@@ -1,0 +1,567 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <link rel="stylesheet" href="site.css" type="text/css">
+
+
+
+    <title>ServiceMix - Getting Started</title>
+  </head>
+
+  <body>
+    <table width="100%" id="layout" style="padding:0px;margin0px;border-collapse:collapse;">
+      <tr>
+        <td colspan="3" style="padding:8px;">
+          <table width="100%" id="banner" style="padding:0px;margin:0px">
+            <tr id="header_row">
+              <td align="left" valign="middle" style="padding:0px;margin:0px;">
+                <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org/servicemix" rel="nofollow"><img align="absmiddle" border=0 src="images/logo.gif"></a></span></span></span>
+
+              </td>
+              
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" id="breadcrumbs">
+          <table width="100%" id="banner" style="padding:0px;margin:0px">
+            <tr>
+              <td align="left">
+                <a href="">Home</a>  | <a href="Navigation">Navigation</a> &gt; Getting Started
+              </td>
+              <td align="right">
+                  <span id="Content"><span><a href="Download" title="Download">Download</a> | <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs</a></span> | <a href="Source" title="Source">Source</a> | <span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span> |<span class="nobr"><a href="irc://irc.codehaus.org/servicemix" rel="nofollow">IRC</a></span> | <span class="nobr"><a href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" rel="nofollow">IRC Log</a></span> | <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a> | <span class="nobr"><a href="http://forums.logicblaze.com/forums/show/3.page" rel="nofollow">Discussion Forum</a></span>| <span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Support</a></span></span></span>
+
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td id="leftColumn" valign="top" style="padding-top: 0px;">
+          <span id="Content"><h3><a name="Navigation-Overview"></a>Overview</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Home" title="Home">Home</a></li>
+    <li><a href="Introduction+to+ESB" title="Introduction to ESB">Introduction to ESB</a></li>
+    <li><a href="Background+to+ServiceMix" title="Background to ServiceMix">Background to ServiceMix</a></li>
+    <li><a href="News" title="News">News</a></li>
+    <li><a href="FAQ" title="FAQ">FAQ</a></li>
+    <li><a href="Download" title="Download">Download</a></li>
+  </ul>
+  <h3><a name="Navigation-Community"></a>Community</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span></li>
+    <li><a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a></li>
+    <li><a href="Contributing" title="Contributing">Contributing</a></li>
+    <li><a href="Team" title="Team">Team</a></li>
+    <li><a href="Users" title="Users">Users</a></li>
+  </ul>
+  <h3><a name="Navigation-Documentation"></a>Documentation</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Getting+Started" title="Getting Started">Getting Started</a></li>
+    <li><a href="Running" title="Running">Running</a></li>
+    <li><a href="Examples" title="Examples">Examples</a></li>
+    <li><a href="Use+Cases" title="Use Cases">Use Cases</a></li>
+    <li><a href="Configuration" title="Configuration">Configuration</a></li>
+    <li><a href="Xml+Reference" title="Xml Reference">Xml Reference</a></li>
+    <li><a href="Management" title="Management">Management</a></li>
+    <li><a href="Architecture" title="Architecture">Architecture</a></li>
+    <li><a href="Clustering" title="Clustering">Clustering</a></li>
+    <li><a href="NMR+Flows" title="NMR Flows">NMR Flows</a></li>
+    <li><a href="Articles" title="Articles">Articles</a></li>
+  </ul>
+  <h3><a name="Navigation-Reference"></a>Reference</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html" rel="nofollow">JBI API</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs</a></span></li>
+    <li><a href="Glossary" title="Glossary">Glossary</a></li>
+  </ul>
+  <h3><a name="Navigation-Features"></a>Features</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Components" title="Components">Components</a></li>
+    <li><a href="Routing" title="Routing">Routing</a></li>
+    <li><a href="Transformation" title="Transformation">Transformation</a></li>
+    <li><a href="Spring+Client+Toolkit" title="Spring Client Toolkit">Spring Client Toolkit</a></li>
+    <li><a href="Client+API" title="Client API">Client API</a></li>
+    <li><a href="POJO+support" title="POJO support">POJO support</a></li>
+    <li><a href="Expressions" title="Expressions">Expressions</a></li>
+    <li><a href="Component+helper+classes" title="Component helper classes">Component helper classes</a></li>
+    <li><a href="Ant+Tasks" title="Ant Tasks">Ant Tasks</a></li>
+    <li><a href="JMX+Console" title="JMX Console">JMX Console</a></li>
+  </ul>
+  <h3><a name="Navigation-Integration"></a>Integration</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Spring+support" title="Spring support">Spring support</a></li>
+    <li><a href="Geronimo+Integration" title="Geronimo Integration">Geronimo Integration</a></li>
+    <li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Integration</a></li>
+    <li><a href="Tomcat+Integration" title="Tomcat Integration">Tomcat Integration</a></li>
+    <li><a href="JNDI+configuration" title="JNDI configuration">JNDI configuration</a></li>
+  </ul>
+  <h3><a name="Navigation-ServiceMixComponents"></a>ServiceMix Components</h3>
+  <ul class="alternate" type="square">
+    <li><a href="BPEL" title="BPEL">BPEL</a></li>
+    <li><a href="Cache" title="Cache">Cache</a></li>
+    <li><a href="Drools" title="Drools">Drools</a></li>
+    <li><a href="Email" title="Email">Email</a></li>
+    <li><a href="File" title="File">File</a></li>
+    <li><a href="FTP" title="FTP">FTP</a></li>
+    <li><a href="Groovy" title="Groovy">Groovy</a></li>
+    <li><a href="HTTP" title="HTTP">HTTP</a></li>
+    <li><a href="Jabber" title="Jabber">Jabber</a></li>
+    <li><a href="JAX+WS" title="JAX WS">JAX WS</a></li>
+    <li><a href="JCA" title="JCA">JCA</a></li>
+    <li><a href="JMS" title="JMS">JMS</a></li>
+    <li><a href="Quartz" title="Quartz">Quartz</a></li>
+    <li><a href="Reflection" title="Reflection">Reflection</a></li>
+    <li><a href="RSS" title="RSS">RSS</a></li>
+    <li><a href="SAAJ" title="SAAJ">SAAJ</a></li>
+    <li><a href="Scripting" title="Scripting">Scripting</a></li>
+    <li><a href="ServiceMix" title="ServiceMix">ServiceMix</a></li>
+    <li><a href="Validation" title="Validation">Validation</a></li>
+    <li><a href="XFire" title="XFire">XFire</a></li>
+    <li><a href="XPath+Router" title="XPath Router">XPath Router</a></li>
+    <li><a href="XSLT" title="XSLT">XSLT</a></li>
+    <li><a href="XSQL" title="XSQL">XSQL</a></li>
+    <li><a href="VFS" title="VFS">VFS</a></li>
+    <li><a href="WSIF" title="WSIF">WSIF</a></li>
+  </ul>
+  <h3><a name="Navigation-Tooling"></a>Tooling</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Eclipse+plugin" title="Eclipse plugin">Eclipse plugin</a></li>
+    <li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Deployer</a></li>
+    <li><a href="WAR+Deployment" title="WAR Deployment">WAR Deployment</a></li>
+    <li><a href="Maven+JBI+plugin" title="Maven JBI plugin">Maven JBI plugin</a></li>
+    <li><a href="Maven+SAR+plugin" title="Maven SAR plugin">Maven SAR plugin</a></li>
+  </ul>
+  <h3><a name="Navigation-Utilities"></a>Utilities</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Reflection" title="Reflection">Reflection</a></li>
+  </ul>
+  <h3><a name="Navigation-OtherJBIsoftware"></a>Other JBI software</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://forge.objectweb.org/projects/celtix/" rel="nofollow">Celtix</a></span></li>
+    <li><span class="nobr"><a href="http://pxe.fivesight.com/wiki/display/PXE/Home" rel="nofollow" title="Visit page outside Confluence">PXE BPEL Engine</a></span></li>
+  </ul>
+  <h3><a name="Navigation-RelatedProjects"></a>Related Projects</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://activemq.codehaus.org/" rel="nofollow">ActiveMQ</a></span></li>
+    <li><span class="nobr"><a href="http://jencks.org/" rel="nofollow">Jencks</a></span></li>
+    <li><span class="nobr"><a href="http://lingo.codehaus.org/" rel="nofollow">Lingo</a></span></li>
+    <li><span class="nobr"><a href="http://activesoap.codehaus.org/" rel="nofollow">ActiveSOAP</a></span></li>
+    <li><span class="nobr"><a href="http://www.springframework.org/" rel="nofollow">Spring</a></span></li>
+    <li><span class="nobr"><a href="http://geronimo.apache.org/" rel="nofollow">Geronimo</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Support"></a>Support</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Issues</a></span></li>
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/browse/SM?report=com.atlassian.jira.plugin.system.project:roadmap-panel" rel="nofollow">Roadmap</a></span></li>
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/browse/SM?report=com.atlassian.jira.plugin.system.project:changelog-panel" rel="nofollow">Change log</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Developers"></a>Developers</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Source" title="Source">Source</a></li>
+    <li><a href="Roadmap" title="Roadmap">Roadmap</a></li>
+    <li><a href="Ideas" title="Ideas">Ideas</a></li>
+    <li><a href="Becoming+a+committer" title="Becoming a committer">Becoming a committer</a></li>
+    <li><a href="Release+Guide" title="Release Guide">Release Guide</a></li>
+    <li><span class="nobr"><a href="http://ci.codehaus.org/beetlejuice/viewProjectSummary.action?projectName=ServiceMix" rel="nofollow">BeetleJuice</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/clover/" rel="nofollow">Clover Report</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref/index.html" rel="nofollow">Source XRef</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html" rel="nofollow">Test Source XRef</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" rel="nofollow">XSD</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="/download/attachments/25208/yjp.gif"></a></span></span></span>
+
+            <h3 class="heading3">Feeds</h3>
+            <table border="0" cellspacing="4px">
+            <tr>
+              <td align="right">
+                <a href="http://docs.codehaus.org/spaces/rss.action?key=SM&newPages=false"><img src="http://docs.codehaus.org/images/icons/rss.gif" border="0"></a><br/>
+              </td>
+              <td align="left">
+                <a href="http://docs.codehaus.org/spaces/rss.action?key=SM&newPages=false">Site</a>
+              </td>
+            </tr>
+            <tr>
+              <td align="right">
+                <a href="http://docs.codehaus.org/spaces/blogrss.action?key=SM"><img src="http://docs.codehaus.org/images/icons/rss.gif" border="0"></a>
+              </td>
+              <td align="left">
+                <a href="http://docs.codehaus.org/spaces/blogrss.action?key=SM">News</a>
+              </td>
+            </tr>
+            </table>
+        </td>
+        <td id="rightColumn" valign="top">
+
+          <div id="page_title">
+            <table width="100%">
+              <tr>
+                <td>
+            Getting Started 
+                </td>
+                <td align="right">
+            
+                </td>
+              </tr>
+            </table>
+          </div>
+
+
+          <div>
+  <div id="Content">
+    <h2><a name="GettingStarted-Introduction"></a>Introduction</h2>
+    <p>This document describes how to install and configure ServiceMix 2.x for both Unix and Windows' platforms. For instructions on installation and configuration of ServiceMix 1.x please see <span class="nobr"><a href="http://docs.codehaus.org/x/wp" rel="nofollow">Getting Started for ServiceMix 1.1</a></span>.</p>
+    <h2><a name="GettingStarted-DocumentOrganization"></a>Document Organization</h2>
+    <p>This document contains the following sections:</p>
+    <ul>
+      <li><a href="#GettingStarted-Introduction">Introduction</a></li>
+      <li><a href="#GettingStarted-DocumentOrganization">Document Organization</a></li>
+      <li><a href="#GettingStarted-PreInstallationRequirements">Pre-Installation Requirements</a></li>
+      <li><a href="#GettingStarted-InstallationProcedureForWindows">Installation Procedure For Windows</a><ul>
+          <li><a href="#GettingStarted-WindowsBinaryInstallation">Windows Binary Installation</a></li>
+          <li><a href="#GettingStarted-WindowsSourceInstallation">Windows Source Installation</a></li>
+          <li><a href="#GettingStarted-WindowsDeveloper%27sReleases">Windows Developer's Releases</a></li>
+        </ul>
+      </li>
+      <li><a href="#GettingStarted-InstallationProcedureforUnix">Installation Procedure for Unix</a><ul>
+          <li><a href="#GettingStarted-UnixBinaryInstallation">Unix Binary Installation</a></li>
+          <li><a href="#GettingStarted-UnixSourceInstallation">Unix Source Installation</a></li>
+          <li><a href="#GettingStarted-UnixDeveloper%27sReleases">Unix Developer's Releases</a></li>
+        </ul>
+      </li>
+      <li><a href="#GettingStarted-StartingServiceMix">Starting ServiceMix</a></li>
+      <li><a href="#GettingStarted-TestingtheInstallation">Testing the Installation</a></li>
+      <li><a href="#GettingStarted-StoppingServiceMix">Stopping ServiceMix</a></li>
+      <li><a href="#GettingStarted-ConfiguringServiceMix">Configuring ServiceMix</a></li>
+      <li><a href="#GettingStarted-AdditionalResources">Additional Resources</a></li>
+    </ul>
+    <h2><a name="GettingStarted-PreInstallationRequirements"></a>Pre-Installation Requirements</h2>
+    <p><b>Hardware:</b></p>
+    <ul>
+      <li>40 MB of disk space for the ServiceMix 2.x binary distribution.</li>
+      <li>24 MB of disk space for the ServiceMix 2.x source or developer's distributions.</li>
+    </ul>
+    <p><b>Operating Systems:</b></p>
+    <ul>
+      <li>Windows: Windows XP SP2, Windows 2000.</li>
+      <li>Unix: Ubuntu Linux, Powerdog Linux, MacOS, AIX, HP-UX, Solaris, any Unix platform that supports Java.</li>
+    </ul>
+    <p><b>Environment:</b></p>
+    <ul>
+      <li>Java Developer Kit (JDK) 1.4.x or greater for deployment and 1.5.x (Java 5) for builds.</li>
+      <li>The JAVA_HOME environment variable must be set to the directory where the JDK is installed, e.g., <tt>c:\Program Files\jsdk.1.4.2-09</tt>.</li>
+      <li>Maven 1.0.2 or greater (required when installing source or developers' releases).</li>
+    </ul>
+    <h2><a name="GettingStarted-InstallationProcedureForWindows"></a>Installation Procedure For Windows</h2>
+    <h4><a name="GettingStarted-WindowsBinaryInstallation"></a>Windows Binary Installation</h4>
+    <p>This procedure explains how to download and install the binary distribution on a Windows system.</p>
+    <p class="paragraph">
+      <ol>
+        <li>From a browser, navigate to <span class="nobr"><a href="http://www.servicemix.org" rel="nofollow">www.servicemix.org</a></span>.</li>
+        <li>Click the Download link in the navigation pane (the left pane).</li>
+        <li>Click the &quot;ServiceMix 2.x Release&quot; link under the &quot;Latest Releases&quot; section.</li>
+        <li>Under the &quot;Download Here&quot; section, select the desired distribution (you may have to scroll down to see the &quot;Download Here&quot; section).<br> For a binary distribution the filename will be similar to: <tt>servicemix-x.x.x.zip</tt>.</li>
+        <li>Extract the files from the zip file into a directory of your choice.</li>
+        <li>Proceed to the <a href="#GettingStarted-StartingServiceMix">Starting ServiceMix</a> section of this document.</li>
+        <li>Following start-up, go to <a href="#GettingStarted-TestingtheInstallation">Testing the Installation</a> section of this document.</li>
+      </ol>
+    </p>
+    <h4><a name="GettingStarted-WindowsSourceInstallation"></a>Windows Source Installation</h4>
+    <p>This procedure explains how to download and install the source distribution on a Windows system. <b>Note:</b> ServiceMix can be run on a Java 1.4.x system, however, Java 5 is required to compile/build ServiceMix.</p>
+    <p class="paragraph">
+      <ol>
+        <li>From a browser, navigate to www.servicemix.org.</li>
+        <li>Click the &quot;Download&quot; link in the navigation pane (the left pane).</li>
+        <li>Click the &quot;ServiceMix 2.x Release&quot; link under the &quot;Latest Releases&quot; section.</li>
+        <li>Under the &quot;Download Here&quot; section, select the desired distribution (if necessary, scroll down to see the &quot;Download Here&quot; section).<br> For a source distribution the filename will be similar to: <tt>servicemix-x.x-src.zip</tt>.</li>
+        <li>Extract ServiceMix from the zip file into a directory of your choice.</li>
+        <li><a name="GettingStarted-WindowsSourceInstallation"></a> Build ServiceMix using Maven 1.0.2 or greater and Java 5. <div class="code">
+            <div class="codeContent"><pre class="code-java">The recommended method of building ServiceMix is the following:
+cd [servicemix_install_dir] 
+  where [servicemix_install_dir] is the directory in which ServiceMix was installed.
+maven 
+
+If the above build fails on some tests, type the following:
+cd [servicemix_install_dir]
+maven -Dmaven.test.skip=<span class="code-keyword">true</span></pre></div>
+          </div>
+          <table align="center" border=0 cellpadding=5 cellspacing="8px" class="infoMacro" width="85%">
+            <colgroup>
+              <col width=24>
+              <col>
+            </colgroup>
+            <tr>
+              <td valign="top"><img align="absmiddle" alt="" border=0 height=16 src="/images/icons/emoticons/information.gif" width=16></td>
+              <td><b class="strong">ServiceMix on Java 1.4</b><br>
+                <p>Some modules can be built on Java 1.4. To compile, run the following command<br> maven -Dservicemix.jdk14=true</p>
+              </td>
+            </tr>
+          </table>
+        </li>
+        <li>Start ServiceMix from the target directory: <div class="code">
+            <div class="codeContent"><pre class="code-java">cd [servicemix_install_dir]\assembly\target\servicemix-2.0.1\bin\servicemix-2.0.1\bin
+servicemix</pre></div>
+          </div>
+        </li>
+        <li>Proceed to <a href="#GettingStarted-TestingtheInstallation">Testing the Installation</a> section.</li>
+      </ol>
+    </p>
+    <h4><a name="GettingStarted-WindowsDeveloper%27sReleases"></a>Windows Developer's Releases</h4>
+    <p>This procedure explains how to download and install the latest developers' snapshot. <b>Note:</b> ServiceMix can be run on a Java 1.4.x system, however, Java 5 is required to compile/build ServiceMix.</p>
+    <p class="paragraph">
+      <ol>
+        <li>From a browser, navigate to <span class="nobr"><a href="http://www.servicemix.org" rel="nofollow">www.servicemix.org</a></span>.</li>
+        <li>Click the Download link in the navigation pane (the left pane).</li>
+        <li>Click the &quot;Development SNAPSHOT releases can also be found here&quot; link.</li>
+        <li>Select the version of ServiceMix to download (if necessary, scroll down to see the ServiceMix snapshots).</li>
+        <li>Extract the files from the zip file into a directory of your choice.</li>
+        <li>If a binary snapshot was downloaded proceed to the <a href="#GettingStarted-StartingServiceMix">Starting ServiceMix</a> section of this document.<br> If a source snapshot was downloaded perform step 6 and step 7 of the <a href="#GettingStarted-WindowsSourceInstallation">Windows Source Installation</a> procedure. </li>
+        <li>Following start-up, proceed to <a href="#GettingStarted-TestingtheInstallation">Testing the Installation</a> section.</li>
+      </ol>
+    </p>
+    <h2><a name="GettingStarted-InstallationProcedureForUnix"></a>Installation Procedure For Unix</h2>
+    <h4><a name="GettingStarted-UnixBinaryInstallation"></a><a name="GettingStarted-UnixBinaryInstallation"></a> Unix Binary Installation</h4>
+    <p>This procedure explains how to download and install the binary distribution on a Unix system. </p>
+    <p class="paragraph">
+      <ol>
+        <li>Download the ServiceMix gzip file to the Unix machine, either using a browser or using a tool, i.e., wget, scp, ftp, etc. <div class="code">
+            <div class="codeContent"><pre class="code-java">If the Unix machine has a browser:
+
+a. Navigate to www.servicemix.org.
+b. Click the <span class="code-quote">&quot;Download&quot;</span> link in the navigation pane (the left pane).
+c. Click the <span class="code-quote">&quot;ServiceMix 2.x Release&quot;</span> link under the <span class="code-quote">&quot;Latest Releases&quot;</span> section.
+d. Under the <span class="code-quote">&quot;Download Here&quot;</span> section, select the desired distribution (<span class="code-keyword">if</span> necessary, 
+scroll down to see the <span class="code-quote">&quot;Download Here&quot;</span> section). For a binary Unix distribution the filename 
+will be similar to: servicemix-x.x.x.tar.gz.
+
+OR
+
+If the Unix machine does NOT have a browser, tools such as wget, scp, or ftp can be used to download the ServiceMix distribution. 
+It is beyond the scope of <span class="code-keyword">this</span> document to explain the use of those tools. For convenience an example is provided below using 
+a Windows machine (that has a browser) and a Unix machine with <span class="code-quote">&quot;wget&quot;</span> installed on it.
+Note: There are several alternative ways to perform <span class="code-keyword">this</span> type of installation. 
+
+a. Obtain the link to the ServiceMix distribution file. On the Windows machine with a browser, navigate to www.servicemix.org.
+b. Click the <span class="code-quote">&quot;Download&quot;</span> link in the left navigation pane.
+c. Click the <span class="code-quote">&quot;ServiceMix 2.x Release&quot;</span> link under the <span class="code-quote">&quot;Latest Releases&quot;</span> section.
+d. Under the <span class="code-quote">&quot;Download Here&quot;</span> section, roll-over the desired distribution (<span class="code-keyword">if</span> necessary, scroll 
+down to see the <span class="code-quote">&quot;Download Here&quot;</span> section). For a binary Unix distribution the filename will be 
+similar to: servicemix-x.x.x.tar.gz.
+e. Right-click on the distribution name and <span class="code-quote">&quot;Copy Shortcut.&quot;</span>
+f. On the Unix machine, change to the directory in which ServiceMix will be installed, e.g., /usr/local.
+f. Download the ServiceMix distribution to the Unix machine using the <span class="code-quote">&quot;wget&quot;</span> tool. For example, type <span class="code-quote">&quot;wget&quot;</span> followed by the saved shortcut:
+
+      wget http:<span class="code-comment">//dist.codehaus.org/servicemix/distributions/servicemix-2.0.1.tar.gz</span></pre></div>
+          </div>
+        </li>
+        <li>Extract the files from the gzip file into a directory of your choice. For example: <div class="code">
+            <div class="codeContent"><pre class="code-java">gunzip servicemix-x.x.x.tar.gz  
+tar xvf servicemix-x.x.x.tar</pre></div>
+          </div>
+        </li>
+        <li>If the <tt>servicemix</tt> start-up script is not executable, change its permisssions. The <tt>servicemix</tt> script is located in the <tt>bin</tt> directory. For example: <div class="code">
+            <div class="codeContent"><pre class="code-java">cd [servicemix_install_dir]/bin
+  where [servicemix_install_dir] is the directory in which ServiceMix was installed.
+chmod 755 servicemix</pre></div>
+          </div>
+        </li>
+        <li>Proceed to the <a href="#GettingStarted-StartingServiceMix">Starting ServiceMix</a> section of this document.</li>
+        <li>Following start-up, go to <a href="#GettingStarted-TestingtheInstallation">Testing the Installation</a> section.</li>
+      </ol>
+    </p>
+    <h4><a name="GettingStarted-UnixSourceInstallation"></a>Unix Source Installation</h4>
+    <p>This procedure explains how to download and install the source distribution on a Unix system. This procedure assumes the Unix machine has a browser. Please see the previous section <a href="#GettingStarted-UnixBinaryInstallation">Unix Binary Installation</a> for ideas on how to install ServiceMix without a browser. <b>Note:</b> ServiceMix can be run on a Java 1.4.x system, however, Java 5 is required to compile/build ServiceMix.</p>
+    <p class="paragraph">
+      <ol>
+        <li>From a browser, navigate to <span class="nobr"><a href="http://www.servicemix.org" rel="nofollow">www.servicemix.org</a></span>.</li>
+        <li>Click the &quot;Download&quot; link in the navigation pane (the left pane).</li>
+        <li>Click the &quot;ServiceMix 2.x Release&quot; link under the &quot;Latest Releases&quot; section.</li>
+        <li>Under the &quot;Download Here&quot; section, select the desired distribution (if necessary, scroll down to see the &quot;Download Here&quot; section).<br> For a source distribution the filename will be similar to: <tt>servicemix-x.x-src.tar.gz</tt>.</li>
+        <li>Extract the files from the zip file into a directory of your choice. For example: <div class="code">
+            <div class="codeContent"><pre class="code-java">gunzip servicemix.x.x-src.tar.gz
+tar xvf servicemix.x-src.tar</pre></div>
+          </div>
+        </li>
+        <li>Build ServiceMix using Maven 1.0.2 or greater and Java 5: <div class="code">
+            <div class="codeContent"><pre class="code-java">The preferred method of building ServiceMix is the following:
+cd [servicemix_install_dir] 
+  where [servicemix_install_dir] is the directory in which ServiceMix was installed.
+maven clean test
+
+If the above build fails on some tests, <span class="code-keyword">do</span> the following:
+cd [servicemix_install_dir]
+maven m:clean
+maven -Dmaven.test.skip=<span class="code-keyword">true</span></pre></div>
+          </div>
+        </li>
+        <li>If the <tt>servicemix</tt> startup script is not executable, change it's permissions. For example: <div class="code">
+            <div class="codeContent"><pre class="code-java">cd [servicemix_install_dir]/assembly/target/servicemix-2.x/bin/servicemix-2.x/bin
+chmod 755 servicemix</pre></div>
+          </div>
+        </li>
+        <li>Start ServiceMix from the target directory: <div class="code">
+            <div class="codeContent"><pre class="code-java">cd [servicemix_install_dir]/assembly/target/servicemix-2.x/bin/servicemix-2.x/bin
+servicemix</pre></div>
+          </div>
+        </li>
+        <li>Proceed to <a href="#GettingStarted-TestingtheInstallation">Testing the Installation</a> section.</li>
+      </ol>
+    </p>
+    <h4><a name="GettingStarted-UnixDeveloper%27sReleases"></a>Unix Developer's Releases</h4>
+    <p>This procedure explains how to download and install the latest developers' snapshot. <b>Note:</b> ServiceMix can be run on a Java 1.4.x system, however, Java 5 is required to compile/build ServiceMix.</p>
+    <p class="paragraph">
+      <ol>
+        <li>From a browser, navigate to www.servicemix.org.</li>
+        <li>Click the Download link in the navigation pane (the left pane).</li>
+        <li>Click the &quot;Development SNAPSHOT releases can also be found here&quot; link.</li>
+        <li>Select the version of ServiceMix to download (you may have to scroll down to see the ServiceMix snapshots). The filename will be similar to: <tt>servicemix-x.x.x-tar.gz</tt> or <tt>servicemix-x.x.x-src.tar.gz</tt>.</li>
+        <li>Extract the files from the gzip file into a directory of your choice. For example: <div class="code">
+            <div class="codeContent"><pre class="code-java">For a binary developer's snapshot:
+  gunzip servicemix-x.x-x.tar.gz  
+  tar xvf servicemix-x.x.x.tar 
+
+For a source developer's snapshot: 
+  gunzip servicemix-x.x.x-src.tar.gz
+  tar xvf servicemix-x.x.x-src.tar</pre></div>
+          </div>
+        </li>
+        <li>If a binary snapshot was downloaded the <tt>servicemix</tt> script may need its permissions changed to make it executable: <div class="code">
+            <div class="codeContent"><pre class="code-java">cd [servicemix_install_dir]/bin  
+  where [servicemix_install_dir] is the directory in which ServiceMix was installed.
+chmod 755 servicemix</pre></div>
+          </div>
+          <p>For a binary snapshot proceed to the <a href="#GettingStarted-StartingServiceMix">Starting ServiceMix</a> section of this document. <br> If a source snapshot was downloaded perform steps 6 - 8 of the <a href="#GettingStarted-UnixSourceInstallation">Unix Source Installation</a> procedure.</p>
+        </li>
+        <li>Proceed to <a href="#GettingStarted-TestingtheInstallation">Testing the Installation</a> section.</li>
+      </ol>
+    </p>
+    <h2><a name="GettingStarted-StartingServiceMix"></a><a name="GettingStarted-StartingServiceMix"></a> Starting ServiceMix</h2>
+    <h4><a name="GettingStarted-OnWindows%3A"></a>On Windows:</h4>
+    <p>From a console window, change to the installation directory and run the <tt>servicemix</tt> program:</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-java">cd [servicemix_install_dir]\bin</pre></div>
+      </div>
+    </p>
+    <p>where <tt>servicemix_install_dir</tt> is the directory in which ServiceMix was installed, e.g., <tt>c:\Program Files\servicemix-2.x</tt>. <br clear="all"> Then type:</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-java">servicemix</pre></div>
+      </div>
+    </p>
+    <h4><a name="GettingStarted-OnUnix%3A"></a>On Unix:</h4>
+    <p>From a command shell, change to the installation directory and run the <tt>servicemix</tt> program:</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-java">cd [servicemix_install_dir]/bin</pre></div>
+      </div>
+    </p>
+    <p>where <tt>servicemix_install_dir</tt> is the directory in which ServiceMix was installed, e.g., <tt>/usr/local/servicemix-2.x</tt>. <br clear="all"> Then type:</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-java">servicemix 
+
+OR
+
+servicemix &gt; /tmp/smlog  2&gt;&amp;1 &amp; 
+Note: /tmp/smlog may be changed to another file name.</pre></div>
+      </div>
+      <table align="center" border=0 cellpadding=5 cellspacing="8px" class="warningMacro" width="85%">
+        <colgroup>
+          <col width=24>
+          <col>
+        </colgroup>
+        <tr>
+          <td valign="top"><img align="absmiddle" alt="" border=0 height=16 src="/images/icons/emoticons/forbidden.gif" width=16></td>
+          <td><b class="strong">Warning</b><br>
+            <p>Do NOT close the console or shell in which ServiceMix was started, as that will terminate ServiceMix (unless ServiceMix was started with nohup).</p>
+          </td>
+        </tr>
+      </table>
+    </p>
+    <h2><a name="GettingStarted-TestingtheInstallation"></a><a name="GettingStarted-TestingtheInstallation"></a> Testing the Installation</h2>
+    <p>The Window's console window or the Unix command shell will display something similar to the following log line if ServiceMix is up and running without any problems:</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-java">[INFO] JBIContainer -- ServiceMix JBI Container 
+&lt;http:<span class="code-comment">//servicemix.org/&gt; name: defaultJBI running version: <span class="code-keyword">null</span></span></pre></div>
+      </div>
+    </p>
+    <p>
+      <br clear="all"> ServiceMix's default port is 1099. From another window run netstat and search for port 1099.</p>
+    <p>From a Windows console, type:</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-java">netstat -an|find <span class="code-quote">&quot;1099&quot;</span></pre></div>
+      </div>
+    </p>
+    <p><b>OR</b></p>
+    <p>From a Unix command shell, type:</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-java">netstat -an|grep 1099</pre></div>
+      </div>
+    </p>
+    <h2><a name="GettingStarted-StoppingServiceMix"></a>Stopping ServiceMix</h2>
+    <p>For both Windows and Unix installations, terminate ServiceMix by typing &quot;CTRL-C&quot; in the command shell or console in which it is running.</p>
+    <p>If ServiceMix was started in the background on Unix, the process can be killed, for example:</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-java">ps -ef|grep servicemix
+kill [PID]
+  where [PID] is the process id of the servicemix process.</pre></div>
+      </div>
+    </p>
+    <h2><a name="GettingStarted-ConfiguringServiceMix"></a>Configuring ServiceMix</h2>
+    <p>After the installation, ServiceMix is running with a basic configuration, but no components. For details on configuring options, please see <a href="Configuration" title="Configuration">Configuration</a>.</p>
+    <h2><a name="GettingStarted-AdditionalResources"></a>Additional Resources</h2>
+    <p>Before trying to use ServiceMix you might want to read <a href="What+is+JBI" title="What is JBI">What is JBI</a>, take a look at the available <a href="Components" title="Components">Components</a> and get an idea for the <a href="Architecture" title="Architecture">Architecture</a> along with the supported <a href="NMR+Flows" title="NMR Flows">NMR Flows</a>.</p>
+    <p>A quick way to get started is to run the examples that are part of the ServiceMix binary distribution. The examples are located in the <em>examples</em> directory under the directory in which ServiceMix was installed.</p>
+    <p>For instructions on running the examples, please see <a href="Examples" title="Examples">Examples</a>.</p>
+    <p class="paragraph">
+      <table align="center" border=0 cellpadding=5 cellspacing="8px" class="tipMacro" width="85%">
+        <colgroup>
+          <col width=24>
+          <col>
+        </colgroup>
+        <tr>
+          <td valign="top"><img align="absmiddle" alt="" border=0 height=16 src="/images/icons/emoticons/check.gif" width=16></td>
+          <td><b class="strong">Handy Hint</b><br>
+            <p>Add <em>$SERVICEMIX_HOME/bin</em> directory to <em>$PATH</em> variable to simplify execution of the examples.</p>
+          </td>
+        </tr>
+      </table>
+    </p>
+    <p>To view the statistics and operation of ServiceMix in a JMX Console and see how the Management works please see the following documents:</p>
+    <ul>
+      <li><a href="JMX+Console" title="JMX Console">JMX Console</a></li>
+      <li><a href="Management" title="Management">Management</a></li>
+    </ul>
+  </div>
+</div>
+
+          &nbsp;
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" id="footer">
+          <table width="100%"> 
+            <tr>
+              <td align="left" valign="top">
+          
+              </td>
+              <td align="right" valign="top">
+          <a style="color:#999;" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&title=Getting+Started">[ edit ]</a>
+              </td>
+            </tr>
+          <table>
+        </td>
+      </tr>
+    </table>
+  </body>
+
+</html>
+
+

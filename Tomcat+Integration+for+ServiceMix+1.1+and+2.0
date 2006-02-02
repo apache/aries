@@ -1,0 +1,455 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <link rel="stylesheet" href="site.css" type="text/css">
+
+
+
+    <title>ServiceMix - Tomcat Integration for ServiceMix 1.1 and 2.0</title>
+  </head>
+
+  <body>
+    <table width="100%" id="layout" style="padding:0px;margin0px;border-collapse:collapse;">
+      <tr>
+        <td colspan="3" style="padding:8px;">
+          <table width="100%" id="banner" style="padding:0px;margin:0px">
+            <tr id="header_row">
+              <td align="left" valign="middle" style="padding:0px;margin:0px;">
+                <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org/servicemix" rel="nofollow"><img align="absmiddle" border=0 src="images/logo.gif"></a></span></span></span>
+
+              </td>
+              
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" id="breadcrumbs">
+          <table width="100%" id="banner" style="padding:0px;margin:0px">
+            <tr>
+              <td align="left">
+                <a href="">Home</a>  | <a href="Tomcat+Integration">Tomcat&nbsp;Integration</a> &gt; Tomcat Integration for ServiceMix 1.1 and 2.0
+              </td>
+              <td align="right">
+                  <span id="Content"><span><a href="Download" title="Download">Download</a> | <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs</a></span> | <a href="Source" title="Source">Source</a> | <span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span> |<span class="nobr"><a href="irc://irc.codehaus.org/servicemix" rel="nofollow">IRC</a></span> | <span class="nobr"><a href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" rel="nofollow">IRC Log</a></span> | <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a> | <span class="nobr"><a href="http://forums.logicblaze.com/forums/show/3.page" rel="nofollow">Discussion Forum</a></span>| <span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Support</a></span></span></span>
+
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td id="leftColumn" valign="top" style="padding-top: 0px;">
+          <span id="Content"><h3><a name="Navigation-Overview"></a>Overview</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Home" title="Home">Home</a></li>
+    <li><a href="Introduction+to+ESB" title="Introduction to ESB">Introduction to ESB</a></li>
+    <li><a href="Background+to+ServiceMix" title="Background to ServiceMix">Background to ServiceMix</a></li>
+    <li><a href="News" title="News">News</a></li>
+    <li><a href="FAQ" title="FAQ">FAQ</a></li>
+    <li><a href="Download" title="Download">Download</a></li>
+  </ul>
+  <h3><a name="Navigation-Community"></a>Community</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span></li>
+    <li><a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a></li>
+    <li><a href="Contributing" title="Contributing">Contributing</a></li>
+    <li><a href="Team" title="Team">Team</a></li>
+    <li><a href="Users" title="Users">Users</a></li>
+  </ul>
+  <h3><a name="Navigation-Documentation"></a>Documentation</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Getting+Started" title="Getting Started">Getting Started</a></li>
+    <li><a href="Running" title="Running">Running</a></li>
+    <li><a href="Examples" title="Examples">Examples</a></li>
+    <li><a href="Use+Cases" title="Use Cases">Use Cases</a></li>
+    <li><a href="Configuration" title="Configuration">Configuration</a></li>
+    <li><a href="Xml+Reference" title="Xml Reference">Xml Reference</a></li>
+    <li><a href="Management" title="Management">Management</a></li>
+    <li><a href="Architecture" title="Architecture">Architecture</a></li>
+    <li><a href="Clustering" title="Clustering">Clustering</a></li>
+    <li><a href="NMR+Flows" title="NMR Flows">NMR Flows</a></li>
+    <li><a href="Articles" title="Articles">Articles</a></li>
+  </ul>
+  <h3><a name="Navigation-Reference"></a>Reference</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html" rel="nofollow">JBI API</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs</a></span></li>
+    <li><a href="Glossary" title="Glossary">Glossary</a></li>
+  </ul>
+  <h3><a name="Navigation-Features"></a>Features</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Components" title="Components">Components</a></li>
+    <li><a href="Routing" title="Routing">Routing</a></li>
+    <li><a href="Transformation" title="Transformation">Transformation</a></li>
+    <li><a href="Spring+Client+Toolkit" title="Spring Client Toolkit">Spring Client Toolkit</a></li>
+    <li><a href="Client+API" title="Client API">Client API</a></li>
+    <li><a href="POJO+support" title="POJO support">POJO support</a></li>
+    <li><a href="Expressions" title="Expressions">Expressions</a></li>
+    <li><a href="Component+helper+classes" title="Component helper classes">Component helper classes</a></li>
+    <li><a href="Ant+Tasks" title="Ant Tasks">Ant Tasks</a></li>
+    <li><a href="JMX+Console" title="JMX Console">JMX Console</a></li>
+  </ul>
+  <h3><a name="Navigation-Integration"></a>Integration</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Spring+support" title="Spring support">Spring support</a></li>
+    <li><a href="Geronimo+Integration" title="Geronimo Integration">Geronimo Integration</a></li>
+    <li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Integration</a></li>
+    <li><a href="Tomcat+Integration" title="Tomcat Integration">Tomcat Integration</a></li>
+    <li><a href="JNDI+configuration" title="JNDI configuration">JNDI configuration</a></li>
+  </ul>
+  <h3><a name="Navigation-ServiceMixComponents"></a>ServiceMix Components</h3>
+  <ul class="alternate" type="square">
+    <li><a href="BPEL" title="BPEL">BPEL</a></li>
+    <li><a href="Cache" title="Cache">Cache</a></li>
+    <li><a href="Drools" title="Drools">Drools</a></li>
+    <li><a href="Email" title="Email">Email</a></li>
+    <li><a href="File" title="File">File</a></li>
+    <li><a href="FTP" title="FTP">FTP</a></li>
+    <li><a href="Groovy" title="Groovy">Groovy</a></li>
+    <li><a href="HTTP" title="HTTP">HTTP</a></li>
+    <li><a href="Jabber" title="Jabber">Jabber</a></li>
+    <li><a href="JAX+WS" title="JAX WS">JAX WS</a></li>
+    <li><a href="JCA" title="JCA">JCA</a></li>
+    <li><a href="JMS" title="JMS">JMS</a></li>
+    <li><a href="Quartz" title="Quartz">Quartz</a></li>
+    <li><a href="Reflection" title="Reflection">Reflection</a></li>
+    <li><a href="RSS" title="RSS">RSS</a></li>
+    <li><a href="SAAJ" title="SAAJ">SAAJ</a></li>
+    <li><a href="Scripting" title="Scripting">Scripting</a></li>
+    <li><a href="ServiceMix" title="ServiceMix">ServiceMix</a></li>
+    <li><a href="Validation" title="Validation">Validation</a></li>
+    <li><a href="XFire" title="XFire">XFire</a></li>
+    <li><a href="XPath+Router" title="XPath Router">XPath Router</a></li>
+    <li><a href="XSLT" title="XSLT">XSLT</a></li>
+    <li><a href="XSQL" title="XSQL">XSQL</a></li>
+    <li><a href="VFS" title="VFS">VFS</a></li>
+    <li><a href="WSIF" title="WSIF">WSIF</a></li>
+  </ul>
+  <h3><a name="Navigation-Tooling"></a>Tooling</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Eclipse+plugin" title="Eclipse plugin">Eclipse plugin</a></li>
+    <li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Deployer</a></li>
+    <li><a href="WAR+Deployment" title="WAR Deployment">WAR Deployment</a></li>
+    <li><a href="Maven+JBI+plugin" title="Maven JBI plugin">Maven JBI plugin</a></li>
+    <li><a href="Maven+SAR+plugin" title="Maven SAR plugin">Maven SAR plugin</a></li>
+  </ul>
+  <h3><a name="Navigation-Utilities"></a>Utilities</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Reflection" title="Reflection">Reflection</a></li>
+  </ul>
+  <h3><a name="Navigation-OtherJBIsoftware"></a>Other JBI software</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://forge.objectweb.org/projects/celtix/" rel="nofollow">Celtix</a></span></li>
+    <li><span class="nobr"><a href="http://pxe.fivesight.com/wiki/display/PXE/Home" rel="nofollow" title="Visit page outside Confluence">PXE BPEL Engine</a></span></li>
+  </ul>
+  <h3><a name="Navigation-RelatedProjects"></a>Related Projects</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://activemq.codehaus.org/" rel="nofollow">ActiveMQ</a></span></li>
+    <li><span class="nobr"><a href="http://jencks.org/" rel="nofollow">Jencks</a></span></li>
+    <li><span class="nobr"><a href="http://lingo.codehaus.org/" rel="nofollow">Lingo</a></span></li>
+    <li><span class="nobr"><a href="http://activesoap.codehaus.org/" rel="nofollow">ActiveSOAP</a></span></li>
+    <li><span class="nobr"><a href="http://www.springframework.org/" rel="nofollow">Spring</a></span></li>
+    <li><span class="nobr"><a href="http://geronimo.apache.org/" rel="nofollow">Geronimo</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Support"></a>Support</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Issues</a></span></li>
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/browse/SM?report=com.atlassian.jira.plugin.system.project:roadmap-panel" rel="nofollow">Roadmap</a></span></li>
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/browse/SM?report=com.atlassian.jira.plugin.system.project:changelog-panel" rel="nofollow">Change log</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Developers"></a>Developers</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Source" title="Source">Source</a></li>
+    <li><a href="Roadmap" title="Roadmap">Roadmap</a></li>
+    <li><a href="Ideas" title="Ideas">Ideas</a></li>
+    <li><a href="Becoming+a+committer" title="Becoming a committer">Becoming a committer</a></li>
+    <li><a href="Release+Guide" title="Release Guide">Release Guide</a></li>
+    <li><span class="nobr"><a href="http://ci.codehaus.org/beetlejuice/viewProjectSummary.action?projectName=ServiceMix" rel="nofollow">BeetleJuice</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/clover/" rel="nofollow">Clover Report</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref/index.html" rel="nofollow">Source XRef</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html" rel="nofollow">Test Source XRef</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" rel="nofollow">XSD</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="/download/attachments/25208/yjp.gif"></a></span></span></span>
+
+            <h3 class="heading3">Feeds</h3>
+            <table border="0" cellspacing="4px">
+            <tr>
+              <td align="right">
+                <a href="http://docs.codehaus.org/spaces/rss.action?key=SM&newPages=false"><img src="http://docs.codehaus.org/images/icons/rss.gif" border="0"></a><br/>
+              </td>
+              <td align="left">
+                <a href="http://docs.codehaus.org/spaces/rss.action?key=SM&newPages=false">Site</a>
+              </td>
+            </tr>
+            <tr>
+              <td align="right">
+                <a href="http://docs.codehaus.org/spaces/blogrss.action?key=SM"><img src="http://docs.codehaus.org/images/icons/rss.gif" border="0"></a>
+              </td>
+              <td align="left">
+                <a href="http://docs.codehaus.org/spaces/blogrss.action?key=SM">News</a>
+              </td>
+            </tr>
+            </table>
+        </td>
+        <td id="rightColumn" valign="top">
+
+          <div id="page_title">
+            <table width="100%">
+              <tr>
+                <td>
+            Tomcat Integration for ServiceMix 1.1 and 2.0 
+                </td>
+                <td align="right">
+            
+                </td>
+              </tr>
+            </table>
+          </div>
+
+
+          <div>
+  <div id="Content">
+    <h2><a name="TomcatIntegrationforServiceMix1.1and2.0-TomcatIntegrationforServiceMix1.1andServiceMix2.0"></a>Tomcat Integration for ServiceMix 1.1 and ServiceMix 2.0</h2>
+    <p>The following guide explains how to deploy ServiceMix 1.1 and ServiceMix 2.0 on the <span class="nobr"><a href="http://tomcat.apache.org" rel="nofollow">Apache Tomcat</a></span> application server. For ServiceMix 2.0.1 and later releases, please refer to the <a href="Tomcat+Integration" title="Tomcat Integration">Tomcat Integration</a> document.</p>
+    <h3><a name="TomcatIntegrationforServiceMix1.1and2.0-PreInstallationRequirements"></a>Pre-Installation Requirements</h3>
+    <ul>
+      <li>Java Developer Kit (JDK) 1.4.x or greater to run ServiceMix (to build Service, JDK 1.5.x or greater is required)</li>
+      <li>The JAVA_HOME environment variable must be set to the directory where the JDK is installed, e.g. <tt>c:\Program Files\Java\jdk1.5.xx</tt>.</li>
+      <li>Maven 1.0.2 or greater (required when installing source or developers' releases).</li>
+      <li>Apache Tomcat version 5.5</li>
+      <li>ServiceMix 1.1 or ServiceMix 2.0</li>
+    </ul>
+    <p>The following platform was used to produce this document:</p>
+    <ul>
+      <li>Windows XP</li>
+      <li>Tomcat 5.5</li>
+      <li>Java 5</li>
+      <li>ServiceMix 1.1 and ServiceMix 2.0</li>
+    </ul>
+    <h3><a name="TomcatIntegrationforServiceMix1.1and2.0-DeployingServiceMixonTomcat"></a>Deploying ServiceMix on Tomcat</h3>
+    <p>Execute the following steps to deploy ServiceMix on Apache Tomcat. <b>NOTE:</b> This procedure will work on Unix platforms as well as the Windows platform, with the appropriate substitutions, such as using the backslash ( \ ) instead of the forward slash ( / ).</p>
+    <p class="paragraph">
+      <ol>
+        <li>Apache Tomcat must be downloaded and installed. For instructions please see the <span class="nobr"><a href="http://tomcat.apache.org" rel="nofollow">Tomcat</a></span> web site.</li>
+        <li>By default Tomcat uses port 8080. It is important to note if your Tomcat installation is on another port, such as port 80; this information will be used in a later step.</li>
+        <li>Download and build the ServiceMix source code. Please see the <span class="nobr"><a href="http://www.servicemix.org/Getting+Started" rel="nofollow">Getting Started</a></span> guide for instructions.<br><b>NOTE:</b> ServiceMix must be BUILT, as well as downloaded.</li>
+        <li>Create the WAR file: <div class="code">
+            <div class="codeContent"><pre class="code-java">cd [servicemix_install_dir]\tooling\servicemix-web
+maven war</pre></div>
+          </div>
+          <p>where <tt>servicemix_install_dir</tt> is the directory in which ServiceMix was downloaded and installed.</p>
+        </li>
+        <li>To deploy the WAR file, <tt>servicemix-web.war</tt>, copy it to the Tomcat <tt>webapps</tt> directory. For example, on a Windows system: <div class="code">
+            <div class="codeContent"><pre class="code-java">cd [servicemix_install_dir]\tooling\servicemix-web\target
+copy servicemix-web.war [tomcat_install_dir]\webapps</pre></div>
+          </div>
+          <p>where <tt>tomcat_install_dir</tt> is the directory in which Tomcat was installed. <br clear="all">
+          </p>
+        </li>
+        <li>To deploy the ServiceMix WAR file, start and stop Tomcat.</li>
+        <li>If there are errors indicating missing classes when Tomcat starts, perform the followng steps: <ol>
+            <li>Stop Tomcat.</li>
+            <li>Install additional jar files in the deployed ServiceMix directory. The missing jar files are: <tt>commons-collections-3.1.jar</tt> and <tt>commons-pool-1.2.jar</tt>. These can be obtained by using a search engine and searching for them. Or they can found in your Maven repository, which is usually located in <tt>your_home_dir\.maven\repository</tt>. Specifically, <tt>your_home_dir\.maven\repository\commons-collections\jars</tt> and <tt>your_home_dir\.maven\repository\commons-pool\jars</tt>. <div class="code">
+                <div class="codeContent"><pre class="code-java">copy commons-collections-3.1.jar [tomcat_install_dir]\webapps\servicemix-web\WEB-INF\lib 
+copy commons-pool-1.2.jar [tomcat_install_dir]\webapps\servicemix-web\WEB-INF\lib</pre></div>
+              </div>
+            </li>
+            <li>Start Tomcat. <br clear="all">
+            </li>
+          </ol>
+        </li>
+        <li>The Tomcat console output should show ServiceMix starting: <div class="code">
+            <div class="codeContent"><pre class="code-java">INFO: Deploying web application archive servicemix-web.war
+Nov 1, 2005 11:03:54 AM org.springframework.web.context.ContextLoader initWebApplicationContext
+INFO: Root WebApplicationContext: initialization started
+Nov 1, 2005 11:03:54 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader loadBeanDefinitions
+INFO: Loading XML bean definitions from ServletContext resource [/WEB-INF/applicationContext.xml]
+Nov 1, 2005 11:03:55 AM org.springframework.core.CollectionFactory &lt;clinit&gt;
+INFO: JDK 1.4+ collections available
+Nov 1, 2005 11:03:55 AM org.springframework.core.CollectionFactory &lt;clinit&gt;
+INFO: Commons Collections 3.x available
+Nov 1, 2005 11:03:55 AM org.springframework.context.support.AbstractRefreshableApplicationContext refreshBeanFactory
+INFO: Bean factory <span class="code-keyword">for</span> application context [Root WebApplicationContext]: org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [jencks,broker,transactionManager,jmsFactory,jbi]; root of BeanFactory hierarchy
+Nov 1, 2005 11:03:55 AM org.springframework.context.support.AbstractApplicationContext refresh
+INFO: 5 beans defined in application context [Root WebApplicationContext]
+Nov 1, 2005 11:03:55 AM org.springframework.context.support.AbstractApplicationContext initMessageSource
+INFO: Unable to locate MessageSource with name 'messageSource': using <span class="code-keyword">default</span> [org.springframework.context.support.DelegatingMessageSource@1049d3]
+Nov 1, 2005 11:03:55 AM org.springframework.context.support.AbstractApplicationContext initApplicationEventMulticaster
+INFO: Unable to locate ApplicationEventMulticaster with name 'applicationEventMulticaster': using <span class="code-keyword">default</span> [org.springframework.context.event.SimpleApplicationEventMulticaster@14a7a12]
+Nov 1, 2005 11:03:55 AM org.springframework.ui.context.support.UiApplicationContextUtils initThemeSource
+INFO: No ThemeSource found <span class="code-keyword">for</span> [Root WebApplicationContext]: using ResourceBundleThemeSource
+Nov 1, 2005 11:03:55 AM org.springframework.beans.factory.support.DefaultListableBeanFactory preInstantiateSingletons
+INFO: Pre-instantiating singletons in factory [org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [jencks,broker,transactionManager,jmsFactory,jbi]; root of BeanFactory hierarchy]
+Nov 1, 2005 11:03:55 AM org.springframework.beans.factory.support.AbstractBeanFactory getBean
+INFO: Creating shared instance of singleton bean 'jencks'
+Nov 1, 2005 11:03:56 AM org.springframework.beans.factory.support.AbstractBeanFactory getBean
+INFO: Creating shared instance of singleton bean 'broker'
+...</pre></div>
+          </div>
+          <p><b>NOTE:</b> The console output is also logged in <tt>tomcat_home_dir\logs\catalina.xxxx-xx-xx.log</tt>.</p>
+        </li>
+      </ol>
+    </p>
+    <h3><a name="TomcatIntegrationforServiceMix1.1and2.0-TestingtheServiceMixDeploymentonTomcat"></a>Testing the ServiceMix Deployment on Tomcat</h3>
+    <p>To ensure that ServiceMix is running on Tomcat do any of the following:</p>
+    <p class="paragraph">
+      <ol>
+        <li>Check the Tomcat console output or the Tomcat log files (see above) and look for servicemix-web starting without any errors.</li>
+        <li>ServiceMix's default port is 1099. From another window run netstat and search for port 1099. <br clear="all"> From a Windows console, type: <div class="code">
+            <div class="codeContent"><pre class="code-java">netstat -an|find <span class="code-quote">&quot;1099&quot;</span></pre></div>
+          </div>
+          <p>
+            <br clear="all"><b>OR</b><br clear="all">
+            <br clear="all"> From a Unix command shell, type:</p>
+          <div class="code">
+            <div class="codeContent"><pre class="code-java">netstat -an|grep 1099</pre></div>
+          </div>
+          <p>
+            <br clear="all">
+          </p>
+        </li>
+        <li>Run the ServiceMix JMX Console. To do this enter the following URL in a web browser: <span class="nobr"><a href="http://localhost:8080/servicemix-web" rel="nofollow">http://localhost:8080/servicemix-web</a></span>. Note: your installation of Tomcat may not be running on port 8080. If that is the case, replace 8080 with the correct port number in the previous URL.<br> Try using the JMX console. For example, perform the following steps. Note: this is optional. <ol>
+            <li>Click on &quot;Catalina&quot;.</li>
+            <li>Click on &quot;Unknown&quot;.</li>
+            <li>Click on the &quot;JMXServlet WebModule&quot; to get monitoring information about the JMX Servlet itself: <br clear="all">
+              <br clear="all"><img align="absmiddle" border=0 src="/download/attachments/36893/jmxconsoletomcat.jpg"><br clear="all">
+              <br clear="all">
+            </li>
+          </ol>
+        </li>
+        <li>An http binding example is supplied. To run it on <b>ServiceMix 1.1</b> do the following steps. To run it on ServiceMix 2.0 go to <a href="#TomcatIntegrationforServiceMix1.1and2.0-2.0steps">2.0 steps</a>. <ol>
+            <li>From a browser, enter the following URL: <span class="nobr"><a href="http://localhost:8080/servicemix-web/examples" rel="nofollow">http://localhost:8080/servicemix-web/examples</a></span>. <b>Note:</b> if Tomcat is using a different port, such as port 80, substitute the correct port number for 8080 in the URL. <br clear="all">
+              <br clear="all"><img align="absmiddle" border=0 src="/download/attachments/36893/httpbindingexample.jpg"><br clear="all">
+              <br clear="all">
+            </li>
+            <li>Click on the &quot;perform a GET&quot; link. If an HTTP 404 error occurs, go to the next step. If there is no error you will see: <br clear="all">
+              <br clear="all"><img align="absmiddle" border=0 src="/download/attachments/36893/httpbindingget.jpg"><br clear="all">
+              <br clear="all">
+            </li>
+            <li>If there was an HTTP 404 error, the <tt>index.html</tt> file needs to be modified. The <tt>index.html</tt> file is located in the <tt>tomcat_install_dir\webapps\servicemix-web\examples</tt> directory. After editing the file, return to step 1. <div class="code">
+                <div class="codeContent"><pre class="code-java">Change <span class="code-keyword">this</span> line: 
+&lt;li&gt;&lt;a href=<span class="code-quote">&quot;/jbi/exampleUri?x=123&amp;name=James&amp;location=London&quot;</span>&gt;perform a GET&lt;/a&gt; into the HTTP binding&lt;/li&gt;
+
+to
+
+&lt;li&gt;&lt;a href=<span class="code-quote">&quot;/servicemix-web/jbi/exampleUri?x=123&amp;name=James&amp;location=London&quot;</span>&gt;perform a GET&lt;/a&gt; into the HTTP binding&lt;/li&gt;</pre></div>
+              </div>
+              <p>
+                <br clear="all">
+              </p>
+            </li>
+            <li>Use the ServiceMix JMX Console to see monitoring information on the httpBinding example just run. <ol>
+                <li>From a browser, enter the following URL: <span class="nobr"><a href="http://localhost:8080/servicemix-web" rel="nofollow">http://localhost:8080/servicemix-web</a></span>. <b>Note:</b> If Tomcat is not running on port 8080, substitute the correct port number for 8080.</li>
+                <li>Click on &quot;org.servicemix.&quot;</li>
+                <li>Click on &quot;org.servicemix.jbi.framework.ComponentMBeanImpl&quot;. In the right-hand frame, scroll to the right to see statistics for the httpbinding example. <br clear="all">
+                  <br clear="all"><img align="absmiddle" border=0 src="/download/attachments/36893/jmxconsolehttpbinding.jpg"><br clear="all">
+                  <br clear="all">
+                  <br clear="all">
+                </li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+        <li><a name="TomcatIntegrationforServiceMix1.1and2.0-2.0steps"></a> To run the httpBinding example for <b>ServiceMix 2.0</b> perform the following steps: <ol>
+            <li>Before attempting to run the example program, first check that the{{HelloWorldComponent.class}} file exists. Do a directory listing of the following and look for the file. <div class="code">
+                <div class="codeContent"><pre class="code-java">cd [tomcat_install_dir]\webapps\servicemix-web\WEB-INF\classes\org\servicemix\components</pre></div>
+              </div>
+              <p>where <tt>[tomcat_install_dir]</tt> is the directory in which Tomcat is installed.</p>
+            </li>
+            <li>If the file <tt>HelloWorldComponent.class</tt> does not exist and possibly the directory <tt>components</tt> does not exist either, perform the following steps. If the file exists, go to <ol>
+                <li>Create the <tt>components</tt> directory in the ServiceMix source distribution: <div class="code">
+                    <div class="codeContent"><pre class="code-java">cd [servicemix_install_dir]\tooling\servicemix-web\src\main\java\org\servicemix
+mkdir components</pre></div>
+                  </div>
+                </li>
+                <li>Copy the <tt>HelloWorldComponent.java</tt> file to the <tt>components</tt> directory created above. The <tt>HelloWorldComponent.java</tt> file can be created by cutting and pasting the following code: <div class="code">
+                    <div class="codeContent"><pre class="code-java"><span class="code-keyword">package</span> org.servicemix.components;
+
+<span class="code-keyword">import</span> org.servicemix.components.util.TransformComponentSupport;
+<span class="code-keyword">import</span> org.servicemix.jbi.jaxp.StringSource;
+
+<span class="code-keyword">import</span> javax.jbi.messaging.MessageExchange;
+<span class="code-keyword">import</span> javax.jbi.messaging.MessagingException;
+<span class="code-keyword">import</span> javax.jbi.messaging.NormalizedMessage;
+
+<span class="code-keyword">public</span> class HelloWorldComponent <span class="code-keyword">extends</span> TransformComponentSupport {
+
+    <span class="code-keyword">private</span> <span class="code-object">String</span> property;
+    
+    <span class="code-keyword">protected</span> <span class="code-object">boolean</span> transform(MessageExchange exchange, NormalizedMessage in, NormalizedMessage out)
+            <span class="code-keyword">throws</span> MessagingException {
+        out.setContent(<span class="code-keyword">new</span> StringSource(<span class="code-quote">&quot;&lt;hello&gt;&quot;</span> + in.getProperty(property) + <span class="code-quote">&quot;&lt;/hello&gt;&quot;</span>));
+        <span class="code-keyword">return</span> <span class="code-keyword">true</span>;
+    }
+
+    <span class="code-keyword">public</span> <span class="code-object">String</span> getProperty() {
+        <span class="code-keyword">return</span> property;
+    }
+
+    <span class="code-keyword">public</span> void setProperty(<span class="code-object">String</span> property) {
+        <span class="code-keyword">this</span>.property = property;
+    }
+
+}</pre></div>
+                  </div>
+                </li>
+                <li>Rebuild the <tt>servicemix-web.war</tt> file: <div class="code">
+                    <div class="codeContent"><pre class="code-java">cd [servicemix_install_dir]\tooling\servicemix-web
+maven war</pre></div>
+                  </div>
+                  <p>where <tt>servicemix_install_dir</tt> is the directory in which ServiceMix was downloaded and installed.</p>
+                </li>
+                <li>Stop Tomcat.</li>
+                <li>Remove the existing <tt>[tomcat_install_dir]\webapps\servicemix-web</tt> directory.</li>
+                <li>Copy <tt>servicemix-web.war</tt> to the Tomcat <tt>webapps</tt> directory. For example, on a Windows system: <div class="code">
+                    <div class="codeContent"><pre class="code-java">cd [servicemix_install_dir]\tooling\servicemix-web\target
+copy servicemix-web.war [tomcat_install_dir]\webapps</pre></div>
+                  </div>
+                  <p>where <tt>tomcat_install_dir</tt> is the directory in which Tomcat was installed. <br clear="all">
+                  </p>
+                </li>
+                <li>Start Tomcat to deploy the ServiceMix WAR file. <br clear="all">
+                </li>
+              </ol>
+            </li>
+            <li>To run the example: from a browser, enter the following URL: <span class="nobr"><a href="http://localhost:8080/servicemix-web/examples" rel="nofollow">http://localhost:8080/servicemix-web/examples</a></span>. <b>NOTE:</b> If Tomcat is using a different port, such as port 80, substitute the correct port number for 8080 in the URL. <br clear="all">
+              <br clear="all"><img align="absmiddle" border=0 src="/download/attachments/36893/httpbindingexample2.0.jpg"><br clear="all">
+              <br clear="all">
+            </li>
+            <li>Enter a name or some text in the text box (shown above) and click the Submit button. You will see: <br clear="all">
+              <br clear="all"><img align="absmiddle" border=0 src="/download/attachments/36893/httpbindingresult2.0.jpg"><br clear="all">
+              <br clear="all">
+              <br clear="all">
+            </li>
+          </ol>
+        </li>
+      </ol>
+    </p>
+  </div>
+</div>
+
+          &nbsp;
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" id="footer">
+          <table width="100%"> 
+            <tr>
+              <td align="left" valign="top">
+          
+              </td>
+              <td align="right" valign="top">
+          <a style="color:#999;" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&title=Tomcat+Integration+for+ServiceMix+1.1+and+2.0">[ edit ]</a>
+              </td>
+            </tr>
+          <table>
+        </td>
+      </tr>
+    </table>
+  </body>
+
+</html>
+
+

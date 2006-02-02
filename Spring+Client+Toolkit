@@ -1,0 +1,599 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <link rel="stylesheet" href="site.css" type="text/css">
+
+
+
+    <title>ServiceMix - Spring Client Toolkit</title>
+  </head>
+
+  <body>
+    <table width="100%" id="layout" style="padding:0px;margin0px;border-collapse:collapse;">
+      <tr>
+        <td colspan="3" style="padding:8px;">
+          <table width="100%" id="banner" style="padding:0px;margin:0px">
+            <tr id="header_row">
+              <td align="left" valign="middle" style="padding:0px;margin:0px;">
+                <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org/servicemix" rel="nofollow"><img align="absmiddle" border=0 src="images/logo.gif"></a></span></span></span>
+
+              </td>
+              
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" id="breadcrumbs">
+          <table width="100%" id="banner" style="padding:0px;margin:0px">
+            <tr>
+              <td align="left">
+                <a href="">Home</a>  | <a href="Home">Home</a> &gt; Spring Client Toolkit
+              </td>
+              <td align="right">
+                  <span id="Content"><span><a href="Download" title="Download">Download</a> | <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs</a></span> | <a href="Source" title="Source">Source</a> | <span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span> |<span class="nobr"><a href="irc://irc.codehaus.org/servicemix" rel="nofollow">IRC</a></span> | <span class="nobr"><a href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" rel="nofollow">IRC Log</a></span> | <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a> | <span class="nobr"><a href="http://forums.logicblaze.com/forums/show/3.page" rel="nofollow">Discussion Forum</a></span>| <span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Support</a></span></span></span>
+
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td id="leftColumn" valign="top" style="padding-top: 0px;">
+          <span id="Content"><h3><a name="Navigation-Overview"></a>Overview</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Home" title="Home">Home</a></li>
+    <li><a href="Introduction+to+ESB" title="Introduction to ESB">Introduction to ESB</a></li>
+    <li><a href="Background+to+ServiceMix" title="Background to ServiceMix">Background to ServiceMix</a></li>
+    <li><a href="News" title="News">News</a></li>
+    <li><a href="FAQ" title="FAQ">FAQ</a></li>
+    <li><a href="Download" title="Download">Download</a></li>
+  </ul>
+  <h3><a name="Navigation-Community"></a>Community</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span></li>
+    <li><a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a></li>
+    <li><a href="Contributing" title="Contributing">Contributing</a></li>
+    <li><a href="Team" title="Team">Team</a></li>
+    <li><a href="Users" title="Users">Users</a></li>
+  </ul>
+  <h3><a name="Navigation-Documentation"></a>Documentation</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Getting+Started" title="Getting Started">Getting Started</a></li>
+    <li><a href="Running" title="Running">Running</a></li>
+    <li><a href="Examples" title="Examples">Examples</a></li>
+    <li><a href="Use+Cases" title="Use Cases">Use Cases</a></li>
+    <li><a href="Configuration" title="Configuration">Configuration</a></li>
+    <li><a href="Xml+Reference" title="Xml Reference">Xml Reference</a></li>
+    <li><a href="Management" title="Management">Management</a></li>
+    <li><a href="Architecture" title="Architecture">Architecture</a></li>
+    <li><a href="Clustering" title="Clustering">Clustering</a></li>
+    <li><a href="NMR+Flows" title="NMR Flows">NMR Flows</a></li>
+    <li><a href="Articles" title="Articles">Articles</a></li>
+  </ul>
+  <h3><a name="Navigation-Reference"></a>Reference</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html" rel="nofollow">JBI API</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs</a></span></li>
+    <li><a href="Glossary" title="Glossary">Glossary</a></li>
+  </ul>
+  <h3><a name="Navigation-Features"></a>Features</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Components" title="Components">Components</a></li>
+    <li><a href="Routing" title="Routing">Routing</a></li>
+    <li><a href="Transformation" title="Transformation">Transformation</a></li>
+    <li><a href="Spring+Client+Toolkit" title="Spring Client Toolkit">Spring Client Toolkit</a></li>
+    <li><a href="Client+API" title="Client API">Client API</a></li>
+    <li><a href="POJO+support" title="POJO support">POJO support</a></li>
+    <li><a href="Expressions" title="Expressions">Expressions</a></li>
+    <li><a href="Component+helper+classes" title="Component helper classes">Component helper classes</a></li>
+    <li><a href="Ant+Tasks" title="Ant Tasks">Ant Tasks</a></li>
+    <li><a href="JMX+Console" title="JMX Console">JMX Console</a></li>
+  </ul>
+  <h3><a name="Navigation-Integration"></a>Integration</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Spring+support" title="Spring support">Spring support</a></li>
+    <li><a href="Geronimo+Integration" title="Geronimo Integration">Geronimo Integration</a></li>
+    <li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Integration</a></li>
+    <li><a href="Tomcat+Integration" title="Tomcat Integration">Tomcat Integration</a></li>
+    <li><a href="JNDI+configuration" title="JNDI configuration">JNDI configuration</a></li>
+  </ul>
+  <h3><a name="Navigation-ServiceMixComponents"></a>ServiceMix Components</h3>
+  <ul class="alternate" type="square">
+    <li><a href="BPEL" title="BPEL">BPEL</a></li>
+    <li><a href="Cache" title="Cache">Cache</a></li>
+    <li><a href="Drools" title="Drools">Drools</a></li>
+    <li><a href="Email" title="Email">Email</a></li>
+    <li><a href="File" title="File">File</a></li>
+    <li><a href="FTP" title="FTP">FTP</a></li>
+    <li><a href="Groovy" title="Groovy">Groovy</a></li>
+    <li><a href="HTTP" title="HTTP">HTTP</a></li>
+    <li><a href="Jabber" title="Jabber">Jabber</a></li>
+    <li><a href="JAX+WS" title="JAX WS">JAX WS</a></li>
+    <li><a href="JCA" title="JCA">JCA</a></li>
+    <li><a href="JMS" title="JMS">JMS</a></li>
+    <li><a href="Quartz" title="Quartz">Quartz</a></li>
+    <li><a href="Reflection" title="Reflection">Reflection</a></li>
+    <li><a href="RSS" title="RSS">RSS</a></li>
+    <li><a href="SAAJ" title="SAAJ">SAAJ</a></li>
+    <li><a href="Scripting" title="Scripting">Scripting</a></li>
+    <li><a href="ServiceMix" title="ServiceMix">ServiceMix</a></li>
+    <li><a href="Validation" title="Validation">Validation</a></li>
+    <li><a href="XFire" title="XFire">XFire</a></li>
+    <li><a href="XPath+Router" title="XPath Router">XPath Router</a></li>
+    <li><a href="XSLT" title="XSLT">XSLT</a></li>
+    <li><a href="XSQL" title="XSQL">XSQL</a></li>
+    <li><a href="VFS" title="VFS">VFS</a></li>
+    <li><a href="WSIF" title="WSIF">WSIF</a></li>
+  </ul>
+  <h3><a name="Navigation-Tooling"></a>Tooling</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Eclipse+plugin" title="Eclipse plugin">Eclipse plugin</a></li>
+    <li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Deployer</a></li>
+    <li><a href="WAR+Deployment" title="WAR Deployment">WAR Deployment</a></li>
+    <li><a href="Maven+JBI+plugin" title="Maven JBI plugin">Maven JBI plugin</a></li>
+    <li><a href="Maven+SAR+plugin" title="Maven SAR plugin">Maven SAR plugin</a></li>
+  </ul>
+  <h3><a name="Navigation-Utilities"></a>Utilities</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Reflection" title="Reflection">Reflection</a></li>
+  </ul>
+  <h3><a name="Navigation-OtherJBIsoftware"></a>Other JBI software</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://forge.objectweb.org/projects/celtix/" rel="nofollow">Celtix</a></span></li>
+    <li><span class="nobr"><a href="http://pxe.fivesight.com/wiki/display/PXE/Home" rel="nofollow" title="Visit page outside Confluence">PXE BPEL Engine</a></span></li>
+  </ul>
+  <h3><a name="Navigation-RelatedProjects"></a>Related Projects</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://activemq.codehaus.org/" rel="nofollow">ActiveMQ</a></span></li>
+    <li><span class="nobr"><a href="http://jencks.org/" rel="nofollow">Jencks</a></span></li>
+    <li><span class="nobr"><a href="http://lingo.codehaus.org/" rel="nofollow">Lingo</a></span></li>
+    <li><span class="nobr"><a href="http://activesoap.codehaus.org/" rel="nofollow">ActiveSOAP</a></span></li>
+    <li><span class="nobr"><a href="http://www.springframework.org/" rel="nofollow">Spring</a></span></li>
+    <li><span class="nobr"><a href="http://geronimo.apache.org/" rel="nofollow">Geronimo</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Support"></a>Support</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Issues</a></span></li>
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/browse/SM?report=com.atlassian.jira.plugin.system.project:roadmap-panel" rel="nofollow">Roadmap</a></span></li>
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/browse/SM?report=com.atlassian.jira.plugin.system.project:changelog-panel" rel="nofollow">Change log</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Developers"></a>Developers</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Source" title="Source">Source</a></li>
+    <li><a href="Roadmap" title="Roadmap">Roadmap</a></li>
+    <li><a href="Ideas" title="Ideas">Ideas</a></li>
+    <li><a href="Becoming+a+committer" title="Becoming a committer">Becoming a committer</a></li>
+    <li><a href="Release+Guide" title="Release Guide">Release Guide</a></li>
+    <li><span class="nobr"><a href="http://ci.codehaus.org/beetlejuice/viewProjectSummary.action?projectName=ServiceMix" rel="nofollow">BeetleJuice</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/clover/" rel="nofollow">Clover Report</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref/index.html" rel="nofollow">Source XRef</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html" rel="nofollow">Test Source XRef</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" rel="nofollow">XSD</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="/download/attachments/25208/yjp.gif"></a></span></span></span>
+
+            <h3 class="heading3">Feeds</h3>
+            <table border="0" cellspacing="4px">
+            <tr>
+              <td align="right">
+                <a href="http://docs.codehaus.org/spaces/rss.action?key=SM&newPages=false"><img src="http://docs.codehaus.org/images/icons/rss.gif" border="0"></a><br/>
+              </td>
+              <td align="left">
+                <a href="http://docs.codehaus.org/spaces/rss.action?key=SM&newPages=false">Site</a>
+              </td>
+            </tr>
+            <tr>
+              <td align="right">
+                <a href="http://docs.codehaus.org/spaces/blogrss.action?key=SM"><img src="http://docs.codehaus.org/images/icons/rss.gif" border="0"></a>
+              </td>
+              <td align="left">
+                <a href="http://docs.codehaus.org/spaces/blogrss.action?key=SM">News</a>
+              </td>
+            </tr>
+            </table>
+        </td>
+        <td id="rightColumn" valign="top">
+
+          <div id="page_title">
+            <table width="100%">
+              <tr>
+                <td>
+            Spring Client Toolkit 
+                </td>
+                <td align="right">
+            
+                </td>
+              </tr>
+            </table>
+          </div>
+
+
+          <div>
+  <div id="Content">
+    <h3><a name="SpringClientToolkit-Introduction"></a>Introduction</h3>
+    <p>Developing services and component for use in a JBI (Java Business Integration) environment can seem a little complex at first and, since the JBI (JSR-208) specification is very open-ended, it can be difficult to get started sometimes. The purpose of the ServiceMix Spring Client Toolkit (SSCT) is to allow you to get up and running quickly with either with new components or services, or maybe simply by JBI-enabling your existing Java code, so that you can use it in a JBI environment.</p>
+    <p>This Quick Start guide will help you quickly build a couple of simple components that can be hooked together, in order to illustrate how you can use JBI. All of the examples detailed below are built to work on the ServiceMix 1.0 release (see <span class="nobr"><a href="http://www.servicemix.org" rel="nofollow">ServiceMix</a></span> for more information).</p>
+    <h3><a name="SpringClientToolkit-It%27sAllaboutTooling"></a>It's All about Tooling</h3>
+    <p>Preparing code for a JBI environment typically means that you need to be able to efficiently build code and then, make that code deployable (since this is what everyone the point of building for JBI). In order to build code for a JBI environment, ServiceMix provides some tooling projects that allow you to quickly produce JBI-compliant JARs and descriptors, without requiring you to get up to your knees in XML and Ant scripts.</p>
+    <p>The starting place is a copy of Maven 1.0.1 (this is available from <span class="nobr"><a href="http://maven.apache.org" rel="nofollow">Apache Maven</a></span>). Once you have Maven installed, you will need to get a copy of the Maven JBI Plugin, which is available <span class="nobr"><a href="http://www.servicemix.org/Maven+JBI+plugin" rel="nofollow">here</a></span>. Simply download the <span class="nobr"><a href="http://dist.codehaus.org/servicemix/distributions/maven-jbi-plugin-1.0.jar" rel="nofollow">maven-jbi-plugin-1.0.jar</a></span> and then drop it into your $MAVEN_HOME/plugins directory to make it available for your build process.</p>
+    <h3><a name="SpringClientToolkit-MyFirstComponentProject"></a>My First Component Project</h3>
+    <p>The best place to start is, of course, to create a new project with which to work. Since this Quick Start guide is intended to make it building and deploying easy, you can use the Maven JBI plugin to help simplify your work. First, create a work directory (i.e., '/work'), which is empty, and then go to that directory from a shell or command line prompt and enter the following:</p>
+    <p class="paragraph">
+      <div class="preformatted">
+        <div class="preformattedContent"><pre>maven jbi:createArchetype
+</pre></div>
+      </div>
+    </p>
+    <p>You should see the Maven start-up, and then be prompted for the name of your new component. As a good starting point, please use 'myFirstComponent'. Maven will then create the required directory structure underneath the /work directory.</p>
+    <p class="paragraph">
+      <div class="preformatted">
+        <div class="preformattedContent"><pre> __  __
+|  \/  |__ _Apache__ ___
+| |\/| / _` \ V / -_) ' \  ~ intelligent projects ~
+|_|  |_\__,_|\_/\___|_||_|  v. 1.0.2
+
+Enter the name for your new JBI project:
+myFirstComponent
+build:start:
+
+jbi:createArchetype:
+    [mkdir] Created dir: C:\work\myFirstComponent\src\main\java
+    [mkdir] Created dir: C:\work\myFirstComponent\src\main\test
+    [mkdir] Created dir: C:\work\myFirstComponent\src\main\merge
+    [mkdir] Created dir: C:\work\myFirstComponent\src\main\jbi\META-INF
+    [copy] Copying 1 file to C:\work\myFirstComponent
+    [copy] Copying 1 file to C:\work\myFirstComponent\src\main\jbi\META-INF
+    [copy] Copying 1 file to C:\work\myFirstComponent\src\main\merge
+BUILD SUCCESSFUL
+Total time: 53 seconds
+Finished at: Thu Aug 18 16:05:01 EDT 2005
+</pre></div>
+      </div>
+    </p>
+    <p>Now, you will need to make this project available in your favourite IDE. So if you are using Eclipse, change to the myFirstComponent directory and use Maven to create the relevant Eclipse files by running the following:</p>
+    <p class="paragraph">
+      <div class="preformatted">
+        <div class="preformattedContent"><pre>maven eclipse
+</pre></div>
+      </div>
+    </p>
+    <p>See the <span class="nobr"><a href="http://maven.apache.org" rel="nofollow">Apache Maven</a></span> website for more information on creating the configuration files for other IDEs.</p>
+    <p>You should now be able to open the JBI project in your IDE, where you can see the basic structure of the project, as shown below:</p>
+    <p><img align="absmiddle" border=0 src="http://www.servicemix.org/spring_client_workspace.jpg"></p>
+    <p>At this point, you are ready to start working with JBI.</p>
+    <h3><a name="SpringClientToolkit-UnderstandingHowJBIWorks"></a>Understanding How JBI Works</h3>
+    <p>While the JBI specification is no light document, this Quick Start guide will try to distill some of the basic ideas, so that you have the information you need to write a basic component. Basically, JBI is a way of exposing <em>Services</em> and <em>Binding Components</em>. A Service is usually something that functions as an Engine of some type, and instances of an engine each run with a configuration, e.g., a service might be a BPEL engine, or it might be a transformation engine. A Binding Component is a particular type of service, which allows you to take calls or messages from a non-JBI transport, such as JMS, or to a non-JBI transport/protocol.</p>
+    <p>The JSR is purposefully vague on some of this simply to allow the greatest range to the component developers. In this case however, you will be using the SSCT to write a simple component for integration use. To that end, there are a few basic concepts to understand:</p>
+    <ul>
+      <li>Services/Components have life-cycles, most commonly <em>initialization</em>, <em>start</em> and <em>stop</em>. There is a bit more to life-cycles, but in order to get started on building code for a JBI environment, you can start here.</li>
+      <li>Services/Components communicate to other Services/Components via <em>EndPoints</em>. Therefore, in order to talk to another service, you need to refer specifically to its Service Name.</li>
+      <li>Services/Components can have interfaces, which means a service can route a message to a different piece of code, and you can have a service that exposes more than one interface.</li>
+      <li>All Service Names and Interface names are <em>Qualified Names</em>, so you should declare namespaces.</li>
+    </ul>
+    <h3><a name="SpringClientToolkit-HowDoesthisMaptotheServiceMixSpringClientToolkit%3F"></a>How Does this Map to the ServiceMix Spring Client Toolkit?</h3>
+    <p>The SSCT is provided to try and simplify the appraoch to building for JBI and to make it easier for you to write these components, though &ndash; as with all things that hide some of technology's complexity &ndash; the SSCT also hides some of the more advanced functionality.</p>
+    <p>The SSCT itself is based on <span class="nobr"><a href="http://www.springframework.org/" rel="nofollow">Spring</a></span> and therefore, it is recommended that you first take a look at Spring if you are not already familiar, since this Quick Start guide assumes at least preliminary Spring knowledge. In addition, the SSCT works in conjunction with the Maven JBI plugin to help you build your component. Finally, in using the SSCT examples, you will be producing hard-routed components, i.e., components that will build with their destinations included, though you the guide will also show you that it isn't overly complex to change your components' desitnations.</p>
+    <p>If you are familiar with the JSR-208 specification, you should be aware of interfaces like Component/LifeCycle/Service Unit Manager etc. While you can certainly use these interfaces, the SSCT provides the following set of three, simplified interfaces to the JBI infrastructure:</p>
+    <p><b><em>ServiceLifeCycleImplementation</em></b></p>
+    <p>Which can be implemented by your code and then rely on the SSCT container to invoke the start/stop method in-line with the JBI lifecycle methods.</p>
+    <p><b><em>ServiceInterfaceImplementation</em></b></p>
+    <p>Which can be used to receieve exchanges on a given interface; your code will implement this interface and return the QName of the interface on which it wishes to receive the exchanges.</p>
+    <p><b><em>ServiceEndPointImplementation</em></b></p>
+    <p>Which can be used to receive exchanges on a given Service Name and EndPoint; your code will implement this interface and return the QName of the service and the name of the EndPoint to receive the exchanges.</p>
+    <h3><a name="SpringClientToolkit-YourFirstComponent"></a>Your First Component</h3>
+    <p>In order to begin, you will create a very simple component that can start a Timer, and then simply create and then send a message to another component. Admittedly, not the most earth-shattering of components &ndash; but it is simple enough that you can get it built over a cup of coffee, and it requires only two pages of explanation.</p>
+    <p>Create a new package org.servicemix.tutorial under src/main/java and then, create a new class called 'TimerComponent' in order to implement the ServiceLifeCycleImplementation interface.</p>
+    <p>You should end up with a class looking much like the following:</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-java"><span class="code-keyword">package</span> org.servicemix.tutorial;
+
+<span class="code-keyword">import</span> javax.jbi.JBIException;
+
+<span class="code-keyword">import</span> org.servicemix.client.ServiceContext;
+
+<span class="code-keyword">import</span> org.servicemix.client.ServiceLifeCycleImplementation;
+
+/**
+ * A simple Timer based component
+ * 
+ * @author &lt;a href=<span class="code-quote">&quot;mailto:pdodds@unity-systems.com&quot;</span>&gt;Philip Dodds &lt;/a&gt;
+ */
+<span class="code-keyword">public</span> class TimerComponent <span class="code-keyword">implements</span> ServiceLifeCycleImplementation {
+
+	/* (non-Javadoc)
+	 * @see org.servicemix.client.ServiceLifeCycleImplementation#init(org.servicemix.client.ServiceContext)
+	 */
+	<span class="code-keyword">public</span> void init(ServiceContext serviceContext) <span class="code-keyword">throws</span> JBIException {
+		<span class="code-comment">// TODO Auto-generated method stub
+</span>
+	}
+
+	/* (non-Javadoc)
+	 * @see org.servicemix.client.ServiceLifeCycleImplementation#start()
+	 */
+	<span class="code-keyword">public</span> void start() <span class="code-keyword">throws</span> JBIException {
+		<span class="code-comment">// TODO Auto-generated method stub
+</span>
+	}
+
+	/* (non-Javadoc)
+	 * @see org.servicemix.client.ServiceLifeCycleImplementation#stop()
+	 */
+	<span class="code-keyword">public</span> void stop() <span class="code-keyword">throws</span> JBIException {
+		<span class="code-comment">// TODO Auto-generated method stub
+</span>
+	}
+
+}</pre></div>
+      </div>
+    </p>
+    <p>Now, you are going to create a basic Timer. The SSCT actually simplifies this for you as you are only extending the TimerTask and creating a Timer, in the init method. In the start and stop, you will basically set the timer operations to schedule the timer to run every 5000ms and to cancel it if stopped.</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-java"><span class="code-keyword">package</span> org.servicemix.tutorial;
+
+<span class="code-keyword">import</span> java.util.Timer;
+<span class="code-keyword">import</span> java.util.TimerTask;
+
+<span class="code-keyword">import</span> javax.jbi.JBIException;
+
+<span class="code-keyword">import</span> org.servicemix.client.ServiceContext;
+<span class="code-keyword">import</span> org.servicemix.client.ServiceLifeCycleImplementation;
+
+/**
+ * A simple Timer-based component
+ * 
+ * @author &lt;a href=<span class="code-quote">&quot;mailto:pdodds@unity-systems.com&quot;</span>&gt;Philip Dodds &lt;/a&gt;
+ */
+<span class="code-keyword">public</span> class TimerComponent <span class="code-keyword">extends</span> TimerTask <span class="code-keyword">implements</span>
+		ServiceLifeCycleImplementation {
+
+	<span class="code-keyword">private</span> Timer timer;
+	<span class="code-keyword">private</span> ServiceContext serviceContext;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.servicemix.client.ServiceLifeCycleImplementation#init(org.servicemix.client.ServiceContext)
+	 */
+	<span class="code-keyword">public</span> void init(ServiceContext serviceContext) <span class="code-keyword">throws</span> JBIException {
+		<span class="code-keyword">this</span>.serviceContext = serviceContext;
+		timer = <span class="code-keyword">new</span> Timer();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.servicemix.client.ServiceLifeCycleImplementation#start()
+	 */
+	<span class="code-keyword">public</span> void start() <span class="code-keyword">throws</span> JBIException {
+		timer.schedule(<span class="code-keyword">this</span>, 5000);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.servicemix.client.ServiceLifeCycleImplementation#stop()
+	 */
+	<span class="code-keyword">public</span> void stop() <span class="code-keyword">throws</span> JBIException {
+		timer.cancel();
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.util.TimerTask#run()
+	 */
+	<span class="code-keyword">public</span> void run() {
+
+	}
+
+}</pre></div>
+      </div>
+    </p>
+    <p><b>NOTE:</b> Since you extended TimerTask, you now have a run method, so you can use this run method to create a simple InOnly exchange. To do this, you can use the serviceContext helper methods.</p>
+    <p>Below, you can see how easy it is to create an InOnly exchange and how to populate the message.</p>
+    <p><b>NOTE:</b> With the ServiceContext helper method, you must also refer to the name of the interface to which the message will be sent. You will see this interface mapping to a service name later in the services.xml.</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-java">/*
+ * (non-Javadoc)
+ * 
+ * @see java.util.TimerTask#run()
+ */
+<span class="code-keyword">public</span> void run() {
+	<span class="code-keyword">try</span> {
+        InOnly inOnly = serviceContext.createInOnly(<span class="code-keyword">new</span> QName(
+				<span class="code-quote">&quot;http:<span class="code-comment">//tempuri.org/logger&quot;</span>, <span class="code-quote">&quot;log&quot;</span>));
+</span>		NormalizedMessage message = inOnly.createMessage();
+		message.setContent(<span class="code-keyword">new</span> StreamSource(<span class="code-keyword">new</span> StringReader(
+				<span class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</span>)));
+		serviceContext.done(inOnly);
+	} <span class="code-keyword">catch</span> (MessagingException e) {
+		e.printStackTrace();
+	}
+}</pre></div>
+      </div>
+    </p>
+    <p>That's it for building your first component's code. Now, you need to do the wiring for the JBI, i.e., you will need to make sure that when you publish to the interface, that it maps to a specific service name. Since you are still writing the first component, you will have to make up the name of the second component as a placeholder. However, keep this name in mind since you will be writing a second component to receive these messages shortly. To do the JBI wiring, look to the /src/main/merge/services.xml file. You should be able to prepare the file as shown below:</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-xml">&lt;services binding-component=<span class="code-quote">&quot;false&quot;</span>	
+	<span class="code-keyword">xmlns:logger</span>=<span class="code-quote">&quot;http://tempuri.org/logger&quot;</span>&gt;
+	&lt;consumes interface-name=<span class="code-quote">&quot;logger:log&quot;</span>
+		service-name=<span class="code-quote">&quot;logger:myLogger&quot;</span> /&gt;
+<span class="code-tag">&lt;/services&gt;</span></pre></div>
+      </div>
+    </p>
+    <p><b>NOTE:</b> The interface name is described as a <em>consumes</em>, which in JBI-speak means that this component will be sending its exchange to the servicename 'logger:myLogger'. You haven't written this service yet, but as you can see, it won't take you long to create this service so that you can use its services.xml to expose the service-name and interface name. The SSCT lets you work through the interface name, though you still have the ability to publish to any of the available EndPoints that are defined in the services.xml.</p>
+    <p>Next, you need to tell the Spring Component that an instance of the TimerComponent is required. This is done in the Spring configuration file found in /src/main/jbi/META-INF/jbi-spring.xml, as can be seen below:</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-xml"><span class="code-tag">&lt;beans&gt;</span>
+	&lt;!--  This is going to be where we declare the beans that we want the
+		   SpringComponent container to build --&gt;
+
+	&lt;bean id=<span class="code-quote">&quot;myTimer&quot;</span>
+		class=<span class="code-quote">&quot;org.servicemix.tutorial.TimerComponent&quot;</span>&gt;	
+	<span class="code-tag">&lt;/bean&gt;</span> 
+<span class="code-tag">&lt;/beans&gt;</span></pre></div>
+      </div>
+    </p>
+    <p>The final step in building the JBI component is actually creating the component, this can be done using the Maven JBI plugin by running the following command from your myFirstComponent directory:</p>
+    <p class="paragraph">
+      <div class="preformatted">
+        <div class="preformattedContent"><pre>maven jbi:generateInstaller
+</pre></div>
+      </div>
+    </p>
+    <p>This command will create a ZIP file in the target directory called <b>myFirstComponent-1.0-jbi-installer.zip</b>.</p>
+    <p>Congratulations! You have just created your first JBI component!</p>
+    <h3><a name="SpringClientToolkit-CreatingaComponenttoReceivetheExchange"></a>Creating a Component to Receive the Exchange</h3>
+    <p>Of course, creating single JBI component is pretty useless, much like being the only person at the party &ndash; there is very little to do. So, the next step is for you to return to the parent directory and repeat the process above, using our Maven JBI plugin and the maven jbi:createArchetype, to create a second component, which you will call <b>mySecondComponent</b>.</p>
+    <p>Once you have created the project, and also the Eclipse files, you can create a new class in the package org.servicemix.tutorial called LoggerComponent. This time you will be implementing the <em>ServiceInterfaceImplementation</em> interface, and you will fill in the getInterface method with the name of the interface you used in building the first component, as shown below:</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-java"><span class="code-keyword">package</span> org.servicemix;
+
+<span class="code-keyword">import</span> javax.jbi.messaging.MessageExchange;
+<span class="code-keyword">import</span> javax.xml.namespace.QName;
+
+<span class="code-keyword">import</span> org.apache.commons.logging.Log;
+<span class="code-keyword">import</span> org.apache.commons.logging.LogFactory;
+<span class="code-keyword">import</span> org.servicemix.client.ServiceContext;
+<span class="code-keyword">import</span> org.servicemix.client.ServiceInterfaceImplementation;
+
+/**
+ * A simple Logger based component
+ * 
+ * @author &lt;a href=<span class="code-quote">&quot;mailto:pdodds@unity-systems.com&quot;</span>&gt;Philip Dodds &lt;/a&gt;
+ */
+<span class="code-keyword">public</span> class LoggerComponent <span class="code-keyword">implements</span> ServiceInterfaceImplementation {
+	
+	<span class="code-keyword">private</span> <span class="code-keyword">static</span> <span class="code-keyword">final</span> Log log = LogFactory.getLog(LoggerComponent.class
+			.getName());
+
+	/* (non-Javadoc)
+	 * @see org.servicemix.client.ServiceInterfaceImplementation#getInterfaceName()
+	 */
+	<span class="code-keyword">public</span> QName getInterfaceName() {
+		<span class="code-keyword">return</span> <span class="code-keyword">new</span> QName(
+				<span class="code-quote">&quot;http:<span class="code-comment">//tempuri.org/timer&quot;</span>, <span class="code-quote">&quot;notification&quot;</span>);
+</span>	}
+
+	/* (non-Javadoc)
+	 * @see org.servicemix.client.ServiceImplementation#setServiceContext(org.servicemix.client.ServiceContext)
+	 */
+	<span class="code-keyword">public</span> void setServiceContext(ServiceContext arg0) {
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.servicemix.client.ServiceImplementation#onMessage(javax.jbi.messaging.MessageExchange)
+	 */
+	<span class="code-keyword">public</span> void onMessage(MessageExchange exchange) {
+		log.info(<span class="code-quote">&quot;I got my exchange &quot;</span>+exchange);
+	}
+
+}</pre></div>
+      </div>
+    </p>
+    <p>The SSCT will ensure that exchanges for this service and its interfaces will be passed to the <em>ServiceInterfaceImplementation</em>.</p>
+    <p>Next, you will need to set up the services.xml for this component. Since this is such a simple example, you can simply reverse the logic from the first component, so that this this component <em>provides</em> the interface for itself.</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-xml">&lt;!-- This is where we are able to declare the ins and outs of the Service
+ 	  as it consumes and provides elements, the service-names and EndPoints
+ 	  will be used to activate the JBI EndPoints,  and you can use the 
+ 	  interface-name to determine which one you want to call and which
+ 	  bean is going to receive the actual JBI exchange --&gt;
+&lt;services binding-component=<span class="code-quote">&quot;false&quot;</span>
+	<span class="code-keyword">xmlns:timer</span>=<span class="code-quote">&quot;http://tempuri.org/timer&quot;</span>
+	<span class="code-keyword">xmlns:logger</span>=<span class="code-quote">&quot;http://tempuri.org/logger&quot;</span>&gt;
+	&lt;provides interface-name=<span class="code-quote">&quot;timer:notification&quot;</span>
+		service-name=<span class="code-quote">&quot;logger:write&quot;</span> /&gt;
+<span class="code-tag">&lt;/services&gt;</span></pre></div>
+      </div>
+    </p>
+    <p>Once again you need to configure the Spring container to create an instance of your bean in the src/main/jbi/META-INF/jbi-spring.xml file, shown below:</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-xml"><span class="code-tag">&lt;beans&gt;</span>
+	&lt;!--  This is going to be where we declare the beans that we want the
+		   SpringComponent container to build --&gt;
+	&lt;bean id=<span class="code-quote">&quot;myLogger&quot;</span>
+		class=<span class="code-quote">&quot;org.servicemix.tutorial.LoggerComponent&quot;</span>&gt;		
+	<span class="code-tag">&lt;/bean&gt;</span> 
+<span class="code-tag">&lt;/beans&gt;</span></pre></div>
+      </div>
+    </p>
+    <p>This now completes the writing of the receiving component's code. As with the first component, you need to build the receiving component so that it is ready for deployment using the maven <b>jbi:generateInstaller</b> goal onto a JBI server (in our case the wonderful <span class="nobr"><a href="http://www.servicemix.org" rel="nofollow">ServiceMix</a></span>).</p>
+    <h3><a name="SpringClientToolkit-DeployingYourComponentsontoServiceMix"></a>Deploying Your Components onto ServiceMix</h3>
+    <p>One of the key differences between the ServiceMix Spring Client Toolkit and the standard ServiceMix client libraries is that the SSCT is designed to generate standard JBI components and service units that can run in any JBI-compliant container. This means that you are able to build installable ZIP files that can be deployed onto the server itself. In this example, you are going to deploy to a stand-alone ServiceMix server, however you could deploy to a Geronimo and JBoss instance running ServiceMix embedded, as well.</p>
+    <p>To deploy your JBI components, you must first download and un-ZIP <span class="nobr"><a href="http://www.servicemix.org/Download" rel="nofollow">ServiceMix</a></span> to your your machine.</p>
+    <p>Next, under $SERVICEMIX_HOME (the location you unzipped it), you should find an <em>install</em> directory. You need to copy both of the JBI installers that you created for your components into this directory. If you have been working in '/work' then these files should appear as follows:</p>
+    <p>/work/myFirstComponent/target/myFirstComponent-1.0-jbi-installer.zip and /work/mySecondComponent/target/mySecondComponent-1.0-jbi-installer.zip.</p>
+    <p>Once you have <em>installed</em> the new components, you can just start ServiceMix - to do so goto $SERVICE_HOME/bin and run <b>servicemix</b></p>
+    <p>You should see your components deploy and then, every 5 secs you should see the logger receive the exchange from the timer component.</p>
+    <p class="paragraph">
+      <div class="preformatted">
+        <div class="preformattedContent"><pre>ServiceMix ESB: null
+
+Loading ServiceMix from servicemix.xml on the CLASSPATH
+Aug 19, 2005 11:13:13 AM org.springframework.beans.factory.xml.XmlBeanDefinitionReader 
+loadBeanDefinitions
+INFO: Loading XML bean definitions from class path resource [servicemix.xml]
+Aug 19, 2005 11:13:13 AM org.springframework.context.support.AbstractRefreshableApplicationContext 
+refreshBeanFactory
+INFO: Bean factory for application context [org.springframework.context.support.
+ClassPathXmlApplicationContext;hashCode=14737862]: org.springframework.beans.factory.support.
+DefaultListableBeanFactory defining beans [transactionManager,jmsFactory,jbi]; root of BeanFactory hierarchy
+Aug 19, 2005 11:13:14 AM org.springframework.context.support.AbstractApplicationContext 
+refresh
+..........
+Aug 19, 2005 11:13:15 AM org.springframework.beans.factory.support.DefaultListableBeanFactory 
+preInstantiateSingletons
+INFO: Pre-instantiating singletons in factory [org.springframework.beans.factory.support.
+DefaultListableBeanFactory defining beans [myLogger]; root of BeanFactory hierarchy]
+Aug 19, 2005 11:13:15 AM org.springframework.beans.factory.support.AbstractBeanFactory getBean
+INFO: Creating shared instance of singleton bean 'myLogger'
+Aug 19, 2005 11:13:15 AM org.servicemix.jbi.framework.ComponentContextImpl activateEndpoint
+INFO: Component: mySecondComponent activated endpoint: {http://tempuri.org/logger}write : default
+Aug 19, 2005 11:13:15 AM org.servicemix.jbi.framework.AutoDeploymentService$1 run
+INFO: Directory: install: Finished installation of archive:  mySecondComponent-1.0-jbi-installer.zip
+Aug 19, 2005 11:13:20 AM org.servicemix.tutorial.LoggerComponent onMessage
+INFO: I got my exchange org.servicemix.jbi.messaging.InOnlyImpl@15ad5c6
+</pre></div>
+      </div>
+    </p>
+    <p>*Aug 19, 2005 11:13:20 AM org.servicemix.tutorial.LoggerComponent onMessage<br> INFO: I got my exchange org.servicemix.jbi.messaging.InOnlyImpl@15ad5c6*</p>
+    <p>There you go! You have just written your first JBI components, hooked them up, and deployed them successfully!</p>
+  </div>
+</div>
+
+          &nbsp;
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" id="footer">
+          <table width="100%"> 
+            <tr>
+              <td align="left" valign="top">
+          
+              </td>
+              <td align="right" valign="top">
+          <a style="color:#999;" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&title=Spring+Client+Toolkit">[ edit ]</a>
+              </td>
+            </tr>
+          <table>
+        </td>
+      </tr>
+    </table>
+  </body>
+
+</html>
+
+

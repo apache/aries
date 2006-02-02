@@ -1,0 +1,416 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <link rel="stylesheet" href="site.css" type="text/css">
+
+
+
+    <title>ServiceMix - XPath Router</title>
+  </head>
+
+  <body>
+    <table width="100%" id="layout" style="padding:0px;margin0px;border-collapse:collapse;">
+      <tr>
+        <td colspan="3" style="padding:8px;">
+          <table width="100%" id="banner" style="padding:0px;margin:0px">
+            <tr id="header_row">
+              <td align="left" valign="middle" style="padding:0px;margin:0px;">
+                <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org/servicemix" rel="nofollow"><img align="absmiddle" border=0 src="images/logo.gif"></a></span></span></span>
+
+              </td>
+              
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" id="breadcrumbs">
+          <table width="100%" id="banner" style="padding:0px;margin:0px">
+            <tr>
+              <td align="left">
+                <a href="">Home</a>  | <a href="Navigation">Navigation</a> &gt; <a href="Routing">Routing</a> &gt; XPath Router
+              </td>
+              <td align="right">
+                  <span id="Content"><span><a href="Download" title="Download">Download</a> | <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs</a></span> | <a href="Source" title="Source">Source</a> | <span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span> |<span class="nobr"><a href="irc://irc.codehaus.org/servicemix" rel="nofollow">IRC</a></span> | <span class="nobr"><a href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" rel="nofollow">IRC Log</a></span> | <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a> | <span class="nobr"><a href="http://forums.logicblaze.com/forums/show/3.page" rel="nofollow">Discussion Forum</a></span>| <span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Support</a></span></span></span>
+
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td id="leftColumn" valign="top" style="padding-top: 0px;">
+          <span id="Content"><h3><a name="Navigation-Overview"></a>Overview</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Home" title="Home">Home</a></li>
+    <li><a href="Introduction+to+ESB" title="Introduction to ESB">Introduction to ESB</a></li>
+    <li><a href="Background+to+ServiceMix" title="Background to ServiceMix">Background to ServiceMix</a></li>
+    <li><a href="News" title="News">News</a></li>
+    <li><a href="FAQ" title="FAQ">FAQ</a></li>
+    <li><a href="Download" title="Download">Download</a></li>
+  </ul>
+  <h3><a name="Navigation-Community"></a>Community</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span></li>
+    <li><a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a></li>
+    <li><a href="Contributing" title="Contributing">Contributing</a></li>
+    <li><a href="Team" title="Team">Team</a></li>
+    <li><a href="Users" title="Users">Users</a></li>
+  </ul>
+  <h3><a name="Navigation-Documentation"></a>Documentation</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Getting+Started" title="Getting Started">Getting Started</a></li>
+    <li><a href="Running" title="Running">Running</a></li>
+    <li><a href="Examples" title="Examples">Examples</a></li>
+    <li><a href="Use+Cases" title="Use Cases">Use Cases</a></li>
+    <li><a href="Configuration" title="Configuration">Configuration</a></li>
+    <li><a href="Xml+Reference" title="Xml Reference">Xml Reference</a></li>
+    <li><a href="Management" title="Management">Management</a></li>
+    <li><a href="Architecture" title="Architecture">Architecture</a></li>
+    <li><a href="Clustering" title="Clustering">Clustering</a></li>
+    <li><a href="NMR+Flows" title="NMR Flows">NMR Flows</a></li>
+    <li><a href="Articles" title="Articles">Articles</a></li>
+  </ul>
+  <h3><a name="Navigation-Reference"></a>Reference</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html" rel="nofollow">JBI API</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs</a></span></li>
+    <li><a href="Glossary" title="Glossary">Glossary</a></li>
+  </ul>
+  <h3><a name="Navigation-Features"></a>Features</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Components" title="Components">Components</a></li>
+    <li><a href="Routing" title="Routing">Routing</a></li>
+    <li><a href="Transformation" title="Transformation">Transformation</a></li>
+    <li><a href="Spring+Client+Toolkit" title="Spring Client Toolkit">Spring Client Toolkit</a></li>
+    <li><a href="Client+API" title="Client API">Client API</a></li>
+    <li><a href="POJO+support" title="POJO support">POJO support</a></li>
+    <li><a href="Expressions" title="Expressions">Expressions</a></li>
+    <li><a href="Component+helper+classes" title="Component helper classes">Component helper classes</a></li>
+    <li><a href="Ant+Tasks" title="Ant Tasks">Ant Tasks</a></li>
+    <li><a href="JMX+Console" title="JMX Console">JMX Console</a></li>
+  </ul>
+  <h3><a name="Navigation-Integration"></a>Integration</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Spring+support" title="Spring support">Spring support</a></li>
+    <li><a href="Geronimo+Integration" title="Geronimo Integration">Geronimo Integration</a></li>
+    <li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Integration</a></li>
+    <li><a href="Tomcat+Integration" title="Tomcat Integration">Tomcat Integration</a></li>
+    <li><a href="JNDI+configuration" title="JNDI configuration">JNDI configuration</a></li>
+  </ul>
+  <h3><a name="Navigation-ServiceMixComponents"></a>ServiceMix Components</h3>
+  <ul class="alternate" type="square">
+    <li><a href="BPEL" title="BPEL">BPEL</a></li>
+    <li><a href="Cache" title="Cache">Cache</a></li>
+    <li><a href="Drools" title="Drools">Drools</a></li>
+    <li><a href="Email" title="Email">Email</a></li>
+    <li><a href="File" title="File">File</a></li>
+    <li><a href="FTP" title="FTP">FTP</a></li>
+    <li><a href="Groovy" title="Groovy">Groovy</a></li>
+    <li><a href="HTTP" title="HTTP">HTTP</a></li>
+    <li><a href="Jabber" title="Jabber">Jabber</a></li>
+    <li><a href="JAX+WS" title="JAX WS">JAX WS</a></li>
+    <li><a href="JCA" title="JCA">JCA</a></li>
+    <li><a href="JMS" title="JMS">JMS</a></li>
+    <li><a href="Quartz" title="Quartz">Quartz</a></li>
+    <li><a href="Reflection" title="Reflection">Reflection</a></li>
+    <li><a href="RSS" title="RSS">RSS</a></li>
+    <li><a href="SAAJ" title="SAAJ">SAAJ</a></li>
+    <li><a href="Scripting" title="Scripting">Scripting</a></li>
+    <li><a href="ServiceMix" title="ServiceMix">ServiceMix</a></li>
+    <li><a href="Validation" title="Validation">Validation</a></li>
+    <li><a href="XFire" title="XFire">XFire</a></li>
+    <li><a href="XPath+Router" title="XPath Router">XPath Router</a></li>
+    <li><a href="XSLT" title="XSLT">XSLT</a></li>
+    <li><a href="XSQL" title="XSQL">XSQL</a></li>
+    <li><a href="VFS" title="VFS">VFS</a></li>
+    <li><a href="WSIF" title="WSIF">WSIF</a></li>
+  </ul>
+  <h3><a name="Navigation-Tooling"></a>Tooling</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Eclipse+plugin" title="Eclipse plugin">Eclipse plugin</a></li>
+    <li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Deployer</a></li>
+    <li><a href="WAR+Deployment" title="WAR Deployment">WAR Deployment</a></li>
+    <li><a href="Maven+JBI+plugin" title="Maven JBI plugin">Maven JBI plugin</a></li>
+    <li><a href="Maven+SAR+plugin" title="Maven SAR plugin">Maven SAR plugin</a></li>
+  </ul>
+  <h3><a name="Navigation-Utilities"></a>Utilities</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Reflection" title="Reflection">Reflection</a></li>
+  </ul>
+  <h3><a name="Navigation-OtherJBIsoftware"></a>Other JBI software</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://forge.objectweb.org/projects/celtix/" rel="nofollow">Celtix</a></span></li>
+    <li><span class="nobr"><a href="http://pxe.fivesight.com/wiki/display/PXE/Home" rel="nofollow" title="Visit page outside Confluence">PXE BPEL Engine</a></span></li>
+  </ul>
+  <h3><a name="Navigation-RelatedProjects"></a>Related Projects</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://activemq.codehaus.org/" rel="nofollow">ActiveMQ</a></span></li>
+    <li><span class="nobr"><a href="http://jencks.org/" rel="nofollow">Jencks</a></span></li>
+    <li><span class="nobr"><a href="http://lingo.codehaus.org/" rel="nofollow">Lingo</a></span></li>
+    <li><span class="nobr"><a href="http://activesoap.codehaus.org/" rel="nofollow">ActiveSOAP</a></span></li>
+    <li><span class="nobr"><a href="http://www.springframework.org/" rel="nofollow">Spring</a></span></li>
+    <li><span class="nobr"><a href="http://geronimo.apache.org/" rel="nofollow">Geronimo</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Support"></a>Support</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Issues</a></span></li>
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/browse/SM?report=com.atlassian.jira.plugin.system.project:roadmap-panel" rel="nofollow">Roadmap</a></span></li>
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/browse/SM?report=com.atlassian.jira.plugin.system.project:changelog-panel" rel="nofollow">Change log</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Developers"></a>Developers</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Source" title="Source">Source</a></li>
+    <li><a href="Roadmap" title="Roadmap">Roadmap</a></li>
+    <li><a href="Ideas" title="Ideas">Ideas</a></li>
+    <li><a href="Becoming+a+committer" title="Becoming a committer">Becoming a committer</a></li>
+    <li><a href="Release+Guide" title="Release Guide">Release Guide</a></li>
+    <li><span class="nobr"><a href="http://ci.codehaus.org/beetlejuice/viewProjectSummary.action?projectName=ServiceMix" rel="nofollow">BeetleJuice</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/clover/" rel="nofollow">Clover Report</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref/index.html" rel="nofollow">Source XRef</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html" rel="nofollow">Test Source XRef</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" rel="nofollow">XSD</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="/download/attachments/25208/yjp.gif"></a></span></span></span>
+
+            <h3 class="heading3">Feeds</h3>
+            <table border="0" cellspacing="4px">
+            <tr>
+              <td align="right">
+                <a href="http://docs.codehaus.org/spaces/rss.action?key=SM&newPages=false"><img src="http://docs.codehaus.org/images/icons/rss.gif" border="0"></a><br/>
+              </td>
+              <td align="left">
+                <a href="http://docs.codehaus.org/spaces/rss.action?key=SM&newPages=false">Site</a>
+              </td>
+            </tr>
+            <tr>
+              <td align="right">
+                <a href="http://docs.codehaus.org/spaces/blogrss.action?key=SM"><img src="http://docs.codehaus.org/images/icons/rss.gif" border="0"></a>
+              </td>
+              <td align="left">
+                <a href="http://docs.codehaus.org/spaces/blogrss.action?key=SM">News</a>
+              </td>
+            </tr>
+            </table>
+        </td>
+        <td id="rightColumn" valign="top">
+
+          <div id="page_title">
+            <table width="100%">
+              <tr>
+                <td>
+            XPath Router 
+                </td>
+                <td align="right">
+            
+                </td>
+              </tr>
+            </table>
+          </div>
+
+
+          <div>
+  <div id="Content">
+    <p>Its often a requirement to perform <em>content based routing</em> in an ESB. This means you route messages around your service bus based on the message properties or the content of the messages. When integrating systems across language boundaries its common to use XML as a universal message format; so XPath is an ideal tool to perform content based routing and transformation.</p>
+    <p>We support a XPath based routing and transformation mechanism designed for high performance and power.</p>
+    <h3><a name="XPathRouter-Example"></a>Example</h3>
+    <p>The following is an example routing and transformation template. Firstly we reuse the XSLT basd transform component.</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-xml"><span class="code-tag">&lt;sm:activationSpec componentName=<span class="code-quote">&quot;transformer&quot;</span> service=<span class="code-quote">&quot;foo:transformer&quot;</span>&gt;</span>
+  <span class="code-tag">&lt;sm:component&gt;</span><span class="code-tag">&lt;bean class=<span class="code-quote">&quot;org.apache.servicemix.components.xslt.XsltComponent&quot;</span>&gt;</span>
+    <span class="code-tag">&lt;property name=<span class="code-quote">&quot;xsltResource&quot;</span> value=<span class="code-quote">&quot;classpath:org/apache/servicemix/components/xslt/router.xsl&quot;</span>/&gt;</span>
+
+    &lt;!-- lets disable automatic output of the result of the transform; only if we perform
+        an invoke in the XSLT will we invoke another endpoint --&gt;
+    <span class="code-tag">&lt;property name=<span class="code-quote">&quot;disableOutput&quot;</span> value=<span class="code-quote">&quot;true&quot;</span>/&gt;</span>
+  <span class="code-tag">&lt;/bean&gt;</span><span class="code-tag">&lt;/sm:component&gt;</span>
+<span class="code-tag">&lt;/sm:activationSpec&gt;</span></pre></div>
+      </div>
+    </p>
+    <p>&nbsp;</p>
+    <p>Then we provide a file in XSLT format, with some JBI extensions</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-xml">&lt;<span class="code-keyword">xsl:stylesheet</span> <span class="code-keyword">xmlns:xsl</span>=<span class="code-quote">&quot;http://www.w3.org/1999/XSL/Transform&quot;</span>
+  <span class="code-keyword">xmlns:jbi</span>=<span class="code-quote">&quot;xalan://org.apache.servicemix.components.xslt.XalanExtension&quot;</span>
+  extension-element-prefixes=<span class="code-quote">&quot;jbi&quot;</span>
+
+  <span class="code-keyword">xmlns:foo</span>=<span class="code-quote">&quot;http://servicemix.org/cheese/&quot;</span>
+  version=<span class="code-quote">&quot;1.0&quot;</span>&gt;
+
+  <span class="code-tag">&lt;<span class="code-keyword">xsl:template</span> match=<span class="code-quote">&quot;/*&quot;</span>&gt;</span>
+    <span class="code-tag">&lt;<span class="code-keyword">xsl:choose</span>&gt;</span>
+
+      <span class="code-tag"><span class="code-comment">&lt;!-- lets forward the inbound message to a service --&gt;</span></span>
+      <span class="code-tag">&lt;<span class="code-keyword">xsl:when</span> test=<span class="code-quote">&quot;@id = '4'&quot;</span>&gt;</span>
+        <span class="code-tag">&lt;jbi:forward service=<span class="code-quote">&quot;foo:trace&quot;</span>/&gt;</span>
+      <span class="code-tag">&lt;/<span class="code-keyword">xsl:when</span>&gt;</span>
+
+      <span class="code-tag"><span class="code-comment">&lt;!-- lets generate the output XML to use as input, copy the input properties and define some new propertes --&gt;</span></span>
+      <span class="code-tag">&lt;<span class="code-keyword">xsl:when</span> test=<span class="code-quote">&quot;@id = '12'&quot;</span>&gt;</span>
+        <span class="code-tag">&lt;jbi:invoke service=<span class="code-quote">&quot;foo:script&quot;</span>&gt;</span>
+          <span class="code-tag">&lt;jbi:copyProperties/&gt;</span>
+          <span class="code-tag">&lt;jbi:setOutProperty name=<span class="code-quote">&quot;foo&quot;</span> select=<span class="code-quote">&quot;@sent&quot;</span>/&gt;</span>
+          <span class="code-tag">&lt;cheese code=<span class="code-quote">&quot;{@id}&quot;</span>&gt;</span>
+            <span class="code-tag">&lt;description&gt;</span>This is some content generated from the routing XSL<span class="code-tag">&lt;/description&gt;</span>
+          <span class="code-tag">&lt;/cheese&gt;</span>
+        <span class="code-tag">&lt;/jbi:invoke&gt;</span>
+      <span class="code-tag">&lt;/<span class="code-keyword">xsl:when</span>&gt;</span>
+
+      <span class="code-tag">&lt;<span class="code-keyword">xsl:when</span> test=<span class="code-quote">&quot;@id != '2'&quot;</span>&gt;</span>
+        <span class="code-tag">&lt;jbi:forward service=<span class="code-quote">&quot;foo:receiver&quot;</span>/&gt;</span>
+      <span class="code-tag">&lt;/<span class="code-keyword">xsl:when</span>&gt;</span>
+
+      <span class="code-tag">&lt;<span class="code-keyword">xsl:otherwise</span>&gt;</span>
+        <span class="code-tag">&lt;jbi:forward service=<span class="code-quote">&quot;foo:trace&quot;</span>/&gt;</span>
+      <span class="code-tag">&lt;/<span class="code-keyword">xsl:otherwise</span>&gt;</span>
+    <span class="code-tag">&lt;/<span class="code-keyword">xsl:choose</span>&gt;</span>
+  <span class="code-tag">&lt;/<span class="code-keyword">xsl:template</span>&gt;</span>
+
+<span class="code-tag">&lt;/<span class="code-keyword">xsl:stylesheet</span>&gt;</span></pre></div>
+      </div>
+    </p>
+    <p>&nbsp;</p>
+    <p>In the above example, depending on the value of the @id attribute, we invoke different services.</p>
+    <p>Notice that we declare the jbi namespace and some attributes on the root XSLT stylesheet element. We then have the following extension elements available to the XSTL</p>
+    <h3><a name="XPathRouter-Xalanextensionsummary"></a>Xalan extension summary</h3>
+    <p>The following new XML tags are available in Xalan when working with ServiceMix</p>
+    <p class="paragraph">
+      <table class="confluenceTable">
+        <tbody>
+          <tr>
+            <th class="confluenceTh"> Element </th>
+            <th class="confluenceTh"> Description </th>
+          </tr>
+          <tr>
+            <td class="confluenceTd"> forward </td>
+            <td class="confluenceTd"> will forward the current inbound message to the given service, interface and/or operation. This mechanism will use the properties and content of the inbound message to create the outbound message </td>
+          </tr>
+          <tr>
+            <td class="confluenceTd"> invoke </td>
+            <td class="confluenceTd"> will perform a one way service invocation where the body of the invoke tag represents the XML content of the message. Notice from the above we can use XPath expressions to create the XML </td>
+          </tr>
+        </tbody>
+      </table>
+    </p>
+    <h3><a name="XPathRouter-Invokingmultipleserviceendpoints"></a>Invoking multiple service endpoints</h3>
+    <p>The following example shows a number of services being invoked one after the other, using optionally different properties. In each case the original XML message is used as the body of the new inbound request.</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-xml">&lt;<span class="code-keyword">xsl:stylesheet</span> <span class="code-keyword">xmlns:xsl</span>=<span class="code-quote">&quot;http://www.w3.org/1999/XSL/Transform&quot;</span>
+                <span class="code-keyword">xmlns:jbi</span>=<span class="code-quote">&quot;xalan://org.apache.servicemix.components.xslt.XalanExtension&quot;</span>
+                extension-element-prefixes=<span class="code-quote">&quot;jbi&quot;</span>
+
+                <span class="code-keyword">xmlns:foo</span>=<span class="code-quote">&quot;http://servicemix.org/cheese/&quot;</span>
+                version=<span class="code-quote">&quot;1.0&quot;</span>&gt;
+
+  <span class="code-tag">&lt;<span class="code-keyword">xsl:strip-space</span> elements=<span class="code-quote">&quot;*&quot;</span>/&gt;</span>
+
+  <span class="code-tag">&lt;<span class="code-keyword">xsl:template</span> match=<span class="code-quote">&quot;/&quot;</span>&gt;</span>
+
+    <span class="code-tag"><span class="code-comment">&lt;!-- lets invoke a number of services one after the other --&gt;</span></span>
+    <span class="code-tag">&lt;jbi:invoke service=<span class="code-quote">&quot;foo:service1&quot;</span>&gt;</span>
+      <span class="code-tag">&lt;jbi:copyProperties/&gt;</span>
+      <span class="code-tag">&lt;jbi:setOutProperty name=<span class="code-quote">&quot;foo&quot;</span> select=<span class="code-quote">&quot;/sample&quot;</span>/&gt;</span>
+      <span class="code-tag">&lt;<span class="code-keyword">xsl:copy-of</span> select=<span class="code-quote">&quot;/&quot;</span>/&gt;</span>
+    <span class="code-tag">&lt;/jbi:invoke&gt;</span>
+
+    <span class="code-tag">&lt;jbi:invoke service=<span class="code-quote">&quot;foo:service2&quot;</span>&gt;</span>
+      <span class="code-tag">&lt;jbi:copyProperties/&gt;</span>
+      <span class="code-tag">&lt;jbi:setOutProperty name=<span class="code-quote">&quot;bar&quot;</span> select=<span class="code-quote">&quot;/sample/@id&quot;</span>/&gt;</span>
+      <span class="code-tag">&lt;<span class="code-keyword">xsl:copy-of</span> select=<span class="code-quote">&quot;/&quot;</span>/&gt;</span>
+    <span class="code-tag">&lt;/jbi:invoke&gt;</span>
+
+    <span class="code-tag">&lt;jbi:invoke service=<span class="code-quote">&quot;foo:service3&quot;</span>&gt;</span>
+      <span class="code-tag">&lt;jbi:copyProperties/&gt;</span>
+      <span class="code-tag">&lt;jbi:setOutProperty name=<span class="code-quote">&quot;foo&quot;</span> select=<span class="code-quote">&quot;string(/sample)&quot;</span>/&gt;</span>
+      <span class="code-tag">&lt;jbi:setOutProperty name=<span class="code-quote">&quot;bar&quot;</span> select=<span class="code-quote">&quot;string(/sample/@id)&quot;</span>/&gt;</span>
+      <span class="code-tag">&lt;<span class="code-keyword">xsl:copy-of</span> select=<span class="code-quote">&quot;/&quot;</span>/&gt;</span>
+    <span class="code-tag">&lt;/jbi:invoke&gt;</span>
+
+    <span class="code-tag">&lt;jbi:invoke service=<span class="code-quote">&quot;foo:receiver&quot;</span>&gt;</span>
+      <span class="code-tag">&lt;jbi:copyProperties/&gt;</span>
+      <span class="code-tag">&lt;jbi:setOutProperty name=<span class="code-quote">&quot;bar&quot;</span> select=<span class="code-quote">&quot;/sample/@id&quot;</span>/&gt;</span>
+      <span class="code-tag">&lt;<span class="code-keyword">xsl:copy-of</span> select=<span class="code-quote">&quot;/&quot;</span>/&gt;</span>
+    <span class="code-tag">&lt;/jbi:invoke&gt;</span>
+
+  <span class="code-tag">&lt;/<span class="code-keyword">xsl:template</span>&gt;</span>
+
+<span class="code-tag">&lt;/<span class="code-keyword">xsl:stylesheet</span>&gt;</span></pre></div>
+      </div>
+    </p>
+    <p>&nbsp;</p>
+    <h3><a name="XPathRouter-SplittingupanXMLmessageintomultipleserviceinvocations"></a>Splitting up an XML message into multiple service invocations</h3>
+    <p>This example demonstrates a message being split into multiple different sections of XML which are then invoked on different services.</p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-xml">&lt;<span class="code-keyword">xsl:stylesheet</span> <span class="code-keyword">xmlns:xsl</span>=<span class="code-quote">&quot;http://www.w3.org/1999/XSL/Transform&quot;</span>
+                <span class="code-keyword">xmlns:jbi</span>=<span class="code-quote">&quot;xalan://org.apache.servicemix.components.xslt.XalanExtension&quot;</span>
+                extension-element-prefixes=<span class="code-quote">&quot;jbi&quot;</span>
+                <span class="code-keyword">xmlns:foo</span>=<span class="code-quote">&quot;http://servicemix.org/cheese/&quot;</span> version=<span class="code-quote">&quot;1.0&quot;</span>&gt;
+
+  <span class="code-tag">&lt;<span class="code-keyword">xsl:template</span> match=<span class="code-quote">&quot;/&quot;</span>&gt;</span>
+
+    <span class="code-tag"><span class="code-comment">&lt;!-- lets pass a new message body --&gt;</span></span>
+    <span class="code-tag">&lt;jbi:invoke service=<span class="code-quote">&quot;foo:service1&quot;</span>&gt;</span>
+      <span class="code-tag">&lt;cheese id=<span class="code-quote">&quot;{/foo/@id}&quot;</span>&gt;</span>Edam<span class="code-tag">&lt;/cheese&gt;</span>
+    <span class="code-tag">&lt;/jbi:invoke&gt;</span>
+
+    <span class="code-tag"><span class="code-comment">&lt;!--  lets split the message  --&gt;</span></span>
+    <span class="code-tag">&lt;jbi:invoke service=<span class="code-quote">&quot;foo:service2&quot;</span>&gt;</span>
+      <span class="code-tag">&lt;<span class="code-keyword">xsl:copy-of</span> select=<span class="code-quote">&quot;/foo/beer&quot;</span>/&gt;</span>
+    <span class="code-tag">&lt;/jbi:invoke&gt;</span>
+
+    <span class="code-tag"><span class="code-comment">&lt;!-- 1-many split --&gt;</span></span>
+    <span class="code-tag">&lt;<span class="code-keyword">xsl:for-each</span> select=<span class="code-quote">&quot;/foo/lineitem&quot;</span>&gt;</span>
+      <span class="code-tag">&lt;jbi:invoke service=<span class="code-quote">&quot;foo:service3&quot;</span>&gt;</span>
+        <span class="code-tag">&lt;<span class="code-keyword">xsl:copy-of</span> select=<span class="code-quote">&quot;.&quot;</span>/&gt;</span>
+      <span class="code-tag">&lt;/jbi:invoke&gt;</span>
+    <span class="code-tag">&lt;/<span class="code-keyword">xsl:for-each</span>&gt;</span>
+
+    <span class="code-tag"><span class="code-comment">&lt;!--  pass the  entire message to the final endpoint  --&gt;</span></span>
+    <span class="code-tag">&lt;jbi:invoke service=<span class="code-quote">&quot;foo:receiver&quot;</span>&gt;</span>
+      <span class="code-tag">&lt;jbi:copyProperties/&gt;</span>
+      <span class="code-tag">&lt;jbi:setOutProperty name=<span class="code-quote">&quot;bar&quot;</span> select=<span class="code-quote">&quot;/sample/@id&quot;</span>/&gt;</span>
+      <span class="code-tag">&lt;<span class="code-keyword">xsl:copy-of</span> select=<span class="code-quote">&quot;/&quot;</span>/&gt;</span>
+    <span class="code-tag">&lt;/jbi:invoke&gt;</span>
+
+  <span class="code-tag">&lt;/<span class="code-keyword">xsl:template</span>&gt;</span>
+<span class="code-tag">&lt;/<span class="code-keyword">xsl:stylesheet</span>&gt;</span></pre></div>
+      </div>
+    </p>
+    <p>&nbsp;</p>
+    <h3><a name="XPathRouter-WhyuseXalan%3F"></a>Why use Xalan?</h3>
+    <p>We use Xalan to implement our XPath based router and transformation engine. The main reasons for doing so are</p>
+    <ul>
+      <li>we typically need to evaluate many XPath expressions on a single message exchange; so we can create them all inside the stylesheet such that they are evaluated efficiently each time.</li>
+      <li>Xalan can turn the stylesheet into bytecode, which we can then cache/pool to ensure the routing and transformations are as fast as possible while still using the power and flexiblity of XPath.</li>
+      <li>Xalan is optimised to only parse what is required of a document to satisfy the template</li>
+    </ul>
+  </div>
+</div>
+
+          &nbsp;
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" id="footer">
+          <table width="100%"> 
+            <tr>
+              <td align="left" valign="top">
+          
+              </td>
+              <td align="right" valign="top">
+          <a style="color:#999;" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&title=XPath+Router">[ edit ]</a>
+              </td>
+            </tr>
+          <table>
+        </td>
+      </tr>
+    </table>
+  </body>
+
+</html>
+
+

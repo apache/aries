@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <link rel="stylesheet" href="site.css" type="text/css">
+
+
+
+    <title>ServiceMix - How does a provider web service expose itself or registers itself on the bus</title>
+  </head>
+
+  <body>
+    <table width="100%" id="layout" style="padding:0px;margin0px;border-collapse:collapse;">
+      <tr>
+        <td colspan="3" style="padding:8px;">
+          <table width="100%" id="banner" style="padding:0px;margin:0px">
+            <tr id="header_row">
+              <td align="left" valign="middle" style="padding:0px;margin:0px;">
+                <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org/servicemix" rel="nofollow"><img align="absmiddle" border=0 src="images/logo.gif"></a></span></span></span>
+
+              </td>
+              
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" id="breadcrumbs">
+          <table width="100%" id="banner" style="padding:0px;margin:0px">
+            <tr>
+              <td align="left">
+                <a href="">Home</a>  | <a href="FAQ">FAQ</a> &gt; <a href="Using+ServiceMix">Using&nbsp;ServiceMix</a> &gt; How does a provider web service expose itself or registers itself on the bus
+              </td>
+              <td align="right">
+                  <span id="Content"><span><a href="Download" title="Download">Download</a> | <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs</a></span> | <a href="Source" title="Source">Source</a> | <span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span> |<span class="nobr"><a href="irc://irc.codehaus.org/servicemix" rel="nofollow">IRC</a></span> | <span class="nobr"><a href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" rel="nofollow">IRC Log</a></span> | <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a> | <span class="nobr"><a href="http://forums.logicblaze.com/forums/show/3.page" rel="nofollow">Discussion Forum</a></span>| <span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Support</a></span></span></span>
+
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td id="leftColumn" valign="top" style="padding-top: 0px;">
+          <span id="Content"><h3><a name="Navigation-Overview"></a>Overview</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Home" title="Home">Home</a></li>
+    <li><a href="Introduction+to+ESB" title="Introduction to ESB">Introduction to ESB</a></li>
+    <li><a href="Background+to+ServiceMix" title="Background to ServiceMix">Background to ServiceMix</a></li>
+    <li><a href="News" title="News">News</a></li>
+    <li><a href="FAQ" title="FAQ">FAQ</a></li>
+    <li><a href="Download" title="Download">Download</a></li>
+  </ul>
+  <h3><a name="Navigation-Community"></a>Community</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span></li>
+    <li><a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a></li>
+    <li><a href="Contributing" title="Contributing">Contributing</a></li>
+    <li><a href="Team" title="Team">Team</a></li>
+    <li><a href="Users" title="Users">Users</a></li>
+  </ul>
+  <h3><a name="Navigation-Documentation"></a>Documentation</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Getting+Started" title="Getting Started">Getting Started</a></li>
+    <li><a href="Running" title="Running">Running</a></li>
+    <li><a href="Examples" title="Examples">Examples</a></li>
+    <li><a href="Use+Cases" title="Use Cases">Use Cases</a></li>
+    <li><a href="Configuration" title="Configuration">Configuration</a></li>
+    <li><a href="Xml+Reference" title="Xml Reference">Xml Reference</a></li>
+    <li><a href="Management" title="Management">Management</a></li>
+    <li><a href="Architecture" title="Architecture">Architecture</a></li>
+    <li><a href="Clustering" title="Clustering">Clustering</a></li>
+    <li><a href="NMR+Flows" title="NMR Flows">NMR Flows</a></li>
+    <li><a href="Articles" title="Articles">Articles</a></li>
+  </ul>
+  <h3><a name="Navigation-Reference"></a>Reference</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html" rel="nofollow">JBI API</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs</a></span></li>
+    <li><a href="Glossary" title="Glossary">Glossary</a></li>
+  </ul>
+  <h3><a name="Navigation-Features"></a>Features</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Components" title="Components">Components</a></li>
+    <li><a href="Routing" title="Routing">Routing</a></li>
+    <li><a href="Transformation" title="Transformation">Transformation</a></li>
+    <li><a href="Spring+Client+Toolkit" title="Spring Client Toolkit">Spring Client Toolkit</a></li>
+    <li><a href="Client+API" title="Client API">Client API</a></li>
+    <li><a href="POJO+support" title="POJO support">POJO support</a></li>
+    <li><a href="Expressions" title="Expressions">Expressions</a></li>
+    <li><a href="Component+helper+classes" title="Component helper classes">Component helper classes</a></li>
+    <li><a href="Ant+Tasks" title="Ant Tasks">Ant Tasks</a></li>
+    <li><a href="JMX+Console" title="JMX Console">JMX Console</a></li>
+  </ul>
+  <h3><a name="Navigation-Integration"></a>Integration</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Spring+support" title="Spring support">Spring support</a></li>
+    <li><a href="Geronimo+Integration" title="Geronimo Integration">Geronimo Integration</a></li>
+    <li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Integration</a></li>
+    <li><a href="Tomcat+Integration" title="Tomcat Integration">Tomcat Integration</a></li>
+    <li><a href="JNDI+configuration" title="JNDI configuration">JNDI configuration</a></li>
+  </ul>
+  <h3><a name="Navigation-ServiceMixComponents"></a>ServiceMix Components</h3>
+  <ul class="alternate" type="square">
+    <li><a href="BPEL" title="BPEL">BPEL</a></li>
+    <li><a href="Cache" title="Cache">Cache</a></li>
+    <li><a href="Drools" title="Drools">Drools</a></li>
+    <li><a href="Email" title="Email">Email</a></li>
+    <li><a href="File" title="File">File</a></li>
+    <li><a href="FTP" title="FTP">FTP</a></li>
+    <li><a href="Groovy" title="Groovy">Groovy</a></li>
+    <li><a href="HTTP" title="HTTP">HTTP</a></li>
+    <li><a href="Jabber" title="Jabber">Jabber</a></li>
+    <li><a href="JAX+WS" title="JAX WS">JAX WS</a></li>
+    <li><a href="JCA" title="JCA">JCA</a></li>
+    <li><a href="JMS" title="JMS">JMS</a></li>
+    <li><a href="Quartz" title="Quartz">Quartz</a></li>
+    <li><a href="Reflection" title="Reflection">Reflection</a></li>
+    <li><a href="RSS" title="RSS">RSS</a></li>
+    <li><a href="SAAJ" title="SAAJ">SAAJ</a></li>
+    <li><a href="Scripting" title="Scripting">Scripting</a></li>
+    <li><a href="ServiceMix" title="ServiceMix">ServiceMix</a></li>
+    <li><a href="Validation" title="Validation">Validation</a></li>
+    <li><a href="XFire" title="XFire">XFire</a></li>
+    <li><a href="XPath+Router" title="XPath Router">XPath Router</a></li>
+    <li><a href="XSLT" title="XSLT">XSLT</a></li>
+    <li><a href="XSQL" title="XSQL">XSQL</a></li>
+    <li><a href="VFS" title="VFS">VFS</a></li>
+    <li><a href="WSIF" title="WSIF">WSIF</a></li>
+  </ul>
+  <h3><a name="Navigation-Tooling"></a>Tooling</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Eclipse+plugin" title="Eclipse plugin">Eclipse plugin</a></li>
+    <li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Deployer</a></li>
+    <li><a href="WAR+Deployment" title="WAR Deployment">WAR Deployment</a></li>
+    <li><a href="Maven+JBI+plugin" title="Maven JBI plugin">Maven JBI plugin</a></li>
+    <li><a href="Maven+SAR+plugin" title="Maven SAR plugin">Maven SAR plugin</a></li>
+  </ul>
+  <h3><a name="Navigation-Utilities"></a>Utilities</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Reflection" title="Reflection">Reflection</a></li>
+  </ul>
+  <h3><a name="Navigation-OtherJBIsoftware"></a>Other JBI software</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://forge.objectweb.org/projects/celtix/" rel="nofollow">Celtix</a></span></li>
+    <li><span class="nobr"><a href="http://pxe.fivesight.com/wiki/display/PXE/Home" rel="nofollow" title="Visit page outside Confluence">PXE BPEL Engine</a></span></li>
+  </ul>
+  <h3><a name="Navigation-RelatedProjects"></a>Related Projects</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://activemq.codehaus.org/" rel="nofollow">ActiveMQ</a></span></li>
+    <li><span class="nobr"><a href="http://jencks.org/" rel="nofollow">Jencks</a></span></li>
+    <li><span class="nobr"><a href="http://lingo.codehaus.org/" rel="nofollow">Lingo</a></span></li>
+    <li><span class="nobr"><a href="http://activesoap.codehaus.org/" rel="nofollow">ActiveSOAP</a></span></li>
+    <li><span class="nobr"><a href="http://www.springframework.org/" rel="nofollow">Spring</a></span></li>
+    <li><span class="nobr"><a href="http://geronimo.apache.org/" rel="nofollow">Geronimo</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Support"></a>Support</h3>
+  <ul class="alternate" type="square">
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Issues</a></span></li>
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/browse/SM?report=com.atlassian.jira.plugin.system.project:roadmap-panel" rel="nofollow">Roadmap</a></span></li>
+    <li><span class="nobr"><a href="http://jira.logicblaze.com/browse/SM?report=com.atlassian.jira.plugin.system.project:changelog-panel" rel="nofollow">Change log</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Developers"></a>Developers</h3>
+  <ul class="alternate" type="square">
+    <li><a href="Source" title="Source">Source</a></li>
+    <li><a href="Roadmap" title="Roadmap">Roadmap</a></li>
+    <li><a href="Ideas" title="Ideas">Ideas</a></li>
+    <li><a href="Becoming+a+committer" title="Becoming a committer">Becoming a committer</a></li>
+    <li><a href="Release+Guide" title="Release Guide">Release Guide</a></li>
+    <li><span class="nobr"><a href="http://ci.codehaus.org/beetlejuice/viewProjectSummary.action?projectName=ServiceMix" rel="nofollow">BeetleJuice</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/clover/" rel="nofollow">Clover Report</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref/index.html" rel="nofollow">Source XRef</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html" rel="nofollow">Test Source XRef</a></span></li>
+    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" rel="nofollow">XSD</a></span></li>
+  </ul>
+  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="/download/attachments/25208/yjp.gif"></a></span></span></span>
+
+            <h3 class="heading3">Feeds</h3>
+            <table border="0" cellspacing="4px">
+            <tr>
+              <td align="right">
+                <a href="http://docs.codehaus.org/spaces/rss.action?key=SM&newPages=false"><img src="http://docs.codehaus.org/images/icons/rss.gif" border="0"></a><br/>
+              </td>
+              <td align="left">
+                <a href="http://docs.codehaus.org/spaces/rss.action?key=SM&newPages=false">Site</a>
+              </td>
+            </tr>
+            <tr>
+              <td align="right">
+                <a href="http://docs.codehaus.org/spaces/blogrss.action?key=SM"><img src="http://docs.codehaus.org/images/icons/rss.gif" border="0"></a>
+              </td>
+              <td align="left">
+                <a href="http://docs.codehaus.org/spaces/blogrss.action?key=SM">News</a>
+              </td>
+            </tr>
+            </table>
+        </td>
+        <td id="rightColumn" valign="top">
+
+          <div id="page_title">
+            <table width="100%">
+              <tr>
+                <td>
+            How does a provider web service expose itself or registers itself on the bus 
+                </td>
+                <td align="right">
+            
+                </td>
+              </tr>
+            </table>
+          </div>
+
+
+          <div>
+  <div id="Content">
+    <p>There is currently no way to do this at run-time. This must currently be done by using a binding component which will invoke the web service. </p>
+    <p>Also see <a href="How+does+ServiceMix+interact+with+a+UDDI+repository" title="How does ServiceMix interact with a UDDI repository">How does ServiceMix interact with a UDDI repository</a></p>
+  </div>
+</div>
+
+          &nbsp;
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" id="footer">
+          <table width="100%"> 
+            <tr>
+              <td align="left" valign="top">
+          
+              </td>
+              <td align="right" valign="top">
+          <a style="color:#999;" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&title=How+does+a+provider+web+service+expose+itself+or+registers+itself+on+the+bus">[ edit ]</a>
+              </td>
+            </tr>
+          <table>
+        </td>
+      </tr>
+    </table>
+  </body>
+
+</html>
+
+
