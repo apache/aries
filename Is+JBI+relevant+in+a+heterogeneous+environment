@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
     <link rel="stylesheet" href="site.css" type="text/css">
@@ -171,7 +171,7 @@
     <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html" rel="nofollow">Test Source XRef</a></span></li>
     <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" rel="nofollow">XSD</a></span></li>
   </ul>
-  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="/download/attachments/25208/yjp.gif"></a></span></span></span>
+  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="http://www.servicemix.org/download/attachments/25208/yjp.gif"></a></span></span></span>
 
             <h3 class="heading3">Feeds</h3>
             <table border="0" cellspacing="4px">
@@ -211,7 +211,7 @@
 
           <div>
   <div id="Content">
-    <p>Some folks <span class="nobr"><a href="http://www.capeclear.com/annrai/archives/2005/06/its_all_about_s_1.html" rel="nofollow">argue</a></span> that JBI has less relevance due to it being a Java API. We obviously disagree <img align="absmiddle" alt="" border=0 class="emoticon" height=20 src="/images/icons/emoticons/smile.gif" width=20>. For a start see some of the comments in that article.</p>
+    <p>Some folks <span class="nobr"><a href="http://www.capeclear.com/annrai/archives/2005/06/its_all_about_s_1.html" rel="nofollow">argue</a></span> that JBI has less relevance due to it being a Java API. We obviously disagree <img align="absmiddle" alt="" border=0 class="emoticon" height=20 src="http://www.servicemix.org/images/icons/emoticons/smile.gif" width=20>. For a start see some of the comments in that article.</p>
     <p>JBI is a Java API for working with integration components and web services on the Java platform. JBI is based on logical XML messaging to binding components which can be any external system; a web service based on SOAP 1.1 or 1.2, a REST service, CORBA service, DCOM or whatever. So JBI works completely fine with a heterogeneous environment; its the aim of binding components to handle the communication and protocol details to integrate with heterogeneous services of any kind.</p>
     <p>The benefit of JBI is it provides a component model, container and management stack for deploying integration components on the Java platform to provide services such as <a href="Routing" title="Routing">Routing</a>, <a href="Transformation" title="Transformation">Transformation</a> or <a href="BPEL" title="BPEL">BPEL</a> while integrating with many different <a href="Components" title="Components">transport and protocol bindings</a></p>
     <p>Its also worth noting that even with the WS-* standards, there is still a large number of different version of specifications, they change rapidly and there is a need to mediate, transform and orchestrate even the WS-* services together with bridge a number of technology stacks and protocols.</p>

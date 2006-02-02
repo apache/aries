@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
     <link rel="stylesheet" href="site.css" type="text/css">
@@ -18,7 +18,10 @@
                 <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org/servicemix" rel="nofollow"><img align="absmiddle" border=0 src="images/logo.gif"></a></span></span></span>
 
               </td>
-              
+              <td align="right" valign="middle" style="padding:0px;margin:0px;">
+                <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org" rel="nofollow"><img align="absmiddle" border=0 src="http://incubator.apache.org/images/apache-incubator-logo.png"></a></span></span></span>
+
+              </td>
             </tr>
           </table>
         </td>
@@ -171,7 +174,7 @@
     <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html" rel="nofollow">Test Source XRef</a></span></li>
     <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" rel="nofollow">XSD</a></span></li>
   </ul>
-  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="/download/attachments/25208/yjp.gif"></a></span></span></span>
+  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="http://www.servicemix.org/download/attachments/25208/yjp.gif"></a></span></span></span>
 
             <h3 class="heading3">Feeds</h3>
             <table border="0" cellspacing="4px">
@@ -243,7 +246,7 @@
       <div class="panel" style="border-style: solid; border-color: #ccc; ">
         <div class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><b>Department Store Distributor's Order Processing System</b></div>
         <div class="panelContent">
-          <div align="center"><img border=0 src="/download/attachments/33556/basicflow_as_usecase.jpg"></div>
+          <div align="center"><img border=0 src="http://www.servicemix.org/download/attachments/33556/basicflow_as_usecase.jpg"></div>
         </div>
       </div>
       <ol>
@@ -261,7 +264,7 @@
       <div class="panel" style="border-style: solid; border-color: #ccc; ">
         <div class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><b>Online Distributor's Order Processing System</b></div>
         <div class="panelContent">
-          <div align="center"><img border=0 src="/download/attachments/33556/filebinding_as_usecase.jpg"></div>
+          <div align="center"><img border=0 src="http://www.servicemix.org/download/attachments/33556/filebinding_as_usecase.jpg"></div>
         </div>
       </div>
     </p>
@@ -273,7 +276,7 @@
       <div class="panel" style="border-style: solid; border-color: #ccc; ">
         <div class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><b>Online Ticket Reservation System</b></div>
         <div class="panelContent">
-          <div align="center"><img border=0 src="/download/attachments/33556/bpel_as_usecase.jpg"></div>
+          <div align="center"><img border=0 src="http://www.servicemix.org/download/attachments/33556/bpel_as_usecase.jpg"></div>
         </div>
       </div>
     </p>
@@ -301,7 +304,7 @@
       <div class="panel" style="border-style: solid; border-color: #ccc; ">
         <div class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><b>Online Application for Tax ID No. System</b></div>
         <div class="panelContent">
-          <div align="center"><img border=0 src="/download/attachments/33556/jms_as_usecase.jpg"></div>
+          <div align="center"><img border=0 src="http://www.servicemix.org/download/attachments/33556/jms_as_usecase.jpg"></div>
         </div>
       </div>
     </p>
@@ -314,7 +317,7 @@
       <div class="panel" style="border-style: solid; border-color: #ccc; ">
         <div class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><b>Department of Public Works Project Monitoring System</b></div>
         <div class="panelContent">
-          <div align="center"><img border=0 src="/download/attachments/33556/usecase_for_http.jpg"></div>
+          <div align="center"><img border=0 src="http://www.servicemix.org/download/attachments/33556/usecase_for_http.jpg"></div>
         </div>
       </div>
     </p>
@@ -326,7 +329,7 @@
       <div class="panel" style="border-style: solid; border-color: #ccc; ">
         <div class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><b>Network Status Indicator</b></div>
         <div class="panelContent">
-          <div align="center"><img border=0 src="/download/attachments/33556/usecase_for_quartz.jpg"></div>
+          <div align="center"><img border=0 src="http://www.servicemix.org/download/attachments/33556/usecase_for_quartz.jpg"></div>
         </div>
       </div>
     </p>
@@ -338,7 +341,7 @@
       <div class="panel" style="border-style: solid; border-color: #ccc; ">
         <div class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><b>News Feed Monitoring System</b></div>
         <div class="panelContent">
-          <div align="center"><img border=0 src="/download/attachments/33556/usecase_for_rss.jpg"></div>
+          <div align="center"><img border=0 src="http://www.servicemix.org/download/attachments/33556/usecase_for_rss.jpg"></div>
         </div>
       </div>
     </p>

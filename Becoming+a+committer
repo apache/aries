@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
     <link rel="stylesheet" href="site.css" type="text/css">
@@ -18,7 +18,10 @@
                 <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org/servicemix" rel="nofollow"><img align="absmiddle" border=0 src="images/logo.gif"></a></span></span></span>
 
               </td>
-              
+              <td align="right" valign="middle" style="padding:0px;margin:0px;">
+                <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org" rel="nofollow"><img align="absmiddle" border=0 src="http://incubator.apache.org/images/apache-incubator-logo.png"></a></span></span></span>
+
+              </td>
             </tr>
           </table>
         </td>
@@ -171,7 +174,7 @@
     <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html" rel="nofollow">Test Source XRef</a></span></li>
     <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" rel="nofollow">XSD</a></span></li>
   </ul>
-  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="/download/attachments/25208/yjp.gif"></a></span></span></span>
+  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="http://www.servicemix.org/download/attachments/25208/yjp.gif"></a></span></span></span>
 
             <h3 class="heading3">Feeds</h3>
             <table border="0" cellspacing="4px">
@@ -216,7 +219,7 @@
     <p>Once you're contributing and your work is good, one of our <a href="Team" title="Team">Team</a> might invite you to be a committer (after we've called a vote). When that happens, if you accept, the following process kicks into place...</p>
     <h3><a name="Becomingacommitter-Becomingacommittersteps"></a>Becoming a committer steps</h3>
     <ul>
-      <li>Download and print the Apache Contributor License Agreement from <span class="nobr"><a href="http://www.apache.org/dev/new-committers-guide.html" rel="nofollow">here</a></span>. You need to sign it and fax it to Apache. In the past I've found its often faster to also post it via snail mail <img align="absmiddle" alt="" border=0 class="emoticon" height=20 src="/images/icons/emoticons/smile.gif" width=20></li>
+      <li>Download and print the Apache Contributor License Agreement from <span class="nobr"><a href="http://www.apache.org/dev/new-committers-guide.html" rel="nofollow">here</a></span>. You need to sign it and fax it to Apache. In the past I've found its often faster to also post it via snail mail <img align="absmiddle" alt="" border=0 class="emoticon" height=20 src="http://www.servicemix.org/images/icons/emoticons/smile.gif" width=20></li>
       <li>wait for your name to appear on the list of <span class="nobr"><a href="http://people.apache.org/~jim/committers.html#unlistedclas" rel="nofollow">received CLAs</a></span></li>
       <li>once thats done let us know and we can apply to Apache Infrastructure to have your account created; we'll also need to know <ul>
           <li>your full name</li>

@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
     <link rel="stylesheet" href="site.css" type="text/css">
@@ -18,7 +18,10 @@
                 <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org/servicemix" rel="nofollow"><img align="absmiddle" border=0 src="images/logo.gif"></a></span></span></span>
 
               </td>
-              
+              <td align="right" valign="middle" style="padding:0px;margin:0px;">
+                <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org" rel="nofollow"><img align="absmiddle" border=0 src="http://incubator.apache.org/images/apache-incubator-logo.png"></a></span></span></span>
+
+              </td>
             </tr>
           </table>
         </td>
@@ -171,7 +174,7 @@
     <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html" rel="nofollow">Test Source XRef</a></span></li>
     <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" rel="nofollow">XSD</a></span></li>
   </ul>
-  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="/download/attachments/25208/yjp.gif"></a></span></span></span>
+  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="http://www.servicemix.org/download/attachments/25208/yjp.gif"></a></span></span></span>
 
             <h3 class="heading3">Feeds</h3>
             <table border="0" cellspacing="4px">
@@ -353,16 +356,16 @@ java -jar bin/deployer.jar --user system --password manager list-modules</pre></
           </p>
         </li>
         <li>Run the ServiceMix JMX Console. To do this, enter the following URL in a web browser: <span class="nobr"><a href="http://localhost:8080/servicemix-web:" rel="nofollow">http://localhost:8080/servicemix-web:</a></span><br clear="all">
-          <br clear="all"><img align="absmiddle" border=0 src="/download/attachments/28063/jmxconsolegeronimo.jpg"><br clear="all">
+          <br clear="all"><img align="absmiddle" border=0 src="http://www.servicemix.org/download/attachments/28063/jmxconsolegeronimo.jpg"><br clear="all">
           <br clear="all">
         </li>
         <li>An http binding example is supplied. To run the example program perform the following steps: <ol>
             <li>From a browser, enter the URL <span class="nobr"><a href="http://localhost:8080/servicemix-web/examples" rel="nofollow">http://localhost:8080/servicemix-web/examples</a></span>. <br clear="all">
-              <br clear="all"><img align="absmiddle" border=0 src="/download/attachments/28063/httpbindingexample2.0.jpg"><br clear="all">
+              <br clear="all"><img align="absmiddle" border=0 src="http://www.servicemix.org/download/attachments/28063/httpbindingexample2.0.jpg"><br clear="all">
               <br clear="all">
             </li>
             <li>Enter a name or some text in the text box (shown above) and click the Submit button. You will see: <br clear="all">
-              <br clear="all"><img align="absmiddle" border=0 src="/download/attachments/28063/httpbindingresultgeronimo.jpg"><br clear="all">
+              <br clear="all"><img align="absmiddle" border=0 src="http://www.servicemix.org/download/attachments/28063/httpbindingresultgeronimo.jpg"><br clear="all">
               <br clear="all">
               <br clear="all">
             </li>

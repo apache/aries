@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
     <link rel="stylesheet" href="site.css" type="text/css">
@@ -18,7 +18,10 @@
                 <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org/servicemix" rel="nofollow"><img align="absmiddle" border=0 src="images/logo.gif"></a></span></span></span>
 
               </td>
-              
+              <td align="right" valign="middle" style="padding:0px;margin:0px;">
+                <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org" rel="nofollow"><img align="absmiddle" border=0 src="http://incubator.apache.org/images/apache-incubator-logo.png"></a></span></span></span>
+
+              </td>
             </tr>
           </table>
         </td>
@@ -171,7 +174,7 @@
     <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html" rel="nofollow">Test Source XRef</a></span></li>
     <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" rel="nofollow">XSD</a></span></li>
   </ul>
-  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="/download/attachments/25208/yjp.gif"></a></span></span></span>
+  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="http://www.servicemix.org/download/attachments/25208/yjp.gif"></a></span></span></span>
 
             <h3 class="heading3">Feeds</h3>
             <table border="0" cellspacing="4px">
@@ -293,7 +296,7 @@ maven -Dmaven.test.skip=<span class="code-keyword">true</span></pre></div>
               <col>
             </colgroup>
             <tr>
-              <td valign="top"><img align="absmiddle" alt="" border=0 height=16 src="/images/icons/emoticons/information.gif" width=16></td>
+              <td valign="top"><img align="absmiddle" alt="" border=0 height=16 src="http://www.servicemix.org/images/icons/emoticons/information.gif" width=16></td>
               <td><b class="strong">ServiceMix on Java 1.4</b><br>
                 <p>Some modules can be built on Java 1.4. To compile, run the following command<br> maven -Dservicemix.jdk14=true</p>
               </td>
@@ -474,7 +477,7 @@ Note: /tmp/smlog may be changed to another file name.</pre></div>
           <col>
         </colgroup>
         <tr>
-          <td valign="top"><img align="absmiddle" alt="" border=0 height=16 src="/images/icons/emoticons/forbidden.gif" width=16></td>
+          <td valign="top"><img align="absmiddle" alt="" border=0 height=16 src="http://www.servicemix.org/images/icons/emoticons/forbidden.gif" width=16></td>
           <td><b class="strong">Warning</b><br>
             <p>Do NOT close the console or shell in which ServiceMix was started, as that will terminate ServiceMix (unless ServiceMix was started with nohup).</p>
           </td>
@@ -527,7 +530,7 @@ kill [PID]
           <col>
         </colgroup>
         <tr>
-          <td valign="top"><img align="absmiddle" alt="" border=0 height=16 src="/images/icons/emoticons/check.gif" width=16></td>
+          <td valign="top"><img align="absmiddle" alt="" border=0 height=16 src="http://www.servicemix.org/images/icons/emoticons/check.gif" width=16></td>
           <td><b class="strong">Handy Hint</b><br>
             <p>Add <em>$SERVICEMIX_HOME/bin</em> directory to <em>$PATH</em> variable to simplify execution of the examples.</p>
           </td>

@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
     <link rel="stylesheet" href="site.css" type="text/css">
@@ -171,7 +171,7 @@
     <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html" rel="nofollow">Test Source XRef</a></span></li>
     <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" rel="nofollow">XSD</a></span></li>
   </ul>
-  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="/download/attachments/25208/yjp.gif"></a></span></span></span>
+  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="http://www.servicemix.org/download/attachments/25208/yjp.gif"></a></span></span></span>
 
             <h3 class="heading3">Feeds</h3>
             <table border="0" cellspacing="4px">
@@ -219,7 +219,7 @@
           <col>
         </colgroup>
         <tr>
-          <td valign="top"><img align="absmiddle" alt="" border=0 height=16 src="/images/icons/emoticons/forbidden.gif" width=16></td>
+          <td valign="top"><img align="absmiddle" alt="" border=0 height=16 src="http://www.servicemix.org/images/icons/emoticons/forbidden.gif" width=16></td>
           <td><b class="strong">We recommend you migrate to JAX-WS</b><br>
             <p>Going forward we believe JAXB 2.0 is the idea XSD &lt;=&gt; Java mapping layer and JAX-WS the ideal API for working with web services. So going forward all of our WS-* implementations will use JAX-WS for its POJO and service interface creation.</p>
             <p>We've left the XMLBeans code around in case folks need to use it but we recommend you migrate to <a href="WS+Notification" title="WS Notification">WS Notification</a> instead. Hopefully we can figure out how to patch something like <span class="nobr"><a href="http://retroweaver.sourceforge.net/" rel="nofollow">Retroweaver</a></span> to turn Java 5 specific code into a 1.4 binary so that folks can use JAX-WS and JAXB 2.0 on Java 1.4 JVMs. Incidentally it was the Java 5 dependency of JAXB 2.0 and JAX-WS that led us down the path of XMLBeans.</p>
