@@ -5,7 +5,7 @@
 
 
 
-    <title>ServiceMix - Scripting</title>
+    <title>ServiceMix - I can not create a JIRA issue</title>
   </head>
 
   <body>
@@ -31,7 +31,7 @@
           <table width="100%" id="banner" style="padding:0px;margin:0px">
             <tr>
               <td align="left">
-                <a href="">Home</a>  | <a href="Navigation">Navigation</a> &gt; Scripting
+                <a href="">Home</a>  | <a href="FAQ">FAQ</a> &gt; <a href="General">General</a> &gt; I can not create a JIRA issue
               </td>
               <td align="right">
                   <span id="Content"><span><a href="Download" title="Download">Download</a> | <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs</a></span> | <a href="Source" title="Source">Source</a> | <span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span> |<span class="nobr"><a href="irc://irc.codehaus.org/servicemix" rel="nofollow">IRC</a></span> | <span class="nobr"><a href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" rel="nofollow">IRC Log</a></span> | <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a> | <span class="nobr"><a href="http://forums.logicblaze.com/forums/show/3.page" rel="nofollow">Discussion Forum</a></span>| <span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Support</a></span></span></span>
@@ -202,7 +202,7 @@
             <table width="100%">
               <tr>
                 <td>
-            Scripting 
+            I can not create a JIRA issue 
                 </td>
                 <td align="right">
             
@@ -214,41 +214,11 @@
 
           <div>
   <div id="Content">
-    <p>ServiceMix has a ScriptComponent which allows you to easily script In or InOut message exchanges using any <span class="nobr"><a href="http://www.jcp.org/en/jsr/detail?id=223" rel="nofollow">JSR 223</a></span> compliant scripting engine such as <span class="nobr"><a href="http://groovy.codehaus.org/" rel="nofollow">Groovy</a></span>, JavaScript, Jython etc.</p>
-    <p>You can provide a custom component by deriving from this component, or just deploy it and configure the script language name along with the script.</p>
-    <p>There are a few <span class="nobr"><a href="http://svn.servicemix.codehaus.org/branches/servicemix-1.1/base/src/test/resources/org/servicemix/client/example.xml?view=markup" rel="nofollow">examples</a></span> using the <a href="Groovy" title="Groovy">Groovy support</a>.</p>
-    <h3><a name="Scripting-Variablesavailable"></a>Variables available</h3>
-    <p>While inside the script you have a access to the JBI scopes as follows.</p>
-    <p class="paragraph">
-      <table class="confluenceTable">
-        <tbody>
-          <tr>
-            <th class="confluenceTh">Variable</th>
-            <th class="confluenceTh">Description</th>
-          </tr>
-          <tr>
-            <td class="confluenceTd">context</td>
-            <td class="confluenceTd">The JBI ComponentContext</td>
-          </tr>
-          <tr>
-            <td class="confluenceTd">deliveryChannel</td>
-            <td class="confluenceTd">the DeliveryChannel</td>
-          </tr>
-          <tr>
-            <td class="confluenceTd">exchange</td>
-            <td class="confluenceTd">The JBI MessageExchange</td>
-          </tr>
-          <tr>
-            <td class="confluenceTd">inMessage</td>
-            <td class="confluenceTd">The in message</td>
-          </tr>
-          <tr>
-            <td class="confluenceTd">bindings</td>
-            <td class="confluenceTd">A Map which is maintained across invocations for the component which allows you to share state across requests. This state is not persistent, but will last for the duration of the JVM</td>
-          </tr>
-        </tbody>
-      </table>
-    </p>
+    <ul>
+      <li>check that you have created an account</li>
+      <li>check that you can log on</li>
+      <li>check that you have set the 'remember me' option</li>
+    </ul>
   </div>
 </div>
 
@@ -263,7 +233,7 @@
           
               </td>
               <td align="right" valign="top">
-          <a style="color:#999;" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&title=Scripting">[ edit ]</a>
+          <a style="color:#999;" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&title=I+can+not+create+a+JIRA+issue">[ edit ]</a>
               </td>
             </tr>
           <table>
@@ -273,5 +243,4 @@
   </body>
 
 </html>
-
 

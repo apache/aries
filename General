@@ -18,7 +18,10 @@
                 <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org/servicemix" rel="nofollow"><img align="absmiddle" border=0 src="images/logo.gif"></a></span></span></span>
 
               </td>
-              
+              <td align="right" valign="middle" style="padding:0px;margin:0px;">
+                <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org" rel="nofollow"><img align="absmiddle" border=0 src="http://incubator.apache.org/images/apache-incubator-logo.png"></a></span></span></span>
+
+              </td>
             </tr>
           </table>
         </td>
@@ -171,7 +174,7 @@
     <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html" rel="nofollow">Test Source XRef</a></span></li>
     <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" rel="nofollow">XSD</a></span></li>
   </ul>
-  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="http://www.servicemix.org/download/attachments/25208/yjp.gif"></a></span></span></span>
+  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="http://www.servicemix.org/download/attachments/25208/yourkit.jpg"></a></span></span></span>
 
             <h3 class="heading3">Feeds</h3>
             <table border="0" cellspacing="4px">
@@ -222,6 +225,7 @@
       <li><a href="How+does+ServiceMix+compare+to+Synapse" title="How does ServiceMix compare to Synapse">How does ServiceMix compare to Synapse</a></li>
       <li><a href="How+does+ServiceMix+compare+to+Tuscany+or+SCA" title="How does ServiceMix compare to Tuscany or SCA">How does ServiceMix compare to Tuscany or SCA</a></li>
       <li><a href="How+does+the+website+work" title="How does the website work">How does the website work</a></li>
+      <li><a href="I+can+not+create+a+JIRA+issue" title="I can not create a JIRA issue">I can not create a JIRA issue</a></li>
       <li><a href="What+is+ServiceMix" title="What is ServiceMix">What is ServiceMix</a></li>
       <li><a href="What+is+the+license" title="What is the license">What is the license</a></li>
       <li><a href="What+platforms+does+ServiceMix+support" title="What platforms does ServiceMix support">What platforms does ServiceMix support</a></li>
