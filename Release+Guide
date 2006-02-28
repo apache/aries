@@ -222,10 +222,13 @@
         <li>Change the version number: <table class="confluenceTable">
             <tbody>
               <tr>
-                <td class="confluenceTd">project.xml</td>
+                <td class="confluenceTd"> project.xml </td>
               </tr>
               <tr>
-                <td class="confluenceTd">etc/project.xml</td>
+                <td class="confluenceTd"> etc/project.xml </td>
+              </tr>
+              <tr>
+                <td class="confluenceTd"> servicemix-assembly/src/main/release/examples/servicemix-web/project.xml </td>
               </tr>
             </tbody>
           </table>

@@ -216,26 +216,28 @@
   <div id="Content">
     <p>The normal routing mechanism in JBI uses <em>Queue Semantics</em>, that is each request is routed to one and only one endpoint.</p>
     <p>ServiceMix supports an additional routing mechanism which uses <em>Topic Semantics</em>. That is every subscriber who is interested in the message receives a copy of the message.</p>
-    <p>You can subscribe to the output of an endpoint as follows, using the <b>&lt;subscription service=&quot;<em>serviceQName</em>&quot;/&gt;</b> tag. (You can include as many as you like inside a <b>&lt;component/&gt;</b> tag</p>
+    <p>You can subscribe to the output of an endpoint as follows, using the <b>&lt;subscriptionSpec service=&quot;</b><b><em>serviceQName</em></b><b>&quot;/&gt;</b> tag. (You can include as many as you like inside a <b>&lt;subscriptions/&gt;</b> tag</p>
     <p class="paragraph">
       <div class="code">
-        <div class="codeContent"><pre class="code-xml">&lt;component id=<span class="code-quote">&quot;receiver&quot;</span> service=<span class="code-quote">&quot;foo:receiver&quot;</span>
-  class=<span class="code-quote">&quot;org.servicemix.examples.ReceiverComponent&quot;</span>&gt;
+        <div class="codeContent"><pre class="code-xml"><span class="code-tag">&lt;sm:activationSpec componentName=<span class="code-quote">&quot;receiver&quot;</span> service=<span class="code-quote">&quot;foo:receiver&quot;</span>&gt;</span>
+  <span class="code-tag">&lt;sm:component&gt;</span><span class="code-tag">&lt;bean class=<span class="code-quote">&quot;org.apache.servicemix.tck.ReceiverComponent&quot;</span>/&gt;</span><span class="code-tag">&lt;/sm:component&gt;</span>
 
   <span class="code-tag"><span class="code-comment">&lt;!--  lets subscribe to the output of the foo:jmsReceiver component --&gt;</span></span>
-  <span class="code-tag">&lt;subscription service=<span class="code-quote">&quot;foo:jmsReceiver&quot;</span> /&gt;</span>
-<span class="code-tag">&lt;/component&gt;</span></pre></div>
+  <span class="code-tag">&lt;sm:subscriptions&gt;</span>
+    <span class="code-tag">&lt;sm:subscriptionSpec service=<span class="code-quote">&quot;foo:jmsReceiver&quot;</span> /&gt;</span>
+  <span class="code-tag">&lt;/sm:subscriptions&gt;</span>
+<span class="code-tag">&lt;/sm:activationSpec&gt;</span></pre></div>
       </div>
     </p>
     <h3><a name="PublishSubscribeRouting-Notes"></a>Notes</h3>
     <p>Note that the queue semantics and topic semantics are completely mutually exclusive. A single endpoint can have a collection of destination endpoints used to dispatch messages as well as a group of subscribers.</p>
     <p>A message is dispatched to its usual JBI destination endpoint, then whether its dispatched or not, its also dispatched to all of its subscribers.</p>
-    <p>To avoid confusing JBI users, it is an error for a message to not be deliverable using the normal JBI sematics. If you wish to allow no message to be dispatched in the normal JBI manner and want to use just subscriber based routing you can disable the JBI error by setting the <b>failIfNoDestinationEndpoint</b> flag on each <b>&lt;component/&gt;</b>.</p>
+    <p>To avoid confusing JBI users, it is an error for a message to not be deliverable using the normal JBI sematics. If you wish to allow no message to be dispatched in the normal JBI manner and want to use just subscriber based routing you can disable the JBI error by setting the <b>failIfNoDestinationEndpoint</b> flag on each <b>&lt;activationSpec/&gt;</b>.</p>
     <p class="paragraph">
       <div class="code">
-        <div class="codeContent"><pre class="code-xml">&lt;component id=<span class="code-quote">&quot;jmsReceiver&quot;</span> service=<span class="code-quote">&quot;foo:jmsReceiver&quot;</span>
-  failIfNoDestinationEndpoint=<span class="code-quote">&quot;false&quot;</span>
-  class=<span class="code-quote">&quot;org.servicemix.components.jms.JmsReceiverComponent&quot;</span>&gt;</pre></div>
+        <div class="codeContent"><pre class="code-xml">&lt;sm:activationSpec componentName=<span class="code-quote">&quot;jmsReceiver&quot;</span> service=<span class="code-quote">&quot;foo:jmsReceiver&quot;</span>
+                   failIfNoDestinationEndpoint=<span class="code-quote">&quot;false&quot;</span>&gt;
+  <span class="code-tag">&lt;sm:component&gt;</span><span class="code-tag">&lt;bean class=<span class="code-quote">&quot;org.apache.servicemix.components.jms.JmsReceiverComponent&quot;</span>&gt;</span></pre></div>
       </div>
     </p>
   </div>

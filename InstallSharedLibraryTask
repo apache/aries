@@ -233,7 +233,8 @@
                   <th class="confluenceTh"> Description </th>
                 </tr>
                 <tr>
-                  <td class="confluenceTd"> sharedLibURI </td>
+                  <td class="confluenceTd"> file <br clear="all">
+                  </td>
                   <td class="confluenceTd"> String </td>
                   <td class="confluenceTd"> theURI of the shared library to install </td>
                 </tr>
@@ -243,6 +244,8 @@
         </tr>
       </table>
     </p>
+    <br>
+    <p class="paragraph"> &nbsp; </p>
   </div>
 </div>
 

@@ -233,7 +233,7 @@
                   <th class="confluenceTh"> Description </th>
                 </tr>
                 <tr>
-                  <td class="confluenceTd"> componentName </td>
+                  <td class="confluenceTd"> name </td>
                   <td class="confluenceTd"> String </td>
                   <td class="confluenceTd"> the name of the Component to shutdown </td>
                 </tr>
@@ -243,6 +243,8 @@
         </tr>
       </table>
     </p>
+    <br>
+    <p class="paragraph"> &nbsp; </p>
   </div>
 </div>
 

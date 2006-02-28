@@ -216,6 +216,7 @@
   <div id="Content">
     <h2><a name="Articles-Articles"></a>Articles</h2>
     <ul>
+      <li><span class="nobr"><a href="http://www.fiveclouds.com/articles/2006/02/11/servicemix-deployments-in-eclipse" rel="nofollow">Great article</a></span> by Philip Dodds showing ServiceMix deployments being created in Eclipse</li>
       <li><span class="nobr"><a href="http://www.zapthink.com/report.html?id=ZAPFLASH-10272004" rel="nofollow">SOA Governance: Reengineering IT Governance</a></span> By Jason Bloomberg</li>
       <li><span class="nobr"><a href="http://www.theserverside.com/articles/article.tss?l=JBIforSOA" rel="nofollow">JBI - A Standard-based approach for SOA</a></span> by Meeraj Kinnumpurath</li>
       <li><span class="nobr"><a href="http://www.javaworld.com/javaworld/jw-12-2005/jw-1212-esb.html" rel="nofollow">ServiceMix as an enterprise service bus</a></span> by J. Jeffrey Hanson</li>
@@ -223,10 +224,13 @@
       <li><span class="nobr"><a href="http://java.sys-con.com/read/117740.htm" rel="nofollow">SOA + EDA = ServiceMix</a></span></li>
       <li><span class="nobr"><a href="http://java.sun.com/integration/" rel="nofollow">Sun's JBI site</a></span></li>
       <li><span class="nobr"><a href="https://wiki.objectweb.org/celtix/Wiki.jsp?page=Research" rel="nofollow">Celix's ESB links</a></span></li>
-      <li>Steve Vinoski's <span class="nobr"><a href="http://dsonline.computer.org/portal/site/dsonline/menuitem.9ed3d9924aeb0dcd82ccc6716bbe36ec/index.jsp?&amp;pName=dso_level1&amp;path=dsonline/0507&amp;file=w4tow.xml&amp;xsl=article.xsl&amp;" rel="nofollow">JBI article</a></span></li>
+      <li>Steve Vinoski's <span class="nobr"><a href="http://dsonline.computer.org/portal/site/dsonline/menuitem.9ed3d9924aeb0dcd82ccc6716bbe36ec/index.jsp?&amp;amp;amp;pName=dso_level1&amp;amp;amp;path=dsonline/0507&amp;amp;amp;file=w4tow.xml&amp;amp;amp;xsl=article.xsl&amp;amp;amp;" rel="nofollow">JBI article</a></span></li>
       <li>Frank Summer's <span class="nobr"><a href="http://www.artima.com/lejava/articles/jbi2.html" rel="nofollow">SOA JBI</a></span></li>
     </ul>
-    <h3><a name="Articles-JBINews%2Cblogsandforms"></a>JBI News, blogs and forms</h3>
+    <h3><a name="Articles-JBI%26ESBNews%2Cblogsandforms"></a>JBI &amp; ESB News, blogs and forms</h3>
+    <ul>
+      <li><span class="nobr"><a href="http://www.computerworld.com/developmenttopics/development/webservices/story/0,10801,108478,00.html" rel="nofollow">What Is an ESB, and Do You Really Need One?</a></span> advice by Sandy Carter, IBM</li>
+    </ul>
     <ul>
       <li><span class="nobr"><a href="http://azur.typepad.com/bpel/2005/12/sca_jbi_and_mor.html" rel="nofollow">SCA, JBI and more..</a></span> which echos our <a href="How+does+ServiceMix+compare+to+Tuscany+or+SCA" title="How does ServiceMix compare to Tuscany or SCA">FAQ entry</a></li>
       <li><span class="nobr"><a href="http://dx.doi.org/10.1571/PSGP7-14-05CC" rel="nofollow">Java Business Integration (JBI) Gains Industry Support</a></span> by Patricia Seybold Group</li>

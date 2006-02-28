@@ -214,8 +214,8 @@
 
           <div>
   <div id="Content">
-    <p>To make it simpler to use as an end user, we've created a JBI <span class="nobr"><a href="http://servicemix.codehaus.org/maven/apidocs/org/servicemix/client/ServiceMixClient.html" rel="nofollow">Client API</a></span> which makes it easy to work with any JBI container and other JBI components.</p>
-    <p>The JavaDoc is probably self evident for many things, especially if you are aware of the JBI APIs. There is an <span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/org/servicemix/client/ServiceMixClientTest.html" rel="nofollow">example test case</a></span> which shows many of these APIs in action.</p>
+    <p>To make it simpler to use as an end user, we've created a JBI <span class="nobr"><a href="http://servicemix.org/maven/servicemix-core/apidocs/org/apache/servicemix/client/ServiceMixClient.html" rel="nofollow">Client API</a></span> which makes it easy to work with any JBI container and other JBI components.</p>
+    <p>The JavaDoc is probably self evident for many things, especially if you are aware of the JBI APIs. There is an <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/xref-test/org/apache/servicemix/client/ServiceMixClientTest.html" rel="nofollow">example test case</a></span> which shows many of these APIs in action.</p>
     <h2><a name="ClientAPI-UsingtheJBIinterfaces"></a>Using the JBI interfaces</h2>
     <p>The following helper methods just provide some helper methods for easier use of the JBI APIs</p>
     <h3><a name="ClientAPI-Sendingmessages"></a>Sending messages</h3>
@@ -289,7 +289,7 @@ client.send(<span class="code-keyword">null</span>, <span class="code-keyword">n
     <h3><a name="ClientAPI-Invokingservices"></a>Invoking services</h3>
     <p class="paragraph">
       <div class="code">
-        <div class="codeContent"><pre class="code-java"><span class="code-comment">// optional endpoint resolution 
+        <div class="codeContent"><pre class="code-java"><span class="code-comment">// optional endpoint resolution
 </span>EndpointResolver resolver = client.createResolverForService(service);
 
 Map properties = <span class="code-keyword">new</span> HashMap();
@@ -301,10 +301,25 @@ properties.put(<span class="code-quote">&quot;name&quot;</span>, <span class="co
     <h2><a name="ClientAPI-ConfiguringtheServiceMixClient"></a>Configuring the ServiceMixClient</h2>
     <p>We use the Spring XML configuration files to configure the client. You can then use dependency injection to inject the client into your POJOs.</p>
     <p>Here's an example of using a basic client...</p>
-    <p class="paragraph"> [Unable to download http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-core/src/test/resources/org/servicemix/client/example.xml : http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-core/src/test/resources/org/servicemix/client/example.xml] </p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-xml"><span class="code-tag">&lt;bean id=<span class="code-quote">&quot;client&quot;</span> class=<span class="code-quote">&quot;org.apache.servicemix.client.DefaultServiceMixClient&quot;</span>&gt;</span>
+  <span class="code-tag">&lt;constructor-arg ref=<span class="code-quote">&quot;jbi&quot;</span> /&gt;</span>
+<span class="code-tag">&lt;/bean&gt;</span></pre></div>
+      </div>
+    </p>
     <p>Note that the jbi bean reference is the ServiceMix JBI container.</p>
     <p>This example creates a client which is hard-wired to default to a specific service when an invocation is performed.</p>
-    <p class="paragraph"> [Unable to download http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-core/src/test/resources/org/servicemix/client/example.xml : http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-core/src/test/resources/org/servicemix/client/example.xml] </p>
+    <p class="paragraph">
+      <div class="code">
+        <div class="codeContent"><pre class="code-xml"><span class="code-tag">&lt;bean id=<span class="code-quote">&quot;clientWithRouting&quot;</span> class=<span class="code-quote">&quot;org.apache.servicemix.client.DefaultServiceMixClient&quot;</span>&gt;</span>
+  <span class="code-tag">&lt;constructor-arg ref=<span class="code-quote">&quot;jbi&quot;</span> /&gt;</span>
+  <span class="code-tag">&lt;constructor-arg&gt;</span>
+    <span class="code-tag">&lt;sm:activationSpec destinationService=<span class="code-quote">&quot;foo:receiver&quot;</span>/&gt;</span>
+  <span class="code-tag">&lt;/constructor-arg&gt;</span>
+<span class="code-tag">&lt;/bean&gt;</span></pre></div>
+      </div>
+    </p>
   </div>
 </div>
 

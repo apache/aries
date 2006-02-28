@@ -214,7 +214,7 @@
 
           <div>
   <div id="Content">
-    <p>The StartAssemblyTask starts a Component <span class="nobr"><a href="http://servicemix.org/maven/servicemix-core/apidocs/org/apache/servicemix/jbi/management/task/StartComponentTask.html" rel="nofollow">StartAssemblyTask </a></span><br clear="all">
+    <p>The StartAssemblyTask starts a Component <span class="nobr"><a href="http://servicemix.org/maven/servicemix-core/apidocs/org/apache/servicemix/jbi/management/task/StartComponentTask.html" rel="nofollow">StartComponentTask </a></span><br clear="all">
     </p>
     <p class="paragraph">
       <table align="center" border=0 cellpadding=5 cellspacing="8px" class="infoMacro" width="85%">
@@ -233,7 +233,7 @@
                   <th class="confluenceTh"> Description </th>
                 </tr>
                 <tr>
-                  <td class="confluenceTd"> componentName </td>
+                  <td class="confluenceTd"> name </td>
                   <td class="confluenceTd"> String </td>
                   <td class="confluenceTd"> the name of the Component to start </td>
                 </tr>
@@ -243,6 +243,8 @@
         </tr>
       </table>
     </p>
+    <br>
+    <p class="paragraph"> &nbsp; </p>
   </div>
 </div>
 

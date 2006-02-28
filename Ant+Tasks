@@ -216,7 +216,7 @@
   <div id="Content">
     <p>A requirement of the JBI/JSR208 is to allow the remote installation, deployment and management of Components. A prefered way of doing this is by Ant Tasks, that use the JMX interfaces exposed by the management of the Container.</p>
     <h2><a name="AntTasks-JbiTask"></a>JbiTask</h2>
-    <p>All ServiceMix Ant Tasks are derived from JbiTask - see <span class="nobr"><a href="http://servicemix.codehaus.org/maven/apidocs/org/servicemix/jbi/management/task/JbiTask.html" rel="nofollow">JbiTask </a></span> and share it'sattributes: <br clear="all">
+    <p>All ServiceMix Ant Tasks are derived from JbiTask - see <span class="nobr"><a href="http://servicemix.org/maven/servicemix-core/apidocs/org/apache/servicemix/jbi/management/task/JbiTask.html" rel="nofollow">JbiTask</a></span> and share it's attributes: <br clear="all">
     </p>
     <p class="paragraph">
       <table align="center" border=0 cellpadding=5 cellspacing="8px" class="infoMacro" width="85%">
@@ -232,12 +232,12 @@
                 <tr>
                   <th class="confluenceTh"> Name </th>
                   <th class="confluenceTh"> type </th>
-                  <th class="confluenceTh">Description </th>
+                  <th class="confluenceTh"> Description </th>
                 </tr>
                 <tr>
                   <td class="confluenceTd"> serverProtocol </td>
                   <td class="confluenceTd"> String </td>
-                  <td class="confluenceTd"> the default protcol used for connecting with the ServiceMix JMX MBeanServer (default is <b>rmi</b>)</td>
+                  <td class="confluenceTd"> the default protcol used for connecting with the ServiceMix JMX MBeanServer (default is <b>rmi</b>) </td>
                 </tr>
                 <tr>
                   <td class="confluenceTd"> namingHost </td>
@@ -247,7 +247,7 @@
                 <tr>
                   <td class="confluenceTd"> containerName </td>
                   <td class="confluenceTd"> String </td>
-                  <td class="confluenceTd"> name of the ServiceMix JBI Container to connect to (default is <b>defaultJBI</b>)</td>
+                  <td class="confluenceTd"> name of the ServiceMix JBI Container to connect to (default is <b>defaultJBI</b>) </td>
                 </tr>
                 <tr>
                   <td class="confluenceTd"> jmxDomainName </td>
@@ -280,7 +280,8 @@
         </tr>
       </table>
     </p>
-    <p>AntTasks derived from JbiTask include:</p>
+    <br>
+    <p class="paragraph"> AntTasks derived from JbiTask include: </p>
     <ul>
       <li><a href="AssemblyDescriptorTask" title="AssemblyDescriptorTask">AssemblyDescriptorTask</a></li>
       <li><a href="DeployedAssembiliesTask" title="DeployedAssembiliesTask">DeployedAssembiliesTask</a></li>

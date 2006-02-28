@@ -228,6 +228,7 @@
     </p>
     <p>&nbsp;</p>
     <p>&nbsp;</p>
+    <p>&nbsp;</p>
     <p>The distinction David makes goes to the heart of both questions. First, Synapse is not a full ESB in the most common sense of the term. Secondly, because the design of Apache Synapse is different from that of Apache ServiceMix, the two solutions have different capabilities and limitations.</p>
     <p>A number of solutions that broker or mediate Web services exchanges are described as ESBs, and Synapse can reasonably be included in that category. However, what most defines an ESB is not its architecture, but its function, which in general terms is to provide</p>
     <ul class="alternate" type="square">
@@ -235,9 +236,7 @@
       <li>with a high degree of performance, scalability and reliability</li>
       <li>spanning multiple transports and heterogeneous endpoints.</li>
     </ul>
-    <p>In providing management through WS-* to Apache Axis, Apache Synapse provides a very important and useful capability to that specific Web service broker. However, in its current implementation Apache Synapse would be overextended as an &quot;architectural&quot; solution. Building an SOA on Apache Synapse would presume that all exchanges in the SOA would be Web Service exchanges based on SOAP, that the management of the exchanges would be invoked exclusively by means of WS-*, </p>
-    <p class="paragraph">
-      <del>and that the underlying SOAP technology at each brokered endpoint would be Apache Axis2</del> *ANY* SOAP stack which implements the relevant protocols. </p>
+    <p>In providing management through WS-* to Apache Axis, the Apache Synapse project provides a very important and useful capability to Web services. However, in its current implementation Apache Synapse would be overextended as an &quot;architectural&quot; solution. Building an SOA on Apache Synapse would presume that all exchanges in the SOA would be made through SOAP-based Web Services, that the management of the exchanges would be invoked exclusively by means of WS-*, and that the underlying SOAP stack(s) implement the relevant protocols.</p>
     <p>ServiceMix is a full ESB that can work with many different <a href="Components" title="Components">SOAP Stacks</a> such as Axis, WSIF, XFire, ActiveSOAP and JAX-WS. ServiceMix also has full support for <a href="Routing" title="Routing">Routing</a>, <a href="Transformation" title="Transformation">Transformation</a> and <a href="BPEL" title="BPEL">Orchestration</a>. Like Apache Synapse, Apache ServiceMix provides mediation for web services exchanges and is designed to support transformation, management and routing through WS-* standards. However, this capability is provided without dependency on the SOAP stack, and most importantly, is provided through the same services architecture used for all message formats and transports, including, but certainly not limited to, Web services.</p>
     <p>Lastly, it is also worth noting that the ServiceMix <a href="Team" title="Team">Team</a> are working with the Synapse community to add JBI support to Synapse, so ServiceMix and Synapse could work together and integrate nicely with each other using JBI; deploying Synase as a JBI component within ServiceMix's JBI container allowing it to integrate with other JBI components such as smart routers or BPEL engines etc.</p>
   </div>

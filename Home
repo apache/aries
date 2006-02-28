@@ -267,6 +267,15 @@
     </ul>
     <h2><a name="Home-News"></a>News</h2>
     <p class="paragraph">
+      <div class="greybox"> <span>Wednesday, February 15, 2006</span></div>
+      <div class="blogpost" style="margin-bottom: 30px">
+        <div class="blogHeading" style="margin-top: 0px; padding-top: 0px"><a href="http://docs.codehaus.org/display/SM/2006/02/15/Creating+graphical+JBI+deployments+with+ServiceMix+in+Eclipse" style="text-decoration: none; color: black">Creating graphical JBI deployments with ServiceMix in Eclipse</a></div>
+        <div class="pagesubheading">
+        </div>
+        <div class="wiki-content">
+          <p>Philip Dodds has a <span class="nobr"><a href="http://www.fiveclouds.com/articles/2006/02/11/servicemix-deployments-in-eclipse" rel="nofollow">great article</a></span> showing ServiceMix deployments being created in <span class="nobr"><a href="http://www.eclipse.org/" rel="nofollow">Eclipse</a></span>. Go Philip!</p>
+        </div>
+      </div>
       <div class="greybox"> <span>Wednesday, January 25, 2006</span></div>
       <div class="blogpost" style="margin-bottom: 30px">
         <div class="blogHeading" style="margin-top: 0px; padding-top: 0px"><a href="http://docs.codehaus.org/display/SM/2006/01/25/ServiceMix+at+JavaWorld" style="text-decoration: none; color: black">ServiceMix at JavaWorld</a></div>
@@ -302,15 +311,6 @@
           <p>We have now moved the <a href="Source" title="Source">Source</a> of ServiceMix to Apache. You can surf and checkout the latest code from here</p>
           <p><span class="nobr"><a href="https://svn.apache.org/repos/asf/incubator/servicemix/" rel="nofollow">https://svn.apache.org/repos/asf/incubator/servicemix/</a></span></p>
           <p>Also we now have a set of Apache based <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a></p>
-        </div>
-      </div>
-      <div class="greybox"> <span>Wednesday, November 23, 2005</span></div>
-      <div class="blogpost" style="margin-bottom: 30px">
-        <div class="blogHeading" style="margin-top: 0px; padding-top: 0px"><a href="http://docs.codehaus.org/display/SM/2005/11/23/ServiceMix+discussion+forum+open" style="text-decoration: none; color: black">ServiceMix discussion forum open</a></div>
-        <div class="pagesubheading">
-        </div>
-        <div class="wiki-content">
-          <p>There is a new <span class="nobr"><a href="http://forums.logicblaze.com/forums/show/3.page" rel="nofollow">discussion forum</a></span> now open to dicusss all things ServiceMix, ESB or JBI. </p>
         </div>
       </div>
       <hr>

@@ -361,7 +361,7 @@
     <p>&nbsp;</p>
     <h2><a name="POJOsupport-BeingevenmorePOJO"></a>Being even more POJO</h2>
     <p>The code above may seem a bit too verbose for you. Firstly you can reduce much code by reusing the <a href="Component+helper+classes" title="Component helper classes">Component helper classes</a>.</p>
-    <p>Another option is to be even more POJO-like. If you just want to invoke operations on the JBI bus then there's no need for you to implement the JBI component or lifecyclce contract - you can just reuse the <a href="Client+API" title="Client API">Client API</a>.</p>
+    <p>Another option is to be even more POJO-like. If you just want to invoke operations on the JBI bus then there's no need for you to implement the JBI component or lifecycle contract - you can just reuse the <a href="Client+API" title="Client API">Client API</a>.</p>
     <p>For example this POJO sends messages into the JBI bus.</p>
     <p class="paragraph">
       <div class="code">

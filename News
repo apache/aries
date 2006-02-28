@@ -215,6 +215,15 @@
           <div>
   <div id="Content">
     <p class="paragraph">
+      <div class="greybox"> <span>Wednesday, February 15, 2006</span></div>
+      <div class="blogpost" style="margin-bottom: 30px">
+        <div class="blogHeading" style="margin-top: 0px; padding-top: 0px"><a href="http://docs.codehaus.org/display/SM/2006/02/15/Creating+graphical+JBI+deployments+with+ServiceMix+in+Eclipse" style="text-decoration: none; color: black">Creating graphical JBI deployments with ServiceMix in Eclipse</a></div>
+        <div class="pagesubheading">
+        </div>
+        <div class="wiki-content">
+          <p>Philip Dodds has a <span class="nobr"><a href="http://www.fiveclouds.com/articles/2006/02/11/servicemix-deployments-in-eclipse" rel="nofollow">great article</a></span> showing ServiceMix deployments being created in <span class="nobr"><a href="http://www.eclipse.org/" rel="nofollow">Eclipse</a></span>. Go Philip!</p>
+        </div>
+      </div>
       <div class="greybox"> <span>Wednesday, January 25, 2006</span></div>
       <div class="blogpost" style="margin-bottom: 30px">
         <div class="blogHeading" style="margin-top: 0px; padding-top: 0px"><a href="http://docs.codehaus.org/display/SM/2006/01/25/ServiceMix+at+JavaWorld" style="text-decoration: none; color: black">ServiceMix at JavaWorld</a></div>
@@ -320,16 +329,6 @@
             <li><a href="Use+Cases" title="Use Cases">Use Cases</a></li>
             <li><a href="Tomcat+Integration" title="Tomcat Integration">Tomcat Integration</a></li>
           </ul>
-        </div>
-      </div>
-      <div class="greybox"> <span>Tuesday, September 13, 2005</span></div>
-      <div class="blogpost" style="margin-bottom: 30px">
-        <div class="blogHeading" style="margin-top: 0px; padding-top: 0px"><a href="http://docs.codehaus.org/display/SM/2005/09/13/The+ServiceMix+team+is+proud+to+support+the+SOA+Tooling+Project" style="text-decoration: none; color: black">The ServiceMix team is proud to support the SOA Tooling Project</a></div>
-        <div class="pagesubheading">
-        </div>
-        <div class="wiki-content">
-          <p>As well as our <span class="nobr"><a href="http://mail-archives.apache.org/mod_mbox/incubator-general/200508.mbox/%3c245FBCC4-1C5B-4085-8F4D-C46EA22EFF1D@mac.com%3e" rel="nofollow">support</a></span> and contributions to both <span class="nobr"><a href="http://celtix.objectweb.org" rel="nofollow">Celtix</a></span> and Apache Synapse, we're happy to announce our support for the Eclipse <span class="nobr"><a href="http://www.eclipse.org/proposals/stp/" rel="nofollow">SOA Tooling Project</a></span> to provide tooling for ESB and JBI. Our <a href="Team" title="Team">Team</a> is looking forward to working with the other <span class="nobr"><a href="http://www.eclipse.org/proposals/stp/" rel="nofollow">supporters</a></span> to make some great Eclipse tooling. </p>
-          <p>BTW if you've not seen it yet the current <span class="nobr"><a href="http://www.eclipse.org/webtools/index.html" rel="nofollow">WebTools project</a></span> provides good JSP, web, XML, XSD, WSDL support and <span class="nobr"><a href="http://www.eclipse.org/birt/" rel="nofollow">BIRT</a></span> provides good reporting.</p>
         </div>
       </div>
     </p>

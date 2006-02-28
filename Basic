@@ -214,7 +214,7 @@
 
           <div>
   <div id="Content">
-    <h3><a name="Basic-OverviewoftheServiceMix1.xBasicExample"></a>Overview of the ServiceMix 1.x <em>Basic</em> Example</h3>
+    <h3><a name="Basic-OverviewoftheServiceMixBasicExample"></a>Overview of the ServiceMix Basic Example</h3>
     <p>This document describes how to run the <em>Basic</em> example and provides details about what it does. For information on the business use case, please refer to: <span class="nobr"><a href="http://www.servicemix.org/Use+Cases" rel="nofollow">Use Case for Basic</a></span>. <br clear="all">
       <br clear="all"> The Basic example illustrates the following:</p>
     <ul>
@@ -226,7 +226,7 @@
       <li>how to use tracing</li>
     </ul>
     <p>The source code for the Basic example is located in the ServiceMix installation directory under the <tt>examples\basic</tt> directory in the <tt>servicemix.xml</tt> file. It is recommended that you refer to the source code while reading this document. <br clear="all">
-      <br clear="all"> There are several components in the <tt>servicemix.xml</tt> file. One component sets off a trigger to send messages to a source destination. Then those messages are consumed by another component and sent to a different output destination. A trace component displays the messages as they arrive. <br clear="all">
+      <br clear="all"> There are several components in the <tt>servicemix.xml</tt>file. One component sets off a trigger to send messages to a source destination. Then those messages are consumed by another component and sent to a different output destination. A trace component displays the messages as they arrive. <br clear="all">
       <br clear="all">
     </p>
     <h3><a name="Basic-RunningtheBasicExample"></a>Running the <em>Basic</em> Example</h3>
@@ -236,12 +236,14 @@
         <div class="codeContent"><pre class="code-java">cd [servicemix_install_dir]\examples\basic</pre></div>
       </div>
     </p>
+    <p>&nbsp;</p>
     <p>Then type:</p>
     <p class="paragraph">
       <div class="code">
         <div class="codeContent"><pre class="code-java">[servicemix_install_dir]\bin\servicemix servicemix.xml</pre></div>
       </div>
     </p>
+    <p>&nbsp;</p>
     <p>where <tt>servicemix_install_dir</tt> is the directory in which ServiceMix was installed. <br clear="all">
       <br clear="all">
     </p>
@@ -254,11 +256,12 @@
         <tr>
           <td valign="top"><img align="absmiddle" alt="" border=0 height=16 src="http://www.servicemix.org/images/icons/emoticons/check.gif" width=16></td>
           <td><b class="strong">Handy Hint</b><br>
-            <p>Add <em>$SERVICEMIX_HOME\bin</em> directory to <em>$PATH</em> variable to simplify execution of the example.</p>
-          </td>
+            <br> Add <em>$SERVICEMIX_HOME\bin</em> directory to <em>$PATH</em> variable to simplify execution of the example.</td>
         </tr>
       </table>
     </p>
+    <br>
+    <p class="paragraph"> &nbsp; </p>
     <h3><a name="Basic-StoppingtheBasicExample"></a>Stopping the <em>Basic</em> Example</h3>
     <p>To terminate the Basic example type &quot;CTRL-C&quot; in the command shell in which it is running and answer &quot;y&quot; to the &quot;Terminate batch job (y/n)?&quot; question. <br clear="all">
     </p>
@@ -270,10 +273,12 @@
       <div class="panel" style="border-style: solid; border-color: #ccc; ">
         <div class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><b>Basic Example Message Flow Diagram</b></div>
         <div class="panelContent">
+          <p>&nbsp;</p>
           <div align="center"><img border=0 src="http://www.servicemix.org/download/attachments/29640/basicflow1.jpg"></div>
-        </div>
+          <br> &nbsp; </div>
       </div>
     </p>
+    <p>&nbsp;</p>
     <p>
       <br clear="all">
       <br clear="all">
@@ -283,7 +288,7 @@
       <ol>
         <li>The <em>timer</em> component sends a message to <em>inputSender</em> through the Normalized Message Router (NMR).</li>
         <li><em>inputSender</em> converts the message (marshals it) into a JMS message, then uses the <em>jmsTemplate</em> bean to publish the message.</li>
-        <li><em>jmsTemplate</em> uses the <em>jmsFactory</em> bean to get a connection to the port associated with the JMS topic called &quot;demo.org.servicemix.source.&quot; The message is published on the &quot;demo.org.servicemix.source&quot; topic.</li>
+        <li><em>jmsTemplate</em> uses the <em>jmsFactory</em>bean to get a connection to the port associated with the JMS topic called &quot;demo.org.servicemix.source.&quot; The message is published on the &quot;demo.org.servicemix.source&quot; topic.</li>
         <li><em>jencks</em> (the JCA resource adapter) listens on port 61616 for messages.</li>
         <li><em>inputReceiver</em> subscribes to the &quot;demo.org.servicemix.source&quot; topic via <em>jencks</em> and receives the JMS message.</li>
         <li><em>inputReceiver</em> normalizes the JMS message and sends it to <em>outputSender</em> via the NMR.</li>
@@ -300,21 +305,22 @@
     </p>
     <p class="paragraph">
       <div class="code">
-        <div class="codeContent"><pre class="code-java">[INFO] TraceComponent - -Exchange: org.servicemix.jbi.messaging.InOnlyImpl@4fdf11 received IN message: 
-org.servicemix.jbi.messaging.NormalizedMessageImpl@1be0369{properties: {org.servicemix.jms.message=ACTIVEMQ_TEXT_MESSAGE: 
-id = 0 ActiveMQMessage{ , jmsMessageID = <span class="code-keyword">null</span>, bodyAsBytes = org.activemq.io.util.ByteArray@1d1fc02, 
+        <div class="codeContent"><pre class="code-java">[INFO] TraceComponent - -Exchange: org.servicemix.jbi.messaging.InOnlyImpl@4fdf11 received IN message:
+org.servicemix.jbi.messaging.NormalizedMessageImpl@1be0369{properties: {org.servicemix.jms.message=ACTIVEMQ_TEXT_MESSAGE:
+id = 0 ActiveMQMessage{ , jmsMessageID = <span class="code-keyword">null</span>, bodyAsBytes = org.activemq.io.util.ByteArray@1d1fc02,
 readOnlyMessage = <span class="code-keyword">true</span>, jmsClientID = 'ID:Lisas-2828-1126207917359-23:0' ,
- jmsCorrelationID = '<span class="code-keyword">null</span>' , jmsDestination = demo.org.servicemix.result, jmsReplyTo = <span class="code-keyword">null</span>, jmsDeliveryMode = 2, 
+ jmsCorrelationID = '<span class="code-keyword">null</span>' , jmsDestination = demo.org.servicemix.result, jmsReplyTo = <span class="code-keyword">null</span>, jmsDeliveryMode = 2,
  jmsRedelivered = <span class="code-keyword">false</span>, jmsType = '<span class="code-keyword">null</span>' , jmsExpiration = 0, jmsPriority = 4, jmsTime
-stamp = 1126207938593, properties = {}, readOnlyProperties = <span class="code-keyword">true</span>, entryBrokerName = 'ID:Lisas-2828-1126207917359-0:0' , 
-entryClusterName = '<span class="code-keyword">default</span>' , consumerNos = [0], transactionId = '<span class="code-keyword">null</span>' , xaTransacted = <span class="code-keyword">false</span>, 
-consumerIdentifer = 'ID:Lisas-2828-1126207917359-14:0' , messageConsumed = <span class="code-keyword">false</span>, transientConsumed = <span class="code-keyword">true</span>, 
+stamp = 1126207938593, properties = {}, readOnlyProperties = <span class="code-keyword">true</span>, entryBrokerName = 'ID:Lisas-2828-1126207917359-0:0' ,
+entryClusterName = '<span class="code-keyword">default</span>' , consumerNos = [0], transactionId = '<span class="code-keyword">null</span>' , xaTransacted = <span class="code-keyword">false</span>,
+consumerIdentifer = 'ID:Lisas-2828-1126207917359-14:0' , messageConsumed = <span class="code-keyword">false</span>, transientConsumed = <span class="code-keyword">true</span>,
 sequenceNumber = 7, deliveryCount = 1, dispatchedFromDLQ = <span class="code-keyword">false</span>, messageAcknowledge = org.activemq.ActiveMQSession@1de7497,
 jmsMessageIdentity = <span class="code-keyword">null</span>, producerKey = ID:Lisas-2828-1126207917359-29: }, text = &lt;?xml version=<span class="code-quote">&quot;1.0&quot;</span> encoding=<span class="code-quote">&quot;UTF-8&quot;</span>?&gt;
 &lt;timer&gt;&lt;name&gt;My Example Job&lt;/name&gt;&lt;group&gt;ServiceMix&lt;/group&gt;&lt;fullname&gt;ServiceMix.My Example Job&lt;/fullname&gt;&lt;description/&gt;&lt;fireTime&gt;
 Thu Sep 08 12:32:18 PDT 2005&lt;/fireTime&gt;&lt;/timer&gt;}}</pre></div>
       </div>
     </p>
+    <p>&nbsp;</p>
     <h3><a name="Basic-Details"></a>Details</h3>
     <p>The following table provides more details about the function of each component and bean in the servicemix.xml file. <br clear="all">
       <br clear="all">
@@ -323,52 +329,52 @@ Thu Sep 08 12:32:18 PDT 2005&lt;/fireTime&gt;&lt;/timer&gt;}}</pre></div>
       <table class="confluenceTable">
         <tbody>
           <tr>
-            <th class="confluenceTh">Component or Bean ID</th>
-            <th class="confluenceTh">Description</th>
+            <th class="confluenceTh"> Component or Bean ID </th>
+            <th class="confluenceTh"> Description </th>
           </tr>
           <tr>
             <td class="confluenceTd"><em>jbi</em></td>
-            <td class="confluenceTd"><em>jbi</em> is the &quot;id&quot; of the JBI container and provides the basic infrastructure services for the following components: <em>timer</em>, <em>inputSender</em>, <em>inputReceiver</em>, <em>outputSender</em>, <em>jmsTrace</em>, and <em>trace</em>. During initialization, several singletons are instantiated: <em>transactionManager</em>, <em>broker</em>, <em>jencks</em>, <em>jmsFactory</em>, and <em>jbi</em>. After initialization, the components in the <em>jbi</em> container are activated, starting with the <em>timer</em> component.</td>
+            <td class="confluenceTd"><em>jbi</em> is the &quot;id&quot; of the JBI container and provides the basic infrastructure services for the following components: <em>timer</em>, <em>inputSender</em>, <em>inputReceiver</em>, <em>outputSender</em>, <em>jmsTrace</em>, and <em>trace</em>. During initialization, several singletons are instantiated: <em>transactionManager</em>, <em>broker</em>, <em>jencks</em>, <em>jmsFactory</em>, and <em>jbi</em>. After initialization, the components in the <em>jbi</em> container are activated, starting with the <em>timer</em> component. </td>
           </tr>
           <tr>
             <td class="confluenceTd"><em>timer</em></td>
-            <td class="confluenceTd">The <em>timer</em> component shows the use of the QuartzComponent class. Every 5 seconds, until the program is terminated, the timer component kicks off an instance of a SimpleTrigger, which is associated with an instance of JobDetail. The job has a property called &quot;name&quot; with a value of &quot;My Example Job&quot; and another property called &quot;group&quot; with a value of &quot;ServiceMix.&quot; The resulting message is converted to a normalized message and routed through the NMR. </td>
+            <td class="confluenceTd"> The <em>timer</em> component shows the use of the QuartzComponent class. Every 5 seconds, until the program is terminated, the timer component kicks off an instance of a SimpleTrigger, which is associated with an instance of JobDetail. The job has a property called &quot;name&quot; with a value of &quot;My Example Job&quot; and another property called &quot;group&quot; with a value of &quot;ServiceMix.&quot; The resulting message is converted to a normalized message and routed through the NMR. </td>
           </tr>
           <tr>
             <td class="confluenceTd"><em>inputSender</em></td>
-            <td class="confluenceTd">This is a component inside the JBI container. It receives the normalized message (the message from the trigger), converts it to a JMS message, and publishes it to the topic called demo.org.servicemix.source. It uses the <em>jmsTemplate</em>(1) bean to handle the publish.</td>
+            <td class="confluenceTd"> This is a component inside the JBI container. It receives the normalized message (the message from the trigger), converts it to a JMS message, and publishes it to the topic called demo.org.servicemix.source. It uses the <em>jmsTemplate</em>(1) bean to handle the publish. </td>
           </tr>
           <tr>
             <td class="confluenceTd"><em>inputReceiver</em></td>
-            <td class="confluenceTd">This component uses <em>jencks</em> , the JCA container, to listen on port 61616 for a JMS message on the topic called &quot;demo.org.servicemix.source.&quot; <em>inputReceiver</em> subscribes to the demo.org.servicemix.source topic. It takes the message, normalizes it, and routes it to <em>outputSender</em> via the NMR. This component combined with <em>outputSender</em> and supporting beans creates a JMS bridge between two topics.</td>
+            <td class="confluenceTd"> This component uses <em>jencks</em> , the JCA container, to listen on port 61616 for a JMS message on the topic called &quot;demo.org.servicemix.source.&quot; <em>inputReceiver</em> subscribes to the demo.org.servicemix.source topic. It takes the message, normalizes it, and routes it to <em>outputSender</em> via the NMR. This component combined with <em>outputSender</em> and supporting beans creates a JMS bridge between two topics. </td>
           </tr>
           <tr>
             <td class="confluenceTd"><em>outputSender</em></td>
-            <td class="confluenceTd">This component receives a normalized message from the NMR, marshals it into a JMS message using <em>jmsTemplate</em>, then publishes it on the ActiveMQ (JMS) topic called &quot;demo.org.servicemix.result.&quot;</td>
+            <td class="confluenceTd"> This component receives a normalized message from the NMR, marshals it into a JMS message using <em>jmsTemplate</em>, then publishes it on the ActiveMQ (JMS) topic called &quot;demo.org.servicemix.result.&quot; </td>
           </tr>
           <tr>
             <td class="confluenceTd"><em>jmsTrace</em></td>
-            <td class="confluenceTd">This component uses <em>jencks</em> to subscribe to the &quot;demo.org.servicemix.result&quot; topic and get messages. It then marshals the message into a normalized message and routes it via the NMR to the <em>trace</em> component.</td>
+            <td class="confluenceTd"> This component uses <em>jencks</em> to subscribe to the &quot;demo.org.servicemix.result&quot; topic and get messages. It then marshals the message into a normalized message and routes it via the NMR to the <em>trace</em> component. </td>
           </tr>
           <tr>
             <td class="confluenceTd"><em>trace</em></td>
-            <td class="confluenceTd">Receives normalized messages from <em>jmsTrace</em> via the NMR. It transforms the normalized message into a string and logs it to the console.</td>
+            <td class="confluenceTd"> Receives normalized messages from <em>jmsTrace</em> via the NMR. It transforms the normalized message into a string and logs it to the console. </td>
           </tr>
           <tr>
             <td class="confluenceTd"><em>jencks</em></td>
-            <td class="confluenceTd"> The <em>jencks</em> bean defines a JCA container. The JCA container allows you to configure thread pool size, configure a transaction manager, and configure a resource adapter. In this example, the resource adapter is an ActiveMQ adapter, however, another JMS listener could be configured instead. This adapter listens on port 61616 for JMS messages.</td>
+            <td class="confluenceTd"> The <em>jencks</em> bean defines a JCA container. The JCA container allows you to configure thread pool size, configure a transaction manager, and configure a resource adapter. In this example, the resource adapter is an ActiveMQ adapter, however, another JMS listener could be configured instead. This adapter listens on port 61616 for JMS messages. </td>
           </tr>
           <tr>
             <td class="confluenceTd"><em>broker</em></td>
-            <td class="confluenceTd">The <em>broker</em> bean uses the <tt>activemq.xml</tt> file to configure the message broker, which handles the JMS messages for the components that require JMS messaging services.</td>
+            <td class="confluenceTd"> The <em>broker</em> bean uses the <tt>activemq.xml</tt> file to configure the message broker, which handles the JMS messages for the components that require JMS messaging services. </td>
           </tr>
           <tr>
             <td class="confluenceTd"><em>transactionManager</em></td>
-            <td class="confluenceTd">This bean is configured to be the default transaction manager for the <em>jbi</em> container. <em>jencks</em> is configured to use the default transaction manager. This transaction manager provides transactional services between the resource adapter (in this case the ActiveMQ resource adapter provided by the <em>jencks</em> JCA container) and components the <em>jbi</em> container. </td>
+            <td class="confluenceTd"> This bean is configured to be the default transaction manager for the <em>jbi</em> container. <em>jencks</em>is configured to use the default transaction manager. This transaction manager provides transactional services between the resource adapter (in this case the ActiveMQ resource adapter provided by the <em>jencks</em> JCA container) and components the <em>jbi</em> container. </td>
           </tr>
           <tr>
             <td class="confluenceTd"><em>jmsFactory</em></td>
-            <td class="confluenceTd">This bean listens on port 61616 and provides a pooled ActiveMQ connection.</td>
+            <td class="confluenceTd"> This bean listens on port 61616 and provides a pooled ActiveMQ connection. </td>
           </tr>
         </tbody>
       </table>
@@ -376,7 +382,7 @@ Thu Sep 08 12:32:18 PDT 2005&lt;/fireTime&gt;&lt;/timer&gt;}}</pre></div>
     <p>1. <em>jmsTemplate:</em> JmsTemplate is a Spring component which hides the low level details when sending JMS messages. For additional information see: <span class="nobr"><a href="http://activemq
 .codehaus.org/Spring+Support" rel="nofollow" title="Visit page outside Confluence">JmsTemplate</a></span>. jmsTemplate is not a component in the <em>jbi</em> container. It is used by <em>inputSender</em> and <em>outputSender</em>.</p>
     <h3><a name="Basic-Issues"></a>Issues</h3>
-    <p>The ServiceMix 2.0.2 distribution has a known logging bug, so output is not logged to the console. This can be corrected in the <b>source</b> distribution of ServiceMix 2.0.2, by replacing the jencks-all-1.1.1.jar with the jencks-all-1.1.2.jar file. Upgrading to 2.0.3 will also resolve the problem. 2.0.3 release is a developer's release at this time. Please see <a href="Download" title="Download">Download</a> for the latest developer's release.</p>
+    <p>The ServiceMix 2.0.2 distribution has a known logging bug, so output is not logged to the console. This can be corrected in the <b>source</b>distribution of ServiceMix 2.0.2, by replacing the jencks-all-1.1.1.jar with the jencks-all-1.1.2.jar file. Upgrading to 2.0.3 will also resolve the problem. 2.0.3 release is a developer's release at this time. Please see <a href="Download" title="Download">Download</a> for the latest developer's release.</p>
     <p>This procedure explains the work around for 2.0.2.</p>
     <p class="paragraph">
       <ol>
@@ -392,6 +398,7 @@ Thu Sep 08 12:32:18 PDT 2005&lt;/fireTime&gt;&lt;/timer&gt;}}</pre></div>
 ..\..\bin\servicemix servicemix.xml</pre></div>
       </div>
     </p>
+    <p>&nbsp;</p>
     <p>Note: It is not necessary to build the source distribution if you have previously done so. If ServiceMix has not been built, execute the above steps before building. The procedure on how to build the source distribution can be found <span class="nobr"><a href="http://www.servicemix.org/Getting+Started#GettingStarted-WindowsSourceInstallation" rel="nofollow">here</a></span>.</p>
     <h3><a name="Basic-RelatedDocumentation"></a>Related Documentation</h3>
     <p>For more information on the following topics please see:</p>

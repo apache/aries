@@ -234,10 +234,34 @@
                   <th class="confluenceTh"> Description </th>
                 </tr>
                 <tr>
-                  <td class="confluenceTd"> reset </td>
+                  <td class="confluenceTd"> start</td>
                   <td class="confluenceTd"> void </td>
                   <td class="confluenceTd"> void </td>
-                  <td class="confluenceTd"> reset all stats counters </td>
+                  <td class="confluenceTd"> starts the flow </td>
+                </tr>
+                <tr>
+                  <td class="confluenceTd"> stop</td>
+                  <td class="confluenceTd"> void </td>
+                  <td class="confluenceTd"> void </td>
+                  <td class="confluenceTd"> stops the flow </td>
+                </tr>
+                <tr>
+                  <td class="confluenceTd"> shutDown</td>
+                  <td class="confluenceTd"> void </td>
+                  <td class="confluenceTd"> void </td>
+                  <td class="confluenceTd"> shutDowns the flow </td>
+                </tr>
+                <tr>
+                  <td class="confluenceTd"> onEvent</td>
+                  <td class="confluenceTd"> void </td>
+                  <td class="confluenceTd"> void </td>
+                  <td class="confluenceTd"> Process state changes in Components </td>
+                </tr>
+                <tr>
+                  <td class="confluenceTd"> release</td>
+                  <td class="confluenceTd"> queue</td>
+                  <td class="confluenceTd"> void </td>
+                  <td class="confluenceTd"> release a queue </td>
                 </tr>
               </tbody>
             </table>
@@ -283,9 +307,7 @@
         </tr>
       </table>
     </p>
-    <p>
-      <br clear="all">
-    </p>
+    <br clear="all">
     <h3><a name="SedaFlowMBean-SedaQueueMBean"></a>SedaQueue MBean</h3>
     <p>A SedaQueue is used by the Seda style message flow for staging MessageExchanges before they are forwarded to the consuming Component - see <span class="nobr"><a href="http://servicemix/codehaus.org/maven/apidocs/org/servicemix/jbi/nmr/flow/seda/SedaQueue.html" rel="nofollow">SedaQueue java doc</a></span>. A SedaQueue MBean is dervied from <a href="Life+Cycle+MBean" title="Life Cycle MBean">Life Cycle MBean</a>.</p>
     <p class="paragraph">
@@ -306,10 +328,10 @@
                   <th class="confluenceTh"> Description </th>
                 </tr>
                 <tr>
-                  <td class="confluenceTd"> capacity </td>
-                  <td class="confluenceTd"> int </td>
+                  <td class="confluenceTd"> name</td>
+                  <td class="confluenceTd"> ComponentNameSpace</td>
                   <td class="confluenceTd"> read/write </td>
-                  <td class="confluenceTd"> capacity for MessageExchanges for this queue</td>
+                  <td class="confluenceTd"> component name space </td>
                 </tr>
               </tbody>
             </table>

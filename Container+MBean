@@ -214,8 +214,88 @@
 
           <div>
   <div id="Content">
+    <p>The JBIContainer MBean is uses the <a href="Life+Cycle+MBean" title="Life Cycle MBean">Life Cycle MBean</a>for life cycle management. All life cycle operations (start,stop,shutdown) are recursively applied to all the contained Components and internal services of the Container.</p>
     <p>
-      <br> The JBIContainer MBean is uses the <a href="Life+Cycle+MBean" title="Life Cycle MBean">Life Cycle MBean</a> for life cycle management. All life cycle operations (start,stop,shutdown) are recursively applied to all the contained Components and internal services of the Container.</p>
+      <br clear="all">
+    </p>
+    <p class="paragraph">
+      <table align="center" border=0 cellpadding=5 cellspacing="8px" class="infoMacro" width="85%">
+        <colgroup>
+          <col width=24>
+          <col>
+        </colgroup>
+        <tr>
+          <td valign="top"><img align="absmiddle" alt="" border=0 height=16 src="http://www.servicemix.org/images/icons/emoticons/information.gif" width=16></td>
+          <td><b class="strong">Operations</b><br>
+            <table class="confluenceTable">
+              <tbody>
+                <tr>
+                  <th class="confluenceTh"> Name </th>
+                  <th class="confluenceTh"> Parameters </th>
+                  <th class="confluenceTh"> Signature </th>
+                  <th class="confluenceTh"> Description </th>
+                </tr>
+                <tr>
+                  <td class="confluenceTd"> start </td>
+                  <td class="confluenceTd"> void </td>
+                  <td class="confluenceTd"> void </td>
+                  <td class="confluenceTd"> starts processing </td>
+                </tr>
+                <tr>
+                  <td class="confluenceTd"> stop </td>
+                  <td class="confluenceTd"> void </td>
+                  <td class="confluenceTd"> void </td>
+                  <td class="confluenceTd"> stop the container from processing </td>
+                </tr>
+                <tr>
+                  <td class="confluenceTd"> shutDown </td>
+                  <td class="confluenceTd"> void </td>
+                  <td class="confluenceTd"> void </td>
+                  <td class="confluenceTd"> shutdowns the container from processing </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </p>
+    <br clear="all">
+    <p class="paragraph">
+      <table align="center" border=0 cellpadding=5 cellspacing="8px" class="infoMacro" width="85%">
+        <colgroup>
+          <col width=24>
+          <col>
+        </colgroup>
+        <tr>
+          <td valign="top"><img align="absmiddle" alt="" border=0 height=16 src="http://www.servicemix.org/images/icons/emoticons/information.gif" width=16></td>
+          <td><b class="strong">Attributes</b><br>
+            <table class="confluenceTable">
+              <tbody>
+                <tr>
+                  <th class="confluenceTh"> Name </th>
+                  <th class="confluenceTh"> type </th>
+                  <th class="confluenceTh"> read/write </th>
+                  <th class="confluenceTh"> Description </th>
+                </tr>
+                <tr>
+                  <td class="confluenceTd"> capacity </td>
+                  <td class="confluenceTd"> int </td>
+                  <td class="confluenceTd"> read/write </td>
+                  <td class="confluenceTd"> the default Capacity for MessageExchanges for all SedaQueues </td>
+                </tr>
+                <tr>
+                  <td class="confluenceTd"> queueNumber </td>
+                  <td class="confluenceTd"> int </td>
+                  <td class="confluenceTd"> read-only </td>
+                  <td class="confluenceTd"> the number of SedaQueues running </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </p>
+    <br clear="all">
   </div>
 </div>
 

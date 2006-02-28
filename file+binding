@@ -5,7 +5,7 @@
 
 
 
-    <title>ServiceMix - File Binding</title>
+    <title>ServiceMix - file binding</title>
   </head>
 
   <body>
@@ -202,7 +202,7 @@
             <table width="100%">
               <tr>
                 <td>
-            File Binding 
+            file binding 
                 </td>
                 <td align="right">
             
@@ -452,7 +452,7 @@ g.servicemix.components.file.FilePoller@183e7de
           
               </td>
               <td align="right" valign="top">
-          <a style="color:#999;" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&title=File+Binding">[ edit ]</a>
+          <a style="color:#999;" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&title=file+binding">[ edit ]</a>
               </td>
             </tr>
           <table>

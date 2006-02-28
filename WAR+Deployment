@@ -5,7 +5,7 @@
 
 
 
-    <title>ServiceMix - War Deployment</title>
+    <title>ServiceMix - WAR Deployment</title>
   </head>
 
   <body>
@@ -202,7 +202,7 @@
             <table width="100%">
               <tr>
                 <td>
-            War Deployment 
+            WAR Deployment 
                 </td>
                 <td align="right">
             
@@ -248,7 +248,7 @@ maven run</pre></div>
           
               </td>
               <td align="right" valign="top">
-          <a style="color:#999;" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&title=War+Deployment">[ edit ]</a>
+          <a style="color:#999;" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&title=WAR+Deployment">[ edit ]</a>
               </td>
             </tr>
           <table>

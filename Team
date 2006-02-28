@@ -220,9 +220,9 @@
       <table class="confluenceTable">
         <tbody>
           <tr>
-            <th class="confluenceTh">Name</th>
-            <th class="confluenceTh">ID</th>
-            <th class="confluenceTh">Organisation</th>
+            <th class="confluenceTh"> Name </th>
+            <th class="confluenceTh"> ID </th>
+            <th class="confluenceTh"> Organisation </th>
           </tr>
           <tr>
             <td class="confluenceTd"> Alan D. Cabrera </td>
@@ -260,19 +260,20 @@
             <td class="confluenceTd"><span class="nobr"><a href="http://logicblaze.com" rel="nofollow">LogicBlaze</a></span></td>
           </tr>
           <tr>
-            <td class="confluenceTd"> David Blevins</td>
+            <td class="confluenceTd"> David Blevins </td>
             <td class="confluenceTd"> dblevins </td>
             <td class="confluenceTd"><span class="nobr"><a href="http://gluecode.com" rel="nofollow">GlueCode</a></span></td>
           </tr>
           <tr>
-            <td class="confluenceTd"> David Jencks</td>
+            <td class="confluenceTd"> David Jencks </td>
             <td class="confluenceTd"> djencks </td>
             <td class="confluenceTd"><span class="nobr"><a href="http://gluecode.com" rel="nofollow">GlueCode</a></span></td>
           </tr>
           <tr>
-            <td class="confluenceTd"> George Gastaldi</td>
+            <td class="confluenceTd"> George Gastaldi </td>
             <td class="confluenceTd"> gastaldi </td>
-            <td class="confluenceTd"><span class="nobr"><a href="http://www.neogrid.com.br" rel="nofollow">Datasul B2B</a></span></td>
+            <td class="confluenceTd"><span class="nobr"><a href="http://www.datasul.com.br/b2b" rel="nofollow">http://www.datasul.com.br/b2b</a></span><br clear="all">
+            </td>
           </tr>
           <tr>
             <td class="confluenceTd"> Greg Wilkins </td>
@@ -301,7 +302,7 @@
           </tr>
           <tr>
             <td class="confluenceTd"> James Strachan </td>
-            <td class="confluenceTd">jstrachan</td>
+            <td class="confluenceTd"> jstrachan </td>
             <td class="confluenceTd"><span class="nobr"><a href="http://logic0blaze.com" rel="nofollow">LogicBlaze</a></span></td>
           </tr>
           <tr>
@@ -357,26 +358,26 @@
       <table class="confluenceTable">
         <tbody>
           <tr>
-            <th class="confluenceTh">Name</th>
-            <th class="confluenceTh">Organisation</th>
+            <th class="confluenceTh"> Name </th>
+            <th class="confluenceTh"> Organisation </th>
           </tr>
           <tr>
-            <td class="confluenceTd">Eric Crampton </td>
+            <td class="confluenceTd"> Eric Crampton </td>
             <td class="confluenceTd">&nbsp;</td>
           </tr>
           <tr>
-            <td class="confluenceTd">Ryan Schweter </td>
+            <td class="confluenceTd"> Ryan Schweter </td>
             <td class="confluenceTd">&nbsp;</td>
           </tr>
           <tr>
-            <td class="confluenceTd">Peter Smith </td>
+            <td class="confluenceTd"> Peter Smith </td>
             <td class="confluenceTd"> FAST </td>
           </tr>
         </tbody>
       </table>
     </p>
     <h3><a name="Team-Contributing"></a>Contributing</h3>
-    <p>We welcome contributions, please do come and <a href="Contributing" title="Contributing">join in the fun</a>. </p>
+    <p>We welcome contributions, please do come and <a href="Contributing" title="Contributing">join in the fun</a>.</p>
   </div>
 </div>
 

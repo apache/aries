@@ -214,7 +214,7 @@
 
           <div>
   <div id="Content">
-    <h3><a name="WSIF-OverviewoftheServiceMix2.xWSIFExample"></a>Overview of the ServiceMix 2.x <em>WSIF</em> Example</h3>
+    <h3><a name="WSIF-OverviewoftheServiceMixWSIFExample"></a>Overview of the ServiceMix WSIF Example</h3>
     <p>Web Services Invocation Framework (WSIF) provides a Java API for calling Web services, hiding the details of how the service is provided, i.e., via SOAP, JMS, etc. The following guide describes the ServiceMix components that integrate with the <span class="nobr"><a href="http://ws.apache.org/wsif/" rel="nofollow">Apache Web Service Invocation Framework (WSIF)</a></span> to perform web service invocations using a number of different implementation protocols such as Axis, local Java, EJB, JMS, JCA and CCI.</p>
     <p>The <em>WSIF</em> example illustrates:</p>
     <ul>
@@ -228,9 +228,9 @@
         <li>The HTTP Binding Component has not been configured, via a <tt>servicemix.xml</tt> file, to use the &quot;checkAvailabity&quot; component as its destination.</li>
       </ol>
     </p>
-    <p>This example shows critical code snippets from a larger example, which can be found at <span class="nobr"><a href="http://ws.apache.org/wsif/" rel="nofollow">Apache Web Services Project</a></span>. A client application submits a ZIP Code to a Web Services application via a JMS queue. The web service then checks if DSL service is available in the ZIP Code area and responds to the client, also by sending a JMS message. The client software uses WSIF to hide the implementation details of JMS. </p>
-    <p>In the ServiceMix example, the <em>WSIF</em> API is used by the client to make the ZIP Code request to the web service. The <em>WSIF</em> API takes care of the JMS details for the client (although other transport mechanisms, such as SOAP, JCA, etc., could have been used). The ServiceMix <em>WSIF</em> API provides a single API to the client and handles the details of the web service invocation for the client, simplifying the client code.</p>
-    <p>The example also shows an important feature of the ServiceMix Client API - how to bind a WSDL file for a web service, which includes additional <em>WSIF</em> metadata to configure the service implementation. In other words, the <tt>service.wsdl</tt> file contains WSIF extensions to WSDL that bind the web service to the transport protocol. Some of the coding details will be shown later in this document.</p>
+    <p>This example shows critical code snippets from a larger example, which can be found at <span class="nobr"><a href="http://ws.apache.org/wsif/" rel="nofollow">Apache Web Services Project</a></span>. A client application submits a ZIP Code to a Web Services application via a JMS queue. The web service then checks if DSL service is available in the ZIP Code area and responds to the client, also by sending a JMS message. The client software uses WSIF to hide the implementation details of JMS.</p>
+    <p>In the ServiceMix example, the <em>WSIF</em> API is used by the client to make the ZIP Code request to the web service. The <em>WSIF</em>API takes care of the JMS details for the client (although other transport mechanisms, such as SOAP, JCA, etc., could have been used). The ServiceMix <em>WSIF</em> API provides a single API to the client and handles the details of the web service invocation for the client, simplifying the client code.</p>
+    <p>The example also shows an important feature of the ServiceMix Client API - how to bind a WSDL file for a web service, which includes additional <em>WSIF</em> metadata to configure the service implementation. In other words, the <tt>service.wsdl</tt>file contains WSIF extensions to WSDL that bind the web service to the transport protocol. Some of the coding details will be shown later in this document.</p>
     <h3><a name="WSIF-HowitWorks"></a>How it Works</h3>
     <p>The diagram below illustrates the example program's logical flow:</p>
     <p>
@@ -245,6 +245,8 @@
         </div>
       </div>
     </p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
     <p>
       <br clear="all">
       <br clear="all">
@@ -255,7 +257,7 @@
         <li>A user opens a web browser and accesses a web form with a &quot;zip code&quot; input field and a submit button. The submit button sends the form and the ZIP Code entered by the user to a Servicemix HTTP binding component.</li>
         <li>The ServiceMix HTTP binding component creates an InOut exchange message through the client API. The message is sent through the NMR to the checkAvailability component.</li>
         <li>The checkAvailability component sends the request to the JMS queue.</li>
-        <li>The web service is implemented with as a message-driven EJB (MDB), who&acirc;&#128;&#153;s &acirc;&#128;&#156;onMessage&acirc;&#128;&#157; method is listening for messages on the queue.</li>
+        <li>The web service is implemented with as a message-driven EJB (MDB), who's &quot;onMessage&quot; method is listening for messages on the queue.</li>
         <li>The MDB processes the request and sends back a response to the checkAvailability component through a temporary queue. The response is either &quot;true&quot; (DSL service is available) or &quot;false&quot; (DSL service is not available).</li>
         <li>The <em>checkAvailability</em> component receives the response from the queue.</li>
         <li>The <em>checkAvailability</em> component responds to the HTTP client.</li>
@@ -270,16 +272,16 @@
       <table class="confluenceTable">
         <tbody>
           <tr>
-            <th class="confluenceTh">Component or Bean ID</th>
-            <th class="confluenceTh">Description</th>
+            <th class="confluenceTh"> Component or Bean ID </th>
+            <th class="confluenceTh"> Description </th>
           </tr>
           <tr>
             <td class="confluenceTd"><em>checkAvailability</em></td>
-            <td class="confluenceTd"> This component uses the WSIFBinding class to integrate WSIF to ServiceMix as specified in the class property. Its definitionResource property is set to read the <tt>classpath:org/servicemix/components/wsif/service.wsdl</tt> file, which is the WSDL file that will be used. The <tt>service.wsdl</tt> file can be found at <tt>[servicemix-2.x_src_install_dir]\components\base\src\test\resources\org\servicemix\components\wsif</tt>. In the init() method of the WSIFBinding class, <tt>service.wsdl</tt> is read to define the binding extension.</td>
+            <td class="confluenceTd"> This component uses the WSIFBinding class to integrate WSIF to ServiceMix as specified in the class property. Its definitionResource property is set to read the <tt>classpath:org/servicemix/components/wsif/service.wsdl</tt> file, which is the WSDL file that will be used. The <tt>service.wsdl</tt> file can be found at <tt>[servicemix_src_install_dir]\servicemix-components\src\test\resources\org\apache\servicemix\components\wsif</tt>. In the init() method of the WSIFBinding class, <tt>service.wsdl</tt> is read to define the binding extension. </td>
           </tr>
           <tr>
             <td class="confluenceTd"><em>MDB</em></td>
-            <td class="confluenceTd"> This MDB is the actual implementation of the service. It acts like a message listener on the queue specified in the config files. When a message is delivered, it extracts the body which is a ZIP Code. It then applies some logic to determine whether DSL service is available at this ZIP Code or not. For simplicity, it just returns true for all ZIP Codes &lt; 50000 and false otherwise. The return message is sent to the queue specified in the replyTo field of the request message. <b>NOTE:</b> The MDB must encode the correct JMSCorrelationID in the return message in order for it to be picked up by WSIF.</td>
+            <td class="confluenceTd"> This MDB is the actual implementation of the service. It acts like a message listener on the queue specified in the config files. When a message is delivered, it extracts the body which is a ZIP Code. It then applies some logic to determine whether DSL service is available at this ZIP Code or not. For simplicity, it just returns true for all ZIP Codes &lt; 50000 and false otherwise. The return message is sent to the queue specified in the replyTo field of the request message. <b>NOTE:</b> The MDB must encode the correct JMSCorrelationID in the return message in order for it to be picked up by WSIF. </td>
           </tr>
         </tbody>
       </table>
@@ -293,6 +295,8 @@
  <span class="code-tag">&lt;/component&gt;</span></pre></div>
       </div>
     </p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
     <p>Following is an example of how to enable a service to be exposed over a JMS topic or queue. This is a snippet of code from the <tt>service.wsdl</tt> file. It shows how to configure the JMS binding:</p>
     <p class="paragraph">
       <div class="code">
@@ -309,6 +313,8 @@
 <span class="code-tag">&lt;/service&gt;</span></pre></div>
       </div>
     </p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
     <p>Here are descriptions of the properties found in the <tt>service.wsdl</tt> file. The descriptions are quoted from the <span class="nobr"><a href="http://cvs.apache.org/viewcvs/~checkout~/ws-wsif/java/doc/wsdl_extensions/jms_bindings.html" rel="nofollow">WSDL Bindings for JMS</a></span> web page:</p>
     <ul class="alternate" type="square">
       <li>&lt;jms:address&gt; describes a target port that is accessible via JMS.</li>
@@ -319,7 +325,7 @@
       <li>jms:binding specifies that this binding is for Native JMS. The type is the type of the JMS message that will be sent. In this case it will be a text message.</li>
     </ul>
     <h3><a name="WSIF-WorkingwithXMLversusproperties"></a>Working with XML versus properties</h3>
-    <p>The JBI standard requires encoding WSDL 1.1 parts using an XML encoding mechanism. ServiceMix supports this requirement. However, in addition ServicMix also allows the message properties, of an NMR message, to use the named parts of the <tt>service.wsdl</tt> file, to avoid unnecessary XML marshalling. </p>
+    <p>The JBI standard requires encoding WSDL 1.1 parts using an XML encoding mechanism. ServiceMix supports this requirement. However, in addition ServicMix also allows the message properties, of an NMR message, to use the named parts of the <tt>service.wsdl</tt> file, to avoid unnecessary XML marshalling.</p>
     <p>A Java client can be programmed as an alternative way of invoking the web service, in lieu of a web form. The following is a Java client example using the ServiceMix <a href="Client+API" title="Client API">Client API</a> in a WSIF approach, passing in and fetching out named parameters. This Java client is performing the role originally assigned to the HTTP Client above. It also needs to be configured (not shown) to communicate to the &quot;checkAvailability&quot; service via the ServiceMix NMR. In other words, it needs to have &quot;checkAvailability&quot; set as its &quot;destination&quot; for the NMR messages it sends.</p>
     <p class="paragraph">
       <div class="code">
@@ -334,6 +340,8 @@ NormalizedMessage out = exchange.getOutMessage();
 <span class="code-object">System</span>.out.println(<span class="code-quote">&quot;Found value: &quot;</span> + result);</pre></div>
       </div>
     </p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
     <p>The previous Java code works against the given WSDL 1.1 <tt>service.wsdl</tt> file using its named parts:</p>
     <p class="paragraph">
       <div class="code">
@@ -370,6 +378,8 @@ NormalizedMessage out = exchange.getOutMessage();
 <span class="code-tag">&lt;/binding&gt;</span></pre></div>
       </div>
     </p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
     <h3><a name="WSIF-RelatedDocumentation"></a>Related Documentation</h3>
     <p>For more information, please see:</p>
     <ul>
