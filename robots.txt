@@ -1,2 +1,1 @@
-User-agent: Slurp
-Crawl-delay: 90
+User-agent: SlurpCrawl-delay: 90
