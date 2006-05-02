@@ -1,1 +1,1042 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html>  <head>    <link rel="stylesheet" href="http://codehaus.org/codehaus-style.css" type="text/css">        <link rel="stylesheet" href="style.css" type="text/css">    <title>ServiceMix - Contributing</title>  </head>  <body>    <table width="100%" id="layout" style="padding:0px;margin0px;border-collapse:collapse;">      <tr>        <td colspan="3" style="padding:8px;">          <table width="100%" id="banner" style="padding:0px;margin:0px">            <tr id="header_row">              <td align="left" valign="middle" style="padding:0px;margin:0px;">                <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org/servicemix" rel="nofollow"><img align="absmiddle" border=0 src="images/logo.gif"></a></span></span></span>              </td>              <td align="right" valign="middle" style="padding:0px;margin:0px;">                <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org" rel="nofollow"><img align="absmiddle" border=0 src="http://incubator.apache.org/images/apache-incubator-logo.png"></a></span></span></span>              </td>            </tr>          </table>        </td>      </tr>      <tr>        <td colspan="3" id="breadcrumbs">          <table width="100%" id="banner" style="padding:0px;margin:0px">            <tr>              <td align="left">                <a href="">Home</a>  | Contributing              </td>              <td align="right">                  <span id="Content"><span><a href="Download" title="Download">Download</a> | <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs</a></span> <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" rel="nofollow">Components</a></span> | <a href="Source" title="Source">Source</a> | <span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span> |<span class="nobr"><a href="irc://irc.codehaus.org/servicemix" rel="nofollow">IRC</a></span> | <span class="nobr"><a href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" rel="nofollow">IRC Log</a></span> | <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a> | <a href="Discussion+Forums" title="Discussion Forums">Discussion Forums</a> | <span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Support</a></span></span></span>              </td>            </tr>          </table>        </td>      </tr>      <tr>        <td id="leftColumn" valign="top" style="padding-top: 0px;">          <span id="Content"><h3><a name="Navigation-Overview"></a>Overview</h3>  <ul class="alternate" type="square">    <li><a href="Home" title="Home">Home</a></li>    <li><a href="Introduction+to+ESB" title="Introduction to ESB">Introduction to ESB</a></li>    <li><a href="Background+to+ServiceMix" title="Background to ServiceMix">Background to ServiceMix</a></li>    <li><a href="News" title="News">News</a></li>    <li><a href="FAQ" title="FAQ">FAQ</a></li>    <li><a href="Download" title="Download">Download</a></li>  </ul>  <h3><a name="Navigation-Community"></a>Community</h3>  <ul class="alternate" type="square">    <li><span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span></li>    <li><a href="Discussion+Forums" title="Discussion Forums">Discussion Forums</a></li>    <li><a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a></li>    <li><a href="Contributing" title="Contributing">Contributing</a></li>    <li><a href="Team" title="Team">Team</a></li>    <li><a href="Users" title="Users">Users</a></li>  </ul>  <h3><a name="Navigation-Documentation"></a>Documentation</h3>  <ul class="alternate" type="square">    <li><a href="Getting+Started" title="Getting Started">Getting Started</a></li>    <li><a href="Running" title="Running">Running</a></li>    <li><a href="Examples" title="Examples">Examples</a></li>    <li><a href="Use+Cases" title="Use Cases">Use Cases</a></li>    <li><a href="Configuration" title="Configuration">Configuration</a></li>    <li><a href="Xml+Reference" title="Xml Reference">Xml Reference</a></li>    <li><a href="Management" title="Management">Management</a></li>    <li><a href="Architecture" title="Architecture">Architecture</a></li>    <li><a href="Clustering" title="Clustering">Clustering</a></li>    <li><a href="NMR+Flows" title="NMR Flows">NMR Flows</a></li>    <li><a href="Articles" title="Articles">Articles</a></li>  </ul>  <h3><a name="Navigation-Reference"></a>Reference</h3>  <ul class="alternate" type="square">    <li><span class="nobr"><a href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html" rel="nofollow">JBI API</a></span></li>    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs Core</a></span></li>    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" rel="nofollow">JavaDocs Components</a></span></li>    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-console/apidocs/" rel="nofollow">JavaDocs Console</a></span></li>    <li><a href="Glossary" title="Glossary">Glossary</a></li>  </ul>  <h3><a name="Navigation-Features"></a>Features</h3>  <ul class="alternate" type="square">    <li><a href="Components" title="Components">Components</a></li>    <li><a href="Routing" title="Routing">Routing</a></li>    <li><a href="Transformation" title="Transformation">Transformation</a></li>    <li><a href="Spring+Client+Toolkit" title="Spring Client Toolkit">Spring Client Toolkit</a></li>    <li><a href="Client+API" title="Client API">Client API</a></li>    <li><a href="POJO+support" title="POJO support">POJO support</a></li>    <li><a href="Expressions" title="Expressions">Expressions</a></li>    <li><a href="Component+helper+classes" title="Component helper classes">Component helper classes</a></li>    <li><a href="Ant+Tasks" title="Ant Tasks">Ant Tasks</a></li>    <li><a href="JMX+Console" title="JMX Console">JMX Console</a></li>  </ul>  <h3><a name="Navigation-Integration"></a>Integration</h3>  <ul class="alternate" type="square">    <li><a href="Spring+support" title="Spring support">Spring support</a></li>    <li><a href="Geronimo+Integration" title="Geronimo Integration">Geronimo Integration</a></li>    <li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Integration</a></li>    <li><a href="Tomcat+Integration" title="Tomcat Integration">Tomcat Integration</a></li>    <li><a href="JNDI+configuration" title="JNDI configuration">JNDI configuration</a></li>  </ul>  <h3><a name="Navigation-ServiceMixComponents"></a>ServiceMix Components</h3>  <ul class="alternate" type="square">    <li><a href="BPEL" title="BPEL">BPEL</a></li>    <li><a href="Cache" title="Cache">Cache</a></li>    <li><a href="Drools" title="Drools">Drools</a></li>    <li><a href="Email" title="Email">Email</a></li>    <li><a href="File" title="File">File</a></li>    <li><a href="FTP" title="FTP">FTP</a></li>    <li><a href="Groovy" title="Groovy">Groovy</a></li>    <li><a href="HTTP" title="HTTP">HTTP</a></li>    <li><a href="Jabber" title="Jabber">Jabber</a></li>    <li><a href="JAX+WS" title="JAX WS">JAX WS</a></li>    <li><a href="JCA" title="JCA">JCA</a></li>    <li><a href="JMS" title="JMS">JMS</a></li>    <li><a href="Quartz" title="Quartz">Quartz</a></li>    <li><a href="Reflection" title="Reflection">Reflection</a></li>    <li><a href="RSS" title="RSS">RSS</a></li>    <li><a href="SAAJ" title="SAAJ">SAAJ</a></li>    <li><a href="Scripting" title="Scripting">Scripting</a></li>    <li><a href="ServiceMix" title="ServiceMix">ServiceMix</a></li>    <li><a href="Validation" title="Validation">Validation</a></li>    <li><a href="XFire" title="XFire">XFire</a></li>    <li><a href="XPath+Router" title="XPath Router">XPath Router</a></li>    <li><a href="XSLT" title="XSLT">XSLT</a></li>    <li><a href="XSQL" title="XSQL">XSQL</a></li>    <li><a href="VFS" title="VFS">VFS</a></li>    <li><a href="WSIF" title="WSIF">WSIF</a></li>  </ul>  <h3><a name="Navigation-Tooling"></a>Tooling</h3>  <ul class="alternate" type="square">    <li><a href="Eclipse+plugin" title="Eclipse plugin">Eclipse plugin</a></li>    <li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Deployer</a></li>    <li><a href="WAR+Deployment" title="WAR Deployment">WAR Deployment</a></li>    <li><a href="Maven+JBI+plugin" title="Maven JBI plugin">Maven JBI plugin</a></li>    <li><a href="Maven+SAR+plugin" title="Maven SAR plugin">Maven SAR plugin</a></li>  </ul>  <h3><a name="Navigation-Utilities"></a>Utilities</h3>  <ul class="alternate" type="square">    <li><a href="Reflection" title="Reflection">Reflection</a></li>  </ul>  <h3><a name="Navigation-OtherJBIsoftware"></a>Other JBI software</h3>  <ul class="alternate" type="square">    <li><span class="nobr"><a href="http://forge.objectweb.org/projects/celtix/" rel="nofollow">Celtix</a></span></li>    <li><span class="nobr"><a href="http://pxe.fivesight.com/wiki/display/PXE/Home" rel="nofollow" title="Visit page outside Confluence">PXE BPEL Engine</a></span></li>  </ul>  <h3><a name="Navigation-RelatedProjects"></a>Related Projects</h3>  <ul class="alternate" type="square">    <li><span class="nobr"><a href="http://activemq.codehaus.org/" rel="nofollow">ActiveMQ</a></span></li>    <li><span class="nobr"><a href="http://jencks.org/" rel="nofollow">Jencks</a></span></li>    <li><span class="nobr"><a href="http://lingo.codehaus.org/" rel="nofollow">Lingo</a></span></li>    <li><span class="nobr"><a href="http://activesoap.codehaus.org/" rel="nofollow">ActiveSOAP</a></span></li>    <li><span class="nobr"><a href="http://www.springframework.org/" rel="nofollow">Spring</a></span></li>    <li><span class="nobr"><a href="http://geronimo.apache.org/" rel="nofollow">Geronimo</a></span></li>  </ul>  <h3><a name="Navigation-Support"></a>Support</h3>  <ul class="alternate" type="square">    <li><span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Issues</a></span></li>    <li><span class="nobr"><a href="http://jira.logicblaze.com/browse/SM?report=com.atlassian.jira.plugin.system.project:roadmap-panel" rel="nofollow">Roadmap</a></span></li>    <li><span class="nobr"><a href="http://jira.logicblaze.com/browse/SM?report=com.atlassian.jira.plugin.system.project:changelog-panel" rel="nofollow">Change log</a></span></li>  </ul>  <h3><a name="Navigation-Developers"></a>Developers</h3>  <ul class="alternate" type="square">    <li><a href="Source" title="Source">Source</a></li>    <li><a href="Roadmap" title="Roadmap">Roadmap</a></li>    <li><a href="Ideas" title="Ideas">Ideas</a></li>    <li><a href="Becoming+a+committer" title="Becoming a committer">Becoming a committer</a></li>    <li><a href="Release+Guide" title="Release Guide">Release Guide</a></li>    <li><span class="nobr"><a href="http://ci.codehaus.org/beetlejuice/viewProjectSummary.action?projectName=ServiceMix" rel="nofollow">BeetleJuice</a></span></li>    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/clover/" rel="nofollow">Clover Report</a></span></li>    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref/index.html" rel="nofollow">Source XRef</a></span></li>    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html" rel="nofollow">Test Source XRef</a></span></li>    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" rel="nofollow">XSD</a></span></li>  </ul>  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="http://www.servicemix.org/download/attachments/25208/yourkit.jpg"></a></span></span></span>            <h3 class="heading3">Feeds</h3>            <table border="0" cellspacing="4px">            <tr>              <td align="right">                <a href="http://docs.codehaus.org/spaces/rss.action?key=SM&newPages=false"><img src="http://docs.codehaus.org/images/icons/rss.gif" border="0"></a><br/>              </td>              <td align="left">                <a href="http://docs.codehaus.org/spaces/rss.action?key=SM&newPages=false">Site</a>              </td>            </tr>            <tr>              <td align="right">                <a href="http://docs.codehaus.org/spaces/blogrss.action?key=SM"><img src="http://docs.codehaus.org/images/icons/rss.gif" border="0"></a>              </td>              <td align="left">                <a href="http://docs.codehaus.org/spaces/blogrss.action?key=SM">News</a>              </td>            </tr>            </table>        </td>        <td id="rightColumn" valign="top">          <div id="page_title">            <table width="100%">              <tr>                <td>            Contributing                 </td>                <td align="right">                            </td>              </tr>            </table>          </div>          <div>  <div id="Content">    <p>There are many ways you can help make ServiceMix a better piece of software - please dive in and help!</p>    <p>Try surf the documentation - if somethings confusing or not clear, let us know. Download the code, try it out, and see what you think. Browse the source code. Got an itch to scratch, want to tune some operation or add some feature?</p>    <p>Want to do some hacking on ServiceMix? Try surfing the our <span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">issue tracker</a></span> for open issues or features that need to be implemented, take ownership of an issue and try to fix it.</p>    <p>If you'd rather a more gentle introduction to working on the ServiceMix project, look at the <span class="nobr"><a href="http://cvs.servicemix.codehaus.org/servicemix/base/src/test/java/org/servicemix/" rel="nofollow">unit tests cases</a></span> and help us to improve our test coverage.</p>    <h2><a name="Contributing-GettingInTouch"></a>Getting In Touch</h2>    <p>There are various ways of communicating with the ServiceMix community.</p>    <ul class="alternate" type="square">      <li>visit the <span class="nobr"><a href="http://forums.logicblaze.com/forums/show/3.page" rel="nofollow">Discussion Forum</a></span></li>      <li>subscribe to the <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a> and take part in any conversations</li>      <li>pop by on <span class="nobr"><a href="irc://irc.codehaus.org/servicemix" rel="nofollow">IRC</a></span> and say hi</li>      <li>add some comments to the <span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">wiki</a></span></li>      <li>if you use ServiceMix please tell us about it on our <a href="Users" title="Users">Users page</a></li>    </ul>    <h2><a name="Contributing-IfYouFindaBugorProblem"></a>If You Find a Bug or Problem</h2>    <p>Please raise a new issue in our <span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">issue tracker</a></span><br> If you can create a JUnit test case then your issue is more likely to be resolved quicker.<br> e.g. take a look at some of the existing <span class="nobr"><a href="http://cvs.servicemix.codehaus.org/servicemix/base/src/test/java/org/servicemix/" rel="nofollow">unit tests cases</a></span></p>    <p>Then we can add your issue to CVS and then we'll know when its really fixed and we can ensure that the problem stays fixed in future releases.</p>    <h2><a name="Contributing-SubmittingPatches"></a>Submitting Patches</h2>    <p>We gladly accept patches if you can find ways to improve, tune or fix ServiceMix in some way.</p>    <p>Most IDEs can create nice patches now very easily. If you're a command line person try the following to create the patch:</p>    <p class="paragraph">      <div class="code">        <div class="codeContent"><pre class="code-none">diff -u Main.java.orig Main.java &gt;&gt; patchfile.txt</pre></div>      </div>    </p>    <p>or</p>    <p class="paragraph">      <div class="code">        <div class="codeContent"><pre class="code-none">svn diff Main.java &gt;&gt; patchfile.txt</pre></div>      </div>    </p>    <h2><a name="Contributing-UsingtheIssueTracker"></a>Using the Issue Tracker</h2>    <p>Before you can raise an issue in the issue tracker you need to register with it. This is quick &amp; painless.</p>    <p>If you want to have a go at fixing an issue you need to be in the list of servicemix-developers on the issue tracker. To join the group, please mail the dev@servicemix.codehaus.org mail list with the email address you used to register with the issue tracker and we'll add you to the group.</p>    <p>Why not dive in and try tackle some of our outstanding issues?<br><span class="error">Error rendering macro: java.io.IOException: Error on line 1: White spaces are required between publicId and systemId. <a href="download/temp/rssoutput1190908554.txt">rssoutput1190908554.txt</a></span></p>    <h2><a name="Contributing-BecomingaCommitter"></a>Becoming a Committer</h2>    <p>The first step is contributing to the project; if you want to take that a step forward and become a fellow committer on the project then see the <a href="Becoming+a+committer" title="Becoming a committer">Committer Guide</a></p>  </div></div>          &nbsp;        </td>      </tr>      <tr>        <td colspan="3" id="footer">          <table width="100%">             <tr>              <td align="left" valign="top">          Copyright 2004. All rights reserved unless otherwise noted.<br/>          Powered by <a href="http://atlassian.com/">Atlassian</a> <a href="http://atlassian.com/confluence/">Confluence</a>.              </td>              <td align="right" valign="top">          <a style="color:#999;" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&title=Contributing">[ edit ]</a>              </td>            </tr>          <table>        </td>      </tr>    </table>  </body></html>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<head profile="http://www.w3.org/2000/08/w3c-synd/#">
+    <link rel="stylesheet" href="site.css" type="text/css"/>
+    <title>ServiceMix - Contributing</title>
+</head>
+
+<body>
+
+  <table id="ulayout">
+    <tr id="ulayout_top">
+      <td colspan="2" valign="bottom">
+        <table width="100%">
+          <tr id="utop">
+            <td id="utop_left">
+              <a href="http://incubator.apache.org"><img src="http://incubator.apache.org/images/apache-incubator-logo.png" style="border: none;"/></a>
+            </td>
+            <td id="utop_right" style="text-align: right; vertical-align: middle;padding-right:10px;">
+              <a href="http://incubator.apache.org/servicemix"><img src="images/logo.gif" alt="ServiceMix" class="spaceLogo" border="0"/></a>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" id="uadvertising_top">
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <table id="utop_nav">
+          <tr>
+            <td align="left" valign="middle">
+              <div id="ubreadcrumbs">
+                <p>
+                  <a href="">Home</a>
+                                     		                  </p>
+              </div>
+            </td>
+            <td align="right" valign="middle">
+              <div id="uquicklinks">
+                                  <p><a href="Download" title="Download">Download</a> | <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/">JavaDocs</a></span> <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/">Components</a></span> | <a href="Source" title="Source">Source</a> | <span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM">Wiki</a></span> |<span class="nobr"><a href="irc://irc.codehaus.org/servicemix">IRC</a></span> | <span class="nobr"><a href="http://servlet.uwyn.com/drone/log/hausbot/servicemix">IRC Log</a></span> | <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a> | <a href="Discussion+Forums" title="Discussion Forums">Discussion Forums</a> | <span class="nobr"><a href="http://issues.apache.org/activemq/browse/SM">Support</a></span></p>
+                              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2"></td>
+    </tr>
+    <tr id="ulayout_middle">
+      <td id="uleft">
+        <div class="content">
+                      <div class="section_3"><h3><a name="Navigation-Overview"></a>Overview</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Home" title="Home">Home</a></li>
+	<li><a href="Introduction+to+ESB" title="Introduction to ESB">Introduction to ESB</a></li>
+	<li><a href="Background+to+ServiceMix" title="Background to ServiceMix">Background to ServiceMix</a></li>
+	<li><a href="News" title="News">News</a></li>
+	<li><a href="FAQ" title="FAQ">FAQ</a></li>
+	<li><a href="Download" title="Download">Download</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Community"></a>Community</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM">Wiki</a></span></li>
+	<li><a href="Discussion+Forums" title="Discussion Forums">Discussion Forums</a></li>
+	<li><a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a></li>
+	<li><a href="Contributing" title="Contributing">Contributing</a></li>
+	<li><a href="Team" title="Team">Team</a></li>
+	<li><a href="Users" title="Users">Users</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Documentation"></a>Documentation</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Getting+Started" title="Getting Started">Getting Started</a></li>
+	<li><a href="Running" title="Running">Running</a></li>
+	<li><a href="Examples" title="Examples">Examples</a></li>
+	<li><a href="Use+Cases" title="Use Cases">Use Cases</a></li>
+	<li><a href="Configuration" title="Configuration">Configuration</a></li>
+	<li><a href="Xml+Reference" title="Xml Reference">Xml Reference</a></li>
+	<li><a href="Management" title="Management">Management</a></li>
+	<li><a href="Architecture" title="Architecture">Architecture</a></li>
+	<li><a href="Clustering" title="Clustering">Clustering</a></li>
+	<li><a href="NMR+Flows" title="NMR Flows">NMR Flows</a></li>
+	<li><a href="Articles" title="Articles">Articles</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Reference"></a>Reference</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html">JBI API</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/">JavaDocs Core</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/">JavaDocs Components</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-console/apidocs/">JavaDocs Console</a></span></li>
+	<li><a href="Glossary" title="Glossary">Glossary</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Features"></a>Features</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Components" title="Components">Components</a></li>
+	<li><a href="Routing" title="Routing">Routing</a></li>
+	<li><a href="Transformation" title="Transformation">Transformation</a></li>
+	<li><a href="Spring+Client+Toolkit" title="Spring Client Toolkit">Spring Client Toolkit</a></li>
+	<li><a href="Client+API" title="Client API">Client API</a></li>
+	<li><a href="POJO+support" title="POJO support">POJO support</a></li>
+	<li><a href="Expressions" title="Expressions">Expressions</a></li>
+	<li><a href="Component+helper+classes" title="Component helper classes">Component helper classes</a></li>
+	<li><a href="Ant+Tasks" title="Ant Tasks">Ant Tasks</a></li>
+	<li><a href="JMX+Console" title="JMX Console">JMX Console</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Integration"></a>Integration</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Spring+support" title="Spring support">Spring support</a></li>
+	<li><a href="Geronimo+Integration" title="Geronimo Integration">Geronimo Integration</a></li>
+	<li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Integration</a></li>
+	<li><a href="Tomcat+Integration" title="Tomcat Integration">Tomcat Integration</a></li>
+	<li><a href="JOnAS+Integration" title="JOnAS Integration">JOnAS Integration</a></li>
+	<li><a href="JNDI+configuration" title="JNDI configuration">JNDI configuration</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-ServiceMixComponents"></a>ServiceMix Components</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="BPEL" title="BPEL">BPEL</a></li>
+	<li><a href="Cache" title="Cache">Cache</a></li>
+	<li><a href="Drools" title="Drools">Drools</a></li>
+	<li><a href="Email" title="Email">Email</a></li>
+	<li><a href="File" title="File">File</a></li>
+	<li><a href="FTP" title="FTP">FTP</a></li>
+	<li><a href="Groovy" title="Groovy">Groovy</a></li>
+	<li><a href="HTTP" title="HTTP">HTTP</a></li>
+	<li><a href="Jabber" title="Jabber">Jabber</a></li>
+	<li><a href="JAX+WS" title="JAX WS">JAX WS</a></li>
+	<li><a href="JCA" title="JCA">JCA</a></li>
+	<li><a href="JMS" title="JMS">JMS</a></li>
+	<li><a href="Quartz" title="Quartz">Quartz</a></li>
+	<li><a href="Reflection" title="Reflection">Reflection</a></li>
+	<li><a href="RSS" title="RSS">RSS</a></li>
+	<li><a href="SAAJ" title="SAAJ">SAAJ</a></li>
+	<li><a href="Scripting" title="Scripting">Scripting</a></li>
+	<li><a href="ServiceMix" title="ServiceMix">ServiceMix</a></li>
+	<li><a href="Validation" title="Validation">Validation</a></li>
+	<li><a href="XFire" title="XFire">XFire</a></li>
+	<li><a href="XPath+Router" title="XPath Router">XPath Router</a></li>
+	<li><a href="XSLT" title="XSLT">XSLT</a></li>
+	<li><a href="XSQL" title="XSQL">XSQL</a></li>
+	<li><a href="VFS" title="VFS">VFS</a></li>
+	<li><a href="WSIF" title="WSIF">WSIF</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Tooling"></a>Tooling</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Visualisation" title="Visualisation">Visualisation</a></li>
+	<li><a href="Eclipse+plugin" title="Eclipse plugin">Eclipse plugin</a></li>
+	<li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Deployer</a></li>
+	<li><a href="WAR+Deployment" title="WAR Deployment">WAR Deployment</a></li>
+	<li><a href="Maven+JBI+plugin" title="Maven JBI plugin">Maven JBI plugin</a></li>
+	<li><a href="Maven+SAR+plugin" title="Maven SAR plugin">Maven SAR plugin</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-OtherJBIsoftware"></a>Other JBI software</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://incubator.apache.org/projects/ode.html">Apache ODE</a></span></li>
+	<li><span class="nobr"><a href="http://forge.objectweb.org/projects/celtix/">Celtix</a></span></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-RelatedProjects"></a>Related Projects</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://activemq.codehaus.org/">ActiveMQ</a></span></li>
+	<li><span class="nobr"><a href="http://jencks.org/">Jencks</a></span></li>
+	<li><span class="nobr"><a href="http://lingo.codehaus.org/">Lingo</a></span></li>
+	<li><span class="nobr"><a href="http://activesoap.codehaus.org/">ActiveSOAP</a></span></li>
+	<li><span class="nobr"><a href="http://www.springframework.org/">Spring</a></span></li>
+	<li><span class="nobr"><a href="http://geronimo.apache.org/">Geronimo</a></span></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Support"></a>Support</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://issues.apache.org/activemq/browse/SM">Issues</a></span></li>
+	<li><span class="nobr"><a href="http://issues.apache.org/activemq/browse/SM?report=com.atlassian.jira.plugin.system.project:roadmap-panel">Roadmap</a></span></li>
+	<li><span class="nobr"><a href="http://issues.apache.org/activemq/browse/SM?report=com.atlassian.jira.plugin.system.project:changelog-panel">Change log</a></span></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Developers"></a>Developers</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Source" title="Source">Source</a></li>
+	<li><a href="Roadmap" title="Roadmap">Roadmap</a></li>
+	<li><a href="Ideas" title="Ideas">Ideas</a></li>
+	<li><a href="Becoming+a+committer" title="Becoming a committer">Becoming a committer</a></li>
+	<li><a href="Release+Guide" title="Release Guide">Release Guide</a></li>
+	<li><span class="nobr"><a href="http://ci.codehaus.org/beetlejuice/viewProjectSummary.action?projectName=ServiceMix">BeetleJuice</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/clover/">Clover Report</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref/index.html">Source XRef</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html">Test Source XRef</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html">XSD</a></span></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3>
+
+<p><span class="nobr"><a href="http://www.yourkit.com"><img src="http://incubator.apache.org/servicemix/download/attachments/25208/yourkit.jpg" align="absmiddle" border="0"/></a></span></p></div>
+          
+          <div class="section_3">
+            <h3>Feeds</h3>
+            <ul class="feedList">
+              <li><a class="rss" href="http://docs.codehaus.org/spaces/rss.action?key=SM&amp;newPages=false">Site</a></li>
+              <li><a class="rss" href="http://docs.codehaus.org/spaces/blogrss.action?key=SM">News</a></li>
+            </ul>
+          </div>
+        </div>
+      </td>
+      <td id="umain">
+        <div class="content">
+          
+          <div id="upage_title">Contributing</div>
+          <div id="uads">
+
+
+<center>
+
+</center>
+
+          </div>
+          
+<p>There are many ways you can help make ServiceMix a better piece
+of software - please dive in and help!</p>
+<p>Try surf the documentation - if somethings confusing or not
+clear, let us know. Download the code, try it out, and see what you
+think. Browse the source code. Got an itch to scratch, want to tune
+some operation or add some feature?</p>
+<p>Want to do some hacking on ServiceMix? Try surfing the our 
+<span class="nobr">
+  <a href="http://issues.apache.org/activemq/browse/SM">issue
+  tracker
+  </a>
+</span> for open issues or features that need to be implemented,
+take ownership of an issue and try to fix it.</p>
+<p>If you'd rather a more gentle introduction to working on the
+ServiceMix project, look at the 
+<span class="nobr">
+  <a href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-core/src/test/java/org/apache/servicemix/">unit tests
+  cases
+  </a>
+</span> and help us to improve our test coverage.</p>
+<div class="section_2"><h2>
+<a id="Contributing-GettingInTouch" name="Contributing-GettingInTouch"></a>Getting In Touch</h2>
+<p>There are various ways of communicating with the ServiceMix
+community.</p>
+<ul class="alternate" type="square">
+  <li>visit the 
+  <span class="nobr">
+    <a href="http://www.nabble.com/ServiceMix---User-f12050.html">Discussion
+    Forum
+    </a>
+  </span></li>
+  <li>subscribe to the 
+  <a href="Mailing+Lists" title="Mailing Lists">Mailing
+  Lists</a> and take part in any conversations</li>
+  <li>pop by on 
+  <span class="nobr">
+    <a href="irc://irc.codehaus.org/servicemix">IRC
+    </a>
+  </span> and say hi</li>
+  <li>add some comments to the 
+  <span class="nobr">
+    <a href="http://docs.codehaus.org/pages/listpages.action?key=SM">wiki
+    </a>
+  </span></li>
+  <li>if you use ServiceMix please tell us about it on our 
+  <a href="Users" title="Users">Users page</a></li>
+</ul>
+</div><div class="section_2"><h2>
+<a id="Contributing-IfYouFindaBugorProblem" name="Contributing-IfYouFindaBugorProblem"></a>If You Find a Bug or
+Problem</h2>
+<p>Please raise a new issue in our 
+<span class="nobr">
+  <a href="http://issues.apache.org/activemq/browse/SM">issue
+  tracker
+  </a>
+</span>
+<br/>If you can create a JUnit test case then your issue is more
+likely to be resolved quicker.
+<br/>e.g. take a look at some of the existing 
+<span class="nobr">
+  <a href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-core/src/test/java/org/apache/servicemix/">unit tests
+  cases
+  </a>
+</span></p>
+<p>Then we can add your issue to CVS and then we'll know when its
+really fixed and we can ensure that the problem stays fixed in
+future releases.</p>
+</div><div class="section_2"><h2>
+<a id="Contributing-SubmittingPatches" name="Contributing-SubmittingPatches"></a>Submitting Patches</h2>
+<p>We gladly accept patches if you can find ways to improve, tune
+or fix ServiceMix in some way.</p>
+<p>Most IDEs can create nice patches now very easily. If you're a
+command line person try the following to create the patch:</p>
+<div class="code codeContent">
+<pre class="code-none">
+diff -u Main.java.orig Main.java &gt;&gt; patchfile.txt
+  </pre>
+</div>
+<p>or</p>
+<div class="code codeContent">
+<pre class="code-none">
+svn diff Main.java &gt;&gt; patchfile.txt
+  </pre>
+</div>
+</div><div class="section_2"><h2>
+<a id="Contributing-UsingtheIssueTracker" name="Contributing-UsingtheIssueTracker"></a>Using the Issue
+Tracker</h2>
+<p>Before you can raise an issue in the issue tracker you need to
+register with it. This is quick &amp; painless.</p>
+<p>If you want to have a go at fixing an issue you need to be in
+the list of servicemix-developers on the issue tracker. To join the
+group, please mail the dev@servicemix.codehaus.org mail list with
+the email address you used to register with the issue tracker and
+we'll add you to the group.</p>
+<p>Why not dive in and try tackle some of our outstanding
+issues?</p>
+<p>
+  <a id="jiraissues" name="jiraissues"></a>
+</p>
+<table width="100%" cellspacing="0" class="grid">
+  <tr>
+    <th colspan="11" class="null1">
+    <a href="rpc/xmlrpc?macro.refresh=true#jiraissues">
+      <img src="http://docs.codehaus.org/images/icons/refresh_16.png" height="16" width="16" border="0" align="right" title="refresh"/>
+    </a> 
+    <a href="http://issues.apache.org/activemq/secure/IssueNavigator.jspa?&amp;pid=10950&amp;resolutionIds=-1&amp;sorter/field=updated&amp;sorter/order=DESC&amp;tempMax=25&amp;reset=true&amp;">Apache
+    Incubator ActiveMQ &amp; ServiceMix</a> 
+    <span class="smalltext">(25 issues)</span></th>
+  </tr>
+  <tr>
+    <th class="null1">T</th>
+    <th class="null1">Key</th>
+    <th class="null1">Summary</th>
+    <th class="null1">Assignee</th>
+    <th class="null1">Reporter</th>
+    <th class="null1">Pr</th>
+    <th class="null1">Status</th>
+    <th class="null1">Res</th>
+    <th class="null1">Created</th>
+    <th class="null1">Updated</th>
+    <th class="null1">Due</th>
+  </tr>
+  <tr class="rowNormal">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-418">
+        <img src="https://issues.apache.org/activemq/images/icons/newfeature.gif" alt="New Feature" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-418">SM-418</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-418">Support
+      for clustered deployment of subscribers</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 28, 2006</td>
+    <td nowrap="true">Apr 28, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowAlternate">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-417">
+        <img src="https://issues.apache.org/activemq/images/icons/newfeature.gif" alt="New Feature" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-417">SM-417</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-417">Support
+      for durable jms subscribers in WSN</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 28, 2006</td>
+    <td nowrap="true">Apr 28, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowNormal">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-413">
+        <img src="https://issues.apache.org/activemq/images/icons/improvement.gif" alt="Improvement" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-413">SM-413</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-413">access
+      message exchange properties in e.g. content-based routing
+      XPath expressions of servicemix-eip</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Peter Klotz</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 27, 2006</td>
+    <td nowrap="true">Apr 27, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowAlternate">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-412">
+        <img src="https://issues.apache.org/activemq/images/icons/improvement.gif" alt="Improvement" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-412">SM-412</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-412">Consider
+      making ComponentSupport implementing
+      MessageExchangeListener</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_minor.gif" alt="Minor" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 27, 2006</td>
+    <td nowrap="true">Apr 27, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowNormal">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-410">
+        <img src="https://issues.apache.org/activemq/images/icons/bug.gif" alt="Bug" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-410">SM-410</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-410">Component
+      Uninstallation : ClassLoader not removed from JVM</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Philippe Pinheiro</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 26, 2006</td>
+    <td nowrap="true">Apr 27, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowAlternate">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-411">
+        <img src="$icons.get(%20$item.getChild('type').getValue()%20)" alt="Test" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-411">SM-411</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-411">Uncomment
+      https test in
+      org.apache.servicemix.http.HttpSpringTest#testSsl and make it
+      work</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 26, 2006</td>
+    <td nowrap="true">Apr 26, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowNormal">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-408">
+        <img src="https://issues.apache.org/activemq/images/icons/task.gif" alt="Task" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-408">SM-408</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-408">Migrate
+      common JAXP/StAX code to stax-utils</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Dan Diephouse</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 20, 2006</td>
+    <td nowrap="true">Apr 21, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowAlternate">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-407">
+        <img src="https://issues.apache.org/activemq/images/icons/improvement.gif" alt="Improvement" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-407">SM-407</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-407">Specifies
+      the replyTo destination at deployment time on the endpoint
+      instead of relying on the JMSReplyTo header</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 20, 2006</td>
+    <td nowrap="true">Apr 20, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowNormal">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-405">
+        <img src="https://issues.apache.org/activemq/images/icons/newfeature.gif" alt="New Feature" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-405">SM-405</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-405">Allow
+      for HTTP GET Binding when deploying SU with wsdl</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">stefan klinger</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 18, 2006</td>
+    <td nowrap="true">Apr 18, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowAlternate">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-404">
+        <img src="https://issues.apache.org/activemq/images/icons/newfeature.gif" alt="New Feature" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-404">SM-404</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-404">Support
+      for standard POST request coming from web forms</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 17, 2006</td>
+    <td nowrap="true">Apr 17, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowNormal">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-397">
+        <img src="https://issues.apache.org/activemq/images/icons/bug.gif" alt="Bug" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-397">SM-397</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-397">WSA:Action
+      header should override default service/endpoint values from
+      the http endpoint definition</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Ilya Kuleshov</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 12, 2006</td>
+    <td nowrap="true">Apr 16, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowAlternate">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-403">
+        <img src="https://issues.apache.org/activemq/images/icons/bug.gif" alt="Bug" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-403">SM-403</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-403">The
+      JBI spec mandates that all properties on JMS message are
+      valid java identifiers</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 16, 2006</td>
+    <td nowrap="true">Apr 16, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowNormal">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-399">
+        <img src="https://issues.apache.org/activemq/images/icons/bug.gif" alt="Bug" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-399">SM-399</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-399">Problems
+      using commons-email</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 13, 2006</td>
+    <td nowrap="true">Apr 13, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowAlternate">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-393">
+        <img src="https://issues.apache.org/activemq/images/icons/bug.gif" alt="Bug" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-393">SM-393</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-393">ServiceMix
+      3.0-M1 RC doesn't like spaces in the path on Windows</a>
+    </td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">Dan Diephouse</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 09, 2006</td>
+    <td nowrap="true">Apr 13, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowNormal">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-389">
+        <img src="https://issues.apache.org/activemq/images/icons/newfeature.gif" alt="New Feature" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-389">SM-389</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-389">Allow
+      deployment of proxy publisher endpoints</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 07, 2006</td>
+    <td nowrap="true">Apr 12, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowAlternate">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-394">
+        <img src="https://issues.apache.org/activemq/images/icons/task.gif" alt="Task" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-394">SM-394</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-394">Create
+      XFire example</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Dan Diephouse</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_minor.gif" alt="Minor" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 09, 2006</td>
+    <td nowrap="true">Apr 09, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowNormal">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-388">
+        <img src="https://issues.apache.org/activemq/images/icons/improvement.gif" alt="Improvement" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-388">SM-388</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-388">The
+      jdbc auditor should implement the ContainerAware interface to
+      be easily registered as a listener on the container</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 07, 2006</td>
+    <td nowrap="true">Apr 07, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowAlternate">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-381">
+        <img src="https://issues.apache.org/activemq/images/icons/improvement.gif" alt="Improvement" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-381">SM-381</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-381">Add
+      an ActiveMQ specific processor set based on
+      ActiveMQInputStream / OutputStream to handle very big
+      messages as a stream</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Apr 04, 2006</td>
+    <td nowrap="true">Apr 04, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowNormal">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-158">
+        <img src="https://issues.apache.org/activemq/images/icons/newfeature.gif" alt="New Feature" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-158">SM-158</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-158">Management
+      application</a>
+    </td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Nov 06, 2005</td>
+    <td nowrap="true">Mar 28, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowAlternate">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-75">
+        <img src="https://issues.apache.org/activemq/images/icons/newfeature.gif" alt="New Feature" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-75">SM-75</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-75">demonstrate
+      XA based transactional message consume &amp; output with say
+      JMS through the JBI flow</a>
+    </td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">james strachan</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Sep 27, 2005</td>
+    <td nowrap="true">Mar 28, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowNormal">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-148">
+        <img src="https://issues.apache.org/activemq/images/icons/newfeature.gif" alt="New Feature" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-148">SM-148</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-148">Auditing
+      tool for reviewing / re-sending exchanges</a>
+    </td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">Guillaume Nodet</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_inprogress.gif" alt="In Progress" border="0"/>In Progress</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Nov 04, 2005</td>
+    <td nowrap="true">Mar 28, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowAlternate">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-30">
+        <img src="https://issues.apache.org/activemq/images/icons/improvement.gif" alt="Improvement" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-30">SM-30</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-30">create
+      an EAR demo to show ServiceMix in use in a J2EE application
+      server using MDBs and Servlets which are wired into the JBI
+      container</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">james strachan</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Aug 18, 2005</td>
+    <td nowrap="true">Mar 28, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowNormal">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-160">
+        <img src="$icons.get(%20$item.getChild('type').getValue()%20)" alt="Wish" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-160">SM-160</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-160">Service
+      Mix Jars in Stable Version</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">George Gastaldi</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_major.gif" alt="Major" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Nov 07, 2005</td>
+    <td nowrap="true">Mar 28, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowAlternate">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-270">
+        <img src="https://issues.apache.org/activemq/images/icons/improvement.gif" alt="Improvement" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-270">SM-270</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-270">XsltComponent
+      should easily allow for dynamically determining the Xslt
+      during runtime</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Jeff Puro</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_minor.gif" alt="Minor" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Jan 23, 2006</td>
+    <td nowrap="true">Mar 28, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+  <tr class="rowNormal">
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-228">
+        <img src="https://issues.apache.org/activemq/images/icons/improvement.gif" alt="Improvement" border="0"/>
+      </a>
+    </td>
+    <td nowrap="true">
+      <a href="https://issues.apache.org/activemq/browse/SM-228">SM-228</a>
+    </td>
+    <td>
+      <a href="https://issues.apache.org/activemq/browse/SM-228">Get
+      back http parameters as inMessage.properties in a POST
+      request.</a>
+    </td>
+    <td nowrap="true">Unassigned</td>
+    <td nowrap="true">Angel Gomez</td>
+    <td nowrap="true">
+      <img src="https://issues.apache.org/activemq/images/icons/priority_minor.gif" alt="Minor" border="0"/>
+    </td>
+    <td nowrap="true">
+    <img src="https://issues.apache.org/activemq/images/icons/status_open.gif" alt="Open" border="0"/>Open</td>
+    <td nowrap="true">UNRESOLVED</td>
+    <td nowrap="true">Dec 06, 2005</td>
+    <td nowrap="true">Mar 28, 2006</td>
+    <td nowrap="true"/>
+  </tr>
+</table>
+<br/>
+<br/> 
+</div><div class="section_2"><h2>
+<a id="Contributing-BecomingaCommitter" name="Contributing-BecomingaCommitter"></a>Becoming a
+Committer</h2>
+<p>The first step is contributing to the project; if you want to
+take that a step forward and become a fellow committer on the
+project then see the 
+<a href="Becoming+a+committer" title="Becoming a committer">Committer Guide</a></p></div>
+        </div>
+<div style="text-align: center; width: 100%; padding-top: 1cm;padding-bottom: 1cm">
+
+
+</div>
+</td>
+    <tr>
+    <tr id="ulayout_bottom">
+      <td colspan="2" id="ufooter">
+        <div class="content">
+          
+          
+          <div>
+            <a class="editPage" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&amp;title=Contributing"><img src="http://www.codehaus.org/edit.gif" border="0">[&nbsp;edit&nbsp;]</a>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+</html>

@@ -1,1 +1,543 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html>  <head>    <link rel="stylesheet" href="http://codehaus.org/codehaus-style.css" type="text/css">        <link rel="stylesheet" href="style.css" type="text/css">    <title>ServiceMix - News</title>  </head>  <body>    <table width="100%" id="layout" style="padding:0px;margin0px;border-collapse:collapse;">      <tr>        <td colspan="3" style="padding:8px;">          <table width="100%" id="banner" style="padding:0px;margin:0px">            <tr id="header_row">              <td align="left" valign="middle" style="padding:0px;margin:0px;">                <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org/servicemix" rel="nofollow"><img align="absmiddle" border=0 src="images/logo.gif"></a></span></span></span>              </td>              <td align="right" valign="middle" style="padding:0px;margin:0px;">                <span id="Content"><span><span class="nobr"><a href="http://incubator.apache.org" rel="nofollow"><img align="absmiddle" border=0 src="http://incubator.apache.org/images/apache-incubator-logo.png"></a></span></span></span>              </td>            </tr>          </table>        </td>      </tr>      <tr>        <td colspan="3" id="breadcrumbs">          <table width="100%" id="banner" style="padding:0px;margin:0px">            <tr>              <td align="left">                <a href="">Home</a>  | News              </td>              <td align="right">                  <span id="Content"><span><a href="Download" title="Download">Download</a> | <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs</a></span> <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" rel="nofollow">Components</a></span> | <a href="Source" title="Source">Source</a> | <span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span> |<span class="nobr"><a href="irc://irc.codehaus.org/servicemix" rel="nofollow">IRC</a></span> | <span class="nobr"><a href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" rel="nofollow">IRC Log</a></span> | <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a> | <a href="Discussion+Forums" title="Discussion Forums">Discussion Forums</a> | <span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Support</a></span></span></span>              </td>            </tr>          </table>        </td>      </tr>      <tr>        <td id="leftColumn" valign="top" style="padding-top: 0px;">          <span id="Content"><h3><a name="Navigation-Overview"></a>Overview</h3>  <ul class="alternate" type="square">    <li><a href="Home" title="Home">Home</a></li>    <li><a href="Introduction+to+ESB" title="Introduction to ESB">Introduction to ESB</a></li>    <li><a href="Background+to+ServiceMix" title="Background to ServiceMix">Background to ServiceMix</a></li>    <li><a href="News" title="News">News</a></li>    <li><a href="FAQ" title="FAQ">FAQ</a></li>    <li><a href="Download" title="Download">Download</a></li>  </ul>  <h3><a name="Navigation-Community"></a>Community</h3>  <ul class="alternate" type="square">    <li><span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM" rel="nofollow">Wiki</a></span></li>    <li><a href="Discussion+Forums" title="Discussion Forums">Discussion Forums</a></li>    <li><a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a></li>    <li><a href="Contributing" title="Contributing">Contributing</a></li>    <li><a href="Team" title="Team">Team</a></li>    <li><a href="Users" title="Users">Users</a></li>  </ul>  <h3><a name="Navigation-Documentation"></a>Documentation</h3>  <ul class="alternate" type="square">    <li><a href="Getting+Started" title="Getting Started">Getting Started</a></li>    <li><a href="Running" title="Running">Running</a></li>    <li><a href="Examples" title="Examples">Examples</a></li>    <li><a href="Use+Cases" title="Use Cases">Use Cases</a></li>    <li><a href="Configuration" title="Configuration">Configuration</a></li>    <li><a href="Xml+Reference" title="Xml Reference">Xml Reference</a></li>    <li><a href="Management" title="Management">Management</a></li>    <li><a href="Architecture" title="Architecture">Architecture</a></li>    <li><a href="Clustering" title="Clustering">Clustering</a></li>    <li><a href="NMR+Flows" title="NMR Flows">NMR Flows</a></li>    <li><a href="Articles" title="Articles">Articles</a></li>  </ul>  <h3><a name="Navigation-Reference"></a>Reference</h3>  <ul class="alternate" type="square">    <li><span class="nobr"><a href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html" rel="nofollow">JBI API</a></span></li>    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" rel="nofollow">JavaDocs Core</a></span></li>    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" rel="nofollow">JavaDocs Components</a></span></li>    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-console/apidocs/" rel="nofollow">JavaDocs Console</a></span></li>    <li><a href="Glossary" title="Glossary">Glossary</a></li>  </ul>  <h3><a name="Navigation-Features"></a>Features</h3>  <ul class="alternate" type="square">    <li><a href="Components" title="Components">Components</a></li>    <li><a href="Routing" title="Routing">Routing</a></li>    <li><a href="Transformation" title="Transformation">Transformation</a></li>    <li><a href="Spring+Client+Toolkit" title="Spring Client Toolkit">Spring Client Toolkit</a></li>    <li><a href="Client+API" title="Client API">Client API</a></li>    <li><a href="POJO+support" title="POJO support">POJO support</a></li>    <li><a href="Expressions" title="Expressions">Expressions</a></li>    <li><a href="Component+helper+classes" title="Component helper classes">Component helper classes</a></li>    <li><a href="Ant+Tasks" title="Ant Tasks">Ant Tasks</a></li>    <li><a href="JMX+Console" title="JMX Console">JMX Console</a></li>  </ul>  <h3><a name="Navigation-Integration"></a>Integration</h3>  <ul class="alternate" type="square">    <li><a href="Spring+support" title="Spring support">Spring support</a></li>    <li><a href="Geronimo+Integration" title="Geronimo Integration">Geronimo Integration</a></li>    <li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Integration</a></li>    <li><a href="Tomcat+Integration" title="Tomcat Integration">Tomcat Integration</a></li>    <li><a href="JNDI+configuration" title="JNDI configuration">JNDI configuration</a></li>  </ul>  <h3><a name="Navigation-ServiceMixComponents"></a>ServiceMix Components</h3>  <ul class="alternate" type="square">    <li><a href="BPEL" title="BPEL">BPEL</a></li>    <li><a href="Cache" title="Cache">Cache</a></li>    <li><a href="Drools" title="Drools">Drools</a></li>    <li><a href="Email" title="Email">Email</a></li>    <li><a href="File" title="File">File</a></li>    <li><a href="FTP" title="FTP">FTP</a></li>    <li><a href="Groovy" title="Groovy">Groovy</a></li>    <li><a href="HTTP" title="HTTP">HTTP</a></li>    <li><a href="Jabber" title="Jabber">Jabber</a></li>    <li><a href="JAX+WS" title="JAX WS">JAX WS</a></li>    <li><a href="JCA" title="JCA">JCA</a></li>    <li><a href="JMS" title="JMS">JMS</a></li>    <li><a href="Quartz" title="Quartz">Quartz</a></li>    <li><a href="Reflection" title="Reflection">Reflection</a></li>    <li><a href="RSS" title="RSS">RSS</a></li>    <li><a href="SAAJ" title="SAAJ">SAAJ</a></li>    <li><a href="Scripting" title="Scripting">Scripting</a></li>    <li><a href="ServiceMix" title="ServiceMix">ServiceMix</a></li>    <li><a href="Validation" title="Validation">Validation</a></li>    <li><a href="XFire" title="XFire">XFire</a></li>    <li><a href="XPath+Router" title="XPath Router">XPath Router</a></li>    <li><a href="XSLT" title="XSLT">XSLT</a></li>    <li><a href="XSQL" title="XSQL">XSQL</a></li>    <li><a href="VFS" title="VFS">VFS</a></li>    <li><a href="WSIF" title="WSIF">WSIF</a></li>  </ul>  <h3><a name="Navigation-Tooling"></a>Tooling</h3>  <ul class="alternate" type="square">    <li><a href="Eclipse+plugin" title="Eclipse plugin">Eclipse plugin</a></li>    <li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Deployer</a></li>    <li><a href="WAR+Deployment" title="WAR Deployment">WAR Deployment</a></li>    <li><a href="Maven+JBI+plugin" title="Maven JBI plugin">Maven JBI plugin</a></li>    <li><a href="Maven+SAR+plugin" title="Maven SAR plugin">Maven SAR plugin</a></li>  </ul>  <h3><a name="Navigation-Utilities"></a>Utilities</h3>  <ul class="alternate" type="square">    <li><a href="Reflection" title="Reflection">Reflection</a></li>  </ul>  <h3><a name="Navigation-OtherJBIsoftware"></a>Other JBI software</h3>  <ul class="alternate" type="square">    <li><span class="nobr"><a href="http://forge.objectweb.org/projects/celtix/" rel="nofollow">Celtix</a></span></li>    <li><span class="nobr"><a href="http://pxe.fivesight.com/wiki/display/PXE/Home" rel="nofollow" title="Visit page outside Confluence">PXE BPEL Engine</a></span></li>  </ul>  <h3><a name="Navigation-RelatedProjects"></a>Related Projects</h3>  <ul class="alternate" type="square">    <li><span class="nobr"><a href="http://activemq.codehaus.org/" rel="nofollow">ActiveMQ</a></span></li>    <li><span class="nobr"><a href="http://jencks.org/" rel="nofollow">Jencks</a></span></li>    <li><span class="nobr"><a href="http://lingo.codehaus.org/" rel="nofollow">Lingo</a></span></li>    <li><span class="nobr"><a href="http://activesoap.codehaus.org/" rel="nofollow">ActiveSOAP</a></span></li>    <li><span class="nobr"><a href="http://www.springframework.org/" rel="nofollow">Spring</a></span></li>    <li><span class="nobr"><a href="http://geronimo.apache.org/" rel="nofollow">Geronimo</a></span></li>  </ul>  <h3><a name="Navigation-Support"></a>Support</h3>  <ul class="alternate" type="square">    <li><span class="nobr"><a href="http://jira.logicblaze.com/jira/browse/SM" rel="nofollow">Issues</a></span></li>    <li><span class="nobr"><a href="http://jira.logicblaze.com/browse/SM?report=com.atlassian.jira.plugin.system.project:roadmap-panel" rel="nofollow">Roadmap</a></span></li>    <li><span class="nobr"><a href="http://jira.logicblaze.com/browse/SM?report=com.atlassian.jira.plugin.system.project:changelog-panel" rel="nofollow">Change log</a></span></li>  </ul>  <h3><a name="Navigation-Developers"></a>Developers</h3>  <ul class="alternate" type="square">    <li><a href="Source" title="Source">Source</a></li>    <li><a href="Roadmap" title="Roadmap">Roadmap</a></li>    <li><a href="Ideas" title="Ideas">Ideas</a></li>    <li><a href="Becoming+a+committer" title="Becoming a committer">Becoming a committer</a></li>    <li><a href="Release+Guide" title="Release Guide">Release Guide</a></li>    <li><span class="nobr"><a href="http://ci.codehaus.org/beetlejuice/viewProjectSummary.action?projectName=ServiceMix" rel="nofollow">BeetleJuice</a></span></li>    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/clover/" rel="nofollow">Clover Report</a></span></li>    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref/index.html" rel="nofollow">Source XRef</a></span></li>    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html" rel="nofollow">Test Source XRef</a></span></li>    <li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" rel="nofollow">XSD</a></span></li>  </ul>  <h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3><span><span class="nobr"><a href="http://www.yourkit.com" rel="nofollow"><img align="absmiddle" border=0 src="http://www.servicemix.org/download/attachments/25208/yourkit.jpg"></a></span></span></span>            <h3 class="heading3">Feeds</h3>            <table border="0" cellspacing="4px">            <tr>              <td align="right">                <a href="http://docs.codehaus.org/spaces/rss.action?key=SM&newPages=false"><img src="http://docs.codehaus.org/images/icons/rss.gif" border="0"></a><br/>              </td>              <td align="left">                <a href="http://docs.codehaus.org/spaces/rss.action?key=SM&newPages=false">Site</a>              </td>            </tr>            <tr>              <td align="right">                <a href="http://docs.codehaus.org/spaces/blogrss.action?key=SM"><img src="http://docs.codehaus.org/images/icons/rss.gif" border="0"></a>              </td>              <td align="left">                <a href="http://docs.codehaus.org/spaces/blogrss.action?key=SM">News</a>              </td>            </tr>            </table>        </td>        <td id="rightColumn" valign="top">          <div id="page_title">            <table width="100%">              <tr>                <td>            News                 </td>                <td align="right">                            </td>              </tr>            </table>          </div>          <div>  <div id="Content">    <p class="paragraph">      <div class="blogSurtitle"><img align="absmiddle" border=0 height=16 src="http://www.servicemix.org/images/icons/blogentry_16.gif" width=16> <a class="blogDate" href="http://docs.codehaus.org/display/SM/2006/03/23">Thursday, March 23, 2006</a></div>      <div class="blogpost" style="margin-bottom: 30px">        <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2006/03/23/New+Discussion+Forums+Available+at+Nabble">New Discussion Forums Available at Nabble</a></div>        <div class="pagesubheading">        </div>        <div class="wiki-content">          <p>Many users prefer to use online forums rather than joining a mail list which can lead to lots more email traffic. However we've seen users use both the mailing lists and the online forum sometimes; often duplicating threads across both mediums.</p>          <p>So we are currently experimenting using combined online forums using the <span class="nobr"><a href="http://www.nabble.com/ServiceMix-f12049.html" rel="nofollow">Nabble forums</a></span> which also work with our <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a> so that both stay completely in sync.</p>          <ul>            <li><span class="nobr"><a href="http://www.nabble.com/ServiceMix---User-f12050.html" rel="nofollow">ServiceMix User Forum</a></span></li>            <li><span class="nobr"><a href="http://www.nabble.com/ServiceMix---Dev-f12051.html" rel="nofollow">ServiceMix Developer Forum</a></span></li>          </ul>          <p>The old forum is <span class="nobr"><a href="http://forums.activemq.org/forums/show/3.page" rel="nofollow">here</a></span> which we are hoping to phase out if Nabble works out.</p>        </div>      </div>      <div class="blogSurtitle"><img align="absmiddle" border=0 height=16 src="http://www.servicemix.org/images/icons/blogentry_16.gif" width=16> <a class="blogDate" href="http://docs.codehaus.org/display/SM/2006/03/22">Wednesday, March 22, 2006</a></div>      <div class="blogpost" style="margin-bottom: 30px">        <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2006/03/22/Come+and+meet+us+at+TSSJS">Come and meet us at TSSJS</a></div>        <div class="pagesubheading">        </div>        <div class="wiki-content">          <p>Two ServiceMixers, <span class="nobr"><a href="http://javasymposium.techtarget.com/html/det_descriptions.htm#JStrachanOSSOA" rel="nofollow">James Strachan</a></span> and <span class="nobr"><a href="http://javasymposium.techtarget.com/html/det_descriptions.htm#SnyderService" rel="nofollow">Bruce Synder</a></span> will be giving presentations at <span class="nobr"><a href="http://javasymposium.techtarget.com/" rel="nofollow">TSSJS</a></span> this week so if you are in the Vegas area, do pop by and say hello</p>        </div>      </div>      <div class="blogSurtitle"><img align="absmiddle" border=0 height=16 src="http://www.servicemix.org/images/icons/blogentry_16.gif" width=16> <a class="blogDate" href="http://docs.codehaus.org/display/SM/2006/02/15">Wednesday, February 15, 2006</a></div>      <div class="blogpost" style="margin-bottom: 30px">        <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2006/02/15/Creating+graphical+JBI+deployments+with+ServiceMix+in+Eclipse">Creating graphical JBI deployments with ServiceMix in Eclipse</a></div>        <div class="pagesubheading">        </div>        <div class="wiki-content">          <p>Philip Dodds has a <span class="nobr"><a href="http://www.fiveclouds.com/articles/2006/02/11/servicemix-deployments-in-eclipse" rel="nofollow">great article</a></span> showing ServiceMix deployments being created in <span class="nobr"><a href="http://www.eclipse.org/" rel="nofollow">Eclipse</a></span>. Go Philip!</p>        </div>      </div>      <div class="blogSurtitle"><img align="absmiddle" border=0 height=16 src="http://www.servicemix.org/images/icons/blogentry_16.gif" width=16> <a class="blogDate" href="http://docs.codehaus.org/display/SM/2006/01/25">Wednesday, January 25, 2006</a></div>      <div class="blogpost" style="margin-bottom: 30px">        <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2006/01/25/ServiceMix+at+JavaWorld">ServiceMix at JavaWorld</a></div>        <div class="pagesubheading">        </div>        <div class="wiki-content">          <p>Jeff Hanson has written a good article on <span class="nobr"><a href="http://www.javaworld.com/javaworld/jw-12-2005/jw-1212-esb.html" rel="nofollow">ServiceMix as an enterprise service bus</a></span> at <span class="nobr"><a href="http://www.javaworld.com" rel="nofollow">JavaWorld</a></span></p>        </div>      </div>      <div class="blogSurtitle"><img align="absmiddle" border=0 height=16 src="http://www.servicemix.org/images/icons/blogentry_16.gif" width=16> <a class="blogDate" href="http://docs.codehaus.org/display/SM/2006/01/03">Tuesday, January 3, 2006</a></div>      <div class="blogpost" style="margin-bottom: 30px">        <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2006/01/03/Servicemix+3.0-SNAPSHOT">Servicemix 3.0-SNAPSHOT</a></div>        <div class="pagesubheading"> Last changed: Jan 23, 2006 17:12 by <a href="display/~gnt">Guillaume Nodet</a></div>        <div class="wiki-content">          <p>ServiceMix version is now 3.0-SNAPSHOT.<br> Packages have been renamed to org.apache.servicemix.<br> Nightly snapshots of the distribution can be downloaded from <span class="nobr"><a href="http://dist.codehaus.org/org.apache.servicemix/distributions/" rel="nofollow">http://dist.codehaus.org/org.apache.servicemix/distributions/</a></span>.</p>        </div>      </div>      <div class="blogSurtitle"><img align="absmiddle" border=0 height=16 src="http://www.servicemix.org/images/icons/blogentry_16.gif" width=16> <a class="blogDate" href="http://docs.codehaus.org/display/SM/2006/01/23">Monday, January 23, 2006</a></div>      <div class="blogpost" style="margin-bottom: 30px">        <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2006/01/23/Awesome+ServiceMix+Article">Awesome ServiceMix Article</a></div>        <div class="pagesubheading">        </div>        <div class="wiki-content">          <p>This article gives a nice overview of JBI and ServiceMix:<br><span class="nobr"><a href="http://www.itarchitect.co.uk/articles/display.asp?id=222" rel="nofollow">http://www.itarchitect.co.uk/articles/display.asp?id=222</a></span></p>        </div>      </div>      <div class="blogSurtitle"><img align="absmiddle" border=0 height=16 src="http://www.servicemix.org/images/icons/blogentry_16.gif" width=16> <a class="blogDate" href="http://docs.codehaus.org/display/SM/2005/12/12">Monday, December 12, 2005</a></div>      <div class="blogpost" style="margin-bottom: 30px">        <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2005/12/12/Subversion+has+moved+to+Apache">Subversion has moved to Apache</a></div>        <div class="pagesubheading">        </div>        <div class="wiki-content">          <p>We have now moved the <a href="Source" title="Source">Source</a> of ServiceMix to Apache. You can surf and checkout the latest code from here</p>          <p><span class="nobr"><a href="https://svn.apache.org/repos/asf/incubator/servicemix/" rel="nofollow">https://svn.apache.org/repos/asf/incubator/servicemix/</a></span></p>          <p>Also we now have a set of Apache based <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a></p>        </div>      </div>      <div class="blogSurtitle"><img align="absmiddle" border=0 height=16 src="http://www.servicemix.org/images/icons/blogentry_16.gif" width=16> <a class="blogDate" href="http://docs.codehaus.org/display/SM/2005/11/23">Wednesday, November 23, 2005</a></div>      <div class="blogpost" style="margin-bottom: 30px">        <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2005/11/23/ServiceMix+discussion+forum+open">ServiceMix discussion forum open</a></div>        <div class="pagesubheading">        </div>        <div class="wiki-content">          <p>There is a new <span class="nobr"><a href="http://forums.logicblaze.com/forums/show/3.page" rel="nofollow">discussion forum</a></span> now open to dicusss all things ServiceMix, ESB or JBI. </p>        </div>      </div>      <div class="blogSurtitle"><img align="absmiddle" border=0 height=16 src="http://www.servicemix.org/images/icons/blogentry_16.gif" width=16> <a class="blogDate" href="http://docs.codehaus.org/display/SM/2005/11/15">Tuesday, November 15, 2005</a></div>      <div class="blogpost" style="margin-bottom: 30px">        <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2005/11/15/ServiceMix+2.0.2+Release">ServiceMix 2.0.2 Release</a></div>        <div class="pagesubheading">        </div>        <div class="wiki-content">          <p>The ServiceMix team is pleased to announce the <a href="ServiceMix+2.0+Release" title="ServiceMix 2.0 Release">ServiceMix 2.0.2 Release</a>.<br> This release provides a few bug fixes.</p>        </div>      </div>      <div class="blogSurtitle"><img align="absmiddle" border=0 height=16 src="http://www.servicemix.org/images/icons/blogentry_16.gif" width=16> <a class="blogDate" href="http://docs.codehaus.org/display/SM/2005/11/07">Monday, November 7, 2005</a></div>      <div class="blogpost" style="margin-bottom: 30px">        <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2005/11/07/ServiceMix+2.0+Released+with+improved+JBI%2C+publish+subscribe+routing+and+better+support+for+XBean+and+JAX+WS">ServiceMix 2.0 Released with improved JBI, publish subscribe routing and better support for XBean and JAX WS</a></div>        <div class="pagesubheading"> Last changed: Nov 08, 2005 07:34 by <a href="display/~jstrachan">James Strachan</a></div>        <div class="wiki-content">          <p>We are pleased to announce the <a href="ServiceMix+2.0+Release" title="ServiceMix 2.0 Release">ServiceMix 2.0 Release</a>. New features include...</p>          <ul>            <li>Improved JBI support including both interface based routing as well as service based routing together with improved WSDL parsing</li>            <li>Support for <a href="Publish+Subscribe+Routing" title="Publish Subscribe Routing">Publish Subscribe Routing</a></li>            <li>Improved <a href="JAX+WS" title="JAX WS">JAX WS</a> support</li>            <li>Migration to <span class="nobr"><a href="http://xbean.org/" rel="nofollow">XBean</a></span> as the XML configuration mechanism which works with any Spring release and allows us to mix and match ServiceMix configuration with other XML configuration mechanisms like ActiveMQ and Jencks</li>            <li>Migration to backport.util.concurrent to make it easier to move direct to a pure Java 5 solution.</li>            <li>a new Loan Broker example from the <span class="nobr"><a href="http://www.eaipatterns.com/ComposedMessagingWS.html" rel="nofollow">EIP Patterns Book</a></span></li>            <li>a new simpler POJO based deployment model</li>            <li>build reorganised to make ServiceMix more modular</li>            <li>a new ChainedComponent which implements simple pipelines of components easily</li>          </ul>        </div>      </div>    </p>  </div></div>          &nbsp;        </td>      </tr>      <tr>        <td colspan="3" id="footer">          <table width="100%">             <tr>              <td align="left" valign="top">          Copyright 2004. All rights reserved unless otherwise noted.<br/>          Powered by <a href="http://atlassian.com/">Atlassian</a> <a href="http://atlassian.com/confluence/">Confluence</a>.              </td>              <td align="right" valign="top">          <a style="color:#999;" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&title=News">[ edit ]</a>              </td>            </tr>          <table>        </td>      </tr>    </table>  </body></html>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<head profile="http://www.w3.org/2000/08/w3c-synd/#">
+    <link rel="stylesheet" href="site.css" type="text/css"/>
+    <title>ServiceMix - News</title>
+</head>
+
+<body>
+
+  <table id="ulayout">
+    <tr id="ulayout_top">
+      <td colspan="2" valign="bottom">
+        <table width="100%">
+          <tr id="utop">
+            <td id="utop_left">
+              <a href="http://incubator.apache.org"><img src="http://incubator.apache.org/images/apache-incubator-logo.png" style="border: none;"/></a>
+            </td>
+            <td id="utop_right" style="text-align: right; vertical-align: middle;padding-right:10px;">
+              <a href="http://incubator.apache.org/servicemix"><img src="images/logo.gif" alt="ServiceMix" class="spaceLogo" border="0"/></a>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" id="uadvertising_top">
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <table id="utop_nav">
+          <tr>
+            <td align="left" valign="middle">
+              <div id="ubreadcrumbs">
+                <p>
+                  <a href="">Home</a>
+                                     		                  </p>
+              </div>
+            </td>
+            <td align="right" valign="middle">
+              <div id="uquicklinks">
+                                  <p><a href="Download" title="Download">Download</a> | <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/">JavaDocs</a></span> <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/">Components</a></span> | <a href="Source" title="Source">Source</a> | <span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM">Wiki</a></span> |<span class="nobr"><a href="irc://irc.codehaus.org/servicemix">IRC</a></span> | <span class="nobr"><a href="http://servlet.uwyn.com/drone/log/hausbot/servicemix">IRC Log</a></span> | <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a> | <a href="Discussion+Forums" title="Discussion Forums">Discussion Forums</a> | <span class="nobr"><a href="http://issues.apache.org/activemq/browse/SM">Support</a></span></p>
+                              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2"></td>
+    </tr>
+    <tr id="ulayout_middle">
+      <td id="uleft">
+        <div class="content">
+                      <div class="section_3"><h3><a name="Navigation-Overview"></a>Overview</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Home" title="Home">Home</a></li>
+	<li><a href="Introduction+to+ESB" title="Introduction to ESB">Introduction to ESB</a></li>
+	<li><a href="Background+to+ServiceMix" title="Background to ServiceMix">Background to ServiceMix</a></li>
+	<li><a href="News" title="News">News</a></li>
+	<li><a href="FAQ" title="FAQ">FAQ</a></li>
+	<li><a href="Download" title="Download">Download</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Community"></a>Community</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM">Wiki</a></span></li>
+	<li><a href="Discussion+Forums" title="Discussion Forums">Discussion Forums</a></li>
+	<li><a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a></li>
+	<li><a href="Contributing" title="Contributing">Contributing</a></li>
+	<li><a href="Team" title="Team">Team</a></li>
+	<li><a href="Users" title="Users">Users</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Documentation"></a>Documentation</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Getting+Started" title="Getting Started">Getting Started</a></li>
+	<li><a href="Running" title="Running">Running</a></li>
+	<li><a href="Examples" title="Examples">Examples</a></li>
+	<li><a href="Use+Cases" title="Use Cases">Use Cases</a></li>
+	<li><a href="Configuration" title="Configuration">Configuration</a></li>
+	<li><a href="Xml+Reference" title="Xml Reference">Xml Reference</a></li>
+	<li><a href="Management" title="Management">Management</a></li>
+	<li><a href="Architecture" title="Architecture">Architecture</a></li>
+	<li><a href="Clustering" title="Clustering">Clustering</a></li>
+	<li><a href="NMR+Flows" title="NMR Flows">NMR Flows</a></li>
+	<li><a href="Articles" title="Articles">Articles</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Reference"></a>Reference</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html">JBI API</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/">JavaDocs Core</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/">JavaDocs Components</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-console/apidocs/">JavaDocs Console</a></span></li>
+	<li><a href="Glossary" title="Glossary">Glossary</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Features"></a>Features</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Components" title="Components">Components</a></li>
+	<li><a href="Routing" title="Routing">Routing</a></li>
+	<li><a href="Transformation" title="Transformation">Transformation</a></li>
+	<li><a href="Spring+Client+Toolkit" title="Spring Client Toolkit">Spring Client Toolkit</a></li>
+	<li><a href="Client+API" title="Client API">Client API</a></li>
+	<li><a href="POJO+support" title="POJO support">POJO support</a></li>
+	<li><a href="Expressions" title="Expressions">Expressions</a></li>
+	<li><a href="Component+helper+classes" title="Component helper classes">Component helper classes</a></li>
+	<li><a href="Ant+Tasks" title="Ant Tasks">Ant Tasks</a></li>
+	<li><a href="JMX+Console" title="JMX Console">JMX Console</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Integration"></a>Integration</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Spring+support" title="Spring support">Spring support</a></li>
+	<li><a href="Geronimo+Integration" title="Geronimo Integration">Geronimo Integration</a></li>
+	<li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Integration</a></li>
+	<li><a href="Tomcat+Integration" title="Tomcat Integration">Tomcat Integration</a></li>
+	<li><a href="JOnAS+Integration" title="JOnAS Integration">JOnAS Integration</a></li>
+	<li><a href="JNDI+configuration" title="JNDI configuration">JNDI configuration</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-ServiceMixComponents"></a>ServiceMix Components</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="BPEL" title="BPEL">BPEL</a></li>
+	<li><a href="Cache" title="Cache">Cache</a></li>
+	<li><a href="Drools" title="Drools">Drools</a></li>
+	<li><a href="Email" title="Email">Email</a></li>
+	<li><a href="File" title="File">File</a></li>
+	<li><a href="FTP" title="FTP">FTP</a></li>
+	<li><a href="Groovy" title="Groovy">Groovy</a></li>
+	<li><a href="HTTP" title="HTTP">HTTP</a></li>
+	<li><a href="Jabber" title="Jabber">Jabber</a></li>
+	<li><a href="JAX+WS" title="JAX WS">JAX WS</a></li>
+	<li><a href="JCA" title="JCA">JCA</a></li>
+	<li><a href="JMS" title="JMS">JMS</a></li>
+	<li><a href="Quartz" title="Quartz">Quartz</a></li>
+	<li><a href="Reflection" title="Reflection">Reflection</a></li>
+	<li><a href="RSS" title="RSS">RSS</a></li>
+	<li><a href="SAAJ" title="SAAJ">SAAJ</a></li>
+	<li><a href="Scripting" title="Scripting">Scripting</a></li>
+	<li><a href="ServiceMix" title="ServiceMix">ServiceMix</a></li>
+	<li><a href="Validation" title="Validation">Validation</a></li>
+	<li><a href="XFire" title="XFire">XFire</a></li>
+	<li><a href="XPath+Router" title="XPath Router">XPath Router</a></li>
+	<li><a href="XSLT" title="XSLT">XSLT</a></li>
+	<li><a href="XSQL" title="XSQL">XSQL</a></li>
+	<li><a href="VFS" title="VFS">VFS</a></li>
+	<li><a href="WSIF" title="WSIF">WSIF</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Tooling"></a>Tooling</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Visualisation" title="Visualisation">Visualisation</a></li>
+	<li><a href="Eclipse+plugin" title="Eclipse plugin">Eclipse plugin</a></li>
+	<li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Deployer</a></li>
+	<li><a href="WAR+Deployment" title="WAR Deployment">WAR Deployment</a></li>
+	<li><a href="Maven+JBI+plugin" title="Maven JBI plugin">Maven JBI plugin</a></li>
+	<li><a href="Maven+SAR+plugin" title="Maven SAR plugin">Maven SAR plugin</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-OtherJBIsoftware"></a>Other JBI software</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://incubator.apache.org/projects/ode.html">Apache ODE</a></span></li>
+	<li><span class="nobr"><a href="http://forge.objectweb.org/projects/celtix/">Celtix</a></span></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-RelatedProjects"></a>Related Projects</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://activemq.codehaus.org/">ActiveMQ</a></span></li>
+	<li><span class="nobr"><a href="http://jencks.org/">Jencks</a></span></li>
+	<li><span class="nobr"><a href="http://lingo.codehaus.org/">Lingo</a></span></li>
+	<li><span class="nobr"><a href="http://activesoap.codehaus.org/">ActiveSOAP</a></span></li>
+	<li><span class="nobr"><a href="http://www.springframework.org/">Spring</a></span></li>
+	<li><span class="nobr"><a href="http://geronimo.apache.org/">Geronimo</a></span></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Support"></a>Support</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://issues.apache.org/activemq/browse/SM">Issues</a></span></li>
+	<li><span class="nobr"><a href="http://issues.apache.org/activemq/browse/SM?report=com.atlassian.jira.plugin.system.project:roadmap-panel">Roadmap</a></span></li>
+	<li><span class="nobr"><a href="http://issues.apache.org/activemq/browse/SM?report=com.atlassian.jira.plugin.system.project:changelog-panel">Change log</a></span></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Developers"></a>Developers</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Source" title="Source">Source</a></li>
+	<li><a href="Roadmap" title="Roadmap">Roadmap</a></li>
+	<li><a href="Ideas" title="Ideas">Ideas</a></li>
+	<li><a href="Becoming+a+committer" title="Becoming a committer">Becoming a committer</a></li>
+	<li><a href="Release+Guide" title="Release Guide">Release Guide</a></li>
+	<li><span class="nobr"><a href="http://ci.codehaus.org/beetlejuice/viewProjectSummary.action?projectName=ServiceMix">BeetleJuice</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/clover/">Clover Report</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref/index.html">Source XRef</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html">Test Source XRef</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html">XSD</a></span></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3>
+
+<p><span class="nobr"><a href="http://www.yourkit.com"><img src="http://incubator.apache.org/servicemix/download/attachments/25208/yourkit.jpg" align="absmiddle" border="0"/></a></span></p></div>
+          
+          <div class="section_3">
+            <h3>Feeds</h3>
+            <ul class="feedList">
+              <li><a class="rss" href="http://docs.codehaus.org/spaces/rss.action?key=SM&amp;newPages=false">Site</a></li>
+              <li><a class="rss" href="http://docs.codehaus.org/spaces/blogrss.action?key=SM">News</a></li>
+            </ul>
+          </div>
+        </div>
+      </td>
+      <td id="umain">
+        <div class="content">
+          
+          <div id="upage_title">News</div>
+          <div id="uads">
+
+
+<center>
+
+</center>
+
+          </div>
+              
+                    <div class="blogSurtitle">
+                <img src="http://docs.codehaus.org/images/icons/blogentry_16.gif" height="16" width="16" border="0" align="absmiddle"/>
+                <a class="blogDate" href="http://docs.codehaus.org/display/SM/2006/03/23">Thursday, March 23, 2006</a>
+            </div>
+        
+
+<div class="blogpost" style="margin-bottom: 30px">
+    <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2006/03/23/New+Discussion+Forums+Available+at+Nabble">New Discussion Forums Available at Nabble</a></div>
+
+    <div class="pagesubheading">
+                    </div>
+        <div class="wiki-content">
+         <p>Before posting you might want to read the <a href="Tips+for+getting+help" title="Tips for getting help">Tips for getting help</a>.</p>
+
+
+<p>Many users prefer to use online forums rather than joining a mail list which can lead to lots more email traffic so we use the online forums at <span class="nobr"><a href="http://www.nabble.com/ServiceMix-f12049.html">Nabble forums</a></span> which also work with our <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a> so that both stay completely in sync.</p>
+
+<ul>
+	<li><span class="nobr"><a href="http://www.nabble.com/ServiceMix---User-f12050.html">ServiceMix User Forum</a></span></li>
+	<li><span class="nobr"><a href="http://www.nabble.com/ServiceMix---Dev-f12051.html">ServiceMix Developer Forum</a></span></li>
+</ul>
+
+
+<p>The old forum is <span class="nobr"><a href="http://forums.activemq.org/forums/show/3.page">here</a></span> which is now deprecated.</p>
+        </div>
+            <div class="endsection">
+        <b>Posted at 23 Mar @ 9:00 AM</b> by
+        
+            <a href="display/~jstrachan">James Strachan</a>        |
+        
+                    <a href="http://docs.codehaus.org/display/SM/2006/03/23/New+Discussion+Forums+Available+at+Nabble?showComments=true#comments">0 comments</a>
+        
+
+    </div>
+</div>    
+                    <div class="blogSurtitle">
+                <img src="http://docs.codehaus.org/images/icons/blogentry_16.gif" height="16" width="16" border="0" align="absmiddle"/>
+                <a class="blogDate" href="http://docs.codehaus.org/display/SM/2006/03/22">Wednesday, March 22, 2006</a>
+            </div>
+        
+
+<div class="blogpost" style="margin-bottom: 30px">
+    <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2006/03/22/Come+and+meet+us+at+TSSJS">Come and meet us at TSSJS</a></div>
+
+    <div class="pagesubheading">
+                    </div>
+        <div class="wiki-content">
+         <p>Two ServiceMixers, <span class="nobr"><a href="http://javasymposium.techtarget.com/html/det_descriptions.htm#JStrachanOSSOA">James Strachan</a></span> and <span class="nobr"><a href="http://javasymposium.techtarget.com/html/det_descriptions.htm#SnyderService">Bruce Synder</a></span> will be giving presentations at <span class="nobr"><a href="http://javasymposium.techtarget.com/">TSSJS</a></span> this week so if you are in the Vegas area, do pop by and say hello</p>
+        </div>
+            <div class="endsection">
+        <b>Posted at 22 Mar @ 8:58 PM</b> by
+        
+            <a href="display/~jstrachan">James Strachan</a>        |
+        
+                    <a href="http://docs.codehaus.org/display/SM/2006/03/22/Come+and+meet+us+at+TSSJS?showComments=true#comments">0 comments</a>
+        
+
+    </div>
+</div>    
+                    <div class="blogSurtitle">
+                <img src="http://docs.codehaus.org/images/icons/blogentry_16.gif" height="16" width="16" border="0" align="absmiddle"/>
+                <a class="blogDate" href="http://docs.codehaus.org/display/SM/2006/02/15">Wednesday, February 15, 2006</a>
+            </div>
+        
+
+<div class="blogpost" style="margin-bottom: 30px">
+    <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2006/02/15/Creating+graphical+JBI+deployments+with+ServiceMix+in+Eclipse">Creating graphical JBI deployments with ServiceMix in Eclipse</a></div>
+
+    <div class="pagesubheading">
+                    </div>
+        <div class="wiki-content">
+         <p>Philip Dodds has a <span class="nobr"><a href="http://www.fiveclouds.com/articles/2006/02/11/servicemix-deployments-in-eclipse">great article</a></span> showing ServiceMix deployments being created in <span class="nobr"><a href="http://www.eclipse.org/">Eclipse</a></span>. Go Philip!</p>
+
+        </div>
+            <div class="endsection">
+        <b>Posted at 15 Feb @ 1:49 PM</b> by
+        
+            <a href="display/~jstrachan">James Strachan</a>        |
+        
+                    <a href="http://docs.codehaus.org/display/SM/2006/02/15/Creating+graphical+JBI+deployments+with+ServiceMix+in+Eclipse?showComments=true#comments">0 comments</a>
+        
+
+    </div>
+</div>    
+                    <div class="blogSurtitle">
+                <img src="http://docs.codehaus.org/images/icons/blogentry_16.gif" height="16" width="16" border="0" align="absmiddle"/>
+                <a class="blogDate" href="http://docs.codehaus.org/display/SM/2006/01/25">Wednesday, January 25, 2006</a>
+            </div>
+        
+
+<div class="blogpost" style="margin-bottom: 30px">
+    <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2006/01/25/ServiceMix+at+JavaWorld">ServiceMix at JavaWorld</a></div>
+
+    <div class="pagesubheading">
+                    </div>
+        <div class="wiki-content">
+         <p>Jeff Hanson has written a good article on <span class="nobr"><a href="http://www.javaworld.com/javaworld/jw-12-2005/jw-1212-esb.html">ServiceMix as an enterprise service bus</a></span> at <span class="nobr"><a href="http://www.javaworld.com">JavaWorld</a></span></p>
+        </div>
+            <div class="endsection">
+        <b>Posted at 25 Jan @ 4:48 AM</b> by
+        
+            <a href="display/~jstrachan">James Strachan</a>        |
+        
+                    <a href="http://docs.codehaus.org/display/SM/2006/01/25/ServiceMix+at+JavaWorld?showComments=true#comments">0 comments</a>
+        
+
+    </div>
+</div>    
+                    <div class="blogSurtitle">
+                <img src="http://docs.codehaus.org/images/icons/blogentry_16.gif" height="16" width="16" border="0" align="absmiddle"/>
+                <a class="blogDate" href="http://docs.codehaus.org/display/SM/2006/01/03">Tuesday, January 3, 2006</a>
+            </div>
+        
+
+<div class="blogpost" style="margin-bottom: 30px">
+    <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2006/01/03/Servicemix+3.0-SNAPSHOT">Servicemix 3.0-SNAPSHOT</a></div>
+
+    <div class="pagesubheading">
+                    Last changed: Jan 23, 2006 17:12 by     <a href="display/~gnt">Guillaume Nodet</a>                    </div>
+        <div class="wiki-content">
+         <p>ServiceMix version is now 3.0-SNAPSHOT.<br/>
+Packages have been renamed to org.apache.servicemix.<br/>
+Nightly snapshots of the distribution can be downloaded from <span class="nobr"><a href="http://dist.codehaus.org/org.apache.servicemix/distributions/">http://dist.codehaus.org/org.apache.servicemix/distributions/</a></span>.</p>
+        </div>
+            <div class="endsection">
+        <b>Posted at 03 Jan @ 4:06 AM</b> by
+        
+            <a href="display/~gnt">Guillaume Nodet</a>        |
+        
+                    <a href="http://docs.codehaus.org/display/SM/2006/01/03/Servicemix+3.0-SNAPSHOT?showComments=true#comments">0 comments</a>
+        
+
+    </div>
+</div>    
+                    <div class="blogSurtitle">
+                <img src="http://docs.codehaus.org/images/icons/blogentry_16.gif" height="16" width="16" border="0" align="absmiddle"/>
+                <a class="blogDate" href="http://docs.codehaus.org/display/SM/2006/01/23">Monday, January 23, 2006</a>
+            </div>
+        
+
+<div class="blogpost" style="margin-bottom: 30px">
+    <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2006/01/23/Awesome+ServiceMix+Article">Awesome ServiceMix Article</a></div>
+
+    <div class="pagesubheading">
+                    </div>
+        <div class="wiki-content">
+         <p>This article gives a nice overview of JBI and ServiceMix:<br/>
+<span class="nobr"><a href="http://www.itarchitect.co.uk/articles/display.asp?id=222">http://www.itarchitect.co.uk/articles/display.asp?id=222</a></span></p>
+        </div>
+            <div class="endsection">
+        <b>Posted at 23 Jan @ 2:14 PM</b> by
+        
+            <a href="display/~lmalgeri">Lisa Malgeri</a>        |
+        
+                    <a href="http://docs.codehaus.org/display/SM/2006/01/23/Awesome+ServiceMix+Article?showComments=true#comments">0 comments</a>
+        
+
+    </div>
+</div>    
+                    <div class="blogSurtitle">
+                <img src="http://docs.codehaus.org/images/icons/blogentry_16.gif" height="16" width="16" border="0" align="absmiddle"/>
+                <a class="blogDate" href="http://docs.codehaus.org/display/SM/2005/12/12">Monday, December 12, 2005</a>
+            </div>
+        
+
+<div class="blogpost" style="margin-bottom: 30px">
+    <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2005/12/12/Subversion+has+moved+to+Apache">Subversion has moved to Apache</a></div>
+
+    <div class="pagesubheading">
+                    </div>
+        <div class="wiki-content">
+         <p>We have now moved the <a href="Source" title="Source">Source</a> of ServiceMix to Apache. You can surf and checkout the latest code from here</p>
+
+<p><span class="nobr"><a href="https://svn.apache.org/repos/asf/incubator/servicemix/">https://svn.apache.org/repos/asf/incubator/servicemix/</a></span></p>
+
+<p>Also we now have a set of Apache based <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a></p>
+        </div>
+            <div class="endsection">
+        <b>Posted at 12 Dec @ 11:01 AM</b> by
+        
+            <a href="display/~jstrachan">James Strachan</a>        |
+        
+                    <a href="http://docs.codehaus.org/display/SM/2005/12/12/Subversion+has+moved+to+Apache?showComments=true#comments">0 comments</a>
+        
+
+    </div>
+</div>    
+                    <div class="blogSurtitle">
+                <img src="http://docs.codehaus.org/images/icons/blogentry_16.gif" height="16" width="16" border="0" align="absmiddle"/>
+                <a class="blogDate" href="http://docs.codehaus.org/display/SM/2005/11/23">Wednesday, November 23, 2005</a>
+            </div>
+        
+
+<div class="blogpost" style="margin-bottom: 30px">
+    <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2005/11/23/ServiceMix+discussion+forum+open">ServiceMix discussion forum open</a></div>
+
+    <div class="pagesubheading">
+                    </div>
+        <div class="wiki-content">
+         <p>There is a new <span class="nobr"><a href="http://forums.logicblaze.com/forums/show/3.page">discussion forum</a></span> now open to dicusss all things ServiceMix, ESB or JBI. </p>
+        </div>
+            <div class="endsection">
+        <b>Posted at 23 Nov @ 6:05 AM</b> by
+        
+            <a href="display/~jstrachan">James Strachan</a>        |
+        
+                    <a href="http://docs.codehaus.org/display/SM/2005/11/23/ServiceMix+discussion+forum+open?showComments=true#comments">0 comments</a>
+        
+
+    </div>
+</div>    
+                    <div class="blogSurtitle">
+                <img src="http://docs.codehaus.org/images/icons/blogentry_16.gif" height="16" width="16" border="0" align="absmiddle"/>
+                <a class="blogDate" href="http://docs.codehaus.org/display/SM/2005/11/15">Tuesday, November 15, 2005</a>
+            </div>
+        
+
+<div class="blogpost" style="margin-bottom: 30px">
+    <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2005/11/15/ServiceMix+2.0.2+Release">ServiceMix 2.0.2 Release</a></div>
+
+    <div class="pagesubheading">
+                    </div>
+        <div class="wiki-content">
+         <p>The ServiceMix team is pleased to announce the <a href="ServiceMix+2.0+Release" title="ServiceMix 2.0 Release">ServiceMix 2.0.2 Release</a>.<br/>
+This release provides a few bug fixes.</p>
+        </div>
+            <div class="endsection">
+        <b>Posted at 15 Nov @ 4:44 PM</b> by
+        
+            <a href="display/~gnt">Guillaume Nodet</a>        |
+        
+                    <a href="http://docs.codehaus.org/display/SM/2005/11/15/ServiceMix+2.0.2+Release?showComments=true#comments">0 comments</a>
+        
+
+    </div>
+</div>    
+                    <div class="blogSurtitle">
+                <img src="http://docs.codehaus.org/images/icons/blogentry_16.gif" height="16" width="16" border="0" align="absmiddle"/>
+                <a class="blogDate" href="http://docs.codehaus.org/display/SM/2005/11/07">Monday, November 7, 2005</a>
+            </div>
+        
+
+<div class="blogpost" style="margin-bottom: 30px">
+    <div class="blogHeading"><a href="http://docs.codehaus.org/display/SM/2005/11/07/ServiceMix+2.0+Released+with+improved+JBI%2C+publish+subscribe+routing+and+better+support+for+XBean+and+JAX+WS">ServiceMix 2.0 Released with improved JBI, publish subscribe routing and better support for XBean and JAX WS</a></div>
+
+    <div class="pagesubheading">
+                    Last changed: Nov 08, 2005 07:34 by     <a href="display/~jstrachan">James Strachan</a>                    </div>
+        <div class="wiki-content">
+         <p>We are pleased to announce the <a href="ServiceMix+2.0+Release" title="ServiceMix 2.0 Release">ServiceMix 2.0 Release</a>. New features include...</p>
+
+<ul>
+	<li>Improved JBI support including both interface based routing as well as service based routing together with improved WSDL parsing</li>
+	<li>Support for <a href="Publish+Subscribe+Routing" title="Publish Subscribe Routing">Publish Subscribe Routing</a></li>
+	<li>Improved <a href="JAX+WS" title="JAX WS">JAX WS</a> support</li>
+	<li>Migration to <span class="nobr"><a href="http://xbean.org/">XBean</a></span> as the XML configuration mechanism which works with any Spring release and allows us to mix and match ServiceMix configuration with other XML configuration mechanisms like ActiveMQ and Jencks</li>
+	<li>Migration to backport.util.concurrent to make it easier to move direct to a pure Java 5 solution.</li>
+	<li>a new Loan Broker example from the <span class="nobr"><a href="http://www.eaipatterns.com/ComposedMessagingWS.html">EIP Patterns Book</a></span></li>
+	<li>a new simpler POJO based deployment model</li>
+	<li>build reorganised to make ServiceMix more modular</li>
+	<li>a new ChainedComponent which implements simple pipelines of components easily</li>
+</ul>
+
+        </div>
+            <div class="endsection">
+        <b>Posted at 07 Nov @ 3:33 PM</b> by
+        
+            <a href="display/~jstrachan">James Strachan</a>        |
+        
+                    <a href="http://docs.codehaus.org/display/SM/2005/11/07/ServiceMix+2.0+Released+with+improved+JBI%2C+publish+subscribe+routing+and+better+support+for+XBean+and+JAX+WS?showComments=true#comments">0 comments</a>
+        
+
+    </div>
+</div>    
+        </div>
+<div style="text-align: center; width: 100%; padding-top: 1cm;padding-bottom: 1cm">
+
+
+</div>
+</td>
+    <tr>
+    <tr id="ulayout_bottom">
+      <td colspan="2" id="ufooter">
+        <div class="content">
+          
+          
+          <div>
+            <a class="editPage" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&amp;title=News"><img src="http://www.codehaus.org/edit.gif" border="0">[&nbsp;edit&nbsp;]</a>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+</html>

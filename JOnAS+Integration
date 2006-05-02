@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<head profile="http://www.w3.org/2000/08/w3c-synd/#">
+    <link rel="stylesheet" href="site.css" type="text/css"/>
+    <title>ServiceMix - JOnAS Integration</title>
+</head>
+
+<body>
+
+  <table id="ulayout">
+    <tr id="ulayout_top">
+      <td colspan="2" valign="bottom">
+        <table width="100%">
+          <tr id="utop">
+            <td id="utop_left">
+              <a href="http://incubator.apache.org"><img src="http://incubator.apache.org/images/apache-incubator-logo.png" style="border: none;"/></a>
+            </td>
+            <td id="utop_right" style="text-align: right; vertical-align: middle;padding-right:10px;">
+              <a href="http://incubator.apache.org/servicemix"><img src="images/logo.gif" alt="ServiceMix" class="spaceLogo" border="0"/></a>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" id="uadvertising_top">
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <table id="utop_nav">
+          <tr>
+            <td align="left" valign="middle">
+              <div id="ubreadcrumbs">
+                <p>
+                  <a href="">Home</a>
+                                     		                  </p>
+              </div>
+            </td>
+            <td align="right" valign="middle">
+              <div id="uquicklinks">
+                                  <p><a href="Download" title="Download">Download</a> | <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/">JavaDocs</a></span> <span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/">Components</a></span> | <a href="Source" title="Source">Source</a> | <span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM">Wiki</a></span> |<span class="nobr"><a href="irc://irc.codehaus.org/servicemix">IRC</a></span> | <span class="nobr"><a href="http://servlet.uwyn.com/drone/log/hausbot/servicemix">IRC Log</a></span> | <a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a> | <a href="Discussion+Forums" title="Discussion Forums">Discussion Forums</a> | <span class="nobr"><a href="http://issues.apache.org/activemq/browse/SM">Support</a></span></p>
+                              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2"></td>
+    </tr>
+    <tr id="ulayout_middle">
+      <td id="uleft">
+        <div class="content">
+                      <div class="section_3"><h3><a name="Navigation-Overview"></a>Overview</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Home" title="Home">Home</a></li>
+	<li><a href="Introduction+to+ESB" title="Introduction to ESB">Introduction to ESB</a></li>
+	<li><a href="Background+to+ServiceMix" title="Background to ServiceMix">Background to ServiceMix</a></li>
+	<li><a href="News" title="News">News</a></li>
+	<li><a href="FAQ" title="FAQ">FAQ</a></li>
+	<li><a href="Download" title="Download">Download</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Community"></a>Community</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://docs.codehaus.org/pages/listpages.action?key=SM">Wiki</a></span></li>
+	<li><a href="Discussion+Forums" title="Discussion Forums">Discussion Forums</a></li>
+	<li><a href="Mailing+Lists" title="Mailing Lists">Mailing Lists</a></li>
+	<li><a href="Contributing" title="Contributing">Contributing</a></li>
+	<li><a href="Team" title="Team">Team</a></li>
+	<li><a href="Users" title="Users">Users</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Documentation"></a>Documentation</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Getting+Started" title="Getting Started">Getting Started</a></li>
+	<li><a href="Running" title="Running">Running</a></li>
+	<li><a href="Examples" title="Examples">Examples</a></li>
+	<li><a href="Use+Cases" title="Use Cases">Use Cases</a></li>
+	<li><a href="Configuration" title="Configuration">Configuration</a></li>
+	<li><a href="Xml+Reference" title="Xml Reference">Xml Reference</a></li>
+	<li><a href="Management" title="Management">Management</a></li>
+	<li><a href="Architecture" title="Architecture">Architecture</a></li>
+	<li><a href="Clustering" title="Clustering">Clustering</a></li>
+	<li><a href="NMR+Flows" title="NMR Flows">NMR Flows</a></li>
+	<li><a href="Articles" title="Articles">Articles</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Reference"></a>Reference</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html">JBI API</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/">JavaDocs Core</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/">JavaDocs Components</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix-console/apidocs/">JavaDocs Console</a></span></li>
+	<li><a href="Glossary" title="Glossary">Glossary</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Features"></a>Features</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Components" title="Components">Components</a></li>
+	<li><a href="Routing" title="Routing">Routing</a></li>
+	<li><a href="Transformation" title="Transformation">Transformation</a></li>
+	<li><a href="Spring+Client+Toolkit" title="Spring Client Toolkit">Spring Client Toolkit</a></li>
+	<li><a href="Client+API" title="Client API">Client API</a></li>
+	<li><a href="POJO+support" title="POJO support">POJO support</a></li>
+	<li><a href="Expressions" title="Expressions">Expressions</a></li>
+	<li><a href="Component+helper+classes" title="Component helper classes">Component helper classes</a></li>
+	<li><a href="Ant+Tasks" title="Ant Tasks">Ant Tasks</a></li>
+	<li><a href="JMX+Console" title="JMX Console">JMX Console</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Integration"></a>Integration</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Spring+support" title="Spring support">Spring support</a></li>
+	<li><a href="Geronimo+Integration" title="Geronimo Integration">Geronimo Integration</a></li>
+	<li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Integration</a></li>
+	<li><a href="Tomcat+Integration" title="Tomcat Integration">Tomcat Integration</a></li>
+	<li><a href="JOnAS+Integration" title="JOnAS Integration">JOnAS Integration</a></li>
+	<li><a href="JNDI+configuration" title="JNDI configuration">JNDI configuration</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-ServiceMixComponents"></a>ServiceMix Components</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="BPEL" title="BPEL">BPEL</a></li>
+	<li><a href="Cache" title="Cache">Cache</a></li>
+	<li><a href="Drools" title="Drools">Drools</a></li>
+	<li><a href="Email" title="Email">Email</a></li>
+	<li><a href="File" title="File">File</a></li>
+	<li><a href="FTP" title="FTP">FTP</a></li>
+	<li><a href="Groovy" title="Groovy">Groovy</a></li>
+	<li><a href="HTTP" title="HTTP">HTTP</a></li>
+	<li><a href="Jabber" title="Jabber">Jabber</a></li>
+	<li><a href="JAX+WS" title="JAX WS">JAX WS</a></li>
+	<li><a href="JCA" title="JCA">JCA</a></li>
+	<li><a href="JMS" title="JMS">JMS</a></li>
+	<li><a href="Quartz" title="Quartz">Quartz</a></li>
+	<li><a href="Reflection" title="Reflection">Reflection</a></li>
+	<li><a href="RSS" title="RSS">RSS</a></li>
+	<li><a href="SAAJ" title="SAAJ">SAAJ</a></li>
+	<li><a href="Scripting" title="Scripting">Scripting</a></li>
+	<li><a href="ServiceMix" title="ServiceMix">ServiceMix</a></li>
+	<li><a href="Validation" title="Validation">Validation</a></li>
+	<li><a href="XFire" title="XFire">XFire</a></li>
+	<li><a href="XPath+Router" title="XPath Router">XPath Router</a></li>
+	<li><a href="XSLT" title="XSLT">XSLT</a></li>
+	<li><a href="XSQL" title="XSQL">XSQL</a></li>
+	<li><a href="VFS" title="VFS">VFS</a></li>
+	<li><a href="WSIF" title="WSIF">WSIF</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Tooling"></a>Tooling</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Visualisation" title="Visualisation">Visualisation</a></li>
+	<li><a href="Eclipse+plugin" title="Eclipse plugin">Eclipse plugin</a></li>
+	<li><a href="JBoss+Deployer" title="JBoss Deployer">JBoss Deployer</a></li>
+	<li><a href="WAR+Deployment" title="WAR Deployment">WAR Deployment</a></li>
+	<li><a href="Maven+JBI+plugin" title="Maven JBI plugin">Maven JBI plugin</a></li>
+	<li><a href="Maven+SAR+plugin" title="Maven SAR plugin">Maven SAR plugin</a></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-OtherJBIsoftware"></a>Other JBI software</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://incubator.apache.org/projects/ode.html">Apache ODE</a></span></li>
+	<li><span class="nobr"><a href="http://forge.objectweb.org/projects/celtix/">Celtix</a></span></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-RelatedProjects"></a>Related Projects</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://activemq.codehaus.org/">ActiveMQ</a></span></li>
+	<li><span class="nobr"><a href="http://jencks.org/">Jencks</a></span></li>
+	<li><span class="nobr"><a href="http://lingo.codehaus.org/">Lingo</a></span></li>
+	<li><span class="nobr"><a href="http://activesoap.codehaus.org/">ActiveSOAP</a></span></li>
+	<li><span class="nobr"><a href="http://www.springframework.org/">Spring</a></span></li>
+	<li><span class="nobr"><a href="http://geronimo.apache.org/">Geronimo</a></span></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Support"></a>Support</h3>
+
+<ul class="alternate" type="square">
+	<li><span class="nobr"><a href="http://issues.apache.org/activemq/browse/SM">Issues</a></span></li>
+	<li><span class="nobr"><a href="http://issues.apache.org/activemq/browse/SM?report=com.atlassian.jira.plugin.system.project:roadmap-panel">Roadmap</a></span></li>
+	<li><span class="nobr"><a href="http://issues.apache.org/activemq/browse/SM?report=com.atlassian.jira.plugin.system.project:changelog-panel">Change log</a></span></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Developers"></a>Developers</h3>
+
+<ul class="alternate" type="square">
+	<li><a href="Source" title="Source">Source</a></li>
+	<li><a href="Roadmap" title="Roadmap">Roadmap</a></li>
+	<li><a href="Ideas" title="Ideas">Ideas</a></li>
+	<li><a href="Becoming+a+committer" title="Becoming a committer">Becoming a committer</a></li>
+	<li><a href="Release+Guide" title="Release Guide">Release Guide</a></li>
+	<li><span class="nobr"><a href="http://ci.codehaus.org/beetlejuice/viewProjectSummary.action?projectName=ServiceMix">BeetleJuice</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/clover/">Clover Report</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref/index.html">Source XRef</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/xref-test/index.html">Test Source XRef</a></span></li>
+	<li><span class="nobr"><a href="http://servicemix.codehaus.org/maven/servicemix.xsd.html">XSD</a></span></li>
+</ul>
+
+
+</div><div class="section_3"><h3><a name="Navigation-Toolsweuse"></a>Tools we use</h3>
+
+<p><span class="nobr"><a href="http://www.yourkit.com"><img src="http://incubator.apache.org/servicemix/download/attachments/25208/yourkit.jpg" align="absmiddle" border="0"/></a></span></p></div>
+          
+          <div class="section_3">
+            <h3>Feeds</h3>
+            <ul class="feedList">
+              <li><a class="rss" href="http://docs.codehaus.org/spaces/rss.action?key=SM&amp;newPages=false">Site</a></li>
+              <li><a class="rss" href="http://docs.codehaus.org/spaces/blogrss.action?key=SM">News</a></li>
+            </ul>
+          </div>
+        </div>
+      </td>
+      <td id="umain">
+        <div class="content">
+          
+          <div id="upage_title">JOnAS Integration</div>
+          <div id="uads">
+
+
+<center>
+
+</center>
+
+          </div>
+          <div class="section_1"><h1><a name="JOnASIntegration-JOnASIntegration"></a>JOnAS Integration</h1>
+
+<p> The Bull R&amp;D team in charge of JOnAS development is pleased to announce the Service Mix integration in the lastest JOnAS stable release (<span class="nobr"><a href="http://forge.objectweb.org/project/download.php?group_id=5&amp;file_id=5189">jonas4.6.6-tomcat5.5.12.tgz</a></span>). This version is the latest J2EE 1.4 certfied release.</p>
+
+<p>The Service Mix version needed for this integration must be one up to servicemix-3.0-M1.</p>
+
+<p>Thanks to Guillaume Nodet for the overnigth fix on the standard jms processor !</p>
+
+<div class="section_2"><h2><a name="JOnASIntegration-Installation"></a>Installation</h2>
+
+<p>In order to deploy the ServiceMix web application into the JOnAS server, follow the next configuration steps.</p>
+
+<p>First of all, download the latest ServiceMix version (servicemix-3.0-M1) or SNAPSHOT released after the 2006-04-07. Then you can extract it in a directory of your choice to be able to update configuration files.</p>
+
+<p>ServiceMix web application configuration :</p>
+<ul>
+	<li>configure JORAM jms provider instead of activeMQ in the web app WEB-INF/applicationContext.xml
+<div class="code"><div class="codeContent">
+<pre class="code-java">&lt;bean id=<span class="code-quote">"jmsFactory"</span>
+	class=<span class="code-quote">"org.objectweb.joram.client.jms.local.LocalConnectionFactory"</span>&gt;
+&lt;/bean&gt;</pre>
+</div></div></li>
+	<li><font color="#000000">remove references to activeMQ</font> in the web app WEB-INF/
+<div class="code"><div class="codeContent">
+<pre class="code-java">&lt;context-param&gt;
+	&lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+	&lt;param-value&gt;/WEB-INF/applicationContext.xml&lt;/param-value&gt;
+&lt;/context-param&gt;</pre>
+</div></div>
+<p>instead of</p>
+<div class="code"><div class="codeContent">
+<pre class="code-java">&lt;context-param&gt;
+	&lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+	&lt;param-value&gt;/WEB-INF/applicationContext.xml WEB-INF/activeMQ.xml&lt;/param-value&gt;
+&lt;/context-param&gt;</pre>
+</div></div></li>
+</ul>
+
+
+<ul>
+	<li>&nbsp;remove references to activeMQ in the web app WEB-INF/applicationContext.xml</li>
+</ul>
+
+
+<p>You can take the following code these files :<br/>
+&nbsp;</p>
+
+<p><b>applicationContext.xml</b></p>
+<div class="code"><div class="codeContent">
+<pre class="code-java">&lt;?xml version=<span class="code-quote">"1.0"</span> encoding=<span class="code-quote">"UTF-8"</span>?&gt;
+&lt;beans xmlns=<span class="code-quote">"http:<span class="code-comment">//xbean.org/schemas/spring/1.0"</span>
+</span>	xmlns:sm=<span class="code-quote">"http:<span class="code-comment">//servicemix.apache.org/config/1.0"</span>
+</span>	xmlns:my=<span class="code-quote">"http:<span class="code-comment">//servicemix.apache.org/demo/"</span>
+</span>	xmlns:foo=<span class="code-quote">"http:<span class="code-comment">//servicemix.apache.org/demo/"</span>&gt;
+</span>
+	&lt;!-- the JBI container --&gt;
+	&lt;sm:container id=<span class="code-quote">"jbi"</span> rootDir=<span class="code-quote">"@rootDir@"</span>
+		useMBeanServer=<span class="code-quote">"<span class="code-keyword">true</span>"</span> createMBeanServer=<span class="code-quote">"<span class="code-keyword">true</span>"</span>
+		installationDirPath=<span class="code-quote">"@installationDirPath@"</span>
+		deploymentDirPath=<span class="code-quote">"@deploymentDirPath@"</span>
+		monitorInstallationDirectory=<span class="code-quote">"<span class="code-keyword">true</span>"</span> dumpStats=<span class="code-quote">"<span class="code-keyword">true</span>"</span>
+		statsInterval=<span class="code-quote">"10"</span> transactionManager=<span class="code-quote">"#transactionManager"</span>&gt;
+
+	&lt;/sm:container&gt;
+
+	&lt;bean id=<span class="code-quote">"transactionManager"</span>
+		class=<span class="code-quote">"org.jencks.factory.TransactionManagerFactoryBean"</span> /&gt;
+
+
+	&lt;bean id=<span class="code-quote">"jmsFactory"</span>
+		class=<span class="code-quote">"org.objectweb.joram.client.jms.local.LocalConnectionFactory"</span>&gt;
+	&lt;/bean&gt;
+
+&lt;/beans&gt;</pre>
+</div></div>
+<p><b>web.xml</b></p>
+<div class="code"><div class="codeContent">
+<pre class="code-java">&lt;?xml version=<span class="code-quote">"1.0"</span> encoding=<span class="code-quote">"ISO-8859-1"</span>?&gt;
+
+&lt;!DOCTYPE web-app
+    PUBLIC <span class="code-quote">"-<span class="code-comment">//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"</span>
+</span>    <span class="code-quote">"http:<span class="code-comment">//java.sun.com/dtd/web-app_2_3.dtd"</span>&gt;
+</span>
+&lt;web-app&gt;
+
+  &lt;display-name&gt;ServiceMix Web Application&lt;/display-name&gt;
+  &lt;description&gt;Deploys ServiceMix inside a Web Application&lt;/description&gt;
+
+  &lt;context-param&gt;
+    &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+    &lt;param-value&gt;/WEB-INF/applicationContext.xml&lt;/param-value&gt;
+  &lt;/context-param&gt;
+  &lt;context-param&gt;
+    &lt;param-name&gt;contextClass&lt;/param-name&gt;
+    &lt;param-value&gt;org.apache.xbean.spring.context.XmlWebApplicationContext&lt;/param-value&gt;
+  &lt;/context-param&gt;
+
+  &lt;listener&gt;
+    &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+  &lt;/listener&gt;
+
+  &lt;!-- servlet mappings --&gt;
+
+  &lt;!-- the main JMX servlet --&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;JMXServlet&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.apache.servicemix.web.jmx.JMXServlet&lt;/servlet-class&gt;
+    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+  &lt;/servlet&gt;
+
+
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;JMXServlet&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/jmx/*&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+
+&lt;/web-app&gt;</pre>
+</div></div>
+<p><b>Warning</b> <b>:</b> ServiceMix is delivering the web application with a set of jar files which is not enough to use all components. You can add any required jar into the WEB-INF/lib directory of the web application.<br/>
+You can find a lot of used jars in ServiceMix standalone lib directory.</p>
+
+<p>Once you have generated the new web application, you can deploy it into your JOnAS server and then install any components and deploy any service assemblies you want !</p>
+
+</div><div class="section_2"><h2><a name="JOnASIntegration-Example"></a>Example</h2>
+
+<p>Here is an example running into ServiceMix deployed as a web application into JOnAS application server.</p>
+
+<p>This example called ServiceMixOnJOnASExample1 is using three different components:</p>
+<ol>
+	<li>servicemix-http (Binding Component)</li>
+	<li>drools (Service Engine)</li>
+	<li>servicemix-jms (Binding Component)</li>
+</ol>
+
+
+<p>The client sends a SOAP message with an attachment over http to servicemix-http<br/>
+which post it to the NMR. Then the message is forwarded to the drools component. If the SOAP body of the sent message contains the keyword 'keep', then the message is posted to the NMR without any modification. Else, the attachment is remove from the message. Then the message is routed to the servicemix-jms component which transforms it into a JMS Message sent to the ServiceMixOnJOnASExample1Queue queue. The client (which was waiting on this queue) received the message.</p>
+
+<p>Here is a schema of the flow :<br/>
+<img src="http://incubator.apache.org/servicemix/download/attachments/49604/schemaExample.gif" align="absmiddle" border="0"/><br/>
+&nbsp;<br/>
+You can download an archive containing all the example ; <span class="nobr"><a href="http://docs.codehaus.org/download/attachments/49604/ServiceMixOnJOnASExample1.tgz?version=3" title="ServiceMixOnJOnASExample1.tgz attached to JOnAS Integration">ServiceMixOnJOnASExample1</a></span></p>
+
+</div><div class="section_2"><h2><a name="JOnASIntegration-Limitations"></a>Limitations</h2>
+
+<p>ServiceMix clustering is using ActiveMQ classes so this functionnality is not supported in JOnAS which is using JORAM.</p>
+
+<p>JORAM could not be configured through spring xm files, so servicemix lightweight jms component could not be used.&nbsp;</p></div></div>
+        </div>
+<div style="text-align: center; width: 100%; padding-top: 1cm;padding-bottom: 1cm">
+
+
+</div>
+</td>
+    <tr>
+    <tr id="ulayout_bottom">
+      <td colspan="2" id="ufooter">
+        <div class="content">
+          
+          
+          <div>
+            <a class="editPage" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=SM&amp;title=JOnAS+Integration"><img src="http://www.codehaus.org/edit.gif" border="0">[&nbsp;edit&nbsp;]</a>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </table>
+</html>
