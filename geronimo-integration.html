@@ -1,0 +1,715 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+    <LINK type="text/css" rel="stylesheet" href="resources/space.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <TITLE>
+Geronimo Integration
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://www.logicblaze.com/images/logos/products/ServiceMix/ServiceMix_logo_150.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="integration.html" title="Integration">Integration</A>&nbsp;&gt;&nbsp;<A href="" title="Geronimo Integration">Geronimo Integration</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><A href="introduction-to-esb.html" title="Introduction to ESB">Introduction to ESB</A></LI>
+	<LI><A href="background-to-servicemix.html" title="Background to ServiceMix">Background to ServiceMix</A></LI>
+	<LI><A href="news.html" title="News">News</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="site.html" title="Site">Site</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><SPAN class="nobr"><A href="navigation.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Documentation"></A>Documentation</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="getting-started.html" title="Getting Started">Getting Started</A></LI>
+	<LI><A href="running.html" title="Running">Running</A></LI>
+	<LI><A href="examples.html" title="Examples">Examples</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">Enterprise Integration Patterns</A></LI>
+	<LI><A href="use-cases-whole.html" title="Use Cases (whole)">Use Cases &#40;whole&#41;</A></LI>
+	<LI><A href="configuration.html" title="Configuration">Configuration</A></LI>
+	<LI><A href="xml-reference.html" title="Xml Reference">Xml Reference</A></LI>
+	<LI><A href="management.html" title="Management">Management</A></LI>
+	<LI><A href="architecture.html" title="Architecture">Architecture</A></LI>
+	<LI><A href="clustering.html" title="Clustering">Clustering</A></LI>
+	<LI><A href="nmr-flows.html" title="NMR Flows">NMR Flows</A></LI>
+	<LI><A href="articles.html" title="Articles">Articles</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Reference"></A>Reference</H3>
+
+<UL class="alternate" type="square">
+	<LI><SPAN class="nobr"><A href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html" title="Visit page outside Confluence" rel="nofollow">JBI API<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs Core<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-console/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs Console<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="glossary.html" title="Glossary">Glossary</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Features"></A>Features</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="components.html" title="Components">Components</A></LI>
+	<LI><A href="routing.html" title="Routing">Routing</A></LI>
+	<LI><A href="transformation.html" title="Transformation">Transformation</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">Enterprise Integration Patterns</A></LI>
+	<LI><A href="spring-client-toolkit.html" title="Spring Client Toolkit">Spring Client Toolkit</A></LI>
+	<LI><A href="client-api.html" title="Client API">Client API</A></LI>
+	<LI><A href="beanflow.html" title="BeanFlow">BeanFlow</A></LI>
+	<LI><A href="pojo-support.html" title="POJO support">POJO support</A></LI>
+	<LI><A href="expressions.html" title="Expressions">Expressions</A></LI>
+	<LI><A href="component-helper-classes.html" title="Component helper classes">Component helper classes</A></LI>
+	<LI><A href="ant-tasks.html" title="Ant Tasks">Ant Tasks</A></LI>
+	<LI><A href="jmx-console.html" title="JMX Console">JMX Console</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Integration"></A>Integration</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="spring-support.html" title="Spring support">Spring support</A></LI>
+	<LI><A href="" title="Geronimo Integration">Geronimo Integration</A></LI>
+	<LI><A href="jboss-deployer.html" title="JBoss Deployer">JBoss Integration</A></LI>
+	<LI><A href="tomcat-integration.html" title="Tomcat Integration">Tomcat Integration</A></LI>
+	<LI><A href="jonas-integration.html" title="JOnAS Integration">JOnAS Integration</A></LI>
+	<LI><A href="jndi-configuration.html" title="JNDI configuration">JNDI configuration</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-ServiceMixComponents"></A>ServiceMix Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="bpel.html" title="BPEL">BPEL</A></LI>
+	<LI><A href="cache.html" title="Cache">Cache</A></LI>
+	<LI><A href="drools.html" title="Drools">Drools</A></LI>
+	<LI><A href="email.html" title="Email">Email</A></LI>
+	<LI><A href="file.html" title="File">File</A></LI>
+	<LI><A href="ftp.html" title="FTP">FTP</A></LI>
+	<LI><A href="groovy.html" title="Groovy">Groovy</A></LI>
+	<LI><A href="http.html" title="HTTP">HTTP</A></LI>
+	<LI><A href="jabber.html" title="Jabber">Jabber</A></LI>
+	<LI><A href="jax-ws.html" title="JAX WS">JAX WS</A></LI>
+	<LI><A href="jca.html" title="JCA">JCA</A></LI>
+	<LI><A href="jms.html" title="JMS">JMS</A></LI>
+	<LI><A href="quartz.html" title="Quartz">Quartz</A></LI>
+	<LI><A href="reflection.html" title="Reflection">Reflection</A></LI>
+	<LI><A href="rss.html" title="RSS">RSS</A></LI>
+	<LI><A href="saaj.html" title="SAAJ">SAAJ</A></LI>
+	<LI><A href="scripting.html" title="Scripting">Scripting</A></LI>
+	<LI><A href="servicemix.html" title="ServiceMix">ServiceMix</A></LI>
+	<LI><A href="validation.html" title="Validation">Validation</A></LI>
+	<LI><A href="xfire.html" title="XFire">XFire</A></LI>
+	<LI><A href="xpath-router.html" title="XPath Router">XPath Router</A></LI>
+	<LI><A href="xslt.html" title="XSLT">XSLT</A></LI>
+	<LI><A href="xsql.html" title="XSQL">XSQL</A></LI>
+	<LI><A href="vfs.html" title="VFS">VFS</A></LI>
+	<LI><A href="wsif.html" title="WSIF">WSIF</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Tooling"></A>Tooling</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="visualisation.html" title="Visualisation">Visualisation</A></LI>
+	<LI><A href="eclipse-plugin.html" title="Eclipse plugin">Eclipse plugin</A></LI>
+	<LI><A href="jboss-deployer.html" title="JBoss Deployer">JBoss Deployer</A></LI>
+	<LI><A href="war-deployment.html" title="WAR Deployment">WAR Deployment</A></LI>
+	<LI><A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A></LI>
+	<LI><A href="maven-sar-plugin.html" title="Maven SAR plugin">Maven SAR plugin</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-OtherJBIsoftware"></A>Other JBI software</H3>
+
+<UL class="alternate" type="square">
+	<LI><SPAN class="nobr"><A href="http://incubator.apache.org/projects/ode.html" title="Orchestration Engine" rel="nofollow">Apache ODE<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+</UL>
+
+
+<H3><A name="Navigation-RelatedProjects"></A>Related Projects</H3>
+
+<UL class="alternate" type="square">
+	<LI><SPAN class="nobr"><A href="http://activemq.codehaus.org/" title="High Performance Message Bus" rel="nofollow">Apache ActiveMQ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://lingo.codehaus.org/" title="POJO Remoting using JMS" rel="nofollow">Lingo<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://jencks.org/" title="Message Driven POJOs and pooling for JMS and JDBC" rel="nofollow">Jencks<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://stomp.codehaus.org/" title="Simple cross language protocol for messaging" rel="nofollow">Stomp<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://www.springframework.org/" title="Visit page outside Confluence" rel="nofollow">Spring<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://geronimo.apache.org/" title="Visit page outside Confluence" rel="nofollow">Geronimo<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://forge.objectweb.org/projects/celtix/" title="Visit page outside Confluence" rel="nofollow">Celtix<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://xfire.codehaus.org/" title="Visit page outside Confluence" rel="nofollow">XFire<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+</UL>
+
+
+<H3><A name="Navigation-Support"></A>Support</H3>
+
+<UL class="alternate" type="square">
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM?report=com.atlassian.jira.plugin.system.project:roadmap-panel" title="Visit page outside Confluence" rel="nofollow">Roadmap<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM?report=com.atlassian.jira.plugin.system.project:changelog-panel" title="Visit page outside Confluence" rel="nofollow">Change log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="roadmap.html" title="Roadmap">Roadmap</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><SPAN class="nobr"><A href="http://ci.codehaus.org/beetlejuice/viewProjectSummary.action?projectName=ServiceMix" title="Visit page outside Confluence" rel="nofollow">BeetleJuice<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/clover/" title="Visit page outside Confluence" rel="nofollow">Clover Report<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/xref/index.html" title="Visit page outside Confluence" rel="nofollow">Source XRef<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/xref-test/index.html" title="Visit page outside Confluence" rel="nofollow">Test Source XRef<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" title="Visit page outside Confluence" rel="nofollow">XSD<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+</UL>
+
+
+<H3><A name="Navigation-Toolsweuse"></A>Tools we use</H3>
+
+<P><SPAN class="nobr"><A href="http://www.yourkit.com/" title="Visit page outside Confluence" rel="nofollow"><IMG src="navigation.data/yourkit.jpg" align="absmiddle" border="0"><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+          
+            <DIV class="pagetitle">Geronimo Integration</DIV>
+            <DIV class="wiki-content">
+<H2><A name="GeronimoIntegration-Introduction"></A>Introduction</H2>
+
+<P><SPAN class="nobr"><A href="http://geronimo.apache.org/" title="Visit page outside Confluence" rel="nofollow">Geronimo<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> is the J2EE server project of the Apache Software Foundation.  ServiceMix is being tightly integrated with Geronimo so that it takes advantage of it&apos;s deployment architecture and to leverage Geronimo to implement J2EE JBI bindings.</P>
+
+<P><B>Note:</B> The Geronimo deployment tool is currently under development, so this document is not complete, but is provided to give a preview of what is coming. This document will be completed when the underlying code is ready. If you are interested in this topic and how it progresses, please &quot;watch&quot; this page for future changes. To do so, click on &quot;watch&quot; in the upper right corner.</P>
+
+<P>In the meantime, the ServiceMix on Geronimo deployment shown here is of the <TT>servicemix-web.war</TT> file. The Tomcat web application server is integrated with Geronimo as part of the Geronimo distribution. Therefore, when the <TT>servicemix-web.war</TT> file is deployed on Geronimo, it is being handed off to Tomcat by Geronimo. Additionally, the war file uses lightweight components, which are those components defined in a <TT>servicemix.xml</TT> file. Ultimately, the ServiceMix deployment on Geronimo will use heavyweight components. Heavyweight components accept service unit deployments, such as PXE. <BR>
+The document is divided into two major sections. The first section discusses deploying ServiceMix on Geronimo. While the Geronimo deployment tool is under development this section shows how to deploy the ServiceMix web war file onto Geronimo. The second major section discusses how to deploy binding components and service engine components on ServiceMix, which is running on Geronimo. </P>
+
+<P>The organization of this document is:</P>
+<UL>
+	<LI><A href="#GeronimoIntegration-GeronimoIntegration" title="Geronimo Integration on Geronimo Integration">Geronimo Integration</A>
+	<UL>
+		<LI><A href="#GeronimoIntegration-PreInstallationRequirements" title="Pre-Installation Requirements on Geronimo Integration">Pre&#45;Installation Requirements</A></LI>
+		<LI><A href="#GeronimoIntegration-DeployingServiceMixonGeronimo" title="Deploying ServiceMix on Geronimo on Geronimo Integration">Deploying ServiceMix on Geronimo</A></LI>
+		<LI><A href="#GeronimoIntegration-TestingtheServiceMixGeronimoDeployment" title="Testing the ServiceMix Geronimo Deployment on Geronimo Integration">Testing the ServiceMix Geronimo Deployment</A></LI>
+		<LI><A href="#GeronimoIntegration-UndeployingServiceMixonGeronimo" title="Undeploying ServiceMix on Geronimo on Geronimo Integration">Undeploying ServiceMix on Geronimo</A></LI>
+	</UL>
+	</LI>
+	<LI><A href="#GeronimoIntegration-DeployingJBIComponents" title="Deploying JBI Components on Geronimo Integration">Deploying JBI Components</A>
+	<UL>
+		<LI><A href="#GeronimoIntegration-DeployingJBIComponentsonServiceMixRunningStandAlone" title="Deploying JBI Components on ServiceMix Running Stand-Alone on Geronimo Integration">Deploying JBI Components on ServiceMix Running Stand&#45;Alone</A></LI>
+		<LI><A href="#GeronimoIntegration-DeployingJBIComponentsonservicemixweb.waronGeronimo" title="Deploying JBI Components on servicemix-web.war on Geronimo on Geronimo Integration">Deploying JBI Components on servicemix&#45;web.war on Geronimo</A></LI>
+		<LI><A href="#GeronimoIntegration-DeployingJBIComponentsonGeronimo" title="Deploying JBI Components on Geronimo on Geronimo Integration">Deploying JBI Components on Geronimo</A></LI>
+	</UL>
+	</LI>
+	<LI><A href="#GeronimoIntegration-RelatedDocumentation" title="Related Documentation on Geronimo Integration">Related Documentation</A></LI>
+	<LI><A href="#GeronimoIntegration-Status" title="Status on Geronimo Integration">Status</A></LI>
+</UL>
+
+
+<H2><A name="GeronimoIntegration-GeronimoIntegration"></A>Geronimo Integration</H2>
+<P>The following guide explains how to deploy ServiceMix 2.0.x on the <SPAN class="nobr"><A href="http://geronimo.apache.org/" title="Visit page outside Confluence" rel="nofollow">Geronimo<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> application server. </P>
+
+<H3><A name="GeronimoIntegration-PreInstallationRequirements"></A>Pre-Installation Requirements</H3>
+
+<UL>
+	<LI>Java Developer Kit (JDK) 1.4.x or greater to run ServiceMix (to build ServiceMix, JDK 1.5.x or greater is required)</LI>
+	<LI>The JAVA_HOME environment variable must be set to the directory where the JDK is installed, e.g. <TT>c:\Program Files\Java\jdk1.5.xx</TT>.</LI>
+	<LI>Maven 1.0.2 or greater (required when installing source or developer releases).</LI>
+	<LI>Geronimo version 1.0-M5 (Geronimo version 1.0-SNAPSHOT for deploying components)</LI>
+	<LI>ServiceMix 2.0.x</LI>
+</UL>
+
+
+<P>The following platform was used to produce this deployment guide:</P>
+<UL>
+	<LI>Windows XP</LI>
+	<LI>Geronimo 1.0-M5 (Geronimo 1.0-SNAPSHOT for component deployment)</LI>
+	<LI>Java 5</LI>
+	<LI>ServiceMix 2.0.x</LI>
+</UL>
+
+
+<H3><A name="GeronimoIntegration-DeployingServiceMixonGeronimo"></A>Deploying ServiceMix on Geronimo</H3>
+
+<P>Execute the following steps to deploy ServiceMix on Geronimo. <B>NOTE:</B> This procedure will work on Unix platforms, as well as the Windows platform, with the appropriate substitutions, such as using the backslash ( / ) instead of the forward slash ( \ ).</P>
+
+<OL>
+	<LI>Geronimo must be downloaded and installed. For instructions please see the <SPAN class="nobr"><A href="http://geronimo.apache.org/" title="Visit page outside Confluence" rel="nofollow">Geronimo<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> web site. In the Geronimo release of geronimo-1.0-M5 or greater, Tomcat is integrated with Geronimo. By default, Tomcat uses port 8080. This information will be used later.</LI>
+	<LI>Download the ServiceMix source code. Please see the <SPAN class="nobr"><A href="http://www.servicemix.org/Getting%20Started" title="Visit page outside Confluence" rel="nofollow">Getting Started<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> guide for instructions.</LI>
+	<LI>Create the WAR file:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [servicemix_install_dir]\tooling\servicemix-web
+maven war</PRE>
+</DIV></DIV>
+<P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was downloaded and installed. The war file can be found in <TT>[servicemix_install_dir]\tooling\servicemix-web\target\servicemix-web.war</TT>.</P></LI>
+	<LI>To deploy the ServiceMix WAR file on Geronimo, use the Geronimo <TT>deployer.jar</TT> tool found in the <TT>bin</TT> directory of the Geronimo base directory.<BR>
+From a command shell:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [geronimo_install_dir]
+java -jar bin/deployer.jar --user system --password manager deploy [servicemix-2.0.x_install_dir]\tooling\servicemix-web\target\servicemix-web.war</PRE>
+</DIV></DIV>
+<P><BR clear="all">
+You will see output similar to this:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Deployed servicemix-web @ http:<SPAN class="code-comment">//Lisas:8080/servicemix-web</SPAN></PRE>
+</DIV></DIV>
+<P>The output in the Geronimo console window should show ServiceMix starting. Output will be similar to the following. This WAR file was not developed for use on Geronimo, but for use on Tomcat stand-alone, therefore, it does not contain a geronimo-web.xml deployment plan. For using the <TT>servicemix-web.war</TT> file on Tomcat, please see <SPAN class="nobr"><A href="http://www.servicemix.org/Tomcat%20Integration" title="Visit page outside Confluence" rel="nofollow">Tomcat Integration<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">...    
+Geronimo Application Server started
+13:13:17,062 WARN  [JettyModuleBuilder] Web application does not contain a WEB-INF/geronimo-web.xml deployment plan.  This may or may not
+ a problem, depending on whether you have things like resource references that need to be resolved.  You can also give the deployer a sep
+te deployment plan file on the command line.</PRE>
+</DIV></DIV>
+<P>If Geronimo is restarted the console log will show ServiceMix starting, as shown below. <B>Note:</B> Geronimo does not need to be restarted to deploy the WAR file. </P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Booting Geronimo Kernel (in Java 1.5.0_05)...
+Starting Geronimo Application Server
+[*****************] 100%  45s Startup complete
+  Listening on Ports:
+    1099 0.0.0.0 RMI Naming
+    1527 0.0.0.0 Derby Connector
+    4201 0.0.0.0 ActiveIO Connector EJB
+    4242 0.0.0.0 Remote Login Listener
+    8019 0.0.0.0 Tomcat Connector AJP
+    8080 0.0.0.0 Jetty Connector HTTP
+    8090 0.0.0.0 Tomcat Connector HTTP
+    8443 0.0.0.0 Jetty Connector HTTPS
+    8453 0.0.0.0 Tomcat Connector HTTPS
+   61616 0.0.0.0 ActiveMQ Message Broker Connector
+  Started Application Modules:
+    EAR: org/apache/geronimo/Console/Jetty
+    WAR: org/apache/geronimo/applications/Welcome/Jetty
+    WAR: servicemix-web
+  Web Applications:
+    http:<SPAN class="code-comment">//Lisas:8080/
+</SPAN>    http:<SPAN class="code-comment">//Lisas:8080/console
+</SPAN>    http:<SPAN class="code-comment">//Lisas:8080/console-standard
+</SPAN>    http:<SPAN class="code-comment">//Lisas:8080/servicemix-web
+</SPAN>Geronimo Application Server started</PRE>
+</DIV></DIV>
+<P><B>NOTE:</B> The console output is also logged in <TT>geronimo_install_dir\var\log\deployer.log</TT>.</P></LI>
+</OL>
+
+
+
+<H3><A name="GeronimoIntegration-TestingtheServiceMixGeronimoDeployment"></A>Testing the ServiceMix Geronimo Deployment</H3>
+<P>To ensure that ServiceMix is running on Geronimo, do any of the following:</P>
+
+<OL>
+	<LI>Use Geronimo&apos;s &quot;list-modules&quot; option on <TT>deployer.jar</TT> to see the <TT>servicemix-web</TT> application:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [geronimo_install_dir]
+java -jar bin/deployer.jar --user system --password manager list-modules</PRE>
+</DIV></DIV>
+<P>Output will be similar to:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Found 33 modules
+  + org/apache/geronimo/Tomcat
+  + org/apache/geronimo/Jetty
+  + org/apache/geronimo/RMINaming
+  + org/apache/geronimo/ActiveMQServer
+  + org/apache/geronimo/TomcatRuntimeDeployer
+  + org/apache/geronimo/Server
+  + org/apache/geronimo/Security
+  + servicemix-web @ http:<SPAN class="code-comment">//Lisas:8080/servicemix-web
+</SPAN>  + org/apache/geronimo/SystemDatabase
+  + org/apache/geronimo/applications/Welcome/Jetty @ http:<SPAN class="code-comment">//Lisas:8080/
+</SPAN>  + org/apache/geronimo/SystemJMS
+...</PRE>
+</DIV></DIV>
+<P><BR clear="all">
+<BR clear="all"></P></LI>
+	<LI>ServiceMix&apos;s default port is 1099. From another window run netstat and search for port 1099.
+<BR clear="all">
+From a Windows console, type:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">netstat -an|find <SPAN class="code-quote">&quot;1099&quot;</SPAN></PRE>
+</DIV></DIV>
+<P><BR clear="all">
+<B>OR</B>
+<BR clear="all">
+<BR clear="all">
+From a Unix command shell, type:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">netstat -an|grep 1099</PRE>
+</DIV></DIV>
+<P><BR clear="all"></P></LI>
+	<LI>Run the ServiceMix JMX Console. To do this, enter the following URL in a web browser: <SPAN class="nobr"><A href="http://localhost:8080/servicemix-web:" title="Visit page outside Confluence" rel="nofollow">http://localhost:8080/servicemix-web:<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>
+<BR clear="all">
+<BR clear="all">
+<IMG src="geronimo-integration.data/jmxconsolegeronimo.jpg" align="absmiddle" border="0">
+<BR clear="all">
+<BR clear="all"></LI>
+	<LI>An http binding example is supplied. To run the example program perform the following steps:
+	<OL>
+		<LI>From a browser, enter the URL  <SPAN class="nobr"><A href="http://localhost:8080/servicemix-web/examples" title="Visit page outside Confluence" rel="nofollow">http://localhost:8080/servicemix-web/examples<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.
+<BR clear="all">
+<BR clear="all">
+<IMG src="geronimo-integration.data/httpbindingexample2.0.jpg" align="absmiddle" border="0">
+<BR clear="all">
+<BR clear="all"></LI>
+		<LI>Enter a name or some text in the text box (shown above) and click the Submit button. You will see:
+<BR clear="all">
+<BR clear="all">
+<IMG src="geronimo-integration.data/httpbindingresultgeronimo.jpg" align="absmiddle" border="0">
+<BR clear="all">
+<BR clear="all">
+<BR clear="all"></LI>
+	</OL>
+	</LI>
+</OL>
+
+
+<H3><A name="GeronimoIntegration-UndeployingServiceMixonGeronimo"></A>Undeploying ServiceMix on Geronimo</H3>
+
+<P>Execute the following steps to undeploy ServiceMix from Geronimo. </P>
+<OL>
+	<LI>To undeploy the ServiceMix WAR file, use the Geronimo <TT>deployer.jar</TT> tool found in the <TT>bin</TT> directory of the Geronimo base directory.<BR>
+From a command shell:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [geronimo_install_dir]
+java -jar bin/deployer.jar --user system --password manager undeploy servicemix-web</PRE>
+</DIV></DIV>
+<P><BR clear="all">
+The output in the Geronimo console window should show the ServiceMix WAR file being undeployed. Output will be similar to the following:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Module servicemix-web stopped.
+
+        Module servicemix-web unloaded.
+
+        Module servicemix-web uninstalled.
+
+    Undeployed servicemix-web</PRE>
+</DIV></DIV></LI>
+</OL>
+
+
+
+<H2><A name="GeronimoIntegration-DeployingJBIComponents"></A>Deploying JBI Components</H2>
+
+<P>Components can be deployed on ServiceMix in various configurations. For example, components can be deployed on ServiceMix running stand-alone or components can be deployed on ServiceMix which itself is deployed on an application server such as Geronimo.</P>
+
+<P>First some background. A JBI component is either a service engine (SE) or a binding component (BC). These terms are defined in <A href="introduction-to-esb.html" title="Introduction to ESB">Introduction to ESB</A> and/or the <A href="glossary.html" title="Glossary">Glossary</A>. A BC/SE is <B>installed</B> on ServiceMix by copying it into the <TT>install</TT> directory which resides under the ServiceMix home directory. So what gets deployed? JBI components can act as containers themselves. Artifacts can be <B>deployed</B> to an existing BC or SE to add more functionality to that component. Adding artifacts to installed components is called deployment. To deploy artifacts to a component the artifacts can be placed in the <TT>deploy</TT> directory under the ServiceMix home directory. Another term that is important to know is <EM>service assembly</EM>. A service assembly is a collection of deployment artifacts and metadata. A <EM>service unit</EM> is a single deployment artifact which is deployed on a single component. For deployment to happen, the artifacts must be in a very specific format, which is specified in the JSR 208 specification. Please see chapter 6 of the <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=copy%20link%20here&linkCreation=true&fromPageId=1898" title="Create Page: copy link here" class="createlink">JSR 208<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> specification for more details. In addition to deploying components, ServiceMix allows <TT>servicemix.xml</TT> files to be deployed in a similar method to deploying a component. </P>
+
+<H3><A name="GeronimoIntegration-DeployingJBIComponentsonServiceMixRunningStandAlone"></A>Deploying JBI Components on ServiceMix Running Stand-Alone</H3>
+<P>This section is included to show how to deploy a ServiceMix component on ServiceMix running stand-alone. It is helpful to see how this deployment is done to build up to the deployment on Geronimo. </P>
+
+<P><B>Note:</B> These steps work on ServiceMix versions prior to 2.0, but it is now broken. Please see Jira issue: <SPAN class="nobr"><A href="https://support.simulalabs.com/jira/browse/SM-154" title="Visit page outside Confluence" rel="nofollow">SM-154<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+
+<P>The following example shows a component &quot;org.servicemix.components.servicemix.ServiceMixComponent&quot; being deployed and then a service unit (Quartz) being deployed to the ServiceMixComponent. Note: that the service unit is a <TT>servicemix.xml</TT> file.</P>
+
+<P>These steps were performed with a source distribution of ServiceMix 2.0.2 on Windows XP. The existing quartz binding example is modified in this example to turn it into a deployement unit.</P>
+
+<OL>
+	<LI>Modify the quartz binding <TT>servicemix.xml</TT> file to change it into a service unit. The <TT>servicemix.xml</TT> file is located in <TT>[servicemix_src_install_dir]\assembly\target\servicemix-2.0.2\bin\servicemix-2.0.2\examples\quartz-binding</TT>, where [servicemix_src_install_dir] is the directory in which the source distribution of ServiceMix is located.</LI>
+	<LI>Create a directory elsewhere, such as \temp\JBIcomponent</LI>
+	<LI>Copy servicemix.xml to \temp\JBIcomponent</LI>
+	<LI>cd \temp\JBIcomponent</LI>
+	<LI>Edit the <TT>servicemix.xml</TT> file. Change the &quot;container&quot; tags to &quot;serviceunit&quot; and save the file. The file should match the following:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;
+&lt;beans xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//xbean.org/schemas/spring/1.0&quot;</SPAN>
+</SPAN>	xmlns:spring=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//xbean.org/schemas/spring/1.0&quot;</SPAN>
+</SPAN>	xmlns:sm=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//servicemix.org/config/1.0&quot;</SPAN>
+</SPAN>	xmlns:xsi=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
+</SPAN>	xsi:schemaLocation=&quot;http:<SPAN class="code-comment">//xbean.org/schemas/spring/1.0 ../../conf/spring-beans.xsd
+</SPAN>	                    http:<SPAN class="code-comment">//servicemix.org/config/1.0 ../../conf/servicemix.xsd&quot;
+</SPAN>	xmlns:my=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//servicemix.org/demo/&quot;</SPAN>&gt;
+</SPAN>
+	&lt;!-- the JBI container --&gt;
+	&lt;sm:serviceunit spring:id=<SPAN class="code-quote">&quot;jbi&quot;</SPAN>&gt;
+
+		&lt;sm:activationSpecs&gt;
+
+			&lt;!-- lets kick off a timer  every 5 seconds --&gt;
+			&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;timer&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:timer&quot;</SPAN>
+				destinationService=<SPAN class="code-quote">&quot;my:trace&quot;</SPAN>&gt;
+				&lt;sm:component&gt;
+					&lt;bean xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//xbean.org/schemas/spring/1.0&quot;</SPAN>
+</SPAN>						class=<SPAN class="code-quote">&quot;org.servicemix.components.quartz.QuartzComponent&quot;</SPAN>&gt;
+						&lt;property name=<SPAN class="code-quote">&quot;triggers&quot;</SPAN>&gt;
+							&lt;map&gt;
+								&lt;entry&gt;
+									&lt;key&gt;
+										&lt;bean class=<SPAN class="code-quote">&quot;org.quartz.SimpleTrigger&quot;</SPAN>&gt;
+											&lt;property name=<SPAN class="code-quote">&quot;repeatInterval&quot;</SPAN> value=<SPAN class="code-quote">&quot;5000&quot;</SPAN> /&gt;
+											&lt;property name=<SPAN class="code-quote">&quot;repeatCount&quot;</SPAN> value=<SPAN class="code-quote">&quot;-1&quot;</SPAN> /&gt;
+										&lt;/bean&gt;
+									&lt;/key&gt;
+									&lt;bean
+										class=<SPAN class="code-quote">&quot;org.quartz.JobDetail&quot;</SPAN>&gt;
+										&lt;property name=<SPAN class="code-quote">&quot;name&quot;</SPAN> value=<SPAN class="code-quote">&quot;My Example Job&quot;</SPAN> /&gt;
+										&lt;property name=<SPAN class="code-quote">&quot;group&quot;</SPAN> value=<SPAN class="code-quote">&quot;ServiceMix&quot;</SPAN> /&gt;
+									&lt;/bean&gt;
+								&lt;/entry&gt;
+							&lt;/map&gt;
+						&lt;/property&gt;
+					&lt;/bean&gt;
+				&lt;/sm:component&gt;
+			&lt;/sm:activationSpec&gt;
+
+
+			&lt;!-- Route the event to a trace component that just outputs the event to the console --&gt;
+			&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;trace&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:trace&quot;</SPAN>&gt;
+				&lt;sm:component&gt;
+					&lt;bean xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//xbean.org/schemas/spring/1.0&quot;</SPAN>
+</SPAN>						class=<SPAN class="code-quote">&quot;org.servicemix.components.util.TraceComponent&quot;</SPAN> /&gt;
+				&lt;/sm:component&gt;
+			&lt;/sm:activationSpec&gt;
+
+		&lt;/sm:activationSpecs&gt;
+	&lt;/sm:serviceunit&gt;
+
+&lt;/beans&gt;</PRE>
+</DIV></DIV>
+<P>This file will be used in a later step.
+<BR clear="all">  </P></LI>
+	<LI>Two jar files must be created. These jar files will be copied into the ServiceMix <TT>deploy</TT> directory. The first jar file will contain the service component <TT>jbi.xml</TT> file. When this is copied to the <TT>deploy</TT> directory it deploys the <TT>ServiceMixComponent</TT> component. The second jar file will contain the service assembly and the <TT>jbi.xml</TT> descriptor file. When it is copied to the <TT>deploy</TT> directory of ServiceMix it deploys the service unit (Quartz) to the previously deployed component, <TT>ServiceMixComponent</TT>.
+	<OL>
+		<LI>The file service component <TT>jbi.xml</TT> file should contain:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;jbi xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//java.sun.com/xml/ns/jbi&quot;</SPAN> 
+</SPAN>     xmlns:xsi=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//www.w3.org/2001/XMLSchema-instance&quot;</SPAN> 
+</SPAN>     xsi:schemaLocation=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//java.sun.com/xml/ns/jbi&quot;</SPAN> 
+</SPAN>     version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN>&gt;
+
+  &lt;component type=<SPAN class="code-quote">&quot;service-engine&quot;</SPAN>&gt;
+    &lt;identification&gt;
+      &lt;name&gt;servicemix-component&lt;/name&gt;
+      &lt;description&gt;A ServiceMix Component that can be used to deploy servicemix.xml artifacts.&lt;/description&gt;
+    &lt;/identification&gt;
+    &lt;component-class-name&gt;org.servicemix.components.servicemix.ServiceMixComponent&lt;/component-class-name&gt;
+    &lt;component-class-path/&gt;
+  &lt;/component&gt;
+
+&lt;/jbi&gt;</PRE>
+</DIV></DIV></LI>
+		<LI>Put <TT>jbi.xml</TT> in an empty META-INF directory and put that into a jar file:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mkdir META-INF
+copy jbi.xml META-INF
+jar cvf service-component.jar *</PRE>
+</DIV></DIV></LI>
+		<LI>Create a zip file of the <TT>servicemix.xml</TT> file you modified above. The zip file should contain the <TT>servicemix.xml</TT> file and it should be called su1.zip to match the name it is called in the <TT>jbi.xml</TT> file. See the <TT>artifacts-name</TT> tag in the <TT>jbi.xml</TT> file for the name of the zip file.</LI>
+		<LI>Create the second jar file--this is the service assembly jar file. It will contain another <TT>jbi.xml</TT> file that is used for the service assembly and it will also contain the zip file, <TT>su1.zip</TT> in the following structure:<BR>
+The service assembly <TT>jbi.xml</TT> should be match the following:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;jbi xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//java.sun.com/xml/ns/jbi&quot;</SPAN> 
+</SPAN>     xmlns:xsi=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//www.w3.org/2001/XMLSchema-instance&quot;</SPAN> 
+</SPAN>     xsi:schemaLocation=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//java.sun.com/xml/ns/jbi&quot;</SPAN> 
+</SPAN>     version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN>&gt;
+     
+   &lt;service-assembly&gt;
+     &lt;identification&gt;
+       &lt;name&gt;AU_1&lt;/name&gt;
+       &lt;description&gt;Sample AU&lt;/description&gt;
+     &lt;/identification&gt;
+     &lt;service-unit&gt;
+       &lt;identification&gt;
+         &lt;name&gt;SU_1&lt;/name&gt;
+         &lt;description&gt;Sample&lt;/description&gt;
+       &lt;/identification&gt;
+       &lt;target&gt;
+         &lt;artifacts-zip&gt;su1.zip&lt;/artifacts-zip&gt;
+         &lt;component-name&gt;servicemix-component&lt;/component-name&gt;
+       &lt;/target&gt;
+     &lt;/service-unit&gt;
+    &lt;/service-assembly&gt;
+    
+&lt;/jbi&gt;</PRE>
+</DIV></DIV>
+<P>Copy the <TT>jbi.xml</TT> file to an empty  META-INF directory, then create the jar file:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">In a directory which contains these files, create the jar file:
+  META-INF/jbi.xml
+  su1.zip
+
+jar cvf sa_quartz.jar *</PRE>
+</DIV></DIV></LI>
+	</OL>
+	</LI>
+	<LI>Deploy the two jar files.  Copy <TT>service_component.jar</TT> and <TT>sa_quartz.jar</TT> to <TT>[servicemix_src_install_dir]\assembly\target\servicemix-2.0.\bin\servicemix-2.0.2\deploy</TT>. This can be done while ServiceMix is running or while ServiceMix is not running. In the second case, run ServiceMix to see the deployment. Output will be similar to:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">ServiceMixComponent: deploy
+ServiceMixComponent: init: SU_1 path: C:\tmp1\servicemix-1.1-SNAPSHOT\target\servicemix-1.1-SNAPSHOT\bin\servicemix-1.1-SNAPSHOT\bin\..\wdir
+\defaultJBI\components\servicemix-component\serviceunit\SU_1
+[INFO] XmlBeanDefinitionReader - -Loading XML bean definitions from URL [file:C:/tmp1/servicemix-1.1-SNAPSHOT/target/servicemix-1.1-SNAPSHOT
+/bin/servicemix-1.1-SNAPSHOT/bin/../wdir/defaultJBI/components/servicemix-component/serviceunit/SU_1/servicemix.xml]
+...
+[INFO] DefaultListableBeanFactory - -Creating shared instance of singleton bean &apos;jbi&apos;
+ServiceMixComponent: start: SU_1
+[INFO] JBIContainer - -Activating component <SPAN class="code-keyword">for</SPAN>: [container=defaultJBI,name=timer,id=timer] with service: {http:<SPAN class="code-comment">//servicemix.org/demo/}timer
+</SPAN> component: org.servicemix.components.quartz.QuartzComponent@1ecfe07
+[INFO] SimpleThreadPool - -Job execution threads will use class loader of thread: main
+[INFO] RAMJobStore - -RAMJobStore initialized.
+[INFO] StdSchedulerFactory - -Quartz scheduler &apos;DefaultQuartzScheduler&apos; initialized from <SPAN class="code-keyword">default</SPAN> resource file in Quartz <SPAN class="code-keyword">package</SPAN>: &apos;quartz.pr
+operties&apos;
+[INFO] StdSchedulerFactory - -Quartz scheduler version: 1.4.0
+[INFO] ComponentContextImpl - -Component: timer activated endpoint: {http:<SPAN class="code-comment">//servicemix.org/demo/}timer : timer
+</SPAN>[INFO] JBIContainer - -Activating component <SPAN class="code-keyword">for</SPAN>: [container=defaultJBI,name=trace,id=trace] with service: {http:<SPAN class="code-comment">//servicemix.org/demo/}trace
+</SPAN> component: org.servicemix.components.util.TraceComponent@8b8a47
+[INFO] ComponentContextImpl - -Component: trace activated endpoint: {http:<SPAN class="code-comment">//servicemix.org/demo/}trace : trace
+</SPAN>[INFO] DeploymentService - -Deployed ServiceUnit SU_1 to Component: servicemix-component
+[INFO] AutoDeploymentService - -Unpacked archive C:\tmp1\servicemix-1.1-SNAPSHOT\target\servicemix-1.1-SNAPSHOT\bin\servicemix-1.1-SNAPSHOT\
+bin\..\deploy\comp.jar to C:\tmp1\servicemix-1.1-SNAPSHOT\target\servicemix-1.1-SNAPSHOT\bin\servicemix-1.1-SNAPSHOT\bin\..\wdir\defaultJBI\
+tmp\comp.0.tmp
+[INFO] XmlBeanDefinitionReader - -Loading XML bean definitions from URL [file:/C:/tmp1/servicemix-1.1-SNAPSHOT/target/servicemix-1.1-SNAPSHO
+T/bin/servicemix-1.1-SNAPSHOT/bin/../wdir/defaultJBI/tmp/comp.0.tmp/META-INF/jbi.xml]
+...
+[INFO] DefaultListableBeanFactory - -Creating shared instance of singleton bean &apos;jbi&apos;
+[INFO] AutoDeploymentService - -Unpacked archive C:\tmp1\servicemix-1.1-SNAPSHOT\target\servicemix-1.1-SNAPSHOT\bin\servicemix-1.1-SNAPSHOT\
+bin\..\deploy\sa_quartz.jar to C:\tmp1\servicemix-1.1-SNAPSHOT\target\servicemix-1.1-SNAPSHOT\bin\servicemix-1.1-SNAPSHOT\bin\..\wdir\defaul
+tJBI\tmp\sa_quartz.0.tmp
+[INFO] XmlBeanDefinitionReader - -Loading XML bean definitions from URL [file:/C:/tmp1/servicemix-1.1-SNAPSHOT/target/servicemix-1.1-SNAPSHO
+T/bin/servicemix-1.1-SNAPSHOT/bin/../wdir/defaultJBI/tmp/sa_quartz.0.tmp/META-INF/jbi.xml]
+[INFO] FileSystemXmlApplicationContext - -Bean factory <SPAN class="code-keyword">for</SPAN> application context [org.springframework.context.support.FileSystemXmlApplication
+[INFO] JBIContainer - -ServiceMix JBI Container (http:<SPAN class="code-comment">//servicemix.org/) name: defaultJBI running version: ServiceMix.
+</SPAN>[INFO] DeliveryChannel - -<SPAN class="code-keyword">default</SPAN> destination serviceName <SPAN class="code-keyword">for</SPAN> timer = {http:<SPAN class="code-comment">//servicemix.org/demo/}trace
+</SPAN>[INFO] QuartzScheduler - -Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED started.
+[INFO] TraceComponent - -Exchange: org.servicemix.jbi.messaging.InOnlyImpl@a7dd39 received IN message: org.servicemix.jbi.messaging.Normaliz
+edMessageImpl@acdd02{properties: {org.servicemix.quartz.context=JobExecutionContext: trigger: &apos;ServiceMix.My Example Job job: ServiceMix.My
+Example Job fireTime: &apos;Thu Dec 08 14:15:06 PST 2005 scheduledFireTime: Thu Dec 08 14:15:05 PST 2005 previousFireTime: &apos;<SPAN class="code-keyword">null</SPAN> nextFireTime: Th
+u Dec 08 14:15:06 PST 2005 isRecovering: <SPAN class="code-keyword">false</SPAN> refireCount: 0, org.servicemix.quartz.detail=JobDetail &apos;ServiceMix.My Example Job&apos;:  jobClass
+: &apos;org.servicemix.components.quartz.ServiceMixJob isStateful: <SPAN class="code-keyword">false</SPAN> isVolatile: <SPAN class="code-keyword">false</SPAN> isDurable: <SPAN class="code-keyword">false</SPAN> requestsRecovers: <SPAN class="code-keyword">false</SPAN>, org.servicem
+ix.component=org.servicemix.components.quartz.QuartzComponent@1ecfe07}}
+[INFO] TraceComponent - -Body is: &lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;&lt;timer&gt;&lt;name&gt;My Example Job&lt;/name&gt;&lt;group&gt;ServiceMix&lt;/group&gt;&lt;fullname
+&gt;ServiceMix.My Example Job&lt;/fullname&gt;&lt;description/&gt;&lt;fireTime&gt;Thu Dec 08 14:15:06 PST 2005&lt;/fireTime&gt;&lt;/timer&gt;
+[INFO] TraceComponent - -Exchange: org.servicemix.jbi.messaging.InOnlyImpl@19ecd80 received IN message: org.servicemix.jbi.messaging.Normali
+zedMessageImpl@c5aa00{properties: {org.servicemix.quartz.context=JobExecutionContext: trigger: &apos;ServiceMix.My Example Job job: ServiceMix.My
+ Example Job fireTime: &apos;Thu Dec 08 14:15:06 PST 2005 scheduledFireTime: Thu Dec 08 14:15:06 PST 2005 previousFireTime: &apos;Thu Dec 08 14:15:05
+PST 2005 nextFireTime: Thu Dec 08 14:15:06 PST 2005 isRecovering: <SPAN class="code-keyword">false</SPAN> refireCount: 0, org.servicemix.quartz.detail=JobDetail &apos;ServiceMix.M
+y Example Job&apos;:  jobClass: &apos;org.servicemix.components.quartz.ServiceMixJob isStateful: <SPAN class="code-keyword">false</SPAN> isVolatile: <SPAN class="code-keyword">false</SPAN> isDurable: <SPAN class="code-keyword">false</SPAN> requestsReco
+vers: <SPAN class="code-keyword">false</SPAN>, org.servicemix.component=org.servicemix.components.quartz.QuartzComponent@1ecfe07}}
+[INFO] TraceComponent - -Body is: &lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;&lt;timer&gt;&lt;name&gt;My Example Job&lt;/name&gt;&lt;group&gt;ServiceMix&lt;/group&gt;&lt;fullname
+&gt;ServiceMix.My Example Job&lt;/fullname&gt;&lt;description/&gt;&lt;fireTime&gt;Thu Dec 08 14:15:06 PST 2005&lt;/fireTime&gt;&lt;/timer&gt;</PRE>
+</DIV></DIV></LI>
+</OL>
+
+
+
+<H3><A name="GeronimoIntegration-DeployingComponentsonservicemixweb.war"></A>Deploying Components on servicemix-web.war</H3>
+<P>This section is on hold until the Jira issue:  is fixed.</P>
+
+<H3><A name="GeronimoIntegration-DeployingJBIComponentsonGeronimoUsingtheGeronimoDeploymentTool"></A>Deploying JBI Components on Geronimo Using the Geronimo Deployment Tool</H3>
+<P>This section discusses using the Geronimo deployment tool to deploy components. This is separate from the previous sections<BR>
+dealing with the servicemix-web.war file. When the deployment tool is fully developed this will be the preferred method.<BR>
+Currently only geronimo-1.0-SNAPSHOT can be used to perform this method. </P>
+
+<P>The JBI spec describes in detail how to create a valid JBI deployment unit.  In essence, it is a jar file with a META-INF/jbi.xml with other resource jars inside it.  Please see <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=Deployment%20Units&linkCreation=true&fromPageId=1898" title="Create Page: Deployment Units" class="createlink">Deployment Units<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for more information.</P>
+
+<OL>
+	<LI>Make sure that your geronimo server is running.</LI>
+	<LI>Run the geronimo deploy tool against your deployment unit (in this case jbcomponent.jar): <DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">java -jar geronimo-1.0-SNAPSHOT/bin/deployer.jar --user system --password manager deploy jbcomponent.jar</PRE>
+</DIV></DIV></LI>
+</OL>
+
+
+<P>That should deploy the component to geronimo.  To check, just take a look at the geronimo logs for a message similar to:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">11:44:24,865 INFO  [Configuration] Started configuration example-engine-1
+11:44:24,869 INFO  [ServiceMixDeployment] Starting: /Users/chirino/sandbox/geronimo/modules/assembly/target/geronimo-1.0-SNAPSHOT/config-store/20/META-INF/jbi.xml
+...
+11:44:25,783 INFO  [DefaultListableBeanFactory] Creating shared instance of singleton bean &apos;jbi&apos;</PRE>
+</DIV></DIV>
+
+
+<H2><A name="GeronimoIntegration-RelatedDocumentation"></A>Related Documentation</H2>
+<UL>
+	<LI><SPAN class="nobr"><A href="http://apache.geronimo.org/" title="Visit page outside Confluence" rel="nofollow">Geronimo<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://www.servicemix.org/Tomcat%20Integration" title="Visit page outside Confluence" rel="nofollow">Tomcat Integration<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</LI>
+</UL>
+
+
+<H2><A name="GeronimoIntegration-Status"></A>Status</H2>
+
+<P>Please monitor the Jira issue <SPAN class="nobr"><A href="https://jira.logicblaze.com/jira/browse/SM-140" title="Visit page outside Confluence" rel="nofollow">SM-140<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to get currrent information on the Geronimo deployer for ServiceMix.</P>
+
+<P>Please monitor the Jira issue <SPAN class="nobr"><A href="https://support.simulalabs.com/jira/browse/SM-154" title="Visit page outside Confluence" rel="nofollow">SM-154<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to get current information on the component deployment bug.</P></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=chirino">Hiram Chirino</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1898&originalId=5290">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1898">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>
