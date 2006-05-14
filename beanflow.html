@@ -242,7 +242,7 @@ BeanFlow
           <DIV id="site-page">
           
             <DIV class="pagetitle">BeanFlow</DIV>
-            <DIV class="wiki-content"><P>BeanFlow is a lightweight Java library for building flows using beans to orchestrate events. You can think of BeanFlow as a simple alternative to <A href="bpel.html" title="BPEL">BPEL</A> where the flows are all specified and implemented using Java code rather than declarative XML.</P>
+            <DIV class="wiki-content"><P>BeanFlow is a lightweight Java library for building workflows using beans to orchestrate events. You can think of BeanFlow as a simple alternative to <A href="bpel.html" title="BPEL">BPEL</A> where the workflows are all specified and implemented using Java code rather than declarative XML.</P>
 
 <H3><A name="BeanFlow-QuickLinks"></A>Quick Links</H3>
 
@@ -255,7 +255,30 @@ BeanFlow
 
 <P>When building highly concurrent or distributed applications it is very common for there to be many events happening; often asynchronously and in different threads and its very common to need to perform kinds of workflow or orchestration across these events.</P>
 
-<P>Now you certainly can use things like <A href="bpel.html" title="BPEL">BPEL</A> to solve these kinds of problems. However often this is a bit heavy weight &amp; complex and you just want to have a bean based flow using regular Java code to represent the flow.</P>
+<P>Now you certainly can use things like <A href="bpel.html" title="BPEL">BPEL</A> to solve these kinds of problems. However often this is a bit heavy weight &amp; complex and you just want to have a bean based workflow using regular Java code to represent the activities involved in the workflow.</P>
+
+<H3><A name="BeanFlow-Transformingthetraditionalworkflowapproach"></A>Transforming the traditional workflow approach</H3>
+
+<P>One of the main goals of BeanFlow is to reuse what the Java platform is good for in the workflow space; then supplement it with missing abstractions rather than inventing the wheel in a sub-optimal way.</P>
+
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh">Traditional approach</TH>
+<TH class="confluenceTh">BeanFlow approach</TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> use a declarative workflow language to specify a workflow </TD>
+<TD class="confluenceTd"> write a Java class </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> use XML markup or pictures to define loops and flows </TD>
+<TD class="confluenceTd"> use regular Java code (if/for/while) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> implement a generic state and persistence framework for workflow instances </TD>
+<TD class="confluenceTd"> use regular Java fields in your workflow class, then use JDBC/DAO/JPA to deal with persistence </TD>
+</TR>
+</TBODY></TABLE>
 
 <H3><A name="BeanFlow-Usecases"></A>Use cases</H3>
 
@@ -268,91 +291,46 @@ BeanFlow
 </UL>
 
 
-<H2><A name="BeanFlow-Flowoverview"></A>Flow overview</H2>
+<H2><A name="BeanFlow-Activityoverview"></A>Activity overview</H2>
 
-<P>A flow is just a POJO which implements the Flow interface. A flow has a simple lifecycle, you can start them and stop them and ask their status.</P>
+<P>An activity is just a POJO which implements the Activity interface; it has a simple lifecycle, you can start them and stop them and ask their status.</P>
 
 <P>Once a flow has been started via the <B>start()</B> method it can take an arbitrarily long time to complete; you can see if the flow has completed via the <B>isStopped()</B> method. You can explicitly complete a flow using the <B>stop()</B> method whenever you like; typically when you are responding to state changes.</P>
 
-<P>A flow could fail for some reason (such as it timed out or some error occurred) so there is a method <B>isFailed()</B> which can be used to easily inspect the flow. Rather like the <B>stop()</B> method, you can call <B>fail(reason)</B> if you wish to terminate a flow with the flow marked as the Failed rather than Stopped state.</P>
+<P>An activity could fail for some reason (such as it timed out or some error occurred) so there is a method <B>isFailed()</B> which can be used to easily inspect the activity. Rather like the <B>stop()</B> method, you can call <B>fail(reason)</B> if you wish to terminate an activity with the activity marked as the Failed rather than Stopped state.</P>
 
 <H3><A name="BeanFlow-Usingtimeouts"></A>Using timeouts</H3>
 
-<P>Its very common to add timeouts onto flows so that if the flow is not complete by a certain time then the flow is stopped &amp; failed; often another parent flow may then do something differently if one of its child flows fails.</P>
+<P>Its very common to add timeouts onto activities so that if the activity is not complete by a certain time then the activity is stopped &amp; failed; often another parent activity may then do something differently if one of its child activities fails.</P>
 
-<P>There is a useful base flow called <B>TimeoutFlow</B> which you can derive from to make your own flow which can be started/stopped/failed and which can be timed out.</P>
+<P>There is a useful base activity called <B>TimeoutActivity</B> which you can derive from to make your own activity which can be started/stopped/failed and which can be timed out.</P>
 
-<P>You can explicitly register the flow with a timer and call the <B>onTimedOut()</B> method yourself or just call the <B>startWithTimeout()</B> method to start the flow registering the timeout.</P>
+<P>You can explicitly register the activity with a timer and call the <B>onTimedOut()</B> method yourself or just call the <B>startWithTimeout()</B> method to start the activity registering the timeout.</P>
 
-<H3><A name="BeanFlow-Joinconditions"></A>Join conditions</H3>
+<H3><A name="BeanFlow-Composingactivities"></A>Composing activities</H3>
 
-<P>In workflows you often want to fork parallel steps and then join on certain events. You often have complex logic to decide on what the join condition is. e.g. in pseudo code</P>
-
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">fork steps A, B, C
-join on A and (B or C)</PRE>
-</DIV></DIV>
-
-<P>In BeanFlow we implement join conditions using regular Java code. The basic idea is that a Flow will listen to changes in a number of different <B>State</B> objects such as fields a, b and c. You can then write a flow bean to perform the join condition you need. When the condition is met you can then perform whatever logic you wish such as</P>
-
-<UL>
-	<LI>stopping the flow</LI>
-	<LI>forking off a new child flow</LI>
-	<LI>changing your state</LI>
-	<LI>changing the state of some other bean</LI>
-	<LI>calling arbitrary Java code</LI>
-</UL>
-
-
-<P>Here is an example flow implemented in Java code for the above code.</P>
-
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java"><SPAN class="code-comment">// lets create some child workflows
-</SPAN><SPAN class="code-keyword">final</SPAN> Flow a = <SPAN class="code-keyword">new</SPAN> TimeoutFlow();
-<SPAN class="code-keyword">final</SPAN> Flow b = <SPAN class="code-keyword">new</SPAN> TimeoutFlow();
-<SPAN class="code-keyword">final</SPAN> Flow c = <SPAN class="code-keyword">new</SPAN> TimeoutFlow();
-
-<SPAN class="code-comment">// lets create the flow with a custom join condition
-</SPAN>Flow flow = <SPAN class="code-keyword">new</SPAN> JoinSupport(a, b, c) {
-    @Override
-    <SPAN class="code-keyword">protected</SPAN> void onChildStateChange(<SPAN class="code-object">int</SPAN> childCount, <SPAN class="code-object">int</SPAN> stoppedCount, <SPAN class="code-object">int</SPAN> failedCount) {
-        
-        <SPAN class="code-keyword">if</SPAN> (a.isStopped() &amp;&amp; (b.isStopped() || c.isStopped())) {
-            <SPAN class="code-comment">// lets stop the flow we&apos;re done
-</SPAN>            stop();
-        }
-    }
-};
-
-<SPAN class="code-comment">// lets start the flows
-</SPAN>flow.startWithTimeout(timer, timeout);
-
-<SPAN class="code-comment">// now lets test things behave properly
-</SPAN>assertFlowStarted(flow);
-
-a.stop();
-assertFlowStarted(flow);
-
-b.stop();
-assertFlowStopped(flow);</PRE>
-</DIV></DIV>
-
-<H3><A name="BeanFlow-Composingflows"></A>Composing flows</H3>
-
-<P>One of the main reasons for using an object orientated language is to make composition and reuse possible; similarly BeanFlow allows you to compose flows together to make modular and reusable workflow constructs easily. So BeanFlow attempts to create a collection of reusable flows which you can then use to derive from or aggregate to make whatever flows you need.</P>
+<P>One of the main reasons for using an object orientated language is to make composition and reuse possible; similarly BeanFlow allows you to compose activities together to make modular and reusable workflow constructs easily. So BeanFlow attempts to create a collection of reusable activities which you can then use to derive from or aggregate to make whatever activities you need.</P>
 
 <TABLE class="confluenceTable"><TBODY>
 <TR>
-<TH class="confluenceTh">Composition Flows</TH>
+<TH class="confluenceTh">Composition Activities</TH>
 <TH class="confluenceTh">Description</TH>
 </TR>
 <TR>
 <TD class="confluenceTd">JoinAll</TD>
-<TD class="confluenceTd">Performs a join on all the given child flows. So the flow waits until all the child flows have completed, then it completes itself. You can add additional constraints to the flow using derivation. The default is to wait for all the child flows to complete; though you can enable fast-fail mode so that the flow fails as soon as a child flow fails</TD>
+<TD class="confluenceTd">Performs a join on all the given child activities. So the activity waits until all the child activities have completed, then it completes itself. You can add additional constraints to the activity using derivation. The default is to wait for all the child activities to complete; though you can enable fast-fail mode so that the activity fails as soon as a child activity fails</TD>
 </TR>
 <TR>
 <TD class="confluenceTd">JoinQuorum</TD>
-<TD class="confluenceTd">This flow is useful for implementing clustering style flows where you want a quorum of flows to complete. e.g. if you have 5 child flows you want to wait for at least 3 flows to complete succesfully before continuing</TD>
+<TD class="confluenceTd">This activity is useful for implementing clustering style activities where you want a quorum of activities to complete. e.g. if you have 5 child activities you want to wait for at least 3 activities to complete succesfully before continuing</TD>
+</TR>
+<TR>
+<TD class="confluenceTd">AsynchronousActivity</TD>
+<TD class="confluenceTd">Executes any Runnable or Callable on an Executor and complete the activity when it has completed so that it can be used in joins</TD>
+</TR>
+<TR>
+<TD class="confluenceTd">ParallelActivity</TD>
+<TD class="confluenceTd">Allows a collection of parallel Runnable or Callable objects to be performed on an Executor then performing some kind of join on them completing</TD>
 </TR>
 </TBODY></TABLE>
 
@@ -372,7 +350,162 @@ assertFlowStarted(flow);
 
 child3.stop();
 assertFlowStopped(flow);</PRE>
-</DIV></DIV></DIV>
+</DIV></DIV>
+
+<H3><A name="BeanFlow-Joinconditions"></A>Join conditions</H3>
+
+<P>In workflows you often want to fork parallel steps and then join on certain events. You often have complex logic to decide on what the join condition is. e.g. in pseudo code</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">fork steps A, B, C
+join on A and (B or C)</PRE>
+</DIV></DIV>
+
+<P>In BeanFlow we implement join conditions using regular Java code. The basic idea is that a Activity will listen to changes in a number of different <B>State</B> objects such as fields a, b and c. You can then write an activity bean to perform the join condition you need. When the condition is met you can then perform whatever logic you wish such as</P>
+
+<UL>
+	<LI>stopping the activity</LI>
+	<LI>forking off a new child activity</LI>
+	<LI>changing your state</LI>
+	<LI>changing the state of some other bean</LI>
+	<LI>calling arbitrary Java code</LI>
+</UL>
+
+
+<P>Here is an example activity implemented in Java code for the above code.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-comment">// lets create some child workflows
+</SPAN><SPAN class="code-keyword">final</SPAN> Activity a = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+<SPAN class="code-keyword">final</SPAN> Activity b = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+<SPAN class="code-keyword">final</SPAN> Activity c = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+
+<SPAN class="code-comment">// lets create the activity with a custom join condition
+</SPAN>Activity activity = <SPAN class="code-keyword">new</SPAN> JoinSupport(a, b, c) {
+    @Override
+    <SPAN class="code-keyword">protected</SPAN> void onChildStateChange(<SPAN class="code-object">int</SPAN> childCount, <SPAN class="code-object">int</SPAN> stoppedCount, <SPAN class="code-object">int</SPAN> failedCount) {
+        
+        <SPAN class="code-keyword">if</SPAN> (a.isStopped() &amp;&amp; (b.isStopped() || c.isStopped())) {
+            <SPAN class="code-comment">// lets stop the activity we&apos;re done
+</SPAN>            stop();
+        }
+    }
+};
+
+<SPAN class="code-comment">// lets start the activities
+</SPAN>activity.startWithTimeout(timer, timeout);
+
+<SPAN class="code-comment">// now lets test things behave properly
+</SPAN>assertFlowStarted(activity);
+
+a.stop();
+assertFlowStarted(activity);
+
+b.stop();
+assertFlowStopped(activity);</PRE>
+</DIV></DIV>
+
+<H3><A name="BeanFlow-Buildingworkflows"></A>Building workflows</H3>
+
+<P>So we&apos;ve been over the basics of activities. Remember they are just Java bean so you can implement them however you wish.</P>
+
+<P>However often folks think of workflows as a number of discrete steps; using a kind of state machine to move from step to step. One real simple approach to<BR>
+writing workflows in this model is to use a method to map to a workflow step.</P>
+
+<P>The following example is a fairly large one, but it shows a variety of different concepts</P>
+
+<UL>
+	<LI>suspending workflows (such as when they wait for external events such as user input or an asynchronous message to arrive)</LI>
+	<LI>looping &amp; using predicates</LI>
+	<LI>forking and joining child activities</LI>
+	<LI>declaratively moving from one step to another</LI>
+</UL>
+
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class ExampleWorkflow <SPAN class="code-keyword">extends</SPAN> Workflow {
+
+    <SPAN class="code-keyword">private</SPAN> <SPAN class="code-object">int</SPAN> loopCount;
+    <SPAN class="code-keyword">private</SPAN> <SPAN class="code-object">long</SPAN> timeout = 500;
+    <SPAN class="code-keyword">private</SPAN> <SPAN class="code-object">String</SPAN> userEmailAddress;
+
+    <SPAN class="code-comment">// Workflow steps
+</SPAN>    <SPAN class="code-comment">// -------------------------------------------------------------------------
+</SPAN>
+    <SPAN class="code-comment">// This is the first step of a workflow by <SPAN class="code-keyword">default</SPAN>
+</SPAN>    <SPAN class="code-comment">// but you can start at any point by passing in a parameter
+</SPAN>    <SPAN class="code-comment">// to the Workflow constructor 
+</SPAN>    <SPAN class="code-keyword">public</SPAN> void startStep() {
+        <SPAN class="code-comment">// lets use an explicit goTo() to tell the workflow 
+</SPAN>        <SPAN class="code-comment">// which step to go to next; though we can just <SPAN class="code-keyword">return</SPAN> Strings
+</SPAN>        goTo(<SPAN class="code-quote">&quot;loopStep&quot;</SPAN>);
+    }
+
+    <SPAN class="code-comment">// lets use the <SPAN class="code-keyword">return</SPAN> value to specify the next step
+</SPAN>    <SPAN class="code-keyword">public</SPAN> <SPAN class="code-object">String</SPAN> loopStep() {
+        <SPAN class="code-keyword">if</SPAN> (++loopCount &gt; 3) {
+            <SPAN class="code-keyword">return</SPAN> <SPAN class="code-quote">&quot;waitForUserInputStep&quot;</SPAN>;
+        }
+        <SPAN class="code-comment">// lets keep looping
+</SPAN>        <SPAN class="code-keyword">return</SPAN> <SPAN class="code-quote">&quot;loopStep&quot;</SPAN>;
+    }
+    
+    <SPAN class="code-keyword">public</SPAN> void waitForUserInputStep() {
+        <SPAN class="code-comment">// we are going to park here until a user 
+</SPAN>        <SPAN class="code-comment">// enters a valid email address
+</SPAN>        <SPAN class="code-comment">// so lets park the workflow engine
+</SPAN>    }
+    
+    <SPAN class="code-keyword">public</SPAN> <SPAN class="code-object">String</SPAN> afterEnteredEmailStep() {
+        <SPAN class="code-comment">// we are going to park here until a user 
+</SPAN>        <SPAN class="code-comment">// enters a valid email address
+</SPAN>        <SPAN class="code-object">System</SPAN>.out.println(<SPAN class="code-quote">&quot;User entered email address: &quot;</SPAN> + userEmailAddress);
+        <SPAN class="code-keyword">return</SPAN> <SPAN class="code-quote">&quot;forkStep&quot;</SPAN>;
+    }
+    
+    <SPAN class="code-keyword">public</SPAN> void forkStep() {
+        <SPAN class="code-comment">// lets fork some child flows
+</SPAN>        TimeoutActivity a = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+        TimeoutActivity b = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+        TimeoutActivity c = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+        
+        <SPAN class="code-object">System</SPAN>.out.println(<SPAN class="code-quote">&quot;Forking off processes a, b, c&quot;</SPAN>);
+        fork(a, b, c);
+        
+        <SPAN class="code-comment">// now lets add some joins
+</SPAN>        joinAll(<SPAN class="code-quote">&quot;aCompletedStep&quot;</SPAN>,timeout, a);
+        joinAll(<SPAN class="code-quote">&quot;abcCompletedStep&quot;</SPAN>, timeout, a, b, c);
+    }
+    
+    <SPAN class="code-keyword">public</SPAN> void aCompletedStep() {
+        <SPAN class="code-object">System</SPAN>.out.println(<SPAN class="code-quote">&quot;child flow A completed!&quot;</SPAN>);
+    }
+    
+    <SPAN class="code-keyword">public</SPAN> <SPAN class="code-object">String</SPAN> abcCompletedStep() {
+        <SPAN class="code-object">System</SPAN>.out.println(<SPAN class="code-quote">&quot;child flows A, B and C completed!&quot;</SPAN>);
+        
+        <SPAN class="code-comment">// we are completely done now
+</SPAN>        <SPAN class="code-keyword">return</SPAN> <SPAN class="code-quote">&quot;stop&quot;</SPAN>;
+    }
+
+    <SPAN class="code-comment">// External events
+</SPAN>    <SPAN class="code-comment">// -------------------------------------------------------------------------
+</SPAN>    <SPAN class="code-keyword">public</SPAN> void userEntered(<SPAN class="code-object">String</SPAN> emailAddress) {
+        <SPAN class="code-keyword">if</SPAN> (emailAddress != <SPAN class="code-keyword">null</SPAN> &amp;&amp; emailAddress.indexOf(<SPAN class="code-quote">&quot;@&quot;</SPAN>) &gt; 0) {
+            <SPAN class="code-keyword">this</SPAN>.userEmailAddress = emailAddress;
+            
+            <SPAN class="code-object">System</SPAN>.out.println(<SPAN class="code-quote">&quot;Lets re-start the suspended workflow&quot;</SPAN>);
+            goTo(<SPAN class="code-quote">&quot;afterEnteredEmailStep&quot;</SPAN>);
+        }
+    }
+}</PRE>
+</DIV></DIV>
+
+<P>In the above example, each workflow step is implemented as a method. If the method returns a String it is interpreted as the next step which will be executed. Returning null (or using a void return type) will suspend the workflow.</P>
+
+<P>You can also explicitly call suspend() or stop() yourself.</P>
+
+<P>The goTo(stepName) will instruct the workflow engine to move to the given step.</P></DIV>
           
                   <DIV class="tabletitle">
             Children
@@ -394,8 +527,8 @@ assertFlowStopped(flow);</PRE>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on May 12, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=5611">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on May 13, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=5725">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5092">edit page</A>)
     </DIV>
