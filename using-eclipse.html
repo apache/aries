@@ -291,53 +291,62 @@ Using Eclipse
 
 <H2><A name="UsingEclipse-InEclipse%3A"></A>In Eclipse:</H2>
 
-<P><BR clear="all"></P>
 <OL>
 	<LI>From the &quot;File&quot; menu select &quot;Import&quot;.&nbsp;
 <BR clear="all">
-<BR clear="all"> <IMG src="using-eclipse.data/FileImport.JPG" align="absmiddle" border="0">
-<BR clear="all">
+<BR clear="all">  <IMG src="using-eclipse.data/FileImport.JPG" align="absmiddle" border="0"><BR clear="all">
 <BR clear="all"></LI>
 	<LI>&nbsp;Select &quot;Existing Projects into Workspace&quot; and click &quot;Next&quot;
 <BR clear="all">
+<BR clear="all"> <IMG src="using-eclipse.data/Import.JPG" align="absmiddle" border="0"><BR clear="all">
+<BR clear="all"></LI>
+	<LI>Browse for the root directory, which is the directory in which you downloaded ServiceMix.&nbsp; &quot;Select All&quot; the files in the Import pop-up window. They are probably already pre-selected for you (check box is checked).&nbsp; Click &quot;Finish&quot; in the Import window.
 <BR clear="all">
-<IMG src="using-eclipse.data/Import.JPG" align="absmiddle" border="0"></LI>
-	<LI>Browse for the root directory, which is the directory in which you downloaded ServiceMix.&nbsp; &quot;Select All&quot; the files in the Import pop-up window. They are probably already pre-selected for you (check box is checked).&nbsp; Click &quot;Finish&quot; in the Import window.<BR>
-<IMG src="using-eclipse.data/Import_SelectAll.JPG" align="absmiddle" border="0"></LI>
+<IMG src="using-eclipse.data/Import_SelectAll.JPG" align="absmiddle" border="0"><BR clear="all">
+<BR clear="all"></LI>
 	<LI>From the &quot;Windows&quot;&nbsp;menu and click &quot;Preferences&quot;<BR>
 The Preferences window will pop-up.<BR>
 Change to JDK 5<BR>
 Windows&gt;preferences click on Compiler<BR>
 Compiler compliance level must be 5.0, pull down menu and select.<BR>
-Check the &quot;Use default compliance settings&quot; box.<BR>
-<IMG src="using-eclipse.data/JDK_Compliance.JPG" align="absmiddle" border="0"></LI>
+Check the &quot;Use default compliance settings&quot; box.
+<BR clear="all">
+<IMG src="using-eclipse.data/JDK_Compliance.JPG" align="absmiddle" border="0"><BR clear="all">
+<BR clear="all"></LI>
 	<LI>Then check under &quot;Installed JREs&quot; that you have JDK 5, e.g., jre_1.5.x<BR>
 <IMG src="using-eclipse.data/Installed_JREs.JPG" align="absmiddle" border="0"><BR clear="all"></LI>
 	<LI>Click on the Java plus sign, then click on Build Path<BR>
-then select Classpath Variables.<BR>
-<IMG src="using-eclipse.data/Classpath_Variables.JPG" align="absmiddle" border="0"></LI>
+then select Classpath Variables.
+<BR clear="all">
+<IMG src="using-eclipse.data/Classpath_Variables.JPG" align="absmiddle" border="0"><BR clear="all">
+<BR clear="all"></LI>
 	<LI>Click on New button to right
 <BR clear="all">
 A pop-up appears.<BR>
 Enter the Name: MAVEN_REPO<BR>
 Enter the Path, which is your local maven repository, usually located in<BR>
 your home directory .maven, for example:<BR>
-C:\Documents and Settings\jwortzman\.maven\repository<BR>
-<IMG src="using-eclipse.data/NewVariableEntry.JPG" align="absmiddle" border="0"><BR clear="all"></LI>
+C:\Documents and Settings\jwortzman\.maven\repository
+<BR clear="all">
+<IMG src="using-eclipse.data/NewVariableEntry.JPG" align="absmiddle" border="0"><BR clear="all">
+<BR clear="all">
+<H1><A name="UsingEclipse-RunninganExample"></A>Running an Example</H1></LI>
 </OL>
 
-
-<H1><A name="UsingEclipse-RunninganExample"></A>Running an Example</H1>
 
 <OL>
 	<LI>Now you can run an example:
 <BR clear="all">
 a. In the Package Explorer find the Main class, which should be located in: servicemix-core/src/main/java/<BR>
 under org.apache.servicemix/Main.java.<BR>
-Double click on the main() class.<BR>
-<IMG src="using-eclipse.data/PackageMainJava.JPG" align="absmiddle" border="0"></LI>
-	<LI>From the Run menu select &quot;Run...&quot;<BR>
-<IMG src="using-eclipse.data/RunRun.JPG" align="absmiddle" border="0"></LI>
+Double click on the main() class.
+<BR clear="all">
+<IMG src="using-eclipse.data/PackageMainJava.JPG" align="absmiddle" border="0"><BR clear="all">
+<BR clear="all"></LI>
+	<LI>From the Run menu select &quot;Run...&quot;
+<BR clear="all">
+<IMG src="using-eclipse.data/RunRun.JPG" align="absmiddle" border="0"><BR clear="all">
+<BR clear="all"></LI>
 	<LI>You will get a Run window pop-up, from there select Java Application.
 	<OL>
 		<LI>Click on New button in botton left</LI>
@@ -352,8 +361,10 @@ You can use the &quot;File System...&quot; button to browse for your directory.<
 		</OL>
 		</LI>
 		<LI>Click Apply.</LI>
-		<LI>Click Run<BR>
-<IMG src="using-eclipse.data/filepoller.JPG" align="absmiddle" border="0"></LI>
+		<LI>Click Run
+<BR clear="all">
+<IMG src="using-eclipse.data/filepoller.JPG" align="absmiddle" border="0"><BR clear="all">
+<BR clear="all"></LI>
 	</OL>
 	</LI>
 </OL>
@@ -365,13 +376,19 @@ You can use the &quot;File System...&quot; button to browse for your directory.<
 <H2><A name="UsingEclipse-UpdatingEclipsefromTrunk"></A>Updating Eclipse from Trunk</H2>
 
 <OL>
-	<LI>Browse the &quot;Project&quot; menu and select &quot;Properties&quot;<BR>
-<IMG src="using-eclipse.data/ProjectProperties.JPG" align="absmiddle" border="0"></LI>
-	<LI>Click &quot;Java BuildPath&quot; and under the &quot;Libraries&quot; tab click &quot;Add External Jar&quot;.<BR>
-<IMG src="using-eclipse.data/JavaBuildPathLibraries.JPG" align="absmiddle" border="0"></LI>
+	<LI>Browse the &quot;Project&quot; menu and select &quot;Properties&quot;
+<BR clear="all">
+<IMG src="using-eclipse.data/ProjectProperties.JPG" align="absmiddle" border="0"><BR clear="all">
+<BR clear="all"></LI>
+	<LI>Click &quot;Java BuildPath&quot; and under the &quot;Libraries&quot; tab click &quot;Add External Jar&quot;.
+<BR clear="all">
+<IMG src="using-eclipse.data/JavaBuildPathLibraries.JPG" align="absmiddle" border="0"><BR clear="all">
+<BR clear="all"></LI>
 	<LI>Browse to the incubator-servicemix-3.0-SNAPSHOT.jar location:<BR>
-\target\incubator-servicemix-3.0-SNAPSHOT\bin\incubator-servicemix-3.0-SNAPSHOT and Click &quot;Open&quot; then &quot;OK&quot; in the &quot;Properties&quot; screen<BR>
-<IMG src="using-eclipse.data/JarSelection.JPG" align="absmiddle" border="0"></LI>
+\target\incubator-servicemix-3.0-SNAPSHOT\bin\incubator-servicemix-3.0-SNAPSHOT and Click &quot;Open&quot; then &quot;OK&quot; in the &quot;Properties&quot; screen
+<BR clear="all">
+<IMG src="using-eclipse.data/JarSelection.JPG" align="absmiddle" border="0"><BR clear="all">
+<BR clear="all"></LI>
 	<LI>Allow some time for the individual projects to build.</LI>
 </OL>
 </DIV>
@@ -384,8 +401,8 @@ You can use the &quot;File System...&quot; button to browse for your directory.<
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=lmalgeri">Lisa Malgeri</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=lmalgeri">Lisa Malgeri</A> on May 12, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1962&originalId=5619">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jeremy.wortzman%2540simulalabs.com">Jeremy Wortzman</A> on May 15, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1962&originalId=5766">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1962">edit page</A>)
     </DIV>
