@@ -2,7 +2,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
   <HEAD>
-    <LINK type="text/css" rel="stylesheet" href="resources/space.css">
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="http://goopen.org/confluence/pages/viewpage.action?spaceKey=SM&title=site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
 JMS
@@ -37,7 +41,7 @@ JMS
           </TD>
           <TD align="right" valign="middle" nowrap="">
             <DIV id="site-quicklinks">
-<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
             </DIV>
           </TD>
         </TR> 
@@ -254,102 +258,20 @@ JMS
 <H3><A name="JMS-ReceivingJMSmessages"></A>Receiving JMS messages</H3>
 
 <P>The JmsReceiverComponent subscribes to the given destination using Spring&apos;s JmsTemplate and dispatches the message into the JBI container. Here&apos;s an <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-components/src/test/resources/org/apache/servicemix/components/xslt/example.xml" title="Visit page outside Confluence" rel="nofollow">example<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> of subscribing to a JMS destination (in this case a topic) and forwarding the JBI message onto another JBI component - which in this case is the <EM>foo:transformer</EM> service.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJmsReceiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJmsReceiver&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:transformer&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsReceiverComponent&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;template&quot;</SPAN>&gt;</SPAN>
-      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.jms.core.JmsTemplate&quot;</SPAN>&gt;</SPAN>
-        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionFactory&quot;</SPAN>&gt;</SPAN>
-          <SPAN class="code-tag">&lt;ref local=<SPAN class="code-quote">&quot;jmsFactory&quot;</SPAN>/&gt;</SPAN>
-        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;defaultDestinationName&quot;</SPAN> value=<SPAN class="code-quote">&quot;test.org.apache.servicemix.components.xslt.source&quot;</SPAN>/&gt;</SPAN>
-        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;pubSubDomain&quot;</SPAN> value=<SPAN class="code-quote">&quot;true&quot;</SPAN>/&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>If you wish to use JCA or some other mechanism to subscribe to JMS you can use the JmsInBinding.</P>
 
 <H3><A name="JMS-SendingJMSmessages"></A>Sending JMS messages</H3>
 
 <P>The JmsSenderComponent will send JMS messages from the input message exchange. This component uses Spring&apos;s JmsTemplate to perform the sending. The following <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-components/src/test/resources/org/apache/servicemix/components/xslt/example.xml" title="Visit page outside Confluence" rel="nofollow">example<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> demonstrates a component which when invoked will send a message to a given JMS topic</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJmsSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJmsSender&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsSenderComponent&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;template&quot;</SPAN>&gt;</SPAN>
-      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.jms.core.JmsTemplate&quot;</SPAN>&gt;</SPAN>
-        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionFactory&quot;</SPAN>&gt;</SPAN>
-          <SPAN class="code-tag">&lt;ref local=<SPAN class="code-quote">&quot;jmsFactory&quot;</SPAN>/&gt;</SPAN>
-        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;defaultDestinationName&quot;</SPAN> value=<SPAN class="code-quote">&quot;test.org.apache.servicemix.components.xslt.source&quot;</SPAN>/&gt;</SPAN>
-        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;pubSubDomain&quot;</SPAN> value=<SPAN class="code-quote">&quot;true&quot;</SPAN>/&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 <H3><A name="JMS-JMSbridges"></A>JMS bridges</H3>
 
 <P>Its a very common requirement to create a message bridge; routing messages from one messaging system to another. With ServiceMix we can connect any transport with any transport - but for now lets focus on JMS to JMS bridging. Imagine for example you wish to route messages from ActiveMQ to MQSeries, or from WebLogic JMS to ActiveMQ.</P>
 
 <P>The following <SPAN class="nobr"><A href="https://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-components/src/test/resources/org/apache/servicemix/components/xslt/pipeline.xml" title="Visit page outside Confluence" rel="nofollow">example<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> demonstrates how to setup a JMS bridge in ServiceMix</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;beans <SPAN class="code-keyword">xmlns:sm</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/config/1.0&quot;</SPAN> 
-	   <SPAN class="code-keyword">xmlns:foo</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.org/demo/pipeline/&quot;</SPAN>&gt;
 
-  <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- the JBI container and its components --&gt;</SPAN></SPAN>
-  <SPAN class="code-tag">&lt;sm:container id=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> embedded=<SPAN class="code-quote">&quot;true&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;sm:activationSpecs&gt;</SPAN>
-
-      <SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJmsReceiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJmsReceiver&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:transformer&quot;</SPAN>&gt;</SPAN>
-        <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsReceiverComponent&quot;</SPAN>&gt;</SPAN>
-          <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;template&quot;</SPAN>&gt;</SPAN>
-            <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.jms.core.JmsTemplate&quot;</SPAN>&gt;</SPAN>
-              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionFactory&quot;</SPAN>&gt;</SPAN>
-                <SPAN class="code-tag">&lt;ref local=<SPAN class="code-quote">&quot;jmsFactory&quot;</SPAN>/&gt;</SPAN>
-              <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;defaultDestinationName&quot;</SPAN> value=<SPAN class="code-quote">&quot;demo.cheese.source&quot;</SPAN>/&gt;</SPAN>
-              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;pubSubDomain&quot;</SPAN> value=<SPAN class="code-quote">&quot;true&quot;</SPAN>/&gt;</SPAN>
-            <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-          <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-        <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN>
-
-      <SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;transformer&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:transformer&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:transformedSender&quot;</SPAN>&gt;</SPAN>
-        <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.xslt.XsltComponent&quot;</SPAN>&gt;</SPAN>
-          <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;xsltResource&quot;</SPAN> value=<SPAN class="code-quote">&quot;classpath:org/apache/servicemix/components/xslt/transform.xsl&quot;</SPAN>/&gt;</SPAN>
-        <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN>
-
-      <SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;transformedSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:transformedSender&quot;</SPAN>&gt;</SPAN>
-        <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsSenderComponent&quot;</SPAN>&gt;</SPAN>
-          <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;template&quot;</SPAN>&gt;</SPAN>
-            <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.jms.core.JmsTemplate&quot;</SPAN>&gt;</SPAN>
-              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionFactory&quot;</SPAN>&gt;</SPAN>
-                <SPAN class="code-tag">&lt;ref local=<SPAN class="code-quote">&quot;jmsFactory&quot;</SPAN>/&gt;</SPAN>
-              <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;defaultDestinationName&quot;</SPAN> value=<SPAN class="code-quote">&quot;demo.cheese.result&quot;</SPAN>/&gt;</SPAN>
-              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;pubSubDomain&quot;</SPAN> value=<SPAN class="code-quote">&quot;true&quot;</SPAN>/&gt;</SPAN>
-            <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-          <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-        <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN>
-
-    <SPAN class="code-tag">&lt;/sm:activationSpecs&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/sm:container&gt;</SPAN>
-
-  <SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;jmsFactory&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.activemq.pool.PooledConnectionFactory&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionFactory&quot;</SPAN>&gt;</SPAN>
-      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.activemq.ActiveMQConnectionFactory&quot;</SPAN>&gt;</SPAN>
-        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;brokerURL&quot;</SPAN> value=<SPAN class="code-quote">&quot;vm://localhost?broker.persistent=false&quot;</SPAN>/&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-
-<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
-</DIV></DIV>
 <P>This example is performing an <A href="xslt.html" title="XSLT">XSLT</A> transform on the messages as well - you can perform arbitrary processing of the messages in the bridge, performing rules processing or content based routing. Obviously you could miss out the transformation step and just route the inbound message on one JMS provider to another JMS provider without any transform step.</P></DIV>
           
                   </DIV>

@@ -2,7 +2,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
   <HEAD>
-    <LINK type="text/css" rel="stylesheet" href="resources/space.css">
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="http://goopen.org/confluence/pages/viewpage.action?spaceKey=SM&title=site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
 RSS
@@ -37,7 +41,7 @@ RSS
           </TD>
           <TD align="right" valign="middle" nowrap="">
             <DIV id="site-quicklinks">
-<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
             </DIV>
           </TD>
         </TR> 
@@ -252,28 +256,7 @@ RSS
 <P>To see this component in action see the <A href="rss-binding.html" title="RSS-binding">Example</A> in the <A href="download.html" title="Download">binary distribution</A>.</P>
 
 <P>You can configure the RSS component as follows in your servicemix.xml</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- lets poll for updates to news sites --&gt;</SPAN></SPAN>
-<SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;rss&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:rss&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;my:trace&quot;</SPAN>&gt;</SPAN>
-	<SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
-		<SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.rss.RssPollingComponent&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;outputType&quot;</SPAN> value=<SPAN class="code-quote">&quot;rss_2.0&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;period&quot;</SPAN> value=<SPAN class="code-quote">&quot;5000&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;lastPolledDate&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;value&gt;</SPAN>2005/aug/10<SPAN class="code-tag">&lt;/value&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
 
-
-  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;urlStrings&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;list&gt;</SPAN>
-      <SPAN class="code-tag">&lt;value&gt;</SPAN>http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/front_page/rss.xml<SPAN class="code-tag">&lt;/value&gt;</SPAN>
-      <SPAN class="code-tag">&lt;value&gt;</SPAN>http://rss.cnn.com/rss/cnn_topstories.rss<SPAN class="code-tag">&lt;/value&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/list&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-		<SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-	<SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
 <P>&nbsp;</P>
 
 <H2><A name="RSS-GeneratingRSS%2FAtomfeeds"></A>Generating RSS/Atom feeds</H2>
@@ -281,27 +264,7 @@ RSS
 <P>This component is used to consume inbound JBI messages and write them to an RSS/Atom feed. You can then use expressions to extract the title and entry content for the items.</P>
 
 <P>The following example shows using XPath expression</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;feedWriter&quot;</SPAN> 
-					 service=<SPAN class="code-quote">&quot;foo:feedWriter&quot;</SPAN>&gt;
-	<SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.rss.FeedWriter&quot;</SPAN>&gt;</SPAN>
 
-   <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;feedFile&quot;</SPAN> value=<SPAN class="code-quote">&quot;target/serviceMixFeed.xml&quot;</SPAN> /&gt;</SPAN>
-	
-   <SPAN class="code-tag"><SPAN class="code-comment">&lt;!--  define expressions for the entry title and value --&gt;</SPAN></SPAN>
-   <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;entryTitle&quot;</SPAN>&gt;</SPAN>
-     <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
-       <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;Message &apos;, /sample/@id, &apos; - &apos;, /sample/@sent)&quot;</SPAN> /&gt;</SPAN>
-     <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-   <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-   <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;entryValue&quot;</SPAN>&gt;</SPAN>
-     <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
-       <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;This is an entry with ID &apos;, /sample/@id, &apos; sent: &apos;, /sample/@sent, &apos;. There is not much else in the message to tell :)&apos;)&quot;</SPAN> /&gt;</SPAN>
-     <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-   <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
 <P>&nbsp;</P></DIV>
           
                   </DIV>

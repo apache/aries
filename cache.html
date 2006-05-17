@@ -2,7 +2,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
   <HEAD>
-    <LINK type="text/css" rel="stylesheet" href="resources/space.css">
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="http://goopen.org/confluence/pages/viewpage.action?spaceKey=SM&title=site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
 Cache
@@ -37,7 +41,7 @@ Cache
           </TD>
           <TD align="right" valign="middle" nowrap="">
             <DIV id="site-quicklinks">
-<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
             </DIV>
           </TD>
         </TR> 
@@ -250,24 +254,7 @@ Cache
 <P>To use the cache component you need to specify an expression to decide which key to use in the cache. This could be a simple property on the message or message exchange or it could be an XPath expression to extract some primary key from inside the XML document.</P>
 
 <P>The following example shows how to configure the cache component. In this case we&apos;re using a <SPAN class="nobr"><A href="http://jaxen.org/" title="Visit page outside Confluence" rel="nofollow">Jaxen<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> based XPath evaluation; though there are other XPath expression implementations such as JAXP 1.3 (for Java 5 or later) and XMLBeans.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;activationSpec componentName=<SPAN class="code-quote">&quot;myService&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myService&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:myServiceImpl&quot;</SPAN>&gt;</SPAN>
-	<SPAN class="code-tag">&lt;component&gt;</SPAN><SPAN class="code-tag">&lt;bean xmlns=<SPAN class="code-quote">&quot;&quot; class=&quot;</SPAN>org.apache.servicemix.components.cache.CacheComponent&quot;&gt;</SPAN>
-  <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- we could use a JCache here if we want --&gt;</SPAN></SPAN>
-  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;cache&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.cache.LRUCache&quot;</SPAN>&gt;</SPAN>
-      <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;100&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-
-  <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- lets define the cache key expression --&gt;</SPAN></SPAN>
-  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;keyExpression&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
-      <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;/*/@id&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/property&gt;</SPAN><SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-<SPAN class="code-tag">&lt;/component&gt;</SPAN><SPAN class="code-tag">&lt;/activationSpec&gt;</SPAN></PRE>
-</DIV></DIV></DIV>
+</DIV>
           
                   </DIV>
         </TD>

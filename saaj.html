@@ -2,7 +2,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
   <HEAD>
-    <LINK type="text/css" rel="stylesheet" href="resources/space.css">
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="http://goopen.org/confluence/pages/viewpage.action?spaceKey=SM&title=site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
 SAAJ
@@ -37,7 +41,7 @@ SAAJ
           </TD>
           <TD align="right" valign="middle" nowrap="">
             <DIV id="site-quicklinks">
-<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
             </DIV>
           </TD>
         </TR> 
@@ -252,35 +256,15 @@ SAAJ
 <H3><A name="SAAJ-InvokingWebServicesUsingSAAJ"></A>Invoking Web Services Using SAAJ</H3>
 
 <P>ServiceMix includes a component for invoking web services using SAAJ and Axis via JBI, as an InOut message exchange. The InOut message exchange pattern (MEP) is a request response pattern where the output message is replaced by a fault, if the message is not successful. For more details on the InOut MEP please see <SPAN class="nobr"><A href="http://www.jcp.org/en/jsr/detail?id=208" title="Visit page outside Confluence" rel="nofollow">JSR 208<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. The following example invokes a web service to ask for a <SPAN class="nobr"><A href="http://xmethods.net/ve2/ViewListing.po?key=uuid:889A05A5-5C03-AD9B-D456-0E54A527EDEE" title="Visit page outside Confluence" rel="nofollow">stock price<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>:</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;stockQuote&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:stockQuote&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;stockQuote&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.saaj.SaajBinding&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;soapEndpoint&quot;</SPAN>&gt;</SPAN>
-      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;javax.xml.messaging.URLEndpoint&quot;</SPAN>&gt;</SPAN>
-        <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;http://64.124.140.30/soap&quot;</SPAN>/&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
- <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>&nbsp;</P>
 
 <P>To invoke this function, pass the following request body:</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;ns1:getQuote <SPAN class="code-keyword">xmlns:ns1</SPAN>=<SPAN class="code-quote">&quot;urn:xmethods-delayed-quotes&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/1999/XMLSchema-instance&quot;</SPAN> <SPAN class="code-keyword">xmlns:se</SPAN>=<SPAN class="code-quote">&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;</SPAN> se:encodingStyle=<SPAN class="code-quote">&quot;http://schemas.xmlsoap.org/soap/encoding/&quot;</SPAN>&gt;</SPAN>
 
-  <SPAN class="code-tag">&lt;symbol xsi:type=<SPAN class="code-quote">&quot;xsd:string&quot;</SPAN>&gt;</SPAN>SUNW<SPAN class="code-tag">&lt;/symbol&gt;</SPAN>
-
-<SPAN class="code-tag">&lt;/ns1:getQuote&gt;</SPAN></PRE>
-</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>Below is the expected response:</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;n:getQuoteResponse <SPAN class="code-keyword">xmlns:n</SPAN>=<SPAN class="code-quote">&quot;urn:xmethods-delayed-quotes&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsd</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;Result xsi:type=<SPAN class="code-quote">&quot;xsd:float&quot;</SPAN>&gt;</SPAN>3.67<SPAN class="code-tag">&lt;/Result&gt;</SPAN>
-<SPAN class="code-tag">&lt;/n:getQuoteResponse&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>&nbsp;</P>
 
 <H3><A name="SAAJ-AdditionalResources"></A>Additional Resources</H3>

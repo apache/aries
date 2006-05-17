@@ -2,7 +2,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
   <HEAD>
-    <LINK type="text/css" rel="stylesheet" href="resources/space.css">
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="http://goopen.org/confluence/pages/viewpage.action?spaceKey=SM&title=site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
 Jabber
@@ -37,7 +41,7 @@ Jabber
           </TD>
           <TD align="right" valign="middle" nowrap="">
             <DIV id="site-quicklinks">
-<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
             </DIV>
           </TD>
         </TR> 
@@ -250,47 +254,18 @@ Jabber
 <H3><A name="Jabber-SendingmessagesfromJBItoJabber"></A>Sending messages from JBI to Jabber</H3>
 
 <P>Both individual based and group chat mechanisms are supported. Here&apos;s an example regular chat sender component.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJabberSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJabberSender&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;myJabberSender&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jabber.JabberChatSender&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;host&quot;</SPAN> value=<SPAN class="code-quote">&quot;localhost&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;port&quot;</SPAN> value=<SPAN class="code-quote">&quot;6222&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;user&quot;</SPAN> value=<SPAN class="code-quote">&quot;test1@servicemix.org&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;password&quot;</SPAN> value=<SPAN class="code-quote">&quot;rocks&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;participant&quot;</SPAN> value=<SPAN class="code-quote">&quot;test2@servicemix.org&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>&nbsp;</P>
 
 <P>Notice how you specify a participant for the person to talk to.</P>
 
 <P>For group chats you specify a room</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJabberSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJabberSender&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;myJabberSender&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jabber.JabberGroupChatSender&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;host&quot;</SPAN> value=<SPAN class="code-quote">&quot;localhost&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;port&quot;</SPAN> value=<SPAN class="code-quote">&quot;6222&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;user&quot;</SPAN> value=<SPAN class="code-quote">&quot;test1@servicemix.org&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;password&quot;</SPAN> value=<SPAN class="code-quote">&quot;rocks&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;room&quot;</SPAN> value=<SPAN class="code-quote">&quot;servicemixroom&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>&nbsp;</P>
 
 <H3><A name="Jabber-ReceivingmessagesfromJabberandsendingthemintoJBItoberoutedbytheNMR"></A>Receiving messages from Jabber and sending them into JBI to be routed by the NMR</H3>
 
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJabberReceiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJabberReceiver&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;myJabberReceiver&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jabber.JabberReceiver&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;host&quot;</SPAN> value=<SPAN class="code-quote">&quot;localhost&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;port&quot;</SPAN> value=<SPAN class="code-quote">&quot;6222&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;user&quot;</SPAN> value=<SPAN class="code-quote">&quot;test2@servicemix.org&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;password&quot;</SPAN> value=<SPAN class="code-quote">&quot;rocks&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>&nbsp;</P></DIV>
           
                   </DIV>
