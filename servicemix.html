@@ -16,7 +16,7 @@ ServiceMix
       <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
         <TR>
           <TD align="left" class="topbardiv" nowrap="">
-            <IMG border="0" src="http://www.logicblaze.com/images/logos/products/ServiceMix/ServiceMix_logo_150.jpg">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
           </TD>
           <TD align="right" nowrap="">
             <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
@@ -253,86 +253,14 @@ ServiceMix
 <H3><A name="ServiceMix-DeployingtheServiceMixComponent"></A>Deploying the ServiceMix Component</H3>
 
 <P>Create and deploy a JBI component archive with a jbi.xml similar to:</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;jbi xmlns=<SPAN class="code-quote">&quot;http://java.sun.com/xml/ns/jbi&quot;</SPAN> 
-     <SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN> 
-     xsi:schemaLocation=<SPAN class="code-quote">&quot;http://java.sun.com/xml/ns/jbi&quot;</SPAN> 
-     version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN>&gt;
 
-  <SPAN class="code-tag">&lt;component type=<SPAN class="code-quote">&quot;service-engine&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;identification&gt;</SPAN>
-      <SPAN class="code-tag">&lt;name&gt;</SPAN>servicemix-component<SPAN class="code-tag">&lt;/name&gt;</SPAN>
-      <SPAN class="code-tag">&lt;description&gt;</SPAN>A ServiceMix Component that can be used to deploy servicemix.xml artifacts.<SPAN class="code-tag">&lt;/description&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/identification&gt;</SPAN>
-    <SPAN class="code-tag">&lt;component-class-name&gt;</SPAN>org.servicemix.components.servicemix.ServiceMixComponent<SPAN class="code-tag">&lt;/component-class-name&gt;</SPAN>
-    <SPAN class="code-tag">&lt;component-class-path/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/component&gt;</SPAN>
-
-<SPAN class="code-tag">&lt;/jbi&gt;</SPAN></PRE>
-</DIV></DIV>
 
 <H3><A name="ServiceMix-Deployingtheservicemix.xmlFiles."></A>Deploying the servicemix.xml Files.</H3>
 
 <P>The servicemix.xml files are deployed as artifacts of a JBI service assembly. Here&apos;s a sample servicemix.xml, notice that the &lt;container&gt; element is replaced with a &lt;serviceunit&gt; element.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;beans <SPAN class="code-keyword">xmlns:my</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.org/demo/&quot;</SPAN>&gt;</SPAN>
 
-  <SPAN class="code-tag">&lt;serviceunit id=<SPAN class="code-quote">&quot;jbi&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;components&gt;</SPAN>
-
-      <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- lets kick off a timer to send messages on an input destination topic --&gt;</SPAN></SPAN>
-      <SPAN class="code-tag">&lt;component id=<SPAN class="code-quote">&quot;timer&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:timer&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.servicemix.components.quartz.QuartzComponent&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;my:trace&quot;</SPAN>&gt;</SPAN>
-        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;triggers&quot;</SPAN>&gt;</SPAN>
-          <SPAN class="code-tag">&lt;map&gt;</SPAN>
-            <SPAN class="code-tag">&lt;entry&gt;</SPAN>
-              <SPAN class="code-tag">&lt;key&gt;</SPAN>
-                <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.quartz.SimpleTrigger&quot;</SPAN>&gt;</SPAN>
-                  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;repeatInterval&quot;</SPAN> value=<SPAN class="code-quote">&quot;500&quot;</SPAN>/&gt;</SPAN>
-                  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;repeatCount&quot;</SPAN> value=<SPAN class="code-quote">&quot;-1&quot;</SPAN>/&gt;</SPAN>
-                <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-              <SPAN class="code-tag">&lt;/key&gt;</SPAN>
-                <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.quartz.JobDetail&quot;</SPAN>&gt;</SPAN>
-                  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;name&quot;</SPAN> value=<SPAN class="code-quote">&quot;My Example Job&quot;</SPAN>/&gt;</SPAN>
-                  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;group&quot;</SPAN> value=<SPAN class="code-quote">&quot;ServiceMix&quot;</SPAN>/&gt;</SPAN>
-                <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-            <SPAN class="code-tag">&lt;/entry&gt;</SPAN>
-          <SPAN class="code-tag">&lt;/map&gt;</SPAN>
-        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/component&gt;</SPAN>
-
-      <SPAN class="code-tag">&lt;component id=<SPAN class="code-quote">&quot;trace&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:trace&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.servicemix.components.util.TraceComponent&quot;</SPAN>/&gt;</SPAN>
-        
-    <SPAN class="code-tag">&lt;/components&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/serviceunit&gt;</SPAN>
-  
-<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
-</DIV></DIV>
 <P>The servicemix.xml file needs to be put in a zip file that is inside a service assembly zip file whose jbi.xml deployment descriptor is similar to:</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;jbi xmlns=<SPAN class="code-quote">&quot;http://java.sun.com/xml/ns/jbi&quot;</SPAN> 
-     <SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN> 
-     xsi:schemaLocation=<SPAN class="code-quote">&quot;http://java.sun.com/xml/ns/jbi&quot;</SPAN> 
-     version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN>&gt;
-     
-   <SPAN class="code-tag">&lt;service-assembly&gt;</SPAN>
-     <SPAN class="code-tag">&lt;identification&gt;</SPAN>
-       <SPAN class="code-tag">&lt;name&gt;</SPAN>AU:1<SPAN class="code-tag">&lt;/name&gt;</SPAN>
-       <SPAN class="code-tag">&lt;description&gt;</SPAN>Sample AU<SPAN class="code-tag">&lt;/description&gt;</SPAN>
-     <SPAN class="code-tag">&lt;/identification&gt;</SPAN>
-     <SPAN class="code-tag">&lt;service-unit&gt;</SPAN>
-       <SPAN class="code-tag">&lt;identification&gt;</SPAN>
-         <SPAN class="code-tag">&lt;name&gt;</SPAN>SU:1<SPAN class="code-tag">&lt;/name&gt;</SPAN>
-         <SPAN class="code-tag">&lt;description&gt;</SPAN>Sample<SPAN class="code-tag">&lt;/description&gt;</SPAN>
-       <SPAN class="code-tag">&lt;/identification&gt;</SPAN>
-       <SPAN class="code-tag">&lt;target&gt;</SPAN>
-         <SPAN class="code-tag">&lt;artifacts-zip&gt;</SPAN>su1.zip<SPAN class="code-tag">&lt;/artifacts-zip&gt;</SPAN>
-         <SPAN class="code-tag">&lt;component-name&gt;</SPAN>servicemix-component<SPAN class="code-tag">&lt;/component-name&gt;</SPAN>
-       <SPAN class="code-tag">&lt;/target&gt;</SPAN>
-     <SPAN class="code-tag">&lt;/service-unit&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/service-assembly&gt;</SPAN>
-    
-<SPAN class="code-tag">&lt;/jbi&gt;</SPAN></PRE>
-</DIV></DIV></DIV>
+</DIV>
           
                   </DIV>
         </TD>

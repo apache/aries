@@ -16,7 +16,7 @@ BeanFlow
       <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
         <TR>
           <TD align="left" class="topbardiv" nowrap="">
-            <IMG border="0" src="http://www.logicblaze.com/images/logos/products/ServiceMix/ServiceMix_logo_150.jpg">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
           </TD>
           <TD align="right" nowrap="">
             <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
@@ -407,12 +407,34 @@ b.stop();
 assertFlowStopped(activity);</PRE>
 </DIV></DIV>
 
-<H3><A name="BeanFlow-Buildingworkflows"></A>Building workflows</H3>
+<H2><A name="BeanFlow-Buildingworkflows"></A>Building workflows</H2>
 
-<P>So we&apos;ve been over the basics of activities. Remember they are just Java bean so you can implement them however you wish.</P>
+<P>So we&apos;ve been over the basics of activities and showed how we can perform joins along with compose them. Remember they are just Java bean so you can implement them however you wish.</P>
 
 <P>However often folks think of workflows as a number of discrete steps; using a kind of state machine to move from step to step. One real simple approach to<BR>
-writing workflows in this model is to use a method to map to a workflow step.</P>
+writing workflows in this model is to use a specific method for each workflow step.</P>
+
+<P>So we have a base class called Workflow which adds a new State object for the current step (which allows actvities to listen to the step changing) together with helper methods for moving to different steps, for suspending and so forth.</P>
+
+<H3><A name="BeanFlow-Movingsteps"></A>Moving steps</H3>
+
+<P>Inside a step you can call any Java methods on any objects. However to move from step to step in a declarative fashion you can call the <B>goTo()</B> method.<BR>
+Another option is to use a method which returns a String; a non-null String is then interpreted as being the next step that is navigated to next.</P>
+
+<P>Note that the movement to the next step always takes place outside of the step method to avoid deeply recursive methods.</P>
+
+<H3><A name="BeanFlow-Suspendingworkflows"></A>Suspending workflows</H3>
+
+<P>Often in a workflow you have to wait for some external event such as</P>
+<UL>
+	<LI>a user enters some text</LI>
+	<LI>a message is received</LI>
+</UL>
+
+
+<P>Once that happens you re-awaken the workflow and commence execution at some step. To implement this just call the goTo() method to cause the workflow to resume at the given step</P>
+
+<H3><A name="BeanFlow-Example"></A>Example</H3>
 
 <P>The following example is a fairly large one, but it shows a variety of different concepts</P>
 
@@ -529,8 +551,8 @@ writing workflows in this model is to use a method to map to a workflow step.</P
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on May 13, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=5725">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on May 15, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=5795">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5092">edit page</A>)
     </DIV>

@@ -16,7 +16,7 @@ XSQL
       <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
         <TR>
           <TD align="left" class="topbardiv" nowrap="">
-            <IMG border="0" src="http://www.logicblaze.com/images/logos/products/ServiceMix/ServiceMix_logo_150.jpg">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
           </TD>
           <TD align="right" nowrap="">
             <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
@@ -253,11 +253,7 @@ XSQL
 
 <P>Firstly here is an example XSQL document. As you can see its a piece of XML which allows embedded SQL statements inside it.</P>
 
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;xsql:query <SPAN class="code-keyword">xmlns:xsql</SPAN>=&apos;urn:oracle-xsql&apos; connection=&apos;demo&apos; tag-case=&apos;lower&apos; row-element=&apos;cheese&apos; rowset-element=&apos;food&apos;&gt;</SPAN>
- select * from cheese
-<SPAN class="code-tag">&lt;/xsql:query&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 <P>This example page could produce something like...</P>
 
@@ -281,30 +277,10 @@ XSQL
 <P>Then we can convert this into a JBI component and apply it in a pipeline as follows...</P>
 
 <P><B>ServiceMix 1.1 Version</B> : </P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;component id=<SPAN class="code-quote">&quot;xsql&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:xsql&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;xsql&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.servicemix.components.xsql.XSQLComponent&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;xsqlResource&quot;</SPAN> value=<SPAN class="code-quote">&quot;classpath:org/servicemix/components/xsql/example.xsql&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionManagerFactory&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.servicemix.components.xsql.DataSourceXSQLConnectionManagerFactory&quot;</SPAN>&gt;</SPAN>
-      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;dataSource&quot;</SPAN> ref=<SPAN class="code-quote">&quot;dataSource&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-<SPAN class="code-tag">&lt;/component&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 <P><B>ServiceMix 2.0+ Version</B> : </P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;xsql&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:xsql&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;xsql&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.servicemix.components.xsql.XSQLComponent&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;xsqlResource&quot;</SPAN> value=<SPAN class="code-quote">&quot;classpath:org/servicemix/components/xsql/example.xsql&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionManagerFactory&quot;</SPAN>&gt;</SPAN>
-      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.servicemix.components.xsql.DataSourceXSQLConnectionManagerFactory&quot;</SPAN>&gt;</SPAN>
-        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;dataSource&quot;</SPAN> ref=<SPAN class="code-quote">&quot;dataSource&quot;</SPAN>/&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 <P>There are 2 main modes of operation for this component</P>
 

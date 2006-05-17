@@ -16,7 +16,7 @@ Component Matrix
       <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
         <TR>
           <TD align="left" class="topbardiv" nowrap="">
-            <IMG border="0" src="http://www.logicblaze.com/images/logos/products/ServiceMix/ServiceMix_logo_150.jpg">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
           </TD>
           <TD align="right" nowrap="">
             <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
@@ -37,7 +37,7 @@ Component Matrix
           </TD>
           <TD align="right" valign="middle" nowrap="">
             <DIV id="site-quicklinks">
-<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
             </DIV>
           </TD>
         </TR> 
@@ -263,24 +263,24 @@ Note that the <B>servicemix-lwcontainer</B> is a standard JBI component which is
 
 <P>The JBI spec defines service invocation as an instance of an interaction between a service consumer and a service provider. The following are the four service invocation patterns are required to be supported by any JBI implementation:</P>
 <UL>
-	<LI><B>One-Way</B>: consumer issues a request to provider with no error (fault) path provided.</LI>
+	<LI><B>In-Only</B>: consumer issues a request to provider with no error (fault) path provided.</LI>
 </UL>
 
 
 <UL>
-	<LI><B>Reliable One-Way</B>: consumer issues a request to provider. Provider may respond with a fault if it fails to<BR>
+	<LI><B>Reliable</B> <B>In-Only</B>: consumer issues a request to provider. Provider may respond with a fault if it fails to<BR>
 process request.</LI>
 </UL>
 
 
 <UL>
-	<LI><B>Request-Response</B>: consumer issues a request to provider, with expectation of response. Provider may<BR>
+	<LI><B>In-Out</B>: consumer issues a request to provider, with expectation of response. Provider may<BR>
 respond with a fault if it fails to process request.</LI>
 </UL>
 
 
 <UL>
-	<LI><B>Request Optional-Response</B>: consumer issues a request to provider, which may result in a response.<BR>
+	<LI><B>In Optional-Out</B>: consumer issues a request to provider, which may result in a response.<BR>
 Consumer and provider both have the option of generating a fault in response to a message received during<BR>
 the interaction.</LI>
 </UL>
@@ -301,97 +301,169 @@ the interaction.</LI>
 <TR>
 <TD class="confluenceTd"> <A href="cache.html" title="Cache"><B>Cache</B></A> </TD>
 <TD class="confluenceTd"> LW&nbsp;SE </TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> Used for caching service invocations to avoid unnecessary load on expensive services. </TD>
 <TD class="confluenceTd"> Mixed </TD>
-<TD class="confluenceTd"> Request-Response </TD>
+<TD class="confluenceTd"> In-Out </TD>
 <TD class="confluenceTd"> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/org/apache/servicemix/components/cache/CacheComponent.html" title="Visit page outside Confluence" rel="nofollow">o.a.s.components.cache.CacheComponent<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>ChainedComponent</B> <BR clear="all"> </TD>
+<TD class="confluenceTd"> LW&nbsp;SE <BR clear="all"> </TD>
+<TD class="confluenceTd"> Router - Will route a message from one component to another <BR clear="all"> </TD>
+<TD class="confluenceTd"> Mixed <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Out <BR clear="all"> </TD>
+<TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> <A href="drools.html" title="Drools"><B>Drools</B></A> </TD>
 <TD class="confluenceTd"> LW&nbsp;SE </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 <TD class="confluenceTd"> Mixed </TD>
-<TD class="confluenceTd"> One-Way </TD>
+<TD class="confluenceTd"> In-Only </TD>
 <TD class="confluenceTd"> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/org/apache/servicemix/components/drools/DroolsComponent.html" title="Visit page outside Confluence" rel="nofollow">o.a.s.components.drools.DroolsComponent<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>EchoComponent</B> <BR clear="all"> </TD>
+<TD class="confluenceTd"> LW&nbsp;SE <BR clear="all"> </TD>
+<TD class="confluenceTd"> Exhoes back what it recieves <BR clear="all"> </TD>
+<TD class="confluenceTd"> Provider <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Out <BR clear="all"> </TD>
+<TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> <A href="email.html" title="Email"><B>Email</B></A> </TD>
 <TD class="confluenceTd"> LW&nbsp;BC </TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> Email support via JavaMail(<SPAN class="nobr"><A href="http://java.sun.com/products/javamail/" title="Visit page outside Confluence" rel="nofollow">http://java.sun.com/products/javamail/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>). <BR clear="all"> </TD>
 <TD class="confluenceTd"> Provider </TD>
-<TD class="confluenceTd"> One-Way </TD>
+<TD class="confluenceTd"> In-Only </TD>
 <TD class="confluenceTd"> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/org/apache/servicemix/components/email/MimeMailSender.html" title="Visit page outside Confluence" rel="nofollow">o.a.s.components.email.MimeMailSender<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 </TR>
 <TR>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> <A href="email.html" title="Email"><B>Email</B></A>cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC </TD>
+<TD class="confluenceTd"> <BR clear="all"> </TD>
 <TD class="confluenceTd"> Provider </TD>
-<TD class="confluenceTd"> One-Way </TD>
+<TD class="confluenceTd"> In-Only </TD>
 <TD class="confluenceTd"> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/org/apache/servicemix/components/email/SimpleMailSender.html" title="Visit page outside Confluence" rel="nofollow">o.a.s.components.email.SimpleMailSender<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 </TR>
 <TR>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> <A href="email.html" title="Email"><B>Email</B></A>cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC <BR clear="all"> </TD>
+<TD class="confluenceTd"> <BR clear="all"> </TD>
 <TD class="confluenceTd"> Consumer </TD>
-<TD class="confluenceTd"> One-Way </TD>
+<TD class="confluenceTd"> In-Only </TD>
 <TD class="confluenceTd"> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/org/apache/servicemix/components/email/MimeMailPoller.html" title="Visit page outside Confluence" rel="nofollow">o.a.s.components.email.MimeMailPoller<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> <A href="file.html" title="File"><B>File</B></A> </TD>
 <TD class="confluenceTd"> LW&nbsp;BC </TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> Components for writing messages to files and polling directories and sending files to the JBI. <BR clear="all"> </TD>
 <TD class="confluenceTd"> Provider </TD>
-<TD class="confluenceTd"> One-Way </TD>
+<TD class="confluenceTd"> In-Only </TD>
 <TD class="confluenceTd"> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/org/apache/servicemix/components/file/FileSender.html" title="Visit page outside Confluence" rel="nofollow">o.a.s.components.file.FileSender<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 </TR>
 <TR>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> <A href="file.html" title="File"><B>File</B></A> </TD>
+<TD class="confluenceTd"> LW BC <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 <TD class="confluenceTd"> Consumer </TD>
-<TD class="confluenceTd"> One-Way </TD>
+<TD class="confluenceTd"> In-Only </TD>
 <TD class="confluenceTd"> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/org/apache/servicemix/components/file/FilePoller.html" title="Visit page outside Confluence" rel="nofollow">o.a.s.components.file.FilePoller<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 </TR>
 <TR>
-<TD class="confluenceTd"> <A href="ftp.html" title="FTP"><B>FTP</B></A> </TD>
+<TD class="confluenceTd"> <A href="ftp.html" title="FTP"><B>FTP</B></A>cont&apos;d </TD>
 <TD class="confluenceTd"> LW&nbsp;BC </TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> FTP support via the Jakarta Commons Net Library. <BR clear="all"> </TD>
 <TD class="confluenceTd"> Provider </TD>
-<TD class="confluenceTd"> One-Way </TD>
+<TD class="confluenceTd"> In-Only </TD>
 <TD class="confluenceTd"> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/org/apache/servicemix/components/net/FTPPoller.html" title="Visit page outside Confluence" rel="nofollow">o.a.s.components.net.FTPPoller<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 </TR>
 <TR>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> <A href="ftp.html" title="FTP"><B>FTP</B></A>cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 <TD class="confluenceTd"> Consumer </TD>
-<TD class="confluenceTd"> One-Way </TD>
+<TD class="confluenceTd"> In-Only </TD>
 <TD class="confluenceTd"> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/org/apache/servicemix/components/net/FTPSender.html" title="Visit page outside Confluence" rel="nofollow">o.a.s.components.net.FTPSender<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> <B>Groovy</B> </TD>
 <TD class="confluenceTd"> LW&nbsp;SE </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> This component allows Groovy scripts to be used as endpoints, transformers, or services.&nbsp; This allows you to combine the power of the Groovy scripting language with the ServiceMix JBI container. <BR clear="all"> </TD>
+<TD class="confluenceTd"> Provider <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Only or In-Out depending on the Groovy Script sent to the Groovy SE. <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> <B>HTTP</B> </TD>
 <TD class="confluenceTd"> LW&nbsp;BC </TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> Both client-side GET/POST with commons httpclient and server side processing with Servlets or Jetty. <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 <TD class="confluenceTd">&nbsp;</TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
+<TD class="confluenceTd"> <B>HTTP</B> cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC </TD>
+<TD class="confluenceTd"> HttpConnector <BR clear="all"> </TD>
+<TD class="confluenceTd"> Consumer <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Out <BR clear="all"> </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>HTTP</B> cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC <BR clear="all"> </TD>
+<TD class="confluenceTd"> HttpInOnlyBinding </TD>
+<TD class="confluenceTd"> Consumer </TD>
+<TD class="confluenceTd"> In-Only <BR clear="all"> </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>HTTP</B> cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC <BR clear="all"> </TD>
+<TD class="confluenceTd"> HttpSoapConnector <BR clear="all"> </TD>
+<TD class="confluenceTd"> Consumer <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Out <BR clear="all"> </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>HTTP</B> cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC <BR clear="all"> </TD>
+<TD class="confluenceTd"> HttpInOnlySoapBinding <BR clear="all"> </TD>
+<TD class="confluenceTd"> Consumer </TD>
+<TD class="confluenceTd"> In-Only <BR clear="all"> </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
 <TD class="confluenceTd"> <B>Jabber</B> </TD>
 <TD class="confluenceTd"> LW&nbsp;BC </TD>
+<TD class="confluenceTd"> Provides Bindings to Jabber network via the Extensible Messaging and Presence Protocol (XMPP) protocol. <BR clear="all"> </TD>
+<TD class="confluenceTd"> <BR clear="all"> </TD>
+<TD class="confluenceTd"> <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>Jabber</B> cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC <BR clear="all"> </TD>
+<TD class="confluenceTd"> JabberReceiver <BR clear="all"> </TD>
+<TD class="confluenceTd"> Consumer </TD>
+<TD class="confluenceTd"> In-Only <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>Jabber</B> cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC <BR clear="all"> </TD>
+<TD class="confluenceTd"> JabberChatSender </TD>
+<TD class="confluenceTd"> Provider </TD>
+<TD class="confluenceTd"> In-Only <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>Jabber</B> cont&apos;d <BR clear="all"> </TD>
+<TD class="confluenceTd"> LW&nbsp;BC <BR clear="all"> </TD>
+<TD class="confluenceTd"> JabberGroupChatSender </TD>
+<TD class="confluenceTd"> Provider <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Only <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
@@ -404,18 +476,67 @@ the interaction.</LI>
 </TR>
 <TR>
 <TD class="confluenceTd"> <B>JCA</B> </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> LW&nbsp;SE <BR clear="all"> </TD>
+<TD class="confluenceTd"> Allows the Java Connector Architecture to be used for efficient thread pooling, transaction handling and consumption on JMS or other Resource Adapters <BR clear="all"> </TD>
+<TD class="confluenceTd"> Consumer <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Only <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> <B>JMS</B> </TD>
 <TD class="confluenceTd"> LW&nbsp;BC </TD>
+<TD class="confluenceTd"> JMS via the Java Messaging Service plus all of the great, reliable, and scalable transports in ActiveMQ which includes persistence, recovery, and transaction support. <BR clear="all">
+ JMSInBinding </TD>
+<TD class="confluenceTd"> Consumer </TD>
+<TD class="confluenceTd"> In-Only </TD>
 <TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>JMS</B> cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC </TD>
+<TD class="confluenceTd"> JmsInUsingJCABinding <BR clear="all"> </TD>
+<TD class="confluenceTd"> Consumer <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Only </TD>
 <TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>JMS</B> cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC </TD>
+<TD class="confluenceTd"> JmsRecieverComponent <BR clear="all"> </TD>
+<TD class="confluenceTd"> Consumer <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Out <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>JMS</B> cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC </TD>
+<TD class="confluenceTd"> JmsSenderComponent <BR clear="all"> </TD>
+<TD class="confluenceTd"> Provider </TD>
+<TD class="confluenceTd"> In-Only&nbsp; <BR clear="all"> </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>JMS</B> cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC </TD>
+<TD class="confluenceTd"> JmsServiceComponent <BR clear="all"> </TD>
+<TD class="confluenceTd"> Provider </TD>
+<TD class="confluenceTd"> In-Out <BR clear="all"> </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>MockServiceComponent</B> <BR clear="all"> </TD>
+<TD class="confluenceTd"> <BR clear="all"> </TD>
+<TD class="confluenceTd"> Useful for controlling what is sent back to the consumer.&nbsp; You have to configure the answer.&nbsp; Send a preconfigured response back. <BR clear="all"> </TD>
+<TD class="confluenceTd"> Provider </TD>
+<TD class="confluenceTd"> In-Out <BR clear="all"> </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>PipelineComponent</B> <BR clear="all"> </TD>
+<TD class="confluenceTd"> LW&nbsp;SE <BR clear="all"> </TD>
+<TD class="confluenceTd"> Will Bridge an In-Only request to an In-Out request exchange pattern. <BR clear="all"> </TD>
+<TD class="confluenceTd"> Mixed <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Out </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
@@ -429,41 +550,74 @@ the interaction.</LI>
 <TR>
 <TD class="confluenceTd"> <B>Quartz</B> </TD>
 <TD class="confluenceTd"> LW&nbsp;SE </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> A component for job scheduling </TD>
+<TD class="confluenceTd"> Consumer </TD>
+<TD class="confluenceTd"> In-Only </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> <B>Reflection</B> </TD>
 <TD class="confluenceTd"> LW&nbsp;SE </TD>
+<TD class="confluenceTd"> The Reflection API represents, or reflects, the classes, interfaces, and objects in the current&nbsp;Java Virtual&nbsp;Machine.&nbsp; This API is handy if you are writing developement tools such as debuggers, class browsers, and GUI&nbsp;builders. </TD>
+<TD class="confluenceTd"> Consumer </TD>
+<TD class="confluenceTd"> In-Only </TD>
+<TD class="confluenceTd"> o.a.s.components.reflection.proxyIntOnlyBinding </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>Reflection</B> cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;SE </TD>
 <TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> Consumer </TD>
+<TD class="confluenceTd"> In-Out </TD>
+<TD class="confluenceTd"> o.a.s.components.reflection.proxyIntOutBinding </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> <B>RSS</B> </TD>
 <TD class="confluenceTd"> LW&nbsp;BC </TD>
+<TD class="confluenceTd"> Support via Rome library for accessing and processing RSS Feeds. <BR clear="all">
+ rsspollingcomponent </TD>
+<TD class="confluenceTd"> Consumer <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Only </TD>
 <TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>RSS</B> cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC <BR clear="all"> </TD>
+<TD class="confluenceTd"> feedwriter prov in-only <BR clear="all"> </TD>
+<TD class="confluenceTd"> Provider <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Only <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> <B>SAAJ</B> </TD>
 <TD class="confluenceTd"> LW&nbsp;BC </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> SAAJ is for Soap With Attachments and Apache Axis support <BR clear="all"> </TD>
+<TD class="confluenceTd"> Provider </TD>
+<TD class="confluenceTd"> In-Out <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> <B>Scripting</B> </TD>
 <TD class="confluenceTd"> LW&nbsp;SE </TD>
+<TD class="confluenceTd"> A component to allow any JSR 223 compliant scripting engine to be used to easily create a component , perform a transformation, or be an expression language. <BR clear="all"> </TD>
+<TD class="confluenceTd"> Provider <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Only or In-Out depending on the Groovy Script sent to the Groovy SE. </TD>
 <TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>servicemix-bpe</B> <BR clear="all"> </TD>
+<TD class="confluenceTd"> JBI&nbsp;SE <BR clear="all"> </TD>
+<TD class="confluenceTd"> WSDL 2.0 Adjuncts defines pre-defined extensions for WSDL 2.0, including MEPS, operation styles, and binding extensions. <BR clear="all"> </TD>
+<TD class="confluenceTd"> Consumer / Provider&nbsp; <BR clear="all"> </TD>
+<TD class="confluenceTd"> All MEPs supported. </TD>
 <TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>servicemix-eip&nbsp;</B> </TD>
+<TD class="confluenceTd"> JBI&nbsp;SE <BR clear="all"> </TD>
+<TD class="confluenceTd"> A routing container where different routing patterns can be deployed as services unit.&nbsp; Based on the EIP Patterns book. <BR clear="all"> </TD>
+<TD class="confluenceTd"> Consumer / Provider&nbsp; <BR clear="all"> </TD>
+<TD class="confluenceTd"> n.a. </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
@@ -471,7 +625,7 @@ the interaction.</LI>
 <TD class="confluenceTd"> JBI&nbsp;BC </TD>
 <TD class="confluenceTd"> HTTP binding </TD>
 <TD class="confluenceTd"> Consumer / Provider <BR clear="all"> </TD>
-<TD class="confluenceTd"> One-Way / Request-Response&nbsp; </TD>
+<TD class="confluenceTd"> In-Only /&nbsp;In-Out </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
@@ -479,7 +633,7 @@ the interaction.</LI>
 <TD class="confluenceTd"> JBI&nbsp;BC </TD>
 <TD class="confluenceTd"> JMS binding </TD>
 <TD class="confluenceTd"> Consumer / Provider <BR clear="all"> </TD>
-<TD class="confluenceTd"> One-Way / Request-Response </TD>
+<TD class="confluenceTd"> In-Only / In-Out </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
@@ -487,7 +641,7 @@ the interaction.</LI>
 <TD class="confluenceTd"> JBI&nbsp;SE </TD>
 <TD class="confluenceTd"> Hosts annotated POJOs </TD>
 <TD class="confluenceTd"> Provider </TD>
-<TD class="confluenceTd"> One-Way / Request-Response </TD>
+<TD class="confluenceTd"> In-Only / In-Out </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
@@ -523,6 +677,22 @@ the interaction.</LI>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
+<TD class="confluenceTd"> <B>StreamWriterComponent</B> <BR clear="all"> </TD>
+<TD class="confluenceTd"> LW&nbsp;SE <BR clear="all"> </TD>
+<TD class="confluenceTd"> Similar to TraceComponent, writes content of input message to the stream requested. </TD>
+<TD class="confluenceTd"> Provider </TD>
+<TD class="confluenceTd"> In-Only <BR clear="all"> </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>TraceComponent</B> <BR clear="all"> </TD>
+<TD class="confluenceTd"> LW&nbsp;SE <BR clear="all"> </TD>
+<TD class="confluenceTd"> Logs output to console </TD>
+<TD class="confluenceTd"> Provider </TD>
+<TD class="confluenceTd"> In-Only <BR clear="all"> </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
 <TD class="confluenceTd"> <B>Validation</B> </TD>
 <TD class="confluenceTd"> LW&nbsp;SE </TD>
 <TD class="confluenceTd">&nbsp;</TD>
@@ -541,17 +711,17 @@ the interaction.</LI>
 <TR>
 <TD class="confluenceTd"> <B>XPath Routing</B> </TD>
 <TD class="confluenceTd"> LW&nbsp;SE </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> Used to perform content based routing in an ESB.&nbsp; This means you route messages around your service bus based on the message properties of the content of the message.&nbsp; When integrating systems accross language boundries its common to use XML as a universal message format; so XPath is an ideal tool to perform content based routing and transformation. <BR clear="all"> </TD>
+<TD class="confluenceTd"> Mixed </TD>
+<TD class="confluenceTd"> Recieves an In-Only exhange and sends an In-Only message to another component. <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> <B>XSLT</B> </TD>
 <TD class="confluenceTd"> LW&nbsp;SE </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> The XsltComponent will preform an XSLT transformation of an inbound Normalized Message and generate an output message as a Normalized Message. <BR clear="all"> </TD>
+<TD class="confluenceTd"> Mixed </TD>
+<TD class="confluenceTd"> MEP is In-Only, as the consumer it is also In-Only.&nbsp; This Component can also have an In-Out exchange pattern, which is the main pattern for this component. <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
@@ -563,19 +733,43 @@ the interaction.</LI>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
+<TD class="confluenceTd"> <B>Validation</B> <BR clear="all"> </TD>
+<TD class="confluenceTd"> LW SE <BR clear="all"> </TD>
+<TD class="confluenceTd"> For schema validation of documents using Java API for XML Processing (JAXP 1.3) and XMLSchema (<SPAN class="nobr"><A href="http://www.w3.org/XML/Schema" title="Visit page outside Confluence" rel="nofollow">http://www.w3.org/XML/Schema<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>) or RelaxNG - a schema language for XML (<SPAN class="nobr"><A href="http://relaxng.org/" title="Visit page outside Confluence" rel="nofollow">http://relaxng.org/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>). If the inputted XML is validated as okay, the same XML is sent back. If there is an error a fault is returned to the sender. </TD>
+<TD class="confluenceTd"> Mixed <BR clear="all"> </TD>
+<TD class="confluenceTd"> As the Provider, the MEP is In-Only, as the consumer it is also In-Only.&nbsp; This component can also have an In-Out exchange pattern, which is the main pattern for this component. <BR clear="all"> </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
 <TD class="confluenceTd"> <B>VFS</B> </TD>
 <TD class="confluenceTd"> LW&nbsp;BC </TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> VFS via the Jakarta Commons Net library which provides access to file systems, jars/zips/bzip2, temporary files, WebDAV, Samba (CIFS), HTTP, HTTPS, FTP, and SFTP among others. <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 <TD class="confluenceTd">&nbsp;</TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 <TR>
+<TD class="confluenceTd"> <B>VFS</B> cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC </TD>
+<TD class="confluenceTd"> FilePoller <BR clear="all"> </TD>
+<TD class="confluenceTd"> Consumer <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Only <BR clear="all"> </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B>VFS</B> cont&apos;d </TD>
+<TD class="confluenceTd"> LW&nbsp;BC <BR clear="all"> </TD>
+<TD class="confluenceTd"> FileWriter <BR clear="all"> </TD>
+<TD class="confluenceTd"> Provider <BR clear="all"> </TD>
+<TD class="confluenceTd"> In-Only <BR clear="all"> </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
 <TD class="confluenceTd"> <B>WSIF</B> </TD>
 <TD class="confluenceTd"> LW&nbsp;BC </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> WSIF for integration with the Apache Web Service Invocation Framework (WSIF) <BR clear="all"> </TD>
+<TD class="confluenceTd"> Provider </TD>
+<TD class="confluenceTd"> In-Only <BR clear="all"> </TD>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 </TBODY></TABLE></DIV>
@@ -588,8 +782,8 @@ the interaction.</LI>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1970&originalId=5209">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jeremy.wortzman%2540simulalabs.com">Jeremy Wortzman</A> on May 17, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1970&originalId=5895">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1970">edit page</A>)
     </DIV>
