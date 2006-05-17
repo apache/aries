@@ -2,7 +2,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
   <HEAD>
-    <LINK type="text/css" rel="stylesheet" href="resources/space.css">
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="http://goopen.org/confluence/pages/viewpage.action?spaceKey=SM&title=site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
 BeanFlow
@@ -37,7 +41,7 @@ BeanFlow
           </TD>
           <TD align="right" valign="middle" nowrap="">
             <DIV id="site-quicklinks">
-<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
             </DIV>
           </TD>
         </TR> 
@@ -338,21 +342,7 @@ BeanFlow
 
 <P>Here is an example of performing joins using collections of child workflows</P>
 
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java"><SPAN class="code-comment">// lets create a join on a number of child flows completing
-</SPAN>JoinAll flow = <SPAN class="code-keyword">new</SPAN> JoinAll(child1, child2, child3);
-flow.startWithTimeout(timer, timeout);
 
-<SPAN class="code-comment">// now lets test the flow
-</SPAN>child1.stop();
-assertFlowStarted(flow);
-
-child2.stop();
-assertFlowStarted(flow);
-
-child3.stop();
-assertFlowStopped(flow);</PRE>
-</DIV></DIV>
 
 <H3><A name="BeanFlow-Joinconditions"></A>Join conditions</H3>
 
@@ -376,36 +366,7 @@ join on A and (B or C)</PRE>
 
 <P>Here is an example activity implemented in Java code for the above code.</P>
 
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java"><SPAN class="code-comment">// lets create some child workflows
-</SPAN><SPAN class="code-keyword">final</SPAN> Activity a = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
-<SPAN class="code-keyword">final</SPAN> Activity b = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
-<SPAN class="code-keyword">final</SPAN> Activity c = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
 
-<SPAN class="code-comment">// lets create the activity with a custom join condition
-</SPAN>Activity activity = <SPAN class="code-keyword">new</SPAN> JoinSupport(a, b, c) {
-    @Override
-    <SPAN class="code-keyword">protected</SPAN> void onChildStateChange(<SPAN class="code-object">int</SPAN> childCount, <SPAN class="code-object">int</SPAN> stoppedCount, <SPAN class="code-object">int</SPAN> failedCount) {
-        
-        <SPAN class="code-keyword">if</SPAN> (a.isStopped() &amp;&amp; (b.isStopped() || c.isStopped())) {
-            <SPAN class="code-comment">// lets stop the activity we&apos;re done
-</SPAN>            stop();
-        }
-    }
-};
-
-<SPAN class="code-comment">// lets start the activities
-</SPAN>activity.startWithTimeout(timer, timeout);
-
-<SPAN class="code-comment">// now lets test things behave properly
-</SPAN>assertFlowStarted(activity);
-
-a.stop();
-assertFlowStarted(activity);
-
-b.stop();
-assertFlowStopped(activity);</PRE>
-</DIV></DIV>
 
 <H2><A name="BeanFlow-Buildingworkflows"></A>Building workflows</H2>
 
@@ -446,84 +407,7 @@ Another option is to use a method which returns a String; a non-null String is t
 </UL>
 
 
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class ExampleWorkflow <SPAN class="code-keyword">extends</SPAN> Workflow {
 
-    <SPAN class="code-keyword">private</SPAN> <SPAN class="code-object">int</SPAN> loopCount;
-    <SPAN class="code-keyword">private</SPAN> <SPAN class="code-object">long</SPAN> timeout = 500;
-    <SPAN class="code-keyword">private</SPAN> <SPAN class="code-object">String</SPAN> userEmailAddress;
-
-    <SPAN class="code-comment">// Workflow steps
-</SPAN>    <SPAN class="code-comment">// -------------------------------------------------------------------------
-</SPAN>
-    <SPAN class="code-comment">// This is the first step of a workflow by <SPAN class="code-keyword">default</SPAN>
-</SPAN>    <SPAN class="code-comment">// but you can start at any point by passing in a parameter
-</SPAN>    <SPAN class="code-comment">// to the Workflow constructor 
-</SPAN>    <SPAN class="code-keyword">public</SPAN> void startStep() {
-        <SPAN class="code-comment">// lets use an explicit goTo() to tell the workflow 
-</SPAN>        <SPAN class="code-comment">// which step to go to next; though we can just <SPAN class="code-keyword">return</SPAN> Strings
-</SPAN>        goTo(<SPAN class="code-quote">&quot;loopStep&quot;</SPAN>);
-    }
-
-    <SPAN class="code-comment">// lets use the <SPAN class="code-keyword">return</SPAN> value to specify the next step
-</SPAN>    <SPAN class="code-keyword">public</SPAN> <SPAN class="code-object">String</SPAN> loopStep() {
-        <SPAN class="code-keyword">if</SPAN> (++loopCount &gt; 3) {
-            <SPAN class="code-keyword">return</SPAN> <SPAN class="code-quote">&quot;waitForUserInputStep&quot;</SPAN>;
-        }
-        <SPAN class="code-comment">// lets keep looping
-</SPAN>        <SPAN class="code-keyword">return</SPAN> <SPAN class="code-quote">&quot;loopStep&quot;</SPAN>;
-    }
-    
-    <SPAN class="code-keyword">public</SPAN> void waitForUserInputStep() {
-        <SPAN class="code-comment">// we are going to park here until a user 
-</SPAN>        <SPAN class="code-comment">// enters a valid email address
-</SPAN>        <SPAN class="code-comment">// so lets park the workflow engine
-</SPAN>    }
-    
-    <SPAN class="code-keyword">public</SPAN> <SPAN class="code-object">String</SPAN> afterEnteredEmailStep() {
-        <SPAN class="code-comment">// we are going to park here until a user 
-</SPAN>        <SPAN class="code-comment">// enters a valid email address
-</SPAN>        <SPAN class="code-object">System</SPAN>.out.println(<SPAN class="code-quote">&quot;User entered email address: &quot;</SPAN> + userEmailAddress);
-        <SPAN class="code-keyword">return</SPAN> <SPAN class="code-quote">&quot;forkStep&quot;</SPAN>;
-    }
-    
-    <SPAN class="code-keyword">public</SPAN> void forkStep() {
-        <SPAN class="code-comment">// lets fork some child flows
-</SPAN>        TimeoutActivity a = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
-        TimeoutActivity b = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
-        TimeoutActivity c = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
-        
-        <SPAN class="code-object">System</SPAN>.out.println(<SPAN class="code-quote">&quot;Forking off processes a, b, c&quot;</SPAN>);
-        fork(a, b, c);
-        
-        <SPAN class="code-comment">// now lets add some joins
-</SPAN>        joinAll(<SPAN class="code-quote">&quot;aCompletedStep&quot;</SPAN>,timeout, a);
-        joinAll(<SPAN class="code-quote">&quot;abcCompletedStep&quot;</SPAN>, timeout, a, b, c);
-    }
-    
-    <SPAN class="code-keyword">public</SPAN> void aCompletedStep() {
-        <SPAN class="code-object">System</SPAN>.out.println(<SPAN class="code-quote">&quot;child flow A completed!&quot;</SPAN>);
-    }
-    
-    <SPAN class="code-keyword">public</SPAN> <SPAN class="code-object">String</SPAN> abcCompletedStep() {
-        <SPAN class="code-object">System</SPAN>.out.println(<SPAN class="code-quote">&quot;child flows A, B and C completed!&quot;</SPAN>);
-        
-        <SPAN class="code-comment">// we are completely done now
-</SPAN>        <SPAN class="code-keyword">return</SPAN> <SPAN class="code-quote">&quot;stop&quot;</SPAN>;
-    }
-
-    <SPAN class="code-comment">// External events
-</SPAN>    <SPAN class="code-comment">// -------------------------------------------------------------------------
-</SPAN>    <SPAN class="code-keyword">public</SPAN> void userEntered(<SPAN class="code-object">String</SPAN> emailAddress) {
-        <SPAN class="code-keyword">if</SPAN> (emailAddress != <SPAN class="code-keyword">null</SPAN> &amp;&amp; emailAddress.indexOf(<SPAN class="code-quote">&quot;@&quot;</SPAN>) &gt; 0) {
-            <SPAN class="code-keyword">this</SPAN>.userEmailAddress = emailAddress;
-            
-            <SPAN class="code-object">System</SPAN>.out.println(<SPAN class="code-quote">&quot;Lets re-start the suspended workflow&quot;</SPAN>);
-            goTo(<SPAN class="code-quote">&quot;afterEnteredEmailStep&quot;</SPAN>);
-        }
-    }
-}</PRE>
-</DIV></DIV>
 
 <P>In the above example, each workflow step is implemented as a method. If the method returns a String it is interpreted as the next step which will be executed. Returning null (or using a void return type) will suspend the workflow.</P>
 
