@@ -2,7 +2,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML>
   <HEAD>
-    <LINK type="text/css" rel="stylesheet" href="resources/space.css">
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="http://goopen.org/confluence/pages/viewpage.action?spaceKey=SM&title=site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
 servicemix-eip
@@ -37,7 +41,7 @@ servicemix-eip
           </TD>
           <TD align="right" valign="middle" nowrap="">
             <DIV id="site-quicklinks">
-<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+<P><A href="download.html" title="Download">Download</A> &#124; <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124;<SPAN class="nobr"><A href="irc://irc.codehaus.org/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <SPAN class="nobr"><A href="http://servlet.uwyn.com/drone/log/hausbot/servicemix" title="Visit page outside Confluence" rel="nofollow">IRC Log<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
             </DIV>
           </TD>
         </TR> 
@@ -329,26 +333,7 @@ This component is based on the great <SPAN class="nobr"><A href="http://www.ente
 This pattern implements the <SPAN class="nobr"><A href="http://www.enterpriseintegrationpatterns.com/ContentBasedRouter.html" title="Visit page outside Confluence" rel="nofollow">Content-Based Router<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> pattern.</P>
 
 <P><IMG src="http://www.enterpriseintegrationpatterns.com/img/ContentBasedRouter.gif" align="absmiddle" border="0"></P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;eip:content-based-router service=<SPAN class="code-quote">&quot;test:router&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;eip:rules&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:routing-rule&gt;</SPAN>
-      <SPAN class="code-tag">&lt;eip:predicate&gt;</SPAN>
-        <SPAN class="code-tag">&lt;eip:xpath-predicate xpath=<SPAN class="code-quote">&quot;count(/test:echo) = 1&quot;</SPAN> namespaceContext=<SPAN class="code-quote">&quot;#nsContext&quot;</SPAN> /&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/eip:predicate&gt;</SPAN>
-      <SPAN class="code-tag">&lt;eip:target&gt;</SPAN>
-        <SPAN class="code-tag">&lt;eip:exchange-target uri=<SPAN class="code-quote">&quot;endpoint:http://test/pipeline/endpoint&quot;</SPAN> /&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/eip:target&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/eip:routing-rule&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:routing-rule&gt;</SPAN>
-      <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- there is no predicate, so this is the default destination --&gt;</SPAN></SPAN>
-      <SPAN class="code-tag">&lt;eip:target&gt;</SPAN>
-        <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;test:recipients&quot;</SPAN> /&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/eip:target&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/eip:routing-rule&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/eip:rules&gt;</SPAN>
-<SPAN class="code-tag">&lt;/eip:content-based-router&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 <H3><A name="servicemix-eip-MessageFilter"></A>Message Filter</H3>
 
@@ -356,32 +341,14 @@ This pattern implements the <SPAN class="nobr"><A href="http://www.enterpriseint
 This pattern implements the <SPAN class="nobr"><A href="http://www.enterpriseintegrationpatterns.com/Filter.html" title="Visit page outside Confluence" rel="nofollow">Message Filter<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> pattern.</P>
 
 <P><IMG src="http://www.enterpriseintegrationpatterns.com/img/MessageFilter.gif" align="absmiddle" border="0"></P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;eip:message-filter service=<SPAN class="code-quote">&quot;test:messageFilter&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;eip:target&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;test:trace3&quot;</SPAN> /&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/eip:target&gt;</SPAN>
-  <SPAN class="code-tag">&lt;eip:filter&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:xpath-predicate xpath=<SPAN class="code-quote">&quot;count(/test:world) = 1&quot;</SPAN> namespaceContext=<SPAN class="code-quote">&quot;#nsContext&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/eip:filter&gt;</SPAN>
-<SPAN class="code-tag">&lt;/eip:message-filter&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 <H3><A name="servicemix-eip-Pipeline"></A>Pipeline</H3>
 
 <P>The Pipeline component is a bridge between an In-Only (or Robust-In-Only) MEP and an In-Out MEP.  When the Pipeline receives an In-Only MEP, it will send the input in an In-Out MEP to the tranformer destination and forward the response in an In-Only MEP to the target destination.</P>
 
 <P>The old org.apache.servicemix.components.util.PipelineComponent will be deprecated.  This one offers the same feature but can be safely clustered and use in a transactional enviromnent.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;eip:pipeline service=<SPAN class="code-quote">&quot;test:pipeline&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;eip:transformer&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;test:routingSlip&quot;</SPAN> /&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/eip:transformer&gt;</SPAN>
-  <SPAN class="code-tag">&lt;eip:target&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;test:trace2&quot;</SPAN> /&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/eip:target&gt;</SPAN>
-<SPAN class="code-tag">&lt;/eip:pipeline&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 <H3><A name="servicemix-eip-StaticRecipientList"></A>Static Recipient List</H3>
 
@@ -389,14 +356,7 @@ This pattern implements the <SPAN class="nobr"><A href="http://www.enterpriseint
 This component implements the <SPAN class="nobr"><A href="http://www.enterpriseintegrationpatterns.com/RecipientList.html" title="Visit page outside Confluence" rel="nofollow">Recipient List<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> pattern, with the limitation that the recipient list is static.</P>
 
 <P><IMG src="http://www.enterpriseintegrationpatterns.com/img/RecipientList.gif" align="absmiddle" border="0"></P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;eip:static-recipient-list service=<SPAN class="code-quote">&quot;test:recipients&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;eip:recipients&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;test:messageFilter&quot;</SPAN> /&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;test:trace4&quot;</SPAN> /&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/eip:recipients&gt;</SPAN>
-<SPAN class="code-tag">&lt;/eip:static-recipient-list&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 <H3><A name="servicemix-eip-StaticRoutingSlip"></A>Static Routing Slip</H3>
 
@@ -405,14 +365,7 @@ This component implements the <SPAN class="nobr"><A href="http://www.enterprisei
 This component only uses In-Out MEPs and errors or faults sent by targets are reported back to the consumer, thus interrupting the routing process.</P>
 
 <P><IMG src="http://www.enterpriseintegrationpatterns.com/img/RoutingTableSimple.gif" align="absmiddle" border="0"></P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;eip:static-routing-slip service=<SPAN class="code-quote">&quot;test:routingSlip&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;eip:targets&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;test:echo&quot;</SPAN> /&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;test:echo&quot;</SPAN> /&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/eip:targets&gt;</SPAN>
-<SPAN class="code-tag">&lt;/eip:static-routing-slip&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 <H3><A name="servicemix-eip-WireTap"></A>Wire Tap</H3>
 
@@ -421,30 +374,14 @@ This component implements the <SPAN class="nobr"><A href="http://www.enterprisei
 It can handle all 4 standard MEPs, but will only send an In-Only MEP to the listener.</P>
 
 <P><IMG src="http://www.enterpriseintegrationpatterns.com/img/WireTap.gif" align="absmiddle" border="0"></P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;eip:wire-tap service=<SPAN class="code-quote">&quot;test:wireTap&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;eip:target&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;test:xpathSplitter&quot;</SPAN> /&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/eip:target&gt;</SPAN>
-  <SPAN class="code-tag">&lt;eip:inListener&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;test:trace1&quot;</SPAN> /&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/eip:inListener&gt;</SPAN>
-<SPAN class="code-tag">&lt;/eip:wire-tap&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 <H3><A name="servicemix-eip-XPathSplitter"></A>XPath Splitter</H3>
 
 <P>The XPathSplitter component implements the <SPAN class="nobr"><A href="http://www.enterpriseintegrationpatterns.com/Sequencer.html" title="Visit page outside Confluence" rel="nofollow">Splitter<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> pattern using an xpath expression to split the incoming xml.</P>
 
 <P><IMG src="http://www.enterpriseintegrationpatterns.com/img/Sequencer.gif" align="absmiddle" border="0"></P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;eip:xpath-splitter service=<SPAN class="code-quote">&quot;test:xpathSplitter&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN> 
-                    xpath=<SPAN class="code-quote">&quot;/*/*&quot;</SPAN> namespaceContext=<SPAN class="code-quote">&quot;#nsContext&quot;</SPAN>&gt;
-  <SPAN class="code-tag">&lt;eip:target&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:exchange-target uri=<SPAN class="code-quote">&quot;service:http://test/router&quot;</SPAN> /&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/eip:target&gt;</SPAN>
-<SPAN class="code-tag">&lt;/eip:xpath-splitter&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 <H3><A name="servicemix-eip-SplitAggregator"></A>SplitAggregator</H3>
 
@@ -452,13 +389,7 @@ It can handle all 4 standard MEPs, but will only send an In-Only MEP to the list
 It relies on several properties that should be set on the exchanges (count, index, correlationId).</P>
 
 <P><IMG src="http://www.enterpriseintegrationpatterns.com/img/Aggregator.gif" align="absmiddle" border="0"></P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;eip:split-aggregator service=<SPAN class="code-quote">&quot;test:aggregator&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;eip:target&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;test:trace5&quot;</SPAN> /&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/eip:target&gt;</SPAN>
-<SPAN class="code-tag">&lt;/eip:split-aggregator&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 <H2><A name="servicemix-eip-Tips"></A>Tips</H2>
 
@@ -504,13 +435,7 @@ This element has the following attributes:</P>
 <H3><A name="servicemix-eip-NamespaceContext"></A>NamespaceContext</H3>
 
 <P>Some patterns use XPath expression.  To use such expressions on an xml with namespaces, you need to define a NamespaceContext.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;eip:namespace-context id=<SPAN class="code-quote">&quot;nsContext&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;eip:namespaces&gt;</SPAN>
-    <SPAN class="code-tag">&lt;eip:namespace prefix=<SPAN class="code-quote">&quot;test&quot;</SPAN>&gt;</SPAN>http://test<SPAN class="code-tag">&lt;/eip:namespace&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/eip:namespaces&gt;</SPAN>
-<SPAN class="code-tag">&lt;/eip:namespace-context&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>This NamespaceContext can be referenced by a <B>namespaceContext</B> attribute as shown in the XPathSplitter or MessageFilter examples.</P>
 
 <H3><A name="servicemix-eip-Predicates"></A>Predicates</H3>
