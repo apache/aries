@@ -111,9 +111,9 @@ InstallComponentTask
 
 <UL class="alternate" type="square">
 	<LI><SPAN class="nobr"><A href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html" title="Visit page outside Confluence" rel="nofollow">JBI API<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
-	<LI><SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs Core<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
-	<LI><SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
-	<LI><SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-console/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs Console<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-core/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs Core<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-components/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs Components<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://servicemix.goopen.org/maven/servicemix-console/apidocs/" title="Visit page outside Confluence" rel="nofollow">JavaDocs Console<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><A href="glossary.html" title="Glossary">Glossary</A></LI>
 </UL>
 
@@ -248,14 +248,14 @@ InstallComponentTask
 <!--          
             <div class="pagetitle">InstallComponentTask</div>
 -->
-            <DIV class="wiki-content">
-<P>The InstallComponentTask installs a Component<BR>
+            <DIV class="wiki-content"><P>The InstallComponentTask installs a Component<BR>
 see <SPAN class="nobr"><A href="http://servicemix.org/maven/servicemix-core/apidocs/org/apache/servicemix/jbi/management/task/InstallComponentTask.html" title="Visit page outside Confluence" rel="nofollow">InstallComponentTask <SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>
-<BR clear="all"> <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Attributes</B><BR>
+<BR clear="all"></P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Attributes</B><BR>
 <TABLE class="confluenceTable"><TBODY>
 <TR>
 <TH class="confluenceTh"> Name </TH>
-<TH class="confluenceTh"> type </TH>
+<TH class="confluenceTh"> Type </TH>
 <TH class="confluenceTh"> Description </TH>
 </TR>
 <TR>
@@ -263,8 +263,18 @@ see <SPAN class="nobr"><A href="http://servicemix.org/maven/servicemix-core/apid
 <TD class="confluenceTd"> String </TD>
 <TD class="confluenceTd"> the archive path for the Component archive </TD>
 </TR>
-</TBODY></TABLE></TD></TR></TABLE><BR>
-&nbsp;</P></DIV>
+<TR>
+<TD class="confluenceTd"> params </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> location of a properties file containing values for the configuration mbean </TD>
+</TR>
+</TBODY></TABLE></TD></TR></TABLE>
+<P>&nbsp;</P>
+
+<P>You can also set configuration parameters using the <B>param</B> sub-element.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;param name=<SPAN class="code-quote">&quot;foo&quot;</SPAN> value=<SPAN class="code-quote">&quot;bar&quot;</SPAN> /&gt;</SPAN></PRE>
+</DIV></DIV></DIV>
           
                   </DIV>
         </TD>
@@ -274,36 +284,9 @@ see <SPAN class="nobr"><A href="http://servicemix.org/maven/servicemix-core/apid
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jgapuz">jgapuz</A> on Feb 19, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1921&originalId=3311">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      <BR>
-- updated attribute<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=1921">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 21, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1921&originalId=5914">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1921">edit page</A>)
     </DIV>
 
