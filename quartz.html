@@ -16,17 +16,18 @@ Quartz
 
     <!-- Banner -->
     <DIV id="site-banner">
-<DIV class="error"><SPAN class="error">Unknown macro: {html}</SPAN> 
-<P>      &lt;table border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; width=&quot;100%&quot;&gt;<BR>
-        &lt;tr&gt;<BR>
-          &lt;td align=&quot;left&quot; class=&quot;topbardiv&quot; nowrap=&quot;&quot;&gt;<BR>
-            &lt;img border=&quot;0&quot; src=&quot;http://incubator.apache.org/servicemix/images/logo.jpg&quot;&gt;<BR>
-          &lt;/td&gt;<BR>
-          &lt;td align=&quot;right&quot; nowrap=&quot;&quot;&gt;<BR>
-            &lt;img border=&quot;0&quot; src=&quot;http://incubator.apache.org/images/apache-incubator-logo.png&quot;&gt;<BR>
-          &lt;/td&gt;<BR>
-        &lt;/tr&gt; <BR>
-      &lt;/table&gt;</P></DIV>
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
     </DIV>
 
     <!-- Bread crumbs and Quick Links -->
@@ -251,7 +252,28 @@ Quartz
 <P>We have a QuartzComponent which integrates with the <SPAN class="nobr"><A href="http://www.opensymphony.com/quartz/" title="Visit page outside Confluence" rel="nofollow">Quartz<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> open source scheduler library. This allows you to trigger service invocations at timed intervals to perform periodic tasks.</P>
 
 <P>Here&apos;s an example of configuring a quartz component. You can add as many triggers as you wish to the component, at different timing intervals.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;timer&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:timer&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;my:receiver&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.quartz.QuartzComponent&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;triggers&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;map&gt;</SPAN>
+        <SPAN class="code-tag">&lt;entry&gt;</SPAN>
+          <SPAN class="code-tag">&lt;key&gt;</SPAN>
+            <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.quartz.SimpleTrigger&quot;</SPAN>&gt;</SPAN>
+              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;repeatInterval&quot;</SPAN> value=<SPAN class="code-quote">&quot;200&quot;</SPAN>/&gt;</SPAN>
+              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;repeatCount&quot;</SPAN> value=<SPAN class="code-quote">&quot;20&quot;</SPAN>/&gt;</SPAN>
+            <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/key&gt;</SPAN>
+            <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.quartz.JobDetail&quot;</SPAN>&gt;</SPAN>
+              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;name&quot;</SPAN> value=<SPAN class="code-quote">&quot;My Example Job&quot;</SPAN>/&gt;</SPAN>
+              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;group&quot;</SPAN> value=<SPAN class="code-quote">&quot;ServiceMix&quot;</SPAN>/&gt;</SPAN>
+            <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/entry&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/map&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P></DIV>
           
                   </DIV>

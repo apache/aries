@@ -9,7 +9,7 @@
     <LINK type="text/css" rel="stylesheet" href="resources/site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
-File
+Unrecognized xbean namespace mapping
     </TITLE>
   <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
   <BODY onload="init()">
@@ -36,7 +36,7 @@ File
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="File">File</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="overview.html" title="Overview">Overview</A>&nbsp;&gt;&nbsp;<A href="faq.html" title="FAQ">FAQ</A>&nbsp;&gt;&nbsp;<A href="errors.html" title="Errors">Errors</A>&nbsp;&gt;&nbsp;<A href="" title="Unrecognized xbean namespace mapping">Unrecognized xbean namespace mapping</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -155,7 +155,7 @@ File
 	<LI><A href="cache.html" title="Cache">Cache</A></LI>
 	<LI><A href="drools.html" title="Drools">Drools</A></LI>
 	<LI><A href="email.html" title="Email">Email</A></LI>
-	<LI><A href="" title="File">File</A></LI>
+	<LI><A href="file.html" title="File">File</A></LI>
 	<LI><A href="ftp.html" title="FTP">FTP</A></LI>
 	<LI><A href="groovy.html" title="Groovy">Groovy</A></LI>
 	<LI><A href="http.html" title="HTTP">HTTP</A></LI>
@@ -246,47 +246,20 @@ File
           <DIV id="site-page">
 
 <!--          
-            <div class="pagetitle">File</div>
+            <div class="pagetitle">Unrecognized xbean namespace mapping</div>
 -->
-            <DIV class="wiki-content">
-<P>These components write messages to files in a directory or poll files or directories (possibly recursively) to send files into the JBI.</P>
-
-<P>Firstly here is the poller which will poll a file or directory (recursively by default) to find files, which are then sent into the JBI bus</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;filePoller&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:filePoller&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.file.FilePoller&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;workManager&quot;</SPAN> ref=<SPAN class="code-quote">&quot;workManager&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;file&quot;</SPAN> value=<SPAN class="code-quote">&quot;target/test-data/file&quot;</SPAN>/&gt;</SPAN>
-    &lt;!--
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;delete&quot;</SPAN> value=<SPAN class="code-quote">&quot;false&quot;</SPAN>/&gt;</SPAN>
-    --&gt;
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;period&quot;</SPAN> value=<SPAN class="code-quote">&quot;1000&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+            <DIV class="wiki-content"><DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">org.springframework.beans.factory.BeanDefinitionStoreException: Unrecognized
+xbean namespace mapping: http:<SPAN class="code-comment">//servicemix.apache.org/jsr181/1.0</SPAN></PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
+<P>This exception is raised when xbean can not find the mapping extension for the given namespace.</P>
 
-<P>Then here&apos;s the sender. We&apos;re using a FileMarshaler here to turn JBI messages into files with an expression using XPath from the message content to generate the file name in the directory.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;fileSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:fileSender&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.file.FileWriter&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;directory&quot;</SPAN> value=<SPAN class="code-quote">&quot;target/test-data/file&quot;</SPAN>/&gt;</SPAN>
-
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;marshaler&quot;</SPAN>&gt;</SPAN>
-      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.util.DefaultFileMarshaler&quot;</SPAN>&gt;</SPAN>
-        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;fileName&quot;</SPAN>&gt;</SPAN>
-          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
-            <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;sample_&apos;, /sample/@id, &apos;.xml&apos;)&quot;</SPAN>/&gt;</SPAN>
-          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
-<P>&nbsp;</P>
-
-<P>You can if you prefer let the operating system generate temporary file names in the directory specifying an optional prefix and suffix.</P></DIV>
+<P>Check that:</P>
+<UL>
+	<LI>the namespace has been mispelled</LI>
+	<LI>you do not have the jar in the classpath: if you use a standard JBI component in a servicemix.xml configuration file, installing a component is not sufficient, you have to extract the libraries in the component installer and add them to the container classpath (in the lib directory)</LI>
+</UL>
+</DIV>
           
                   </DIV>
         </TD>
@@ -295,11 +268,11 @@ File
       </DIV>
     </DIV>
     <DIV id="site-footer">
-          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2098&originalId=5184">view change</A>)
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 16, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5780&originalId=5823">view change</A>)
               
-      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2098">edit page</A>)
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5780">edit page</A>)
     </DIV>
 
   </BODY>

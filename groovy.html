@@ -16,17 +16,18 @@ Groovy
 
     <!-- Banner -->
     <DIV id="site-banner">
-<DIV class="error"><SPAN class="error">Unknown macro: {html}</SPAN> 
-<P>      &lt;table border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; width=&quot;100%&quot;&gt;<BR>
-        &lt;tr&gt;<BR>
-          &lt;td align=&quot;left&quot; class=&quot;topbardiv&quot; nowrap=&quot;&quot;&gt;<BR>
-            &lt;img border=&quot;0&quot; src=&quot;http://incubator.apache.org/servicemix/images/logo.jpg&quot;&gt;<BR>
-          &lt;/td&gt;<BR>
-          &lt;td align=&quot;right&quot; nowrap=&quot;&quot;&gt;<BR>
-            &lt;img border=&quot;0&quot; src=&quot;http://incubator.apache.org/images/apache-incubator-logo.png&quot;&gt;<BR>
-          &lt;/td&gt;<BR>
-        &lt;/tr&gt; <BR>
-      &lt;/table&gt;</P></DIV>
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
     </DIV>
 
     <!-- Bread crumbs and Quick Links -->
@@ -257,7 +258,31 @@ Groovy
 <H2><A name="Groovy-Example"></A>Example</H2>
 
 <P>Before we go into detail of how you can work with JBI and Groovy in ServiceMix, lets show a simple hello world kinda example.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myServiceUsingXMLText&quot;</SPAN>
+        service=<SPAN class="code-quote">&quot;foo:myServiceUsingXMLText&quot;</SPAN>&gt;
+        <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.groovy.GroovyComponent&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;scriptText&quot;</SPAN>&gt;</SPAN>
+              <SPAN class="code-tag">&lt;value&gt;</SPAN>
+                &lt;![CDATA[
 
+// lets output some message properties
+outMessage.properties = [foo:<SPAN class="code-quote">&quot;hello&quot;</SPAN>, someList:[1, 2, 3]]
+
+// lets output some non-xml body
+outMessage.bodyText = &quot;&quot;&quot;
+<SPAN class="code-tag">&lt;hello&gt;</SPAN>
+  <SPAN class="code-tag">&lt;world person=<SPAN class="code-quote">&quot;$inMessage.properties.name&quot;</SPAN> location=<SPAN class="code-quote">&quot;London&quot;</SPAN>/&gt;</SPAN>
+<SPAN class="code-tag">&lt;/hello&gt;</SPAN>
+&quot;&quot;&quot;
+                ]]&gt;
+              <SPAN class="code-tag">&lt;/value&gt;</SPAN>
+            <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>As you can see the component is configured with a piece of Groovy to execute when the service is invoked. (BTW if you wanna see this script in action try the <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/xref-test/org/servicemix/client/ServiceMixClientTest.html" title="Visit page outside Confluence" rel="nofollow">test case<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and <SPAN class="nobr"><A href="http://svn.servicemix.codehaus.org/*checkout*/branches/servicemix-1.1/base/src/test/resources/org/servicemix/client/example.xml" title="Visit page outside Confluence" rel="nofollow">XML config file<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
 
 <P>Now we&apos;ll go through the various options which are available when working with JBI and Groovy in ServiceMix</P>
@@ -265,7 +290,28 @@ Groovy
 <H2><A name="Groovy-Maintainingstateacrossrequests"></A>Maintaining state across requests</H2>
 
 <P>Its often handy to keep track of state across requests. There is a variable called &apos;bindings&apos; which you can use to maintain state...</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;activationSpec componentName=<SPAN class="code-quote">&quot;myServiceImpl&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myServiceImpl&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;component&gt;</SPAN>
+       <SPAN class="code-tag">&lt;bean xmlns=<SPAN class="code-quote">&quot;&quot; class=&quot;</SPAN>org.apache.servicemix.components.groovy.GroovyComponent&quot;&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;scriptText&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;value&gt;</SPAN>
+            &lt;![CDATA[
+if (bindings.counter == null) {
+    bindings.counter = 1
+}
+else {
+    ++bindings.counter
+}
 
+def date = new Date()
+
+outMessage.bodyText = <SPAN class="code-quote">&quot;<SPAN class="code-tag">&lt;response counter=&apos;$bindings.counter&apos; date=&apos;$date&apos;&gt;</SPAN><SPAN class="code-tag">&lt;/response&gt;</SPAN>&quot;</SPAN>
+            ]]&gt;
+          <SPAN class="code-tag">&lt;/value&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/component&gt;</SPAN><SPAN class="code-tag">&lt;/activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <H2><A name="Groovy-WorkingwithJBIproperties"></A>Working with JBI properties</H2>
 

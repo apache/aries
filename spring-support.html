@@ -274,7 +274,26 @@ Spring support
 <H2><A name="Springsupport-ConfiguringusingSpringXML"></A>Configuring using Spring XML</H2>
 
 <P>So let&apos;s see how to wire together a couple of components with Spring. The easiest way to get started is to see an example. The following configuration is taken from <A href="pojo-support.html" title="POJO support">these examples</A>.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;beans <SPAN class="code-keyword">xmlns:sm</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/config/1.0&quot;</SPAN> 
+	   <SPAN class="code-keyword">xmlns:foo</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.org/cheese/&quot;</SPAN>&gt;
 
+  <SPAN class="code-tag">&lt;sm:container id=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> embedded=<SPAN class="code-quote">&quot;true&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;sm:activationSpecs&gt;</SPAN>
+
+      <SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;sender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:sender&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
+      	<SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.pojo.MySender&quot;</SPAN> /&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN>
+
+      <SPAN class="code-tag">&lt;sm:activationSpec id=<SPAN class="code-quote">&quot;receiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
+      	<SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.pojo.MyReceiver&quot;</SPAN>/&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN>
+
+    <SPAN class="code-tag">&lt;/sm:activationSpecs&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/sm:container&gt;</SPAN>
+
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>We introduce a few new XML tags for JBI configuration, but apart from that you can use all of the regular Spring configuration tags - bean, property, value etc. For example, inside the &lt;container&gt; tag you can configure properties on the JBI container itself using &lt;property&gt; tags. Inside each &lt;component&gt; tag you can configure properties on the component. This allows you to mix and match regular Spring configuration of POJOs with our JBI Spring configuration mechanism.</P>

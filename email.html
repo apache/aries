@@ -16,17 +16,18 @@ Email
 
     <!-- Banner -->
     <DIV id="site-banner">
-<DIV class="error"><SPAN class="error">Unknown macro: {html}</SPAN> 
-<P>      &lt;table border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; width=&quot;100%&quot;&gt;<BR>
-        &lt;tr&gt;<BR>
-          &lt;td align=&quot;left&quot; class=&quot;topbardiv&quot; nowrap=&quot;&quot;&gt;<BR>
-            &lt;img border=&quot;0&quot; src=&quot;http://incubator.apache.org/servicemix/images/logo.jpg&quot;&gt;<BR>
-          &lt;/td&gt;<BR>
-          &lt;td align=&quot;right&quot; nowrap=&quot;&quot;&gt;<BR>
-            &lt;img border=&quot;0&quot; src=&quot;http://incubator.apache.org/images/apache-incubator-logo.png&quot;&gt;<BR>
-          &lt;/td&gt;<BR>
-        &lt;/tr&gt; <BR>
-      &lt;/table&gt;</P></DIV>
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
     </DIV>
 
     <!-- Bread crumbs and Quick Links -->
@@ -249,21 +250,109 @@ Email
 -->
             <DIV class="wiki-content">
 <P>We currently support MIME email sending via <SPAN class="nobr"><A href="http://java.sun.com/products/javamail/" title="Visit page outside Confluence" rel="nofollow">JavaMail<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. The following example shows the configuration of the JavaMail email sender component.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;mimeSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:mimeSender&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.email.MimeMailSender&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;sender&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.mail.javamail.JavaMailSenderImpl&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;host&quot;</SPAN> value=<SPAN class="code-quote">&quot;localhost&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>We also support the simpler <SPAN class="nobr"><A href="http://static.springframework.org/spring/docs/1.2.x/api/org/springframework/mail/MailSender.html" title="Visit page outside Confluence" rel="nofollow">MailSender<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> from Spring, such as to work with <SPAN class="nobr"><A href="http://servlets.com/cos" title="Visit page outside Confluence" rel="nofollow">COS<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;emailSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:emailSender&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.email.SimpleMailSender&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;sender&quot;</SPAN> ref=<SPAN class="code-quote">&quot;cosMailSender&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <H3><A name="Email-Usingmessageproperties"></A>Using message properties</H3>
 
 <P>The default configuration of the email sender uses the supplied message properties to figure out how to send the email. The following code shows this in use</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">InOnly exchange = client.createInOnlyExchange();
+NormalizedMessage message = exchange.getInMessage();
 
+message.setProperty(<SPAN class="code-quote">&quot;org.apache.servicemix.email.to&quot;</SPAN>, <SPAN class="code-quote">&quot;scm@servicemix.org&quot;</SPAN>);
+message.setProperty(<SPAN class="code-quote">&quot;org.apache.servicemix.email.from&quot;</SPAN>, <SPAN class="code-quote">&quot;junit@servicemix.org&quot;</SPAN>);
+message.setProperty(<SPAN class="code-quote">&quot;org.apache.servicemix.email.subject&quot;</SPAN>, <SPAN class="code-quote">&quot;Hello from JUnit!&quot;</SPAN>);
+message.setProperty(<SPAN class="code-quote">&quot;org.apache.servicemix.email.text&quot;</SPAN>, <SPAN class="code-quote">&quot;Hi from test <SPAN class="code-keyword">case</SPAN>: &quot;</SPAN> + getName() + <SPAN class="code-quote">&quot; running at: &quot;</SPAN> + <SPAN class="code-keyword">new</SPAN> Date());
+
+client.sendSync(exchange);</PRE>
+</DIV></DIV>
 
 <H3><A name="Email-Usingexpressions"></A>Using expressions</H3>
 
 <P>You can also use <A href="expressions.html" title="Expressions">Expressions</A> to configure the various properties on the email. The following example uses a mixture of constant expression and XPath expressions. This means that the sender component will use XPath to extract information from the message content and use that to create the email.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;simpleMailSenderWithExpressions&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:simpleMailSenderWithExpressions&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.email.SimpleMailSender&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;sender&quot;</SPAN> ref=<SPAN class="code-quote">&quot;javaMailSender&quot;</SPAN>/&gt;</SPAN>
 
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;marshaler&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.email.SimpleMailMarshaler&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;from&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;/person/email&quot;</SPAN>/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;to&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;/person/accountant/email&quot;</SPAN>/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;subject&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.ConstantExpression&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;Drink a beer&quot;</SPAN>/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;text&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;Hello there &apos;, /person/name, &apos; how are you today?&apos;)&quot;</SPAN>/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>This example uses property expressions; that is extracting properties from the message.</P>
-</DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;simpleMailSenderWithPropertyExpressions&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:simpleMailSenderWithPropertyExpressions&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.email.SimpleMailSender&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;sender&quot;</SPAN> ref=<SPAN class="code-quote">&quot;javaMailSender&quot;</SPAN>/&gt;</SPAN>
+
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;marshaler&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.email.SimpleMailMarshaler&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;from&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.PropertyExpression&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;from&quot;</SPAN>/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;to&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.PropertyExpression&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;to&quot;</SPAN>/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;subject&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.ConstantExpression&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;Subject came from expression&quot;</SPAN>/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;text&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.PropertyExpression&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;text&quot;</SPAN>/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV></DIV>
           
                   <DIV class="tabletitle">
             Children

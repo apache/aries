@@ -16,17 +16,18 @@ XSLT
 
     <!-- Banner -->
     <DIV id="site-banner">
-<DIV class="error"><SPAN class="error">Unknown macro: {html}</SPAN> 
-<P>      &lt;table border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; width=&quot;100%&quot;&gt;<BR>
-        &lt;tr&gt;<BR>
-          &lt;td align=&quot;left&quot; class=&quot;topbardiv&quot; nowrap=&quot;&quot;&gt;<BR>
-            &lt;img border=&quot;0&quot; src=&quot;http://incubator.apache.org/servicemix/images/logo.jpg&quot;&gt;<BR>
-          &lt;/td&gt;<BR>
-          &lt;td align=&quot;right&quot; nowrap=&quot;&quot;&gt;<BR>
-            &lt;img border=&quot;0&quot; src=&quot;http://incubator.apache.org/images/apache-incubator-logo.png&quot;&gt;<BR>
-          &lt;/td&gt;<BR>
-        &lt;/tr&gt; <BR>
-      &lt;/table&gt;</P></DIV>
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
     </DIV>
 
     <!-- Bread crumbs and Quick Links -->
@@ -260,22 +261,74 @@ XSLT
 
 <H4><A name="XSLT-ReceivingthemessagefromaJMStopic"></A>Receiving the message from a JMS topic</H4>
 
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJmsReceiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJmsReceiver&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:transformer&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsReceiverComponent&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;template&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.jms.core.JmsTemplate&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionFactory&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;ref local=<SPAN class="code-quote">&quot;jmsFactory&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;defaultDestinationName&quot;</SPAN> value=<SPAN class="code-quote">&quot;test.org.apache.servicemix.components.xslt.source&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;pubSubDomain&quot;</SPAN> value=<SPAN class="code-quote">&quot;true&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <H4><A name="XSLT-TransformingthemessageusingXSLT"></A>Transforming the message using XSLT</H4>
 
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;transformer&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:transformer&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:transformedSender&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.xslt.XsltComponent&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;xsltResource&quot;</SPAN> value=<SPAN class="code-quote">&quot;classpath:org/apache/servicemix/components/xslt/transform.xsl&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <H4><A name="XSLT-SendingtheresulttoadifferentJMStopic"></A>Sending the result to a different JMS topic</H4>
 
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJmsSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJmsSender&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsSenderComponent&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;template&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.jms.core.JmsTemplate&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionFactory&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;ref local=<SPAN class="code-quote">&quot;jmsFactory&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;defaultDestinationName&quot;</SPAN> value=<SPAN class="code-quote">&quot;test.org.apache.servicemix.components.xslt.source&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;pubSubDomain&quot;</SPAN> value=<SPAN class="code-quote">&quot;true&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <H4><A name="XSLT-Subscribingtothetopicandpipeliningittoatracecomponenttodemonstratethepipelineworking"></A>Subscribing to the topic and pipelining it to a trace component to demonstrate the pipeline working</H4>
 
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;jmsTrace&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:jmsTrace&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:trace&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsReceiverComponent&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;template&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.jms.core.JmsTemplate&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionFactory&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;ref local=<SPAN class="code-quote">&quot;jmsFactory&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;defaultDestinationName&quot;</SPAN> value=<SPAN class="code-quote">&quot;test.org.apache.servicemix.components.xslt.result&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;pubSubDomain&quot;</SPAN> value=<SPAN class="code-quote">&quot;true&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN>
 
+<SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;trace&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:trace&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.util.TraceComponent&quot;</SPAN>/&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P></DIV>
           
                   </DIV>

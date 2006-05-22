@@ -16,17 +16,18 @@ RSS
 
     <!-- Banner -->
     <DIV id="site-banner">
-<DIV class="error"><SPAN class="error">Unknown macro: {html}</SPAN> 
-<P>      &lt;table border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; width=&quot;100%&quot;&gt;<BR>
-        &lt;tr&gt;<BR>
-          &lt;td align=&quot;left&quot; class=&quot;topbardiv&quot; nowrap=&quot;&quot;&gt;<BR>
-            &lt;img border=&quot;0&quot; src=&quot;http://incubator.apache.org/servicemix/images/logo.jpg&quot;&gt;<BR>
-          &lt;/td&gt;<BR>
-          &lt;td align=&quot;right&quot; nowrap=&quot;&quot;&gt;<BR>
-            &lt;img border=&quot;0&quot; src=&quot;http://incubator.apache.org/images/apache-incubator-logo.png&quot;&gt;<BR>
-          &lt;/td&gt;<BR>
-        &lt;/tr&gt; <BR>
-      &lt;/table&gt;</P></DIV>
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
     </DIV>
 
     <!-- Bread crumbs and Quick Links -->
@@ -255,7 +256,28 @@ RSS
 <P>To see this component in action see the <A href="rss-binding.html" title="RSS-binding">Example</A> in the <A href="download.html" title="Download">binary distribution</A>.</P>
 
 <P>You can configure the RSS component as follows in your servicemix.xml</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- lets poll for updates to news sites --&gt;</SPAN></SPAN>
+<SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;rss&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:rss&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;my:trace&quot;</SPAN>&gt;</SPAN>
+	<SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+		<SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.rss.RssPollingComponent&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;outputType&quot;</SPAN> value=<SPAN class="code-quote">&quot;rss_2.0&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;period&quot;</SPAN> value=<SPAN class="code-quote">&quot;5000&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;lastPolledDate&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;value&gt;</SPAN>2005/aug/10<SPAN class="code-tag">&lt;/value&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
 
+
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;urlStrings&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;list&gt;</SPAN>
+      <SPAN class="code-tag">&lt;value&gt;</SPAN>http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/front_page/rss.xml<SPAN class="code-tag">&lt;/value&gt;</SPAN>
+      <SPAN class="code-tag">&lt;value&gt;</SPAN>http://rss.cnn.com/rss/cnn_topstories.rss<SPAN class="code-tag">&lt;/value&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/list&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+		<SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+	<SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <H2><A name="RSS-GeneratingRSS%2FAtomfeeds"></A>Generating RSS/Atom feeds</H2>
@@ -263,7 +285,27 @@ RSS
 <P>This component is used to consume inbound JBI messages and write them to an RSS/Atom feed. You can then use expressions to extract the title and entry content for the items.</P>
 
 <P>The following example shows using XPath expression</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;feedWriter&quot;</SPAN> 
+					 service=<SPAN class="code-quote">&quot;foo:feedWriter&quot;</SPAN>&gt;
+	<SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.rss.FeedWriter&quot;</SPAN>&gt;</SPAN>
 
+   <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;feedFile&quot;</SPAN> value=<SPAN class="code-quote">&quot;target/serviceMixFeed.xml&quot;</SPAN> /&gt;</SPAN>
+	
+   <SPAN class="code-tag"><SPAN class="code-comment">&lt;!--  define expressions for the entry title and value --&gt;</SPAN></SPAN>
+   <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;entryTitle&quot;</SPAN>&gt;</SPAN>
+     <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
+       <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;Message &apos;, /sample/@id, &apos; - &apos;, /sample/@sent)&quot;</SPAN> /&gt;</SPAN>
+     <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+   <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+   <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;entryValue&quot;</SPAN>&gt;</SPAN>
+     <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
+       <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;This is an entry with ID &apos;, /sample/@id, &apos; sent: &apos;, /sample/@sent, &apos;. There is not much else in the message to tell :)&apos;)&quot;</SPAN> /&gt;</SPAN>
+     <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+   <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P></DIV>
           
                   </DIV>

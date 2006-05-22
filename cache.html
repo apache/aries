@@ -16,17 +16,18 @@ Cache
 
     <!-- Banner -->
     <DIV id="site-banner">
-<DIV class="error"><SPAN class="error">Unknown macro: {html}</SPAN> 
-<P>      &lt;table border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; width=&quot;100%&quot;&gt;<BR>
-        &lt;tr&gt;<BR>
-          &lt;td align=&quot;left&quot; class=&quot;topbardiv&quot; nowrap=&quot;&quot;&gt;<BR>
-            &lt;img border=&quot;0&quot; src=&quot;http://incubator.apache.org/servicemix/images/logo.jpg&quot;&gt;<BR>
-          &lt;/td&gt;<BR>
-          &lt;td align=&quot;right&quot; nowrap=&quot;&quot;&gt;<BR>
-            &lt;img border=&quot;0&quot; src=&quot;http://incubator.apache.org/images/apache-incubator-logo.png&quot;&gt;<BR>
-          &lt;/td&gt;<BR>
-        &lt;/tr&gt; <BR>
-      &lt;/table&gt;</P></DIV>
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
     </DIV>
 
     <!-- Bread crumbs and Quick Links -->
@@ -252,7 +253,24 @@ Cache
 <P>To use the cache component you need to specify an expression to decide which key to use in the cache. This could be a simple property on the message or message exchange or it could be an XPath expression to extract some primary key from inside the XML document.</P>
 
 <P>The following example shows how to configure the cache component. In this case we&apos;re using a <SPAN class="nobr"><A href="http://jaxen.org/" title="Visit page outside Confluence" rel="nofollow">Jaxen<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> based XPath evaluation; though there are other XPath expression implementations such as JAXP 1.3 (for Java 5 or later) and XMLBeans.</P>
-</DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;activationSpec componentName=<SPAN class="code-quote">&quot;myService&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myService&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:myServiceImpl&quot;</SPAN>&gt;</SPAN>
+	<SPAN class="code-tag">&lt;component&gt;</SPAN><SPAN class="code-tag">&lt;bean xmlns=<SPAN class="code-quote">&quot;&quot; class=&quot;</SPAN>org.apache.servicemix.components.cache.CacheComponent&quot;&gt;</SPAN>
+  <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- we could use a JCache here if we want --&gt;</SPAN></SPAN>
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;cache&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.cache.LRUCache&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;100&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+
+  <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- lets define the cache key expression --&gt;</SPAN></SPAN>
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;keyExpression&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;/*/@id&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/property&gt;</SPAN><SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+<SPAN class="code-tag">&lt;/component&gt;</SPAN><SPAN class="code-tag">&lt;/activationSpec&gt;</SPAN></PRE>
+</DIV></DIV></DIV>
           
                   </DIV>
         </TD>
