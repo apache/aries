@@ -263,7 +263,44 @@ JNDI configuration
 <P>Where the value is any valid Spring resource string such as a <SPAN class="nobr"><A href="file://foo/bar.xml" title="Visit page outside Confluence" rel="nofollow">file://foo/bar.xml<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or a URL such as <SPAN class="nobr"><A href="http://acme.com/whatnot.xml" title="Visit page outside Confluence" rel="nofollow">http://acme.com/whatnot.xml<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. The default value is assumed to be classpath://jndi.xml.</P>
 
 <P>Then you can create a regular Spring XML configuration file to create a JNDI context (called <EM>jndi</EM>), which by default is a file called jndi.xml on the classpath</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;beans&gt;</SPAN>
 
+  <SPAN class="code-tag">&lt;import resource=<SPAN class="code-quote">&quot;tx.xml&quot;</SPAN> /&gt;</SPAN>
+
+  &lt;bean id=<SPAN class="code-quote">&quot;jndi&quot;</SPAN> 
+        class=<SPAN class="code-quote">&quot;org.apache.xbean.spring.jndi.SpringInitialContextFactory&quot;</SPAN> 
+        factory-method=<SPAN class="code-quote">&quot;makeInitialContext&quot;</SPAN>
+        singleton=<SPAN class="code-quote">&quot;true&quot;</SPAN>&gt;
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;entries&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;map&gt;</SPAN>
+      
+        <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- PXE DB datasource --&gt;</SPAN></SPAN>
+        &lt;!--
+        <SPAN class="code-tag">&lt;entry key=<SPAN class="code-quote">&quot;java:comp/env/jdbc/pxe__pm&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.hsqldb.jdbc.jdbcDataSource&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;database&quot;</SPAN> value=<SPAN class="code-quote">&quot;jdbc:hsqldb:mem:pxe&quot;</SPAN>/&gt;</SPAN>
+            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;user&quot;</SPAN> value = <SPAN class="code-quote">&quot;sa&quot;</SPAN>/&gt;</SPAN>
+            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;password&quot;</SPAN> value = &quot;&quot;/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/entry&gt;</SPAN>
+        --&gt;
+        
+        <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- wsn2005 jms connection factory --&gt;</SPAN></SPAN>
+        <SPAN class="code-tag">&lt;entry key=<SPAN class="code-quote">&quot;java:comp/env/jms/wsnotificationCF&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.activemq.ActiveMQConnectionFactory&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;brokerURL&quot;</SPAN> value=<SPAN class="code-quote">&quot;tcp://localhost:61616&quot;</SPAN> /&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/entry&gt;</SPAN>
+
+        <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- transaction manager --&gt;</SPAN></SPAN>
+        <SPAN class="code-tag">&lt;entry key=<SPAN class="code-quote">&quot;javax.transaction.TransactionManager&quot;</SPAN> value-ref=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN> /&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/map&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>.</P></DIV>
           
                   </DIV>

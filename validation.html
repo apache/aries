@@ -252,7 +252,13 @@ Validation
 <P>The validation component provides schema validation of documents using <SPAN class="nobr"><A href="http://java.sun.com/xml/jaxp/index.jsp" title="Visit page outside Confluence" rel="nofollow">JAXP 1.3<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and <SPAN class="nobr"><A href="http://www.w3.org/XML/Schema" title="Visit page outside Confluence" rel="nofollow">XMLSchema<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or <SPAN class="nobr"><A href="http://relaxng.org/" title="Visit page outside Confluence" rel="nofollow">RelaxNG<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
 
 <P>The component is pretty simple and straightforward; its configured with a schema document as follows. If the inbound document is valid, it continues on its way to the ultimate destination. Otherwise a fault is returned in the message exchange.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myService&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myService&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;myService&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:myServiceImpl&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.validation.ValidateComponent&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;schemaResource&quot;</SPAN> value=<SPAN class="code-quote">&quot;classpath:org/apache/servicemix/components/validation/schema.xsd&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P></DIV>
           
                   </DIV>
