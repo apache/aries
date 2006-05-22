@@ -440,6 +440,8 @@ Another option is to use a method which returns a String; a non-null String is t
 
 <H3><A name="BeanFlow-SimpleExample"></A>Simple Example</H3>
 
+<P>There now follows a simple workflow example...</P>
+
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class SimpleWorkflow <SPAN class="code-keyword">extends</SPAN> Workflow&lt;SimpleWorkflow.Step&gt; {
 
@@ -466,6 +468,8 @@ Another option is to use a method which returns a String; a non-null String is t
     }
 }</PRE>
 </DIV></DIV>
+
+<P>As you can see the step is defined by an enumeration <B>Step</B> and we have a regular Java method to implement each step. The <EM>step method</EM> can then return the step to go to next after the current method terminates. If you return null or use a void method then the workflow suspends. </P>
 
 <H3><A name="BeanFlow-CompleteExample"></A>Complete Example</H3>
 
@@ -592,7 +596,7 @@ Another option is to use a method which returns a String; a non-null String is t
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on May 22, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=5937">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=5942">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5092">edit page</A>)
     </DIV>
