@@ -9,24 +9,25 @@
     <LINK type="text/css" rel="stylesheet" href="resources/site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
-JMS Binding
+jms-binding
     </TITLE>
   <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
   <BODY onload="init()">
 
     <!-- Banner -->
     <DIV id="site-banner">
-<DIV class="error"><SPAN class="error">Unknown macro: {html}</SPAN> 
-<P>      &lt;table border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; width=&quot;100%&quot;&gt;<BR>
-        &lt;tr&gt;<BR>
-          &lt;td align=&quot;left&quot; class=&quot;topbardiv&quot; nowrap=&quot;&quot;&gt;<BR>
-            &lt;img border=&quot;0&quot; src=&quot;http://incubator.apache.org/servicemix/images/logo.jpg&quot;&gt;<BR>
-          &lt;/td&gt;<BR>
-          &lt;td align=&quot;right&quot; nowrap=&quot;&quot;&gt;<BR>
-            &lt;img border=&quot;0&quot; src=&quot;http://incubator.apache.org/images/apache-incubator-logo.png&quot;&gt;<BR>
-          &lt;/td&gt;<BR>
-        &lt;/tr&gt; <BR>
-      &lt;/table&gt;</P></DIV>
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
     </DIV>
 
     <!-- Bread crumbs and Quick Links -->
@@ -35,7 +36,7 @@ JMS Binding
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="sandbox.html" title="Sandbox">Sandbox</A>&nbsp;&gt;&nbsp;<A href="" title="JMS Binding">JMS Binding</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="example-use-cases.html" title="Example & Use Cases">Example &amp; Use Cases</A>&nbsp;&gt;&nbsp;<A href="examples.html" title="Examples">Examples</A>&nbsp;&gt;&nbsp;<A href="" title="jms-binding">jms-binding</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -245,10 +246,10 @@ JMS Binding
           <DIV id="site-page">
 
 <!--          
-            <div class="pagetitle">JMS Binding</div>
+            <div class="pagetitle">jms- binding</div>
 -->
             <DIV class="wiki-content">
-<H3><A name="JMSBinding-OverviewoftheServiceMix2.xJMSBindingExample"></A>Overview of the ServiceMix 2.x <EM>JMS Binding</EM> Example</H3>
+<H3><A name="jms-binding-OverviewoftheServiceMix2.xJMSBindingExample"></A>Overview of the ServiceMix 2.x <EM>JMS Binding</EM> Example</H3>
 
 <P>The following procedure describes how to run the <EM>JMS Binding</EM> example and provides details regarding what it does. For information on the business use case, please refer to: <SPAN class="nobr"><A href="http://www.servicemix.org/Use%20Cases" title="Visit page outside Confluence" rel="nofollow">Use Case for JMS Binding<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.
 <BR clear="all">
@@ -269,7 +270,7 @@ The JMS Binding example illustrates:</P>
 <BR clear="all">
 This example shows how to connect the JMS bindings to a simple service component.  One component listens for a JMS message on topic &apos;demo.org.servicemix.source&apos; while another publishes processed messages to topic &apos;demo.org.servicemix.result&apos;.  A simple JMS client is provided so that messages can be sent and received to and from the ServiceMix Container.</P>
 
-<H3><A name="JMSBinding-RunningtheJMSBindingExample"></A>Running the <EM>JMS Binding</EM> Example</H3>
+<H3><A name="jms-binding-RunningtheJMSBindingExample"></A>Running the <EM>JMS Binding</EM> Example</H3>
 
 <OL>
 	<LI>From a command shell, go to the JMS Binding example directory:
@@ -288,15 +289,18 @@ This example shows how to connect the JMS bindings to a simple service component
 </DIV></DIV>
 <P><BR clear="all">
 Ant will compile and run the simple JMS client, <EM>JMSClient</EM>, which performs a JMS based request-response into the ServiceMix container before returning the results to the console.
-<BR clear="all"></P></LI>
+<BR clear="all">
+<BR clear="all"></P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hint</B><BR>
+<P>Add <EM>$SERVICEMIX_HOME\bin</EM> directory to <EM>$PATH</EM> variable to simplify execution of the example.</P></TD></TR></TABLE></LI>
 </OL>
 
 
-<H3><A name="JMSBinding-StoppingtheJMSBindingExample"></A>Stopping the <EM>JMS Binding</EM> Example</H3>
+<H3><A name="jms-binding-StoppingtheJMSBindingExample"></A>Stopping the <EM>JMS Binding</EM> Example</H3>
 <P>To terminate the <EM>JMS Binding</EM> example, type &quot;CTRL-C&quot; in the command shell in which it is running and answer &quot;y&quot; to the &quot;Terminate batch job (y/n)?&quot; question.
 <BR clear="all"></P>
 
-<H3><A name="JMSBinding-HowitWorks"></A>How it Works</H3>
+<H3><A name="jms-binding-HowitWorks"></A>How it Works</H3>
 <P>The diagram below illustrates the flow of messages through the <EM>JMS Binding</EM> components:
 <BR clear="all">
 <BR clear="all"></P>
@@ -382,7 +386,7 @@ ry: org.jencks.SingletonEndpointFactory@d0d12e[transactionManager=org.apache.ger
  Socket[addr=/127.0.0.1,port=1863,localport=61616]</PRE>
 </DIV></DIV>
 
-<H3><A name="JMSBinding-Details"></A>Details</H3>
+<H3><A name="jms-binding-Details"></A>Details</H3>
 
 <P>The following table provides more details about the function of each component and bean in the servicemix.xml file.
 <BR clear="all">
@@ -424,7 +428,7 @@ ry: org.jencks.SingletonEndpointFactory@d0d12e[transactionManager=org.apache.ger
 
 <P>1. <EM>jmsTemplate:</EM> JmsTemplate is a Spring component which hides the low level details when sending JMS messages. For additional information see: <SPAN class="nobr"><A href="http://docs.codehaus.org/display/ACTIVEMQ/Spring%20Support" title="Visit page outside Confluence" rel="nofollow">JmsTemplate<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. jmsTemplate is not a component in the <EM>jbi</EM> container. It is used by <EM>inputSender</EM> and <EM>outputSender</EM>.</P>
 
-<H3><A name="JMSBinding-RelatedDocumentation"></A>Related Documentation</H3>
+<H3><A name="jms-binding-RelatedDocumentation"></A>Related Documentation</H3>
 <P>For more information on the following topics please see:</P>
 
 <UL>
@@ -442,9 +446,17 @@ ry: org.jencks.SingletonEndpointFactory@d0d12e[transactionManager=org.apache.ger
 </UL>
 
 
-<P><BR clear="all"></P>
+<P><BR clear="all">
+For a brief explanation of the XML tags in the <TT>servicemi.xml</TT> file, please see:</P>
 
-</DIV>
+<UL>
+	<LI><SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" title="Visit page outside Confluence" rel="nofollow">XSD<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+</UL>
+
+
+
+
+<P>.</P></DIV>
           
                   </DIV>
         </TD>
@@ -453,11 +465,11 @@ ry: org.jencks.SingletonEndpointFactory@d0d12e[transactionManager=org.apache.ger
       </DIV>
     </DIV>
     <DIV id="site-footer">
-          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=mjarillas">mjarillas</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2094&originalId=5202">view change</A>)
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=lmalgeri">Lisa Malgeri</A> on Dec 18, 2005
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2073&originalId=3622">view change</A>)
               
-      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2094">edit page</A>)
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2073">edit page</A>)
     </DIV>
 
   </BODY>
