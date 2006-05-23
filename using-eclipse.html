@@ -286,9 +286,9 @@ Using Eclipse
 <OL>
 	<LI>Grab the sources from <A href="source.html" title="Source">svn</A> or <SPAN class="nobr"><A href="http://servicemix.org/Download" title="Visit page outside Confluence" rel="nofollow">download<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> servicemix source distribution.
 <BR clear="all"></LI>
-	<LI>From the command line execute the following Maven command to ready the project for Eclipse.
+	<LI>From the command line execute the following Maven 2 command to ready the project for Eclipse.
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">maven -Dmaven.test.skip=<SPAN class="code-keyword">true</SPAN> <SPAN class="code-keyword">default</SPAN> eclipse</PRE>
+<PRE class="code-java">mvn eclipse:eclipse</PRE>
 </DIV></DIV></LI>
 </OL>
 
@@ -329,12 +329,12 @@ then select Classpath Variables.&nbsp;
 	<LI>Click on New button to right
 <BR clear="all">
 A pop-up appears.<BR>
-Enter the Name: MAVEN_REPO<BR>
+Enter the Name: M2_REPO<BR>
 Enter the Path, which is your local maven repository, usually located in<BR>
-your home directory .maven, for example:<BR>
-C:\Documents and Settings\jwortzman\.maven\repository&nbsp;
+your home directory .m2, for example:<BR>
+C:\Documents and Settings\gnodet\.m2\repository&nbsp;
 <BR clear="all">
-<BR clear="all">  <IMG src="using-eclipse.data/NewVariableEntry.JPG" align="absmiddle" border="0"><BR clear="all">
+<BR clear="all">  <IMG src="using-eclipse.data/eclipse-m2-repo-variable.PNG" align="absmiddle" border="0"><BR clear="all">
 <BR clear="all"></LI>
 </OL>
 
@@ -408,8 +408,8 @@ You can use the &quot;File System...&quot; button to browse for your directory.<
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=lmalgeri">Lisa Malgeri</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jeremy.wortzman%2540simulalabs.com">Jeremy Wortzman</A> on May 15, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1962&originalId=5769">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 23, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1962&originalId=5949">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1962">edit page</A>)
     </DIV>
