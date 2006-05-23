@@ -248,11 +248,20 @@ Source
 <!--          
             <div class="pagetitle">Source</div>
 -->
-            <DIV class="wiki-content">
+            <DIV class="wiki-content"><H2><A name="Source-ApacheServiceMixsource"></A>Apache ServiceMix source</H2>
+
 <H3><A name="Source-WebBrowsingofSVN"></A>Web Browsing of SVN</H3>
 
-<P><SPAN class="nobr"><A href="https://svn.apache.org/repos/asf/incubator/servicemix/trunk/" title="Visit page outside Confluence" rel="nofollow">https://svn.apache.org/repos/asf/incubator/servicemix/trunk/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+<P><SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/" title="Visit page outside Confluence" rel="nofollow">http://svn.apache.org/repos/asf/incubator/servicemix/trunk/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
 <SPAN class="nobr"><A href="http://svn.apache.org/viewcvs.cgi/incubator/servicemix/trunk" title="Visit page outside Confluence" rel="nofollow">http://svn.apache.org/viewcvs.cgi/incubator/servicemix/trunk<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<H3><A name="Source-AnonymousSVNaccess"></A>Anonymous SVN access</H3>
+
+<P>This project&apos;s SVN repository can be checked out through anonymous (pserver)  SVN with the following instruction set.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">svn co http:<SPAN class="code-comment">//svn.apache.org/repos/asf/incubator/servicemix/trunk/</SPAN></PRE>
+</DIV></DIV>
 
 <H3><A name="Source-CheckingoutfromSVN"></A>Checking out from SVN</H3>
 
@@ -262,51 +271,33 @@ Source
 
 <P>Only project developers can commit to the SVN tree via this method.  SSH must be installed on your client machine. Enter your site password when prompted.</P>
 
-<H3><A name="Source-ToworkwiththeServiceMixextensionsatCodehaus"></A>To work with the ServiceMix extensions at Codehaus</H3>
+<H2><A name="Source-ToworkwiththeServiceMixextensionsatCodehaus"></A>To work with the ServiceMix extensions at Codehaus</H2>
 
-<P>To browse SVN via the web using this URL</P>
+<P>Some extensions are hosted at CodeHaus.<BR>
+To browse SVN via the web using this URL</P>
 
-<P><SPAN class="nobr"><A href="http://svn.servicemix.codehaus.org/trunk/" title="Visit page outside Confluence" rel="nofollow">http://svn.servicemix.codehaus.org/trunk/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+<P><SPAN class="nobr"><A href="http://svn.codehaus.org/servicemix/trunk/" title="Visit page outside Confluence" rel="nofollow">http://svn.codehaus.org/servicemix/trunk/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
-<H3><A name="Source-AnonymousSVNAccessbehindafirewall"></A>Anonymous SVN Access behind a firewall</H3>
+<P>This project&apos;s SVN repository can be checked out with the following instruction.  </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">svn co http:<SPAN class="code-comment">//svn.codehaus.org/servicemix/trunk</SPAN></PRE>
+</DIV></DIV>
+
+<P>If you are a commiter, use </P>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">svn co https:<SPAN class="code-comment">//svn.codehaus.org/servicemix/trunk</SPAN></PRE>
 </DIV></DIV>
 
-<H3><A name="Source-AnonymousSVNaccess"></A>Anonymous SVN access</H3>
+<H2><A name="Source-Downloading2.xsourcecode"></A>Downloading 2.x source code</H2>
 
-<P>This project&apos;s SVN repository can be checked out through anonymous (pserver)  SVN with the following instruction set.  When prompted for a password for anonymous, simply press the Enter key.</P>
+<P>If you use ServiceMix 2.x version, you can download the code from </P>
 
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">svn co svn:<SPAN class="code-comment">//svn.servicemix.org/servicemix/scm/trunk</SPAN></PRE>
+<PRE class="code-java">svn co http:<SPAN class="code-comment">//svn.codehaus.org/servicemix/tags/SERVICEMIX_2_0_2/</SPAN></PRE>
 </DIV></DIV>
-
-<H3><A name="Source-DeveloperSVNAccessviaSSH"></A>Developer SVN Access via SSH</H3>
-
-<P>Only project developers can access the SVN tree via this method.  SSH1 must be installed on your client machine. Substitute username with the proper value. Enter your site password when prompted.</P>
-
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">svn co svn+ssh:<SPAN class="code-comment">//svn.servicemix.org/scm/servicemix/trunk</SPAN></PRE>
-</DIV></DIV>
-
-<P>Remember to replace &apos;username&apos; with your actual username on SVN.servicemix.codehaus.org.</P>
-
-<H2><A name="Source-Workingwiththe1.xbranches"></A>Working with the 1.x branches</H2>
-
-<P>If you want to work on the 1.x branch try this instead</P>
-
-<H3><A name="Source-AnonymousSVNaccess"></A>Anonymous SVN access </H3>
-
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">svn co svn:<SPAN class="code-comment">//svn.servicemix.org/servicemix/scm/branches/servicemix-1.1</SPAN></PRE>
-</DIV></DIV>
-
-<H3><A name="Source-DeveloperSVNAccessviaSSH"></A>Developer SVN Access via SSH</H3>
-
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">svn co svn+ssh:<SPAN class="code-comment">//svn.servicemix.org/scm/servicemix/branches/servicemix-1.1</SPAN></PRE>
-</DIV></DIV></DIV>
+</DIV>
           
                   </DIV>
         </TD>
@@ -316,8 +307,8 @@ Source
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 12, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2029&originalId=5548">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 23, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2029&originalId=5948">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2029">edit page</A>)
     </DIV>
