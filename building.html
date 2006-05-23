@@ -36,7 +36,7 @@ Building
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="overview.html" title="Overview">Overview</A>&nbsp;&gt;&nbsp;<A href="faq.html" title="FAQ">FAQ</A>&nbsp;&gt;&nbsp;<A href="" title="Building">Building</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="developers.html" title="Developers">Developers</A>&nbsp;&gt;&nbsp;<A href="" title="Building">Building</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -249,22 +249,46 @@ Building
             <div class="pagetitle">Building</div>
 -->
             <DIV class="wiki-content">
-<P>Questions on building ServiceMix and running the unit test suite</P>
+<P>ServiceMix uses <SPAN class="nobr"><A href="http://maven.apache.org/" title="Visit page outside Confluence" rel="nofollow">Maven<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> as its build tool. If you don&apos;t fancy using Maven you can use your IDE directly or <A href="download.html" title="Download">Download</A> a distribution or JAR.</P>
 
-<UL><LI><A href="maven-cannot-download-dependencies.html" title="Maven cannot download dependencies">Maven cannot download dependencies</A></LI></UL></DIV>
+<P>We have tested the build with Maven 2.0.4 and it works fine. <BR>
+Previous / later versions of Maven may vary - if you hit problems on other versions please talk to us on the <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A>.<BR>
+Be sure to read the <A href="build.html" title="Build">FAQ</A></P>
+
+<H2><A name="Building-Gettingstarted"></A>Getting started</H2>
+
+<UL>
+	<LI>Download and <SPAN class="nobr"><A href="http://maven.apache.org/start/install.html" title="Visit page outside Confluence" rel="nofollow">install Maven<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</LI>
+	<LI>Get the latest code <A href="source.html" title="Source">from SVN</A></LI>
+	<LI>Build the code with the following command</LI>
+</UL>
+
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn -Dmaven.test.skip=<SPAN class="code-keyword">true</SPAN> install</PRE>
+</DIV></DIV>
+
+<H2><A name="Building-UsinganIDE"></A>Using an IDE</H2>
+
+<P>If you prefer to use an IDE then you can autogenerate the IDE&apos;s project files using maven plugins. e.g.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn eclipse:eclipse</PRE>
+</DIV></DIV>
+
+<P>or</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn idea:idea</PRE>
+</DIV></DIV>
+
+<P>etc.</P>
+
+<P>Please refer to the <SPAN class="nobr"><A href="http://maven.apache.org/plugins/index.html" title="Visit page outside Confluence" rel="nofollow">plugin reference<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for more details on using them.</P>
+
+<P>Created by <SPAN class="nobr"><A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet" title="View profile for Guillaume Nodet"><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/user_12.gif" height="12" width="12" align="absmiddle" alt="" border="0"></SUP>Guillaume Nodet</A></SPAN><BR>
+ On Tue May 23 17:28:36 CEST 2006</P></DIV>
           
-                  <DIV class="tabletitle">
-            Children
-            <SPAN class="smalltext" id="show" style="display: inline;">
-              <A href="javascript:showChildren()">Show Children</A></SPAN>
-            <SPAN class="smalltext" id="hide" style="display: none;">
-              <A href="javascript:hideChildren()">Hide Children</A></SPAN>
-          </DIV>
-          <DIV class="greybox" id="children" style="display: none;">
-                                      <A href="maven-cannot-download-dependencies.html" title="Maven cannot download dependencies">Maven cannot download dependencies</A>
-              <SPAN class="smalltext">(ServiceMix)</SPAN>
-              <BR>
-                      </DIV>
                   </DIV>
         </TD>
       </TR>
@@ -272,10 +296,11 @@ Building
       </DIV>
     </DIV>
     <DIV id="site-footer">
-          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on Aug 25, 2005
-                  
-      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2129">edit page</A>)
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 23, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5955&originalId=5961">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5955">edit page</A>)
     </DIV>
 
   </BODY>
