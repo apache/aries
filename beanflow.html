@@ -550,7 +550,34 @@ Another option is to use a method which returns a String; a non-null String is t
 
 <P>You can also explicitly call suspend() or stop() yourself.</P>
 
-<P>The goTo(stepName) will instruct the workflow engine to move to the given step.</P></DIV>
+<P>The goTo(stepName) will instruct the workflow engine to move to the given step.</P>
+
+<H3><A name="BeanFlow-ValidatingWorkflows"></A>Validating Workflows</H3>
+
+<P>To avoid typos between the workflow step enum and the methods in the workflow class, on startup we check that there are suitable methods available for the enum. Many thanks to <SPAN class="nobr"><A href="http://www.javarants.com/" title="Visit page outside Confluence" rel="nofollow">Sam<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for this idea! <IMG class="emoticon" src="http://goopen.org/confluence/images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"> e.g. the following bad workflow is automatically caught and a useful error is generated.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class BadWorkflow <SPAN class="code-keyword">extends</SPAN> Workflow&lt;BadWorkflow.Step&gt; {
+    
+    <SPAN class="code-keyword">public</SPAN> <SPAN class="code-keyword">static</SPAN> <SPAN class="code-keyword">enum</SPAN> Step {
+        startStep, fooStep, doesNotExistStep
+    };
+
+    <SPAN class="code-keyword">public</SPAN> BadWorkflow() {
+        <SPAN class="code-keyword">super</SPAN>(Step.startStep);
+    }
+
+    <SPAN class="code-comment">// Workflow steps
+</SPAN>    <SPAN class="code-comment">// -------------------------------------------------------------------------
+</SPAN>    <SPAN class="code-keyword">public</SPAN> Step startStep() {
+        <SPAN class="code-keyword">return</SPAN> Step.fooStep;
+    }
+    
+    <SPAN class="code-keyword">public</SPAN> Step fooStep() {
+        <SPAN class="code-keyword">return</SPAN> Step.doesNotExistStep;
+    }
+}</PRE>
+</DIV></DIV></DIV>
           
                   <DIV class="tabletitle">
             Children
@@ -573,7 +600,7 @@ Another option is to use a method which returns a String; a non-null String is t
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on May 24, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=5973">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=5974">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5092">edit page</A>)
     </DIV>
