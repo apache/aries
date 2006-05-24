@@ -298,7 +298,7 @@ BeanFlow
 
 <P>Its very common to add timeouts onto activities so that if the activity is not complete by a certain time then the activity is stopped &amp; failed; often another parent activity may then do something differently if one of its child activities fails.</P>
 
-<P>There is a useful base activity called <B>TimeoutActivity</B> which you can derive from to make your own activity which can be started/stopped/failed and which can be timed out.</P>
+<P>There is a useful base activity called <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/TimeoutActivity.html" title="Visit page outside Confluence" rel="nofollow">TimeoutActivity<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which you can derive from to make your own activity which can be started/stopped/failed and which can be timed out.</P>
 
 <P>You can explicitly register the activity with a timer and call the <B>onTimedOut()</B> method yourself or just call the <B>startWithTimeout()</B> method to start the activity registering the timeout.</P>
 
@@ -312,19 +312,19 @@ BeanFlow
 <TH class="confluenceTh">Description</TH>
 </TR>
 <TR>
-<TD class="confluenceTd">JoinAll</TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/JoinAll.html" title="Visit page outside Confluence" rel="nofollow">JoinAll<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 <TD class="confluenceTd">Performs a join on all the given child activities. So the activity waits until all the child activities have completed, then it completes itself. You can add additional constraints to the activity using derivation. The default is to wait for all the child activities to complete; though you can enable fast-fail mode so that the activity fails as soon as a child activity fails</TD>
 </TR>
 <TR>
-<TD class="confluenceTd">JoinQuorum</TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/JoinQuorum.html" title="Visit page outside Confluence" rel="nofollow">JoinQuorum<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 <TD class="confluenceTd">This activity is useful for implementing clustering style activities where you want a quorum of activities to complete. e.g. if you have 5 child activities you want to wait for at least 3 activities to complete succesfully before continuing</TD>
 </TR>
 <TR>
-<TD class="confluenceTd">AsynchronousActivity</TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/AsynchronousActivity.html" title="Visit page outside Confluence" rel="nofollow">AsynchronousActivity<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 <TD class="confluenceTd">Executes any Runnable or Callable on an Executor and complete the activity when it has completed so that it can be used in joins</TD>
 </TR>
 <TR>
-<TD class="confluenceTd">ParallelActivity</TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/ParallelActivity.html" title="Visit page outside Confluence" rel="nofollow">ParallelActivity<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 <TD class="confluenceTd">Allows a collection of parallel Runnable or Callable objects to be performed on an Executor then performing some kind of join on them completing</TD>
 </TR>
 </TBODY></TABLE>
@@ -407,7 +407,7 @@ assertStopped(activity);</PRE>
 <P>However often folks think of workflows as a number of discrete steps; using a kind of state machine to move from step to step. One real simple approach to<BR>
 writing workflows in this model is to use a specific method for each workflow step.</P>
 
-<P>So we have a base class called Workflow which adds a new State object for the current step (which allows actvities to listen to the step changing) together with helper methods for moving to different steps, for suspending and so forth.</P>
+<P>So we have a base class called <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/Workflow.html" title="Visit page outside Confluence" rel="nofollow">Workflow<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which adds a new State object for the current step (which allows actvities to listen to the step changing) together with helper methods for moving to different steps, for suspending and so forth.</P>
 
 <H3><A name="BeanFlow-Movingsteps"></A>Moving steps</H3>
 
@@ -612,7 +612,7 @@ Another option is to use a method which returns a String; a non-null String is t
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on May 24, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=5981">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=5982">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5092">edit page</A>)
     </DIV>
