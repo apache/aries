@@ -274,9 +274,21 @@ BeanFlow
 </UL>
 
 
-<H2><A name="BeanFlow-Activityoverview"></A>Activity overview</H2>
+<H2><A name="BeanFlow-Codeoverview"></A>Code overview</H2>
 
-<P>An activity is just a POJO which implements the Activity interface; it has a simple lifecycle, you can start them and stop them and ask their status.</P>
+<P>First we&apos;ll give an overview of the two main interfaces in BeanFlow then we&apos;ll progress to concepts like timeouts and composing activities.</P>
+
+<H3><A name="BeanFlow-Stateclass"></A>State class</H3>
+
+<P>We have a <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/State.html" title="Visit page outside Confluence" rel="nofollow">State&lt;T&gt;<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> interface which is identical to the <SPAN class="nobr"><A href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/atomic/AtomicReference.html" title="Visit page outside Confluence" rel="nofollow">AtomicReference&lt;T&gt;<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> interface included in java.util.concurrent in Java 5 apart from that it allows you to register listeners to the state. This makes it easy to respond to the changes in state.</P>
+
+<P>One added detail is the that State&lt;T&gt; allows you to specify the <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/support/Notifier.html" title="Visit page outside Confluence" rel="nofollow">Notifier<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> implementation used to perform the notifications (which always occur outside of the semaphore to allow things to be re-entrant).</P>
+
+<P>The default notifier used is the <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/support/SynchronousNotifier.html" title="Visit page outside Confluence" rel="nofollow">SynchronousNotifier<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> but its easy to switch to an <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/support/AsynchronousNotifier.html" title="Visit page outside Confluence" rel="nofollow">AsynchronousNotifier<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> by just passing it into the constructor of the State&lt;T&gt; object.</P>
+
+<H3><A name="BeanFlow-Activityclass"></A>Activity class</H3>
+
+<P>An activity is just a POJO which implements the <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/Activity.html" title="Visit page outside Confluence" rel="nofollow">Activity<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> interface; it has a simple lifecycle, you can start them and stop them and ask their status.</P>
 
 <P>Once a flow has been started via the <B>start()</B> method it can take an arbitrarily long time to complete; you can see if the flow has completed via the <B>isStopped()</B> method. You can explicitly complete a flow using the <B>stop()</B> method whenever you like; typically when you are responding to state changes.</P>
 
@@ -600,7 +612,7 @@ Another option is to use a method which returns a String; a non-null String is t
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on May 24, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=5979">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=5981">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5092">edit page</A>)
     </DIV>
