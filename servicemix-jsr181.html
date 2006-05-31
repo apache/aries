@@ -230,8 +230,58 @@ It uses <SPAN class="nobr"><A href="http://xfire.codehaus.org/" title="Visit pag
 
 <P>Features:</P>
 <UL>
-	<LI></LI>
+	<LI>no annotations</LI>
+	<LI>jsr181 annotations</LI>
+	<LI><SPAN class="nobr"><A href="http://jakarta.apache.org/commons/attributes/" title="Visit page outside Confluence" rel="nofollow">commons-attributes<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> annotations</LI>
+	<LI>aegis binding</LI>
+	<LI>jaxb2 binding</LI>
+	<LI>xmlbeans binding</LI>
 </UL>
+
+
+<H2><A name="servicemix-jsr181-Installation"></A>Installation</H2>
+
+<P>Installing the servicemix-http component can be done in several ways:</P>
+<UL>
+	<LI>drop the installer zip in an hotdeploy directory monitored by ServiceMix</LI>
+	<LI>using <A href="ant-tasks.html" title="Ant Tasks">ant tasks</A></LI>
+</UL>
+
+
+<P>Note that when using ant tasks, the component is not started, you will have to start it manually using ant tasks or a console.</P>
+
+<H2><A name="servicemix-jsr181-Configuration"></A>Configuration</H2>
+
+<P>Several parameters can be configured using a JMX console.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Configuration</B><BR>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh"> Name </TH>
+<TH class="confluenceTh"> Type </TH>
+<TH class="confluenceTh"> Description </TH>
+<TH class="confluenceTh"> Default </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> printStackTraceInFaults </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> print the full stack trace in faults when an exception occurs </TD>
+<TD class="confluenceTd"> false </TD>
+</TR>
+</TBODY></TABLE>
+<P> of total simulatenous connections | 256 |</P></TD></TR></TABLE>
+
+<H2><A name="servicemix-jsr181-XBeandeployment"></A>XBean deployment</H2>
+
+<P>You can deploy Service Units containing a file named xbean.xml for activating consumer and provider endpoints.</P>
+
+<P>This xml file should respect the given syntax, though this is a spring based xml configuration file from where all beans of class <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-jsr181/apidocs/org/apache/servicemix/jsr181/Jsr181Endpoint.html" title="Visit page outside Confluence" rel="nofollow">Jsr181Endpoint<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> are retrieved.<BR>
+See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-jsr181/src/test/resources/good2/xbean.xml" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.&nbsp; Note that you have to define the http namespace with</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;beans <SPAN class="code-keyword">xmlns:jsr181</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/jsr181/1.0&quot;</SPAN>&gt;</SPAN>
+    ...
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>Any numbers of endpoints can be specified in the xbean.xml file.</P>
 </DIV>
           
                   </DIV>
@@ -243,7 +293,7 @@ It uses <SPAN class="nobr"><A href="http://xfire.codehaus.org/" title="Visit pag
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 31, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2057&originalId=8492">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2057&originalId=8493">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2057">edit page</A>)
     </DIV>
