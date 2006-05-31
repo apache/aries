@@ -223,13 +223,13 @@ Ant Tasks
 <!--          
             <div class="pagetitle">Ant Tasks</div>
 -->
-            <DIV class="wiki-content">
-<P>A requirement of the JBI/JSR208 is to allow the remote installation, deployment and management of Components. A prefered way of doing this is by Ant Tasks, that use the JMX interfaces exposed by the management of the Container.</P>
+            <DIV class="wiki-content"><P>A requirement of the JBI/JSR208 is to allow the remote installation, deployment and management of Components. A prefered way of doing this is by Ant Tasks, that use the JMX interfaces exposed by the management of the Container.</P>
 
 <H2><A name="AntTasks-JbiTask"></A>JbiTask</H2>
 
 <P>All ServiceMix Ant Tasks are derived from JbiTask - see <SPAN class="nobr"><A href="http://servicemix.org/maven/servicemix-core/apidocs/org/apache/servicemix/jbi/management/task/JbiTask.html" title="Visit page outside Confluence" rel="nofollow">JbiTask<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and share it&apos;s attributes:
-<BR clear="all">  <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Attributes</B><BR>
+<BR clear="all"></P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Attributes</B><BR>
 <TABLE class="confluenceTable"><TBODY>
 <TR>
 <TH class="confluenceTh"> Name </TH>
@@ -242,29 +242,29 @@ Ant Tasks
 <TD class="confluenceTd"> the default protcol used for connecting with the ServiceMix JMX MBeanServer (default is <B>rmi</B>) </TD>
 </TR>
 <TR>
-<TD class="confluenceTd"> namingHost </TD>
+<TD class="confluenceTd"> host </TD>
 <TD class="confluenceTd"> String </TD>
 <TD class="confluenceTd"> hostname of the naming server (default is <B>localhost</B>) </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> containerName </TD>
 <TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd"> name of the ServiceMix JBI Container to connect to (default is <B>defaultJBI</B>) </TD>
+<TD class="confluenceTd"> name of the ServiceMix JBI Container to connect to (default is <B>ServiceMix</B>) </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> jmxDomainName </TD>
 <TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd"> domain name of the MBeanServer used by the ServiceMix JBI Container (default is <B>org.servicemix</B>) </TD>
+<TD class="confluenceTd"> domain name of the MBeanServer used by the ServiceMix JBI Container (default is <B>org.apache.servicemix</B>) </TD>
 </TR>
 <TR>
-<TD class="confluenceTd"> namingPort </TD>
+<TD class="confluenceTd"> port </TD>
 <TD class="confluenceTd"> int </TD>
 <TD class="confluenceTd"> The port the naming server listens for connections on (default is <B>1099</B>) </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> jndiPath </TD>
 <TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd"> The path in the naming server to retrieve the JMX Connection (default is <B>/&lt;container name&gt;JMX</B>) </TD>
+<TD class="confluenceTd"> The path in the naming server to retrieve the JMX Connection (default is <B>/jmxri</B>) </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> username </TD>
@@ -272,7 +272,7 @@ Ant Tasks
 <TD class="confluenceTd"> user name for the JMXConnection (default is <B>&quot;&quot;</B>) </TD>
 </TR>
 <TR>
-<TD class="confluenceTd"> passwd </TD>
+<TD class="confluenceTd"> password </TD>
 <TD class="confluenceTd"> String </TD>
 <TD class="confluenceTd"> passwd for the JMXConnection (default is <B>&quot;&quot;</B>) </TD>
 </TR>
@@ -281,10 +281,9 @@ Ant Tasks
 <TD class="confluenceTd"> boolean </TD>
 <TD class="confluenceTd"> fail the build if an error occurs (default is <B>true</B>) </TD>
 </TR>
-</TBODY></TABLE></TD></TR></TABLE><BR>
-AntTasks derived from JbiTask include:</P>
-
-<P><B>Components tasks</B></P>
+</TBODY></TABLE></TD></TR></TABLE>
+<P>AntTasks derived from JbiTask include:<BR>
+<B>Components tasks</B></P>
 <UL>
 	<LI><A href="installcomponenttask.html" title="InstallComponentTask">InstallComponentTask</A></LI>
 	<LI><A href="uninstallcomponenttask.html" title="UninstallComponentTask">UninstallComponentTask</A></LI>
@@ -380,8 +379,8 @@ AntTasks derived from JbiTask include:</P>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A> on Mar 06, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1918&originalId=3832">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on May 31, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1918&originalId=8513">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1918">edit page</A>)
     </DIV>
