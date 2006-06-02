@@ -284,13 +284,11 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <P>Any numbers of endpoints can be specified in the xbean.xml file.</P>
 
 <P>As the main purpose is to expose a POJO, you will have to include the needed class files / jars in the service unit and reference them using the following tags in your xbean.xml configuration file:</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;classpath&gt;</SPAN>
   <SPAN class="code-tag">&lt;location&gt;</SPAN>.<SPAN class="code-tag">&lt;/location&gt;</SPAN>
 <SPAN class="code-tag">&lt;/classpath&gt;</SPAN></PRE>
 </DIV></DIV>
-
 <P>This will add the content of the <B>location</B> tags (relative to the unzipped service unit) to the classpath.  The previous configuration will just add the class files contained in the service unit, as if it is a plain jar.</P>
 
 <P>If you want to embed jars, just use something like</P>
@@ -301,6 +299,25 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 </DIV></DIV>
 
 <H2><A name="servicemix-jsr181-Endpoint"></A>Endpoint</H2>
+
+<P>A few examples:</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;jsr181:endpoint endpoint=<SPAN class="code-quote">&quot;endpoint1&quot;</SPAN>
+				   typeMapping=<SPAN class="code-quote">&quot;xmlbeans&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;jsr181:pojo&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;test.EchoService&quot;</SPAN> /&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/jsr181:pojo&gt;</SPAN>
+<SPAN class="code-tag">&lt;/jsr181:endpoint&gt;</SPAN></PRE>
+</DIV></DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;myPojo&quot;</SPAN> class=<SPAN class="code-quote">&quot;test.EchoService&quot;</SPAN> /&gt;</SPAN>
+<SPAN class="code-tag">&lt;jsr181:endpoint pojo=<SPAN class="code-quote">&quot;#myPojo&quot;</SPAN> /&gt;</SPAN></PRE>
+</DIV></DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;jsr181:endpoint pojoClass=<SPAN class="code-quote">&quot;test.EchoService2&quot;</SPAN>
+				   annotations=<SPAN class="code-quote">&quot;none&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
 
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Endpoint attributes</B><BR>
 <TABLE class="confluenceTable"><TBODY>
@@ -317,6 +334,18 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <TD class="confluenceTd"> no </TD>
 </TR>
 <TR>
+<TD class="confluenceTd"> endpoint </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> JBI Endpoint name </TD>
+<TD class="confluenceTd"> no (will be auto-generated if not specified) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> interfaceName </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> Interface QName implemented by the JBI endpoint </TD>
+<TD class="confluenceTd"> no (will be auto-generated if not specified) </TD>
+</TR>
+<TR>
 <TD class="confluenceTd"> pojo </TD>
 <TD class="confluenceTd"> Object </TD>
 <TD class="confluenceTd"> the instanciated POJO to service requests </TD>
@@ -327,6 +356,12 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <TD class="confluenceTd"> String </TD>
 <TD class="confluenceTd"> the class name of the POJO to service requests </TD>
 <TD class="confluenceTd"> one of pojo or pojoClass </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> service </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> JBI Service name </TD>
+<TD class="confluenceTd"> no (will be auto-generated if not specified)</TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> serviceInterface </TD>
@@ -345,7 +380,6 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <H2><A name="servicemix-jsr181-AccessingtheJBIbus"></A>Accessing the JBI bus</H2>
 
 <P>If you want to send a request to another service from your POJO, you can add the following method on your POJO:</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-keyword">private</SPAN> javax.jbi.component.ComponentContext context;
 
@@ -353,13 +387,11 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
   <SPAN class="code-keyword">this</SPAN>.context = context;
 }</PRE>
 </DIV></DIV>
-
 <P>You will be able to use the provided DeliveryChannel to send requests.</P>
 
 <P>Note that only sendSync is allowed for active JBI exchanges (but you have to use send for DONE or ERROR status exchanges).</P>
 
 <P>You can also use the <A href="client-api.html" title="Client API">client api</A>:</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-keyword">public</SPAN> void myMethod() {
   ServiceMixClient client = <SPAN class="code-keyword">new</SPAN> DefaultServiceMixClient(<SPAN class="code-keyword">this</SPAN>.context);
@@ -368,7 +400,20 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
   client.send(resolver, <SPAN class="code-keyword">null</SPAN>, <SPAN class="code-keyword">null</SPAN>, <SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>);
 }</PRE>
 </DIV></DIV>
-</DIV>
+
+<H2><A name="servicemix-jsr181-Lightweightmode"></A>Lightweight mode</H2>
+
+<P>The servicemix-jsr181 component can also be configured in a spring/xbean configuration file, for use in an embedded ServiceMix.<BR>
+Here is an example of such a configuration:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"></PRE>
+</DIV></DIV>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Classpath issues when embedding servicemix-jsr181 component</B><BR>
+<P>When using the servicemix.xml configuration file to create jsr181 endpoints, you must include the servicemix-jsr181-xxx.jar in your classpath.<BR>
+You will find this file inside the component installer (./components/servicemix-jsr181-xxx.zip).<BR>
+Failing this, an IllegalArgumentException will be thrown with the following message:<BR>
+ Component name: xxxxxx is bound to an object which is not a JBI component, it is of type: javax.xml.namespace.QName<BR>
+or aanother exception with</P></TD></TR></TABLE></DIV>
           
                   </DIV>
         </TD>
@@ -378,8 +423,8 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 31, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2057&originalId=8498">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jun 02, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2057&originalId=8531">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2057">edit page</A>)
     </DIV>
