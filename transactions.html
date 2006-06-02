@@ -9,7 +9,7 @@
     <LINK type="text/css" rel="stylesheet" href="resources/site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
-Guides
+Transactions
     </TITLE>
   <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
   <BODY onload="init()">
@@ -36,7 +36,7 @@ Guides
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="" title="Guides">Guides</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="guides.html" title="Guides">Guides</A>&nbsp;&gt;&nbsp;<A href="" title="Transactions">Transactions</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -221,43 +221,123 @@ Guides
           <DIV id="site-page">
 
 <!--          
-            <div class="pagetitle">Guides</div>
+            <div class="pagetitle">Transactions</div>
 -->
-            <DIV class="wiki-content"><UL><LI><A href="clustering.html" title="Clustering">Clustering</A></LI><LI><A href="configuration.html" title="Configuration">Configuration</A></LI><LI><A href="getting-started-guide.html" title="Getting Started Guide">Getting Started Guide</A><UL><LI><A href="getting-started-for-servicemix-1x.html" title="Getting Started for ServiceMix 1.x">Getting Started for ServiceMix 1.x</A></LI><LI><A href="getting-started-for-servicemix-2x.html" title="Getting Started for ServiceMix 2.x">Getting Started for ServiceMix 2.x</A></LI></UL></LI><LI><A href="load-balancing.html" title="Load Balancing">Load Balancing</A></LI><LI><A href="management.html" title="Management">Management</A><UL><LI><A href="ant-tasks.html" title="Ant Tasks">Ant Tasks</A><UL><LI><A href="deployserviceassemblytask.html" title="DeployServiceAssemblyTask">DeployServiceAssemblyTask</A></LI><LI><A href="installcomponenttask.html" title="InstallComponentTask">InstallComponentTask</A></LI><LI><A href="installsharedlibrarytask.html" title="InstallSharedLibraryTask">InstallSharedLibraryTask</A></LI><LI><A href="listbindingcomponentstask.html" title="ListBindingComponentsTask">ListBindingComponentsTask</A></LI><LI><A href="listserviceassembliestask.html" title="ListServiceAssembliesTask">ListServiceAssembliesTask</A></LI><LI><A href="listserviceenginestask.html" title="ListServiceEnginesTask">ListServiceEnginesTask</A></LI><LI><A href="listsharedlibrariestask.html" title="ListSharedLibrariesTask">ListSharedLibrariesTask</A></LI><LI><A href="shutdowncomponenttask.html" title="ShutDownComponentTask">ShutDownComponentTask</A></LI><LI><A href="shutdownserviceassemblytask.html" title="ShutDownServiceAssemblyTask">ShutDownServiceAssemblyTask</A></LI><LI><A href="startcomponenttask.html" title="StartComponentTask">StartComponentTask</A></LI><LI><A href="startserviceassemblytask.html" title="StartServiceAssemblyTask">StartServiceAssemblyTask</A></LI><LI><A href="stopcomponenttask.html" title="StopComponentTask">StopComponentTask</A></LI><LI><A href="stopserviceassemblytask.html" title="StopServiceAssemblyTask">StopServiceAssemblyTask</A></LI><LI><A href="undeployserviceassemblytask.html" title="UndeployServiceAssemblyTask">UndeployServiceAssemblyTask</A></LI><LI><A href="uninstallcomponenttask.html" title="UninstallComponentTask">UninstallComponentTask</A></LI><LI><A href="uninstallsharedlibrarytask.html" title="UninstallSharedLibraryTask">UninstallSharedLibraryTask</A></LI></UL></LI><LI><A href="component-mbean.html" title="Component MBean">Component MBean</A></LI><LI><A href="container-mbean.html" title="Container MBean">Container MBean</A></LI><LI><A href="environment-context-mbean.html" title="Environment Context MBean">Environment Context MBean</A></LI><LI><A href="jmx-console.html" title="JMX Console">JMX Console</A></LI><LI><A href="life-cycle-mbean.html" title="Life Cycle MBean">Life Cycle MBean</A></LI><LI><A href="message-flow-mbean.html" title="Message Flow MBean">Message Flow MBean</A><UL><LI><A href="seda-flow-mbean.html" title="Seda Flow MBean">Seda Flow MBean</A></LI></UL></LI><LI><A href="nmr-broker-mbean.html" title="NMR Broker MBean">NMR Broker MBean</A></LI><LI><A href="specifications.html" title="Specifications">Specifications</A></LI></UL></LI><LI><A href="nmr-flows.html" title="NMR Flows">NMR Flows</A></LI><LI><A href="transactions.html" title="Transactions">Transactions</A></LI></UL> 
+            <DIV class="wiki-content"><H2><A name="Transactions-QualityofService"></A>Quality of Service</H2>
+
+<UL>
+	<LI>clustered</LI>
+	<LI>synchronous</LI>
+	<LI>transactional</LI>
+	<LI>persistent</LI>
+</UL>
+
+
+<H2><A name="Transactions-Synchronicity%26Transactionality"></A>Synchronicity &amp; Transactionality</H2>
+
+<P>If syncSend is used to send a message exchange, the implied semantic is that the transaction flows with the exchange and that the provider has to answer synchronously and enlist any needed resources inside the transaction.<BR>
+If send is used, the act of sending the message will be enlisted in the current transaction, but the exchange processing will be defered and handled in its own thread.</P>
+
+<P>Responding to a transactional synchronous message may not be always a possible option for a given component acting as a provider.<BR>
+For example, an asynchronous BPEL process may not support this processing behavior.</P>
+
+<P>Note that flows have limited capabilities regarding JBI exchange QoS.<BR>
+The seda flows can not handle asynchonous transactional send (because there is no transactional resource involved) and thus will only be able to process synchronous transactional messages.  On the other hand, the JCA flow can handle asynchonous transactional messages (the underlying JMS session is enlisted in the transaction), but no synchronous transactional exchanges.</P>
+
+<P>Actually, all QoS combinations can be handled by one or the other flow, but exchanges that are clustered, transactional and synchronous or persistent, transactional and synchronous.</P>
+
+<P>  St:        A, S<BR>
+  Seda:      A, S, ST<BR>
+  Jms:       A, AC, ACP, S, SC, SCP<BR>
+  Jca:       A, AC, ACP, ACT, ACPT, APT<BR>
+  Unhandled: SCT, SPT, SCPT</P>
+
+<P>  A: Asynchronous<BR>
+  S: Synchronous<BR>
+  C: Clustered (means that the same endpoint is activated on the local container and at least a remote container)<BR>
+  P: Persistent<BR>
+  R: Remote (means that the endpoint is not available locally, but only on a remote container)<BR>
+  T: Transactional</P>
+
+<P>Currently, there is no distinction between C (clustered) and R (remote), though this should be enhanced to provider support for SCT which would be handled as ST (using the local endpoint).<BR>
+We would then have,</P>
+
+<P>  St:        A, AC, S, SC<BR>
+  Seda:      A, AC, S, SC, ST, SCT<BR>
+  Jms:       A, AC, ACP, AR, ARP, S, SC, SCP, SRP<BR>
+  Jca:       A, AC, ACP, ACT, ACPT, APT, AR, ARP, ART, ARPT<BR>
+  Unhandled: SPT, SCPT, SRPT</P>
+
+<H2><A name="Transactions-Sendingsynchronoustransactionalexchanges"></A>Sending synchronous transactional exchanges</H2>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">TransactionManager tm = (TransactionManager) getContext().getTransactionManager();
+  tm.begin();
+  
+  InOnly me = createInOnly();
+  getContext().getDeliveryChannel().sendSync(me);
+  
+  tm.commit();</PRE>
+</DIV></DIV>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">TransactionManager tm = (TransactionManager) getContext().getTransactionManager();
+  tm.begin();
+  
+  InOut me = createInOut();
+  getContext().getDeliveryChannel().sendSync(me);
+  <SPAN class="code-comment">// retrieve the out message
+</SPAN>  me.setStatus(ExchangeStatus.DONE);
+  getContext().getDeliveryChannel().sendSync(me);
+  
+  tm.commit();</PRE>
+</DIV></DIV>
+
+<H2><A name="Transactions-Sendingasynchronoustransactionalexchanges"></A>Sending asynchronous transactional exchanges</H2>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">TransactionManager tm = (TransactionManager) getContext().getTransactionManager();
+  tm.begin();
+  
+  InOnly me = createInOnly();
+  getContext().getDeliveryChannel().send(me);
+  
+  tm.commit();</PRE>
+</DIV></DIV>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">TransactionManager tm = (TransactionManager) getContext().getTransactionManager();
+  tm.begin();
+  
+  InOut me = createInOut();
+  getContext().getDeliveryChannel().send(me);
+  
+  tm.commit();</PRE>
+</DIV></DIV>
+
+<H2><A name="Transactions-Receivingandprocessingtransactionalexchanges"></A>Receiving and processing transactional exchanges</H2>
+
+<P>A great care should be taken to use the same QoS for the answer than the one used for the request.</P>
+
+<P>You can check if a given exchange is transactional by using:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-object">boolean</SPAN> transactional = exchange.getProperty(<SPAN class="code-quote">&quot;javax.jbi.transaction.jta&quot;</SPAN>) != <SPAN class="code-keyword">null</SPAN>;</PRE>
+</DIV></DIV>
+
+<P>and you can check if the exchange is synchronous by using:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-object">boolean</SPAN> synchronous = exchange.getProperty(<SPAN class="code-quote">&quot;javax.jbi.messaging.sendSync&quot;</SPAN>) != <SPAN class="code-keyword">null</SPAN>;</PRE>
+</DIV></DIV>
+
+<P>If your component is a MessageExchangeListener, the delivery will automatically be<BR>
+transacted.  You just need to use sendSync if the exchange is synchronous and send<BR>
+if the exchange is not.</P>
+
 
 <P>Created by <SPAN class="nobr"><A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet" title="View profile for Guillaume Nodet"><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/user_12.gif" height="12" width="12" align="absmiddle" alt="" border="0"></SUP>Guillaume Nodet</A></SPAN><BR>
+ On Fri Jun 02 18:41:25 CEST 2006<BR>
 Using <FONT color="blue">TimTam</FONT></P></DIV>
           
-                  <DIV class="tabletitle">
-            Children
-            <SPAN class="smalltext" id="show" style="display: inline;">
-              <A href="javascript:showChildren()">Show Children</A></SPAN>
-            <SPAN class="smalltext" id="hide" style="display: none;">
-              <A href="javascript:hideChildren()">Hide Children</A></SPAN>
-          </DIV>
-          <DIV class="greybox" id="children" style="display: none;">
-                                      <A href="transactions.html" title="Transactions">Transactions</A>
-              <SPAN class="smalltext">(ServiceMix)</SPAN>
-              <BR>
-                          <A href="configuration.html" title="Configuration">Configuration</A>
-              <SPAN class="smalltext">(ServiceMix)</SPAN>
-              <BR>
-                          <A href="load-balancing.html" title="Load Balancing">Load Balancing</A>
-              <SPAN class="smalltext">(ServiceMix)</SPAN>
-              <BR>
-                          <A href="nmr-flows.html" title="NMR Flows">NMR Flows</A>
-              <SPAN class="smalltext">(ServiceMix)</SPAN>
-              <BR>
-                          <A href="management.html" title="Management">Management</A>
-              <SPAN class="smalltext">(ServiceMix)</SPAN>
-              <BR>
-                          <A href="clustering.html" title="Clustering">Clustering</A>
-              <SPAN class="smalltext">(ServiceMix)</SPAN>
-              <BR>
-                          <A href="getting-started-guide.html" title="Getting Started Guide">Getting Started Guide</A>
-              <SPAN class="smalltext">(ServiceMix)</SPAN>
-              <BR>
-                      </DIV>
                   </DIV>
         </TD>
       </TR>
@@ -266,10 +346,10 @@ Using <FONT color="blue">TimTam</FONT></P></DIV>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5213&originalId=5243">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jun 02, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=8533&originalId=8534">view change</A>)
               
-      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5213">edit page</A>)
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=8533">edit page</A>)
     </DIV>
 
   </BODY>
