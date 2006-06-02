@@ -223,8 +223,7 @@ servicemix-jms
 <!--          
             <div class="pagetitle">servicemix- jms</div>
 -->
-            <DIV class="wiki-content">
-<H1><A name="servicemix-jms-servicemixjms"></A>servicemix-jms</H1>
+            <DIV class="wiki-content"><H1><A name="servicemix-jms-servicemixjms"></A>servicemix-jms</H1>
 
 <P>ServiceMix ships with a JBI compliant JMS binding component named servicemix-jms.</P>
 
@@ -442,6 +441,12 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <TD class="confluenceTd">&nbsp;</TD>
 <TD class="confluenceTd"> yes (one of jndiDestinationName or jmsProviderDestinationName) </TD>
 </TR>
+<TR>
+<TD class="confluenceTd"> connectionFactory </TD>
+<TD class="confluenceTd"> javax.jms.ConnectionFactory </TD>
+<TD class="confluenceTd"> the connectionFactory to use.  This optional property can be used instead of using JNDI configuration </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
 </TBODY></TABLE></TD></TR></TABLE>
 <P>The <B>targetService</B>, <B>targetEndpoint</B> and <B>targetInterfaceName</B> attributes can be used to specify the routing method to use (routing by interface, service or endpoint) and is also useful to allow several proxy endpoints to be created for the same JBI endpoint.  For example to create an JMS only endpoint and an JMS+SOAP endpoint, both jms endpoints will have the same targetEndpoint and targetService, but they must have different endpoint names.</P>
 
@@ -545,6 +550,12 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <TD class="confluenceTd">&nbsp;</TD>
 <TD class="confluenceTd"> yes (one of jndiDestinationName or jmsProviderDestinationName) </TD>
 </TR>
+<TR>
+<TD class="confluenceTd"> connectionFactory </TD>
+<TD class="confluenceTd"> javax.jms.ConnectionFactory </TD>
+<TD class="confluenceTd"> the connectionFactory to use.  This optional property can be used instead of using JNDI configuration </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
 </TBODY></TABLE></TD></TR></TABLE>
 
 <H2><A name="servicemix-jms-WSDLDeployment"></A>WSDL Deployment</H2>
@@ -609,12 +620,11 @@ Here is an example of such a configuration:</P>
   <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
 <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
 </DIV></DIV>
-
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Classpath issues when embedding servicemix-jms component</B><BR>
 <P>When using the servicemix.xml configuration file to create jms endpoints, you must include the servicemix-jms-xxx.jar in your classpath.<BR>
 You will find this file inside the component installer (./components/servicemix-jms-xxx.zip).<BR>
 Failing this, an IllegalArgumentException will be thrown with the following message:<BR>
-    Component name: xxxxxx is bound to an object which is not a JBI component, it is of type: javax.xml.namespace.QName</P></TD></TR></TABLE>
+ Component name: xxxxxx is bound to an object which is not a JBI component, it is of type: javax.xml.namespace.QName</P></TD></TR></TABLE>
 
 <H2><A name="servicemix-jms-AccessingWSDLs"></A>Accessing WSDLs</H2>
 
@@ -696,8 +706,8 @@ Failing this, an IllegalArgumentException will be thrown with the following mess
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1954&originalId=5174">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jun 02, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1954&originalId=8532">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1954">edit page</A>)
     </DIV>
