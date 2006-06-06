@@ -422,7 +422,52 @@ Here is an example of such a configuration:</P>
 You will find this file inside the component installer (./components/servicemix-jsr181-xxx.zip).<BR>
 Failing this, an IllegalArgumentException will be thrown with the following message:<BR>
  Component name: xxxxxx is bound to an object which is not a JBI component, it is of type: javax.xml.namespace.QName<BR>
-or aanother exception with</P></TD></TR></TABLE></DIV>
+or aanother exception with</P></TD></TR></TABLE>
+
+<H2><A name="servicemix-jsr181-Proxies"></A>Proxies</H2>
+
+<P>You can create java proxies for JBI endpoints, provided that they expose a WSDL.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;jsr181:proxy id=<SPAN class="code-quote">&quot;proxy&quot;</SPAN>
+              container=<SPAN class="code-quote">&quot;#jbi&quot;</SPAN> 
+              interfaceName=<SPAN class="code-quote">&quot;test:EchoPortType&quot;</SPAN>
+              type=<SPAN class="code-quote">&quot;test.Echo&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
+
+<P>You can use it from one of you client bean, or from inside another component, and call the JBI endpoint as a plain Java object.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">private</SPAN> Echo echo;
+  
+  <SPAN class="code-keyword">public</SPAN> void setEcho(Echo echo) {
+    <SPAN class="code-keyword">this</SPAN>.echo = echo;
+  }
+
+  <SPAN class="code-keyword">public</SPAN> void myMethod() {
+    <SPAN class="code-object">String</SPAN> result = echo.echo(<SPAN class="code-quote">&quot;world&quot;</SPAN>);
+    ...
+  }</PRE>
+</DIV></DIV>
+
+<H2><A name="servicemix-jsr181-EJBs"></A>EJBs</H2>
+
+<P>Using spring EJB proxies, you can easily expose an existing EJB on the JBI bus.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;jsr181:endpoint annotations=<SPAN class="code-quote">&quot;none&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:ejb&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;ejb&quot;</SPAN> 
+                 serviceInterface=<SPAN class="code-quote">&quot;foo.bar.Hello&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;jsr181:pojo&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;jndiName&quot;</SPAN> value=<SPAN class="code-quote">&quot;my/jndi/path&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;businessInterface&quot;</SPAN> value=<SPAN class="code-quote">&quot;foo.bar.Hello&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;jndiTemplate&quot;</SPAN> ref=<SPAN class="code-quote">&quot;jndiTemplate&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/jsr181:pojo&gt;</SPAN>
+<SPAN class="code-tag">&lt;/jsr181:endpoint&gt;</SPAN></PRE>
+</DIV></DIV>
+
+</DIV>
           
                   </DIV>
         </TD>
@@ -432,8 +477,8 @@ or aanother exception with</P></TD></TR></TABLE></DIV>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jun 02, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2057&originalId=8531">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jun 06, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2057&originalId=8559">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2057">edit page</A>)
     </DIV>
