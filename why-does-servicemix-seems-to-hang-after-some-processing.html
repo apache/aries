@@ -224,8 +224,12 @@ Why does ServiceMix seems to hang after some processing
 <!--          
             <div class="pagetitle">Why does ServiceMix seems to hang after some processing</div>
 -->
-            <DIV class="wiki-content"><P>The main reason is that one of the component does not comply with the JBI spec.<BR>
-See <A href="writing-lighweight-components.html" title="Writing lighweight components">Writing lighweight components</A> for more informations.</P></DIV>
+            <DIV class="wiki-content"><P>The main reason is that one of the component does not comply with the JBI spec.</P>
+
+<P>A usual case is when the provider (target component) has not answered an InOut exchange or has not acked an InOnly exchange (all exchanges must be terminated by a DONE status or an ERROR status).  For an InOut exchange, the consumer should ack the exchange when the answer is received back.<BR>
+Note that the consumer must also pull messages from the DeliveryChannel (or implement MessageExchangeListener interface), so that the delivery channel will not be fulled of DONE exchanges.</P>
+
+<P>See <A href="writing-lighweight-components.html" title="Writing lighweight components">Writing lighweight components</A> for more informations.</P></DIV>
           
         <!--
           <div class="tabletitle">
@@ -249,8 +253,9 @@ See <A href="writing-lighweight-components.html" title="Writing lighweight compo
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on May 05, 2006
-                  
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jun 14, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=4919&originalId=8741">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=4919">edit page</A>)
     </DIV>
 
