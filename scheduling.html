@@ -80,9 +80,10 @@ Scheduling
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><SPAN class="nobr"><A href="navigation.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
 	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="navigation.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
 	<LI><A href="team.html" title="Team">Team</A></LI>
 	<LI><A href="users.html" title="Users">Users</A></LI>
@@ -180,7 +181,7 @@ Scheduling
 <H3><A name="Navigation-RelatedProjects"></A>Related Projects</H3>
 
 <UL class="alternate" type="square">
-	<LI><SPAN class="nobr"><A href="http://activemq.codehaus.org/" title="High Performance Message Bus" rel="nofollow">Apache ActiveMQ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://incubator.apache.org/activemq/" title="High Performance Message Bus" rel="nofollow">Apache ActiveMQ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><SPAN class="nobr"><A href="http://lingo.codehaus.org/" title="POJO Remoting using JMS" rel="nofollow">Lingo<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><SPAN class="nobr"><A href="http://jencks.org/" title="Message Driven POJOs and pooling for JMS and JDBC" rel="nofollow">Jencks<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><SPAN class="nobr"><A href="http://stomp.codehaus.org/" title="Simple cross language protocol for messaging" rel="nofollow">Stomp<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
@@ -230,28 +231,7 @@ Scheduling
 <P>We have a QuartzComponent which integrates with the <SPAN class="nobr"><A href="http://www.opensymphony.com/quartz/" title="Visit page outside Confluence" rel="nofollow">Quartz<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> open source scheduler library. This allows you to trigger service invocations at timed intervals to perform periodic tasks.</P>
 
 <P>Here&apos;s an example of configuring a quartz component. You can add as many triggers as you wish to the component, at different timing intervals.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;timer&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:timer&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;my:receiver&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.quartz.QuartzComponent&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;triggers&quot;</SPAN>&gt;</SPAN>
-      <SPAN class="code-tag">&lt;map&gt;</SPAN>
-        <SPAN class="code-tag">&lt;entry&gt;</SPAN>
-          <SPAN class="code-tag">&lt;key&gt;</SPAN>
-            <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.quartz.SimpleTrigger&quot;</SPAN>&gt;</SPAN>
-              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;repeatInterval&quot;</SPAN> value=<SPAN class="code-quote">&quot;200&quot;</SPAN>/&gt;</SPAN>
-              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;repeatCount&quot;</SPAN> value=<SPAN class="code-quote">&quot;20&quot;</SPAN>/&gt;</SPAN>
-            <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-          <SPAN class="code-tag">&lt;/key&gt;</SPAN>
-            <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.quartz.JobDetail&quot;</SPAN>&gt;</SPAN>
-              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;name&quot;</SPAN> value=<SPAN class="code-quote">&quot;My Example Job&quot;</SPAN>/&gt;</SPAN>
-              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;group&quot;</SPAN> value=<SPAN class="code-quote">&quot;ServiceMix&quot;</SPAN>/&gt;</SPAN>
-            <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-        <SPAN class="code-tag">&lt;/entry&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/map&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>&nbsp;</P></DIV>
           
                   </DIV>
