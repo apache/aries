@@ -80,9 +80,10 @@ Client API
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><SPAN class="nobr"><A href="navigation.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
 	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="navigation.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
 	<LI><A href="team.html" title="Team">Team</A></LI>
 	<LI><A href="users.html" title="Users">Users</A></LI>
@@ -180,7 +181,7 @@ Client API
 <H3><A name="Navigation-RelatedProjects"></A>Related Projects</H3>
 
 <UL class="alternate" type="square">
-	<LI><SPAN class="nobr"><A href="http://activemq.codehaus.org/" title="High Performance Message Bus" rel="nofollow">Apache ActiveMQ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://incubator.apache.org/activemq/" title="High Performance Message Bus" rel="nofollow">Apache ActiveMQ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><SPAN class="nobr"><A href="http://lingo.codehaus.org/" title="POJO Remoting using JMS" rel="nofollow">Lingo<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><SPAN class="nobr"><A href="http://jencks.org/" title="Message Driven POJOs and pooling for JMS and JDBC" rel="nofollow">Jencks<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><SPAN class="nobr"><A href="http://stomp.codehaus.org/" title="Simple cross language protocol for messaging" rel="nofollow">Stomp<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
@@ -315,22 +316,11 @@ properties.put(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="co
 <P>We use the Spring XML configuration files to configure the client. You can then use dependency injection to inject the client into your POJOs.</P>
 
 <P>Here&apos;s an example of using a basic client...</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;client&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.servicemix.client.DefaultServiceMixClient&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;constructor-arg ref=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> /&gt;</SPAN>
-<SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>Note that the jbi bean reference is the ServiceMix JBI container.</P>
 
 <P>This example creates a client which is hard-wired to default to a specific service when an invocation is performed.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;clientWithRouting&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.servicemix.client.DefaultServiceMixClient&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;constructor-arg ref=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> /&gt;</SPAN>
-  <SPAN class="code-tag">&lt;constructor-arg&gt;</SPAN>
-    <SPAN class="code-tag">&lt;sm:activationSpec destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/constructor-arg&gt;</SPAN>
-<SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
-</DIV></DIV></DIV>
+</DIV>
           
                   </DIV>
         </TD>
