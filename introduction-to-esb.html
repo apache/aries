@@ -224,25 +224,23 @@ Introduction to ESB
 <!--          
             <div class="pagetitle">Introduction to ESB</div>
 -->
-            <DIV class="wiki-content">
-<H3><A name="IntroductiontoESB-Introduction"></A>Introduction</H3>
+            <DIV class="wiki-content"><H3><A name="IntroductiontoESB-Introduction"></A>Introduction</H3>
 
 <P>This document introduces the general concept of an Enterprise Service Bus (ESB) and the Java Business Integration (JBI) specification, followed by a discussion of ServiceMix, an open source ESB implementation based on the JBI standard <SPAN class="nobr"><A href="http://www.jcp.org/en/jsr/detail?id=208" title="Visit page outside Confluence" rel="nofollow">JSR 208<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
 
 <H3><A name="IntroductiontoESB-TheProblem"></A>The Problem</H3>
-<P>Enterprise networks commonly deploy disparate applications, platforms, and business processes that need to communicate or exchange data with each other. The applications, platforms and processes have non-compatible data formats and non-compatible communications protocols. If an enterprise needs to interface with external systems, the integration problem extends outside of a company, encompassing its business partners&apos; IT systems and processes as well. </P>
+
+<P>Enterprise networks commonly deploy disparate applications, platforms, and business processes that need to communicate or exchange data with each other. The applications, platforms and processes have non-compatible data formats and non-compatible communications protocols. If an enterprise needs to interface with external systems, the integration problem extends outside of a company, encompassing its business partners&apos; IT systems and processes as well.</P>
 
 <P>In recent years, there have been several technologies attempting to solve these problems such as Enterprise Applicaton Integration <A href="glossary.html#Glossary-EAI" title="EAI on Glossary">(EAI)</A>, Business-to-Business <A href="glossary.html#Glossary-B2B" title="B2B on Glossary">(B2B)</A>, Service Oriented Architecture (<A href="glossary.html#Glossary-SOA" title="SOA on Glossary">SOA)</A>, and <A href="glossary.html#Glossary-webservices" title="webservices on Glossary">Web Services</A>. These solutions addressed some of the integration problems, but were proprietary, expensive, and time-consuming to implement. These solutions range from expensive vendor solutions (high cost, vendor lock-in) to home-grown custom solutions (high maintenance, high cost). The overwhelming disadvantages of these solutions are high cost and low flexibility due to non-standard implementations.</P>
 
-
-
 <H3><A name="IntroductiontoESB-TheESBApproach"></A>The ESB Approach</H3>
+
 <P>A standards-based ESB solves the integration problem without the drawbacks of the other solutions. The purpose of an ESB is to facilitate application and process integration by providing distributed processing, intelligent <A href="glossary.html#Glossary-routing" title="routing on Glossary">routing</A>, security, and dynamic data <A href="glossary.html#Glossary-transformation" title="transformation on Glossary">transformation</A>. In an ESB these services are infrastructure services so each application does not have to implement these requirements independently and in a proprietary manner.</P>
 
+<P>The ESB addresses the disadvantages of existing solutions by creating a standard infrastructure for integration. Point-to-point solutions, where each of <EM>n</EM> components requires <EM>n</EM>&#45;1 interfaces for full communication, are replaced by a bus solution where each component requires a single interface to the bus for global communication. An ESB provides distributed messaging, routing, business process orchestration, reliability and security. It also provides pluggable services and, because of the standard bus, these pluggable services can be provided by third parties and still interoperate reliably with the bus.</P>
 
-<P>The ESB addresses the disadvantages of existing solutions by creating a standard infrastructure for integration. Point-to-point solutions, where each of <EM>n</EM> components requires <EM>n</EM>-1 interfaces for full communication, are replaced by a bus solution where each component requires a single interface to the bus for global communication.  An ESB provides distributed messaging, routing, business process orchestration, reliability and security. It also provides pluggable services and, because of the standard bus, these pluggable services can be provided by third parties and still interoperate reliably with the bus.</P>
-
-<P>Attributes of an ESB integration infrastructure are: </P>
+<P>Attributes of an ESB integration infrastructure are:</P>
 <OL>
 	<LI>distributed - to remove geographical constraints</LI>
 	<LI>message-based - to promote loose coupling</LI>
@@ -251,7 +249,7 @@ Introduction to ESB
 </OL>
 
 
-<P>As an integration infrastructure, the ESB provides a number of functions including: </P>
+<P>As an integration infrastructure, the ESB provides a number of functions including:</P>
 <OL>
 	<LI>routing</LI>
 	<LI>transformation</LI>
@@ -261,32 +259,31 @@ Introduction to ESB
 
 <P>An ESB also supports requirements such as security, <A href="glossary.html#Glossary-orchestration" title="orchestration on Glossary">orchestration</A>, and <A href="glossary.html#Glossary-transaction" title="transaction on Glossary">transactionality</A>. These exist in &quot;hard-wired&quot; integration methods, but are not available automatically in a service-oriented architecture. One of the key requirements for the ESB is to give loosely coupled, service-based integration methods a level of enterprise-class reliability and security.</P>
 
-<P>A newer requirement for ESBs is the ability to allow not only loosely-coupled requests found in a service oriented architecture, but also to provide the infrastructure for an Event Driven Architecture <A href="glossary.html#Glossary-EDA" title="EDA on Glossary">(EDA)</A>. SOA and EDA provide complementary functionality. In EDA an event triggers a message to be sent to other applications that are decoupled from the application that triggered the event. This is an asynchronous operation as the recipient applications may receive or pick-up their messages at a later time, whereas the SOA messaging model is typically synchronous in nature. </P>
+<P>A newer requirement for ESBs is the ability to allow not only loosely-coupled requests found in a service oriented architecture, but also to provide the infrastructure for an Event Driven Architecture <A href="glossary.html#Glossary-EDA" title="EDA on Glossary">(EDA)</A>. SOA and EDA provide complementary functionality. In EDA an event triggers a message to be sent to other applications that are decoupled from the application that triggered the event. This is an asynchronous operation as the recipient applications may receive or pick-up their messages at a later time, whereas the SOA messaging model is typically synchronous in nature.</P>
 
 <H3><A name="IntroductiontoESB-WhatisJavaBusinessIntegration%28JBI%29%3F"></A>What is Java Business Integration (JBI)?</H3>
 
 <P>JBI is an architecture for integration systems specifying plug-in components that interoperate by exchanging messages, rather than by interacting directly. This decoupling increases flexibility because each component needs to know how to interact with the JBI bus only and not with <EM>n</EM> number of other components. JBI components provide services, consume services, or sometimes both. There are two types of components: Service Engines (SE) and Binding Components (BC). The SEs provide business logic and transformation services. The BCs provide connectivity for applications that are external to the JBI. The separation of business and processing logic from communication logic makes the implementation of components much less complex.</P>
 
-<P>The mediated message exchange between components is provided by the Normalized Message Router (NMR). The NMR routes normalized messages between service providers and consumers. A normalized message consists of two parts: the message content (payload) and the message metadata. The message metadata contains information such as security information, that can affect the processing of the message as it routes through the JBI. Messages flowing into the JBI, via binding components, are translated into a normalized (neutral) format, then routed to their destination. Prior to final delivery the normalized message is translated into the appropriate format for the recipient. A message can be routed through several JBI components depending on what processing is needed. </P>
+<P>The mediated message exchange between components is provided by the Normalized Message Router (NMR). The NMR routes normalized messages between service providers and consumers. A normalized message consists of two parts: the message content (payload) and the message metadata. The message metadata contains information such as security information, that can affect the processing of the message as it routes through the JBI. Messages flowing into the JBI, via binding components, are translated into a normalized (neutral) format, then routed to their destination. Prior to final delivery the normalized message is translated into the appropriate format for the recipient. A message can be routed through several JBI components depending on what processing is needed.</P>
 
 <P>The JBI environment also supplies a set of services for self management, including services for component installation and life cycle management of components.</P>
 
 <P>In summary, the JBI specification creates a standards-based technology for enterprise application integration. For more details on the JBI specification please see: <SPAN class="nobr"><A href="http://www.jcp.org/en/jsr/detail?id=208" title="Visit page outside Confluence" rel="nofollow">JSR 208<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
 
-
-<H3><A name="IntroductiontoESB-WhyServiceMix"></A>Why ServiceMix </H3>
+<H3><A name="IntroductiontoESB-WhyServiceMix"></A>Why ServiceMix</H3>
 
 <P>There are many vendors that provide ESB solutions, but there is not universal agreement as to the best design or architecture for an ESB. LogicBlaze has implemented the ServiceMix ESB based on the JBI (JSR 208) specification in order to create a standards based ESB and the ServiceMix ESB combines the functionality of both a Service Oriented Architecture (S0A) and Event Driven Architecture (EDA) to achieve an agile, enterprise ESB.</P>
 
-<P>As previously stated, ServiceMix is an open source ESB that is based on the Java Business Integration (JBI) standard. These two factors, open source and open standards-based, allow for low entry cost, maximum flexibility, reuse, and investment protection. </P>
+<P>As previously stated, ServiceMix is an open source ESB that is based on the Java Business Integration (JBI) standard. These two factors, open source and open standards-based, allow for low entry cost, maximum flexibility, reuse, and investment protection.</P>
 
 <P>Low entry cost is a result of the open source model, which allows developers to leverage the work of the development community when implementing components to plug into the ESB, or using the ESB as an integral part of a larger solution.</P>
 
-<P>Flexibility results from the fact that any number of third party vendors supply components and bindings that conform to the JBI open standard specification can be supported. These components and bindings not only interoperate with each other and external applications via the ServiceMix ESB, but can easily be replaced with alternate components that provide the same or enhanced services. </P>
+<P>Flexibility results from the fact that any number of third party vendors supply components and bindings that conform to the JBI open standard specification can be supported. These components and bindings not only interoperate with each other and external applications via the ServiceMix ESB, but can easily be replaced with alternate components that provide the same or enhanced services.</P>
 
 <P>Reuse and investment protection also results from the adherence to standards. Not only can developers swap out ESB components, or use components in another JBI-standard ESB, but they can swap out the entire ESB and still use the standard plug-in components.</P>
 
-<P>As an agile ESB, ServiceMix allows plug-in services which can combine to create a service oriented architecture. ServiceMix allows services to operate in an event driven way as well. In other words, the services are decoupled and listen on the bus for service requests. The bus is responsible for quality of service (QoS) features such as message persistence, guaranteed delivery, failure handling, and transaction support. </P>
+<P>As an agile ESB, ServiceMix allows plug-in services which can combine to create a service oriented architecture. ServiceMix allows services to operate in an event driven way as well. In other words, the services are decoupled and listen on the bus for service requests. The bus is responsible for quality of service (QoS) features such as message persistence, guaranteed delivery, failure handling, and transaction support.</P>
 
 <P>ServiceMix supports event driven architecture for events occurring both internal and external to the bus. In other words, JMS binding components can listen for the arrival of messages, i.e., the &quot;event&quot; on topics or queues which are external to the bus, while other components can listen for messages on the normalized message bus.</P>
 
@@ -298,7 +295,7 @@ Introduction to ESB
 
 <H3><A name="IntroductiontoESB-DefinitionofTerms"></A>Definition of Terms</H3>
 
-<P>For definitions of terms used in this document please see the <A href="glossary.html" title="Glossary">Glossary</A>.</P></DIV>
+<P>For definitions of terms used in this document please see the <A href="glossary.html" title="Glossary">Glossary</A>. Please delete this line.</P></DIV>
           
                   </DIV>
         </TD>
@@ -308,8 +305,8 @@ Introduction to ESB
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=lmalgeri">Lisa Malgeri</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1892&originalId=5132">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=elsan">elavarasan muthusamy</A> on Jun 14, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1892&originalId=8744">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1892">edit page</A>)
     </DIV>
