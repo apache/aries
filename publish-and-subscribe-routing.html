@@ -80,9 +80,10 @@ Publish and Subscribe Routing
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><SPAN class="nobr"><A href="navigation.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
 	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="navigation.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
 	<LI><A href="team.html" title="Team">Team</A></LI>
 	<LI><A href="users.html" title="Users">Users</A></LI>
@@ -180,7 +181,7 @@ Publish and Subscribe Routing
 <H3><A name="Navigation-RelatedProjects"></A>Related Projects</H3>
 
 <UL class="alternate" type="square">
-	<LI><SPAN class="nobr"><A href="http://activemq.codehaus.org/" title="High Performance Message Bus" rel="nofollow">Apache ActiveMQ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://incubator.apache.org/activemq/" title="High Performance Message Bus" rel="nofollow">Apache ActiveMQ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><SPAN class="nobr"><A href="http://lingo.codehaus.org/" title="POJO Remoting using JMS" rel="nofollow">Lingo<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><SPAN class="nobr"><A href="http://jencks.org/" title="Message Driven POJOs and pooling for JMS and JDBC" rel="nofollow">Jencks<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><SPAN class="nobr"><A href="http://stomp.codehaus.org/" title="Simple cross language protocol for messaging" rel="nofollow">Stomp<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
@@ -229,16 +230,7 @@ Publish and Subscribe Routing
 <P>ServiceMix supports an additional routing mechanism which uses <EM>Topic Semantics</EM>. That is every subscriber who is interested in the message receives a copy of the message.</P>
 
 <P>You can subscribe to the output of an endpoint as follows, using the <B>&lt;subscriptionSpec service=&quot;</B><B><EM>serviceQName</EM></B><B>&quot;/&gt;</B> tag. (You can include as many as you like inside a <B>&lt;subscriptions/&gt;</B> tag</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;receiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.tck.ReceiverComponent&quot;</SPAN>/&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
 
-  <SPAN class="code-tag"><SPAN class="code-comment">&lt;!--  lets subscribe to the output of the foo:jmsReceiver component --&gt;</SPAN></SPAN>
-  <SPAN class="code-tag">&lt;sm:subscriptions&gt;</SPAN>
-    <SPAN class="code-tag">&lt;sm:subscriptionSpec service=<SPAN class="code-quote">&quot;foo:jmsReceiver&quot;</SPAN> /&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/sm:subscriptions&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
 
 <H3><A name="PublishandSubscribeRouting-Notes"></A>Notes</H3>
 
@@ -247,11 +239,7 @@ Publish and Subscribe Routing
 <P>A message is dispatched to its usual JBI destination endpoint, then whether its dispatched or not, its also dispatched to all of its subscribers.</P>
 
 <P>To avoid confusing JBI users, it is an error for a message to not be deliverable using the normal JBI sematics. If you wish to allow no message to be dispatched in the normal JBI manner and want to use just subscriber based routing you can disable the JBI error by setting the <B>failIfNoDestinationEndpoint</B> flag on each <B>&lt;activationSpec/&gt;</B>.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;jmsReceiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:jmsReceiver&quot;</SPAN>
-                   failIfNoDestinationEndpoint=<SPAN class="code-quote">&quot;false&quot;</SPAN>&gt;
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsReceiverComponent&quot;</SPAN>&gt;</SPAN></PRE>
-</DIV></DIV></DIV>
+</DIV>
           
                   </DIV>
         </TD>
