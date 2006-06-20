@@ -72,7 +72,7 @@ JMS
 	<LI><A href="background-to-servicemix.html" title="Background to ServiceMix">Background to ServiceMix</A></LI>
 	<LI><A href="news.html" title="News">News</A></LI>
 	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
-	<LI><A href="site.html" title="Site">Site</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">Site</A></LI>
 	<LI><A href="download.html" title="Download">Download</A></LI>
 </UL>
 
@@ -234,15 +234,9 @@ JMS
 <H3><A name="JMS-ReceivingJMSmessages"></A>Receiving JMS messages</H3>
 
 <P>The JmsReceiverComponent subscribes to the given destination using Spring&apos;s JmsTemplate and dispatches the message into the JBI container. Here&apos;s an <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-components/src/test/resources/org/apache/servicemix/components/xslt/example.xml" title="Visit page outside Confluence" rel="nofollow">example<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> of subscribing to a JMS destination (in this case a topic) and forwarding the JBI message onto another JBI component - which in this case is the <EM>foo:transformer</EM> service.</P>
-
-<P>If you wish to use JCA or some other mechanism to subscribe to JMS you can use the JmsInBinding.</P>
-
-<H3><A name="JMS-SendingJMSmessages"></A>Sending JMS messages</H3>
-
-<P>The JmsSenderComponent will send JMS messages from the input message exchange. This component uses Spring&apos;s JmsTemplate to perform the sending. The following <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-components/src/test/resources/org/apache/servicemix/components/xslt/example.xml" title="Visit page outside Confluence" rel="nofollow">example<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> demonstrates a component which when invoked will send a message to a given JMS topic</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJmsSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJmsSender&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsSenderComponent&quot;</SPAN>&gt;</SPAN>
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJmsReceiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJmsReceiver&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:transformer&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsReceiverComponent&quot;</SPAN>&gt;</SPAN>
     <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;template&quot;</SPAN>&gt;</SPAN>
       <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.jms.core.JmsTemplate&quot;</SPAN>&gt;</SPAN>
         <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionFactory&quot;</SPAN>&gt;</SPAN>
@@ -255,6 +249,12 @@ JMS
   <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
 <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
 </DIV></DIV>
+<P>If you wish to use JCA or some other mechanism to subscribe to JMS you can use the JmsInBinding.</P>
+
+<H3><A name="JMS-SendingJMSmessages"></A>Sending JMS messages</H3>
+
+<P>The JmsSenderComponent will send JMS messages from the input message exchange. This component uses Spring&apos;s JmsTemplate to perform the sending. The following <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-components/src/test/resources/org/apache/servicemix/components/xslt/example.xml" title="Visit page outside Confluence" rel="nofollow">example<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> demonstrates a component which when invoked will send a message to a given JMS topic</P>
+
 
 <H3><A name="JMS-JMSbridges"></A>JMS bridges</H3>
 
