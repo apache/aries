@@ -72,7 +72,7 @@ BeanFlow
 	<LI><A href="background-to-servicemix.html" title="Background to ServiceMix">Background to ServiceMix</A></LI>
 	<LI><A href="news.html" title="News">News</A></LI>
 	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
-	<LI><A href="site.html" title="Site">Site</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">Site</A></LI>
 	<LI><A href="download.html" title="Download">Download</A></LI>
 </UL>
 
@@ -332,21 +332,7 @@ BeanFlow
 
 <P>Here is an example of performing joins using collections of child workflows</P>
 
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java"><SPAN class="code-comment">// lets create a join on a number of child flows completing
-</SPAN>JoinAll flow = <SPAN class="code-keyword">new</SPAN> JoinAll(child1, child2, child3);
-flow.startWithTimeout(timer, timeout);
 
-<SPAN class="code-comment">// now lets test the flow
-</SPAN>child1.stop();
-assertStarted(flow);
-
-child2.stop();
-assertStarted(flow);
-
-child3.stop();
-assertStopped(flow);</PRE>
-</DIV></DIV>
 
 <H3><A name="BeanFlow-Joinconditions"></A>Join conditions</H3>
 
@@ -370,36 +356,7 @@ join on A and (B or C)</PRE>
 
 <P>Here is an example activity implemented in Java code for the above code.</P>
 
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java"><SPAN class="code-comment">// lets create some child workflows
-</SPAN><SPAN class="code-keyword">final</SPAN> Activity a = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
-<SPAN class="code-keyword">final</SPAN> Activity b = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
-<SPAN class="code-keyword">final</SPAN> Activity c = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
 
-<SPAN class="code-comment">// lets create the activity with a custom join condition
-</SPAN>Activity activity = <SPAN class="code-keyword">new</SPAN> JoinSupport(a, b, c) {
-    @Override
-    <SPAN class="code-keyword">protected</SPAN> void onChildStateChange(<SPAN class="code-object">int</SPAN> childCount, <SPAN class="code-object">int</SPAN> stoppedCount, <SPAN class="code-object">int</SPAN> failedCount) {
-
-        <SPAN class="code-keyword">if</SPAN> (a.isStopped() &amp;&amp; (b.isStopped() || c.isStopped())) {
-            <SPAN class="code-comment">// lets stop the activity we&apos;re done
-</SPAN>            stop();
-        }
-    }
-};
-
-<SPAN class="code-comment">// lets start the activities
-</SPAN>activity.startWithTimeout(timer, timeout);
-
-<SPAN class="code-comment">// now lets test things behave properly
-</SPAN>assertStarted(activity);
-
-a.stop();
-assertStarted(activity);
-
-b.stop();
-assertStopped(activity);</PRE>
-</DIV></DIV>
 
 <H2><A name="BeanFlow-Buildingworkflows"></A>Building workflows</H2>
 

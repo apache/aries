@@ -72,7 +72,7 @@ Drools
 	<LI><A href="background-to-servicemix.html" title="Background to ServiceMix">Background to ServiceMix</A></LI>
 	<LI><A href="news.html" title="News">News</A></LI>
 	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
-	<LI><A href="site.html" title="Site">Site</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">Site</A></LI>
 	<LI><A href="download.html" title="Download">Download</A></LI>
 </UL>
 
@@ -228,7 +228,14 @@ Drools
 <P>We support Rules based routing using the <SPAN class="nobr"><A href="http://drools.codehaus.org/" title="Visit page outside Confluence" rel="nofollow">Drools<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> rule engine. The basic idea is you expose a DroolsComponent at some service/interface/operation endpoint in ServiceMix then let it perform rules based routing, or other actions as required.</P>
 
 <P>You can deploy a DroolsComponent with a rule base which will be fired when it is invoked. The rule base is then in complete control over messge dispatching.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;droolsRouter&quot;</SPAN> 
+					 service=<SPAN class="code-quote">&quot;foo:droolsRouter&quot;</SPAN>&gt;
+	<SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.drools.DroolsComponent&quot;</SPAN>&gt;</SPAN>
+  	<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;ruleBaseResource&quot;</SPAN> value=<SPAN class="code-quote">&quot;classpath:org/apache/servicemix/components/drools/rulebase.xml&quot;</SPAN> /&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>Then you can create your Drools rule base using whatever Drools mechanism you wish. For example here&apos;s the default Java semantic module to perform custom routing</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml">&lt;rule-set name=<SPAN class="code-quote">&quot;cheese rules&quot;</SPAN>
