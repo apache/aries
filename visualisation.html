@@ -72,7 +72,7 @@ Visualisation
 	<LI><A href="background-to-servicemix.html" title="Background to ServiceMix">Background to ServiceMix</A></LI>
 	<LI><A href="news.html" title="News">News</A></LI>
 	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
-	<LI><A href="site.html" title="Site">Site</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">Site</A></LI>
 	<LI><A href="download.html" title="Download">Download</A></LI>
 </UL>
 
@@ -243,7 +243,14 @@ Visualisation
 
 <P>The following example shows how to configure a simple visualization listener.</P>
 
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:container id=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> embedded=<SPAN class="code-quote">&quot;true&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:listeners&gt;</SPAN>
+      <SPAN class="code-tag">&lt;sm:dotViewEndpointListener file=<SPAN class="code-quote">&quot;target/ServiceMixComponents.dot&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/sm:listeners&gt;</SPAN>
+  
+  <SPAN class="code-tag">&lt;sm:activationSpecs&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <H2><A name="Visualisation-AnoteforOSXusers"></A>A note for OS X users</H2>
 

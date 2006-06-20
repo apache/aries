@@ -72,7 +72,7 @@ Publish and Subscribe Routing
 	<LI><A href="background-to-servicemix.html" title="Background to ServiceMix">Background to ServiceMix</A></LI>
 	<LI><A href="news.html" title="News">News</A></LI>
 	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
-	<LI><A href="site.html" title="Site">Site</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">Site</A></LI>
 	<LI><A href="download.html" title="Download">Download</A></LI>
 </UL>
 
@@ -230,7 +230,16 @@ Publish and Subscribe Routing
 <P>ServiceMix supports an additional routing mechanism which uses <EM>Topic Semantics</EM>. That is every subscriber who is interested in the message receives a copy of the message.</P>
 
 <P>You can subscribe to the output of an endpoint as follows, using the <B>&lt;subscriptionSpec service=&quot;</B><B><EM>serviceQName</EM></B><B>&quot;/&gt;</B> tag. (You can include as many as you like inside a <B>&lt;subscriptions/&gt;</B> tag</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;receiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.tck.ReceiverComponent&quot;</SPAN>/&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
 
+  <SPAN class="code-tag"><SPAN class="code-comment">&lt;!--  lets subscribe to the output of the foo:jmsReceiver component --&gt;</SPAN></SPAN>
+  <SPAN class="code-tag">&lt;sm:subscriptions&gt;</SPAN>
+    <SPAN class="code-tag">&lt;sm:subscriptionSpec service=<SPAN class="code-quote">&quot;foo:jmsReceiver&quot;</SPAN> /&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/sm:subscriptions&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <H3><A name="PublishandSubscribeRouting-Notes"></A>Notes</H3>
 
@@ -239,7 +248,11 @@ Publish and Subscribe Routing
 <P>A message is dispatched to its usual JBI destination endpoint, then whether its dispatched or not, its also dispatched to all of its subscribers.</P>
 
 <P>To avoid confusing JBI users, it is an error for a message to not be deliverable using the normal JBI sematics. If you wish to allow no message to be dispatched in the normal JBI manner and want to use just subscriber based routing you can disable the JBI error by setting the <B>failIfNoDestinationEndpoint</B> flag on each <B>&lt;activationSpec/&gt;</B>.</P>
-</DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;jmsReceiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:jmsReceiver&quot;</SPAN>
+                   failIfNoDestinationEndpoint=<SPAN class="code-quote">&quot;false&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsReceiverComponent&quot;</SPAN>&gt;</SPAN></PRE>
+</DIV></DIV></DIV>
           
                   </DIV>
         </TD>
