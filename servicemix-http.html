@@ -72,7 +72,7 @@ servicemix-http
 	<LI><A href="background-to-servicemix.html" title="Background to ServiceMix">Background to ServiceMix</A></LI>
 	<LI><A href="news.html" title="News">News</A></LI>
 	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
-	<LI><A href="site.html" title="Site">Site</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">Site</A></LI>
 	<LI><A href="download.html" title="Download">Download</A></LI>
 </UL>
 
@@ -322,13 +322,7 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <P>A consumer endpoint is a server-side http endpoint that will consumer plain HTTP, or HTTP+SOAP requests and send them into the NMR to a given JBI endpoint, which is called the proxied endpoint.</P>
 
 <P>Following is an example of an http consumer endpoint.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;http:endpoint service=<SPAN class="code-quote">&quot;test:MyConsumerService&quot;</SPAN>
-               endpoint=<SPAN class="code-quote">&quot;myConsumer&quot;</SPAN>
-               role=<SPAN class="code-quote">&quot;consumer&quot;</SPAN> 
-               locationURI=<SPAN class="code-quote">&quot;http://localhost:8192/Service/&quot;</SPAN>
-               defaultMep=<SPAN class="code-quote">&quot;http://www.w3.org/2004/08/wsdl/in-out&quot;</SPAN> /&gt;</PRE>
-</DIV></DIV>
+
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Consumer endpoint attributes</B><BR>
 <TABLE class="confluenceTable"><TBODY>
 <TR>
@@ -423,13 +417,7 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <P>A provider endpoint is a client-side jbi endpoint which can receive requests from the NMR and send them to a given url where the service is provided.</P>
 
 <P>Here is an example of an http provider endpoint:</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;http:endpoint service=<SPAN class="code-quote">&quot;test:MyProviderService&quot;</SPAN>
-               endpoint=<SPAN class="code-quote">&quot;myProvider&quot;</SPAN>
-               role=<SPAN class="code-quote">&quot;provider&quot;</SPAN> 
-               locationURI=<SPAN class="code-quote">&quot;http://localhost:8192/Service/&quot;</SPAN>
-               wsdlResource=<SPAN class="code-quote">&quot;classpath:provider.wsdl&quot;</SPAN> /&gt;</PRE>
-</DIV></DIV>
+
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Provider endpoint attributes</B><BR>
 <TABLE class="confluenceTable"><TBODY>
 <TR>
@@ -487,30 +475,7 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <P>Both consumer and provider endpoints support SSL.</P>
 
 <P>SSL parameters can be provided using the following syntax:</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;http:endpoint service=<SPAN class="code-quote">&quot;testSsl:MyConsumerService&quot;</SPAN>
-  endpoint=<SPAN class="code-quote">&quot;myConsumer&quot;</SPAN>
-  role=<SPAN class="code-quote">&quot;consumer&quot;</SPAN> 
-  locationURI=<SPAN class="code-quote">&quot;https://localhost:8193/Service/&quot;</SPAN>
-  defaultMep=<SPAN class="code-quote">&quot;http://www.w3.org/2004/08/wsdl/in-out&quot;</SPAN>&gt;
-  <SPAN class="code-tag">&lt;http:ssl&gt;</SPAN>
-    &lt;http:sslParameters keyStore=<SPAN class="code-quote">&quot;classpath:org/apache/servicemix/http/server.keystore&quot;</SPAN>
-    keyStorePassword=<SPAN class="code-quote">&quot;password&quot;</SPAN>/&gt;
-  <SPAN class="code-tag">&lt;/http:ssl&gt;</SPAN>
-<SPAN class="code-tag">&lt;/http:endpoint&gt;</SPAN>
 
-&lt;http:endpoint service=<SPAN class="code-quote">&quot;testSsl:MyProviderService&quot;</SPAN>
-  endpoint=<SPAN class="code-quote">&quot;myProvider&quot;</SPAN>
-  role=<SPAN class="code-quote">&quot;provider&quot;</SPAN> 
-  locationURI=<SPAN class="code-quote">&quot;https://localhost:8193/Service/&quot;</SPAN>&gt;
-  <SPAN class="code-tag">&lt;http:ssl&gt;</SPAN>
-    &lt;http:sslParameters keyStore=<SPAN class="code-quote">&quot;classpath:org/apache/servicemix/http/server.keystore&quot;</SPAN>
-      keyStorePassword=<SPAN class="code-quote">&quot;password&quot;</SPAN>
-      trustStore=<SPAN class="code-quote">&quot;classpath:org/apache/servicemix/http/client.keystore&quot;</SPAN>
-      trustStorePassword=<SPAN class="code-quote">&quot;password&quot;</SPAN>/&gt;
-  <SPAN class="code-tag">&lt;/http:ssl&gt;</SPAN>
-<SPAN class="code-tag">&lt;/http:endpoint&gt;</SPAN></PRE>
-</DIV></DIV>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">SSL attributes</B><BR>
 <TABLE class="confluenceTable"><TBODY>
 <TR>
@@ -594,68 +559,13 @@ The service unit may contain any number of WSDL files, each one being parsed and
 To retrieve the necessary informations from the wsdl, the component can recognize a jbi extension, in addition to the standard http and soap bindings, which specified the role of the component and the default MEP to use for JBI exchanges.</P>
 
 <P>Here is an example of a WSDL:</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;definitions name=&apos;Consumer&apos; 
-             targetNamespace=&apos;http://http.servicemix.org/Test&apos; 
-             <SPAN class="code-keyword">xmlns:tns</SPAN>=&apos;http://http.servicemix.org/Test&apos; 
-             <SPAN class="code-keyword">xmlns:http</SPAN>=&apos;http://schemas.xmlsoap.org/wsdl/http/&apos; 
-             <SPAN class="code-keyword">xmlns:soap</SPAN>=&apos;http://schemas.xmlsoap.org/wsdl/soap/&apos; 
-             xmlns=&apos;http://schemas.xmlsoap.org/wsdl/&apos;
-             <SPAN class="code-keyword">xmlns:jbi</SPAN>=&apos;http://servicemix.org/wsdl/jbi/&apos;&gt;
 
-    <SPAN class="code-tag">&lt;portType name=&apos;ConsumerInterface&apos;&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/portType&gt;</SPAN>
-
-    <SPAN class="code-tag">&lt;binding name=&apos;ConsumerSoapBinding&apos; type=&apos;tns:ConsumerInterface&apos;&gt;</SPAN>
-        <SPAN class="code-tag">&lt;soap:binding transport=<SPAN class="code-quote">&quot;http&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/binding&gt;</SPAN>
-
-    <SPAN class="code-tag">&lt;binding name=&apos;ConsumerHttpBinding&apos; type=&apos;tns:ConsumerInterface&apos;&gt;</SPAN>
-        <SPAN class="code-tag">&lt;http:binding verb=<SPAN class="code-quote">&quot;POST&quot;</SPAN>&gt;</SPAN><SPAN class="code-tag">&lt;/http:binding&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/binding&gt;</SPAN>
-
-    <SPAN class="code-tag">&lt;service name=&apos;ConsumerInOnly&apos;&gt;</SPAN>
-        <SPAN class="code-tag">&lt;port name=&apos;TestEndpoint&apos; binding=&apos;tns:ConsumerSoapBinding&apos;&gt;</SPAN>
-            <SPAN class="code-tag">&lt;soap:address location=<SPAN class="code-quote">&quot;http://localhost:8192/InOnly&quot;</SPAN>/&gt;</SPAN>
-            <SPAN class="code-tag">&lt;jbi:endpoint role=<SPAN class="code-quote">&quot;consumer&quot;</SPAN> defaultMep=&apos;in-only&apos;/&gt;</SPAN>
-        <SPAN class="code-tag">&lt;/port&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/service&gt;</SPAN>
-
-    <SPAN class="code-tag">&lt;service name=&apos;ConsumerInOut&apos;&gt;</SPAN>
-        <SPAN class="code-tag">&lt;port name=&apos;TestEndpoint&apos; binding=&apos;tns:ConsumerHttpBinding&apos;&gt;</SPAN>
-            <SPAN class="code-tag">&lt;http:address location=<SPAN class="code-quote">&quot;http://localhost:8192/InOut&quot;</SPAN>/&gt;</SPAN>
-            <SPAN class="code-tag">&lt;jbi:endpoint role=<SPAN class="code-quote">&quot;consumer&quot;</SPAN> defaultMep=&apos;in-out&apos;/&gt;</SPAN>
-        <SPAN class="code-tag">&lt;/port&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/service&gt;</SPAN>
-    
-<SPAN class="code-tag">&lt;/definitions&gt;</SPAN></PRE>
-</DIV></DIV>
 
 <H2><A name="servicemix-http-Lightweightmode"></A>Lightweight mode</H2>
 
 <P>The servicemix-http component can also be configured in a spring/xbean configuration file, for use in an embedded ServiceMix.<BR>
 Here is an example of such a configuration:</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
-    <SPAN class="code-tag">&lt;http:component&gt;</SPAN>
-      <SPAN class="code-tag">&lt;http:endpoints&gt;</SPAN>
-        &lt;http:endpoint service=<SPAN class="code-quote">&quot;test:dummy&quot;</SPAN>
-                       endpoint=<SPAN class="code-quote">&quot;dummy&quot;</SPAN>
-                       role=<SPAN class="code-quote">&quot;consumer&quot;</SPAN> 
-                       soap=<SPAN class="code-quote">&quot;true&quot;</SPAN>
-                       locationURI=<SPAN class="code-quote">&quot;http://localhost:8192/Service/&quot;</SPAN>
-                       defaultMep=<SPAN class="code-quote">&quot;http://www.w3.org/2004/08/wsdl/in-out&quot;</SPAN> /&gt;
 
-        &lt;http:endpoint service=<SPAN class="code-quote">&quot;test:MyProviderService&quot;</SPAN>
-                       endpoint=<SPAN class="code-quote">&quot;myProvider&quot;</SPAN>
-                       role=<SPAN class="code-quote">&quot;provider&quot;</SPAN> 
-                       locationURI=<SPAN class="code-quote">&quot;http://localhost:8192/Service/&quot;</SPAN> /&gt;
-      <SPAN class="code-tag">&lt;/http:endpoints&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/http:component&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Classpath issues when embedding servicemix-http component</B><BR>
 <P>When using the servicemix.xml configuration file to create http endpoints, you must include the servicemix-http-xxx.jar in your classpath.<BR>
 You will find this file inside the component installer (./components/servicemix-http-xxx.zip).<BR>
