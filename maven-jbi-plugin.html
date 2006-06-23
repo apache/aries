@@ -232,7 +232,19 @@ Maven JBI plugin
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml">&lt;project xmlns=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
   xsi:schemaLocation=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
-  ...
+  ...  <SPAN class="code-tag">&lt;pluginRepositories&gt;</SPAN>
+    <SPAN class="code-tag">&lt;pluginRepository&gt;</SPAN>
+      <SPAN class="code-tag">&lt;id&gt;</SPAN>apache.snapshots<SPAN class="code-tag">&lt;/id&gt;</SPAN>
+      <SPAN class="code-tag">&lt;name&gt;</SPAN>Maven Central Plugins Development Repository<SPAN class="code-tag">&lt;/name&gt;</SPAN>
+      <SPAN class="code-tag">&lt;url&gt;</SPAN>http://cvs.apache.org/maven-snapshot-repository<SPAN class="code-tag">&lt;/url&gt;</SPAN>
+      <SPAN class="code-tag">&lt;snapshots&gt;</SPAN>
+        <SPAN class="code-tag">&lt;enabled&gt;</SPAN>true<SPAN class="code-tag">&lt;/enabled&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/snapshots&gt;</SPAN>
+      <SPAN class="code-tag">&lt;releases&gt;</SPAN>
+         <SPAN class="code-tag">&lt;enabled&gt;</SPAN>false<SPAN class="code-tag">&lt;/enabled&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/releases&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/pluginRepository&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/pluginRepositories&gt;</SPAN>
   <SPAN class="code-tag">&lt;build&gt;</SPAN>
     <SPAN class="code-tag">&lt;plugins&gt;</SPAN>
       <SPAN class="code-tag">&lt;plugin&gt;</SPAN>
@@ -245,7 +257,6 @@ Maven JBI plugin
 <SPAN class="code-tag">&lt;/project&gt;</SPAN></PRE>
 </DIV></DIV>
 <P>Once this plugin has been added to your POM you can start using the capabilities.</P>
-
 
 <H3><A name="MavenJBIplugin-Maven1.xSupport%26nbsp%3B"></A>Maven 1.x Support&nbsp;</H3>
 
@@ -274,7 +285,7 @@ Maven JBI plugin
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=pdodds%2540unity-systems.com">pdodds@unity-systems.com</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on Jun 23, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1948&originalId=8870">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1948&originalId=8871">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1948">edit page</A>)
     </DIV>
