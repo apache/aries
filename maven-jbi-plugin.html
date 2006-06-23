@@ -226,7 +226,7 @@ Maven JBI plugin
 -->
             <DIV class="wiki-content"><P>A key part of a productive development environment is the tooling, for Apache ServiceMix the tooling is provided in the form of a powerful and flexible Apache Maven plugin.&nbsp; The plugin has many useful features to enable you to work with the different project types available in JBI - such as Components, Service Assemblies, Service Units and Shared Librarys - and also allows you to work interact with a running Apache ServiceMix server by exposing the JSR-208 Ant Tasks as plugin goals.</P>
 
-<H3><A name="MavenJBIplugin-GettingStarted"></A>Getting Started</H3>
+<H2><A name="MavenJBIplugin-GettingStarted"></A>Getting Started</H2>
 
 <P>In order to get started with the plugin you need to make it avilable to your project,&nbsp; this is done by adding the following to your pom.xml.</P>
 <DIV class="code"><DIV class="codeContent">
@@ -274,6 +274,67 @@ Maven JBI plugin
 
 <P>A service assembly is a collection service units that can be deployed together,&nbsp; it creates a zip archive containing each of the service units (SU&apos;s)&nbsp;</P>
 
+<H2><A name="MavenJBIplugin-BuildingandDeployingSharedLibraries%26nbsp%3B"></A>Building and Deploying Shared Libraries&nbsp;</H2>
+
+<P>The best place to start with the tooling is with the logically lowest component in the JBI spec,&nbsp; which I suppose would be the Shared Library.&nbsp; In essence a shared library is basically a JAR contains a set of JARs and a JBI.xml,&nbsp; the important bits about the Shared Library is that it is named and versioned.&nbsp; This fits nicely with the Maven approach since all maven artifacts have id&apos;s and versions,&nbsp; and also the dependencies within your shared library POM can quickly be used to allow the JBI tooling to create the Shared Libraries zip archive.</P>
+
+<P>In order to convert a standard project to a shared library you simply need to change the packaging (note you will need to have added the plugin repository and plugin from Getting Started).</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;project xmlns=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
+  xsi:schemaLocation=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;modelVersion&gt;</SPAN>4.0.0<SPAN class="code-tag">&lt;/modelVersion&gt;</SPAN>
+  <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.apache.servicemix<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
+  <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>MySharedLibrary<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
+  <SPAN class="code-tag">&lt;packaging&gt;</SPAN>jbi-shared-library<SPAN class="code-tag">&lt;/packaging&gt;</SPAN>
+  <SPAN class="code-tag">&lt;version&gt;</SPAN>1.0-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>
+  <SPAN class="code-tag">&lt;name&gt;</SPAN>A custom project<SPAN class="code-tag">&lt;/name&gt;</SPAN>  
+  ...
+<SPAN class="code-tag">&lt;/project&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>Once you have set the packaging to be <B>jbi-shared-library</B> you can run <EM>mvn install</EM> and you will create both the standard jar packaging which will be set to your repository and also a ZIP packaging which will incorporate your dependencies and also a jbi.xml.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">6/23/06 2:47:24 PM EDT: [INFO] ----------------------------------------------------------------------------
+6/23/06 2:47:24 PM EDT: [INFO] Building A custom project
+6/23/06 2:47:24 PM EDT: [INFO]    task-segment: [install]
+6/23/06 2:47:24 PM EDT: [INFO] ----------------------------------------------------------------------------
+6/23/06 2:47:24 PM EDT: [INFO] artifact org.apache.maven.plugins:maven-resources-plugin: checking <SPAN class="code-keyword">for</SPAN> updates from central
+6/23/06 2:47:25 PM EDT: [INFO] artifact org.apache.maven.plugins:maven-compiler-plugin: checking <SPAN class="code-keyword">for</SPAN> updates from central
+6/23/06 2:47:26 PM EDT: [INFO] artifact org.apache.maven.plugins:maven-surefire-plugin: checking <SPAN class="code-keyword">for</SPAN> updates from central
+6/23/06 2:47:27 PM EDT: [INFO] artifact org.apache.maven.plugins:maven-jar-plugin: checking <SPAN class="code-keyword">for</SPAN> updates from central
+6/23/06 2:47:27 PM EDT: [INFO] artifact org.apache.maven.plugins:maven-install-plugin: checking <SPAN class="code-keyword">for</SPAN> updates from central
+6/23/06 2:47:30 PM EDT: jbi:generate-jbi-shared-library-descriptor
+6/23/06 2:47:30 PM EDT: [INFO] Generating jbi.xml
+6/23/06 2:47:30 PM EDT: resources:resources
+6/23/06 2:47:30 PM EDT: [INFO] Using <SPAN class="code-keyword">default</SPAN> encoding to copy filtered resources.
+6/23/06 2:47:31 PM EDT: compiler:compile
+6/23/06 2:47:31 PM EDT: [INFO] Nothing to compile - all classes are up to date
+6/23/06 2:47:31 PM EDT: resources:testResources
+6/23/06 2:47:31 PM EDT: [INFO] Using <SPAN class="code-keyword">default</SPAN> encoding to copy filtered resources.
+6/23/06 2:47:31 PM EDT: compiler:testCompile
+6/23/06 2:47:31 PM EDT: [INFO] No sources to compile
+6/23/06 2:47:32 PM EDT: surefire:test
+6/23/06 2:47:32 PM EDT: [INFO] No tests to run.
+6/23/06 2:47:32 PM EDT: jar:jar
+6/23/06 2:47:32 PM EDT: [INFO] Building jar: C:\Workspaces\runtime-New_configuration\MySharedLibrary\target\MySharedLibrary-1.0-SNAPSHOT.jar
+6/23/06 2:47:32 PM EDT: jbi:jbi-shared-library
+6/23/06 2:47:32 PM EDT: [INFO] Generating shared library C:\Workspaces\runtime-New_configuration\MySharedLibrary\target\MySharedLibrary-1.0-SNAPSHOT.zip
+6/23/06 2:47:32 PM EDT: [INFO] Building jar: C:\Workspaces\runtime-New_configuration\MySharedLibrary\target\MySharedLibrary-1.0-SNAPSHOT.zip
+6/23/06 2:47:32 PM EDT: install:install
+6/23/06 2:47:32 PM EDT: [INFO] Installing C:\Workspaces\runtime-New_configuration\MySharedLibrary\target\MySharedLibrary-1.0-SNAPSHOT.jar to C:\Documents and Settings\pdodds\.m2\repository\org\apache\servicemix\MySharedLibrary\1.0-SNAPSHOT\MySharedLibrary-1.0-SNAPSHOT.jar
+6/23/06 2:47:32 PM EDT: [INFO] Installing C:\Workspaces\runtime-New_configuration\MySharedLibrary\target\MySharedLibrary-1.0-SNAPSHOT.zip to C:\Documents and Settings\pdodds\.m2\repository\org\apache\servicemix\MySharedLibrary\1.0-SNAPSHOT\MySharedLibrary-1.0-SNAPSHOT.zip
+6/23/06 2:47:32 PM EDT: BUILD SUCCESSFUL</PRE>
+</DIV></DIV>
+
+<P>The jbi.xml that was generated will provide for both the Java classes in this project and those in the dependencies to be made available and the shared library name and version will match the Maven pom.xml.</P>
+
+<P>If you have a locally running Apache ServiceMix instance (which its default settings) you can even use the plugin to install the Shared Library by simply typing:</P>
+
+<P><EM>mvn jbi:installSharedLibrary</EM></P>
+
+<P>This will call the ANT tasks from within Maven giving the shared library to install as the one built in the install phase.</P>
+
 <H3><A name="MavenJBIplugin-Maven1.xSupport%26nbsp%3B"></A>Maven 1.x Support&nbsp;</H3>
 
 <P>Information on the Maven 1.x JBI plugin is available <A href="maven-1x-jbi-plugin.html" title="Maven 1.x JBI Plugin">here</A>.</P></DIV>
@@ -301,7 +362,7 @@ Maven JBI plugin
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=pdodds%2540unity-systems.com">pdodds@unity-systems.com</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on Jun 23, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1948&originalId=8872">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1948&originalId=8873">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1948">edit page</A>)
     </DIV>
