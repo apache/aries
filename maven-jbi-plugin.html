@@ -274,7 +274,7 @@ Maven JBI plugin
 
 <P>A service assembly is a collection service units that can be deployed together,&nbsp; it creates a zip archive containing each of the service units (SU&apos;s)&nbsp;</P>
 
-<H2><A name="MavenJBIplugin-BuildingandDeployingSharedLibraries%26nbsp%3B"></A>Building and Deploying Shared Libraries&nbsp;</H2>
+<H2><A name="MavenJBIplugin-BuildingandInstallingSharedLibraries"></A>Building and Installing Shared Libraries</H2>
 
 <P>The best place to start with the tooling is with the logically lowest component in the JBI spec,&nbsp; which I suppose would be the Shared Library.&nbsp; In essence a shared library is basically a JAR contains a set of JARs and a JBI.xml,&nbsp; the important bits about the Shared Library is that it is named and versioned.&nbsp; This fits nicely with the Maven approach since all maven artifacts have id&apos;s and versions,&nbsp; and also the dependencies within your shared library POM can quickly be used to allow the JBI tooling to create the Shared Libraries zip archive.</P>
 
@@ -287,13 +287,11 @@ Maven JBI plugin
   <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>MySharedLibrary<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
   <SPAN class="code-tag">&lt;packaging&gt;</SPAN>jbi-shared-library<SPAN class="code-tag">&lt;/packaging&gt;</SPAN>
   <SPAN class="code-tag">&lt;version&gt;</SPAN>1.0-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>
-  <SPAN class="code-tag">&lt;name&gt;</SPAN>A custom project<SPAN class="code-tag">&lt;/name&gt;</SPAN>  
+  <SPAN class="code-tag">&lt;name&gt;</SPAN>A custom project<SPAN class="code-tag">&lt;/name&gt;</SPAN>
   ...
 <SPAN class="code-tag">&lt;/project&gt;</SPAN></PRE>
 </DIV></DIV>
-
 <P>Once you have set the packaging to be <B>jbi-shared-library</B> you can run <EM>mvn install</EM> and you will create both the standard jar packaging which will be set to your repository and also a ZIP packaging which will incorporate your dependencies and also a jbi.xml.</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">6/23/06 2:47:24 PM EDT: [INFO] ----------------------------------------------------------------------------
 6/23/06 2:47:24 PM EDT: [INFO] Building A custom project
@@ -326,7 +324,6 @@ Maven JBI plugin
 6/23/06 2:47:32 PM EDT: [INFO] Installing C:\Workspaces\runtime-New_configuration\MySharedLibrary\target\MySharedLibrary-1.0-SNAPSHOT.zip to C:\Documents and Settings\pdodds\.m2\repository\org\apache\servicemix\MySharedLibrary\1.0-SNAPSHOT\MySharedLibrary-1.0-SNAPSHOT.zip
 6/23/06 2:47:32 PM EDT: BUILD SUCCESSFUL</PRE>
 </DIV></DIV>
-
 <P>The jbi.xml that was generated will provide for both the Java classes in this project and those in the dependencies to be made available and the shared library name and version will match the Maven pom.xml.</P>
 
 <P>If you have a locally running Apache ServiceMix instance (which its default settings) you can even use the plugin to install the Shared Library by simply typing:</P>
@@ -334,6 +331,56 @@ Maven JBI plugin
 <P><EM>mvn jbi:installSharedLibrary</EM></P>
 
 <P>This will call the ANT tasks from within Maven giving the shared library to install as the one built in the install phase.</P>
+
+<H2><A name="MavenJBIplugin-BuildingandInstallingComponents"></A>Building and Installing Components</H2>
+
+<P>JBI logically separates Binding Components and Service Engines as two flavours of a component,  the Maven JBI tooling provides that you can define a project as a <B>jbi-component</B> and then specify whether it is a service-engine or binding-component.  Like the shared libraries we have just covered the definition of a jbi-component firstly requires the steps from Getting Started (plugin repositories and plugin) and then it also requires you change the packaging of your project.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;project xmlns=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
+  xsi:schemaLocation=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;modelVersion&gt;</SPAN>4.0.0<SPAN class="code-tag">&lt;/modelVersion&gt;</SPAN>
+  <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.apache.servicemix<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
+  <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>MyBindingComponent<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
+  <SPAN class="code-tag">&lt;packaging&gt;</SPAN>jbi-component<SPAN class="code-tag">&lt;/packaging&gt;</SPAN>
+  <SPAN class="code-tag">&lt;version&gt;</SPAN>1.0-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>
+  <SPAN class="code-tag">&lt;name&gt;</SPAN>An example binding component<SPAN class="code-tag">&lt;/name&gt;</SPAN>
+  ...
+<SPAN class="code-tag">&lt;/project&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>Since a binding component or service engine has more settings than can be derived from your Maven POM.xml we also need to update the plugin section we added to configure these additional settings:</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;plugin&gt;</SPAN>
+  <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.apache.servicemix.tooling<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
+  <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>jbi-maven-plugin<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
+  <SPAN class="code-tag">&lt;extensions&gt;</SPAN>true<SPAN class="code-tag">&lt;/extensions&gt;</SPAN>
+  <SPAN class="code-tag">&lt;configuration&gt;</SPAN>
+    <SPAN class="code-tag">&lt;type&gt;</SPAN>binding-component<SPAN class="code-tag">&lt;/type&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bootstrap&gt;</SPAN>org.apache.servicemix.MyBootstrap<SPAN class="code-tag">&lt;/bootstrap&gt;</SPAN>
+    <SPAN class="code-tag">&lt;component&gt;</SPAN>org.apache.servicemix.MyComponent<SPAN class="code-tag">&lt;/component&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/configuration&gt;</SPAN>
+<SPAN class="code-tag">&lt;/plugin&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>The parameters allow you to specify the following :</P>
+
+<P><B>type</B> - whether this is a binding-component or a service-engine<BR>
+<B>bootstrap</B> - the name of the class that will be your bootstrap implementation<BR>
+<B>component</B> - the name of the class that will be your component implementation</P>
+
+<P>Once you have configured these steps you can run <EM>mvn install</EM> and much like the shared library maven will create both a standard jar and also a component installer:</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Maven Log - Missing</PRE>
+</DIV></DIV>
+
+<P>If you have a locally running Apache ServiceMix instance (which its default settings) you can even use the plugin to install the Component by simply typing:</P>
+
+<P><EM>mvn jbi:installComponent</EM></P>
+
+<P>This will call the ANT tasks from within Maven giving the component to install as the one built in the install phase.</P>
 
 <H3><A name="MavenJBIplugin-Maven1.xSupport%26nbsp%3B"></A>Maven 1.x Support&nbsp;</H3>
 
@@ -362,7 +409,7 @@ Maven JBI plugin
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=pdodds%2540unity-systems.com">pdodds@unity-systems.com</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on Jun 23, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1948&originalId=8873">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1948&originalId=8874">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1948">edit page</A>)
     </DIV>
