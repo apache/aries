@@ -224,10 +224,9 @@ Building
 <!--          
             <div class="pagetitle">Building</div>
 -->
-            <DIV class="wiki-content">
-<P>ServiceMix uses <SPAN class="nobr"><A href="http://maven.apache.org/" title="Visit page outside Confluence" rel="nofollow">Maven<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> as its build tool. If you don&apos;t fancy using Maven you can use your IDE directly or <A href="download.html" title="Download">Download</A> a distribution or JAR.</P>
+            <DIV class="wiki-content"><P>ServiceMix uses <SPAN class="nobr"><A href="http://maven.apache.org/" title="Visit page outside Confluence" rel="nofollow">Maven<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> as its build tool. If you don&apos;t fancy using Maven you can use your IDE directly or <A href="download.html" title="Download">Download</A> a distribution or JAR.</P>
 
-<P>We have tested the build with Maven 2.0.4 and it works fine. <BR>
+<P>We have tested the build with Maven 2.0.4 and it works fine.<BR>
 Previous / later versions of Maven may vary - if you hit problems on other versions please talk to us on the <A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A>.<BR>
 Be sure to read the <A href="build.html" title="Build">FAQ</A></P>
 
@@ -241,24 +240,31 @@ Be sure to read the <A href="build.html" title="Build">FAQ</A></P>
 
 
 <DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn -N install
+cd tooling
+mvn install
+mvn -Dmaven.test.skip=<SPAN class="code-keyword">true</SPAN> install</PRE>
+</DIV></DIV>
+
+<P>Next time you build, you can just run</P>
+
+<DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn -Dmaven.test.skip=<SPAN class="code-keyword">true</SPAN> install</PRE>
 </DIV></DIV>
 
 <H2><A name="Building-UsinganIDE"></A>Using an IDE</H2>
 
 <P>If you prefer to use an IDE then you can autogenerate the IDE&apos;s project files using maven plugins. e.g.</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn eclipse:eclipse</PRE>
 </DIV></DIV>
-
 <P>or</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn idea:idea</PRE>
 </DIV></DIV>
-
 <P>etc.</P>
+
+<P>Note that you may need to build the whole ServiceMix project once using maven.</P>
 
 <P>Please refer to the <SPAN class="nobr"><A href="http://maven.apache.org/plugins/index.html" title="Visit page outside Confluence" rel="nofollow">plugin reference<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for more details on using them.</P></DIV>
           
@@ -270,8 +276,8 @@ Be sure to read the <A href="build.html" title="Build">FAQ</A></P>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on Jun 06, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5955&originalId=8573">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jun 27, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5955&originalId=8891">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5955">edit page</A>)
     </DIV>
