@@ -224,50 +224,42 @@ Working with Service Units
 <!--          
             <div class="pagetitle">Working with Service Units</div>
 -->
-            <DIV class="wiki-content"><P>When you wish to deploy a component you can use a <B>Service Unit</B> to provide instance artifacts.  In JBI terms this means that a <B>Service Unit</B> can be defined to be provided to a component which will then be passed the contents of the SU.  The JBI is purposefully vague on the contents of an SU (other than the jbi.xml) since how you design your components to operate with *Service Unit*s is up to you.</P>
+            <DIV class="wiki-content"><P>When you wish to deploy a component you can use a <B>Service Unit</B> to provide instance artifacts.  In JBI terms this means that a <B>Service Unit</B> can be defined to be provided to a component which will then be passed the contents of the SU.  The JBI is purposefully vague on the contents of an SU (other than the jbi.xml) since how you design your components to operate with &#42;Service Unit*s is up to you.</P>
 
-<P>The Maven tooling provides some basic steps to allow you to build the <B>Service Unit*s,  which are simply zip files containing the resources you wish to pass to the component.  First you must change you pom.xml to package as a *jbi-service-unit</B>.</P>
-
+<P>The Maven tooling provides some basic steps to allow you to build the <B>Service Unit*s,  which are simply zip files containing the resources you wish to pass to the component.  First you must change you pom.xml to package as a &#42;jbi-service-unit</B>.</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml">&lt;project xmlns=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
   xsi:schemaLocation=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
   <SPAN class="code-tag">&lt;modelVersion&gt;</SPAN>4.0.0<SPAN class="code-tag">&lt;/modelVersion&gt;</SPAN>
   <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.apache.servicemix<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
-  <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>MyBindingComponent<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
+  <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>MyHttpServiceUnit<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
   <SPAN class="code-tag">&lt;packaging&gt;</SPAN>jbi-service-unit<SPAN class="code-tag">&lt;/packaging&gt;</SPAN>
   <SPAN class="code-tag">&lt;version&gt;</SPAN>1.0-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>
-  <SPAN class="code-tag">&lt;name&gt;</SPAN>An example binding component<SPAN class="code-tag">&lt;/name&gt;</SPAN>
+  <SPAN class="code-tag">&lt;name&gt;</SPAN>A service unit<SPAN class="code-tag">&lt;/name&gt;</SPAN>
   ...
 <SPAN class="code-tag">&lt;/project&gt;</SPAN></PRE>
 </DIV></DIV>
-
 <P>A <B>Service Unit</B> is assigned to a component and there are couple of ways you can do this using the tooling,  the best way to do this is to actually add the component as a dependency, as shown below for the ServiceMix HTTP component:</P>
-
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;dependencies&gt;</SPAN>        
+<PRE class="code-xml"><SPAN class="code-tag">&lt;dependencies&gt;</SPAN>
     <SPAN class="code-tag">&lt;dependency&gt;</SPAN>
        <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.apache.servicemix<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
        <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>servicemix-http<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
-       <SPAN class="code-tag">&lt;version&gt;</SPAN>3.0-incubating-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>            
+       <SPAN class="code-tag">&lt;version&gt;</SPAN>3.0-incubating-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>
     <SPAN class="code-tag">&lt;/dependency&gt;</SPAN>
 <SPAN class="code-tag">&lt;/dependencies&gt;</SPAN></PRE>
 </DIV></DIV>
-
 <P>This is the preferred way,  since the tooling can later do some intelligent dependency calculations and actually find and install the components for you before installing the service assembly containing this service unit.  However,  if you are going to use a component that isn&apos;t available as a Maven dependency (is there such as thing I wonder?),  then you can use the project properties to define the component name.</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;properties&gt;</SPAN>
      <SPAN class="code-tag">&lt;componentName&gt;</SPAN>servicemix-http<SPAN class="code-tag">&lt;/componentName&gt;</SPAN>
 <SPAN class="code-tag">&lt;/properties&gt;</SPAN></PRE>
 </DIV></DIV>
-
 <P>Once you have configured these steps you can run <EM>mvn install</EM> and you should find that both a jar and zip version of the service unit are created,  this is to allow you to reference the SU as a dependency on the Service Assembly.</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">Maven Log - Missing</PRE>
 </DIV></DIV>
-
-<P><EM>Remember that a Service Unit is pretty useless outside a Service Assembly</EM></P></DIV>
+<P><EM>Remember that a Service Unit is pretty useless outside a</EM> <EM><A href="working-with-service-assemblies.html" title="Working with Service Assemblies"><EM>Service Assembly</EM></A></EM></P></DIV>
           
                   </DIV>
         </TD>
@@ -278,7 +270,8 @@ Working with Service Units
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on Jun 30, 2006
-                  
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=8919&originalId=8922">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=8919">edit page</A>)
     </DIV>
 
