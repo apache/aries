@@ -224,7 +224,38 @@ Working with Service Assemblies
 <!--          
             <div class="pagetitle">Working with Service Assemblies</div>
 -->
-            <DIV class="wiki-content"><P>A Service Assembly is basicall</P></DIV>
+            <DIV class="wiki-content"><P>When you have defined your Service Units you need to package them up into a <B>Service Assembly</B>.  A <B>Service Assembly</B> is basically a collection of Service Units (which are basically ZIP archives containing resources to go to a component (either BC/SE)) and a jbi.xml that tells the JBI container the names of the components that you wish to deploy each of the Service Units to.</P>
+
+<P>The Maven tooling provides some basic steps to allow you to build the <B>Service Assemblies</B>.  First you must change you pom.xml in your SA project to package as a &#42;jbi-service-assembly*.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;project xmlns=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
+  xsi:schemaLocation=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;modelVersion&gt;</SPAN>4.0.0<SPAN class="code-tag">&lt;/modelVersion&gt;</SPAN>
+  <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.apache.servicemix<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
+  <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>MySimpleServiceAssembly<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
+  <SPAN class="code-tag">&lt;packaging&gt;</SPAN>jbi-service-assembly<SPAN class="code-tag">&lt;/packaging&gt;</SPAN>
+  <SPAN class="code-tag">&lt;version&gt;</SPAN>1.0-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>
+  <SPAN class="code-tag">&lt;name&gt;</SPAN>A service assembly<SPAN class="code-tag">&lt;/name&gt;</SPAN>
+  ...
+<SPAN class="code-tag">&lt;/project&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>In order to embed your Service Units you need to simply refer to them as dependencies.  During the creation of this Service Assembly the tooling is actually intelligent enough to go and find the Service Unit to determine the component that it is based on.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;dependencies&gt;</SPAN>
+    <SPAN class="code-tag">&lt;dependency&gt;</SPAN>
+       <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.apache.servicemix<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
+       <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>MyHttpServiceUnit<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
+       <SPAN class="code-tag">&lt;version&gt;</SPAN>3.0-incubating-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/dependency&gt;</SPAN>
+<SPAN class="code-tag">&lt;/dependencies&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>Once you have configured these steps you can run <EM>mvn install</EM> and you should find the ZIP for the <B>Service Assembly</B> is created.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Maven Log - Missing</PRE>
+</DIV></DIV></DIV>
           
                   </DIV>
         </TD>
@@ -235,7 +266,8 @@ Working with Service Assemblies
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on Jun 30, 2006
-                  
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=8920&originalId=8923">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=8920">edit page</A>)
     </DIV>
 
