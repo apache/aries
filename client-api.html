@@ -377,6 +377,14 @@ properties.put(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="co
     <SPAN class="code-tag">&lt;sm:activationSpec destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>/&gt;</SPAN>
   <SPAN class="code-tag">&lt;/constructor-arg&gt;</SPAN>
 <SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<H3><A name="ClientAPI-IfyouhaveaccesstoaComponentContext"></A>If you have access to a ComponentContext</H3>
+
+<P>If you are inside a JBI component you can create a ServiceMixClient as follows</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">ServiceMixClient client = <SPAN class="code-keyword">new</SPAN> ServiceMixClientFacade(context);</PRE>
 </DIV></DIV></DIV>
           
                   </DIV>
@@ -387,8 +395,8 @@ properties.put(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="co
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on Jun 30, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1957&originalId=8915">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on Jul 03, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1957&originalId=8927">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1957">edit page</A>)
     </DIV>
