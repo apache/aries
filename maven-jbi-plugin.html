@@ -72,7 +72,7 @@ Maven JBI plugin
 	<LI><A href="background-to-servicemix.html" title="Background to ServiceMix">Background to ServiceMix</A></LI>
 	<LI><A href="news.html" title="News">News</A></LI>
 	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
-	<LI><A href="sitemap.html" title="SiteMap">Site</A></LI>
+	<LI><A href="site.html" title="Site">Site</A></LI>
 	<LI><A href="download.html" title="Download">Download</A></LI>
 </UL>
 
@@ -256,6 +256,9 @@ Maven JBI plugin
   <SPAN class="code-tag">&lt;/build&gt;</SPAN>
 <SPAN class="code-tag">&lt;/project&gt;</SPAN></PRE>
 </DIV></DIV>
+
+<H2><A name="MavenJBIplugin-ProjectTypes%26nbsp%3B"></A>Project Types&nbsp;</H2>
+
 <P>Once this plugin has been added to your POM you can start using the capabilities.&nbsp; In order to understand all the things you can do we have broken downs its functionality by the type of artifact you wish to create.&nbsp; JBI covers the creation of four different types of artifact these are:</P>
 
 <H4><A name="MavenJBIplugin-SharedLibraries%26nbsp%3B"></A>Shared Libraries&nbsp;</H4>
@@ -282,6 +285,17 @@ Maven JBI plugin
 
 <P><A href="working-with-service-assemblies.html" title="Working with Service Assemblies">Working with Service Assemblies</A></P>
 
+<H2><A name="MavenJBIplugin-RunningunderServiceMix%26nbsp%3B"></A>Running under ServiceMix&nbsp;</H2>
+
+<P>As shown in the project types, each different project type can be deployed to a server using the JBI plugin (thought the ANT tasks defined in the JBI specification).&nbsp; The only issue here can be working out dependencies and trying to make sure that you deploy the dependencies.&nbsp; This means if you have a Service Assembly you wish to deploy you need to first get the dependent components (and maybe even the dependent shared libraries) deploy.&nbsp; The Maven2 JBI plugin provides a couple of goals that can help you work through this.</P>
+
+<H4><A name="MavenJBIplugin-mvnjbi%3AdeployProject%26nbsp%3B"></A>mvn jbi:deployProject&nbsp;</H4>
+
+<P>If you have created you assemblies, service units, components and shared libraries as Maven projects (which all ServiceMix components are) you can use this goal.&nbsp; In essence the plugin will walk the dependencies starting in the current project then deploy each of the dependencies in reverse order.&nbsp; This can be very useful if you want to quickly get up and running with a new Service Assembly against an installed instance of Apache ServiceMix.</P>
+
+<H4><A name="MavenJBIplugin-mvnjbi%3Aservicemix%26nbsp%3B"></A>mvn jbi:servicemix&nbsp;</H4>
+
+<P>If you quickly want to get up and running with Apache ServiceMix the best way is to use this goal.&nbsp; As an extension of the deployProject goal is works in much the same way,&nbsp; the difference is that this goal downloads and starts a copy of Apache ServiceMix within Maven so you don&apos;t need to have a version installed,&nbsp; this can be very useful if you are working on trying out functionality and want to simply test your projects.&nbsp;</P>
 
 <H3><A name="MavenJBIplugin-Maven1.xSupport%26nbsp%3B"></A>Maven 1.x Support&nbsp;</H3>
 
@@ -321,8 +335,8 @@ Maven JBI plugin
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=pdodds%2540unity-systems.com">pdodds@unity-systems.com</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on Jun 30, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1948&originalId=8916">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on Jul 04, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1948&originalId=8953">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1948">edit page</A>)
     </DIV>
