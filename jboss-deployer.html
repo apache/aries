@@ -72,7 +72,7 @@ JBoss Deployer
 	<LI><A href="background-to-servicemix.html" title="Background to ServiceMix">Background to ServiceMix</A></LI>
 	<LI><A href="news.html" title="News">News</A></LI>
 	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
-	<LI><A href="sitemap.html" title="SiteMap">Site</A></LI>
+	<LI><A href="site.html" title="Site">Site</A></LI>
 	<LI><A href="download.html" title="Download">Download</A></LI>
 </UL>
 
@@ -169,11 +169,11 @@ JBoss Deployer
 <H3><A name="Navigation-Tooling"></A>Tooling</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="visualisation.html" title="Visualisation">Visualisation</A></LI>
+	<LI><A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A></LI>
 	<LI><A href="eclipse-plugin.html" title="Eclipse plugin">Eclipse plugin</A></LI>
+	<LI><A href="visualisation.html" title="Visualisation">Visualisation</A></LI>
 	<LI><A href="" title="JBoss Deployer">JBoss Deployer</A></LI>
 	<LI><A href="war-deployment.html" title="WAR Deployment">WAR Deployment</A></LI>
-	<LI><A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A></LI>
 	<LI><A href="maven-sar-plugin.html" title="Maven SAR plugin">Maven SAR plugin</A></LI>
 </UL>
 
@@ -236,25 +236,23 @@ JBoss Deployer
 <P><IMG src="http://www.servicemix.org/jboss-screenshot.png" align="absmiddle" border="0"></P>
 
 <H3><A name="JBossDeployer-InstallingtheJBossDeployer"></A>Installing the JBoss Deployer</H3>
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Download ServiceMix/JBoss Deployer Bundle</B><BR><BR>
-You can download the ServiceMix 2.0 release bundled with the JBoss deployer <SPAN class="nobr"><A href="http://dist.codehaus.org/servicemix/distributions/jboss-deployer-2.0.sar" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></TD></TR></TABLE>
-<P>&nbsp;</P>
 
-<P>Currently the deployer is available from Subversion in tooling/jboss-deployer, the build process is completely managed by Maven, though you will first need to install a SAR plugin for Maven to allow it to build the SAR (Service Archive) for the JBoss deployer.  This can be done by checking out tooling/maven-sar-plugin and running:</P>
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>maven plugin:install
-</PRE>
+<P>Due to licensing reasons, the JBoss deployer is available at Codehaus.<BR>
+You can build it using the following commands.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">svn co http:<SPAN class="code-comment">//svn.codehaus.org/servicemix/trunk/jboss-deployer
+</SPAN>cd jboss-deployer
+mvn install</PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
 
-<P>This will install the SAR plugin you can download the jboss-deployer code and run the following goal in Maven:</P>
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>maven sar:install
-</PRE>
-</DIV></DIV>
-<P>&nbsp;</P>
+<P>You will then find a jboss-deployer-3.0-incubating-SNAPSHOT.sar in the target directory,  simply take this and drop it in your JBoss deploy directory (currently only tested on JBos 4.0.3), and away you go&#33;&#33;&#33; Want to see it in action?  You should be able to drop the JBI RI Transformation Engine example straight into the deploy directory and watch it pick up.  Suddenly you have JBI enabled your JBoss Server&#33;</P>
 
-<P>You will then find a jboss-deployer-2.0.sar in the target directory,  simply take this and drop it in your JBoss deploy directory (currently only tested on JBos 4.0.3), and away you go&#33;&#33;&#33; Want to see it in action?  You should be able to drop the JBI RI Transformation Engine example straight into the deploy directory and watch it pick up.  Suddenly you have JBI enabled your JBoss Server&#33;</P>
+<H3><A name="JBossDeployer-DeployingstandardJBIartifacts"></A>Deploying standard JBI artifacts</H3>
+
+<P>You can deploy standard JBI components and Service Assemblies on your JBI-enabled JBoss, by simply copying these artifacts to the deploy directory in JBoss.  They will all use the same JBI container and will be able to communicate together.<BR>
+Note that if you use XBean configuration files (see below), each file dropped will create a new JBI container.<BR>
+To work around that, you can change your servicemix.xml file and deploy it as a Service Unit on the <A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">lightweight container</A>.</P>
 
 <H3><A name="JBossDeployer-DeployingServiceMixXBeanConfigurations"></A>Deploying ServiceMix XBean Configurations</H3>
 
@@ -264,36 +262,32 @@ Note that if you are planning on using the components that ship with ServiceMix 
 
 <P>Since it is this approach that most people start with we added the ability to deploy this Spring JBI configurations onto JBoss.&nbsp;  In order to do this, deploy the jboss-deployer-2.0.sar deployer that you see below . Next, take a servicemix.xml configuration file and rename it so that it ends in &#45;sm.xml (ie. filebind-sm.xml).&nbsp; Place the configuration file in the JBoss deploy directory.&nbsp;&nbsp;  Before you do that, you will need to make some basic modifications to the configuration file to get it running, namely you will need to make sure that the <EM>createMBeanServer</EM> property is <EM>false</EM>.&nbsp; Below is the file binding example configured to run under JBoss.</P>
 
-<P><B>Example filebinding-sm.xml for ServiceMix 2.0</B></P>
+<P><B>Example filebinding-sm.xml for ServiceMix 3.0</B></P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;</SPAN>
-&lt;beans xmlns=<SPAN class="code-quote">&quot;http://xbean.org/schemas/spring/1.0&quot;</SPAN>
-	<SPAN class="code-keyword">xmlns:spring</SPAN>=<SPAN class="code-quote">&quot;http://xbean.org/schemas/spring/1.0&quot;</SPAN>
-	<SPAN class="code-keyword">xmlns:sm</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.org/config/1.0&quot;</SPAN>
-	<SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
-	<SPAN class="code-keyword">xmlns:foo</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.org/demo/&quot;</SPAN>&gt;
+&lt;beans <SPAN class="code-keyword">xmlns:sm</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/config/1.0&quot;</SPAN>
+       <SPAN class="code-keyword">xmlns:foo</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.org/demo/&quot;</SPAN>&gt;
 
 	<SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- the JBI container --&gt;</SPAN></SPAN>
-	&lt;sm:container id=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> useMBeanServer=<SPAN class="code-quote">&quot;false&quot;</SPAN>
-		createMBeanServer=<SPAN class="code-quote">&quot;false&quot;</SPAN> dumpStats=<SPAN class="code-quote">&quot;true&quot;</SPAN> statsInterval=<SPAN class="code-quote">&quot;10&quot;</SPAN>&gt;
+	&lt;sm:container id=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> 
+                useMBeanServer=<SPAN class="code-quote">&quot;false&quot;</SPAN>
+   	            createMBeanServer=<SPAN class="code-quote">&quot;false&quot;</SPAN> 
+                dumpStats=<SPAN class="code-quote">&quot;true&quot;</SPAN> 
+                statsInterval=<SPAN class="code-quote">&quot;10&quot;</SPAN>&gt;
 
 		<SPAN class="code-tag">&lt;sm:activationSpecs&gt;</SPAN>
 
 			<SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- Write files to the outbox directory --&gt;</SPAN></SPAN>
 			&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;fileSender&quot;</SPAN>
-				service=<SPAN class="code-quote">&quot;foo:fileSender&quot;</SPAN>&gt;
+				                service=<SPAN class="code-quote">&quot;foo:fileSender&quot;</SPAN>&gt;
 				<SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
-					&lt;bean xmlns=<SPAN class="code-quote">&quot;http://xbean.org/schemas/spring/1.0&quot;</SPAN>
-						class=<SPAN class="code-quote">&quot;org.servicemix.components.file.FileWriter&quot;</SPAN>&gt;
+					<SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.file.FileWriter&quot;</SPAN>&gt;</SPAN>
 						<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;directory&quot;</SPAN> value=<SPAN class="code-quote">&quot;outbox&quot;</SPAN> /&gt;</SPAN>
 						<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;marshaler&quot;</SPAN>&gt;</SPAN>
-							&lt;bean
-								class=<SPAN class="code-quote">&quot;org.servicemix.components.util.DefaultFileMarshaler&quot;</SPAN>&gt;
+							<SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.util.DefaultFileMarshaler&quot;</SPAN>&gt;</SPAN>
 								<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;fileName&quot;</SPAN>&gt;</SPAN>
-									&lt;bean
-										class=<SPAN class="code-quote">&quot;org.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;
-										&lt;constructor-arg
-											value=<SPAN class="code-quote">&quot;concat(&apos;sample_&apos;, /sample/@id, &apos;.xml&apos;)&quot;</SPAN> /&gt;
+									<SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
+										<SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;sample_&apos;, /sample/@id, &apos;.xml&apos;)&quot;</SPAN> /&gt;</SPAN>
 									<SPAN class="code-tag">&lt;/bean&gt;</SPAN>
 								<SPAN class="code-tag">&lt;/property&gt;</SPAN>
 							<SPAN class="code-tag">&lt;/bean&gt;</SPAN>
@@ -304,10 +298,10 @@ Note that if you are planning on using the components that ship with ServiceMix 
 
 			<SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- Look for files in the inbox directory --&gt;</SPAN></SPAN>
 			&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;filePoller&quot;</SPAN>
-				destinationService=<SPAN class="code-quote">&quot;foo:fileSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:filePoller&quot;</SPAN>&gt;
+				                 destinationService=<SPAN class="code-quote">&quot;foo:fileSender&quot;</SPAN> 
+                         service=<SPAN class="code-quote">&quot;foo:filePoller&quot;</SPAN>&gt;
 				<SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
-					&lt;bean xmlns=<SPAN class="code-quote">&quot;http://xbean.org/schemas/spring/1.0&quot;</SPAN>
-						class=<SPAN class="code-quote">&quot;org.servicemix.components.file.FilePoller&quot;</SPAN>&gt;
+					<SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.file.FilePoller&quot;</SPAN>&gt;</SPAN>
 						<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;workManager&quot;</SPAN> ref=<SPAN class="code-quote">&quot;workManager&quot;</SPAN> /&gt;</SPAN>
 						<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;file&quot;</SPAN> value=<SPAN class="code-quote">&quot;inbox&quot;</SPAN> /&gt;</SPAN>
 						<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;period&quot;</SPAN> value=<SPAN class="code-quote">&quot;1000&quot;</SPAN> /&gt;</SPAN>
@@ -318,8 +312,7 @@ Note that if you are planning on using the components that ship with ServiceMix 
 	<SPAN class="code-tag">&lt;/sm:container&gt;</SPAN>
 
 	<SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- the work manager (thread pool) for this container --&gt;</SPAN></SPAN>
-	&lt;bean id=<SPAN class="code-quote">&quot;workManager&quot;</SPAN>
-		class=<SPAN class="code-quote">&quot;org.jencks.factory.WorkManagerFactoryBean&quot;</SPAN>&gt;
+	<SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;workManager&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.jencks.factory.WorkManagerFactoryBean&quot;</SPAN>&gt;</SPAN>
 		<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;threadPoolSize&quot;</SPAN> value=<SPAN class="code-quote">&quot;30&quot;</SPAN> /&gt;</SPAN>
 	<SPAN class="code-tag">&lt;/bean&gt;</SPAN>
 
@@ -327,6 +320,20 @@ Note that if you are planning on using the components that ship with ServiceMix 
 </DIV></DIV>
 <P>&nbsp;</P></DIV>
           
+        <!--
+          <div class="tabletitle">
+            Children
+            <span class="smalltext" id="show" style="display: inline;">
+              <a href="javascript:showChildren()">Show Children</a></span>
+            <span class="smalltext" id="hide" style="display: none;">
+              <a href="javascript:hideChildren()">Hide Children</a></span>
+          </div>
+          <div class="greybox" id="children" style="display: none;">
+                                      <a href="http://goopen.org/confluence/display/SM/JBoss+Deployer+for+2.0" title="JBoss Deployer for 2.0">JBoss Deployer for 2.0</a>
+              <span class="smalltext">(ServiceMix)</span>
+              <br>
+                      </div>
+-->
                   </DIV>
         </TD>
       </TR>
@@ -335,8 +342,8 @@ Note that if you are planning on using the components that ship with ServiceMix 
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=pdodds%2540unity-systems.com">pdodds@unity-systems.com</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1932&originalId=5122">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jul 25, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1932&originalId=9225">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1932">edit page</A>)
     </DIV>

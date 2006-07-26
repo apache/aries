@@ -72,7 +72,7 @@ FTP
 	<LI><A href="background-to-servicemix.html" title="Background to ServiceMix">Background to ServiceMix</A></LI>
 	<LI><A href="news.html" title="News">News</A></LI>
 	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
-	<LI><A href="sitemap.html" title="SiteMap">Site</A></LI>
+	<LI><A href="site.html" title="Site">Site</A></LI>
 	<LI><A href="download.html" title="Download">Download</A></LI>
 </UL>
 
@@ -169,11 +169,11 @@ FTP
 <H3><A name="Navigation-Tooling"></A>Tooling</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="visualisation.html" title="Visualisation">Visualisation</A></LI>
+	<LI><A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A></LI>
 	<LI><A href="eclipse-plugin.html" title="Eclipse plugin">Eclipse plugin</A></LI>
+	<LI><A href="visualisation.html" title="Visualisation">Visualisation</A></LI>
 	<LI><A href="jboss-deployer.html" title="JBoss Deployer">JBoss Deployer</A></LI>
 	<LI><A href="war-deployment.html" title="WAR Deployment">WAR Deployment</A></LI>
-	<LI><A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A></LI>
 	<LI><A href="maven-sar-plugin.html" title="Maven SAR plugin">Maven SAR plugin</A></LI>
 </UL>
 
@@ -239,12 +239,32 @@ message.setContent(<SPAN class="code-keyword">new</SPAN> StringSource(<SPAN clas
 client.sendSync(exchange);</PRE>
 </DIV></DIV>
 <P>will generate an XML text file on the FTP server. Here is an example of the FTP configuration on the server side.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;ftpSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:ftpSender&quot;</SPAN>&gt;</SPAN>
+   	<SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.net.FTPSender&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;clientPool&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;ftpClientPool&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.net.FTPClientPool&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;host&quot;</SPAN> value=<SPAN class="code-quote">&quot;localhost&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;username&quot;</SPAN> value=<SPAN class="code-quote">&quot;servicemix&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;password&quot;</SPAN> value=<SPAN class="code-quote">&quot;rocks&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <H3><A name="FTP-Usingpropertiestospecifythefilenameorcontent"></A>Using properties to specify the file name or content</H3>
 
 <P>You can use properties on the message to override the destination file name and content. e.g.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">InOnly exchange = client.createInOnlyExchange();
+NormalizedMessage message = exchange.getInMessage();
 
+message.setProperty(<SPAN class="code-quote">&quot;org.apache.servicemix.file.name&quot;</SPAN>, <SPAN class="code-quote">&quot;cheese.txt&quot;</SPAN>);
+message.setProperty(<SPAN class="code-quote">&quot;org.apache.servicemix.file.content&quot;</SPAN>, <SPAN class="code-quote">&quot;Hello World!&quot;</SPAN>);
+
+client.sendSync(exchange);</PRE>
+</DIV></DIV>
 
 <H3><A name="FTP-YoucanalsousepluggableExpressionstoconfigurethefilenameand%2Forfilecontent."></A>You can also use pluggable <A href="expressions.html" title="Expressions">Expressions</A> to configure the file name and/or file content.</H3>
 

@@ -72,7 +72,7 @@ JCA
 	<LI><A href="background-to-servicemix.html" title="Background to ServiceMix">Background to ServiceMix</A></LI>
 	<LI><A href="news.html" title="News">News</A></LI>
 	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
-	<LI><A href="sitemap.html" title="SiteMap">Site</A></LI>
+	<LI><A href="site.html" title="Site">Site</A></LI>
 	<LI><A href="download.html" title="Download">Download</A></LI>
 </UL>
 
@@ -169,11 +169,11 @@ JCA
 <H3><A name="Navigation-Tooling"></A>Tooling</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="visualisation.html" title="Visualisation">Visualisation</A></LI>
+	<LI><A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A></LI>
 	<LI><A href="eclipse-plugin.html" title="Eclipse plugin">Eclipse plugin</A></LI>
+	<LI><A href="visualisation.html" title="Visualisation">Visualisation</A></LI>
 	<LI><A href="jboss-deployer.html" title="JBoss Deployer">JBoss Deployer</A></LI>
 	<LI><A href="war-deployment.html" title="WAR Deployment">WAR Deployment</A></LI>
-	<LI><A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A></LI>
 	<LI><A href="maven-sar-plugin.html" title="Maven SAR plugin">Maven SAR plugin</A></LI>
 </UL>
 
@@ -238,7 +238,25 @@ JCA
 <H3><A name="JCA-ConfiguretheJCAContainer"></A>Configure the JCA Container</H3>
 
 <P>Just add the following to your Spring configuration file</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;jencks&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.jencks.JCAContainer&quot;</SPAN>&gt;</SPAN>
 
+  <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- lets use the default configuration of work manager and transaction manager--&gt;</SPAN></SPAN>
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;bootstrapContext&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.jencks.factory.BootstrapContextFactoryBean&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;threadPoolSize&quot;</SPAN> value=<SPAN class="code-quote">&quot;25&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+
+
+  <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- the JCA Resource Adapter --&gt;</SPAN></SPAN>
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;resourceAdapter&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;activeMQResourceAdapter&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.activemq.ra.ActiveMQResourceAdapter&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;serverUrl&quot;</SPAN> value=<SPAN class="code-quote">&quot;tcp://localhost:61626&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+<SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>Which will create the JCA container. Notice that there is a work manager you can configure to set the thread pooling limits. Also you can associate whichever <EM>JCA Resource Adapter</EM> you wish, such as to use another JMS provider.</P>
@@ -246,7 +264,21 @@ JCA
 <H3><A name="JCA-ConfiguretheJMSwithJCAcomponent."></A>Configure the JMS with JCA component.</H3>
 
 <P>We have a JmsInUsingJCABinding which works nicely with our JCA container to provide a JBI component for consuming inbound JMS messages using JCA for all the session, connection and thread pooling as well as handling parallel processing of inbound messages and transaction handling.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJmsReceiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJmsReceiver&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsInUsingJCABinding&quot;</SPAN>&gt;</SPAN>
 
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;jcaContainer&quot;</SPAN> ref=<SPAN class="code-quote">&quot;jencks&quot;</SPAN>/&gt;</SPAN>
+
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;activationSpec&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.activemq.ra.ActiveMQActivationSpec&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;destination&quot;</SPAN> value=<SPAN class="code-quote">&quot;test.org.apache.servicemix.example.jca&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;destinationType&quot;</SPAN> value=<SPAN class="code-quote">&quot;javax.jms.Topic&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>You will notice that its not very different from the regular <A href="jms.html" title="JMS">JMS</A> component; the main difference is the use of the J2EE activation spec object to register with the JCA container.</P>
@@ -256,11 +288,30 @@ JCA
 <H2><A name="JCA-UsingXA"></A>Using XA</H2>
 
 <P>To use XA for an inbound connection in the JCA container you&apos;ll need to specify a transaction manager to the connector. Here&apos;s an example</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJmsReceiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJmsReceiver&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsInUsingJCABinding&quot;</SPAN>&gt;</SPAN>
 
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;jcaContainer&quot;</SPAN> ref=<SPAN class="code-quote">&quot;jencks&quot;</SPAN>/&gt;</SPAN>
+
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;activationSpec&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.activemq.ra.ActiveMQActivationSpec&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;destination&quot;</SPAN> value=<SPAN class="code-quote">&quot;test.org.apache.servicemix.example.jca&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;destinationType&quot;</SPAN> value=<SPAN class="code-quote">&quot;javax.jms.Topic&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+
+    <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- use XA transactions --&gt;</SPAN></SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN> ref=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>You also need to provide a transaction manager implementation to use. Here this exampe uses <SPAN class="nobr"><A href="http://jencks.org/" title="Visit page outside Confluence" rel="nofollow">Geronimo&apos;s Transaction Manager<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.jencks.factory.TransactionManagerFactoryBean&quot;</SPAN>/&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P></DIV>
           
                   </DIV>

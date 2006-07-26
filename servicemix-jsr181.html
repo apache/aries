@@ -72,7 +72,7 @@ servicemix-jsr181
 	<LI><A href="background-to-servicemix.html" title="Background to ServiceMix">Background to ServiceMix</A></LI>
 	<LI><A href="news.html" title="News">News</A></LI>
 	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
-	<LI><A href="sitemap.html" title="SiteMap">Site</A></LI>
+	<LI><A href="site.html" title="Site">Site</A></LI>
 	<LI><A href="download.html" title="Download">Download</A></LI>
 </UL>
 
@@ -169,11 +169,11 @@ servicemix-jsr181
 <H3><A name="Navigation-Tooling"></A>Tooling</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="visualisation.html" title="Visualisation">Visualisation</A></LI>
+	<LI><A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A></LI>
 	<LI><A href="eclipse-plugin.html" title="Eclipse plugin">Eclipse plugin</A></LI>
+	<LI><A href="visualisation.html" title="Visualisation">Visualisation</A></LI>
 	<LI><A href="jboss-deployer.html" title="JBoss Deployer">JBoss Deployer</A></LI>
 	<LI><A href="war-deployment.html" title="WAR Deployment">WAR Deployment</A></LI>
-	<LI><A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A></LI>
 	<LI><A href="maven-sar-plugin.html" title="Maven SAR plugin">Maven SAR plugin</A></LI>
 </UL>
 
@@ -303,9 +303,22 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 
 <P>A few examples:</P>
 
-
-
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;jsr181:endpoint endpoint=<SPAN class="code-quote">&quot;endpoint1&quot;</SPAN>
+                 typeMapping=<SPAN class="code-quote">&quot;xmlbeans&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;jsr181:pojo&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;test.EchoService&quot;</SPAN> /&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/jsr181:pojo&gt;</SPAN>
+<SPAN class="code-tag">&lt;/jsr181:endpoint&gt;</SPAN></PRE>
+</DIV></DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;myPojo&quot;</SPAN> class=<SPAN class="code-quote">&quot;test.EchoService&quot;</SPAN> /&gt;</SPAN>
+<SPAN class="code-tag">&lt;jsr181:endpoint pojo=<SPAN class="code-quote">&quot;#myPojo&quot;</SPAN> /&gt;</SPAN></PRE>
+</DIV></DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;jsr181:endpoint pojoClass=<SPAN class="code-quote">&quot;test.EchoService2&quot;</SPAN>
+                 annotations=<SPAN class="code-quote">&quot;none&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
 
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Endpoint attributes</B><BR>
 <TABLE class="confluenceTable"><TBODY>

@@ -72,7 +72,7 @@ XSLT
 	<LI><A href="background-to-servicemix.html" title="Background to ServiceMix">Background to ServiceMix</A></LI>
 	<LI><A href="news.html" title="News">News</A></LI>
 	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
-	<LI><A href="sitemap.html" title="SiteMap">Site</A></LI>
+	<LI><A href="site.html" title="Site">Site</A></LI>
 	<LI><A href="download.html" title="Download">Download</A></LI>
 </UL>
 
@@ -169,11 +169,11 @@ XSLT
 <H3><A name="Navigation-Tooling"></A>Tooling</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="visualisation.html" title="Visualisation">Visualisation</A></LI>
+	<LI><A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A></LI>
 	<LI><A href="eclipse-plugin.html" title="Eclipse plugin">Eclipse plugin</A></LI>
+	<LI><A href="visualisation.html" title="Visualisation">Visualisation</A></LI>
 	<LI><A href="jboss-deployer.html" title="JBoss Deployer">JBoss Deployer</A></LI>
 	<LI><A href="war-deployment.html" title="WAR Deployment">WAR Deployment</A></LI>
-	<LI><A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A></LI>
 	<LI><A href="maven-sar-plugin.html" title="Maven SAR plugin">Maven SAR plugin</A></LI>
 </UL>
 
@@ -224,8 +224,7 @@ XSLT
 <!--          
             <div class="pagetitle">XSLT</div>
 -->
-            <DIV class="wiki-content">
-<P>The XsltComponent will perform an XSLT transformation of an inbound NormalizedMessage and generate an output message as a NormalizedMessage.</P>
+            <DIV class="wiki-content"><P>The XsltComponent will perform an XSLT transformation of an inbound NormalizedMessage and generate an output message as a NormalizedMessage.</P>
 
 <P>If the component is given an InOut message exchange, then the &apos;out&apos; message is used. Otherwise if an InOnly is used then the component will create a new InOnly message exchange for the result of the transformation.</P>
 
@@ -233,11 +232,25 @@ XSLT
 
 <H3><A name="XSLT-Example"></A>Example</H3>
 
-<P>There is an <SPAN class="nobr"><A href="http://svn.servicemix.codehaus.org/*checkout*/branches/servicemix-1.1/base/src/test/resources/org/servicemix/components/xslt/example.xml" title="Visit page outside Confluence" rel="nofollow">example<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which demonstates a pipeline from a message source, to a transformation, to send the message along with tracing the operation.</P>
+<P>There is an <SPAN class="nobr"><A href="http://svn.apache.org/viewvc/incubator/servicemix/trunk/servicemix-components/src/test/resources/org/apache/servicemix/components/xslt/example.xml?view=co" title="Visit page outside Confluence" rel="nofollow">example<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which demonstates a pipeline from a message source, to a transformation, to send the message along with tracing the operation.</P>
 
 <H4><A name="XSLT-ReceivingthemessagefromaJMStopic"></A>Receiving the message from a JMS topic</H4>
 
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJmsReceiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJmsReceiver&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:transformer&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsReceiverComponent&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;template&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.jms.core.JmsTemplate&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionFactory&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;ref local=<SPAN class="code-quote">&quot;jmsFactory&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;defaultDestinationName&quot;</SPAN> value=<SPAN class="code-quote">&quot;test.org.apache.servicemix.components.xslt.source&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;pubSubDomain&quot;</SPAN> value=<SPAN class="code-quote">&quot;true&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <H4><A name="XSLT-TransformingthemessageusingXSLT"></A>Transforming the message using XSLT</H4>
@@ -272,7 +285,25 @@ XSLT
 
 <H4><A name="XSLT-Subscribingtothetopicandpipeliningittoatracecomponenttodemonstratethepipelineworking"></A>Subscribing to the topic and pipelining it to a trace component to demonstrate the pipeline working</H4>
 
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;jmsTrace&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:jmsTrace&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:trace&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsReceiverComponent&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;template&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.jms.core.JmsTemplate&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionFactory&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;ref local=<SPAN class="code-quote">&quot;jmsFactory&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;defaultDestinationName&quot;</SPAN> value=<SPAN class="code-quote">&quot;test.org.apache.servicemix.components.xslt.result&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;pubSubDomain&quot;</SPAN> value=<SPAN class="code-quote">&quot;true&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN>
 
+<SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;trace&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:trace&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.util.TraceComponent&quot;</SPAN>/&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P></DIV>
           
                   </DIV>
@@ -283,8 +314,8 @@ XSLT
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2039&originalId=5200">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jul 06, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2039&originalId=8969">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2039">edit page</A>)
     </DIV>
