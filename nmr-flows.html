@@ -245,7 +245,7 @@ There are three basic types, that have different characteristics and are suited 
 <P><IMG src="http://servicemix.org/sedaflow.jpg" align="absmiddle" border="0"></P>
 </DIV></DIV>
 
-<H3><A name="NMRFlows-JMSFlow"></A>JMS Flow</H3>
+<H2><A name="NMRFlows-JMSFlow"></A>JMS Flow</H2>
 
 <P>A JMS Flow is used for cases where you need collaboration between more than one ServiceMix JBIContainer (for fail-over or scalability).<BR>
 Component deployment happens in the same way as a normal SericeMix JBI container (both for POJO and archive Component deployment) but all the containers in the cluster are notified of a deployment, and the JMS Flow will handle automatic routing (and failover) of MessageExchange(s) between the container instances.<BR>
@@ -254,7 +254,12 @@ A Message Queue is used for each Component instance, so multiple instances of th
 <DIV class="panel" style="border-style: solid; border-color: #ccc; "><DIV class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><B>JMS Flow</B></DIV><DIV class="panelContent">
 <P><IMG src="http://servicemix.org/clusterflow.jpg" align="absmiddle" border="0"></P>
 </DIV></DIV>
-</DIV>
+
+<H2><A name="NMRFlows-JCAFlow"></A>JCA Flow</H2>
+
+<P>The JCA Flow is very similar to the JMS Flow, in that it allow to cluster ServiceMix containers together.<BR>
+The main difference is that it uses JCA to provide support for XA transactions when sending and receiving<BR>
+JBI exchanges. You can find more informations on transactions <A href="transactions.html" title="Transactions">here</A>.</P></DIV>
           
                   </DIV>
         </TD>
@@ -264,8 +269,8 @@ A Message Queue is used for each Component instance, so multiple instances of th
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jul 26, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1986&originalId=9269">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jul 26, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1986&originalId=9271">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1986">edit page</A>)
     </DIV>
