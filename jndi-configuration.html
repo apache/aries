@@ -228,18 +228,46 @@ JNDI configuration
 
 <P>When you are working in embedded mode, you probably want a JNDI provider to use to configure the services available to other JBI components which do not use dependency injection and Spring to configure themselves.</P>
 
-<P>For a standalone JNDI provider, we do recommend using our own Spring based JNDI provider which is the default in the stand alone ServiceMix server. To use add the following jndi.properties file to your classpath</P>
+<P>For a standalone JNDI provider, we do recommend using our own Spring based JNDI provider which is the default in the stand alone ServiceMix server.</P>
+
+<P>This is provided in xbean-spring-common (currently version 2.4) and, a bonus, is not confined to ServiceMix either. It can be used for unit testing in your dev environment and more.</P>
+
+<P>To use it, add the following jndi.properties file to your classpath</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-none">java.naming.factory.initial = org.servicemix.jbi.jndi.SpringInitialContextFactory</PRE>
+<PRE class="code-none">java.naming.factory.initial = org.apache.xbean.spring.jndi.SpringInitialContextFactory</PRE>
 </DIV></DIV>
 <P>Note that you can also add a line</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-none">java.naming.provider.url = classpath:foo/bar.xml</PRE>
 </DIV></DIV>
-<P>Where the value is any valid Spring resource string such as a <SPAN class="nobr"><A href="file://foo/bar.xml" title="Visit page outside Confluence" rel="nofollow">file://foo/bar.xml<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or a URL such as <SPAN class="nobr"><A href="http://acme.com/whatnot.xml" title="Visit page outside Confluence" rel="nofollow">http://acme.com/whatnot.xml<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. The default value is assumed to be classpath://jndi.xml.</P>
+<P>Where the value is any valid Spring resource string such as a <SPAN class="nobr"><A href="file://foo/bar.xml" title="Visit page outside Confluence" rel="nofollow">file://foo/bar.xml<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or a URL such as <SPAN class="nobr"><A href="http://acme.com/whatnot.xml" title="Visit page outside Confluence" rel="nofollow">http://acme.com/whatnot.xml<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. or classpath:jndi-entries.xml.</P>
 
-<P>Then you can create a regular Spring XML configuration file to create a JNDI context (called <EM>jndi</EM>), which by default is a file called jndi.xml on the classpath</P>
+<P>The default value is assumed to be classpath://jndi.xml.</P>
 
+<P>When InitialContext is called upon, the JndiProvider will respond.</P>
+
+<P>For the JNDI entries you need, create a regular Spring XML configuration file with a JNDI context bean (called <EM>jndi</EM>), which by default is located in a file called jndi.xml on the classpath</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;
+&lt;!DOCTYPE beans PUBLIC <SPAN class="code-quote">&quot;-<SPAN class="code-comment">//SPRING//DTD BEAN//EN&quot;</SPAN> <SPAN class="code-quote">&quot;http://www.springframework.org/dtd/spring-beans.dtd&quot;</SPAN>&gt;
+</SPAN>&lt;beans&gt;
+  &lt;bean id=<SPAN class="code-quote">&quot;jndi&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.xbean.spring.jndi.DefaultContext&quot;</SPAN>&gt;
+    &lt;property name=<SPAN class="code-quote">&quot;entries&quot;</SPAN>&gt;
+      &lt;map&gt;
+        &lt;entry key=<SPAN class="code-quote">&quot;java:comp/env/jdbc/myDatabase&quot;</SPAN>&gt;
+			&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.jdbc.datasource.DriverManagerDataSource&quot;</SPAN>
+				destroy-method=<SPAN class="code-quote">&quot;close&quot;</SPAN> singleton=<SPAN class="code-quote">&quot;<SPAN class="code-keyword">false</SPAN>&quot;</SPAN>&gt;
+				&lt;property name=<SPAN class="code-quote">&quot;driverClassName&quot;</SPAN> value=<SPAN class="code-quote">&quot;com.sybase.jdbc3.jdbc.SybDataSource&quot;</SPAN>/&gt;
+				&lt;property name=<SPAN class="code-quote">&quot;url&quot;</SPAN> value=<SPAN class="code-quote">&quot;jdbc:sybase:Tds:sybase-server:5000/MyDatabase&quot;</SPAN>/&gt;
+				&lt;property name=<SPAN class="code-quote">&quot;username&quot;</SPAN> value=<SPAN class="code-quote">&quot;db-username&quot;</SPAN>/&gt;
+				&lt;property name=<SPAN class="code-quote">&quot;password&quot;</SPAN> value=<SPAN class="code-quote">&quot;myS3cr3tpassword&quot;</SPAN>/&gt;
+			&lt;/bean&gt;
+        &lt;/entry&gt;
+      &lt;/map&gt;
+    &lt;/property&gt;
+  &lt;/bean&gt;
+&lt;/beans&gt;</PRE>
+</DIV></DIV>
 <P>.</P></DIV>
           
                   </DIV>
@@ -250,8 +278,8 @@ JNDI configuration
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1901&originalId=5227">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rbuckland">Ramon Buckland</A> on Jul 27, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1901&originalId=9286">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1901">edit page</A>)
     </DIV>
