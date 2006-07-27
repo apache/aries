@@ -259,7 +259,46 @@ A Message Queue is used for each Component instance, so multiple instances of th
 
 <P>The JCA Flow is very similar to the JMS Flow, in that it allow to cluster ServiceMix containers together.<BR>
 The main difference is that it uses JCA to provide support for XA transactions when sending and receiving<BR>
-JBI exchanges. You can find more informations on transactions <A href="transactions.html" title="Transactions">here</A>.</P></DIV>
+JBI exchanges. You can find more informations on transactions <A href="transactions.html" title="Transactions">here</A>.</P>
+
+<H2><A name="NMRFlows-Configuringflows"></A>Configuring flows</H2>
+
+<P>Flows are configured on the JBI container by usually using the <B>flowNames</B> attribute on the main container element.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:container flowNames=<SPAN class="code-quote">&quot;seda&quot;</SPAN>&gt;</SPAN>
+  ...
+<SPAN class="code-tag">&lt;/sm:container&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>JMS and JCA flows should be configured with an ActiveMQ url to the broker.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:container flowNames=<SPAN class="code-quote">&quot;jms?jmsURL=tcp://localhost:61616/&quot;</SPAN>&gt;</SPAN>
+  ...
+<SPAN class="code-tag">&lt;/sm:container&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>You can defined several flows by using a comma separated list.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:container flowNames=<SPAN class="code-quote">&quot;seda,jms?jmsURL=tcp://localhost:61616/&quot;</SPAN>&gt;</SPAN>
+  ...
+<SPAN class="code-tag">&lt;/sm:container&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>For more complex configurations, you can define the flow explicitely.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:container&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:flows&gt;</SPAN>
+    <SPAN class="code-tag">&lt;sm:sedaFlow /&gt;</SPAN>
+    &lt;sm:jcaFlow bootstrapContext=<SPAN class="code-quote">&quot;#bootstrapContext&quot;</SPAN>
+                connectionManager=<SPAN class="code-quote">&quot;#connectionManager&quot;</SPAN>
+                jmsURL=<SPAN class="code-quote">&quot;vm://localhost&quot;</SPAN> /&gt;
+  <SPAN class="code-tag">&lt;/sm:flows&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:container&gt;</SPAN></PRE>
+</DIV></DIV></DIV>
           
                   </DIV>
         </TD>
@@ -269,8 +308,8 @@ JBI exchanges. You can find more informations on transactions <A href="transacti
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jul 26, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1986&originalId=9271">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jul 27, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1986&originalId=9276">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1986">edit page</A>)
     </DIV>
