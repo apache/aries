@@ -253,24 +253,21 @@ There are several components in the <TT>servicemix.xml</TT>file. One component s
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">cd [servicemix_install_dir]\examples\basic</PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
-
-<P><BR clear="all"> <TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hint</B><BR>
+<P><BR clear="all"></P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hint</B><BR>
 <P>Note: if you are running versione 3.0-M2 and experience a error like<BR>
 &nbsp;&nbsp;<EM>bla, bla, bla &apos;Bean class org.quartz.SimpleTrigger&apos; not found bla, bla, bla</EM><BR>
-probably you have to run ant in <TT>\examples\basic</TT> directory to download additional packages (as Quartz, Common Pools and Common Collection)</P></TD></TR></TABLE></P>
-
+probably you have to run &quot;ant setup&quot; in <TT>\examples\basic</TT> directory to download additional packages (as Quartz, Common Pools and Common Collection)</P></TD></TR></TABLE>
 <P>Then type:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">[servicemix_install_dir]\bin\servicemix servicemix.xml</PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
-
 <P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed.
 <BR clear="all">
-<BR clear="all"> <TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hint</B><BR><BR>
-Add <EM>$SERVICEMIX_HOME\bin</EM> directory to <EM>$PATH</EM> variable to simplify execution of the example.</TD></TR></TABLE><BR>
-&nbsp;</P>
+<BR clear="all"></P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hint</B><BR>
+<P>Add <EM>$SERVICEMIX_HOME\bin</EM> directory to <EM>$PATH</EM> variable to simplify execution of the example.</P></TD></TR></TABLE>
+<P>&nbsp;</P>
 
 <H3><A name="Basic-StoppingtheBasicExample"></A>Stopping the <EM>Basic</EM> Example</H3>
 
@@ -283,11 +280,9 @@ Add <EM>$SERVICEMIX_HOME\bin</EM> directory to <EM>$PATH</EM> variable to simpli
 <BR clear="all">
 <BR clear="all"></P>
 <DIV class="panel" style="border-style: solid; border-color: #ccc; "><DIV class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><B>Basic Example Message Flow Diagram</B></DIV><DIV class="panelContent">
-<P>&nbsp;<DIV align="center"><IMG src="basic.data/basicflow1.jpg" border="0"></DIV><BR>
+<P><DIV align="center"><IMG src="basic.data/basicflow1.jpg" border="0"></DIV><BR>
 &nbsp;</P>
 </DIV></DIV>
-<P>&nbsp;</P>
-
 <P><BR clear="all">
 <BR clear="all"></P>
 
@@ -326,7 +321,6 @@ jmsMessageIdentity = <SPAN class="code-keyword">null</SPAN>, producerKey = ID:Li
 &lt;timer&gt;&lt;name&gt;My Example Job&lt;/name&gt;&lt;group&gt;ServiceMix&lt;/group&gt;&lt;fullname&gt;ServiceMix.My Example Job&lt;/fullname&gt;&lt;description/&gt;&lt;fireTime&gt;
 Thu Sep 08 12:32:18 PDT 2005&lt;/fireTime&gt;&lt;/timer&gt;}}</PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
 
 <H3><A name="Basic-Details"></A>Details</H3>
 
@@ -441,35 +435,9 @@ Thu Sep 08 12:32:18 PDT 2005&lt;/fireTime&gt;&lt;/timer&gt;}}</PRE>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=brontolo">Marco</A> on Jul 24, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2093&originalId=9162">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      hit &quot;Run Ant before example&quot;<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=2093">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jpangburn">Jesse Pangburn</A> on Jul 28, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2093&originalId=9389">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2093">edit page</A>)
     </DIV>
 
