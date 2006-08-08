@@ -240,16 +240,23 @@ Be sure to read the <A href="build.html" title="Build">FAQ</A></P>
 
 
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">mvn -N install
-cd tooling
-mvn install
-cd..
-mvn -Dmaven.test.skip=<SPAN class="code-keyword">true</SPAN> install</PRE>
+<PRE class="code-java">mvn -Dmaven.test.skip=<SPAN class="code-keyword">true</SPAN> -Dprofile=step1 install
+mvn -Dmaven.test.skip=<SPAN class="code-keyword">true</SPAN> -Dprofile=step2 install</PRE>
 </DIV></DIV>
 <P>Next time you build, you can just run</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn -Dmaven.test.skip=<SPAN class="code-keyword">true</SPAN> install</PRE>
 </DIV></DIV>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Building 3.0-M1 and 3.0-M2</B><BR>
+<P>Note that this only works for versions from 3.0-M3.<BR>
+To build previous versions, you need to run:</P>
+
+<P>mvn &#45;N install<BR>
+cd tooling<BR>
+mvn install &#45;Dmaven.test.skip=true<BR>
+cd ..<BR>
+mvn install &#45;Dmaven.test.skip=true</P>
+</TD></TR></TABLE>
 
 <H2><A name="Building-UsinganIDE"></A>Using an IDE</H2>
 
@@ -275,8 +282,8 @@ mvn -Dmaven.test.skip=<SPAN class="code-keyword">true</SPAN> install</PRE>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jun 29, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5955&originalId=8901">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 04, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5955&originalId=9559">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5955">edit page</A>)
     </DIV>

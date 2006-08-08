@@ -224,14 +224,16 @@ XFire
 <!--          
             <div class="pagetitle">XFire</div>
 -->
-            <DIV class="wiki-content">
+            <DIV class="wiki-content"><TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Warning</B><BR>
+<P>This component has been deprecated in favor to <A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A> and <A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A> component,<BR>
+which also use the XFire soap stack.</P></TD></TR></TABLE>
+
 <H3><A name="XFire-Introduction"></A>Introduction</H3>
 
 <P>ServiceMix provides support for the XFire SOAP stack, allowing clean integration between XFire and ServiceMix. XFire is an easy-to-use SOAP framework that offers high performance.
 <BR clear="all">
 <BR clear="all">
 Before reviewing the partial example below, it is strongly recommended that you read the <SPAN class="nobr"><A href="http://xfire.codehaus.org/Spring" title="Visit page outside Confluence" rel="nofollow">Spring XFire instructions<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
-
 
 <H3><A name="XFire-StepstoIntegratewithXFire"></A>Steps to Integrate with XFire</H3>
 
@@ -245,10 +247,6 @@ Before reviewing the partial example below, it is strongly recommended that you 
     }
 }</PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
-
-<P>&nbsp;</P>
-
 <P>Next, define this service bean in your bean definitions:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- The Service Bean --&gt;</SPAN></SPAN>
@@ -260,10 +258,6 @@ Before reviewing the partial example below, it is strongly recommended that you 
     <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;xfire&quot;</SPAN> ref=<SPAN class="code-quote">&quot;xfire&quot;</SPAN>/&gt;</SPAN>
   <SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
-
-<P>&nbsp;</P>
-
 <P>Then, to expose your service on the JBI bus, register a JBI binding for the service:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;binding&quot;</SPAN> service=<SPAN class="code-quote">&quot;xfire:Echo&quot;</SPAN>&gt;</SPAN>
@@ -272,9 +266,6 @@ Before reviewing the partial example below, it is strongly recommended that you 
   <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
 <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
-
-<P>&nbsp;</P>
 
 <H3><A name="XFire-LocationoftheServiceMixXFireComponents"></A>Location of the ServiceMix XFire Components</H3>
 
@@ -300,8 +291,8 @@ where <TT>[servicemix_src_install_dir]</TT> is the directory in which ServiceMix
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2111&originalId=5199">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2111&originalId=9592">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2111">edit page</A>)
     </DIV>

@@ -238,12 +238,13 @@ It uses <SPAN class="nobr"><A href="http://xfire.codehaus.org/" title="Visit pag
 	<LI>jaxb2 binding</LI>
 	<LI>xmlbeans binding</LI>
 	<LI>wsdl auto generation</LI>
+	<LI>MTOM / attachments support</LI>
 </UL>
 
 
 <H2><A name="servicemix-jsr181-Installation"></A>Installation</H2>
 
-<P>Installing the servicemix-http component can be done in several ways:</P>
+<P>Installing the servicemix-jsr181 component can be done in several ways:</P>
 <UL>
 	<LI>drop the installer zip in an hotdeploy directory monitored by ServiceMix</LI>
 	<LI>using <A href="ant-tasks.html" title="Ant Tasks">ant tasks</A></LI>
@@ -302,7 +303,6 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <H2><A name="servicemix-jsr181-Endpoint"></A>Endpoint</H2>
 
 <P>A few examples:</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml">&lt;jsr181:endpoint endpoint=<SPAN class="code-quote">&quot;endpoint1&quot;</SPAN>
                  typeMapping=<SPAN class="code-quote">&quot;xmlbeans&quot;</SPAN>&gt;
@@ -319,7 +319,6 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <PRE class="code-xml">&lt;jsr181:endpoint pojoClass=<SPAN class="code-quote">&quot;test.EchoService2&quot;</SPAN>
                  annotations=<SPAN class="code-quote">&quot;none&quot;</SPAN> /&gt;</PRE>
 </DIV></DIV>
-
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Endpoint attributes</B><BR>
 <TABLE class="confluenceTable"><TBODY>
 <TR>
@@ -347,6 +346,12 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <TD class="confluenceTd"> no (will be auto-generated if not specified) </TD>
 </TR>
 <TR>
+<TD class="confluenceTd"> mtomEnabled </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> Enable MTOM / attachment support </TD>
+<TD class="confluenceTd"> no (defaults to false) </TD>
+</TR>
+<TR>
 <TD class="confluenceTd"> pojo </TD>
 <TD class="confluenceTd"> Object </TD>
 <TD class="confluenceTd"> the instanciated POJO to service requests </TD>
@@ -362,7 +367,7 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <TD class="confluenceTd"> service </TD>
 <TD class="confluenceTd"> QName </TD>
 <TD class="confluenceTd"> JBI Service name </TD>
-<TD class="confluenceTd"> no (will be auto-generated if not specified)</TD>
+<TD class="confluenceTd"> no (will be auto-generated if not specified) </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> serviceInterface </TD>
@@ -435,19 +440,16 @@ or aanother exception with</P></TD></TR></TABLE>
 <H2><A name="servicemix-jsr181-Proxies"></A>Proxies</H2>
 
 <P>You can create java proxies for JBI endpoints, provided that they expose a WSDL.</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml">&lt;jsr181:proxy id=<SPAN class="code-quote">&quot;proxy&quot;</SPAN>
               container=<SPAN class="code-quote">&quot;#jbi&quot;</SPAN> 
               interfaceName=<SPAN class="code-quote">&quot;test:EchoPortType&quot;</SPAN>
               type=<SPAN class="code-quote">&quot;test.Echo&quot;</SPAN> /&gt;</PRE>
 </DIV></DIV>
-
 <P>You can use it from one of you client bean, or from inside another component, and call the JBI endpoint as a plain Java object.</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-keyword">private</SPAN> Echo echo;
-  
+
   <SPAN class="code-keyword">public</SPAN> void setEcho(Echo echo) {
     <SPAN class="code-keyword">this</SPAN>.echo = echo;
   }
@@ -461,9 +463,8 @@ or aanother exception with</P></TD></TR></TABLE>
 <H2><A name="servicemix-jsr181-EJBs"></A>EJBs</H2>
 
 <P>Using spring EJB proxies, you can easily expose an existing EJB on the JBI bus.</P>
-
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;jsr181:endpoint annotations=<SPAN class="code-quote">&quot;none&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:ejb&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;ejb&quot;</SPAN> 
+<PRE class="code-xml">&lt;jsr181:endpoint annotations=<SPAN class="code-quote">&quot;none&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:ejb&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;ejb&quot;</SPAN>
                  serviceInterface=<SPAN class="code-quote">&quot;foo.bar.Hello&quot;</SPAN>&gt;
   <SPAN class="code-tag">&lt;jsr181:pojo&gt;</SPAN>
     <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean&quot;</SPAN>&gt;</SPAN>
@@ -475,7 +476,38 @@ or aanother exception with</P></TD></TR></TABLE>
 <SPAN class="code-tag">&lt;/jsr181:endpoint&gt;</SPAN></PRE>
 </DIV></DIV>
 
-</DIV>
+<H2><A name="servicemix-jsr181-MTOMsupport"></A>MTOM support</H2>
+
+<P>MTOM is a way to handle large amounts of binary data in your services. Unlike attachments, the XML infoset stays the same. MTOM just &quot;optimizes&quot; any base64Binary data you have in your messages. When MTOM is turned on, this base64 data gets sent as a binary attachment saving time and space.</P>
+
+<P>MTOM support can be turned on using:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;jsr181:endpoint mtomEnabled=<SPAN class="code-quote">&quot;true&quot;</SPAN> ... /&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>MTOM is supported for the following classes:</P>
+<UL>
+	<LI>DataSource</LI>
+	<LI>DataHandler</LI>
+	<LI>byte[]</LI>
+</UL>
+
+
+<P>If you have a bean with the following method:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> <SPAN class="code-object">String</SPAN> echo(<SPAN class="code-object">String</SPAN> msg, DataHandler binary) {
+  ...
+}</PRE>
+</DIV></DIV>
+<P>you will be able to call it using the following requests:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;echo <SPAN class="code-keyword">xmlns:xop</SPAN>=&apos;http://www.w3.org/2004/08/xop/include&apos;&gt;</SPAN>
+  <SPAN class="code-tag">&lt;msg&gt;</SPAN>hello world<SPAN class="code-tag">&lt;/msg&gt;</SPAN>
+  <SPAN class="code-tag">&lt;binary&gt;</SPAN>
+    <SPAN class="code-tag">&lt;xop:Include href=&apos;binary&apos;/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/binary&gt;</SPAN>
+<SPAN class="code-tag">&lt;/echo&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>provided that the JBI message contains an attachment named &quot;binary&quot;.</P></DIV>
           
                   </DIV>
         </TD>
@@ -485,8 +517,8 @@ or aanother exception with</P></TD></TR></TABLE>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jul 27, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2057&originalId=9274">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=boneill42">Brian ONeill</A> on Aug 07, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2057&originalId=9586">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2057">edit page</A>)
     </DIV>

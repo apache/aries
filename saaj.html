@@ -224,7 +224,10 @@ SAAJ
 <!--          
             <div class="pagetitle">SAAJ</div>
 -->
-            <DIV class="wiki-content"><H3><A name="SAAJ-Introduction"></A>Introduction</H3>
+            <DIV class="wiki-content"><TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Warning</B><BR>
+<P>This component has been deprecated in favor to <A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A> component.</P></TD></TR></TABLE>
+
+<H3><A name="SAAJ-Introduction"></A>Introduction</H3>
 
 <P>ServiceMix supports SOAP with Attachments for Java (<SPAN class="nobr"><A href="http://java.sun.com/xml/saaj/" title="Visit page outside Confluence" rel="nofollow">SAAJ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>) and <SPAN class="nobr"><A href="http://ws.apache.org/axis/" title="Visit page outside Confluence" rel="nofollow">Apache Axis<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
 
@@ -242,8 +245,6 @@ SAAJ
   <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
  <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
-
 <P>To invoke this function, pass the following request body:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;ns1:getQuote <SPAN class="code-keyword">xmlns:ns1</SPAN>=<SPAN class="code-quote">&quot;urn:xmethods-delayed-quotes&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/1999/XMLSchema-instance&quot;</SPAN> <SPAN class="code-keyword">xmlns:se</SPAN>=<SPAN class="code-quote">&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;</SPAN> se:encodingStyle=<SPAN class="code-quote">&quot;http://schemas.xmlsoap.org/soap/encoding/&quot;</SPAN>&gt;</SPAN>
@@ -252,16 +253,12 @@ SAAJ
 
 <SPAN class="code-tag">&lt;/ns1:getQuote&gt;</SPAN></PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
-
 <P>Below is the expected response:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;n:getQuoteResponse <SPAN class="code-keyword">xmlns:n</SPAN>=<SPAN class="code-quote">&quot;urn:xmethods-delayed-quotes&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsd</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN>&gt;</SPAN>
   <SPAN class="code-tag">&lt;Result xsi:type=<SPAN class="code-quote">&quot;xsd:float&quot;</SPAN>&gt;</SPAN>3.67<SPAN class="code-tag">&lt;/Result&gt;</SPAN>
 <SPAN class="code-tag">&lt;/n:getQuoteResponse&gt;</SPAN></PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
-
 
 <H3><A name="SAAJ-AdditionalResources"></A>Additional Resources</H3>
 
@@ -277,8 +274,8 @@ For details on JBI InOut message exchanges, please <SPAN class="nobr"><A href="h
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jul 19, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2006&originalId=9094">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2006&originalId=9590">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2006">edit page</A>)
     </DIV>

@@ -224,7 +224,10 @@ WSIF
 <!--          
             <div class="pagetitle">WSIF</div>
 -->
-            <DIV class="wiki-content">
+            <DIV class="wiki-content"><TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Warning</B><BR>
+<P>This component has been deprecated in favor to <A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A> component.<BR>
+If you want to invoke EJBs, use <A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A> component.</P></TD></TR></TABLE>
+
 <H3><A name="WSIF-OverviewoftheServiceMixWSIFExample"></A>Overview of the ServiceMix WSIF Example</H3>
 
 <P>Web Services Invocation Framework (WSIF) provides a Java API for calling Web services, hiding the details of how the service is provided, i.e., via SOAP, JMS, etc. The following guide describes the ServiceMix components that integrate with the <SPAN class="nobr"><A href="http://ws.apache.org/wsif/" title="Visit page outside Confluence" rel="nofollow">Apache Web Service Invocation Framework (WSIF)<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to perform web service invocations using a number of different implementation protocols such as Axis, local Java, EJB, JMS, JCA and CCI.</P>
@@ -258,10 +261,6 @@ WSIF
 <DIV class="panel" style="border-style: solid; border-color: #ccc; "><DIV class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><B>WSIF Logical Flow Diagram</B></DIV><DIV class="panelContent">
 <P><IMG src="wsif.data/wsifflow.jpg" align="left" border="0"></P>
 </DIV></DIV>
-<P>&nbsp;</P>
-
-<P>&nbsp;</P>
-
 <P><BR clear="all">
 <BR clear="all"></P>
 
@@ -302,15 +301,7 @@ WSIF
 
 <P>The following snippet is from the <TT>servicemix.xml</TT> file. Note: that the WSIFBinding class has the <TT>service.wsdl</TT> file as a property.</P>
 
-<P>&nbsp;</P>
-
-<P>&nbsp;</P>
-
 <P>Following is an example of how to enable a service to be exposed over a JMS topic or queue. This is a snippet of code from the <TT>service.wsdl</TT> file. It shows how to configure the JMS binding:</P>
-
-<P>&nbsp;</P>
-
-<P>&nbsp;</P>
 
 <P>Here are descriptions of the properties found in the <TT>service.wsdl</TT> file. The descriptions are quoted from the <SPAN class="nobr"><A href="http://cvs.apache.org/viewcvs/~checkout~/ws-wsif/java/doc/wsdl_extensions/jms_bindings.html" title="Visit page outside Confluence" rel="nofollow">WSDL Bindings for JMS<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> web page:</P>
 <UL class="alternate" type="square">
@@ -329,15 +320,8 @@ WSIF
 
 <P>A Java client can be programmed as an alternative way of invoking the web service, in lieu of a web form. The following is a Java client example using the ServiceMix <A href="client-api.html" title="Client API">Client API</A> in a WSIF approach, passing in and fetching out named parameters. This Java client is performing the role originally assigned to the HTTP Client above. It also needs to be configured (not shown) to communicate to the &quot;checkAvailability&quot; service via the ServiceMix NMR. In other words, it needs to have &quot;checkAvailability&quot; set as its &quot;destination&quot; for the NMR messages it sends.</P>
 
-<P>&nbsp;</P>
-
-<P>&nbsp;</P>
-
 <P>The previous Java code works against the given WSDL 1.1 <TT>service.wsdl</TT> file using its named parts:</P>
 
-<P>&nbsp;</P>
-
-<P>&nbsp;</P>
 
 <H3><A name="WSIF-RelatedDocumentation"></A>Related Documentation</H3>
 
@@ -365,8 +349,8 @@ WSIF
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2115&originalId=5198">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2115&originalId=9591">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2115">edit page</A>)
     </DIV>

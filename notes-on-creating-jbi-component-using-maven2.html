@@ -9,7 +9,7 @@
     <LINK type="text/css" rel="stylesheet" href="resources/site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
-Maven JBI plugin
+Notes on Creating JBI Component using maven2
     </TITLE>
   <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
   <BODY onload="init()">
@@ -36,7 +36,7 @@ Maven JBI plugin
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="tooling-and-utilities.html" title="Tooling and Utilities">Tooling and Utilities</A>&nbsp;&gt;&nbsp;<A href="" title="Maven JBI plugin">Maven JBI plugin</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="guides.html" title="Guides">Guides</A>&nbsp;&gt;&nbsp;<A href="servicemix-common.html" title="servicemix-common">servicemix-common</A>&nbsp;&gt;&nbsp;<A href="" title="Notes on Creating JBI Component using maven2">Notes on Creating JBI Component using maven2</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -169,7 +169,7 @@ Maven JBI plugin
 <H3><A name="Navigation-Tooling"></A>Tooling</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="" title="Maven JBI plugin">Maven JBI plugin</A></LI>
+	<LI><A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A></LI>
 	<LI><A href="eclipse-plugin.html" title="Eclipse plugin">Eclipse plugin</A></LI>
 	<LI><A href="visualisation.html" title="Visualisation">Visualisation</A></LI>
 	<LI><A href="jboss-deployer.html" title="JBoss Deployer">JBoss Deployer</A></LI>
@@ -222,138 +222,76 @@ Maven JBI plugin
           <DIV id="site-page">
 
 <!--          
-            <div class="pagetitle">Maven JBI plugin</div>
+            <div class="pagetitle">Notes on Creating JBI Component using maven2</div>
 -->
-            <DIV class="wiki-content"><P>A key part of a productive development environment is the tooling, for Apache ServiceMix the tooling is provided in the form of a powerful and flexible Apache Maven plugin.&nbsp; The plugin has many useful features to enable you to work with the different project types available in JBI - such as Components, Service Assemblies, Service Units and Shared Librarys - and also allows you to work interact with a running Apache ServiceMix server by exposing the JSR-208 Ant Tasks as plugin goals.</P>
+            <DIV class="wiki-content"><P><B>Introduction</B></P>
 
-<H2><A name="MavenJBIplugin-GettingStarted"></A>Getting Started</H2>
+<P>Before you attempt at creating a JBI component using <SPAN class="nobr"><A href="http://servicemix.org/site/creating-a-standard-jbi-component.html" title="Visit page outside Confluence" rel="nofollow">http://servicemix.org/site/creating-a-standard-jbi-component.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>;. My suggestion is that you should visit Maven&apos;s home page and have a look at the getting started page <SPAN class="nobr"><A href="http://maven.apache.org/guides/getting-started/index.html" title="Visit page outside Confluence" rel="nofollow">http://maven.apache.org/guides/getting-started/index.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>;. Get acquainted with the term archetype&#45; going by definition it&apos;s more of &quot;<EM>an original pattern or model from which all other things of the same kind are made&quot;.</EM> So there you go, Servicemix already has a template which you can use&#33;</P>
 
-<P>In order to get started with the plugin you need to make it avilable to your project,&nbsp; this is done by adding the following to your pom.xml.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;project xmlns=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
-  xsi:schemaLocation=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
-  ...    <SPAN class="code-tag">&lt;pluginRepositories&gt;</SPAN>
-    <SPAN class="code-tag">&lt;pluginRepository&gt;</SPAN>
-      <SPAN class="code-tag">&lt;id&gt;</SPAN>apache.snapshots<SPAN class="code-tag">&lt;/id&gt;</SPAN>
-      <SPAN class="code-tag">&lt;name&gt;</SPAN>Maven Central Plugins Development Repository<SPAN class="code-tag">&lt;/name&gt;</SPAN>
-      <SPAN class="code-tag">&lt;url&gt;</SPAN>http://cvs.apache.org/maven-snapshot-repository<SPAN class="code-tag">&lt;/url&gt;</SPAN>
-      <SPAN class="code-tag">&lt;snapshots&gt;</SPAN>
-        <SPAN class="code-tag">&lt;enabled&gt;</SPAN>true<SPAN class="code-tag">&lt;/enabled&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/snapshots&gt;</SPAN>
-      <SPAN class="code-tag">&lt;releases&gt;</SPAN>
-         <SPAN class="code-tag">&lt;enabled&gt;</SPAN>false<SPAN class="code-tag">&lt;/enabled&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/releases&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/pluginRepository&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/pluginRepositories&gt;</SPAN>
-  <SPAN class="code-tag">&lt;build&gt;</SPAN>
-    <SPAN class="code-tag">&lt;plugins&gt;</SPAN>
-      <SPAN class="code-tag">&lt;plugin&gt;</SPAN>
-        <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.apache.servicemix.tooling<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
-        <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>jbi-maven-plugin<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
-	<SPAN class="code-tag">&lt;version&gt;</SPAN>1.0-incubating-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>
-        <SPAN class="code-tag">&lt;extensions&gt;</SPAN>true<SPAN class="code-tag">&lt;/extensions&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/plugin&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/plugins&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/build&gt;</SPAN>
-<SPAN class="code-tag">&lt;/project&gt;</SPAN></PRE>
-</DIV></DIV>
+<P><B>When to use this JBI Component</B></P>
 
-<H2><A name="MavenJBIplugin-ProjectTypes%26nbsp%3B"></A>Project Types&nbsp;</H2>
+<P>&lt;TODO&gt;</P>
 
-<P>Once this plugin has been added to your POM you can start using the capabilities.&nbsp; In order to understand all the things you can do we have broken downs its functionality by the type of artifact you wish to create.&nbsp; JBI covers the creation of four different types of artifact these are:</P>
+<P><B><EM>First things first</EM></B></P>
 
-<H4><A name="MavenJBIplugin-SharedLibraries%26nbsp%3B"></A>Shared Libraries&nbsp;</H4>
+<P><FONT color="#cc3300">Check if you have maven2 installed, if not then please install it.</FONT> <SPAN class="nobr"><A href="http://maven.apache.org/download.html#Installation" title="Visit page outside Confluence" rel="nofollow">http://maven.apache.org/download.html#Installation<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
-<P>These are bundles of code or JAR&apos;s that you can install onto a server (with a given version) to allow components (BC/SE&apos;s) to share physical code.</P>
-
-<P><A href="working-with-shared-libraries.html" title="Working with Shared Libraries">Working with Shared Libraries</A></P>
-
-<H4><A name="MavenJBIplugin-BindingComponents%2FServiceEngines%26nbsp%3B"></A>Binding Components/Service Engines&nbsp;</H4>
-
-<P>These artifacts are the installers for components,&nbsp; allowing you to register a Component that can either start and operate immediately or can wait for the deployment of a service unit.</P>
-
-<P><A href="working-with-components.html" title="Working with Components">Working with Components</A></P>
-
-<H4><A name="MavenJBIplugin-ServiceUnits"></A>Service Units</H4>
-
-<P>These are zip archives created to contain configuration information of an instance of a service unit that can be deployed to a component (BC/SE)</P>
-
-<P><A href="working-with-service-units.html" title="Working with Service Units">Working with Service Units</A></P>
-
-<H4><A name="MavenJBIplugin-ServiceAssembly"></A>Service Assembly</H4>
-
-<P>A service assembly is a collection service units that can be deployed together,&nbsp; it creates a zip archive containing each of the service units (SU&apos;s)&nbsp;</P>
-
-<P><A href="working-with-service-assemblies.html" title="Working with Service Assemblies">Working with Service Assemblies</A></P>
-
-<H2><A name="MavenJBIplugin-RunningunderServiceMix%26nbsp%3B"></A>Running under ServiceMix&nbsp;</H2>
-
-<P>As shown in the project types, each different project type can be deployed to a server using the JBI plugin (through the ANT tasks defined in the JBI specification).&nbsp; The only issue here can be working out dependencies and trying to make sure that you deploy the dependencies.&nbsp; This means if you have a Service Assembly you wish to deploy you need to first get the dependent components (and maybe even the dependent shared libraries) to deploy.&nbsp; The Maven2 JBI plugin provides a couple of goals that can help you work through this.</P>
-
-<H4><A name="MavenJBIplugin-mvnjbi%3AprojectDeploy%26nbsp%3B"></A>mvn jbi:projectDeploy&nbsp;</H4>
-
-<P>If you have created you assemblies, service units, components and shared libraries as Maven projects (which all ServiceMix components are) you can use this goal.&nbsp; In essence the plugin will walk the dependencies starting in the current project then deploy each of the dependencies in reverse order.&nbsp; This can be very useful if you want to quickly get up and running with a new Service Assembly against an installed instance of Apache ServiceMix.</P>
-
-<H4><A name="MavenJBIplugin-mvnjbi%3Aservicemix%26nbsp%3B"></A>mvn jbi:servicemix&nbsp;</H4>
-
-<P>If you quickly want to get up and running with Apache ServiceMix the best way is to use this goal.&nbsp; As an extension of the deployProject goal is works in much the same way,&nbsp; the difference is that this goal downloads and starts a copy of Apache ServiceMix within Maven so you don&apos;t need to have a version installed,&nbsp; this can be very useful if you are working on trying out functionality and want to simply test your projects.&nbsp;</P>
-
-<H2><A name="MavenJBIplugin-WorkingwithServiceMixEmbeddedConfigurations"></A>Working with ServiceMix Embedded Configurations</H2>
-
-<P>You can also work run your Servicemix embedded configurations using the <EM>jbi:embeddedServicemix</EM> goal.  This will look by default in the src/main/resources/ directory of your project for a servicemix.xml and use that to boot ServiceMix.  If you want to try this feature out you can also use the servicemix-embeddded-simple archetype to create a simple project with the files in place.</P>
-
+<P><B>1)</B> To&nbsp;create a JBI component as you might have guessed by now &#45;&nbsp;run the mvn command: (needless to say you should create a new directory where you want all your stuff to be generated&nbsp;)</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn archetype:create \
-    -DarchetypeGroupId=org.apache.servicemix.tooling \
-    -DarchetypeArtifactId=servicemix-embedded-simple \
-    -DarchetypeVersion=1.0-incubating-SNAPSHOT \
-    -DgroupId=org.apache.servicemix.samples.embedded \
-    -DartifactId=servicemix-embedded-example</PRE>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DarchetypeGroupId=org.apache.servicemix.tooling \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DarchetypeArtifactId=servicemix-service-engine \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DarchetypeVersion=1.0-incubating-SNAPSHOT \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DgroupId=org.apache.servicemix.<SPAN class="code-keyword">package</SPAN> \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DartifactId=servicemix-<SPAN class="code-keyword">package</SPAN></PRE>
 </DIV></DIV>
-
-<P>Then simply go into the servicemix-embedded-example directory created by the archetype and run </P>
-
+<P>Well, notice the text in blue in the above mvn command. This is meant to be the package info. So if you are creating a component which maybe does some xslt transformation then you&nbsp;would end up with something like:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">mvn jbi:embeddedServicemix</PRE>
+<PRE class="code-java">mvn archetype:create \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DarchetypeGroupId=org.apache.servicemix.tooling \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DarchetypeArtifactId=servicemix-service-engine \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DarchetypeVersion=1.0-incubating-SNAPSHOT \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DgroupId=org.apache.servicemix.xslt \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DartifactId=servicemix-xslt</PRE>
 </DIV></DIV>
+<P><B>&nbsp;2)</B> After you have successfully run the above command this is what you would end up with&nbsp;</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">servicemix-xslt\
+  pom.xml
+  src\
+    main\
+      java\
+        org\
+          apache\
+            servicemix\
+              xslt\
+                MyBootstrap.java
+                MyComponent.java
+                MyDeployer.java
+                MyEndpoint.java
+                MyLifeCycle.java
+                MySpringComponent.java
+    test\
+      java\
+        org\
+          apache\
+            servicemix\
+              xslt\
+                MySpringComponentTest.java
+      resources\
+        spring.xml&nbsp;</PRE>
+</DIV></DIV>
+<P>&nbsp;&nbsp;&nbsp;&nbsp;<BR>
+Now you might be wondering why&nbsp;all the classes have the word &quot;My&quot; prefixed to them. Don&apos;t worry these are just driven from the template,&nbsp;you just need to rename them to whatever you want to. Just make sure you change the corresponding resource files,&nbsp;change &quot;My&quot; to whatever prefix that you used for the classes.</P>
 
-<H2><A name="MavenJBIplugin-FullPluginInformation"></A>Full Plugin Information</H2>
+<P><B>3)</B> Using an IDE to add meat to the component.</P>
 
-<P>For a more detailed breakdown of the plugin&apos;s functionality check out the <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-1.0-incubating-SNAPSHOT/site/tooling/jbi-maven-plugin/plugin-info.html" title="Visit page outside Confluence" rel="nofollow">Maven2 generated documentation<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+<P>You can either use IDEA or Eclipse, I tried it with Eclipse so I guess I am going to stick it for now. &lt;TODO&gt;</P>
 
-<H3><A name="MavenJBIplugin-Maven1.xSupport"></A>Maven 1.x Support</H3>
+<P><B>Using the component that you created</B></P>
 
-<P>Information on the Maven 1.x JBI plugin is available <A href="maven-1x-jbi-plugin.html" title="Maven 1.x JBI Plugin">here</A>.</P></DIV>
+<P>&lt;TODO&gt;</P></DIV>
           
-        <!--
-          <div class="tabletitle">
-            Children
-            <span class="smalltext" id="show" style="display: inline;">
-              <a href="javascript:showChildren()">Show Children</a></span>
-            <span class="smalltext" id="hide" style="display: none;">
-              <a href="javascript:hideChildren()">Hide Children</a></span>
-          </div>
-          <div class="greybox" id="children" style="display: none;">
-                                      <a href="http://goopen.org/confluence/display/SM/Working+with+Shared+Libraries" title="Working with Shared Libraries">Working with Shared Libraries</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/Working+with+Service+Assemblies" title="Working with Service Assemblies">Working with Service Assemblies</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/Full+Description" title="Full Description">Full Description</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/Working+with+Service+Units" title="Working with Service Units">Working with Service Units</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/Working+with+Components" title="Working with Components">Working with Components</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/Maven+1.x+JBI+Plugin" title="Maven 1.x JBI Plugin">Maven 1.x JBI Plugin</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                      </div>
--->
                   </DIV>
         </TD>
       </TR>
@@ -361,11 +299,11 @@ Maven JBI plugin
       </DIV>
     </DIV>
     <DIV id="site-footer">
-          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=pdodds%2540unity-systems.com">pdodds@unity-systems.com</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on Aug 04, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1948&originalId=9569">view change</A>)
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=soumadeep">Soumadeep Sen</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=soumadeep">Soumadeep Sen</A> on Aug 06, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9560&originalId=9579">view change</A>)
               
-      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1948">edit page</A>)
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=9560">edit page</A>)
     </DIV>
 
   </BODY>

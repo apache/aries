@@ -224,7 +224,9 @@ HTTP
 <!--          
             <div class="pagetitle">HTTP</div>
 -->
-            <DIV class="wiki-content">
+            <DIV class="wiki-content"><TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Warning</B><BR>
+<P>This component has been deprecated in favor to <A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A> component.</P></TD></TR></TABLE>
+
 <P>We support both a client side HTTP (capable of invoking requests on remote HTTP servers) and a server side HTTP binding (for exposing JBI components over HTTP). Note that both these 2 components are pure HTTP bindings; they assume that a REST or SOAP service creates the inbound request first. So they just deal with the HTTP transport and do not perform any protocol encoding such as SOAP 1.1 or SOAP 1.2; they pass along the XML they are given.</P>
 
 <H3><A name="HTTP-ClientsideHTTPinvocation"></A>Client side HTTP invocation</H3>
@@ -237,7 +239,6 @@ HTTP
   <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
 <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
 
 <H3><A name="HTTP-ServersideHTTPbinding"></A>Server side HTTP binding</H3>
 
@@ -252,7 +253,6 @@ HTTP
   <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
 <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
 
 <H2><A name="HTTP-UsingHTTPbindinginaWAR"></A>Using HTTP binding in a WAR</H2>
 
@@ -260,11 +260,8 @@ HTTP
 
 <P>Here&apos;s an example</P>
 
-<P>&nbsp;</P>
-
 <P>Notice that the web.xml then refers to the endpoint name <B>httpBinding</B> in the ServiceMix configuration file. e.g. this component</P>
 
-<P>&nbsp;</P>
 
 <H3><A name="HTTP-ExampleofusingtheHTTPbindinginaWAR"></A>Example of using the HTTP binding in a WAR</H3>
 
@@ -273,8 +270,6 @@ HTTP
 <PRE class="code-java">cd tooling/servicemix-web
 maven run</PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
-
 <P>Then point your browser to <SPAN class="nobr"><A href="http://localhost:8080/examples/" title="Visit page outside Confluence" rel="nofollow">http://localhost:8080/examples/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
 <P>You should see the simple demo which performs a HTTP GET/POST into the JBI container and shows the result in your browser. This example renders better in FireFox which handles XML response types nicer than Safari.</P>
@@ -283,8 +278,6 @@ maven run</PRE>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">maven war</PRE>
 </DIV></DIV>
-<P>&nbsp;</P>
-
 <P>Then deploy the war into your servlet engine. You&apos;ll typically need to use a different URL then such as <SPAN class="nobr"><A href="http://localhost:8080/servicemix-web/examples/" title="Visit page outside Confluence" rel="nofollow">http://localhost:8080/servicemix-web/examples/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
 <H3><A name="HTTP-Moredetail"></A>More detail</H3>
@@ -299,8 +292,8 @@ maven run</PRE>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2083&originalId=5187">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2083&originalId=9588">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2083">edit page</A>)
     </DIV>
