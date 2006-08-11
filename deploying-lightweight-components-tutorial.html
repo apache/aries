@@ -224,26 +224,24 @@ Deploying Lightweight Components Tutorial
 <!--          
             <div class="pagetitle">Deploying Lightweight Components Tutorial</div>
 -->
-            <DIV class="wiki-content">
-<H2><A name="DeployingLightweightComponentsTutorial-Introduction"></A>Introduction</H2>
+            <DIV class="wiki-content"><H2><A name="DeployingLightweightComponentsTutorial-Introduction"></A>Introduction</H2>
 
 <P>This document discusses how to package and deploy a lightweight component to the ServiceMix lightweight container (<TT>servicemix-lwcontainer</TT>). The ServiceMix lightweight container is a service engine JBI component whose purpose is to allow lightweight components (POJOs) to be deployed at runtime rather than only deploying them statically via the <TT>servicemix.xml</TT> file. Please see <A href="what-is-a-lightweight-component.html" title="What is a lightweight component">What is a Lightweight Component</A> for a good explanation of the different types of JBI components.</P>
 
-<P>As explained in <EM>What is a Lightweight Component</EM> there are two main use cases for ServiceMix: <BR>
+<P>As explained in <EM>What is a Lightweight Component</EM> there are two main use cases for ServiceMix:<BR>
 1. As a full JBI container - using ServiceMix as a full JBI container in which you can deploy Service Assemblies and standard JBI components. And you may also deploy lightweight components in this mode - they must be deployed to the <TT>servicemix-lwcontainer</TT>.</P>
 
 <P>2. Embedded - this is a static configuration used mainly for testing or perhaps for encapsulating ServiceMix into a web application. This uses the <TT>servicemix.xml</TT> file to configure components thare are only deployed when ServiceMix is started, not at runtime. You cannot deploy service units to this type of ServiceMix configuration at runtime. You would have to shutdown, reconfigure and then restart.</P>
 
-<P>Just a brief background: A JBI component is either a service engine (SE) or a binding component (BC). These terms are defined in <A href="introduction-to-esb.html" title="Introduction to ESB">Introduction to ESB</A> and/or the <A href="glossary.html" title="Glossary">Glossary</A>. A BC/SE is <B>installed</B> on ServiceMix by copying it into the <TT>install</TT> directory which resides under the ServiceMix home directory. So what gets deployed? JBI components can act as containers themselves. Artifacts can be <B>deployed</B> to an existing BC or SE to add more functionality to that component. Adding artifacts to installed components is called deployment. To deploy artifacts to a component the artifacts can be placed in the <TT>deploy</TT> directory under the ServiceMix home directory. A term that is important to know is <EM>service assembly</EM>. A service assembly is a collection of deployment artifacts and metadata. A <EM>service unit</EM> is a single deployment artifact which is deployed on a single component. For deployment to happen, the artifacts must be in a very specific format, which is specified in the JSR 208 specification. Please see chapter 6 of the <SPAN class="nobr"><A href="http://www.jcp.org/en/jsr/detail?id=208" title="Visit page outside Confluence" rel="nofollow">JSR 208<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> specification for more details. </P>
+<P>Just a brief background: A JBI component is either a service engine (SE) or a binding component (BC). These terms are defined in <A href="introduction-to-esb.html" title="Introduction to ESB">Introduction to ESB</A> and/or the <A href="glossary.html" title="Glossary">Glossary</A>. A BC/SE is <B>installed</B> on ServiceMix by copying it into the <TT>install</TT> directory which resides under the ServiceMix home directory. So what gets deployed? JBI components can act as containers themselves. Artifacts can be <B>deployed</B> to an existing BC or SE to add more functionality to that component. Adding artifacts to installed components is called deployment. To deploy artifacts to a component the artifacts can be placed in the <TT>deploy</TT> directory under the ServiceMix home directory. A term that is important to know is <EM>service assembly</EM>. A service assembly is a collection of deployment artifacts and metadata. A <EM>service unit</EM> is a single deployment artifact which is deployed on a single component. For deployment to happen, the artifacts must be in a very specific format, which is specified in the JSR 208 specification. Please see chapter 6 of the <SPAN class="nobr"><A href="http://www.jcp.org/en/jsr/detail?id=208" title="Visit page outside Confluence" rel="nofollow">JSR 208<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> specification for more details.</P>
 
-<H2><A name="DeployingLightweightComponentsTutorial-ManuallyCreatingaServiceUnitandServiceAssembly"></A>Manually Creating a Service Unit and Service Assembly </H2>
+<H2><A name="DeployingLightweightComponentsTutorial-ManuallyCreatingaServiceUnitandServiceAssembly"></A>Manually Creating a Service Unit and Service Assembly</H2>
 
-<P>We are going to use the existing ServiceMix Loan Broker example, which can be found <SPAN class="nobr"><A href="http://www.servicemix.org/Loan%20Broker%20example" title="Visit page outside Confluence" rel="nofollow">Loan Broker Demo for ServiceMix<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>, as the basis for this discussion. </P>
+<P>We are going to use the existing ServiceMix Loan Broker example, which can be found <SPAN class="nobr"><A href="http://www.servicemix.org/Loan%20Broker%20example" title="Visit page outside Confluence" rel="nofollow">Loan Broker Demo for ServiceMix<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>, as the basis for this discussion.</P>
 
-<P>There are several things to note about this example. First of all it is meant to be run stand-alone. Specifically, when running this example, ServiceMix will be started for you, then the loan broker is deployed and run. Therefore, there is a <TT>servicemix.xml</TT> file in the <TT>loan-broker</TT> directory. This <TT>servicemix.xml</TT> file is used for configuring the ServiceMix JBI container upon ServiceMix starting up. This is not to be confused with the <TT>servicemix.xml</TT> located in the <TT>loan-broker\src\su</TT> directory. The SU <TT>servicemix.xml</TT> file is used to configure the <TT>servicemix-lwcontainer</TT>. Every service unit must contain some kind of configuration file. For example, if we were creating a service unit for the BPEL service engine there would also be a configuration file, but it would not be a <TT>servicemix.xml</TT> file, such as the one used for configuring the lightweight container. </P>
+<P>There are several things to note about this example. First of all it is meant to be run stand-alone. Specifically, when running this example, ServiceMix will be started for you, then the loan broker is deployed and run. Therefore, there is a <TT>servicemix.xml</TT> file in the <TT>loan-broker</TT> directory. This <TT>servicemix.xml</TT> file is used for configuring the ServiceMix JBI container upon ServiceMix starting up. This is not to be confused with the <TT>servicemix.xml</TT> located in the <TT>loan-broker\src\su</TT> directory. The SU <TT>servicemix.xml</TT> file is used to configure the <TT>servicemix-lwcontainer</TT>. Every service unit must contain some kind of configuration file. For example, if we were creating a service unit for the BPEL service engine there would also be a configuration file, but it would not be a <TT>servicemix.xml</TT> file, such as the one used for configuring the lightweight container.</P>
 
 <P><B>NOTE:</B> There are two major phases to creating a lightweight component that is ready for deployment: one, is the development phase of the component, which includes coding and compiling and building the code, the second phase is creating the packaging necessary for the component to be installed onto the JBI container. This document will focus on the second part. Any steps relating to compilation are simply performed here to get us to the point that we can assemble the component into a JBI service assembly or service unit.</P>
-
 
 <P>In general, there are three steps to creating the SA and deploying it to the ServiceMix container.</P>
 <OL>
@@ -255,7 +253,7 @@ Deploying Lightweight Components Tutorial
 
 <P>The following provides details on each step above using the loan-broker example to illustrate.</P>
 
-<P>Although we are not covering the component development phase, in this case we do need to perform a compile. We will use Apache Ant to compile the loan-broker demo components: </P>
+<P>Although we are not covering the component development phase, in this case we do need to perform a compile. We will use Apache Ant to compile the loan-broker demo components:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">cd [servicemix_dir]\examples\loan-broker
 ant build-components</PRE>
@@ -263,7 +261,6 @@ ant build-components</PRE>
 <P>This will compile the Java code and put the Java class files into the <TT>[servicemix_dir]\examples\loan-broker\build\loanbroker\components</TT> directory.</P>
 
 <P>Now we are ready to assemble the lightweight components together. The loan broker demo supplies us with a <TT>build.xml</TT> file (which was used in the compile step above). The <TT>build.xml</TT> contains targets for creating service units and service assemblies. If you run &quot;ant setup&quot; a service unit and service assembly will automatically be created. Ultimately, this is what you will want to do, however, the following procedure gives the manual steps for creating a service unit and service assembly, to facilitate in understanding the contents of a SUs and SAs.</P>
-
 <OL>
 	<LI>First create the service unit. The service unit is a ZIP file that will contain your application&apos;s Java class files and the <TT>servicemix.xml</TT> configuration file. The service unit can also contain a <TT>jbi.xml</TT> which provides information about services statically provided and consumed. In ServiceMix it is optional to include this file. In the case of our example, we have not included it.
 <BR clear="all">
@@ -293,7 +290,7 @@ The <TT>jbi.xml</TT> looks like this:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;
 &lt;jbi xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//java.sun.com/xml/ns/jbi&quot;</SPAN> version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN>&gt;
-</SPAN>     
+</SPAN>
    &lt;service-assembly&gt;
      &lt;identification&gt;
        &lt;name&gt;loanbroker&lt;/name&gt;
@@ -310,12 +307,12 @@ The <TT>jbi.xml</TT> looks like this:</P>
        &lt;/target&gt;
      &lt;/service-unit&gt;
     &lt;/service-assembly&gt;
-    
+
 &lt;/jbi&gt;</PRE>
 </DIV></DIV>
 <P><BR clear="all">
 <BR clear="all">
-The interesting thing to note is that the <TT>jbi.xml</TT> file tells the JBI container what service units are in the service assembly and where to deploy them. There is only one service unit in our example, which is &quot;loanbroker&quot; (see the <TT>artifacts-name</TT> tag) and the component to which it will be deployed is <TT>servicemix-lwcontainer</TT> (see the &lt;component-name&gt; tag). There could be multiple service units in a service assembly and they would each be included in the <TT>jbi.xml</TT> file with the same type of information for each. 
+The interesting thing to note is that the <TT>jbi.xml</TT> file tells the JBI container what service units are in the service assembly and where to deploy them. There is only one service unit in our example, which is &quot;loanbroker&quot; (see the <TT>artifacts-name</TT> tag) and the component to which it will be deployed is <TT>servicemix-lwcontainer</TT> (see the &lt;component-name&gt; tag). There could be multiple service units in a service assembly and they would each be included in the <TT>jbi.xml</TT> file with the same type of information for each.
 <BR clear="all">
 Create the service assembly ZIP file and include the <TT>loanbroker-su.zip</TT> file and the <TT>META-INF\jbi.xml</TT> directory and file in it. To remain consistent with our example, call the zip file <TT>loanbroker-sa.zip</TT>.
 <BR clear="all">
@@ -328,11 +325,45 @@ Put the <TT>loanbroker-sa.zip</TT> file in the <TT>[servicemix_dir]\examples\loa
 </OL>
 
 
-
 <H2><A name="DeployingLightweightComponentsTutorial-RelatedDocumentation"></A>Related Documentation</H2>
 
-
 <P>The JBI spec describes in detail how to create a valid JBI deployment unit. Please see <SPAN class="nobr"><A href="http://www.jcp.org/en/jsr/detail?id=208" title="Visit page outside Confluence" rel="nofollow">JSR 208<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+
+<H2><A name="DeployingLightweightComponentsTutorial-SpringRelatedinformation"></A>Spring Related information</H2>
+
+<P>Inside the servicemix.xml file, the ability to import the common beans using the following:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;<SPAN class="code-keyword">import</SPAN> resource=<SPAN class="code-quote">&quot;classpath:otherBeans.xml&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
+<P>The resource is a SpringResource so the following also works:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;<SPAN class="code-keyword">import</SPAN> resource=<SPAN class="code-quote">&quot;file:path/to/file/jmx.xml&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
+<P>if you run ServiceMix (or JBoss) with a param:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">JAVA_OPTS=<SPAN class="code-quote">&quot;-DMYHOME=somepath/&quot;</SPAN>
+JAVA_OPTS=-DMYHOME=somepath/ # windows</PRE>
+</DIV></DIV>
+<P>then in the servicemix.xml and xbean.xml you can reference MYHOME.</P>
+
+<P>eg:</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;<SPAN class="code-keyword">import</SPAN> resource=<SPAN class="code-quote">&quot;file:${MYHOME}/path/to/file/jmx.xml&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
+
+<P>Then you can also import a properties file from this same path to pull in other config you may need. (that you want outside an SU/SA bundle).</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;bean id=<SPAN class="code-quote">&quot;propertyConfigurer&quot;</SPAN>
+  class=<SPAN class="code-quote">&quot;org.springframework.beans.factory.config.PropertyPlaceholderConfigurer&quot;</SPAN>&gt;
+  &lt;property name=<SPAN class="code-quote">&quot;locations&quot;</SPAN>&gt;
+    &lt;list&gt;
+      &lt;value&gt;${MYHOME}/conf/config.properties&quot;&lt;/value&gt;
+    &lt;/list&gt;
+  &lt;/property&gt;
+&lt;/bean&gt;</PRE>
+</DIV></DIV>
 </DIV>
           
                   </DIV>
@@ -343,8 +374,8 @@ Put the <TT>loanbroker-sa.zip</TT> file in the <TT>[servicemix_dir]\examples\loa
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=lmalgeri">Lisa Malgeri</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1992&originalId=5260">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bradtwurst">James Bradt</A> on Aug 09, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1992&originalId=9623">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1992">edit page</A>)
     </DIV>

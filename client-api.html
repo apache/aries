@@ -279,7 +279,6 @@ NormalizedMessage outMessage = exchange.getOutMessage();</PRE>
 <P>ServiceMix has integrated support for <A href="uris.html" title="URIs">URIs</A> to simplify the accessing of endpoints within the <A href="nmr.html" title="NMR">NMR</A>. The ServiceMixClient (from 3.0-M3 or later) allows you to work with URIs easily via a Destination interface. This interface acts as a factory of MessageExchange objects which are pre-wired to specific endpoints specified via a URI.</P>
 
 <P>The following shows how to work with InOnly for one way messaging</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">Destination destination = client.createDestination(<SPAN class="code-quote">&quot;service:http:<SPAN class="code-comment">//servicemix.org/cheese/receiver&quot;</SPAN>);
 </SPAN>InOnly exchange = destination.createInOnlyExchange();
@@ -290,9 +289,7 @@ message.setContent(<SPAN class="code-keyword">new</SPAN> StreamSource(<SPAN clas
 
 client.send(exchange);</PRE>
 </DIV></DIV>
-
 <P>Or using InOut for request-response</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">Destination destination = client.createDestination(<SPAN class="code-quote">&quot;service:http:<SPAN class="code-comment">//servicemix.org/cheese/myService&quot;</SPAN>);
 </SPAN>InOut exchange = destination.createInOutExchange();
@@ -309,7 +306,6 @@ NormalizedMessage response = exchange.getOutMessage();</PRE>
 <H3><A name="ClientAPI-SimpleronewaymessagingwithDestinations"></A>Simpler one-way messaging with Destinations</H3>
 
 <P>For one-way messaging its sometimes simpler to just work with a Message instance (you can always refer to the MessageExchange via the getExchange() method if need be). For example</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">Destination destination = client.createDestination(<SPAN class="code-quote">&quot;service:http:<SPAN class="code-comment">//servicemix.org/cheese/receiver&quot;</SPAN>);
 </SPAN>Message message = destination.createInOnlyMessage();
@@ -318,7 +314,6 @@ message.setBody(<SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&
 
 client.send(message);</PRE>
 </DIV></DIV>
-
 <P>For more detail see the <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-core/src/test/java/org/apache/servicemix/client/ClientDestinationTest.java" title="Visit page outside Confluence" rel="nofollow">unit test case<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
 <H2><A name="ClientAPI-UsingthePOJOmethods"></A>Using the POJO methods</H2>
@@ -382,10 +377,22 @@ properties.put(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="co
 <H3><A name="ClientAPI-IfyouhaveaccesstoaComponentContext"></A>If you have access to a ComponentContext</H3>
 
 <P>If you are inside a JBI component you can create a ServiceMixClient as follows</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">ServiceMixClient client = <SPAN class="code-keyword">new</SPAN> ServiceMixClientFacade(context);</PRE>
-</DIV></DIV></DIV>
+</DIV></DIV>
+
+<H2><A name="ClientAPI-UsingClientFactory"></A>Using ClientFactory</H2>
+
+<P>Starting from 3.0-M3, you can retrieve a ClientFactory from JNDI.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">ClientFactory factory = <SPAN class="code-keyword">new</SPAN> InitialContext().lookup(ClientFactory.DEFAULT_JNDI_NAME);
+ServiceMixClient client = factory.createClient();
+...
+client.close();</PRE>
+</DIV></DIV>
+
+<P>Note that creating client is somewhat expensive, so it&apos;s best to create a client once and reuse it.</P></DIV>
           
                   </DIV>
         </TD>
@@ -395,8 +402,8 @@ properties.put(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="co
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on Jul 03, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1957&originalId=8927">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1957&originalId=9596">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1957">edit page</A>)
     </DIV>

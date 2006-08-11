@@ -409,44 +409,50 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <TR>
 <TD class="confluenceTd"> initialContextFactory </TD>
 <TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd"> yes (unless a default one is provided on the jms component configuration) </TD>
+<TD class="confluenceTd"> the JNDI context factory class name </TD>
+<TD class="confluenceTd"> no </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> jndiProviderURL </TD>
 <TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd"> yes (unless a default one is provided on the jms component configuration) </TD>
-</TR>
-<TR>
-<TD class="confluenceTd"> destinationStyle </TD>
-<TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd"> yes (unless a default one is provided on the jms component configuration) </TD>
-</TR>
-<TR>
-<TD class="confluenceTd"> jndiConnectionFactoryName </TD>
-<TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd"> yes (unless a default one is provided on the jms component configuration) </TD>
-</TR>
-<TR>
-<TD class="confluenceTd"> jndiDestinationName </TD>
-<TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd"> yes (one of jndiDestinationName or jmsProviderDestinationName) </TD>
-</TR>
-<TR>
-<TD class="confluenceTd"> jmsProviderDestinationName </TD>
-<TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd"> yes (one of jndiDestinationName or jmsProviderDestinationName) </TD>
+<TD class="confluenceTd"> the JNDI provide url </TD>
+<TD class="confluenceTd"> no </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> connectionFactory </TD>
 <TD class="confluenceTd"> javax.jms.ConnectionFactory </TD>
 <TD class="confluenceTd"> the connectionFactory to use.  This optional property can be used instead of using JNDI configuration </TD>
 <TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> jndiConnectionFactoryName </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the JNDI name of the JMS ConnectionFactory to lookup </TD>
+<TD class="confluenceTd"> yes (unless a default one is provided on the jms component configuration) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> destination </TD>
+<TD class="confluenceTd"> javax.jms.Destination </TD>
+<TD class="confluenceTd"> the Destination to use. This optional property can be use instead of jndiDestinationName or jmsProviderDestinationName </TD>
+<TD class="confluenceTd"> no (one of destination, jndiDestinationName or jmsProviderDestinationName) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> jndiDestinationName </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the JNDI name of the destination to look up </TD>
+<TD class="confluenceTd"> yes (unless destination or jmsProviderDestinationName is set) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> jmsProviderDestinationName </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> if used, the target JMS destination will be created by the JMS provider by calling Session.createQueue or Session.createTopic </TD>
+<TD class="confluenceTd"> no (one of destination, jndiDestinationName or jmsProviderDestinationName) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> destinationStyle </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> used to select the destination type used with the jmsProviderDestinationName </TD>
+<TD class="confluenceTd"> no (unless jmsProviderDestinationName is used) </TD>
 </TR>
 </TBODY></TABLE></TD></TR></TABLE>
 <P>The <B>targetService</B>, <B>targetEndpoint</B> and <B>targetInterfaceName</B> attributes can be used to specify the routing method to use (routing by interface, service or endpoint) and is also useful to allow several proxy endpoints to be created for the same JBI endpoint.  For example to create an JMS only endpoint and an JMS+SOAP endpoint, both jms endpoints will have the same targetEndpoint and targetService, but they must have different endpoint names.</P>
@@ -518,38 +524,14 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <TR>
 <TD class="confluenceTd"> initialContextFactory </TD>
 <TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd"> yes (unless a default one is provided on the jms component configuration) </TD>
+<TD class="confluenceTd"> the JNDI context factory class name </TD>
+<TD class="confluenceTd"> no </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> jndiProviderURL </TD>
 <TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd"> yes (unless a default one is provided on the jms component configuration) </TD>
-</TR>
-<TR>
-<TD class="confluenceTd"> destinationStyle </TD>
-<TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd"> yes (unless a default one is provided on the jms component configuration) </TD>
-</TR>
-<TR>
-<TD class="confluenceTd"> jndiConnectionFactoryName </TD>
-<TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd"> yes (unless a default one is provided on the jms component configuration) </TD>
-</TR>
-<TR>
-<TD class="confluenceTd"> jndiDestinationName </TD>
-<TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd"> yes (one of jndiDestinationName or jmsProviderDestinationName) </TD>
-</TR>
-<TR>
-<TD class="confluenceTd"> jmsProviderDestinationName </TD>
-<TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd"> yes (one of jndiDestinationName or jmsProviderDestinationName) </TD>
+<TD class="confluenceTd"> the JNDI provide url </TD>
+<TD class="confluenceTd"> no </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> connectionFactory </TD>
@@ -557,7 +539,91 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <TD class="confluenceTd"> the connectionFactory to use.  This optional property can be used instead of using JNDI configuration </TD>
 <TD class="confluenceTd"> no </TD>
 </TR>
+<TR>
+<TD class="confluenceTd"> jndiConnectionFactoryName </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the JNDI name of the JMS ConnectionFactory to lookup </TD>
+<TD class="confluenceTd"> yes (unless a default one is provided on the jms component configuration) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> destination </TD>
+<TD class="confluenceTd"> javax.jms.Destination </TD>
+<TD class="confluenceTd"> the Destination to use. This optional property can be use instead of jndiDestinationName or jmsProviderDestinationName </TD>
+<TD class="confluenceTd"> no (one of destination, jndiDestinationName or jmsProviderDestinationName) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> jndiDestinationName </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the JNDI name of the destination to look up </TD>
+<TD class="confluenceTd"> yes (unless destination or jmsProviderDestinationName is set) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> jmsProviderDestinationName </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> if used, the target JMS destination will be created by the JMS provider by calling Session.createQueue or Session.createTopic </TD>
+<TD class="confluenceTd"> no (one of destination, jndiDestinationName or jmsProviderDestinationName) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> destinationStyle </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> used to select the destination type used with the jmsProviderDestinationName </TD>
+<TD class="confluenceTd"> no (unless jmsProviderDestinationName is used) </TD>
+</TR>
 </TBODY></TABLE></TD></TR></TABLE>
+
+<H2><A name="servicemix-jms-ConfiguringtheConnectionFactoryandDestination"></A>Configuring the ConnectionFactory and Destination</H2>
+
+<H4><A name="servicemix-jms-JNDIconfiguration"></A>JNDI configuration</H4>
+
+<P>When the ConnectionFactory or the Destination is lookup in JNDI, the JNDI context will be created in the following order:</P>
+<UL>
+	<LI>using the <B>initialContextFactory</B> and <B>jndiProviderURL</B></LI>
+	<LI>using the <B>initialContextFactory</B> and <B>jndiProviderURL</B> configured on the component configuration</LI>
+	<LI>using the default context provided by the JBI container</LI>
+</UL>
+
+
+<H4><A name="servicemix-jms-ConnectionFactory"></A>ConnectionFactory</H4>
+
+<P>The JMS ConnectionFactory is retrieved using the properties defined on the endpoint in the following order:</P>
+<UL>
+	<LI>using <B>connectionFactory</B></LI>
+	<LI>using <B>jndiConnectionFactoryName</B> to lookup the ConnectionFactory in JNDI</LI>
+	<LI>using the <B>connectionFactory</B> configured on the component configuration</LI>
+	<LI>using the <B>jndiConnectionFactoryName</B> configured on the component configuration to lookup the ConnectionFactory in JNDI</LI>
+</UL>
+
+
+<H4><A name="servicemix-jms-Destination"></A>Destination</H4>
+
+<P>The JMS Destination is retrieved in the following order:</P>
+<UL>
+	<LI>using <B>destination</B></LI>
+	<LI>using <B>jndiDestinationName</B></LI>
+	<LI>using <B>jmsProviderDestinationName</B> and <B>destinationStyle</B></LI>
+</UL>
+
+
+<H4><A name="servicemix-jms-Examples"></A>Examples</H4>
+
+<P>Using JNDI</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;jms:endpoint ...
+    jndiConnectionFactoryName=<SPAN class="code-quote">&quot;java:comp/env/jms/ConnectionFactory&quot;</SPAN>
+    jndiDestinationName=<SPAN class="code-quote">&quot;java:comp/env/jms/MyQueue&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
+
+<P>If you use ActiveMQ, you can use the following definition:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;jms:endpoint ...
+    connectionFactory=<SPAN class="code-quote">&quot;#connectionFactory&quot;</SPAN>
+    destinationStyle=<SPAN class="code-quote">&quot;queue&quot;</SPAN>
+    jmsProviderDestinationName=<SPAN class="code-quote">&quot;MyQueue&quot;</SPAN> /&gt;
+
+<SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;connectionFactory&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.activemq.ActiveMQConnectionFactory&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;brokerURL&quot;</SPAN> value=<SPAN class="code-quote">&quot;tcp://localhost:61216&quot;</SPAN> /&gt;</SPAN>
+<SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <H2><A name="servicemix-jms-WSDLDeployment"></A>WSDL Deployment</H2>
 
@@ -707,8 +773,8 @@ Failing this, an IllegalArgumentException will be thrown with the following mess
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jun 02, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1954&originalId=8532">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 09, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1954&originalId=9617">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1954">edit page</A>)
     </DIV>

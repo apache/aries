@@ -391,6 +391,18 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 
 <H2><A name="servicemix-jsr181-AccessingtheJBIbus"></A>Accessing the JBI bus</H2>
 
+<P>The prefered way to access the JBI bus is by retrieving a ComponentContext implementation.<BR>
+The spring BeanFactory has a parent factory which contains a bean named &quot;context&quot; that you can refer to.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;jsr181:endpoint ...&gt;</SPAN>
+  <SPAN class="code-tag">&lt;jsr181:pojo&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;xxx&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;context&quot;</SPAN> ref=<SPAN class="code-quote">&quot;context&quot;</SPAN> /&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/jsr181:pojo&gt;</SPAN>
+<SPAN class="code-tag">&lt;/jsr181:endpoint&gt;</SPAN></PRE>
+</DIV></DIV>
+
 <P>If you want to send a request to another service from your POJO, you can add the following method on your POJO:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-keyword">private</SPAN> javax.jbi.component.ComponentContext context;
@@ -440,6 +452,8 @@ or aanother exception with</P></TD></TR></TABLE>
 <H2><A name="servicemix-jsr181-Proxies"></A>Proxies</H2>
 
 <P>You can create java proxies for JBI endpoints, provided that they expose a WSDL.</P>
+
+<P>The basic configuration is the following:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml">&lt;jsr181:proxy id=<SPAN class="code-quote">&quot;proxy&quot;</SPAN>
               container=<SPAN class="code-quote">&quot;#jbi&quot;</SPAN> 
@@ -447,6 +461,21 @@ or aanother exception with</P></TD></TR></TABLE>
               type=<SPAN class="code-quote">&quot;test.Echo&quot;</SPAN> /&gt;</PRE>
 </DIV></DIV>
 <P>You can use it from one of you client bean, or from inside another component, and call the JBI endpoint as a plain Java object.</P>
+
+<P>From a jsr181 Service Unit, it could be used as following:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;jsr181:endpoint serviceInterface=<SPAN class="code-quote">&quot;test.Echo&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;jsr181:pojo&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;test.EchoProxy&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;echo&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;jsr181:proxy service=<SPAN class="code-quote">&quot;test:EchoService&quot;</SPAN> context=<SPAN class="code-quote">&quot;#context&quot;</SPAN> type=<SPAN class="code-quote">&quot;test.Echo&quot;</SPAN> /&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/jsr181:pojo&gt;</SPAN>
+<SPAN class="code-tag">&lt;/jsr181:endpoint&gt;</SPAN></PRE>
+</DIV></DIV>
+
+
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-keyword">private</SPAN> Echo echo;
 
@@ -517,8 +546,8 @@ or aanother exception with</P></TD></TR></TABLE>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=boneill42">Brian ONeill</A> on Aug 07, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2057&originalId=9586">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 10, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2057&originalId=9634">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2057">edit page</A>)
     </DIV>
