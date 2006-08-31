@@ -69,7 +69,7 @@ servicemix-http
 <UL class="alternate" type="square">
 	<LI><A href="home.html" title="Home">Home</A></LI>
 	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
-	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=License&linkCreation=true&fromPageId=2021" title="Create Page: License" class="createlink">License<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
 	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
 	<LI><A href="download.html" title="Download">Download</A></LI>
 	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
@@ -93,7 +93,7 @@ servicemix-http
 <H3><A name="Navigation-Documentation"></A>Documentation</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="getting-started.html" title="Getting Started">Getting Started</A></LI>
+	<LI><A href="getting-started-guide.html" title="Getting Started Guide">Getting Started</A></LI>
 	<LI><A href="features.html" title="Features">Features</A></LI>
 	<LI><A href="running.html" title="Running">Running</A></LI>
 	<LI><A href="examples.html" title="Examples">Examples</A></LI>
@@ -325,22 +325,25 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <TD class="confluenceTd"> no </TD>
 </TR>
 </TBODY></TABLE></TD></TR></TABLE>
-<P>The <B>targetService</B>, <B>targetEndpoint</B> and <B>targetInterfaceName</B> attributes can be used to specify the routing method to use (routing by interface, service or endpoint) and is also useful to allow several proxy endpoints to be created for the same JBI endpoint.  For example to create an HTTP only endpoint and an HTTP+SOAP endpoint, both http endpoints will have the same targetEndpoint and targetService, but they must have different endpoint names.</P>
 
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
+<P>The locationUri is usually something like *<SPAN class="nobr"><A href="http://0.0.0.0:8192/jbi/Service*" title="Visit page outside Confluence" rel="nofollow">http://0.0.0.0:8192/jbi/Service*<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+The 0.0.0.0 IP address binds the server socket to all networks that the host<BR>
+is in.  If you use <B>localhost</B>, you will only be able to access the URL from<BR>
+the same computer.</P></TD></TR></TABLE>
+
+<P>The <B>targetService</B>, <B>targetEndpoint</B> and <B>targetInterfaceName</B> attributes can be used to specify the routing method to use (routing by interface, service or endpoint) and is also useful to allow several proxy endpoints to be created for the same JBI endpoint.  For example to create an HTTP only endpoint and an HTTP+SOAP endpoint, both http endpoints will have the same targetEndpoint and targetService, but they must have different endpoint names.</P>
 
 <H3><A name="servicemix-http-Basicauthenticationconfiguration"></A>Basic authentication configuration</H3>
 
 <P>The consumer endpoint supports basic authentication.</P>
-
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
 <P>Basic authentication credentials are passed in plain text across the network.  Please use additional encryption for better security, or use a stronger mechanism other than basic authentication.</P></TD></TR></TABLE>
-
 <P>Basic authentication can be provided using the following syntax:</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml">&lt;http:endpoint service=<SPAN class="code-quote">&quot;testBasicAuth:MyConsumerService&quot;</SPAN>
   endpoint=<SPAN class="code-quote">&quot;myConsumer&quot;</SPAN>
-  role=<SPAN class="code-quote">&quot;consumer&quot;</SPAN> 
+  role=<SPAN class="code-quote">&quot;consumer&quot;</SPAN>
   locationURI=<SPAN class="code-quote">&quot;https://localhost:8193/Service/&quot;</SPAN>
   defaultMep=<SPAN class="code-quote">&quot;http://www.w3.org/2004/08/wsdl/in-out&quot;</SPAN>&gt;
   <SPAN class="code-tag">&lt;http:basicAuthentication&gt;</SPAN>
@@ -348,7 +351,6 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
   <SPAN class="code-tag">&lt;/http:basicAuthentication&gt;</SPAN>
 <SPAN class="code-tag">&lt;/http:endpoint&gt;</SPAN></PRE>
 </DIV></DIV>
-
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">BasicAuthCredentials attributes</B><BR>
 <TABLE class="confluenceTable"><TBODY>
 <TR>
@@ -709,8 +711,8 @@ Failing this, an IllegalArgumentException will be thrown with the following mess
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=roehl">Roehl Sioson</A> on Aug 15, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1928&originalId=9674">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 31, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1928&originalId=13358">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1928">edit page</A>)
     </DIV>
