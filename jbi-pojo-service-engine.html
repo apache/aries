@@ -1,0 +1,280 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <TITLE>
+JBI Pojo Service Engine
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="developers.html" title="Developers">Developers</A>&nbsp;&gt;&nbsp;<A href="ideas.html" title="Ideas">Ideas</A>&nbsp;&gt;&nbsp;<A href="" title="JBI Pojo Service Engine">JBI Pojo Service Engine</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="navigation.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Documentation"></A>Documentation</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="getting-started.html" title="Getting Started">Getting Started</A></LI>
+	<LI><A href="features.html" title="Features">Features</A></LI>
+	<LI><A href="running.html" title="Running">Running</A></LI>
+	<LI><A href="examples.html" title="Examples">Examples</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">Enterprise Integration Patterns</A></LI>
+	<LI><A href="use-cases-whole.html" title="Use Cases (whole)">Use Cases &#40;whole&#41;</A></LI>
+	<LI><A href="configuration.html" title="Configuration">Configuration</A></LI>
+	<LI><A href="xml-reference.html" title="Xml Reference">Xml Reference</A></LI>
+	<LI><A href="management.html" title="Management">Management</A></LI>
+	<LI><A href="architecture.html" title="Architecture">Architecture</A></LI>
+	<LI><A href="clustering.html" title="Clustering">Clustering</A></LI>
+	<LI><A href="nmr-flows.html" title="NMR Flows">NMR Flows</A></LI>
+	<LI><A href="articles.html" title="Articles">Articles</A></LI>
+	<LI><A href="features.html" title="Features">Features</A></LI>
+	<LI><A href="integration.html" title="Integration">Integration</A></LI>
+	<LI><A href="components.html" title="Components">Components</A></LI>
+	<LI><A href="tooling-and-utilities.html" title="Tooling and Utilities">Tooling</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+</UL>
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">JBI Pojo Service Engine</div>
+-->
+            <DIV class="wiki-content"><P>While we have a JSR-181 Service Engine that allows us to work to EJBs/POJO&apos;s etc I have been wondering if we should provide a annotated POJO engine that is closer to the JBI infrastructure than the JSR181 (XFire) based one.</P>
+
+<P>The idea would be to allow you to create more providers and consumes but writing POJO&apos;s in the Service Unit and then deploying with this servicemix-jbi-pojo engine which would scan the POJOs and create them performing some injection and setup of endpoints as we go.</P>
+
+<P>The idea would be that Providers are stateless and Consumers are singletons - unless a Provider is also a consumer.</P>
+
+<P>To have a look at how it might work I knocked up so good old (no code behind the scenes) examples:</P>
+
+<P>First up - an example of a consumer service - this is basically where we have something at doesn&apos;t provide any services and simply consumes them - say a file poller for example.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">package</SPAN> org.apache.servicemix.pojo.engine.examples;
+
+<SPAN class="code-keyword">import</SPAN> java.io.File;
+
+<SPAN class="code-keyword">import</SPAN> javax.jbi.JBIException;
+<SPAN class="code-keyword">import</SPAN> javax.jbi.component.ComponentContext;
+<SPAN class="code-keyword">import</SPAN> javax.jbi.messaging.DeliveryChannel;
+<SPAN class="code-keyword">import</SPAN> javax.jbi.messaging.InOnly;
+<SPAN class="code-keyword">import</SPAN> javax.resource.spi.work.WorkManager;
+
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.ConsumerService;
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.LocalComponentContext;
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.LocalDeliveryChannel;
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.LocalWorkingArea;
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.LocalWorkmanager;
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.ProviderService;
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.ServiceShutdown;
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.ServiceStartup;
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.TargettedMessageExchange;
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.TargettedMessageExchangeFactory;
+
+@Consumer
+<SPAN class="code-keyword">public</SPAN> class DemoConsumerService {
+
+	/**
+	 * We could inject a delivery channel
+	 */
+	@Resource DeliveryChannel channel;
+
+	/**
+	 * The Component Context could be handy
+	 */
+	@Resource ComponentContext context;
+
+	/**
+	 * Nothing like a jenck workmanager <SPAN class="code-keyword">for</SPAN> that polling
+	 */
+	@Resource WorkManager myWorkmanager;
+
+	/**
+	 * The Service unit&apos;s directory is good <SPAN class="code-keyword">for</SPAN> artifacts
+	 */
+	@LocalWorkingArea File myWorkspace;
+
+	/**
+	 * What about getting a targetted message exchange factory By doing <SPAN class="code-keyword">this</SPAN> we
+	 * can pulling out the consumes <SPAN class="code-keyword">for</SPAN> the Service unit
+	 */
+	@TargettedMessageExchange(providerService = @ProviderService(targetNamespace = <SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//www.blah.com&quot;</SPAN>, serviceName = <SPAN class="code-quote">&quot;myDestinationService&quot;</SPAN>))
+</SPAN>	TargettedMessageExchangeFactory myTargetFactory;&nbsp;	@Destination(uri=<SPAN class="code-quote">&quot;service:urn:service&quot;</SPAN>)	<SPAN class="code-keyword">private</SPAN> Destination service1;
+
+	/**
+	 * Calls on SU init
+	 *
+	 */
+	@PostConstruct
+	<SPAN class="code-keyword">public</SPAN> void init() {
+		<SPAN class="code-keyword">try</SPAN> {
+			<SPAN class="code-comment">// ... <SPAN class="code-keyword">do</SPAN> something
+</SPAN>			InOnly inOnly = myTargetFactory.createInOnlyExchange();
+
+			<SPAN class="code-comment">// .. <SPAN class="code-keyword">do</SPAN> something with the exchange
+</SPAN>			channel.send(inOnly);
+			<SPAN class="code-comment">// ... <SPAN class="code-keyword">do</SPAN> more
+</SPAN>		} <SPAN class="code-keyword">catch</SPAN> (JBIException exception) {
+
+		}
+	}
+
+	/**
+	 * Calls on SU shutdown
+	 *
+	 */
+	@PreDestroy
+	<SPAN class="code-keyword">public</SPAN> void destroy() {
+
+	}
+
+}</PRE>
+</DIV></DIV>
+<P>Note that the idea is to provide the ability to inject useful stuff - also note that annotations provide the information on the service names etc - the idea here is that we don&apos;t need spring or anything else it is pure Java (no XML config) in the SU.</P>
+
+<P>Not also that we can get a targetted exchange factory - this is to allow us to be able to pick up the consumes and provides from the SU during packaging (for tooling to use).</P>
+
+<P>Next up lets look at a Provider</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">package</SPAN> org.apache.servicemix.pojo.engine.examples;
+
+<SPAN class="code-keyword">import</SPAN> javax.jbi.messaging.DeliveryChannel;
+<SPAN class="code-keyword">import</SPAN> javax.jbi.messaging.MessageExchange;
+<SPAN class="code-keyword">import</SPAN> javax.xml.transform.Source;
+
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.ExchangeProcessor;
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.LocalDeliveryChannel;
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.MessageExchangePattern;
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.ParameterMapping;
+<SPAN class="code-keyword">import</SPAN> org.apache.servicemix.pojo.engine.ProviderService;
+
+@ProviderService(targetNamespace = <SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//servicemix.apache.org&quot;</SPAN>, serviceName = <SPAN class="code-quote">&quot;myService&quot;</SPAN>)
+</SPAN><SPAN class="code-keyword">public</SPAN> class DemoProviderService {
+
+	@ExchangeProcessor
+	<SPAN class="code-keyword">public</SPAN> void myInOutProcessor(MessageExchange me) {
+		<SPAN class="code-comment">// Do something here
+</SPAN>	}
+
+	@ExchangeProcessor
+	<SPAN class="code-keyword">public</SPAN> void myInOnlyProcessor(@InMessageContent Source payload) {
+		<SPAN class="code-comment">// Do something here
+</SPAN>	}
+}</PRE>
+</DIV></DIV>
+<P>Note that we provider service can declare the provided endpoint - as a service or interface etc it can also get note that it can also map methods to exchange processors including the exchange patterns it wants to handle and also the parameters - so it can pick up the content or the payload.</P>
+
+<P>Note that a ProviderService can also create targetted message exchanges through annotations and in essence become a consumer as well.</P>
+
+<P>This is pure ideas and all edits are welcome</P></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on Aug 28, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9700&originalId=13327">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=9700">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>
