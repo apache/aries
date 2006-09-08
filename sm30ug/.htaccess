@@ -1,3 +1,3 @@
 RewriteEngine On
-RewriteBase /site/sm30ug
+RewriteBase /servicemix/sm30ug
 RewriteRule   ^$  users-guide.html [R,L]

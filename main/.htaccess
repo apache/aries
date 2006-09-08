@@ -1,5 +1,5 @@
 RewriteEngine On
-RewriteBase /site/main
+RewriteBase /servicemix/main
 RewriteRule   ^$  home.html [R,L]
 
     RewriteRule ^Ant\+Tasks$ ant-tasks.html [R,L]
