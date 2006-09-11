@@ -34,17 +34,6 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 
 <P>The <TT>servicemix-wsn2005</TT> is a standard JBI Service Engine which implements the <SPAN class="nobr"><A href="http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=wsn" title="Visit page outside Confluence" rel="nofollow">WS-Notification<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> specification from Oasis.</P>
 
-<DIV>
-<UL>
-  <LI><A href="#servicemix-wsn2005-Overview">Overview</A></LI>
-  <LI><A href="#servicemix-wsn2005-Usagescenarii">Usage scenarii</A></LI>
-  <LI><A href="#servicemix-wsn2005-InsidetheJBIBus">Inside the JBI Bus</A></LI>
-  <LI><A href="#servicemix-wsn2005-OutsidetheJBIBus">Outside the JBI Bus</A></LI>
-  <LI><A href="#servicemix-wsn2005-Staticconfiguration">Static configuration</A></LI>
-  <LI><A href="#servicemix-wsn2005-Dynamicconfiguration">Dynamic configuration</A></LI>
-  <LI><A href="#servicemix-wsn2005-EmbeddingWSNotification">Embedding WS-Notification</A></LI>
-</UL></DIV>
-
 <H2><A name="servicemix-wsn2005-Overview"></A>Overview</H2>
 
 <P>While this article does not intend to be a review of the WS-Notification specification, here is a few terms you need to fully understand:</P>
@@ -62,31 +51,20 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 
 <P>The WS-Notification SE can be used to provide publish/subscribe routing in the JBI bus. There are several usage:</P>
 <UL>
-	<LI><A href="#servicemix-wsn2005-InsidetheJBIBus" title="Inside the JBI Bus on servicemix-wsn2005">use inside the JBI bus</A></LI>
-	<LI><A href="#servicemix-wsn2005-OusidetheJBIBus" title="Ouside the JBI Bus on servicemix-wsn2005">use outside the JBI bus</A></LI>
+	<LI><A href="#servicemix-wsn2005-ConfigurationusingJBIpackaging" title="Configuration using JBI packaging on servicemix-wsn2005">configuration using JBI packaging</A></LI>
+	<LI><A href="#servicemix-wsn2005-DynamicconfigurationinsidetheJBIbus" title="Dynamic configuration inside the JBI bus on servicemix-wsn2005">dynamic configuration inside the JBI bus</A></LI>
+	<LI><A href="#servicemix-wsn2005-OutsidetheJBIbus" title="Outside the JBI bus on servicemix-wsn2005">Outside the JBI bus</A></LI>
+	<LI><A href="#servicemix-wsn2005-EmbeddingWSNotification" title="Embedding WS-Notification on servicemix-wsn2005">embedding WS-Notification SE</A></LI>
 </UL>
 
 
-<P>Both uses may be achieved using:</P>
-<UL>
-	<LI><A href="#servicemix-wsn2005-Staticconfiguration" title="Static configuration on servicemix-wsn2005">static publishers and subscribers</A></LI>
-	<LI><A href="#servicemix-wsn2005-Dynamicconfiguration" title="Dynamic configuration on servicemix-wsn2005">dynamic publishers and subscribers</A></LI>
-</UL>
+<H2><A name="servicemix-wsn2005-ConfigurationusingJBIpackaging"></A>Configuration using JBI packaging</H2>
 
+<H2><A name="servicemix-wsn2005-DynamicconfigurationinsidetheJBIbus"></A>Dynamic configuration inside the JBI bus</H2>
 
-<P>In addition, you can also</P>
-<UL>
-	<LI><A href="#servicemix-wsn2005-EmbeddingWSNotification" title="Embedding WS-Notification on servicemix-wsn2005">embed WS-Notification SE</A></LI>
-</UL>
+<H2><A name="servicemix-wsn2005-OutsidetheJBIbus"></A>Outside the JBI bus</H2>
 
-
-<H2><A name="servicemix-wsn2005-InsidetheJBIBus"></A>Inside the JBI Bus</H2>
-
-<H2><A name="servicemix-wsn2005-OutsidetheJBIBus"></A>Outside the JBI Bus</H2>
-
-<H2><A name="servicemix-wsn2005-Staticconfiguration"></A>Static configuration</H2>
-
-<H2><A name="servicemix-wsn2005-Dynamicconfiguration"></A>Dynamic configuration</H2>
+<P>If you want to use WS-Notification ouside the JBI world, you will need to be able to receive incoming requests or send notifications to the external services.  This must be done through by using Binding Components, either using HTTP or JMS.</P>
 
 <H2><A name="servicemix-wsn2005-EmbeddingWSNotification"></A>Embedding WS-Notification</H2>
 
@@ -110,7 +88,8 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 11, 2006
-                  
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13583&originalId=13588">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13583">edit page</A>)
     </DIV>
 
