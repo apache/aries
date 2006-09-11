@@ -20,7 +20,7 @@ CIMERO Editor
       <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
         <TR>
           <TD align="left" class="topbardiv" nowrap="">
-            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/main/images/logo.jpg">
           </TD>
           <TD align="right" nowrap="">
             <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
@@ -79,37 +79,16 @@ CIMERO Editor
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
+	<LI><A href="../SM30UG/users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
 	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
 	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
-	<LI><SPAN class="nobr"><A href="navigation.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><A href="team.html" title="Team">Team</A></LI>
 	<LI><A href="users.html" title="Users">Users</A></LI>
-</UL>
-
-
-<H3><A name="Navigation-Documentation"></A>Documentation</H3>
-
-<UL class="alternate" type="square">
-	<LI><A href="getting-started-guide.html" title="Getting Started Guide">Getting Started</A></LI>
-	<LI><A href="features.html" title="Features">Features</A></LI>
-	<LI><A href="running.html" title="Running">Running</A></LI>
-	<LI><A href="examples.html" title="Examples">Examples</A></LI>
-	<LI><A href="servicemix-eip.html" title="servicemix-eip">Enterprise Integration Patterns</A></LI>
-	<LI><A href="use-cases-whole.html" title="Use Cases (whole)">Use Cases &#40;whole&#41;</A></LI>
-	<LI><A href="configuration.html" title="Configuration">Configuration</A></LI>
-	<LI><A href="xml-reference.html" title="Xml Reference">Xml Reference</A></LI>
-	<LI><A href="management.html" title="Management">Management</A></LI>
-	<LI><A href="architecture.html" title="Architecture">Architecture</A></LI>
-	<LI><A href="clustering.html" title="Clustering">Clustering</A></LI>
-	<LI><A href="nmr-flows.html" title="NMR Flows">NMR Flows</A></LI>
-	<LI><A href="articles.html" title="Articles">Articles</A></LI>
-	<LI><A href="features.html" title="Features">Features</A></LI>
-	<LI><A href="integration.html" title="Integration">Integration</A></LI>
-	<LI><A href="components.html" title="Components">Components</A></LI>
-	<LI><A href="tooling-and-utilities.html" title="Tooling and Utilities">Tooling</A></LI>
 </UL>
 
 
@@ -135,7 +114,7 @@ CIMERO Editor
 -->
             <DIV class="wiki-content"><TABLE class="confluenceTable"><TBODY>
 <TR>
-<TD class="confluenceTd"> <DIV align="center"><A href="cimero-editor.data/logo_bull.jpg" target="logo_bull.jpg" onclick="window.open(&quot;http://goopen.org/confluence/download/attachments/9328/logo_bull.jpg&quot;, &quot;logo_bull.jpg&quot;, &quot;height=93,width=153,menubar=no,status=no,toolbar=no&quot;); return false;"><IMG src="cimero-editor.data/logo_bull.jpg.jpeg" border="0"></A></DIV><BR clear="all"> <DIV align="center"><IMG src="cimero-editor.data/logo.jpg" border="0"></DIV> </TD>
+<TD class="confluenceTd"> <DIV align="center"><A href="cimero-editor.data/logo_bull.jpg" target="logo_bull.jpg" onclick="window.open(&quot;http://goopen.org/confluence/download/attachments/9328/logo_bull.jpg&quot;, &quot;logo_bull.jpg&quot;, &quot;height=93,width=153,menubar=no,status=no,toolbar=no&quot;); return false;"><IMG src="cimero-editor.data/logo_bull.jpg.jpeg" border="0"></A></DIV><BR clear="all">  <DIV align="center"><IMG src="cimero-editor.data/logo.jpg" border="0"></DIV> </TD>
 <TD class="confluenceTd"> <BR clear="all"> </TD>
 </TR>
 <TR>
@@ -156,16 +135,16 @@ CIMERO Editor
 - a binding component to connect a FTP server
 - a binding component to connect a JMS server (sm-jms)
 - a binding component to send input message (timer)
+- a binding component to send a message to the screen
 - a service engine to transforme message (content transformer)
 - a service engine to enriche message (message enricher)
 - a service engine to splitt a message (eip-splitter)
 - a service engine to aggregate a message (eip-aggregator)
 - a service engine to trace a message (eip-wire-tap)
 - a service engine to filter message (eip-filter)
-- a service engine to send a message to the screen
 - a service engine to route message (on properties or content)</PRE>
 </DIV></DIV><DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">Soon, CIMERO Editor will propose more components :
+<PRE class="code-java">Soon, CIMERO Editor will maybe propose more components :
 - a service engine to forward an input In-Only or Robust-In-Only exchange to a list of known recipients
 - ...</PRE>
 </DIV></DIV>
@@ -210,19 +189,17 @@ CIMERO Editor
 &#42; GEF : <SPAN class="nobr"><A href="http://download3.eclipse.org/tools/gef/downloads/index.php" title="Visit page outside Confluence" rel="nofollow">http://download3.eclipse.org/tools/gef/downloads/index.php<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
 <P><EM>Tested on Debian, Windows 2000, Windows XP with Eclipse 3.1.2 et 3.2.0</EM></P>
-
-<HR>
 <DIV class="preformatted"><DIV class="preformattedContent">
 <PRE>As an example, the next picture is a screenshoot of a CIMERO use. The created graph is composed of :
 
-- an input mail message
-- a router of mail message
-- an  output mail message
-- an output SOAP message
+	- an input mail message
+	- a router of mail message
+	- an output mail message
+	- an output SOAP message
 
 The router is based on the &quot;from&quot; property of the input mail message and it send to the output mail server or to the ouput webservice.
 
-A graph like this can be transformed automaticaly into an XML configuration file for ServiceMix or into a JBI package.
+A graph like this can be transformed automaticaly into an XML configuration file for ServiceMix or into a JBI package
 
 The generated package can be deployed automaticaly on a ServiceMix server (you must configure and start it before deploying).
 </PRE>
@@ -244,8 +221,8 @@ The generated package can be deployed automaticaly on a ServiceMix server (you m
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=pierre.notel%2540bull.net">Pierre NOTEL</A> on Aug 31, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9328&originalId=13354">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=pierre.notel%2540bull.net">Pierre NOTEL</A> on Sep 05, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9328&originalId=13452">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=9328">edit page</A>)
     </DIV>
