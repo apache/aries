@@ -75,7 +75,11 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 
 <H2><A name="1.Quickstart-Starttheserver"></A>Start the server</H2>
 
-<P>With Apache ServiceMix already installed, open a command line console and change directory to <B>&lt;servicemix_home&gt;</B>. To start the server, run the following command:</P>
+<P>With Apache ServiceMix already installed, open a command line console and change directory to <B>&lt;servicemix_home&gt;</B>. To start the server, run the following command in Windows</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">bin\servicemix</PRE>
+</DIV></DIV>
+<P>respectively in Linux:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">bin/servicemix</PRE>
 </DIV></DIV>
@@ -99,7 +103,14 @@ INFO  - JBIContainer                   - ServiceMix JBI Container (ServiceMix) s
 
 <P>While you will lear in the remaining of this guide how to create and package a JBI application, we will just use a pre-built packaging for now.</P>
 
-<P>Open another command line console in the <B>&lt;servicemix_home&gt;</B> directory and run the following commands (here, Linux syntax is used; in Windows do use <EM>copy</EM> instead of <EM>cp</EM> and backslash instead of slash as path deliminator).</P>
+<P>Open another command line console in the <B>&lt;servicemix_home&gt;</B> directory and run the following commands in Windows</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">copy components\servicemix-shared-*.zip install
+copy components\servicemix-http-*.zip install
+copy components\servicemix-jsr181-*.zip install
+copy examples\wsdl-first\wsdl-first-sa-*.zip deploy</PRE>
+</DIV></DIV>
+<P>respectively Linux:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">cp components/servicemix-shared-*.zip install
 cp components/servicemix-http-*.zip install
@@ -142,7 +153,7 @@ INFO  - AutoDeploymentService          - Directory: deploy: Finished installatio
 
 <P><SPAN class="nobr"><A href="http://localhost:8192/PersonService/main.wsdl" title="Visit page outside Confluence" rel="nofollow">http://localhost:8192/PersonService/main.wsdl<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
-<P>You should see the WSDL of the web service that have just deployed &#33;</P>
+<P>You should see the WSDL of the web service that have just deployed&#33;</P>
 
 <P><A href="#1.Quickstart-top" title="top on 1. Quick start">top</A></P>
 
@@ -168,13 +179,13 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 14, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13487&originalId=13650">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 15, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13487&originalId=13730">view change</A>)
                       <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
         <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
           <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
       <B>Comment:</B>
-      formatting, shortening of some formulation, some minor additions<BR>
+      commands for win<BR>
       <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13487">View page history</A></SPAN>
   </DIV>
 
