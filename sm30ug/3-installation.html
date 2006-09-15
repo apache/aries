@@ -61,7 +61,6 @@ Here you will find information about what are pre requisite software, where to d
   <LI><A href="#3.Installation-ConfiguringServiceMix">Configuring ServiceMix</A></LI>
 </UL></DIV>
 
-
 <H2><A name="3.Installation-PreInstallationRequirements"></A>Pre-Installation Requirements</H2>
 
 <P><B>Hardware:</B></P>
@@ -284,13 +283,14 @@ If a source snapshot was downloaded perform steps 6 - 8 of the <A href="#3.Insta
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">cd [servicemix_install_dir]</PRE>
 </DIV></DIV>
+
 <P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed, e.g., <TT>c:\Program Files\servicemix-3.x</TT>.
 <BR clear="all">
 Then type:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">bin\servicemix</PRE>
 </DIV></DIV>
-<P><EM>Note:</EM> working directories get created relative to the current directory. For the working directories to be created in the proper place, ServiceMix must be launched from its home/installation directory.</P>
+<P><EM>Note:</EM> Working directories get created relative to the current directory. For the working directories to be created in the proper place, ServiceMix must be launched from its home/installation directory.</P>
 
 <H3><A name="3.Installation-OnUnix"></A>On Unix</H3>
 
@@ -323,7 +323,7 @@ Note: /tmp/smlog may be changed to another file name.</PRE>
 
 <P>From a Windows console, type:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">netstat \-an\|find <SPAN class="code-quote">&quot;1099&quot;</SPAN></PRE>
+<PRE class="code-java">netstat -an|find <SPAN class="code-quote">&quot;1099&quot;</SPAN></PRE>
 </DIV></DIV>
 <P><B>OR</B></P>
 
@@ -368,9 +368,35 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 06, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=13510">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 14, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=13651">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      typos + minor syntax flaws<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13489">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13489">edit page</A>)
     </DIV>
 
