@@ -117,10 +117,10 @@ The recommended method of building ServiceMix is the following:
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">cd [servicemix_install_dir]</PRE>
 </DIV></DIV>
-<P> where <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=servicemix_install_dir&linkCreation=true&fromPageId=13489" title="Create Page: servicemix_install_dir" class="createlink">servicemix&#95;install&#95;dir<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> is the directory in which ServiceMix was installed.</P>
+<P> where <TT>[servicemix_install_dir]</TT> is the directory in which ServiceMix was installed.</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">mvn -Dmaven.test.skip=<SPAN class="code-keyword">true</SPAN> -Dprofile=step1
-mvn -Dmaven.test.skip=<SPAN class="code-keyword">true</SPAN> -Dprofile=step2</PRE>
+<PRE class="code-java">mvn -Dprofile=step1
+mvn -Dprofile=step2</PRE>
 </DIV></DIV></LI>
 	<LI>Unzip the distribution using your favorite zip tool</LI>
 	<LI>Start ServiceMix from the target directory, for example:
@@ -167,7 +167,7 @@ b. Click the &quot;Download&quot; link in the navigation pane (the left pane).<B
 c. Click the &quot;ServiceMix 3.x Release&quot; link under the &quot;Latest Releases&quot; section. This brings up a new page.<BR>
 d. Under the &quot;Download Here&quot; section, select the desired distribution (if necessary,<BR>
 scroll down to see the &quot;Download Here&quot; section). For a binary Unix distribution, the filename<BR>
-will be similar to: servicemix-x.x.x.tar.gz.</P>
+will be similar to: apache-servicemix-x.x.x.tar.gz.</P>
 
 <P>OR</P>
 
@@ -184,13 +184,16 @@ down to see the &quot;Download Here&quot; section). For a binary Unix distributi
 similar to: servicemix-x.x.x.tar.gz.<BR>
 e. Right-click on the distribution name and &quot;Copy Shortcut.&quot;<BR>
 f. On the Unix machine, change to the directory in which ServiceMix will be installed, e.g., /usr/local.<BR>
-f. Download the ServiceMix distribution to the Unix machine using the &quot;wget&quot; tool. For example, type &quot;wget&quot; followed by the saved shortcut:<BR>
- wget <SPAN class="nobr"><A href="http://dist.codehaus.org/servicemix/distributions/servicemix-3.0.x.tar.gz" title="Visit page outside Confluence" rel="nofollow">http://dist.codehaus.org/servicemix/distributions/servicemix-3.0.x.tar.gz<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+f. Download the ServiceMix distribution to the Unix machine using the &quot;wget&quot; tool. For example, type &quot;wget&quot; followed by the saved shortcut:</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>wget http://people.apache.org/repo/m2-incubating-repository/org/apache/servicemix/apache-servicemix/3.0-incubating/apache-servicemix-3.0-incubating-src.tar.gz
+</PRE>
+</DIV></DIV>
 <OL>
 	<LI>Extract the files from the gzip file into a directory of your choice. For example:
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">gunzip servicemix-x.x.x.tar.gz
-tar xvf servicemix-x.x.x.tar</PRE>
+<PRE class="code-java">gunzip apache-servicemix-x.x.x.tar.gz
+tar xvf apache-servicemix-x.x.x.tar</PRE>
 </DIV></DIV></LI>
 	<LI>If the <TT>servicemix</TT> start-up script is not executable, change its permisssions. The <TT>servicemix</TT> script is located in the <TT>bin</TT> directory. For example:
 <DIV class="code"><DIV class="codeContent">
@@ -214,29 +217,31 @@ chmod 755 servicemix</PRE>
 For a source distribution, the filename will be similar to: <TT>servicemix-x.x-src.tar.gz</TT>.</LI>
 	<LI>Extract the files from the ZIP file into a directory of your choice. For example:
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">gunzip servicemix.x.x-src.tar.gz
-tar xvf servicemix.x.x-src.tar</PRE>
+<PRE class="code-java">gunzip apache-servicemix.x.x-src.tar.gz
+tar xvf apache-servicemix.x.x-src.tar</PRE>
 </DIV></DIV></LI>
-	<LI>Build ServiceMix using Maven 1.0.2 or greater and Java 5:
+	<LI>Build ServiceMix using Maven 2.0.4 or greater and Java 5:
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">The preferred method of building ServiceMix is the following:
 cd [servicemix_install_dir]
  where [servicemix_install_dir] is the directory in which ServiceMix was installed.
-maven clean test
-
-If the above build fails on some tests, <SPAN class="code-keyword">do</SPAN> the following:
-cd [servicemix_install_dir]
-maven m:clean
-maven \-Dmaven.test.skip=<SPAN class="code-keyword">true</SPAN></PRE>
+mvn -Dprofile=step1
+mvn -Dprofile=step2</PRE>
+</DIV></DIV></LI>
+	<LI>Uncompress the distribution that has just been created
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [servicemix_install_dir]/apache-servicemix/target
+gunzip apache-servicemix-3.0-incubating.tar.gz
+tar xvf apache-servicemix-3.0-incubating.tar</PRE>
 </DIV></DIV></LI>
 	<LI>If the <TT>servicemix</TT> start-up script is not executable, change its permissions. For example:
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [servicemix_install_dir]/servicemix-assembly/target/servicemix-3.x/bin/servicemix-3.x/bin
+<PRE class="code-java">cd [servicemix_install_dir]/apache-servicemix/target/apache-servicemix-3.0-incubating/bin
 chmod 755 servicemix</PRE>
 </DIV></DIV></LI>
 	<LI>Start ServiceMix from the target directory, for example:
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [servicemix_install_dir]/servicemix-assembly/target/servicemix-3.x/bin/servicemix-3.x
+<PRE class="code-java">cd [servicemix_install_dir]/apache-servicemix/target/apache-servicemix-3.0-incubating
 bin/servicemix</PRE>
 </DIV></DIV>
 <P><EM>Note:</EM> working directories get created relative to the current directory. For the working directories to be created in the proper place, ServiceMix must be launched from its home/installation directory.</P></LI>
@@ -255,12 +260,12 @@ bin/servicemix</PRE>
 	<LI>Extract the files from the gzip file into a directory of your choice. For example:
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">For a binary developer&apos;s snapshot:
- gunzip servicemix-x.x-x.tar.gz
- tar xvf servicemix-x.x.x.tar
+ gunzip apache-servicemix-x.x-x.tar.gz
+ tar xvf apache-servicemix-x.x.x.tar
 
 For a source developer&apos;s snapshot:
- gunzip servicemix-x.x.x-src.tar.gz
- tar xvf servicemix-x.x.x-src.tar</PRE>
+ gunzip apache-servicemix-x.x.x-src.tar.gz
+ tar xvf apache-servicemix-x.x.x-src.tar</PRE>
 </DIV></DIV></LI>
 	<LI>If a binary snapshot was downloaded the <TT>servicemix</TT> script may need its permissions changed to make it executable:
 <DIV class="code"><DIV class="codeContent">
@@ -317,19 +322,19 @@ Note: /tmp/smlog may be changed to another file name.</PRE>
 
 <P>If ServiceMix is up and running without problems, the Window&apos;s console window or the Unix command shell will display something similar to the following log line:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">INFO - JBIContainer.init(421) \| ServiceMix JBI Container ([http:<SPAN class="code-comment">//servicemix.org/]) name: defaultJBI running version: 3.0-SNAPSHOT</SPAN></PRE>
+<PRE class="code-java">INFO - JBIContainer.init(421) | ServiceMix JBI Container ([http:<SPAN class="code-comment">//servicemix.org/]) name: defaultJBI running version: 3.0-incubating</SPAN></PRE>
 </DIV></DIV>
 <P>ServiceMix&apos;s default port is 1099. From another window run netstat and search for port 1099.</P>
 
 <P>From a Windows console, type:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">netstat -an|find <SPAN class="code-quote">&quot;1099&quot;</SPAN></PRE>
+<PRE class="code-java">netstat -an | find <SPAN class="code-quote">&quot;1099&quot;</SPAN></PRE>
 </DIV></DIV>
 <P><B>OR</B></P>
 
 <P>From a Unix command shell, type:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">netstat \-an\|grep 1099</PRE>
+<PRE class="code-java">netstat -an | grep 1099</PRE>
 </DIV></DIV>
 
 <H2><A name="3.Installation-StoppingServiceMix"></A>Stopping ServiceMix</H2>
@@ -338,12 +343,9 @@ Note: /tmp/smlog may be changed to another file name.</PRE>
 
 <P>If ServiceMix was started in the background on Unix, the process can be killed, with the following:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">ps \-ef\|grep servicemix
+<PRE class="code-java">ps -ef | grep servicemix
 kill [PID]
  where [PID] is the process id of the servicemix process.</PRE>
-</DIV></DIV>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java"></PRE>
 </DIV></DIV>
 
 <H2><A name="3.Installation-ConfiguringServiceMix"></A>Configuring ServiceMix</H2>
@@ -368,35 +370,9 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 14, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=13651">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      typos + minor syntax flaws<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13489">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 15, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=13653">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13489">edit page</A>)
     </DIV>
 
