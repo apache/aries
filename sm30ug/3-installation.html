@@ -80,7 +80,7 @@ Here you will find information about what are pre requisite software, where to d
 <P><B>Environment:</B></P>
 <UL>
 	<LI>Java Developer Kit (JDK) 1.5.x or greater (<SPAN class="nobr"><A href="http://java.sun.com/" title="Visit page outside Confluence" rel="nofollow">http://java.sun.com/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>).</LI>
-	<LI>The JAVA_HOME environment variable must be set to the directory where the JDK is installed, e.g., <TT>c:\Program Files\jdk.1.5.0_06</TT>.</LI>
+	<LI>The JAVA_HOME environment variable must be set to the directory where the JDK is installed, e.g., <TT>c:\Program Files\jdk.1.5.0_06</TT>. To accomplish that, press Windows key and Break key together, switch to &quot;Advanced&quot; tab and click on &quot;Environment Variables&quot;. Here, check for the variable and, if necessary, add it.</LI>
 	<LI>Apache Maven 2.0.4 (<SPAN class="nobr"><A href="http://maven.apache.org/download.html" title="Visit page outside Confluence" rel="nofollow">http://maven.apache.org/download.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>).</LI>
 </UL>
 
@@ -288,7 +288,6 @@ If a source snapshot was downloaded perform steps 6 - 8 of the <A href="#3.Insta
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">cd [servicemix_install_dir]</PRE>
 </DIV></DIV>
-
 <P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed, e.g., <TT>c:\Program Files\servicemix-3.x</TT>.
 <BR clear="all">
 Then type:</P>
@@ -370,9 +369,35 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 15, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=13653">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 16, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=13736">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      same formatting for both OSes, minor hints<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13489">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13489">edit page</A>)
     </DIV>
 
