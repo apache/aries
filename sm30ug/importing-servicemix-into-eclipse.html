@@ -1,0 +1,191 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <TITLE>
+Importing ServiceMix into Eclipse
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+    </DIV>
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-page">
+            <DIV class="wiki-content">
+<P>THIS IS A RAW VERSION, IDENTICAL TO <SPAN class="nobr"><A href="http://docs.codehaus.org/display/SM/Using%20Eclipse" title="Visit page outside Confluence" rel="nofollow">http://docs.codehaus.org/display/SM/Using+Eclipse<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> AND WILL BE CHANGED IN THE NEXT HOUERS.</P>
+
+<H1><A name="ImportingServiceMixintoEclipse-Introduction"></A>Introduction</H1>
+
+<P>This document will guide you through&nbsp;importing ServiceMix&nbsp;into the IDE Eclipse.</P>
+
+<H2><A name="ImportingServiceMixintoEclipse-PreInstallationRequirements"></A>Pre-Installation Requirements</H2>
+
+<P><B>Hardware:</B></P>
+<UL>
+	<LI>52 MB of free disk space for the ServiceMix 3.x binary distribution.</LI>
+	<LI>18 MB of free disk space for the ServiceMix 3.x source or developer&apos;s distributions.</LI>
+</UL>
+
+
+<P><B>Operating Systems:</B></P>
+<UL>
+	<LI>Windows: Windows XP SP2, Windows 2000.</LI>
+	<LI>Unix: Ubuntu Linux, Powerdog Linux, MacOS, AIX, HP-UX, Solaris, any Unix platform that supports Java.</LI>
+</UL>
+
+
+<P><B>Environment:</B></P>
+<UL>
+	<LI>Java Developer Kit (JDK) 1.5.x (Java 5) for compiling/building.</LI>
+	<LI>The JAVA_HOME environment variable must be set to the directory where the JDK is installed, e.g., <TT>c:\Program Files\jsdk.1.5.x</TT></LI>
+	<LI>Maven 1.0.2 or greater.</LI>
+	<LI>Eclipse 3.x or greater.</LI>
+</UL>
+
+
+<H1><A name="ImportingServiceMixintoEclipse-ImportingServiceMix"></A>Importing ServiceMix</H1>
+
+<P>Below are the steps to import ServiceMix as a project in Eclipse.</P>
+
+<H2><A name="ImportingServiceMixintoEclipse-PreparingtheFilesforEclipse"></A>Preparing the Files for Eclipse</H2>
+
+<OL>
+	<LI>Grab the sources from <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=Source&linkCreation=true&fromPageId=13740" title="Create Page: Source" class="createlink">svn<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or <SPAN class="nobr"><A href="http://servicemix.org/Download" title="Visit page outside Confluence" rel="nofollow">download<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> servicemix source distribution.
+<BR clear="all"></LI>
+	<LI>From the command line execute the following Maven 2 command to ready the project for Eclipse.
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn eclipse:eclipse</PRE>
+</DIV></DIV></LI>
+</OL>
+
+
+<H2><A name="ImportingServiceMixintoEclipse-InEclipse%3A"></A>In Eclipse:</H2>
+
+<OL>
+	<LI>From the &quot;File&quot; menu select &quot;Import&quot;.&nbsp;
+<BR clear="all">
+<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (FileImport.JPG) not found.</SPAN><BR clear="all">
+<BR clear="all"></LI>
+	<LI>&nbsp;Select &quot;Existing Projects into Workspace&quot; and click &quot;Next&quot;&nbsp;
+<BR clear="all">
+<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (Import.JPG) not found.</SPAN><BR clear="all">
+<BR clear="all"></LI>
+	<LI>Browse for the root directory, which is the directory in which you downloaded ServiceMix.&nbsp; &quot;Select All&quot; the files in the Import pop-up window. They are probably already pre-selected for you (check box is checked).&nbsp; Click &quot;Finish&quot; in the Import window.&nbsp;
+<BR clear="all">
+<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (Import_SelectAll.JPG) not found.</SPAN><BR clear="all">
+<BR clear="all"></LI>
+	<LI>From the &quot;Windows&quot;&nbsp;menu and click &quot;Preferences&quot;<BR>
+The Preferences window will pop-up.<BR>
+Change to JDK 5<BR>
+Windows&gt;preferences click on Compiler<BR>
+Compiler compliance level must be 5.0, pull down menu and select.<BR>
+Check the &quot;Use default compliance settings&quot; box.&nbsp;
+<BR clear="all">
+<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (JDK_Compliance.JPG) not found.</SPAN><BR clear="all">
+<BR clear="all"></LI>
+	<LI>Then check under &quot;Installed JREs&quot; that you have JDK 5, e.g., jre_1.5.x&nbsp;
+<BR clear="all">
+<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (Installed_JREs.JPG) not found.</SPAN><BR clear="all">
+<BR clear="all"></LI>
+	<LI>Click on the Java plus sign, then click on Build Path<BR>
+then select Classpath Variables.&nbsp;
+<BR clear="all">
+<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (Classpath_Variables.JPG) not found.</SPAN><BR clear="all">
+<BR clear="all"></LI>
+	<LI>Click on New button to right
+<BR clear="all">
+A pop-up appears.<BR>
+Enter the Name: M2_REPO<BR>
+Enter the Path, which is your local maven repository, usually located in<BR>
+your home directory .m2, for example:<BR>
+C:\Documents and Settings\gnodet\.m2\repository&nbsp;
+<BR clear="all">
+<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (eclipse-m2-repo-variable.png) not found.</SPAN><BR clear="all">
+<BR clear="all"></LI>
+</OL>
+
+
+<H1><A name="ImportingServiceMixintoEclipse-RunninganExample"></A>Running an Example</H1>
+
+<OL>
+	<LI>Now you can run an example:
+<BR clear="all">
+a. In the Package Explorer find the Main class, which should be located in: servicemix-core/src/main/java/<BR>
+under org.apache.servicemix/Main.java.<BR>
+Double click on the main() class.&nbsp;
+<BR clear="all">
+<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (PackageMainJava.JPG) not found.</SPAN><BR clear="all">
+<BR clear="all"></LI>
+	<LI>From the Run menu select &quot;Run...&quot;&nbsp;
+<BR clear="all">
+<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (RunRun.JPG) not found.</SPAN><BR clear="all">
+<BR clear="all"></LI>
+	<LI>You will get a Run window pop-up, from there select Java Application.
+	<OL>
+		<LI>Click on New button in botton left</LI>
+		<LI>Name the Project: any name you like, for example if you want to run the FilePoller application call it &quot;filepoller&quot;.</LI>
+		<LI>Click on arguments button:
+		<OL>
+			<LI>In the Program Arguments box enter <TT>servicemix.xml</TT></LI>
+			<LI>In the Working Directory enter the path of your example. Such as:<BR>
+C:\Program Files\servicemix-1.0.1\examples\file-binding
+<BR clear="all">
+You can use the &quot;File System...&quot; button to browse for your directory.</LI>
+		</OL>
+		</LI>
+		<LI>Click Apply.</LI>
+		<LI>Click Run&nbsp;
+<BR clear="all">
+<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (filepoller.JPG) not found.</SPAN><BR clear="all">
+<BR clear="all"></LI>
+	</OL>
+	</LI>
+</OL>
+
+
+<H1><A name="ImportingServiceMixintoEclipse-ConfiguringEclipse"></A>Configuring Eclipse</H1>
+
+
+<H2><A name="ImportingServiceMixintoEclipse-UpdatingEclipsefromTrunk"></A>Updating Eclipse from Trunk</H2>
+
+<OL>
+	<LI>Browse the &quot;Project&quot; menu and select &quot;Properties&quot;&nbsp;
+<BR clear="all">
+<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (ProjectProperties.JPG) not found.</SPAN><BR clear="all">
+<BR clear="all"></LI>
+	<LI>Click &quot;Java BuildPath&quot; and under the &quot;Libraries&quot; tab click &quot;Add External Jar&quot;.&nbsp;
+<BR clear="all">
+<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (JavaBuildPathLibraries.JPG) not found.</SPAN><BR clear="all">
+<BR clear="all"></LI>
+	<LI>Browse to the incubator-servicemix-3.0-SNAPSHOT.jar location:<BR>
+\target\incubator-servicemix-3.0-SNAPSHOT\bin\incubator-servicemix-3.0-SNAPSHOT and Click &quot;Open&quot; then &quot;OK&quot; in the &quot;Properties&quot; screen&nbsp;
+<BR clear="all">
+<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (JarSelection.JPG) not found.</SPAN><BR clear="all">
+<BR clear="all"></LI>
+	<LI>Allow some time for the individual projects to build.</LI>
+</OL>
+</DIV>
+          </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 18, 2006
+                  
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13740">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>
