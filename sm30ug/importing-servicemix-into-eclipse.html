@@ -19,12 +19,9 @@ Importing ServiceMix into Eclipse
         <TR>
         <TD valign="top">
           <DIV id="site-page">
-            <DIV class="wiki-content">
-<P>THIS IS A RAW VERSION, IDENTICAL TO <SPAN class="nobr"><A href="http://docs.codehaus.org/display/SM/Using%20Eclipse" title="Visit page outside Confluence" rel="nofollow">http://docs.codehaus.org/display/SM/Using+Eclipse<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> AND WILL BE CHANGED IN THE NEXT HOUERS.</P>
+            <DIV class="wiki-content"><H1><A name="ImportingServiceMixintoEclipse-Introduction"></A>Introduction</H1>
 
-<H1><A name="ImportingServiceMixintoEclipse-Introduction"></A>Introduction</H1>
-
-<P>This document will guide you through&nbsp;importing ServiceMix&nbsp;into the IDE Eclipse.</P>
+<P>This document will guide you through&nbsp;importing ServiceMix 3.0 into the IDE <SPAN class="nobr"><A href="http://download.eclipse.org/eclipse/downloads/" title="Visit page outside Confluence" rel="nofollow">Eclipse Java Development Tools<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> v3.x.</P>
 
 <H2><A name="ImportingServiceMixintoEclipse-PreInstallationRequirements"></A>Pre-Installation Requirements</H2>
 
@@ -46,7 +43,7 @@ Importing ServiceMix into Eclipse
 <UL>
 	<LI>Java Developer Kit (JDK) 1.5.x (Java 5) for compiling/building.</LI>
 	<LI>The JAVA_HOME environment variable must be set to the directory where the JDK is installed, e.g., <TT>c:\Program Files\jsdk.1.5.x</TT></LI>
-	<LI>Maven 1.0.2 or greater.</LI>
+	<LI>Maven 2 or greater.</LI>
 	<LI>Eclipse 3.x or greater.</LI>
 </UL>
 
@@ -58,9 +55,9 @@ Importing ServiceMix into Eclipse
 <H2><A name="ImportingServiceMixintoEclipse-PreparingtheFilesforEclipse"></A>Preparing the Files for Eclipse</H2>
 
 <OL>
-	<LI>Grab the sources from <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=Source&linkCreation=true&fromPageId=13740" title="Create Page: Source" class="createlink">svn<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or <SPAN class="nobr"><A href="http://servicemix.org/Download" title="Visit page outside Confluence" rel="nofollow">download<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> servicemix source distribution.
+	<LI>Grab the sources from <A href="../SM/source.html" title="Source">svn</A>or <SPAN class="nobr"><A href="http://servicemix.org/Download" title="Visit page outside Confluence" rel="nofollow">download<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> servicemix source distribution.
 <BR clear="all"></LI>
-	<LI>From the command line execute the following Maven 2 command to ready the project for Eclipse.
+	<LI>Open a command line and change to the source root folder. Execute the following Maven 2 command to ready the project for Eclipse. It will take around two minutes.
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn eclipse:eclipse</PRE>
 </DIV></DIV></LI>
@@ -72,82 +69,260 @@ Importing ServiceMix into Eclipse
 <OL>
 	<LI>From the &quot;File&quot; menu select &quot;Import&quot;.&nbsp;
 <BR clear="all">
-<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (FileImport.JPG) not found.</SPAN><BR clear="all">
-<BR clear="all"></LI>
+<BR clear="all">  <IMG src="importing-servicemix-into-eclipse.data/FileImport.JPG" align="absmiddle" border="0"><BR clear="all"></LI>
 	<LI>&nbsp;Select &quot;Existing Projects into Workspace&quot; and click &quot;Next&quot;&nbsp;
 <BR clear="all">
-<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (Import.JPG) not found.</SPAN><BR clear="all">
-<BR clear="all"></LI>
-	<LI>Browse for the root directory, which is the directory in which you downloaded ServiceMix.&nbsp; &quot;Select All&quot; the files in the Import pop-up window. They are probably already pre-selected for you (check box is checked).&nbsp; Click &quot;Finish&quot; in the Import window.&nbsp;
+<BR clear="all">  <IMG src="importing-servicemix-into-eclipse.data/Import.png" align="absmiddle" border="0"><BR clear="all"></LI>
+	<LI>Browse for the root directory, which is the directory in which you downloaded ServiceMix.&nbsp; &quot;Select All&quot; the files in the Import pop-up window. They are probably already pre-selected for you (check box is checked).&nbsp; Un-checking the option &quot;Copy projects into workspace&quot; allows you to automatically always edit the current version of the SVN checkout folder, thus avoiding an import after each SVN update. Click &quot;Finish&quot; in the Import window; the import takes around three minutes.
 <BR clear="all">
-<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (Import_SelectAll.JPG) not found.</SPAN><BR clear="all">
-<BR clear="all"></LI>
+<BR clear="all">  <IMG src="importing-servicemix-into-eclipse.data/Import_SelectAll.png" align="absmiddle" border="0"><BR clear="all"></LI>
 	<LI>From the &quot;Windows&quot;&nbsp;menu and click &quot;Preferences&quot;<BR>
 The Preferences window will pop-up.<BR>
-Change to JDK 5<BR>
-Windows&gt;preferences click on Compiler<BR>
+Click on the &quot;Java&quot; plus sign and change to &quot;Compiler&quot;.<BR>
 Compiler compliance level must be 5.0, pull down menu and select.<BR>
 Check the &quot;Use default compliance settings&quot; box.&nbsp;
 <BR clear="all">
-<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (JDK_Compliance.JPG) not found.</SPAN><BR clear="all">
-<BR clear="all"></LI>
+<BR clear="all">  <IMG src="importing-servicemix-into-eclipse.data/JDK_Compliance.JPG" align="absmiddle" border="0"><BR clear="all"></LI>
 	<LI>Then check under &quot;Installed JREs&quot; that you have JDK 5, e.g., jre_1.5.x&nbsp;
 <BR clear="all">
-<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (Installed_JREs.JPG) not found.</SPAN><BR clear="all">
-<BR clear="all"></LI>
-	<LI>Click on the Java plus sign, then click on Build Path<BR>
-then select Classpath Variables.&nbsp;
+<BR clear="all">  <IMG src="importing-servicemix-into-eclipse.data/Installed_JREs.JPG" align="absmiddle" border="0"><BR clear="all"></LI>
+	<LI>Click on &quot;Build Path&quot; and then select &quot;Classpath Variables&quot;.&nbsp;
 <BR clear="all">
-<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (Classpath_Variables.JPG) not found.</SPAN><BR clear="all">
-<BR clear="all"></LI>
-	<LI>Click on New button to right
+<BR clear="all">  <IMG src="importing-servicemix-into-eclipse.data/Classpath_Variables.JPG" align="absmiddle" border="0"><BR clear="all"></LI>
+	<LI>Click on &quot;New&quot; button to right
 <BR clear="all">
 A pop-up appears.<BR>
 Enter the Name: M2_REPO<BR>
-Enter the Path, which is your local maven repository, usually located in<BR>
-your home directory .m2, for example:<BR>
-C:\Documents and Settings\gnodet\.m2\repository&nbsp;
+Enter the Path of your local maven repository, usually located in &lt;your home directory&gt;\.m2, for example:<BR>
+C:\Documents and Settings\exjobb\.m2\repository
 <BR clear="all">
-<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (eclipse-m2-repo-variable.png) not found.</SPAN><BR clear="all">
-<BR clear="all"></LI>
+&nbsp; <IMG src="importing-servicemix-into-eclipse.data/eclipse-m2-repo-variable.PNG" align="absmiddle" border="0"><BR clear="all"></LI>
+	<LI>Click &quot;OK&quot; button. The necessary build takes around three minutes.</LI>
 </OL>
 
 
 <H1><A name="ImportingServiceMixintoEclipse-RunninganExample"></A>Running an Example</H1>
 
+<P>Now you can run an example:</P>
+
 <OL>
-	<LI>Now you can run an example:
-<BR clear="all">
-a. In the Package Explorer find the Main class, which should be located in: servicemix-core/src/main/java/<BR>
+	<LI>In the Package Explorer find the Main class, which should be located in: servicemix-core/src/main/java/<BR>
 under org.apache.servicemix/Main.java.<BR>
-Double click on the main() class.&nbsp;
+Double click on the main() method.&nbsp;
 <BR clear="all">
-<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (PackageMainJava.JPG) not found.</SPAN><BR clear="all">
-<BR clear="all"></LI>
+<BR clear="all">  <IMG src="importing-servicemix-into-eclipse.data/PackageMainJava.png" align="absmiddle" border="0"><BR clear="all"></LI>
 	<LI>From the Run menu select &quot;Run...&quot;&nbsp;
 <BR clear="all">
-<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (RunRun.JPG) not found.</SPAN><BR clear="all">
-<BR clear="all"></LI>
+<BR clear="all">  <IMG src="importing-servicemix-into-eclipse.data/RunRun.JPG" align="absmiddle" border="0"><BR clear="all"></LI>
 	<LI>You will get a Run window pop-up, from there select Java Application.
 	<OL>
-		<LI>Click on New button in botton left</LI>
-		<LI>Name the Project: any name you like, for example if you want to run the FilePoller application call it &quot;filepoller&quot;.</LI>
-		<LI>Click on arguments button:
+		<LI>Click on New button in botton left (Eclipse &lt;3.2) or the icon in the top left (Eclipse v3.2)</LI>
+		<LI>Name the Project: any name you like, for example if you want to run the FilePoller / FileBinding application call it &quot;filepoller&quot;, so it&apos;s easy for you to remember what this run configuration does.</LI>
+		<LI>Click on &quot;<B>Arguments</B>&quot; tab:
 		<OL>
-			<LI>In the Program Arguments box enter <TT>servicemix.xml</TT></LI>
-			<LI>In the Working Directory enter the path of your example. Such as:<BR>
-C:\Program Files\servicemix-1.0.1\examples\file-binding
-<BR clear="all">
+			<LI>In the &quot;Program Arguments&quot; box enter <TT>servicemix.xml</TT></LI>
+			<LI>In the Working Directory enter the path of your example. Such as<BR>
+S:\apache-servicemix\src\main\release\examples\file-binding<BR>
+where S:\ is assumed as your servicemix root directory.<BR>
 You can use the &quot;File System...&quot; button to browse for your directory.</LI>
 		</OL>
 		</LI>
-		<LI>Click Apply.</LI>
-		<LI>Click Run&nbsp;
-<BR clear="all">
-<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (filepoller.JPG) not found.</SPAN><BR clear="all">
-<BR clear="all"></LI>
 	</OL>
 	</LI>
+</OL>
+
+
+<P><IMG src="importing-servicemix-into-eclipse.data/Run%20-%20filepoller%20-%20Arguments.png" align="absmiddle" border="0"></P>
+<OL>
+	<LI>
+	<OL>
+		<LI>Click on the tab &quot;<B>Classpath</B>&quot; to give Eclipse needed information on where to search for executable files. This description sticks to the file-binding example, but a similar procedure will be needed for most examples and your own code as well. There are three main ways to add classes to the classpath:
+		<OL>
+			<LI>You can add other projects of the workbench. Doing this will make the file-binding example run.
+			<OL>
+				<LI>Click &quot;User Entries&quot;</LI>
+				<LI>Click &quot;Add Projects&quot; and click the checkbox(es) in front of the project(s) that are required. For convenience reasons you may click &quot;Select All&quot;.</LI>
+			</OL>
+			</LI>
+		</OL>
+		</LI>
+	</OL>
+	</LI>
+</OL>
+
+
+<P><IMG src="importing-servicemix-into-eclipse.data/Classpath%20-%20Add%20projects.png" align="absmiddle" border="0"></P>
+<OL>
+	<LI>
+	<OL>
+		<LI>
+		<OL>
+			<LI>
+			<OL>
+				<LI>Click &quot;OK&quot;. Now your Run-dialog shall look similar to this screenshot:</LI>
+			</OL>
+			</LI>
+		</OL>
+		</LI>
+	</OL>
+	</LI>
+</OL>
+
+
+<P><IMG src="importing-servicemix-into-eclipse.data/Classpath%20result%20all%20projects.png" align="absmiddle" border="0"></P>
+<OL>
+	<LI>
+	<OL>
+		<LI>
+		<OL>
+			<LI>You can add JARs and classes that are stored within a classpath environment variable. This is not required for the file-binding example, but possible, e.g. if you want to run a specific ServiceMix version from a JAR for bug reproduction or the like - this case is used for the following description. Often, this way is used to reference depenedencies Maven downloads automatically for you.
+			<OL>
+				<LI>Click &quot;User Entries&quot;</LI>
+				<LI>Click &quot;Advanced&quot;, &quot;Add Classpath Variables&quot; and &quot;OK&quot;<BR>
+<IMG src="importing-servicemix-into-eclipse.data/Classpath%20-%20Advanced%20Options%20var.png" align="absmiddle" border="0"></LI>
+				<LI>Check M2_REPRO and click &quot;Extend&quot;</LI>
+			</OL>
+			</LI>
+		</OL>
+		</LI>
+	</OL>
+	</LI>
+</OL>
+
+
+<P><IMG src="importing-servicemix-into-eclipse.data/Classpath%20-%20Advanced%20Options%20-%20Variable.png" align="absmiddle" border="0"></P>
+<OL>
+	<LI>
+	<OL>
+		<LI>
+		<OL>
+			<LI>
+			<OL>
+				<LI>Choose the JAR containing the bytecode for the missing classes. If you want to run SOME_VERSION of ServiceMix, choose /org/apache/servicemix/servicemix-core/SOME_VERSION/servicemix-core-SOME_VERSION.jar</LI>
+			</OL>
+			</LI>
+		</OL>
+		</LI>
+	</OL>
+	</LI>
+</OL>
+
+
+<P>In case you want to reference a dependency, proceed in the same way. In case you do not know which package you shall select, see below.</P>
+
+<P><IMG src="importing-servicemix-into-eclipse.data/Classpath%20-%20Advanced%20Options%20-%20Variable%20-%20Extend.png" align="absmiddle" border="0"></P>
+<OL>
+	<LI>
+	<OL>
+		<LI>
+		<OL>
+			<LI>
+			<OL>
+				<LI>Click &quot;OK&quot;</LI>
+			</OL>
+			</LI>
+			<LI>You can add arbitrary folders to the classpath. This is usually only needed for your own code. To explain the workflow, let&apos;s assume you did not add any projects, thus your file-binding example does not run and the console window contains this message:</LI>
+		</OL>
+		</LI>
+	</OL>
+	</LI>
+</OL>
+
+
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>Error &apos;Bean class [org.apache.servicemix.components.file.FileWriter] not found&apos;
+</PRE>
+</DIV></DIV>
+
+<OL>
+	<LI>
+	<OL>
+		<LI>
+		<OL>
+			<LI>
+			<OL>
+				<LI>Click &quot;User Entries&quot;</LI>
+				<LI>Click &quot;Advanced&quot;, &quot;Add External Folder&quot; and &quot;OK&quot;</LI>
+			</OL>
+			</LI>
+		</OL>
+		</LI>
+	</OL>
+	</LI>
+</OL>
+
+
+<P><IMG src="importing-servicemix-into-eclipse.data/Classpath%20-%20Advanced%20Options%20ext%20folder.png" align="absmiddle" border="0"></P>
+<OL>
+	<LI>
+	<OL>
+		<LI>
+		<OL>
+			<LI>
+			<OL>
+				<LI>When S:\ is your servicemix root directory, select/enter<BR>
+<EM>S:\servicemix-components\target\classes</EM></LI>
+			</OL>
+			</LI>
+		</OL>
+		</LI>
+	</OL>
+	</LI>
+</OL>
+
+
+<P>Why this directory? Well, have a closer look at the error message presented above. The package <EM>org.apache.servicemix.components</EM> indicates the location of the missing bean <EM>FileWriter</EM> is <EM>servicemix-components</EM>, and as we need an executable file, the <EM>target\classes</EM> subdirectory is where to look. Of course we shall proof that <EM>FileWriter</EM> really is located here, so execute <EM>dir /s FileWriter.class</EM> in the given directory and watch the output.</P>
+
+<P><IMG src="importing-servicemix-into-eclipse.data/Classpath%20-%20Advanced%20Options%20-%20external%20folder.png" align="absmiddle" border="0"></P>
+<OL>
+	<LI>
+	<OL>
+		<LI>
+		<OL>
+			<LI>
+			<OL>
+				<LI>Click &quot;OK&quot;.</LI>
+				<LI>aaa</LI>
+			</OL>
+			</LI>
+		</OL>
+		</LI>
+	</OL>
+	</LI>
+</OL>
+
+
+<P><B>TODO</B></P>
+
+<P>Click Apply.</P>
+
+<P>Click Run.</P>
+
+<P>error message&nbsp;</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>java.lang.NoClassDefFoundError: org/apache/servicemix/Main
+</PRE>
+</DIV></DIV>
+<P>class file not found. execute</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>mvn install
+</PRE>
+</DIV></DIV>
+<P>to get a build&nbsp;</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>Error &apos;Bean class [org.apache.servicemix.components.file.FileWriter] not found&apos;
+</PRE>
+</DIV></DIV>
+<P>Why this directory? Well, have a closer look at the error message presented above. The package <EM>org.apache.servicemix.components</EM> indicates the location of the missing bean <EM>FileWriter</EM> is <EM>servicemix-components</EM>, and as we need an executable file, the <EM>target\classes</EM> subdirectory is where to look. Of course we shall proof that <EM>FileWriter</EM> really is located here, so execute <EM>dir /s FileWriter.class</EM> in the given directory and watch the output.</P>
+
+<P>When you run the example, Eclipse will show in the Console window error messages like &quot;<EM>Error creating bean with name</EM>&quot;, &quot;<EM>java.lang.NoClassDefFoundError</EM>&quot; or similar. Scan the messages from top to bottom until you find the missing component, indicated by a package name&nbsp;&#45; in case it&apos;s a &quot;<EM>java.lang.NoClassDefFoundError</EM>&quot; or &quot;<EM>java.lang.ClassNotFoundException</EM>&quot;, the missing class is printed directly after that error string.</P>
+
+<P>First extract the package name (eg: &quot;java.lang.ClassNotFoundException: org.quartz.SimpleTrigger&quot; tells you that the package <EM>org.quartz</EM> is missing). Add the required library to the classpath like stated above for &quot;Add Classpath Variables&quot;. Look for a folder matching the missing package (sometimes the TLD is omitted, so package <EM>org.quartz</EM> may be placed in folder <EM>quartz</EM>), and choose a JAR containing executable bytecode classes (so not the <EM>quartz-1.5.1-sources.jar</EM> but <EM>quartz-1.5.1.jar</EM>) within the folder. Redo this procedure until no JAR is missing any more.</P>
+
+<P><B>TODO</B><BR>
+&nbsp;</P>
+<OL>
+	<LI>&nbsp;</LI>
 </OL>
 
 
@@ -182,7 +357,8 @@ You can use the &quot;File System...&quot; button to browse for your directory.<
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 18, 2006
-                  
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13740&originalId=13745">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13740">edit page</A>)
     </DIV>
 
