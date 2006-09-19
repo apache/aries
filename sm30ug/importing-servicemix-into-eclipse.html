@@ -71,15 +71,14 @@ Downloading: http:<SPAN class="code-comment">//mirrors.sunsite.dk/maven2/org/apa
 [INFO] ------------------------------------------------------------------------
 [INFO] Plugin could not be found - check that the goal name is correct: Unable to download the artifact from any repository</PRE>
 </DIV></DIV>
-<P>execute the commands stated under &quot;Build ServiceMix...&quot; in the chapters <A href="3-installation.html#3.Installation-WindowsSourceInstallation" title="Windows Source Installation on 3. Installation">Windows</A> / <A href="3-installation.html#3.Installation-UnixSourceInstallation" title="Unix Source Installation on 3. Installation">Unix</A> source installation:</P></LI>
-</OL>
-
-
+<P>execute the commands stated under &quot;Build ServiceMix...&quot; in the chapters <A href="3-installation.html#3.Installation-WindowsSourceInstallation" title="Windows Source Installation on 3. Installation">Windows</A> / <A href="3-installation.html#3.Installation-UnixSourceInstallation" title="Unix Source Installation on 3. Installation">Unix</A> source installation:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn -Dprofile=step1
 mvn -Dprofile=step2</PRE>
 </DIV></DIV>
-<P>and then retry.</P>
+<P>and then retry.</P></LI>
+</OL>
+
 
 <H2><A name="ImportingServiceMixintoEclipse-InEclipse%3A"></A>In Eclipse:</H2>
 
@@ -218,8 +217,7 @@ In case you want to reference a dependency, proceed in the same way. In case you
 &nbsp;
 <BR clear="all"></LI>
 				<LI>When S:\ is your servicemix root directory, select/enter<BR>
-<EM>S:\servicemix-components\target\classes</EM>
-<BR clear="all">
+<EM>S:\servicemix-components\target\classes</EM><BR clear="all">
 &nbsp;
 <BR clear="all">
 Why this directory? Well, have a closer look at the error message presented above. The package <EM>org.apache.servicemix.components</EM> indicates the location of the missing bean <EM>FileWriter</EM> is <EM>servicemix-components</EM>, and as we need an executable file, the <EM>target\classes</EM> subdirectory is where to look. Of course we shall proof that <EM>FileWriter</EM> really is located here, so execute <EM>dir /s FileWriter.class</EM> in the given directory and watch the output.
@@ -290,12 +288,12 @@ Why this directory? Well, have a closer look at the error message presented abov
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 19, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13740&originalId=13758">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13740&originalId=13759">view change</A>)
                       <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
         <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
           <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
       <B>Comment:</B>
-      HDD space requirements refined. Deleted last section as Guillaume and me se no sense in using JAR instead of .class<BR>
+      indention problem fixed<BR>
       <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13740">View page history</A></SPAN>
   </DIV>
 
