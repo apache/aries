@@ -27,8 +27,8 @@ Importing ServiceMix into Eclipse
 
 <P><B>Hardware:</B></P>
 <UL>
-	<LI>52 MB of free disk space for the ServiceMix 3.x binary distribution.</LI>
-	<LI>18 MB of free disk space for the ServiceMix 3.x source or developer&apos;s distributions.</LI>
+	<LI>Around 25 MB of free disk space for the ServiceMix 3.x sources.</LI>
+	<LI>Roughly 250 MB of free disk space for the complete build (Eclipse plugin and ServiceMix binaries) produced by Maven and further 200 MB for the dependencies Maven downloads during building. As a lot of small files are produced, the exact space demands depend greatly on your cluster utilisation ratio.</LI>
 </UL>
 
 
@@ -43,7 +43,7 @@ Importing ServiceMix into Eclipse
 <UL>
 	<LI>Java Developer Kit (JDK) 1.5.x (Java 5) for compiling/building.</LI>
 	<LI>The JAVA_HOME environment variable must be set to the directory where the JDK is installed, e.g., <TT>c:\Program Files\jsdk.1.5.x</TT></LI>
-	<LI>Maven 2 or greater.</LI>
+	<LI>Maven 2.0.4 or greater.</LI>
 	<LI>Eclipse 3.x or greater.</LI>
 </UL>
 
@@ -60,9 +60,26 @@ Importing ServiceMix into Eclipse
 	<LI>Open a command line and change to the source root folder. Execute the following Maven 2 command to ready the project for Eclipse. It will take around two minutes.
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn eclipse:eclipse</PRE>
-</DIV></DIV></LI>
+</DIV></DIV>
+<P>In case you did never use Maven before and get errors stating that some plugins or the like are missing, like for example:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">[INFO] Searching repository <SPAN class="code-keyword">for</SPAN> plugin with prefix: &apos;eclipse&apos;.
+Downloading: http:<SPAN class="code-comment">//mirrors.sunsite.dk/maven2/org/apache/servicemix/tooling/jbi-maven-plugin/3.0-incubating/jbi-maven-plugin-3.0-incubating.jar
+</SPAN>[WARNING] Unable to get resource from repository central (http:<SPAN class="code-comment">//repo1.maven.org/maven2)
+</SPAN>[INFO] ------------------------------------------------------------------------
+[ERROR] BUILD ERROR
+[INFO] ------------------------------------------------------------------------
+[INFO] Plugin could not be found - check that the goal name is correct: Unable to download the artifact from any repository</PRE>
+</DIV></DIV>
+<P>execute the commands stated under &quot;Build ServiceMix...&quot; in the chapters <A href="3-installation.html#3.Installation-WindowsSourceInstallation" title="Windows Source Installation on 3. Installation">Windows</A> / <A href="3-installation.html#3.Installation-UnixSourceInstallation" title="Unix Source Installation on 3. Installation">Unix</A> source installation:</P></LI>
 </OL>
 
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn -Dprofile=step1
+mvn -Dprofile=step2</PRE>
+</DIV></DIV>
+<P>and then retry.</P>
 
 <H2><A name="ImportingServiceMixintoEclipse-InEclipse%3A"></A>In Eclipse:</H2>
 
@@ -201,7 +218,8 @@ In case you want to reference a dependency, proceed in the same way. In case you
 &nbsp;
 <BR clear="all"></LI>
 				<LI>When S:\ is your servicemix root directory, select/enter<BR>
-<EM>S:\servicemix-components\target\classes</EM><BR clear="all">
+<EM>S:\servicemix-components\target\classes</EM>
+<BR clear="all">
 &nbsp;
 <BR clear="all">
 Why this directory? Well, have a closer look at the error message presented above. The package <EM>org.apache.servicemix.components</EM> indicates the location of the missing bean <EM>FileWriter</EM> is <EM>servicemix-components</EM>, and as we need an executable file, the <EM>target\classes</EM> subdirectory is where to look. Of course we shall proof that <EM>FileWriter</EM> really is located here, so execute <EM>dir /s FileWriter.class</EM> in the given directory and watch the output.
@@ -226,7 +244,6 @@ Why this directory? Well, have a closer look at the error message presented abov
 
 <H3><A name="ImportingServiceMixintoEclipse-Oneortwolinesoferrormessages"></A>One or two lines of error messages</H3>
 
-
 <P>In case you see an error message like</P>
 <DIV class="preformatted"><DIV class="preformattedContent">
 <PRE>java.lang.NoClassDefFoundError: org/apache/servicemix/Main
@@ -239,14 +256,11 @@ Why this directory? Well, have a closer look at the error message presented abov
 </DIV></DIV>
 <P>in the source&apos;s root directory. This will take roughly 10 to 15 minutes. Maybe you prefer to reference a binary distribution (see &quot;Add Classpath Variables&quot; above).</P>
 
-
 <H3><A name="ImportingServiceMixintoEclipse-Lengthyerrormessages%28stacktrace%29"></A>Lengthy error messages (stack trace)</H3>
-
 
 <P>Scan the messages in the console window from top to bottom until you find one stating a missing component, indicated by a package name&nbsp;&#45; in case it&apos;s a &quot;<EM>java.lang.NoClassDefFoundError</EM>&quot; or &quot;<EM>java.lang.ClassNotFoundException</EM>&quot;, the missing class is printed directly after that error string, whereas for instance &quot;<EM>Error creating bean with name</EM>&quot; is demanding slightly more search.</P>
 
 <P>Messages may look like one of the following</P>
-
 <DIV class="preformatted"><DIV class="preformattedContent">
 <PRE>Error &apos;Bean class [org.apache.servicemix.components.file.FileWriter] not found&apos;
 </PRE>
@@ -266,30 +280,7 @@ Why this directory? Well, have a closer look at the error message presented abov
 </UL>
 
 
-<P>Redo this until no class/JAR is missing any more.</P>
-
-<H1><A name="ImportingServiceMixintoEclipse-ConfiguringEclipse"></A>Configuring Eclipse</H1>
-
-
-<H2><A name="ImportingServiceMixintoEclipse-UpdatingEclipsefromTrunk"></A>Updating Eclipse from Trunk</H2>
-
-<OL>
-	<LI>Browse the &quot;Project&quot; menu and select &quot;Properties&quot;&nbsp;
-<BR clear="all">
-<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (ProjectProperties.JPG) not found.</SPAN><BR clear="all">
-<BR clear="all"></LI>
-	<LI>Click &quot;Java BuildPath&quot; and under the &quot;Libraries&quot; tab click &quot;Add External Jar&quot;.&nbsp;
-<BR clear="all">
-<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (JavaBuildPathLibraries.JPG) not found.</SPAN><BR clear="all">
-<BR clear="all"></LI>
-	<LI>Browse to the incubator-servicemix-3.0-SNAPSHOT.jar location:<BR>
-\target\incubator-servicemix-3.0-SNAPSHOT\bin\incubator-servicemix-3.0-SNAPSHOT and Click &quot;Open&quot; then &quot;OK&quot; in the &quot;Properties&quot; screen&nbsp;
-<BR clear="all">
-<BR clear="all">  <SPAN class="error">Unable to render embedded object: File (JarSelection.JPG) not found.</SPAN><BR clear="all">
-<BR clear="all"></LI>
-	<LI>Allow some time for the individual projects to build.</LI>
-</OL>
-</DIV>
+<P>Redo this until no class/JAR is missing any more.</P></DIV>
           </DIV>
         </TD>
       </TR>
@@ -298,13 +289,13 @@ Why this directory? Well, have a closer look at the error message presented abov
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 18, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13740&originalId=13754">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 19, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13740&originalId=13758">view change</A>)
                       <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
         <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
           <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
       <B>Comment:</B>
-      INS: Troubleshooting<BR>
+      HDD space requirements refined. Deleted last section as Guillaume and me se no sense in using JAR instead of .class<BR>
       <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13740">View page history</A></SPAN>
   </DIV>
 
