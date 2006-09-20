@@ -69,7 +69,6 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 
 <P>Select the file compression format compatible with your system (zip, tar.gz) by clicking directly on the link, download it and expand the binary to your hard drive in a new directory; for example in <TT>z:\servicemix</TT> &#45; from now on this directory will be referenced as &lt;servicemix_home&gt;. Please remember the restrictions concerning illegal characters in Java paths, e.g. &#33;, % etc.</P>
 
-
 <P>The installation of Apache ServiceMix is as simple as uncompressing the .zip or .tar files. The next step is to start the server.</P>
 
 <P><A href="#1.Quickstart-top" title="top on 1. Quick start">top</A></P>
@@ -105,12 +104,13 @@ INFO  - JBIContainer                   - ServiceMix JBI Container (ServiceMix) s
 </DIV></DIV>
 <P>you may have some illegal characters in the path, e.g. &#33;, % etc., that cause Java not to find the files.</P>
 
-
 <P><A href="#1.Quickstart-top" title="top on 1. Quick start">top</A></P>
 
 <H2><A name="1.Quickstart-Deployasampleapplication"></A>Deploy a sample application</H2>
 
-<P>While you will lear in the remaining of this guide how to create and package a JBI application, we will just use a pre-built packaging for now.</P>
+<P>While you will learn in the remaining of this guide how to create and package a JBI application, we will just use a pre-built packaging for now.</P>
+
+<P><EM>Note:</EM> This requires ServiceMix 3.0 and does not work with 3.0M2 or prior.&nbsp;</P>
 
 <P>Open another command line console in the <B>&lt;servicemix_home&gt;</B> directory and run the following commands in Windows</P>
 <DIV class="code"><DIV class="codeContent">
@@ -189,8 +189,34 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 20, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13487&originalId=13765">view change</A>)
-              
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13487&originalId=13766">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      typo &amp; nore<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13487">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13487">edit page</A>)
     </DIV>
 
