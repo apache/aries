@@ -1,7 +1,7 @@
 RewriteEngine On
 RewriteBase /servicemix
 RewriteRule   ^SM30UG/(.*)$ sm30ug/$1 [R,L]
-RewriteRule   ^(sm30ug/.*)$ $1 [R,L]
-RewriteRule   ^(dist/.*)$ $1 [R,L]
-RewriteRule   ^(maven/.*)$ $1 [R,L]
+RewriteRule   ^(sm30ug/.*)$ $1 [L]
+RewriteRule   ^(dist/.*)$ $1 [L]
+RewriteRule   ^(maven/.*)$ $1 [L]
 RewriteRule   ^(.*)$ main/$1 [R,L]
