@@ -53,10 +53,16 @@ Here you will find information about what are pre requisite software, where to d
 </UL></LI>
   <LI><A href="#3.Installation-StartingServiceMix">Starting ServiceMix</A>
 <UL>
-  <LI><A href="#3.Installation-OnWindows">On Windows</A></LI>
-  <LI><A href="#3.Installation-OnUnix">On Unix</A></LI>
-  <LI><A href="#3.Installation-TestingtheInstallation">Testing the Installation</A></LI>
+  <LI><A href="#3.Installation-OnWindows">On Windows</A>
+<UL>
+  <LI><A href="#3.Installation-Troubleshooting">Troubleshooting</A></LI>
 </UL></LI>
+  <LI><A href="#3.Installation-OnUnix">On Unix</A>
+<UL>
+  <LI><A href="#3.Installation-Troubleshooting">Troubleshooting</A></LI>
+</UL></LI>
+</UL></LI>
+  <LI><A href="#3.Installation-TestingtheInstallation">Testing the Installation</A></LI>
   <LI><A href="#3.Installation-StoppingServiceMix">Stopping ServiceMix</A></LI>
   <LI><A href="#3.Installation-ConfiguringServiceMix">Configuring ServiceMix</A></LI>
 </UL></DIV>
@@ -97,7 +103,7 @@ Here you will find information about what are pre requisite software, where to d
 	<LI>Click the &quot;ServiceMix 3.0.x Release&quot; link under the &quot;Latest Releases&quot; section. This brings up a new page.</LI>
 	<LI>Under the &quot;Download Here&quot; section, select the desired distribution (you may have to scroll down to see the &quot;Download Here&quot; section).<BR>
 For a binary distribution, the filename will be similar to: <TT>apache-servicemix-3.0.x.zip</TT>.</LI>
-	<LI>Extract the files from the ZIP file into a directory of your choice.</LI>
+	<LI>Extract the files from the ZIP file into a directory of your choice. Please remember the restrictions concerning illegal characters in Java paths, e.g. &#33;, % etc.</LI>
 	<LI>Proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.</LI>
 	<LI>Following start-up, go to the <A href="#3.Installation-TestingtheInstallation" title="Testing the Installation on 3. Installation">Testing the Installation</A> section of this document.</LI>
 </OL>
@@ -111,7 +117,7 @@ For a binary distribution, the filename will be similar to: <TT>apache-servicemi
 	<LI>Click the &quot;ServiceMix 3.0.x Release&quot; link under the &quot;Latest Releases&quot; section. This brings up another page.</LI>
 	<LI>Under the &quot;Download Here&quot; section, select the desired distribution (if necessary, scroll down to see the &quot;Download Here&quot; section).<BR>
 For a source distribution, the filename will be similar to: <TT>apache-servicemix-3.0.x-src.zip</TT>.</LI>
-	<LI>Extract ServiceMix from the ZIP file into a directory of your choice.</LI>
+	<LI>Extract ServiceMix from the ZIP file into a directory of your choice. Please remember the restrictions concerning illegal characters in Java paths, e.g. &#33;, % etc.</LI>
 	<LI><A name="3.Installation-WindowsSourceInstallation"></A> Build ServiceMix using Maven 2.0.4 or greater and Java 5.<BR>
 The recommended method of building ServiceMix is the following:
 <DIV class="code"><DIV class="codeContent">
@@ -127,13 +133,8 @@ mvn -Dprofile=step2</PRE>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">[servicemix_install_dir]\apache-servicemix\target\apache-servicemix-3.0-incubating.zip</PRE>
 </DIV></DIV></LI>
-	<LI>Start ServiceMix from the target directory, for example:
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [servicemix_install_dir]\apache-servicemix\target\apache-servicemix-3.0-incubating-SNAPSHOT
-bin\servicemix</PRE>
-</DIV></DIV>
-<P><EM>Note:</EM> working directories get created relative to the current directory. For the working directories to be created in the proper place, ServiceMix must be launched from its home/installation directory.</P></LI>
-	<LI>Proceed to the <A href="#3.Installation-TestingtheInstallation" title="Testing the Installation on 3. Installation">Testing the Installation</A> section.</LI>
+	<LI>Proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.</LI>
+	<LI>Following start-up, go to the <A href="#3.Installation-TestingtheInstallation" title="Testing the Installation on 3. Installation">Testing the Installation</A> section of this document.</LI>
 </OL>
 
 
@@ -147,9 +148,9 @@ bin\servicemix</PRE>
 	<LI>Click the Download link in the navigation pane (the left pane).</LI>
 	<LI>Click the &quot;Current development SNAPSHOT release&quot; link.</LI>
 	<LI>Select the version of ServiceMix to download (if necessary, scroll down to see the ServiceMix snapshots).</LI>
-	<LI>Extract the files from the ZIP file into a directory of your choice.</LI>
+	<LI>Extract the files from the ZIP file into a directory of your choice. Please remember the restrictions concerning illegal characters in Java paths, e.g. &#33;, % etc.</LI>
 	<LI>If a binary snapshot was downloaded proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.<BR>
-If a source snapshot was downloaded perform step 6 and step 7 of the <A href="#3.Installation-WindowsSourceInstallation" title="Windows Source Installation on 3. Installation">Windows Source Installation</A> procedure.</LI>
+If a source snapshot was downloaded perform step 5 (building) and step 6 (unzipping) of the <A href="#3.Installation-WindowsSourceInstallation" title="Windows Source Installation on 3. Installation">Windows Source Installation</A> procedure and proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.</LI>
 	<LI>Following start-up, proceed to the <A href="#3.Installation-TestingtheInstallation" title="Testing the Installation on 3. Installation">Testing the Installation</A> section.</LI>
 </OL>
 
@@ -198,13 +199,8 @@ f. Download the ServiceMix distribution to the Unix machine using the &quot;wget
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">gunzip apache-servicemix-x.x.x.tar.gz
 tar xvf apache-servicemix-x.x.x.tar</PRE>
-</DIV></DIV></LI>
-	<LI>If the <TT>servicemix</TT> start-up script is not executable, change its permisssions. The <TT>servicemix</TT> script is located in the <TT>bin</TT> directory. For example:
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [servicemix_install_dir]/bin
- where [servicemix_install_dir] is the directory in which ServiceMix was installed.
-chmod 755 servicemix</PRE>
-</DIV></DIV></LI>
+</DIV></DIV>
+<P>Please remember the restrictions concerning illegal characters in Java paths, e.g. &#33;, % etc.</P></LI>
 	<LI>Proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.</LI>
 	<LI>Following start-up, go to the <A href="#3.Installation-TestingtheInstallation" title="Testing the Installation on 3. Installation">Testing the Installation</A> section.</LI>
 </OL>
@@ -223,7 +219,8 @@ For a source distribution, the filename will be similar to: <TT>servicemix-x.x-s
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">gunzip apache-servicemix.x.x-src.tar.gz
 tar xvf apache-servicemix.x.x-src.tar</PRE>
-</DIV></DIV></LI>
+</DIV></DIV>
+<P>Please remember the restrictions concerning illegal characters in Java paths, e.g. &#33;, % etc.</P></LI>
 	<LI>Build ServiceMix using Maven 2.0.4 or greater and Java 5:
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">The preferred method of building ServiceMix is the following:
@@ -239,18 +236,8 @@ mvn -Dprofile=step2</PRE>
 gunzip apache-servicemix-3.0-incubating.tar.gz
 tar xvf apache-servicemix-3.0-incubating.tar</PRE>
 </DIV></DIV></LI>
-	<LI>If the <TT>servicemix</TT> start-up script is not executable, change its permissions. For example:
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [servicemix_install_dir]/apache-servicemix/target/apache-servicemix-3.0-incubating/bin
-chmod 755 servicemix</PRE>
-</DIV></DIV></LI>
-	<LI>Start ServiceMix from the target directory, for example:
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [servicemix_install_dir]/apache-servicemix/target/apache-servicemix-3.0-incubating
-bin/servicemix</PRE>
-</DIV></DIV>
-<P><EM>Note:</EM> working directories get created relative to the current directory. For the working directories to be created in the proper place, ServiceMix must be launched from its home/installation directory.</P></LI>
-	<LI>Proceed to <A href="#3.Installation-TestingtheInstallation" title="Testing the Installation on 3. Installation">Testing the Installation</A> section.</LI>
+	<LI>Proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.</LI>
+	<LI>Following start-up, go to the <A href="#3.Installation-TestingtheInstallation" title="Testing the Installation on 3. Installation">Testing the Installation</A> section.</LI>
 </OL>
 
 
@@ -271,15 +258,10 @@ bin/servicemix</PRE>
 For a source developer&apos;s snapshot:
  gunzip apache-servicemix-x.x.x-src.tar.gz
  tar xvf apache-servicemix-x.x.x-src.tar</PRE>
-</DIV></DIV></LI>
-	<LI>If a binary snapshot was downloaded the <TT>servicemix</TT> script may need its permissions changed to make it executable:
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [servicemix_install_dir]/bin
- where [servicemix_install_dir] is the directory in which ServiceMix was installed.
-chmod 755 servicemix</PRE>
 </DIV></DIV>
-<P>For a binary snapshot, proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.<BR>
-If a source snapshot was downloaded perform steps 6 - 8 of the <A href="#3.Installation-UnixSourceInstallation" title="Unix Source Installation on 3. Installation">Unix Source Installation</A> procedure.</P></LI>
+<P>Please remember the restrictions concerning illegal characters in Java paths, e.g. &#33;, % etc.</P></LI>
+	<LI>For a binary snapshot, proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.<BR>
+If a source snapshot was downloaded perform steps 6 - 8 (building, uncompressing, starting) of the <A href="#3.Installation-UnixSourceInstallation" title="Unix Source Installation on 3. Installation">Unix Source Installation</A> procedure.</LI>
 	<LI>Proceed to the <A href="#3.Installation-TestingtheInstallation" title="Testing the Installation on 3. Installation">Testing the Installation</A> section.</LI>
 </OL>
 
@@ -289,40 +271,71 @@ If a source snapshot was downloaded perform steps 6 - 8 of the <A href="#3.Insta
 
 <H3><A name="3.Installation-OnWindows"></A>On Windows</H3>
 
-<P>From a console window, change to the installation directory and run <TT>ServiceMix</TT>:</P>
+<P>From a console window, change to the installation directory and run <TT>ServiceMix</TT>. For the binary distribution, go to</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">cd [servicemix_install_dir]</PRE>
 </DIV></DIV>
-<P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed, e.g., <TT>c:\Program Files\servicemix-3.x</TT>.
-<BR clear="all">
-Then type:</P>
+<P>and for the source distribution go to the target directory, for example:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [servicemix_install_dir]\apache-servicemix\target\apache-servicemix-3.0-incubating-SNAPSHOT</PRE>
+</DIV></DIV>
+<P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed, e.g., <TT>c:\Program Files\servicemix-3.x</TT>.</P>
+
+<P>Then type:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">bin\servicemix</PRE>
 </DIV></DIV>
 <P><EM>Note:</EM> Working directories get created relative to the current directory. For the working directories to be created in the proper place, ServiceMix must be launched from its home/installation directory.</P>
 
+<H4><A name="3.Installation-Troubleshooting"></A>Troubleshooting</H4>
+
+<P>In case you get a</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>Exception in thread &quot;main&quot; java.lang.IllegalArgumentException
+</PRE>
+</DIV></DIV>
+<P>you may have some illegal characters in the path, e.g. &#33;, % etc.</P>
+
 <H3><A name="3.Installation-OnUnix"></A>On Unix</H3>
 
-<P>From a command shell, change to the installation directory and run <TT>ServiceMix</TT>:</P>
+<P>From a command shell, change to the installation directory and run <TT>ServiceMix</TT>. For the binary distribution, go to</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">cd [servicemix_install_dir]</PRE>
 </DIV></DIV>
-<P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed, e.g., <TT>/usr/local/servicemix-3.x</TT>.
-<BR clear="all">
-Then type:</P>
+<P>and for the source distribution go to the target directory, for example:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [servicemix_install_dir]/apache-servicemix/target/apache-servicemix-3.0-incubating</PRE>
+</DIV></DIV>
+<P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed, e.g., <TT>/usr/local/servicemix-3.x</TT>.</P>
+
+<P>Then type:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">bin/servicemix
 
 OR
 
-nohup bin/servicemix &gt; /tmp/smlog  2&gt;&amp;1 &amp;
-Note: /tmp/smlog may be changed to another file name.</PRE>
+nohup bin/servicemix &gt; /tmp/smlog  2&gt;&amp;1 &amp;</PRE>
 </DIV></DIV>
-<P><EM>Note:</EM> working directories get created relative to the current directory. For the working directories to be created in the proper place, ServiceMix must be launched from its home/installation directory.</P>
+<P><EM>Note:</EM> /tmp/smlog may be changed to another file name.</P>
+
+<P><EM>Note:</EM> Working directories get created relative to the current directory. For the working directories to be created in the proper place, ServiceMix must be launched from its home/installation directory.</P>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Warning</B><BR>
 <P>Do NOT close the console or shell in which ServiceMix was started, as that will terminate ServiceMix (unless ServiceMix was started with nohup).</P></TD></TR></TABLE>
 
-<H3><A name="3.Installation-TestingtheInstallation"></A>Testing the Installation</H3>
+<H4><A name="3.Installation-Troubleshooting"></A>Troubleshooting</H4>
+
+<P>If the <TT>servicemix</TT> start-up script is not executable, change its permisssions. The <TT>servicemix</TT> script is located in the <TT>bin</TT> directory. For example:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">chmod 755 bin/servicemix</PRE>
+</DIV></DIV>
+<P>In case you get a</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>Exception in thread &quot;main&quot; java.lang.IllegalArgumentException
+</PRE>
+</DIV></DIV>
+<P>you may have some illegal characters in the path, e.g. &#33;, % etc.</P>
+
+<H2><A name="3.Installation-TestingtheInstallation"></A>Testing the Installation</H2>
 
 <P>If ServiceMix is up and running without problems, the Window&apos;s console window or the Unix command shell will display something similar to the following log line:</P>
 <DIV class="code"><DIV class="codeContent">
@@ -374,9 +387,35 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 19, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=13760">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 20, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=13764">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      concentrated all starting related stuff. Illegal java path characters. Addes keywords to pure numeric step references, to adding/removing steps won&apos;t break reference.<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13489">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13489">edit page</A>)
     </DIV>
 
