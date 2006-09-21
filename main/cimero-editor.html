@@ -36,7 +36,7 @@ CIMERO Editor
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="developers.html" title="Developers">Developers</A>&nbsp;&gt;&nbsp;<A href="ideas.html" title="Ideas">Ideas</A>&nbsp;&gt;&nbsp;<A href="" title="CIMERO Editor">CIMERO Editor</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="tooling-and-utilities.html" title="Tooling and Utilities">Tooling and Utilities</A>&nbsp;&gt;&nbsp;<A href="" title="CIMERO Editor">CIMERO Editor</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -112,49 +112,97 @@ CIMERO Editor
 <!--          
             <div class="pagetitle">CIMERO Editor</div>
 -->
-            <DIV class="wiki-content"><TABLE class="confluenceTable"><TBODY>
-<TR>
-<TD class="confluenceTd"> <DIV align="center"><A href="cimero-editor.data/logo_bull.jpg" target="logo_bull.jpg" onclick="window.open(&quot;http://goopen.org/confluence/download/attachments/9328/logo_bull.jpg&quot;, &quot;logo_bull.jpg&quot;, &quot;height=93,width=153,menubar=no,status=no,toolbar=no&quot;); return false;"><IMG src="cimero-editor.data/logo_bull.jpg.jpeg" border="0"></A></DIV><BR clear="all">  <DIV align="center"><IMG src="cimero-editor.data/logo.jpg" border="0"></DIV> </TD>
-<TD class="confluenceTd"> <BR clear="all"> </TD>
-</TR>
-<TR>
-<TD class="confluenceTd"><H3><A name="CIMEROEditor-ThispagedescribestheCIMEROprojectwhichisagraphicalEclipsetoolingforServiceMix."></A>This page describes the CIMERO project which is a graphical Eclipse tooling for ServiceMix.</H3>
+            <DIV class="wiki-content"><P><DIV align="center"><A href="cimero-editor.data/logo_bull.jpg" target="logo_bull.jpg" onclick="window.open(&quot;http://goopen.org/confluence/download/attachments/9328/logo_bull.jpg&quot;, &quot;logo_bull.jpg&quot;, &quot;height=93,width=153,menubar=no,status=no,toolbar=no&quot;); return false;"><IMG src="cimero-editor.data/logo_bull.jpg.jpeg" border="0"></A></DIV><BR>
+&nbsp;<BR>
+<DIV align="center"><IMG src="cimero-editor.data/logo.jpg" border="0"></DIV><BR>
+&nbsp;</P>
+
+<H1><A name="CIMEROEditor-ThispagedescribestheCIMEROproject%3AagraphicalEclipsetoolforServiceMix."></A>This page describes the CIMERO project : a graphical Eclipse tool for ServiceMix.</H1>
+
 <DIV class="panel"><DIV class="panelContent">
-<P>&nbsp;&nbsp;This Eclipse plugin permits to create graphically a configuration of a ServiceMix flow. The created graph can build an XML configuration file to ServiceMix or a JBI package.</P>
-</DIV></DIV><DIV class="panel"><DIV class="panelContent">
-<P>The graphical configuration contains a toolbox (which contains some Binding Components and some Service Engines), a drawing area and a properties area. To use it, you have just to choose the component you want in the toolbox and to drop it on the drawing area. Then, you can configure it and connect it with other components (see the screenshot).</P>
-</DIV></DIV><DIV class="panel"><DIV class="panelContent">
-<P>&nbsp;Moreover, we associated this plugin with a second one which allows to create and run a ServiceMix server under Eclipse (based on the source code provided by ServiceMix). Then, our plugin is able to deploy a JBI package on a ServiceMix server by a single mouse click (without competition with the future ServiceMix plugin).</P>
-</DIV></DIV><DIV class="code"><DIV class="codeContent">
+<P>&nbsp;&nbsp;This Eclipse plugin permits to create graphically a configuration of a ServiceMix flow. With the created graph, user can build an XML configuration file to ServiceMix or a JBI package.</P>
+</DIV></DIV>
+<DIV class="panel"><DIV class="panelContent">
+<P>The graphical configuration contains a toolbox (which contains some Binding Components and some Service Engines), a drawing area and a properties area.</P>
+
+<P>To use it, you have just to choose the component you want in the toolbox and to drop it on the drawing area. Then, you can configure it and connect it with other components (see the screenshot).</P>
+</DIV></DIV>
+<DIV class="panel"><DIV class="panelContent">
+<P>Moreover, we associated this plugin with a second one which allows to create and run a ServiceMix server under Eclipse (based on the source code provided by ServiceMix).</P>
+
+<P>Then, our plugin is able to deploy a JBI package on a ServiceMix server by a single mouse click (without competition with the future ServiceMix plugin).</P>
+</DIV></DIV>
+<DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">TIP : These two plugins are explained in the Eclipse <SPAN class="code-quote">&quot;Help contents&quot;</SPAN>.</PRE>
-</DIV></DIV><DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">Now, CIMERO Editor provides :
-- a binding component to connect a RSS file
-- a binding component to connect a WebService (sm-http)
-- a binding component to connect a Mail server
-- a binding component to connect a FTP server
-- a binding component to connect a JMS server (sm-jms)
-- a binding component to send input message (timer)
-- a binding component to send a message to the screen
-- a service engine to transforme message (content transformer)
-- a service engine to enriche message (message enricher)
-- a service engine to splitt a message (eip-splitter)
-- a service engine to aggregate a message (eip-aggregator)
-- a service engine to trace a message (eip-wire-tap)
-- a service engine to filter message (eip-filter)
-- a service engine to route message (on properties or content)</PRE>
-</DIV></DIV><DIV class="code"><DIV class="codeContent">
+</DIV></DIV>
+<BLOCKQUOTE>
+</BLOCKQUOTE>
+<DIV class="panel"><DIV class="panelContent">
+<P><B><EM>Now, CIMERO Editor provides :</EM></B>
+<BR clear="all">
+<INS>&#45; 7 binding components :</INS>
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - a binding component to connect a RSS file
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - a binding component to connect a WebService (sm-http)
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - a binding component to connect a Mail server
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - a binding component to connect a FTP server
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - a binding component to connect a JMS server (sm-jms)
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - a binding component to send input message (timer)
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - a binding component to send a message to the screen
+<BR clear="all">
+<INS>&#45; 7 service engines :</INS>
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - a service engine to transforme message (content transformer)
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - a service engine to enriche message (message enricher)
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - a service engine to splitt a message (eip-splitter)
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - a service engine to aggregate a message (eip-aggregator)
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - a service engine to trace a message (eip-wire-tap)
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - a service engine to filter message (eip-filter)
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; - a service engine to route message (on properties or content)</P>
+</DIV></DIV>
+<DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">Soon, CIMERO Editor will maybe propose more components :
 - a service engine to forward an input In-Only or Robust-In-Only exchange to a list of known recipients
-- ...</PRE>
+- a service to validate message (validation service engine)</PRE>
 </DIV></DIV>
-<P>In the &quot;Attachments&quot; page, you could find <BR clear="all">
-&#42; a first <SPAN class="nobr"><A href="cimero-editor.data/cimero.swf" title="cimero.swf attached to CIMERO Editor">ACTIVEMQ:flash demonstration<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> (4Mo - 1024*768)&nbsp; (hit next button to make video play) <BR clear="all">
-&#42; a second <SPAN class="nobr"><A href="cimero-editor.data/pres_example.htm" title="pres_example.htm attached to CIMERO Editor">ACTIVEMQ:flash demonstration<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> (10Mo - 1600*1280) <BR clear="all">
-&#42; the <SPAN class="nobr"><A href="cimero-editor.data/com.bull.cimero.pluginEditor_2.4.0.jar" title="com.bull.cimero.pluginEditor_2.4.0.jar attached to CIMERO Editor">ACTIVEMQ:CIMERO plugin<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <BR clear="all">
-&#42; the <SPAN class="nobr"><A href="cimero-editor.data/com.bull.cimero.pluginServiceMix_2.0.2.jar" title="com.bull.cimero.pluginServiceMix_2.0.2.jar attached to CIMERO Editor">ACTIVEMQ:ServiceMix plugin for CIMERO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <DIV class="panel"><DIV class="panelContent">
-<P><B>&nbsp;Thanks for feedback...</B> <BR clear="all"></P>
-</DIV></DIV><DIV class="code"><DIV class="codeContent">
+<P><BR clear="all">
+In the &quot;Attachments&quot; page, you could find
+<BR clear="all">
+&#42; a first <SPAN class="nobr"><A href="cimero-editor.data/cimero.swf" title="cimero.swf attached to CIMERO Editor">ACTIVEMQ:flash demonstration<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> (4Mo - 1024*768)&nbsp; (hit next button to make video play)
+<BR clear="all">
+&#42; a second <SPAN class="nobr"><A href="cimero-editor.data/pres_example.htm" title="pres_example.htm attached to CIMERO Editor">ACTIVEMQ:flash demonstration<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> (10Mo - 1600*1280)
+<BR clear="all">
+&#42; the <SPAN class="nobr"><A href="cimero-editor.data/com.bull.cimero.pluginEditor_2.7.1.jar" title="com.bull.cimero.pluginEditor_2.7.1.jar attached to CIMERO Editor">ACTIVEMQ:CIMERO plugin<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>
+<BR clear="all">
+&#42; the <SPAN class="nobr"><A href="cimero-editor.data/com.bull.cimero.pluginServiceMix_2.0.2.jar" title="com.bull.cimero.pluginServiceMix_2.0.2.jar attached to CIMERO Editor">ACTIVEMQ:ServiceMix plugin for CIMERO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>
+<BR clear="all">
+<DIV class="panel"><DIV class="panelContent">
+
+</DIV></DIV><BR clear="all">
+ If you have any questions or suggestions, please mail us to :
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; - Cedric Mouilleron : cedric.mouilleron@bull.net
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; - Pierre Notel : pierre.notel@bull.net&nbsp;
+<BR clear="all">
+&nbsp;&nbsp;&nbsp; - Jerome Camilleri : jerome.camilleri@bull.net&nbsp;
+<BR clear="all">
+<BR clear="all">
+<B>&nbsp;Thanks for feedback...</B>
+<BR clear="all"></P>
+<DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">CIMERO Editor est disponible sous licence Apache.
 
 /*
@@ -180,34 +228,39 @@ CIMERO Editor
 *
 * Camilleri Jerome : jerome.camilleri@bull.net
 */</PRE>
-</DIV></DIV> </P></TD>
-</TR>
-</TBODY></TABLE>
-<P>&#45;--&#45;<B><INS>Requirements :</INS></B><BR>
+</DIV></DIV>
+<P>&#45;-&#45;<B><INS>Requirements :</INS></B><BR>
 &#42; WST/JST : <SPAN class="nobr"><A href="http://www.eclipse.org/webtools/index.html" title="Visit page outside Confluence" rel="nofollow">http://www.eclipse.org/webtools/index.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
 &#42; EMF : <SPAN class="nobr"><A href="http://download3.eclipse.org/tools/emf/scripts/downloads.php" title="Visit page outside Confluence" rel="nofollow">http://download3.eclipse.org/tools/emf/scripts/downloads.php<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
 &#42; GEF : <SPAN class="nobr"><A href="http://download3.eclipse.org/tools/gef/downloads/index.php" title="Visit page outside Confluence" rel="nofollow">http://download3.eclipse.org/tools/gef/downloads/index.php<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
 <P><EM>Tested on Debian, Windows 2000, Windows XP with Eclipse 3.1.2 et 3.2.0</EM></P>
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>As an example, the next picture is a screenshoot of a CIMERO use. The created graph is composed of :
+<DIV class="panel"><DIV class="panelContent">
+<P>As an example, the next picture is a screenshoot of a CIMERO use. The created graph is composed of :</P>
 
-	- an input mail message
-	- a router of mail message
-	- an output mail message
-	- an output SOAP message
+<P>&nbsp;&nbsp;&nbsp; - an input and output mail message<BR>
+&nbsp;&nbsp;&nbsp; - a router of mail message<BR>
+&nbsp;&nbsp;&nbsp; - a transformer message (with a xslt file)<BR>
+&nbsp;&nbsp;&nbsp; - an output mail message<BR>
+&nbsp;&nbsp;&nbsp; - a tracer component (to send message copie)<BR>
+&nbsp;&nbsp;&nbsp; - an output screen message<BR>
+&nbsp;&nbsp;&nbsp; - an output SOAP message</P>
 
-The router is based on the &quot;from&quot; property of the input mail message and it send to the output mail server or to the ouput webservice.
+<P>The router is based on the &quot;from&quot; property of the input mail message and it send to the output mail server or to the ouput webservice.</P>
 
-A graph like this can be transformed automaticaly into an XML configuration file for ServiceMix or into a JBI package
-
-The generated package can be deployed automaticaly on a ServiceMix server (you must configure and start it before deploying).
-</PRE>
+<P>A graph like this can be transformed automaticaly into an XML configuration file for ServiceMix or into a JBI package. Functionnalities to generate are in a popup menu like in this example.<BR>
+The generated package can be deployed automaticaly on a ServiceMix server (you must configure and start it before deploying).</P>
 </DIV></DIV>
-<P><DIV align="center"><IMG src="cimero-editor.data/cimero_sample.png" border="0"></DIV></P>
 <TABLE class="confluenceTable"><TBODY>
 <TR>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> <IMG src="cimero-editor.data/CimeroExample.png" align="left" border="0"> </TD>
+</TR>
+<TR>
+</TR>
+</TBODY></TABLE>
+
+<TABLE class="confluenceTable"><TBODY>
+<TR>
 </TR>
 <TR>
 </TR>
@@ -221,8 +274,8 @@ The generated package can be deployed automaticaly on a ServiceMix server (you m
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=pierre.notel%2540bull.net">Pierre NOTEL</A> on Sep 05, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9328&originalId=13452">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 20, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9328&originalId=13768">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=9328">edit page</A>)
     </DIV>

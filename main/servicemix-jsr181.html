@@ -306,7 +306,7 @@ The spring BeanFactory has a parent factory which contains a bean named &quot;co
 <P>You can also use the <A href="client-api.html" title="Client API">client api</A>:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-keyword">public</SPAN> void myMethod() {
-  ServiceMixClient client = <SPAN class="code-keyword">new</SPAN> DefaultServiceMixClient(<SPAN class="code-keyword">this</SPAN>.context);
+  ServiceMixClient client = <SPAN class="code-keyword">new</SPAN> ServiceMixClientFacade(<SPAN class="code-keyword">this</SPAN>.context);
   QName service = <SPAN class="code-keyword">new</SPAN> QName(<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//servicemix.org/cheese/&quot;</SPAN>, <SPAN class="code-quote">&quot;receiver&quot;</SPAN>);
 </SPAN>  EndpointResolver resolver = client.createResolverForService(service);
   client.send(resolver, <SPAN class="code-keyword">null</SPAN>, <SPAN class="code-keyword">null</SPAN>, <SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>);
@@ -434,8 +434,8 @@ or aanother exception with</P></TD></TR></TABLE>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 10, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2057&originalId=9634">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 18, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2057&originalId=13737">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2057">edit page</A>)
     </DIV>

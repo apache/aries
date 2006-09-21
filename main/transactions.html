@@ -248,7 +248,7 @@ InOut me = createInOut();
 getContext().getDeliveryChannel().sendSync(me);
 <SPAN class="code-comment">// retrieve the out message
 </SPAN>me.setStatus(ExchangeStatus.DONE);
-getContext().getDeliveryChannel().sendSync(me);
+getContext().getDeliveryChannel().send(me);
 
 tm.commit();</PRE>
 </DIV></DIV>
@@ -298,8 +298,8 @@ if the exchange is not.</P></DIV>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 28, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=8533&originalId=13333">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 20, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=8533&originalId=13773">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=8533">edit page</A>)
     </DIV>
