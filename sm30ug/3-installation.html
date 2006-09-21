@@ -94,6 +94,14 @@ Here you will find information about what are pre requisite software, where to d
 <H2><A name="3.Installation-InstallationProcedureforWindows"></A>Installation Procedure for Windows</H2>
 
 <P>This section of the Getting Started guide explains how to install binary and source distributions of ServiceMix on a Windows system.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hint</B><BR>
+<P>In case you have to install ServiceMix into a very deep path or a path containing illegal characters for Java paths, e.g. &#33;, % etc., you may add a bat file to <EM>start &#45;&gt; startup</EM> that executes</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>subst S: &quot;C:\your very % problamtic path!\SM&quot;
+</PRE>
+</DIV></DIV>
+<P>so your ServiceMix root directory is S:\ &mdash; which works for sure and is short to type.</P>
+</TD></TR></TABLE>
 
 <H3><A name="3.Installation-WindowsBinaryInstallation"></A>Windows Binary Installation</H3>
 
@@ -387,13 +395,13 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 20, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=13764">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 21, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=13774">view change</A>)
                       <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
         <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
           <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
       <B>Comment:</B>
-      concentrated all starting related stuff. Illegal java path characters. Addes keywords to pure numeric step references, to adding/removing steps won&apos;t break reference.<BR>
+      path hint<BR>
       <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13489">View page history</A></SPAN>
   </DIV>
 
