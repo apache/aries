@@ -164,7 +164,71 @@ Thread pools
 </TR>
 </TBODY></TABLE>
 
-<P>You will find a more detailed explanation of these parameters from the <SPAN class="nobr"><A href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/ThreadPoolExecutor.html" title="Visit page outside Confluence" rel="nofollow">ThreadPoolExecutor<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P></DIV>
+<P>Each thread pool has its own identifier, for example:</P>
+<UL>
+	<LI><TT>component.id</TT> where <TT>id</TT> is the name of the component</LI>
+	<LI><TT>flow.seda.id</TT> where <TT>id</TT> is the name of the component</LI>
+	<LI><TT>flow.jca.destination</TT> where <TT>destination</TT> is the name of the JMS destination used</LI>
+</UL>
+
+
+<P>Thread pools are configured hierarchically using these ids.  It means that when an executor is created with an id of &lt;code&gt;foo.bar&lt;/code&gt;, the factory will look for a configuration in the following way:</P>
+<UL>
+	<LI><TT>configs.get(&quot;foo.bar&quot;)</TT></LI>
+	<LI><TT>configs.get(&quot;foo&quot;)</TT></LI>
+	<LI><TT>defaultConfig</TT></LI>
+</UL>
+
+
+<P>Following is an example configuration of the factory:</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:container ...&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:executorFactory&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.executors.impl.ExecutorFactoryImpl&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;defaultConfig&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.executors.impl.ExecutorConfig&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;corePoolSize&quot;</SPAN> value=<SPAN class="code-quote">&quot;4&quot;</SPAN>/&gt;</SPAN>
+            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;maximumPoolSize&quot;</SPAN> value=<SPAN class="code-quote">&quot;-1&quot;</SPAN>/&gt;</SPAN>
+            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;queueSize&quot;</SPAN> value=<SPAN class="code-quote">&quot;0&quot;</SPAN>/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;configs&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;map&gt;</SPAN>
+          <SPAN class="code-tag">&lt;entry key=<SPAN class="code-quote">&quot;flow.seda&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.executors.impl.ExecutorConfig&quot;</SPAN>&gt;</SPAN>
+              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;corePoolSize&quot;</SPAN> value=<SPAN class="code-quote">&quot;32&quot;</SPAN>/&gt;</SPAN>
+              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;maximumPoolSize&quot;</SPAN> value=<SPAN class="code-quote">&quot;-1&quot;</SPAN>/&gt;</SPAN>
+              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;queueSize&quot;</SPAN> value=<SPAN class="code-quote">&quot;1024&quot;</SPAN>/&gt;</SPAN>
+            <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/entry&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/map&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/sm:executorFactory&gt;</SPAN>
+  ...
+<SPAN class="code-tag">&lt;/sm:container&gt;</SPAN></PRE>
+</DIV></DIV>
+
+
+<P>Usually, three parameters will be used to configure the behavior of the thread pool:</P>
+<UL>
+	<LI><TT>corePoolSize</TT></LI>
+	<LI><TT>maximumPoolSize</TT></LI>
+	<LI><TT>queueSize</TT></LI>
+</UL>
+
+
+<P>When the executor receives a new task, the following happen:</P>
+<UL>
+	<LI>if the number of threads is less than <TT>corePoolSize</TT>, the executor will create a new thread to handle the job</LI>
+	<LI>if the number of queued jobs is less than <TT>queueSize</TT>, the job is queued</LI>
+	<LI>is the queue is full and the number of threads is less than <TT>maximumPoolSize</TT>, a new thread is created to handle the job</LI>
+	<LI>else, the current thread will handle the job</LI>
+</UL>
+
+
+<P>Note that <TT>maximumPoolSize</TT> and <TT>queueSize</TT> can be set to -1 to not bound these values.</P></DIV>
           
                   </DIV>
         </TD>
@@ -175,7 +239,8 @@ Thread pools
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 22, 2006
-                  
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13790&originalId=13791">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13790">edit page</A>)
     </DIV>
 
