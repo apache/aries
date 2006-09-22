@@ -112,7 +112,7 @@ How do I change the logging
 <!--          
             <div class="pagetitle">How do I change the logging</div>
 -->
-            <DIV class="wiki-content"><P>We use <SPAN class="nobr"><A href="http://jakarta.apache.org/commons/logging/" title="Visit page outside Confluence" rel="nofollow">commons-logging<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>to log information in the broker client and the broker itself so you can fully configure which logging levels are used and whether to log to files or the console etc. For more information see the <SPAN class="nobr"><A href="http://logging.apache.org/log4j/docs/manual.html" title="Visit page outside Confluence" rel="nofollow">log4j manual.<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P></DIV>
+            <DIV class="wiki-content"><P>We use <SPAN class="nobr"><A href="http://jakarta.apache.org/commons/logging/" title="Visit page outside Confluence" rel="nofollow">commons-logging<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to log information in the broker client and the broker itself. So, you can fully configure which logging levels are used and whether to log to files or the console etc. For more information see the <SPAN class="nobr"><A href="http://logging.apache.org/log4j/docs/manual.html" title="Visit page outside Confluence" rel="nofollow">log4j manual<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P></DIV>
           
                   </DIV>
         </TD>
@@ -122,8 +122,35 @@ How do I change the logging
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on May 05, 2006
-                  
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 22, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=4920&originalId=13780">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      typo<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=4920">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=4920">edit page</A>)
     </DIV>
 
