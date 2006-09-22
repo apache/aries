@@ -112,12 +112,14 @@ Visualisation
 <!--          
             <div class="pagetitle">Visualisation</div>
 -->
-            <DIV class="wiki-content">
-<P>Inspired greatly by <SPAN class="nobr"><A href="http://javasymposium.techtarget.com/html/det_descriptions.htm#GHohpeSoftware" title="Visit page outside Confluence" rel="nofollow">Gregor and Erik&apos;s great talk at TSSJS 2006<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> we&apos;ve started to add some visualisation plugins into Apache ServiceMix.</P>
+            <DIV class="wiki-content"><P>Inspired greatly by <SPAN class="nobr"><A href="http://javasymposium.techtarget.com/html/det_descriptions.htm#GHohpeSoftware" title="Visit page outside Confluence" rel="nofollow">Gregor and Erik&apos;s great talk at TSSJS 2006<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> we&apos;ve started to add some visualisation plugins into Apache ServiceMix.</P>
+
+<P>This implementation uses the Interfaces&nbsp;<SPAN class="nobr"><A href="http://servicemix.org/maven/servicemix-core/apidocs/org/apache/servicemix/jbi/event/EndpointListener.html" title="Visit page outside Confluence" rel="nofollow">EndpointListener<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> respectively <SPAN class="nobr"><A href="http://servicemix.org/maven/servicemix-core/apidocs/org/apache/servicemix/jbi/event/ExchangeListener.html" title="Visit page outside Confluence" rel="nofollow">ExchangeListener<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and creates <SPAN class="nobr"><A href="http://www.graphviz.org/" title="Visit page outside Confluence" rel="nofollow">DOT files<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> (online viewer <SPAN class="nobr"><A href="http://www.research.att.com/~john/Grappa/grappa1_2.html" title="Visit page outside Confluence" rel="nofollow">Grappa<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>).<BR>
+Both visualisation listeners can be added to the &lt;listeners&gt; element of the &lt;container&gt; tag&nbsp; (see <A href="#Visualisation-Configuration" title="Configuration on Visualisation">Configuration</A> below).</P>
 
 <H3><A name="Visualisation-ComponentandEndpointvisualisation"></A>Component and Endpoint visualisation</H3>
 
-<P>There is a <B>&lt;dotViewEndpointListener/&gt;</B> listener plugin which can be added to the &lt;listeners&gt; element of the &lt;container&gt; tag which generates a <SPAN class="nobr"><A href="http://www.graphviz.org/" title="Visit page outside Confluence" rel="nofollow">DOT file<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> representing the components and their endpoints.</P>
+<P>There is a <B>&lt;dotViewEndpointListener/&gt;</B> listener plugin which generates a DOT file representing the components and their endpoints.</P>
 
 <P><IMG src="visualisation.data/ServiceMixComponents.png" align="absmiddle" border="0"></P>
 
@@ -129,8 +131,7 @@ Visualisation
 
 <H2><A name="Visualisation-Configuration"></A>Configuration</H2>
 
-<P>The following example shows how to configure a simple visualization listener.</P>
-
+<P>The following example shows how to configure a simple visualization listener in the <EM>servicemix.xml</EM> config file.</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;sm:container id=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> embedded=<SPAN class="code-quote">&quot;true&quot;</SPAN>&gt;</SPAN>
   <SPAN class="code-tag">&lt;sm:listeners&gt;</SPAN>
@@ -158,9 +159,35 @@ Visualisation
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2033&originalId=5288">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 22, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2033&originalId=13792">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      made slightly more user centric<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=2033">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2033">edit page</A>)
     </DIV>
 
