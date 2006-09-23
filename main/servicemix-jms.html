@@ -457,9 +457,28 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <TD class="confluenceTd"> used to select the destination type used with the jmsProviderDestinationName </TD>
 <TD class="confluenceTd"> no (unless jmsProviderDestinationName is used) </TD>
 </TR>
+<TR>
+<TD class="confluenceTd"> needJavaIdentifiers </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> (defaults to false) indicates that the jms provider does not support extented syntax for JMS properties and only support valid java identifiers.  In such a case, all non conformant properties will not be set on the JMS message. </TD>
+</TR>
 </TBODY></TABLE></TD></TR></TABLE>
 
-<H2><A name="servicemix-jms-ConfiguringtheConnectionFactoryandDestination"></A>Configuring the ConnectionFactory and Destination</H2>
+<H3><A name="servicemix-jms-Processors"></A>Processors</H3>
+
+<P>Several types of processors are defined to configure the behavior of servicemix-jms endpoints.  These are:</P>
+<UL>
+	<LI>multiplexing (default) is optimized for ActiveMQ</LI>
+	<LI>standard which is best suited for other JMS providers</LI>
+	<LI>jca can be used for transacted deliveries</LI>
+</UL>
+
+
+<P>The processor used on a given endpoint can be configured using the <TT>processorName</TT> attribute on the endpoint.</P>
+
+<P>JCA enabled endpoints need specific configuration.  A full example is available <SPAN class="nobr"><A href="http://svn.apache.org/viewvc/incubator/servicemix/tags/servicemix-3.0/servicemix-jms/src/test/resources/org/apache/servicemix/jms/spring-jca.xml?revision=HEAD" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<H3><A name="servicemix-jms-ConfiguringtheConnectionFactoryandDestination"></A>Configuring the ConnectionFactory and Destination</H3>
 
 <H4><A name="servicemix-jms-JNDIconfiguration"></A>JNDI configuration</H4>
 
@@ -661,8 +680,8 @@ Failing this, an IllegalArgumentException will be thrown with the following mess
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 09, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1954&originalId=9617">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 23, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1954&originalId=13795">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1954">edit page</A>)
     </DIV>
