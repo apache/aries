@@ -146,7 +146,7 @@ We will leverage ServiceMix archetypes and maven plugin (see <A href="maven-jbi-
 
 <H2><A name="Creatingaprotocolbridge-Creatingthearchetypes"></A>Creating the archetypes</H2>
 
-<P>In the bridge directory, run the following commands:</P>
+<P>In the bridge directory, run the following commands (remove tailing backslashes and make each commando one line):</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn archetype:create \
         -DarchetypeGroupId=org.apache.servicemix.tooling \
@@ -183,7 +183,7 @@ mvn archetype:create \
         -DgroupId=org.apache.servicemix.samples.bridge \
         -DartifactId=bridge-sa</PRE>
 </DIV></DIV>
-<P>The version information may have to be changed from <EM>3.0-incubating-SNAPSHOT</EM> to your used version (e.g. <EM>3.0-incubating</EM>).</P>
+<P>The version information may have to be changed from <EM>3.0-incubating-SNAPSHOT</EM> to your used ServiceMix version (e.g. <EM>3.0-incubating</EM>).</P>
 
 <H2><A name="Creatingaprotocolbridge-Mainpom"></A>Main pom</H2>
 
@@ -204,12 +204,13 @@ mvn archetype:create \
   <SPAN class="code-tag">&lt;/modules&gt;</SPAN>
 <SPAN class="code-tag">&lt;/project&gt;</SPAN></PRE>
 </DIV></DIV>
-<P>The content of &lt;version&gt; may have to be changed from <EM>1.0-SNAPSHOT</EM> to your used version (e.g. <EM>3.0-incubating</EM>).</P>
+<P>The content of &lt;version&gt; describes <EM>not</EM> the version of ServiceMix but the SA we create, thus you may change it to your desired version (e.g. <EM>3.0-final</EM>). Then you have to change it below as well.</P>
+
 
 <H2><A name="Creatingaprotocolbridge-ConfiguretheServiceAssembly"></A>Configure the Service Assembly</H2>
 
 <P>We want the Service Assembly to include the 4 SUs that we just created.<BR>
-So let&apos;s edit the pom and change the dependencies to:</P>
+So let&apos;s edit the main pom we just created and add the &lt;dependencies&gt; which is a child of &lt;project&gt;:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;dependencies&gt;</SPAN>
   <SPAN class="code-tag">&lt;dependency&gt;</SPAN>
@@ -369,7 +370,7 @@ mvn jbi:projectDeploy</PRE>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 25, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9511&originalId=13811">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9511&originalId=13812">view change</A>)
                       <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
         <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
           <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
