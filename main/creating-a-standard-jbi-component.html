@@ -119,16 +119,17 @@ We will write a full XSLT Service Engine.</P>
 
 <H2><A name="CreatingaStandardJBIComponent-Usingthemaven2archetype"></A>Using the maven2 archetype</H2>
 
-<P>Run the following command:</P>
+<P>Run the following command (remove the trailing backshlashes and make it one line):</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn archetype:create \
         -DarchetypeGroupId=org.apache.servicemix.tooling \
         -DarchetypeArtifactId=servicemix-service-engine \
-        -DarchetypeVersion=1.0-incubating-SNAPSHOT \
+        -DarchetypeVersion=3.0-incubating \
         -DgroupId=org.apache.servicemix.xslt \
         -DartifactId=servicemix-xslt</PRE>
 </DIV></DIV>
-<P>The first three parameters identify the maven 2 archetype to use, while the last two parameters are used for the generated maven 2 project.</P>
+<P>The first three parameters identify the maven 2 archetype to use, while the last two parameters are used for the generated maven 2 project. The version information &quot;3.0-incubating&quot; may have to be changed; just look at any of ServiceMix&apos; <EM>pom.xml</EM> for the version you are using.</P>
+
 
 <P>This will create the following files:</P>
 <DIV class="code"><DIV class="codeContent">
@@ -224,9 +225,35 @@ Using <FONT color="blue">TimTam</FONT></P></DIV>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 01, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5293&originalId=9489">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 25, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5293&originalId=13801">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      updated command + extended information<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=5293">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5293">edit page</A>)
     </DIV>
 

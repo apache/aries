@@ -124,24 +124,26 @@ Notes on Creating JBI Component using maven2
 
 <P><FONT color="#cc3300">Check if you have maven2 installed, if not then please install it.</FONT> <SPAN class="nobr"><A href="http://maven.apache.org/download.html#Installation" title="Visit page outside Confluence" rel="nofollow">http://maven.apache.org/download.html#Installation<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
-<P><B>1)</B> To&nbsp;create a JBI component as you might have guessed by now &#45;&nbsp;run the mvn command: (needless to say you should create a new directory where you want all your stuff to be generated&nbsp;)</P>
+<P><B>1)</B> To&nbsp;create a JBI component as you might have guessed by now &#45;&nbsp;run the mvn command: (needless to say you should create a new directory where you want all your stuff to be generated and you have to remove the trailing backshlashes and make it one line)</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn archetype:create \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DarchetypeGroupId=org.apache.servicemix.tooling \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DarchetypeArtifactId=servicemix-service-engine \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DarchetypeVersion=1.0-incubating-SNAPSHOT \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DgroupId=org.apache.servicemix.<SPAN class="code-keyword">package</SPAN> \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DartifactId=servicemix-<SPAN class="code-keyword">package</SPAN></PRE>
+        -DarchetypeGroupId=org.apache.servicemix.tooling \
+        -DarchetypeArtifactId=servicemix-service-engine \
+        -DarchetypeVersion=3.0-incubating \
+        -DgroupId=org.apache.servicemix.<SPAN class="code-keyword">package</SPAN> \
+        -DartifactId=servicemix-<SPAN class="code-keyword">package</SPAN></PRE>
 </DIV></DIV>
 <P>Well, notice the text in blue in the above mvn command. This is meant to be the package info. So if you are creating a component which maybe does some xslt transformation then you&nbsp;would end up with something like:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn archetype:create \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DarchetypeGroupId=org.apache.servicemix.tooling \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DarchetypeArtifactId=servicemix-service-engine \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DarchetypeVersion=1.0-incubating-SNAPSHOT \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DgroupId=org.apache.servicemix.xslt \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -DartifactId=servicemix-xslt</PRE>
+        -DarchetypeGroupId=org.apache.servicemix.tooling \
+        -DarchetypeArtifactId=servicemix-service-engine \
+        -DarchetypeVersion=1.0-incubating-SNAPSHOT \
+        -DgroupId=org.apache.servicemix.xslt \
+        -DartifactId=servicemix-xslt</PRE>
 </DIV></DIV>
+<P>The version information &quot;3.0-incubating&quot; may have to be changed; just look at any of ServiceMix&apos; <EM>pom.xml</EM> for the version you are using.</P>
+
 <P><B>&nbsp;2)</B> After you have successfully run the above command this is what you would end up with&nbsp;</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">servicemix-xslt\
@@ -167,7 +169,7 @@ Notes on Creating JBI Component using maven2
               xslt\
                 MySpringComponentTest.java
       resources\
-        spring.xml&nbsp;</PRE>
+        spring.xml</PRE>
 </DIV></DIV>
 <P>&nbsp;&nbsp;&nbsp;&nbsp;<BR>
 Now you might be wondering why&nbsp;all the classes have the word &quot;My&quot; prefixed to them. Don&apos;t worry these are just driven from the template,&nbsp;you just need to rename them to whatever you want to. Just make sure you change the corresponding resource files,&nbsp;change &quot;My&quot; to whatever prefix that you used for the classes.</P>
@@ -188,9 +190,35 @@ Now you might be wondering why&nbsp;all the classes have the word &quot;My&quot;
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=soumadeep">Soumadeep Sen</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=soumadeep">Soumadeep Sen</A> on Aug 06, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9560&originalId=9579">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 25, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9560&originalId=13802">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      updated command + extended information<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=9560">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=9560">edit page</A>)
     </DIV>
 
