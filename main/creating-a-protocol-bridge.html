@@ -183,10 +183,11 @@ mvn archetype:create \
         -DgroupId=org.apache.servicemix.samples.bridge \
         -DartifactId=bridge-sa</PRE>
 </DIV></DIV>
+<P>The version information may have to be changed from <EM>3.0-incubating-SNAPSHOT</EM> to your used version (e.g. <EM>3.0-incubating</EM>).</P>
 
 <H2><A name="Creatingaprotocolbridge-Mainpom"></A>Main pom</H2>
 
-<P>Now that we have created the SUs and SA structure, let&apos;s write the main pom:</P>
+<P>Now that we have created the SUs and SA structure, let&apos;s write the main <EM>pom.xml</EM> (in the bridge directory):</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;project&gt;</SPAN>
   <SPAN class="code-tag">&lt;modelVersion&gt;</SPAN>4.0.0<SPAN class="code-tag">&lt;/modelVersion&gt;</SPAN>
@@ -203,6 +204,7 @@ mvn archetype:create \
   <SPAN class="code-tag">&lt;/modules&gt;</SPAN>
 <SPAN class="code-tag">&lt;/project&gt;</SPAN></PRE>
 </DIV></DIV>
+<P>The content of &lt;version&gt; may have to be changed from <EM>1.0-SNAPSHOT</EM> to your used version (e.g. <EM>3.0-incubating</EM>).</P>
 
 <H2><A name="Creatingaprotocolbridge-ConfiguretheServiceAssembly"></A>Configure the Service Assembly</H2>
 
@@ -356,7 +358,7 @@ mvn jbi:projectDeploy</PRE>
 
 <H2><A name="Creatingaprotocolbridge-What%27snext"></A>What&apos;s next</H2>
 
-<P>Of course, this example is not very useful as is, especially with an identity XSLT sheet.  However, adding an xpath router as the target of the pipeline, could be usefull to normalize different requests to the same format, because the XSD changed between versions of the service, or because different clients use different XSDs which can be services by the same service.</P></DIV>
+<P>Of course, this example is not very useful as is, especially with an identity XSLT sheet.  However, adding an xpath router as the target of the pipeline, could be useful to normalize different requests to the same format, because the XSD changed between versions of the service, or because different clients use different XSDs which can be services by the same service.</P></DIV>
           
                   </DIV>
         </TD>
@@ -366,9 +368,35 @@ mvn jbi:projectDeploy</PRE>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 04, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9511&originalId=13446">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 25, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9511&originalId=13811">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      INS further explanation/help<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=9511">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=9511">edit page</A>)
     </DIV>
 
