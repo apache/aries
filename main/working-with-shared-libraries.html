@@ -114,7 +114,7 @@ Working with Shared Libraries
 -->
             <DIV class="wiki-content"><P>The best place to start with the tooling is with the logically lowest component in the JBI spec,&nbsp; which I suppose would be the Shared Library.&nbsp; In essence a shared library is basically a JAR containing a set of JARs and a JBI.xml.&nbsp; The important bits about the Shared Library is that it is named and versioned.&nbsp; This fits nicely with the Maven approach since all Maven artifacts have id&apos;s and versions,&nbsp; and also the dependencies within your shared library POM can quickly be used to allow the JBI tooling to create the Shared Libraries zip archive.</P>
 
-<P>In order to convert a standard project to a shared library you simply need to change the packaging (note you will need to have added the plugin repository and plugin from Getting Started).</P>
+<P>In order to convert a standard project to a shared library you simply need to change the packaging (note you will need to have added the plugin repository and plugin from <A href="maven-jbi-plugin.html#MavenJBIplugin-GettingStarted" title="Getting Started on Maven JBI plugin">Getting Started</A>).</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml">&lt;project xmlns=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
   xsi:schemaLocation=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
@@ -176,9 +176,35 @@ Working with Shared Libraries
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on Aug 02, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=8917&originalId=9500">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 25, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=8917&originalId=13804">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      INS link to further reading<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=8917">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=8917">edit page</A>)
     </DIV>
 

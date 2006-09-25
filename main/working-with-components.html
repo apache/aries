@@ -112,7 +112,7 @@ Working with Components
 <!--          
             <div class="pagetitle">Working with Components</div>
 -->
-            <DIV class="wiki-content"><P>JBI logically separates Binding Components and Service Engines as two flavours of a component,  the Maven JBI tooling provides that you can define a project as a <B>jbi-component</B> and then specify whether it is a service-engine or binding-component.  Like the shared libraries we have just covered the definition of a jbi-component firstly requires the steps from Getting Started (plugin repositories and plugin) and then it also requires you change the packaging of your project.</P>
+            <DIV class="wiki-content"><P>JBI logically separates Binding Components and Service Engines as two flavours of a component,  the Maven JBI tooling provides that you can define a project as a <B>jbi-component</B> and then specify whether it is a service-engine or binding-component.  Like the shared libraries we have just covered the definition of a jbi-component firstly requires the steps from <A href="maven-jbi-plugin.html#MavenJBIplugin-GettingStarted" title="Getting Started on Maven JBI plugin">Getting Started</A> (plugin repositories and plugin) and then it also requires you change the packaging of your project.</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml">&lt;project xmlns=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsi</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
   xsi:schemaLocation=<SPAN class="code-quote">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
@@ -166,9 +166,35 @@ Working with Components
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on Aug 20, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=8918&originalId=9706">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 25, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=8918&originalId=13805">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      INS link to further reading<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=8918">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=8918">edit page</A>)
     </DIV>
 
