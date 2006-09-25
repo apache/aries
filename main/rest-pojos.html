@@ -139,10 +139,8 @@ REST POJOs
 
   @Resource ActionBeanContext context; <SPAN class="code-comment">// providers access to request/response et al via Stripes helper class
 </SPAN>
-  <SPAN class="code-keyword">private</SPAN> <SPAN class="code-object">Long</SPAN> id
-
   @Get
-  <SPAN class="code-keyword">public</SPAN> Cheese load() {
+  <SPAN class="code-keyword">public</SPAN> Cheese load(<SPAN class="code-object">Long</SPAN> id) {
     <SPAN class="code-keyword">return</SPAN> cheese; <SPAN class="code-comment">// load by id
 </SPAN>  }
 
@@ -159,7 +157,7 @@ REST POJOs
 
 
   @Delete
-  <SPAN class="code-keyword">public</SPAN> void delete() {
+  <SPAN class="code-keyword">public</SPAN> void delete(<SPAN class="code-object">Long</SPAN> id) {
     ...
   }
 
@@ -176,7 +174,7 @@ REST POJOs
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on Sep 25, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2085&originalId=13798">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2085&originalId=13799">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2085">edit page</A>)
     </DIV>
