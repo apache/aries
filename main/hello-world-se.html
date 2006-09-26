@@ -1,0 +1,295 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <TITLE>
+Hello World - SE
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/main/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="" title="Hello World - SE">Hello World - SE</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="../SM30UG/users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+</UL>
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">Hello World -  SE</div>
+-->
+            <DIV class="wiki-content"><H1><A name="HelloWorld-SE-%26nbsp%3BTutorial%3ACreationofa%22HelloWorldSE%22"></A>&nbsp;Tutorial: Creation of a &quot;Hello World - SE&quot;</H1>
+
+<P>This tutorial describes how to create a <EM>very simple</EM> &quot;Hello world&quot; JBI service engine (SE) component, pack it into a Service Unit (SU) which will be packed to a Service Assambly (SA), and finally how to run the SE inside ServiceMix. The SE will answer your messages with &quot;Hello, I received xyz bytes&#33;&quot;, so you literally see that it works. As it has the same structure as real, useful SE, the given hints help you to use it as a blueprint to create your own SE-SA-SU. Still, the example is as minimalistic as possible, so are not getting lost in too many details and you get an idea of the big picture.</P>
+
+<P>This tutorial shows you the desired/best practices or &quot;clean&quot; way to create a SE-SA-SU using Maven archetypes, so how the workflow <EM>shall</EM> be (of course, other possibilities exist and may be better suited for certain situations). Furthermore, it will explain the reasons for critical choices and how to required information can be retrieved. Where appropriate, additional reading will be suggested. To make it as easy as possible to follow the descriptions, they contain only the <EM>relevant</EM> code snippets, while the <EM>full</EM> code is available in the SVN repository for reference. Please note that the code snippets are fetched directly from the full code in the SVN repository, thus the wiki and the code share always at the same, up to date state.&nbsp;</P>
+
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hints</B><BR>
+
+<P>This tutorial is especially useful for ServiceMix beginners.</P>
+
+<P>The Maven <SPAN class="nobr"><A href="http://maven.apache.org/guides/getting-started/index.html" title="Visit page outside Confluence" rel="nofollow">Getting Started Guide<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> is a recommended, short  reading. It explains most of the Maven related things you will need.</P>
+
+</TD></TR></TABLE>
+
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>&nbsp;
+
+<P>INS When to use this JBI Component<BR>
+INS Using the component that you created</P>
+
+<P><SPAN class="nobr"><A href="http://www.servicemix.org/site/notes-on-creating-jbi-component-using-maven2.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/notes-on-creating-jbi-component-using-maven2.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+is already fully incorporated, so delete content and point from there to here</P>
+
+
+<P>provide exact position in the SVN&#33;&nbsp;<BR>
+/samples/hello-world-SE-SU-SA/<BR>
+integrate from SVN source like it is done at Configuration&nbsp; at <SPAN class="nobr"><A href="http://www.servicemix.org/site/visualisation.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/visualisation.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+
+<P>maybe moving the content of overlapping existing docus to this new tut and - where appropriate - delete the old ones (only leaving a redirect).</P>
+
+
+<P>provide additional reading</P>
+
+<P>Maybe add testing&nbsp;</P>
+</TD></TR></TABLE>
+
+
+<H2><A name="HelloWorld-SE-Prerequisites"></A>Prerequisites</H2>
+
+<P>You need</P>
+<UL>
+	<LI>Around 15 minutes of time</LI>
+	<LI>A running copy of ServiceMix 3.0 and Maven 2.0.4 or higher</LI>
+	<LI>A connection to the Internet to download dependencies</LI>
+	<LI>A text editor to alter XML files</LI>
+</UL>
+
+
+<H2><A name="HelloWorld-SE-OverviewSESUSA"></A>Overview SE-SU-SA</H2>
+
+
+<P>JBI components are can be tought of as the &quot;smallest applications&quot; you can access in an ESB. They have a very specific purpose, thus a narrow scope and set of functionallity. Components come in two flavours: Service Engine (SE) and Binding Components (BC).</P>
+
+<P>Components are enriched by metadata (<FONT color="#ff0000">which?</FONT>) and the whole is packed into a Service Unit (SU) - basically a JAR archive.</P>
+
+<P>Several SUs are packed into a Service Assambly (SA). An SA is a complete &quot;application&quot; consisting of multiple components (reminder: the &quot;smallest appliactions&quot;) interacting with each other and thus making up the big &quot;application&quot;.&nbsp;</P>
+
+
+<P><FONT color="#ff0000">Further reading: JSR 208</FONT>&nbsp;</P>
+
+<H2><A name="HelloWorld-SE-CreatingtheSE"></A>Creating the SE</H2>
+
+<P>First, a JBI component has to be created. Here, we use archetypes, just like shown at <A href="creating-a-standard-jbi-component.html" title="Creating a Standard JBI Component">Creating a Standard JBI Component</A> and <A href="notes-on-creating-jbi-component-using-maven2.html" title="Notes on Creating JBI Component using maven2">Notes on Creating JBI Component using maven2</A> and <A href="creating-a-protocol-bridge.html" title="Creating a protocol bridge">Creating a protocol bridge</A>. The Maven 2 archetypes are a kind of pattern, generic model, blueprint or template, or as <SPAN class="nobr"><A href="http://www.m-w.com/cgi-bin/dictionary?book=Dictionary&va=archetype" title="Visit page outside Confluence" rel="nofollow">Merriam-Webster<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> defines &quot;<EM>the original pattern or model of which all things of the same type are representations or copies</EM>&quot;. Using archetypes, Maven creates the basis for components and so on, thus they spare developers repetetive work and avoid errors like typos etc.</P>
+
+<P><EM>Note:</EM> As this text describes how to create a &quot;Hello World&quot; Service Engine and pack it into an SU and SA, the project name is <EM>hello-world-SE-SU-SA</EM> and the single pieces are named analogous. For a custom project, the IDs and names shall be altered such that they describe the purpose or function of any piece of the SA.</P>
+
+
+<P>Create a directory <EM>hello-world-SE-SU-SA</EM> and open a command line in this folder. Now execute the following command (it has to be one line but was split to be readable):</P>
+
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>mvn archetype:create -DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-engine
+-DarchetypeVersion=3.0-incubating -DgroupId=org.apache.servicemix.samples.helloWorldSE -DartifactId=hello-world-SE
+</PRE>
+</DIV></DIV>
+<P>The first three parameters identify the maven 2 archetype to use, while the last two parameters define the generated maven 2 project. The version information &quot;<FONT color="#993300">3.0-incubating</FONT>&quot; may have to be changed; just look at any of ServiceMix&apos; <EM>pom.xml</EM> for the version you are using. Maven uses the group ID (printed in <FONT color="#ff00ff">pink</FONT>) as default Java package (see in output below as well), thus invalid characters like minus, percent etc. must be avoided or a custom package name has to be given as parameter. The output looks like this (watch for the informations in bold letters):</P>
+
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>[INFO] Scanning for projects...
+[INFO] Searching repository for plugin with prefix: &apos;archetype&apos;.
+[INFO] ----------------------------------------------------------------------------
+[INFO] Building Maven Default Project
+[INFO]    task-segment: [archetype:create] (aggregator-style)
+[INFO] ----------------------------------------------------------------------------
+...
+[INFO] Defaulting package to group ID: org.apache.servicemix.samples.helloWorldSE
+...
+[INFO] ********************* End of debug info from resources from generated POM ***********************
+[INFO] Archetype created in dir: C:\0hello-world-SE-SU-SA\hello-world-SE
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+</PRE>
+</DIV></DIV>
+<P>Maven creates a new folder having the same name as the artifact ID provided (printed in <FONT color="#009900">green</FONT> in the command). Inside this folder, a file called <EM>pom.xml</EM> is created. This contains the Project Object Model providing Maven with all needed information for building,&nbsp;see <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html" title="Visit page outside Confluence" rel="nofollow">Introduction to the POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> at the Maven website. Moreover, Java source files and tests were created. The full structure of the things created by Maven for you looks like this (some directories are grouped together):</P>
+
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>\hello-world-SE-SU-SA\hello-world-SE\
+      pom.xml
+      src\main\
+            java\
+                  org\apache\servicemix\
+                        samples\helloWorldSE\
+                              MyBootstrap.java
+                              MyComponent.java
+                              MyDeployer.java
+                              MyEndpoint.java
+                              MyLifeCycle.java
+                              MySpringComponent.java
+      test\
+            java\
+                  org\apache\servicemix\
+                        samples\helloWorldSE\
+                              MySpringComponentTest.java
+            resources\
+                  spring.xml
+</PRE>
+</DIV></DIV>
+<P>Now you might be wondering why&nbsp;all the classes have the word &quot;My&quot; prefixed to them. Don&apos;t worry these are just driven from the template,&nbsp;you just need to rename them to whatever you want to. Just make sure you change the corresponding resource files,&nbsp;change &quot;My&quot; to whatever prefix that you used for the classes.</P>
+
+<P><B>3)</B> Using an IDE to add meat to the component.</P>
+
+<P>You can either use IDEA or Eclipse, I tried it with Eclipse so I guess I am going to stick it for now. &lt;TODO&gt;</P>
+
+<P>Now you can build and test the code by executing</P>
+
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>cd hello-world-SE
+
+mvn test
+</PRE>
+</DIV></DIV>
+
+<P> This shall already include everything stated at<BR>
+<SPAN class="nobr"><A href="http://www.servicemix.org/site/maven-jbi-plugin.html#MavenJBIplugin-GettingStarted" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/maven-jbi-plugin.html#MavenJBIplugin-GettingStarted<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+and<BR>
+<SPAN class="nobr"><A href="http://www.servicemix.org/site/working-with-components.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/working-with-components.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+&nbsp;</P>
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Be Careful</B><BR>
+<P>The body of the note here..</P></TD></TR></TABLE>
+
+
+<H2><A name="HelloWorld-SE-PackingintotheSU"></A>Packing into the SU</H2>
+
+<P>The archetypes for SUs and SAs do not contain much code, but rather help with tasks related to Maven. You will only need to adapt the generated POMs to your project - just little work, but requiring some guidiance. Here we go:</P>
+
+<P>use the SU archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &nbsp;</P>
+
+<P>manually editing <SPAN class="nobr"><A href="working-with-service-units.html" title="Visit page outside Confluence" rel="nofollow">http://goopen.org/confluence/display/SM/Working+with+Service+Units<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &nbsp;</P>
+
+<H2><A name="HelloWorld-SE-PackingintotheSA%26nbsp%3B"></A>Packing into the SA&nbsp;</H2>
+
+<P>As mentioned <A href="#HelloWorld-SE-PackingintotheSU" title="#Packing into the SU">above\</A>, the archetypes for SUs and SAs mainly help with tasks related to Maven.</P>
+
+
+
+<P>use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+mvn archetype:create &#45;DarchetypeGroupId=org.apache.servicemix.tooling &#45;DarchetypeArtifactId=servicemix-service-assembly &#45;DarchetypeVersion=3.0-incubating-SNAPSHOT &#45;DgroupId=org.apache.servicemix.samples.helloWorldSE &#45;DartifactId=hello-world-SA</P>
+
+
+
+<P>manually editing <SPAN class="nobr"><A href="http://www.servicemix.org/site/working-with-service-assemblies.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/working-with-service-assemblies.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 26, 2006
+                  
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>
