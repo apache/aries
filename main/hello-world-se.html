@@ -123,15 +123,27 @@ Hello World - SE
 <P>The Maven <SPAN class="nobr"><A href="http://maven.apache.org/guides/getting-started/index.html" title="Visit page outside Confluence" rel="nofollow">Getting Started Guide<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> is a recommended and short  reading. It explains most of the Maven related things needed.</P></TD></TR></TABLE>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
 <P>INS When to use this JBI Component<BR>
-INS Using the component that you created<BR>
-provide exact position in the SVN&#33;<BR>
+INS Using the component that you created</P>
+
+
+<P>provide exact position in the SVN&#33;<BR>
 /samples/hello-world-SE-SU-SA/<BR>
-integrate from SVN source like it is done at Configuration at <SPAN class="nobr"><A href="http://www.servicemix.org/site/visualisation.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/visualisation.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-maybe moving the content of overlapping existing docus to this new tut and - where appropriate - delete the old ones (only leaving a redirect).<BR>
+integrate from SVN source like it is done at Configuration at <SPAN class="nobr"><A href="http://www.servicemix.org/site/visualisation.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/visualisation.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+
+<P>maybe moving the content of overlapping existing docus to this new tut and - where appropriate - delete the old ones (only leaving a redirect).<BR>
 <SPAN class="nobr"><A href="http://www.servicemix.org/site/notes-on-creating-jbi-component-using-maven2.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/notes-on-creating-jbi-component-using-maven2.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
 <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-standard-jbi-component.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-standard-jbi-component.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
- is already fully incorporated, so delete content and point from there to here<BR>
-provide additional reading</P>
+ is already fully incorporated, so delete content and point from there to here</P>
+
+
+<P>ServiceMix can be used as a protocol bridge. The following tutorial will explain how to create a JBI Service Assembly (aka a JBI application) to bridge two different protocols. In this example, we will bridge the HTTP/SOAP with the JMS protocol using an InOnly MEP. We will also put between the two protocols an XSLT transformation.<BR>
+We will leverage ServiceMix archetypes and maven plugin (see <A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A>).</P>
+
+
+<P>provide additional reading<BR>
+ <A href="creating-a-protocol-bridge.html" title="Creating a protocol bridge">Creating a protocol bridge</A>.for a &quot;bigger&quot; example</P>
+
 
 <P>Maybe add testing</P></TD></TR></TABLE>
 
@@ -182,8 +194,8 @@ provide additional reading</P>
 ...<BR>
 [INFO] <FONT color="#ff00ff">Defaulting package to group ID: org.apache.servicemix.samples.helloWorldSE</FONT><BR>
 ...<BR>
-[INFO] &#42;**************<B>&#42;</B>&#42;<B>&#42; End of debug info from resources from generated POM **&#42;</B>&#42;*****************&#42;<BR>
-[INFO] Archetype created in dir: C:\0hello-world-SE-SU-SA<BR clear="all"><FONT color="#009900"></FONT>hello-world-SE<BR>
+[INFO] &#42;************<B>&#42;</B>&#42;<B>&#42;</B>&#42; End of debug info from resources from generated POM &#42;<B>&#42;</B>&#42;*****************&#42;<BR>
+[INFO] <FONT color="#009900">Archetype created in dir: C:\hello-world-SE-SU-SA\hello-world-SE</FONT><BR>
 [INFO] &#45;----------------------------------------------------------------------&#45;<BR>
 [INFO] BUILD SUCCESSFUL<BR>
 [INFO] &#45;----------------------------------------------------------------------&#45;</P>
@@ -234,15 +246,15 @@ mvn compile
 <P>Doing automated testing of the code is possible as well. As ServiceMix&apos; root POM disables testing, we have to be activate it for the subprojects that shall be tested. To do so, the &lt;build&gt; entity of our <EM>pom.xml</EM> has to be enriched by</P>
 <DIV class="preformatted"><DIV class="preformattedContent">
 <PRE>&lt;pluginManagement&gt;
-	  &lt;plugins&gt;
-			&lt;plugin&gt;
-				  &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-				  &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
-				  &lt;configuration&gt;
-						&lt;skip&gt;false&lt;/skip&gt;&lt;!-- this overrides ServiceMix&apos; root POM and forces to execute the tests --&gt;
-				  &lt;/configuration&gt;
-			&lt;/plugin&gt;
-	  &lt;/plugins&gt;
+     &lt;plugins&gt;
+          &lt;plugin&gt;
+               &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+               &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+               &lt;configuration&gt;
+                    &lt;skip&gt;false&lt;/skip&gt;&lt;!-- this overrides ServiceMix&apos; root POM and forces to execute the tests --&gt;
+               &lt;/configuration&gt;
+          &lt;/plugin&gt;
+     &lt;/plugins&gt;
 &lt;/pluginManagement&gt;
 </PRE>
 </DIV></DIV>
@@ -278,6 +290,7 @@ mvn compile
 
 <H3><A name="HelloWorld-SE-AddingfunctionalitytothestuboftheSE"></A>Adding functionality to the stub of the SE</H3>
 
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
 <P>The default implementation of the component accepts InOut MEPs and return the input content as the out message.</P>
 
 <P>Using an IDE to add meat to the component. You can either use IDEA or Eclipse, I tried it with Eclipse so I guess I am going to stick it for now. &lt;TODO&gt;</P>
@@ -285,26 +298,78 @@ mvn compile
 <P> This shall already include everything stated at<BR>
 <SPAN class="nobr"><A href="http://www.servicemix.org/site/maven-jbi-plugin.html#MavenJBIplugin-GettingStarted" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/maven-jbi-plugin.html#MavenJBIplugin-GettingStarted<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
 and<BR>
-<SPAN class="nobr"><A href="http://www.servicemix.org/site/working-with-components.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/working-with-components.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Be Careful</B><BR>
-<P>The body of the note here..</P></TD></TR></TABLE>
+<SPAN class="nobr"><A href="http://www.servicemix.org/site/working-with-components.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/working-with-components.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P></TD></TR></TABLE>
 
-<H2><A name="HelloWorld-SE-PackingintotheSU"></A>Packing into the SU</H2>
+<H2><A name="HelloWorld-SE-CreatingtheSUandSAandincorporatingthemintothemainPOM"></A>Creating the SU and SA and incorporating them into the main POM</H2>
 
-<P>The archetypes for SUs and SAs do not contain much code, but rather help with tasks related to Maven. You will only need to adapt the generated POMs to your project - just little work, but requiring some guidiance. Here we go:</P>
 
-<P>use the SU archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+<P>The archetypes for SUs and SAs do not contain much code, but rather help with tasks related to Maven. We will only need to adapt the POMs to our project - just little work, but requiring some guidiance.</P>
 
-<P>manually editing <SPAN class="nobr"><A href="working-with-service-units.html" title="Visit page outside Confluence" rel="nofollow">http://goopen.org/confluence/display/SM/Working+with+Service+Units<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
-<H2><A name="HelloWorld-SE-PackingintotheSA"></A>Packing into the SA</H2>
+<H3><A name="HelloWorld-SE-CreatingtheSUandSA%26nbsp%3B"></A>Creating the SU and SA&nbsp;</H3>
 
-<P>As mentioned <A href="#HelloWorld-SE-PackingintotheSU" title="#Packing into the SU">above\</A>, the archetypes for SUs and SAs mainly help with tasks related to Maven.</P>
+<P>In the directory <EM>hello-world-SE-SU-SA</EM> we execute the following commands (they have to be one line but were split to be readable) for the SU</P>
 
-<P>use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-mvn archetype:create &#45;DarchetypeGroupId=org.apache.servicemix.tooling &#45;DarchetypeArtifactId=servicemix-service-assembly &#45;DarchetypeVersion=3.0-incubating-SNAPSHOT &#45;DgroupId=org.apache.servicemix.samples.helloWorldSE &#45;DartifactId=hello-world-SA</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>mvn archetype:create -DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-unit&nbsp;
+-DarchetypeVersion=3.0-incubating -DgroupId=org.apache.servicemix.samples.helloWorldSE -DartifactId=hello-world-SU&nbsp;
+</PRE>
+</DIV></DIV>
+<P>and the SU</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>mvn archetype:create -DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-assembly
+-DarchetypeVersion=3.0-incubating -DgroupId=org.apache.servicemix.samples.helloWorldSE -DartifactId=hello-world-SA &nbsp;
+</PRE>
+</DIV></DIV>
 
-<P>manually editing <SPAN class="nobr"><A href="http://www.servicemix.org/site/working-with-service-assemblies.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/working-with-service-assemblies.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P></DIV>
+<H3><A name="HelloWorld-SE-IncorporatingtheSUandSAintothemainPOM"></A>Incorporating the SU and SA into the main POM</H3>
+
+<P>Now that we have created the SU and SA structure, we incorporate them into the main <EM>pom.xml</EM>. We create a file called <EM>pom.xml</EM> in the <EM>hello-world-SE-SU-SA</EM> directory and instert the following content:</P>
+
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>&lt;project&gt;
+	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+	&lt;groupId&gt;org.apache.servicemix.samples&lt;/groupId&gt;
+	&lt;artifactId&gt;helloWorldSE&lt;/artifactId&gt;
+	&lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+	&lt;packaging&gt;pom&lt;/packaging&gt;
+	&lt;modules&gt;
+		&lt;module&gt;hello-world-SA&lt;/module&gt;
+		&lt;module&gt;hello-world-SU&lt;/module&gt;
+	&lt;/modules&gt;
+	&lt;dependencies&gt;
+		&lt;dependency&gt;
+			&lt;groupId&gt;org.apache.servicemix.samples.helloWorldSE&lt;/groupId&gt;
+			&lt;artifactId&gt;hello-world-SU&lt;/artifactId&gt;
+			&lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+		&lt;/dependency&gt;
+	&lt;/dependencies&gt;
+&lt;/project&gt;
+</PRE>
+</DIV></DIV>
+<P>The &lt;modules&gt; entity defines which child projects belong to the main project. The &lt;dependencies&gt; entity causes Maven to include the SU into the SA.</P>
+
+<P><EM>Note:</EM> The content of &lt;version&gt; describes <EM>not</EM> the version of ServiceMix but the project we create, thus we may choose any desired version (e.g. <EM>3.0-final</EM>). Then you have to change it below as well.</P>
+
+<P>Now, we should be able to launch Maven and have the SA generated in the <EM>hello-world-SE-SU-SA/</EM><EM>hello-world-SA/target/</EM> directory by running the following command from the <EM>hello-world-SE-SU-SA</EM> directory:mvn install<BR>
+Of course, it won&apos;t work if you deploy it and we now need to fill the holes.</P>
+
+<P>Then, deploy the SA and needed components to a started ServiceMix container:</P>
+
+<P>cd hello-world-SE-SU-SA/hello-world-SA/<BR>
+mvn jbi:projectDeploy</P>
+
+<P>Then you can send an request to ...</P>
+
+
+<H3><A name="HelloWorld-SE-ConfiguringtheServiceAssembly%26nbsp%3B"></A>Configuring the Service Assembly&nbsp;</H3>
+
+<P>manually editing <SPAN class="nobr"><A href="working-with-service-units.html" title="Visit page outside Confluence" rel="nofollow">http://goopen.org/confluence/display/SM/Working+with+Service+Units<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+manually editing <SPAN class="nobr"><A href="http://www.servicemix.org/site/working-with-service-assemblies.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/working-with-service-assemblies.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<P>use the SU archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+&nbsp;</P></DIV>
           
                   </DIV>
         </TD>
@@ -315,12 +380,12 @@ mvn archetype:create &#45;DarchetypeGroupId=org.apache.servicemix.tooling &#45;D
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 27, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13853">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13856">view change</A>)
                       <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
         <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
           <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
       <B>Comment:</B>
-      formatting shall be okay now (wiki markup edit)<BR>
+      INS further explanation/help<BR>
       <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13823">View page history</A></SPAN>
   </DIV>
 
