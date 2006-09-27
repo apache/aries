@@ -189,7 +189,7 @@ We will leverage ServiceMix archetypes and maven plugin (see <A href="maven-jbi-
 ...<BR>
 [INFO] <FONT color="#ff00ff">Defaulting package to group ID: org.apache.servicemix.samples.helloWorldSE</FONT><BR>
 ...<BR>
-[INFO] &#42;********<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42;</B>&#42; End of debug info from resources from generated POM &#42;<B>&#42;</B>&#42;*****************&#42;<BR>
+[INFO] &#42;**<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42; End of debug info from resources from generated POM **&#42;</B>&#42;*****************&#42;<BR>
 [INFO] <FONT color="#009900">Archetype created in dir: C:\hello-world-SE-SU-SA\hello-world-SE</FONT><BR>
 [INFO] &#45;----------------------------------------------------------------------&#45;<BR>
 [INFO] BUILD SUCCESSFUL<BR>
@@ -272,7 +272,6 @@ C:\hello-world-SE-SU-SA\hello-world-SU\src\main\resources
 
 <P><EM>Note:</EM> The content of &lt;version&gt; describes <EM>not</EM> the version of ServiceMix but of the project we create, thus we may choose any desired version (e.g. <EM>3.0-final</EM>). We just have to use consitently the same version when we reference this project.</P>
 
-
 <H2><A name="HelloWorld-SE-Mavencommands%26nbsp%3B"></A>Maven commands&nbsp;</H2>
 
 <P>By now, it is already possible to call Maven with the relevant goals.</P>
@@ -345,22 +344,34 @@ C:\hello-world-SE-SU-SA\hello-world-SU\src\main\resources
 <PRE>mvn install
 </PRE>
 </DIV></DIV>
-<P>from the <EM>hello-world-SE-SU-SA</EM> directory, the SA is generated in the <EM>hello-world-SE-SU-SA/</EM><EM>hello-world-SA/target/</EM> directory. Of course, it does not yet do anything, but we can already deploy the SA and needed components to a running ServiceMix container by switching to the <EM>hello-world-SE-SU-SA/hello-world-SA/</EM> directory and calling</P>
+<P>from the <EM>hello-world-SE-SU-SA</EM> directory, the SA is generated in the <EM>hello-world-SE-SU-SA/</EM><EM>hello-world-SA/target/</EM> directory. Of course, our code does not yet do anything, but we can already deploy the SA and needed components to a running ServiceMix container by switching to the <EM>hello-world-SE-SU-SA/hello-world-SA/</EM> directory and calling</P>
 <DIV class="preformatted"><DIV class="preformattedContent">
 <PRE>mvn jbi:projectDeploy
 </PRE>
 </DIV></DIV>
-<P>ServiceMix will output this confirmation</P>
+<P>Essentially, the plugin will walk the dependencies starting in the current project, then deploy each of the dependencies in reverse order. So it copies contents of the <EM>hello-world-SA-1.0-SNAPSHOT.zip</EM> and orther sources to ServiceMix subdirectories. For further information see <A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A>. When the deployment is complete, ServiceMix will output this confirmation:</P>
 <DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>INFO&nbsp; - ServiceAssemblyLifeCycle&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Starting service assembly: hello-world-SA
+<PRE>INFO  - ServiceAssemblyLifeCycle       - Starting service assembly: hello-world-SA
 </PRE>
 </DIV></DIV>
+<P><EM>Note:</EM> The command <EM>mvn install</EM> executed in the <EM>hello-world-SE</EM> directory creates a JAR and also a component installer. For installation, <EM>mvn jbi:installComponent</EM> has to be executed.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Deploying Dependencies</B><BR>
+<P>When working with the <EM>jbi:projectDeploy</EM> one may want to disable dependency deployment. When deploying to a server which has other components sharing these dependencies, they can cause problems while trying to undeploy and redeploy them. To stop the jbi-maven-plugin undeploying and redeploying dependencies, the configuration files (usually in the SA&apos;s or the component&apos;s <EM>pom.xml</EM>) have to be extended by a new element called deployDependencies with a value of false (<EM>&lt;deployDependencies&gt;false&lt;/deployDependencies&gt;</EM>). This has to be placed in the configuration section for the jbi-maven-plugin. The final structure looks like this:</P>
+
+<P>&lt;build&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;plugins&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;plugin&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;jbi-maven-plugin&lt;/artifactId&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;configuration&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;deployDependencies&gt;false&lt;/deployDependencies&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/configuration&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/plugin&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/plugins&gt;<BR>
+&lt;/build&gt;</P></TD></TR></TABLE>
 
 <H2><A name="HelloWorld-SE-Addingfunctionality"></A>Adding functionality</H2>
 
-<P>&nbsp;</P>
-
-<P>Configuring the Service Assembly&nbsp;</P>
+<P>Configuring the Service Assembly</P>
 
 <P>manually editing <SPAN class="nobr"><A href="working-with-service-units.html" title="Visit page outside Confluence" rel="nofollow">http://goopen.org/confluence/display/SM/Working+with+Service+Units<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
@@ -368,10 +379,7 @@ C:\hello-world-SE-SU-SA\hello-world-SU\src\main\resources
 
 <P>use the SU archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
-<P>use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-&nbsp;</P>
-
-<P>&nbsp;</P>
+<P>use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
 <P>it and we now need to fill the holes.</P>
 
@@ -395,7 +403,7 @@ and<BR>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 27, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13858">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13859">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
