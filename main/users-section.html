@@ -112,14 +112,102 @@ Users section
 <!--          
             <div class="pagetitle">Users section</div>
 -->
-            <DIV class="wiki-content"><P><B>Getting the component dependencies into your local machine/company repository</B></P>
+            <DIV class="wiki-content"><P><B>Roadmap for a perspective Servicemix developer</B></P>
+
+
+<P>THE POINT:</P>
+<UL>
+	<LI>connect the dots between the documentation already existing on the Servicemix website</LI>
+	<LI>Give a developer interested in Servicemix a run through on getting the software up and running (with examples&#33;)</LI>
+	<LI>Give the developer information on monitoring/configuring the software via jconsole</LI>
+</UL>
+
+
+<P> Conventions:</P>
+<OL>
+	<LI>&apos;company repository&apos; = a remote Maven 2 repository used within your company to hold dependencies/artifacts.</LI>
+	<LI>[Smix_source_folder] = the location of the folder created after uncompressing the downloaded Smix source distribution (from .zip, .tar.gz etc.).</LI>
+	<LI>[Servicemix_binary_distribution_home] = installation location of the Smix binary distribution on your machine</LI>
+</OL>
+
+
+<P><EM>NOTE: I am using</EM> <EM><SPAN class="nobr"><A href="http://people.apache.org/maven-snapshot-repository/org/apache/servicemix/apache-servicemix/3.0-incubating-SNAPSHOT/apache-servicemix-3.0-incubating-20060907.104512-15-src.tar.gz" title="Visit page outside Confluence" rel="nofollow"><EM>apache-servicemix-3.0-incubating-20060907.104512-15-src.tar.gz</EM> <SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></EM><EM>for the following tutorial. If you do not use this snapshot release I cannot guarantee the following will work.</EM></P>
+
+
+<P>BEFORE STARTING:</P>
+<UL>
+	<LI>You will need Maven 2 installed on your machine&nbsp;</LI>
+</UL>
+
+
+<P><B>Getting the component dependencies into your local machine/company repository</B></P>
+
 
 <P>If you are going to be running any of the examples or doing any development with a current SNAPSHOT/release then you may want to do a few things first. It makes sense to check out the 3.0 (SNAPSHOT if you want the newest) source code so that you can install the Smix component dependencies in your local repository. First go here and download the <SPAN class="nobr"><A href="http://servicemix.org/site/download.html" title="Visit page outside Confluence" rel="nofollow">ServiceMix 3.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> sources. Next you will want to build the Servicemix app and it&apos;s included components. Go <SPAN class="nobr"><A href="http://servicemix.org/site/building.html" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for instructions.</P>
 
 <P>Once you have built the 3.0 app, following the instructions linked above, the Smix component modules will be installed locally. If you want to deploy those dependencies to a company repository then keep reading. I can only give information on doing this for Maven 2 as I did not try this for Maven 1. First go into the top level project pom.xml with you favorite editor. This will be in the [Smix_source_folder]/src folder. You are going to first edit out the references to Maven 1. Search for &apos;m1&apos;, or in another case I searched for &apos;maven-one&apos;. There was a property and a plug in section I deleted (maybe some other sections also). I think the plug in is the important one to delte/coment out. Next edit the &apos;distributionManagement&apos; section. Put the relevent information for you company repository here. If you are working with a SNAPSHOT release then you will need to put your snapshot repository information in here.</P>
 
+<P>You should now be able to &apos;mvn &#45;Dmaven.test.skip=true deploy&apos; and the dependencies will upload to the remote repository you defined. This is a good thing when people you are working with will need the Smix component dependencies. If others will be working on a Smix project you create it will also come in handy, as they will not have to chase down dependencies. THANKS MAVEN&#33;&#33;&#33; I think there are other benefits too, such as faster fetching since the dependencies are more local (physically).</P>
 
-<P>You should now be able to &apos;mvn &#45;Dmaven.test.skip=true deploy&apos; and the dependencies will upload to the remote repository you defined. This is good for when other people you are working with will need the Smix component dependencies. I think there are other benefits too, such as faster fetching since the dependencies are more local (physically).</P></DIV>
+<P><B>Next up install the compiled binary Servicemix...</B></P>
+
+
+<P>You now have Smix built from source, and the Smix components in a Maven 2 repository. The built distribution of Smix will be in [Smix_source_folder]/apache-servicemix/target. There will be a source distribution that is like (exactly like?) the one which you downloaded, and the .zip, .tar.gzip binary distributions. Install the binary distribution following <SPAN class="nobr"><A href="http://servicemix.org/sm30ug/3-installation.html#3.Installation-UnixSourceInstallation" title="Visit page outside Confluence" rel="nofollow">these<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> directions. Note those are for Unix, but you can follow the link and find directions for Windows. Once you have installed the binary Servicemix installation you are ready to do some testing.</P>
+
+<P>&nbsp;<B>wsdl-first</B></P>
+
+<P>The first thing to do now is install the <SPAN class="nobr"><A href="http://servicemix.org/sm30ug/1-quick-start.html#1.Quickstart-Deployasampleapplication" title="Visit page outside Confluence" rel="nofollow">wsdl-first<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> service assembly (SA) which contains a few service units (SU&apos;s) (<SPAN class="nobr"><A href="https://sdlc6a.sun.com/ECom/EComActionServlet;jsessionid=728961EE41294F2FB2547B82D037F02E" title="Visit page outside Confluence" rel="nofollow">See JBI specification document<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>). The end result is a XFire based SOAP service which is pretty simple. The actual code for the service is in the file [Servicemix_binary_distribution_home]/examples/wsdl-first/wsdl-first-jsr181-su/src/main/java/org/apache/servicemix/samples/wsdl_first/PersonImpl.java. Phew&#33; Take a look at the code, it is pretty simple. It uses an <SPAN class="nobr"><A href="http://java.sun.com/j2se/1.5.0/docs/guide/language/annotations.html" title="Visit page outside Confluence" rel="nofollow">annotation<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which describes the class as a <SPAN class="nobr"><A href="http://dev2dev.bea.com/webservices/jwsm.html" title="Visit page outside Confluence" rel="nofollow">jsr181<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> web service. One interesting thing to note about this project is the use of an ant task inside the parent pom.xml. This taks uses XFire&apos;s WsGenTask to create Java objects used by the web service, as described in the WSDL file.</P>
+
+<P>So let&apos;s get this up and running in our Smix container. <SPAN class="nobr"><A href="http://servicemix.org/sm30ug/1-quick-start.html#1.Quickstart-Starttheserver" title="Visit page outside Confluence" rel="nofollow">Start<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> Smix, watch the output to make sure things start up correctly. You will need to open up a new console for the next step, since the Smix output is taking up the other. You will be able to watch this output to see what is going on in some of the following steps. Go back to [Servicemix_binary_distribution_home]. You need to copy the components needed by the wsdl-first SA from the /components folder to the /install folder. The ones you should copy are:</P>
+<UL>
+	<LI>servicemix-http-3.0-incubating-SNAPSHOT-installer.zip</LI>
+	<LI>servicemix-shared-3.0-incubating-SNAPSHOT-installer.zip</LI>
+	<LI>servicemix-jsr181-3.0-incubating-SNAPSHOT-installer.zip</LI>
+</UL>
+
+
+<P>With each copied component will come messages from Smix in the console output window. Watch these to make sure things properly install. If any problems crop up, try to copy the component again. I have received a zip related exception before. I did the copy a second time and the problem didn&apos;t show itself a second time.</P>
+
+<P>There is an easy way to do the following: copy the file [Servicemix_binary_distribution_home]/examples/wsdl-first/wsdl-first-sa-3.0-incubating-SNAPSHOT.zip into the /install folder. Watch the Smix console window making sure things go well. You can now open a browser and go <SPAN class="nobr"><A href="http://localhost:8192/PersonService/main.wsdl" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to see the WSDL for the SOAP service.</P>
+
+<P>&nbsp;That was the easy way....but you want to learn about developing so let&apos;s do it the &apos;hard&apos; way. First go to the [Servicemix_binary_distribution_home]/examples/wsdl-first folder and type mvn install. This example project is using a <SPAN class="nobr"><A href="http://servicemix.org/site/maven-jbi-plugin.html" title="Visit page outside Confluence" rel="nofollow">Maven 2 plugin<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for creating specific JBI components. If you look in the module pom.xml files you will see a special packaging type. After the mvn install completes there will be file called wsdl-first-sa-3.0-incubating-SNAPSHOT-installer in the wsdl-first-sa module&apos;s target folder. This is SA for the wsdl-first example project. Now we want to deploy this to our container. The Maven JBI plugin will take care of this for us&#33;&#33;&#33; Note we need to make a small change to the wsdl-first-sa module&apos;s pom.xml. The plugin will normally try to install all the shared libraries needed by the SA when running the Maven goal jbi:projectDeploy. This is sometimes useful. But often it causes problems because another SA in Smix is using the shared lib already. In this case the Maven goal will try to remove and redeploy the shared lib from Smix. This causes a problem and will make the SA deployment fail. So to tell the plugin to not do this make the following change in the pom.xml:</P>
+
+<P>&nbsp;&nbsp;&nbsp; &lt;build&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;plugins&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;plugin&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;groupId&gt;org.apache.servicemix.tooling&lt;/groupId&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;artifactId&gt;jbi-maven-plugin&lt;/artifactId&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;extensions&gt;true&lt;/extensions&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/plugin&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/plugins&gt;<BR>
+&nbsp;&nbsp;&nbsp; &lt;/build&gt;</P>
+
+<P>&#45;--<DEL>to</DEL>---&nbsp;</P>
+
+<P>&nbsp;&nbsp;&nbsp; &lt;build&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;plugins&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;plugin&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;groupId&gt;org.apache.servicemix.tooling&lt;/groupId&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;artifactId&gt;jbi-maven-plugin&lt;/artifactId&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;extensions&gt;true&lt;/extensions&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;configuration&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;deployDependencies&gt;false&lt;/deployDependencies&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/configuration&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/plugin&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/plugins&gt;<BR>
+&nbsp;&nbsp;&nbsp; &lt;/build&gt;</P>
+
+<P>&nbsp;That little config change will prevent some headaches later.</P>
+
+<P>You are ready to rock. Change directory to the wsdl-first-sa module. Type &apos;mvn jbi:projectDeploy&apos;. You can watch the Smix console for information on the deployment.</P>
+
+<P><B>Temporary excursion into monitoring</B></P>
+
+<P>coming soon...&nbsp;</P>
+
+<P><B>Next up - the bridge example</B></P>
+
+<P>coming soon....</P></DIV>
           
                   </DIV>
         </TD>
@@ -130,7 +218,7 @@ Users section
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=robottaway">Robert Ottaway</A> on Sep 26, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13814&originalId=13834">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13814&originalId=13835">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13814">edit page</A>)
     </DIV>
