@@ -126,12 +126,11 @@ INS When to use this JBI Component<BR>
 INS Using the component that you created<BR>
 provide exact position in the SVN&#33;&nbsp;<BR>
 /samples/hello-world-SE-SU-SA/<BR>
-integrate from SVN source like it is done at Configuration&nbsp; at <SPAN class="nobr"><A href="http://www.servicemix.org/site/visualisation.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/visualisation.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>
-
-<P>maybe moving the content of overlapping existing docus to this new tut and - where appropriate - delete the old ones (only leaving a redirect).<BR>
+integrate from SVN source like it is done at Configuration&nbsp; at <SPAN class="nobr"><A href="http://www.servicemix.org/site/visualisation.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/visualisation.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+maybe moving the content of overlapping existing docus to this new tut and - where appropriate - delete the old ones (only leaving a redirect).<BR>
 <SPAN class="nobr"><A href="http://www.servicemix.org/site/notes-on-creating-jbi-component-using-maven2.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/notes-on-creating-jbi-component-using-maven2.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
 <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-standard-jbi-component.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-standard-jbi-component.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
- is already fully incorporated, so delete content and point from there to here</P>
+ is already fully incorporated, so delete content and point from there to here
 
 <P>provide additional reading</P>
 
@@ -171,27 +170,26 @@ integrate from SVN source like it is done at Configuration&nbsp; at <SPAN class=
 <P>First, we create a directory <EM>hello-world-SE-SU-SA</EM> and open a command line in this folder. Now we execute the following command (it has to be one line but was split to be readable):</P>
 <DIV class="panel"><DIV class="panelContent">
 <P>mvn archetype:create &#45;DarchetypeGroupId=org.apache.servicemix.tooling &#45;DarchetypeArtifactId=servicemix-service-engine<BR>
-&#45;DarchetypeVersion=3.0-incubating &#45;DgroupId=org.ap<FONT color="#cc6633">ache.servicemix.</FONT>samples.helloWorldSE &#45;DartifactId=hello-world-SE</P>
+&#45;DarchetypeVersion=<FONT color="#993366">3.0-incubating</FONT> &#45;DgroupId=<FONT color="#ff00ff">org.apache.servicemix.samples.helloWorldSE</FONT> &#45;DartifactId=<FONT color="#009900">hello-world-SE</FONT></P>
 </DIV></DIV>
-<P>The first three parameters identify the maven 2 archetype to use, while the last two parameters define the generated maven 2 project. The version information &quot;<FONT color="#993300">3.0-incubating</FONT>&quot; may have to be changed; a look at any of ServiceMix&apos; <EM>pom.xml</EM> reveals the version to use. Maven uses the group ID (printed in <FONT color="#ff00ff">pink</FONT>) as default Java package (see <EM>Defaulting package to group ID:</EM> in output below as well), thus invalid characters like minus, percent etc. must be avoided or a custom package name has to be given as parameter. The output looks like this (only relevant information preserved):</P>
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>[INFO] Scanning for projects...
-[INFO] Searching repository for plugin with prefix: &apos;archetype&apos;.
-[INFO] ----------------------------------------------------------------------------
-[INFO] Building Maven Default Project
-[INFO]    task-segment: [archetype:create] (aggregator-style)
-[INFO] ----------------------------------------------------------------------------
-...
-[INFO] Defaulting package to group ID: org.apache.servicemix.samples.helloWorldSE
-...
-[INFO] ********************* End of debug info from resources from generated POM ***********************
-[INFO] Archetype created in dir: C:\0hello-world-SE-SU-SA\hello-world-SE
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESSFUL
-[INFO] ------------------------------------------------------------------------
-</PRE>
+<P>The first three parameters identify the maven 2 archetype to use, while the last two parameters define the generated maven 2 project. The version information &quot;<FONT color="#993366">3.0-incubating</FONT>&quot; may have to be changed; a look at any of ServiceMix&apos; <EM>pom.xml</EM> reveals the version to use. Maven uses the group ID (printed in <FONT color="#ff00ff">pink</FONT>) as default Java package (see output below as well), thus invalid characters like minus, percent etc. must be avoided or a custom package name has to be given as parameter. Mavens output following the command looks like this (only relevant information preserved):</P>
+<DIV class="panel"><DIV class="panelContent">
+<P>[INFO] Scanning for projects...<BR>
+[INFO] Searching repository for plugin with prefix: &apos;archetype&apos;.<BR>
+[INFO] &#45;--------------------------------------------------------------------------&#45;<BR>
+[INFO] Building Maven Default Project<BR>
+[INFO]    task-segment: [archetype:create] (aggregator-style)<BR>
+[INFO] &#45;--------------------------------------------------------------------------&#45;<BR>
+...<BR>
+[INFO] <FONT color="#ff00ff">Defaulting package to group ID: org.apache.servicemix.samples.helloWorldSE</FONT><BR>
+...<BR>
+[INFO] &#42;******************<B>&#42; End of debug info from resources from generated POM &#42;</B>********************&#42;<BR>
+[INFO] Archetype created in dir: C:\0hello-world-SE-SU-SA{color:#009900}hello-world-SE<FONT color=""></FONT><BR>
+[INFO] &#45;----------------------------------------------------------------------&#45;<BR>
+[INFO] BUILD SUCCESSFUL<BR>
+[INFO] &#45;----------------------------------------------------------------------&#45;</P>
 </DIV></DIV>
-<P>Maven creates a new folder having the same name as the artifact ID provided (printed in <FONT color="#009900">green</FONT> in the command). Inside this folder, a file called <EM>pom.xml</EM> is created. This contains the Project Object Model providing Maven with all needed information for building,&nbsp;see <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html" title="Visit page outside Confluence" rel="nofollow">Introduction to the POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> at the Maven website. Moreover, Java source files and tests were created. The full structure of the things created by Maven for you looks like this (some directories are grouped together):</P>
+<P>Maven creates a new folder having the same name as the artifact ID provided (printed in <FONT color="#009900">green</FONT> in the command and output). Inside this folder, a file called <EM>pom.xml</EM> is created. This contains the Project Object Model providing Maven with all needed information for building (see <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html" title="Visit page outside Confluence" rel="nofollow">Introduction to the POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> at the Maven website). Moreover, Java source files and tests were created. The full structure of files created by Maven looks like this (some directories are grouped together for better readability):</P>
 <DIV class="preformatted"><DIV class="preformattedContent">
 <PRE>\hello-world-SE-SU-SA\hello-world-SE\
       pom.xml
@@ -214,27 +212,28 @@ integrate from SVN source like it is done at Configuration&nbsp; at <SPAN class=
                   spring.xml
 </PRE>
 </DIV></DIV>
-<P>You might be wondering why&nbsp;all the classes have the word &quot;My&quot; prefixed to them. This prefix is just driven from the template; you just need to rename it to whatever you want to, as long as you make sure you change the corresponding resource files (all tests and the <EM>pom.xml</EM>) as well.</P>
+<P>All the classes have the word &quot;My&quot; prefixed to them due to the template. We can just rename the prefix to whatever we want to, as long as we make sure we change the corresponding resource files (all tests and the <EM>pom.xml</EM>) as well.</P>
 
 <H3><A name="HelloWorld-SE-Compilingthecode%26nbsp%3B"></A>Compiling the code&nbsp;</H3>
 
-<P>From now on, you can build the code by executing</P>
+<P>From now on, we can build the code by executing</P>
 <DIV class="preformatted"><DIV class="preformattedContent">
 <PRE>cd hello-world-SE
 
 mvn compile
 </PRE>
 </DIV></DIV>
-<P>which shall present you as one of the last lines of output</P>
+<P>which shall present us as one of the last lines of output</P>
 <DIV class="preformatted"><DIV class="preformattedContent">
 <PRE>[INFO] BUILD SUCCESSFUL
 </PRE>
 </DIV></DIV>
-<P>In case this success information is not appearing, the output shall give further information on the reasons.</P>
+<P>In case this success information is not appearing, the output shall give further information on the reasons. In case it&apos;s not helpful, further information can be found in the <A href="mailing-lists.html" title="Mailing Lists">ServiceMix mailing lists</A> and the <SPAN class="nobr"><A href="http://maven.apache.org/" title="Visit page outside Confluence" rel="nofollow">Maven website<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+
 
 <H3><A name="HelloWorld-SE-Testingthecode%26nbsp%3B"></A>Testing the code&nbsp;</H3>
 
-<P>Doing automated testing of the code is possible as well. As ServiceMix&apos; root POM disables testing, it has to be activated for the subprojects that shall be tested. To do so, the &lt;build&gt; entity of our <EM>pom.xml</EM> has to be enriched by</P>
+<P>Doing automated testing of the code is possible as well. As ServiceMix&apos; root POM disables testing, we have to be activate it for the subprojects that shall be tested. To do so, the &lt;build&gt; entity of our <EM>pom.xml</EM> has to be enriched by</P>
 <DIV class="preformatted"><DIV class="preformattedContent">
 <PRE>&lt;pluginManagement&gt;
             &lt;plugins&gt;
@@ -249,33 +248,37 @@ mvn compile
         &lt;/pluginManagement&gt;
 </PRE>
 </DIV></DIV>
-<P>&nbsp;where <EM>&lt;skip&gt;false&lt;/skip&gt;</EM> is the relevant line of code. Now, tests will be done when executing</P>
+<P>&nbsp;where <EM>&lt;skip&gt;false&lt;/skip&gt;</EM> is the relevant line of code. Now, when executing</P>
 <DIV class="preformatted"><DIV class="preformattedContent">
 <PRE>mvn test
 </PRE>
 </DIV></DIV>
-<P>The output shall look like the following<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=INFO&linkCreation=true&fromPageId=13823" title="Create Page: INFO" class="createlink">INFO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> Scanning for projects...<BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=INFO&linkCreation=true&fromPageId=13823" title="Create Page: INFO" class="createlink">INFO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#45;--------------------------------------------------------------------------&#45;<BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=INFO&linkCreation=true&fromPageId=13823" title="Create Page: INFO" class="createlink">INFO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> Building A custom project<BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=INFO&linkCreation=true&fromPageId=13823" title="Create Page: INFO" class="createlink">INFO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> task-segment: <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=test&linkCreation=true&fromPageId=13823" title="Create Page: test" class="createlink">test<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=INFO&linkCreation=true&fromPageId=13823" title="Create Page: INFO" class="createlink">INFO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#45;--------------------------------------------------------------------------&#45;<BR>
-...<BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=INFO&linkCreation=true&fromPageId=13823" title="Create Page: INFO" class="createlink">INFO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> <SPAN class="error">&#91;surefire:test&#93;</SPAN><BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=INFO&linkCreation=true&fromPageId=13823" title="Create Page: INFO" class="createlink">INFO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> Setting reports dir: c:\java\tmp\servicemix-xslt\target/surefire-reports<BR>
-&#45;-----------------------------------------------------&#45;<BR>
- T E S T S<BR>
-&#45;-----------------------------------------------------&#45;<BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=surefire&linkCreation=true&fromPageId=13823" title="Create Page: surefire" class="createlink">surefire<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> Running org.apache.servicemix.helloWorldSE.MySpringComponentTest<BR>
-...<BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=surefire&linkCreation=true&fromPageId=13823" title="Create Page: surefire" class="createlink">surefire<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 1,422 sec<BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=INFO&linkCreation=true&fromPageId=13823" title="Create Page: INFO" class="createlink">INFO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#45;----------------------------------------------------------------------&#45;<BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=INFO&linkCreation=true&fromPageId=13823" title="Create Page: INFO" class="createlink">INFO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> BUILD SUCCESSFUL<BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=INFO&linkCreation=true&fromPageId=13823" title="Create Page: INFO" class="createlink">INFO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#45;----------------------------------------------------------------------&#45;<BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=INFO&linkCreation=true&fromPageId=13823" title="Create Page: INFO" class="createlink">INFO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> Total time: 42 seconds<BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=INFO&linkCreation=true&fromPageId=13823" title="Create Page: INFO" class="createlink">INFO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> Finished at: Thu May 11 22:50:58 CEST 2006<BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=INFO&linkCreation=true&fromPageId=13823" title="Create Page: INFO" class="createlink">INFO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> Final Memory: 8M/18M<BR>
-<SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=INFO&linkCreation=true&fromPageId=13823" title="Create Page: INFO" class="createlink">INFO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#45;----------------------------------------------------------------------&#45;<BR>
-Adding</P>
+<P>tests will be done and Maven outputs the following (truncated to the relevant information):</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>[INFO] Scanning for projects...
+[INFO] ----------------------------------------------------------------------------
+[INFO] Building A custom project
+[INFO]    task-segment: [test]
+[INFO] ----------------------------------------------------------------------------
+...
+[INFO] [compiler:compile]
+...
+[INFO] [surefire:test]
+[INFO] Setting reports dir: c:\java\tmp\servicemix-helloWorldSE\target/surefire-reports
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+[surefire] Running org.apache.servicemix.samples.helloWorldSE.MySpringComponentTest
+...
+[surefire] Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 1,422 sec
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+...
+</PRE>
+</DIV></DIV>
+
+<H3><A name="HelloWorld-SE-AddingfunctionalitytothestuboftheSE%26nbsp%3B"></A>Adding functionality to the stub of the SE&nbsp;</H3>
 
 <P>The default implementation of the component accepts InOut MEPs and return the input content as the out message.</P>
 
@@ -315,12 +318,12 @@ mvn archetype:create &#45;DarchetypeGroupId=org.apache.servicemix.tooling &#45;D
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 27, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13850">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13851">view change</A>)
                       <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
         <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
           <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
       <B>Comment:</B>
-      color test<BR>
+      updated command + extended information<BR>
       <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13823">View page history</A></SPAN>
   </DIV>
 
