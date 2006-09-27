@@ -164,8 +164,7 @@ We will leverage ServiceMix archetypes and maven plugin (see <A href="maven-jbi-
 
 <P><FONT color="#ff0000">Further reading: JSR 208</FONT></P>
 
-<H2><A name="HelloWorld-SE-CreatingthestuboftheSE%2CSU%2CSAandmainPOM"></A>Creating the stub of the SE, SU, SA and main POM</H2>
-
+<H2><A name="HelloWorld-SE-CreatingthemainPOMandthestubsoftheSE%2CSU%2CSA"></A>Creating the main POM and the stubs of the SE, SU, SA</H2>
 
 
 <H3><A name="HelloWorld-SE-CreatingthestuboftheSE"></A>Creating the stub of the SE</H3>
@@ -190,7 +189,7 @@ We will leverage ServiceMix archetypes and maven plugin (see <A href="maven-jbi-
 ...<BR>
 [INFO] <FONT color="#ff00ff">Defaulting package to group ID: org.apache.servicemix.samples.helloWorldSE</FONT><BR>
 ...<BR>
-[INFO] &#42;**********<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42; End of debug info from resources from generated POM **&#42;</B>&#42;*****************&#42;<BR>
+[INFO] &#42;********<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42;</B>&#42; End of debug info from resources from generated POM &#42;<B>&#42;</B>&#42;*****************&#42;<BR>
 [INFO] <FONT color="#009900">Archetype created in dir: C:\hello-world-SE-SU-SA\hello-world-SE</FONT><BR>
 [INFO] &#45;----------------------------------------------------------------------&#45;<BR>
 [INFO] BUILD SUCCESSFUL<BR>
@@ -201,7 +200,6 @@ We will leverage ServiceMix archetypes and maven plugin (see <A href="maven-jbi-
 <H3><A name="HelloWorld-SE-CreatingthestuboftheSUandSA%26nbsp%3B"></A>Creating the stub of the SU and SA&nbsp;</H3>
 
 <P>The archetypes for SUs and SAs do not contain much code, but rather help with tasks related to Maven. Later, we will only need to adapt the POMs to our project - just little work.</P>
-
 
 <P>In the directory <EM>hello-world-SE-SU-SA</EM> we execute the following commands (they have to be one line but were split to be readable) for the SU</P>
 <DIV class="preformatted"><DIV class="preformattedContent">
@@ -272,7 +270,8 @@ C:\hello-world-SE-SU-SA\hello-world-SU\src\main\resources
 </DIV></DIV>
 <P>The &lt;modules&gt; entity defines which child projects belong to the main project. The &lt;dependencies&gt; entity causes Maven to include the SU into the SA.</P>
 
-<P><EM>Note:</EM> The content of &lt;version&gt; describes <EM>not</EM> the version of ServiceMix but the project we create, thus we may choose any desired version (e.g. <EM>3.0-final</EM>). Then you have to change it below as well.</P>
+<P><EM>Note:</EM> The content of &lt;version&gt; describes <EM>not</EM> the version of ServiceMix but of the project we create, thus we may choose any desired version (e.g. <EM>3.0-final</EM>). We just have to use consitently the same version when we reference this project.</P>
+
 
 <H2><A name="HelloWorld-SE-Mavencommands%26nbsp%3B"></A>Maven commands&nbsp;</H2>
 
@@ -341,7 +340,6 @@ C:\hello-world-SE-SU-SA\hello-world-SU\src\main\resources
 
 <H3><A name="HelloWorld-SE-GenerationanddeploymentoftheSA"></A>Generation and deployment of the SA</H3>
 
-
 <P>By running</P>
 <DIV class="preformatted"><DIV class="preformattedContent">
 <PRE>mvn install
@@ -352,22 +350,33 @@ C:\hello-world-SE-SU-SA\hello-world-SU\src\main\resources
 <PRE>mvn jbi:projectDeploy
 </PRE>
 </DIV></DIV>
+<P>ServiceMix will output this confirmation</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>INFO&nbsp; - ServiceAssemblyLifeCycle&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Starting service assembly: hello-world-SA
+</PRE>
+</DIV></DIV>
+
+<H2><A name="HelloWorld-SE-Addingfunctionality"></A>Adding functionality</H2>
+
+<P>&nbsp;</P>
+
+<P>Configuring the Service Assembly&nbsp;</P>
+
+<P>manually editing <SPAN class="nobr"><A href="working-with-service-units.html" title="Visit page outside Confluence" rel="nofollow">http://goopen.org/confluence/display/SM/Working+with+Service+Units<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<P>manually editing <SPAN class="nobr"><A href="http://www.servicemix.org/site/working-with-service-assemblies.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/working-with-service-assemblies.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<P>use the SU archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<P>use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+&nbsp;</P>
+
+<P>&nbsp;</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
 <P>it and we now need to fill the holes.</P>
 
 <P>Then you can send an request to ...</P>
 
-<H3><A name="HelloWorld-SE-ConfiguringtheServiceAssembly%26nbsp%3B"></A>Configuring the Service Assembly&nbsp;</H3>
-
-<P>manually editing <SPAN class="nobr"><A href="working-with-service-units.html" title="Visit page outside Confluence" rel="nofollow">http://goopen.org/confluence/display/SM/Working+with+Service+Units<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-manually editing <SPAN class="nobr"><A href="http://www.servicemix.org/site/working-with-service-assemblies.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/working-with-service-assemblies.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
-
-<P>use the SU archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-&nbsp;</P>
-
-<H3><A name="HelloWorld-SE-AddingfunctionalitytothestuboftheSE"></A>Adding functionality to the stub of the SE</H3>
-
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
 <P>The default implementation of the component accepts InOut MEPs and return the input content as the out message.</P>
 
 <P>Using an IDE to add meat to the component. You can either use IDEA or Eclipse, I tried it with Eclipse so I guess I am going to stick it for now. &lt;TODO&gt;</P>
@@ -386,34 +395,8 @@ and<BR>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 27, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13857">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      restructured<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13823">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13858">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
 
