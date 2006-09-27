@@ -163,8 +163,9 @@ and<BR>
 <P>Components are enriched by metadata (<FONT color="#ff0000">which?</FONT>) and the whole is packed into a Service Unit (SU) - basically a JAR archive.</P>
 
 <P>Several SUs are packed into a Service Assambly (SA). An SA is a complete &quot;application&quot; consisting of multiple components (reminder: the &quot;smallest appliactions&quot;) interacting with each other and making up the big &quot;application&quot;.</P>
-
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
 <P><FONT color="#ff0000">Further reading: JSR 208</FONT></P>
+</TD></TR></TABLE>
 
 <H2><A name="HelloWorld-SE-CreatingthemainPOMandthestubsoftheSE%2CSU%2CSA"></A>Creating the main POM and the stubs of the SE, SU, SA</H2>
 
@@ -191,7 +192,7 @@ and<BR>
 ...<BR>
 [INFO] <FONT color="#ff00ff">Defaulting package to group ID: org.apache.servicemix.samples.helloWorldSE</FONT><BR>
 ...<BR>
-[INFO] &#42;<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42;</B>&#42; End of debug info from resources from generated POM &#42;<B>&#42;</B>&#42;*****************&#42;<BR>
+[INFO] *<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42;</B>&#42; End of debug info from resources from generated POM *<B>&#42;</B>&#42;*****************&#42;<BR>
 [INFO] <FONT color="#009900">Archetype created in dir: C:\hello-world-SE-SU-SA\hello-world-SE</FONT><BR>
 [INFO] &#45;----------------------------------------------------------------------&#45;<BR>
 [INFO] BUILD SUCCESSFUL<BR>
@@ -339,11 +340,7 @@ C:\hello-world-SE-SU-SA\hello-world-SU\src\main\resources
 </PRE>
 </DIV></DIV>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
-
-<P>Maybe add further testingat the end of the tutarial (as &quot;how to continue when having the working example&quot;)</P>
-
-</TD></TR></TABLE>
-
+<P>Maybe add further testing at the end of the tutarial (&quot;how to continue when having the working example&quot;)</P></TD></TR></TABLE>
 
 <H3><A name="HelloWorld-SE-GenerationanddeploymentoftheSA"></A>Generation and deployment of the SA</H3>
 
@@ -380,24 +377,30 @@ C:\hello-world-SE-SU-SA\hello-world-SU\src\main\resources
 <H2><A name="HelloWorld-SE-Addingfunctionality"></A>Adding functionality</H2>
 
 <P>The structure is done, so the functionality have to be added. Using an IDE like IDEA or<BR>
-Eclipse this is easier; here, the workflow with Eclipse is described.&nbsp;<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>The default implementation of the component accepts InOut MEPs (ADD<BR>
+Eclipse this is easier; here, the workflow with Eclipse is described.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
+<P>The default implementation of the component accepts InOut MEPs (ADD<BR>
 LINK TO FURTHER READING CONCERNING MEPs) and return the input content<BR>
-as the out message. This is already nearly what we want.<BR>
-&nbsp;OUTLINE:<BR>
-Get Messages<BR>
-read Messagescount the bytessend a message backConfigure SA so that the example receives messages<BR>
-make something send messages (eg quartz timer, HTTP POST,...) and dump the answer (eg TraceComponent, FireWriter, EIP,...)<BR>
-&nbsp;manually editing <SPAN class="nobr"><A href="working-with-service-units.html" title="Visit page outside Confluence" rel="nofollow">http://goopen.org/confluence/display/SM/Working+with+Service+Units<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>
-
-<P>manually editing <SPAN class="nobr"><A href="http://www.servicemix.org/site/working-with-service-assemblies.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/working-with-service-assemblies.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+as the out message. This is already nearly what we want.</P>
 
 
+<P> OUTLINE for further work:</P>
 
-<P>use the SU archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+<UL>
+	<LI>Get Messages</LI>
+	<LI>read Messages</LI>
+	<LI>count the bytes</LI>
+	<LI>send a message back</LI>
+	<LI>Configure SA so that the example receives messages</LI>
+	<LI>make something send messages (eg quartz timer, HTTP POST,...) and dump the answer (eg TraceComponent, FireWriter, EIP,...)</LI>
+	<LI>add a chapter what user may do now / &quot;how to continue when having the working example&quot;</LI>
+</UL>
 
-<P>use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>&nbsp;</P>
 
-</TD></TR></TABLE></P></DIV>
+<P> manually editing <SPAN class="nobr"><A href="working-with-service-units.html" title="Visit page outside Confluence" rel="nofollow">http://goopen.org/confluence/display/SM/Working+with+Service+Units<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+manually editing <SPAN class="nobr"><A href="http://www.servicemix.org/site/working-with-service-assemblies.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/working-with-service-assemblies.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+use the SU archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P></TD></TR></TABLE></DIV>
           
                   </DIV>
         </TD>
@@ -408,34 +411,8 @@ make something send messages (eg quartz timer, HTTP POST,...) and dump the answe
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 27, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13860">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      restructured<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13823">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13861">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
 
