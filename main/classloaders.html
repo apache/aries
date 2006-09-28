@@ -123,27 +123,21 @@ Classloaders
 </UL>
 
 
-<P>The container class loader contains: JRE + /conf + /lib/<B>.jar + /lib/optional/</B>.jar.</P>
+<P>The container class loader contains: JRE + <TT>/conf</TT> + <TT>/lib/&#42;.jar</TT> + <TT>/lib/optional/&#42;.jar</TT>.</P>
 
-<P>The components are libraries class loaders are defined in the JBI spec and contain the jars referenced in the jbi descriptor.  These class<BR>
-loaders can use a parent-first (default) or self-first delegation: when a class is loaded, the class loader will first ask its parent(s), or will first load the class from its referenced jars.</P>
+<P>The components are libraries class loaders are defined in the JBI spec and contain the jars referenced in the jbi descriptor.  These class loaders can use a parent-first (default) or self-first delegation: when a class is loaded, the class loader will first ask its parent(s), or  will first load the class from its referenced jars.</P>
 
 <P>The service unit class loader is not specified in the JBI spec, because the SU content is specific to each component.  In ServiceMix, all xbean based SU may define their own classloader using the &lt;classpath /&gt; location.</P>
 
 <P>Let&apos;s say you deploy a pojo on the lwcontainer.  When building the configuration, xbean need to find the class.  It will ask the SU classloader to do so.  So the component may be inside this classloader, or one of its parent (servicemix-lwcontainer, servicemix-shared and the container classloader).  However, the component and SL classloaders are not easily modified (you need to repackage the artifact and redeploy it), so you can put this class in the SU or the container.</P>
 
-<P>If you put this class in the container, you will need to restart the container after having added the jar in the classpath, which is not<BR>
-what we want.  So usually, we put it in the SU. </P>
+<P>If you put this class in the container, you will need to restart the container after having added the jar in the classpath, which is not what we want.  So usually, we put it in the SU. </P>
 
-<P>The other benefit of using classloaders is that you can have isolated components.  You could deploy two components (or SU) which use<BR>
-different version of the same library without any problems.  This is not possible if you put all the dependencies in the container<BR>
-classpath.</P>
+<P>The other benefit of using classloaders is that you can have isolated components.  You could deploy two components (or SU) which use different version of the same library without any problems.  This is not possible if you put all the dependencies in the container classpath.</P>
 
 <H2><A name="Classloaders-Selffirstdelegation."></A>Self-first delegation.</H2>
 
-<P>The common delegation mechanism for classloaders is to delegate to the parent first when loading a class.  Thus, all classes defined in the<BR>
-container classloader are shared.  But when a class reference another class (using an import statement in the java code for example), the<BR>
-referenced classes will be loaded by the same classloader. To avoid such problems, you can use a self-first delegation: classes will be loaded from the classloader, and if not found, it will ask its parent.</P></DIV>
+<P>The common delegation mechanism for classloaders is to delegate to the parent first when loading a class.  Thus, all classes defined in the container classloader are shared.  But when a class reference another class (using an import statement in the java code for example), the referenced classes will be loaded by the same classloader. To avoid such problems, you can use a self-first delegation: classes will be loaded from the classloader, and if not found, it will ask its parent.</P></DIV>
           
                   </DIV>
         </TD>
@@ -154,7 +148,8 @@ referenced classes will be loaded by the same classloader. To avoid such problem
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 28, 2006
-                  
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13870&originalId=13872">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13870">edit page</A>)
     </DIV>
 
