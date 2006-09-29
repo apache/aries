@@ -114,6 +114,8 @@ Hello World - SE
 -->
             <DIV class="wiki-content"><H1><A name="HelloWorld-SE-Tutorial%3ACreationofa%22HelloWorldSE%22"></A>Tutorial: Creation of a &quot;Hello World - SE&quot;</H1>
 
+<P><B>Note:</B> The content of this document is overlapping with <A href="creating-a-standard-jbi-component.html" title="Creating a Standard JBI Component">Creating a Standard JBI Component</A> and <A href="notes-on-creating-jbi-component-using-maven2.html" title="Notes on Creating JBI Component using maven2">Notes on Creating JBI Component using maven2</A>. Any changes you might want to do for this document might be relevant for them as well. Questions unanswered by this document may be answered by the other documents.</P>
+
 <P>This tutorial describes how to create a <EM>very simple</EM> &quot;Hello world&quot; JBI service engine (SE) component, pack it into a Service Unit (SU) which will be packed to a Service Assambly (SA), and finally how to run the SE inside ServiceMix. The SE will answer received messages with &quot;Hello, I received xyz bytes&#33;&quot;, so we literally see that it works. As it has the same structure as real, useful SE, the given hints help to use the presented code as a blueprint to create own SE-SA-SUs. Still, the example is as minimalistic as possible, so readers shall not get lost in too many details but get an idea of the big picture.</P>
 
 <P>This tutorial shows the desired/best practices or &quot;clean&quot; way to create a SE-SA-SU using ServiceMix Maven archetypes and the Maven plugin (see <A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A>), so how the workflow <EM>shall</EM> be - of course, other possibilities exist and may be better suited for certain situations. Furthermore, it will explain the reasons for critical choices and how required information can be retrieved. Where appropriate, additional reading is suggested.</P>
@@ -134,7 +136,7 @@ integrate from SVN source like it is done at Configuration at <SPAN class="nobr"
 <P>maybe moving the content of overlapping existing docus to this new tut and - where appropriate - delete the old ones (only leaving a redirect).<BR>
 <SPAN class="nobr"><A href="http://www.servicemix.org/site/notes-on-creating-jbi-component-using-maven2.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/notes-on-creating-jbi-component-using-maven2.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
 <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-standard-jbi-component.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-standard-jbi-component.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-are already fully incorporated, so delete content and point from there to here</P>
+are already fully incorporated, so delete content and point from there to here (and delete note at the very top)</P>
 
 <P> This shall already include everything stated at<BR>
 <SPAN class="nobr"><A href="http://www.servicemix.org/site/maven-jbi-plugin.html#MavenJBIplugin-GettingStarted" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/maven-jbi-plugin.html#MavenJBIplugin-GettingStarted<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
@@ -199,6 +201,28 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
 [INFO] &#45;----------------------------------------------------------------------&#45;</P>
 </DIV></DIV>
 <P>Maven creates a new folder having the same name as the artifact ID provided (printed in <FONT color="#009900">green</FONT> in the command and output). Inside this folder, a file called <EM>pom.xml</EM> is created. This contains the Project Object Model providing Maven with all needed information for building (see <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html" title="Visit page outside Confluence" rel="nofollow">Introduction to the POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> at the Maven website). Moreover, Java source files and tests were created.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">In case of a BUILD ERROR: Maven plugin version requirement</B><BR>
+<P>The&nbsp; maven-archetype-plugin <B>1.0-alpha4</B> or above is required for this tutorial. When an older version is installed, a BUILD ERROR will occur. The version can be checked by having a look at the name of the directories contained in <EM>&#126;/.m2/repository/org/apache/maven/plugins/maven-archetype-plugin</EM> (&#126; is you user directory, on Windows <EM>C:\Documents and Settings\&lt;USERNAME</EM>&gt;). In case only an older version is present, we create a minimal <EM>pom.xml</EM> in the folder where we&apos;re calling the <EM>mvn archetype:create</EM> goal in (so the current folder) and fill the created file with the following content:&nbsp;</P>
+
+<P>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<BR>
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 <SPAN class="nobr"><A href="http://maven.apache.org/maven-v4_0_0.xsd" title="Visit page outside Confluence" rel="nofollow">http://maven.apache.org/maven-v4_0_0.xsd<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>&quot;&gt;<BR>
+&nbsp;&nbsp;&nbsp; &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;<BR>
+&nbsp;&nbsp;&nbsp; &lt;groupId&gt;mygroup&lt;/groupId&gt;<BR>
+&nbsp;&nbsp;&nbsp; &lt;artifactId&gt;myartifact&lt;/artifactId&gt;<BR>
+&nbsp;&nbsp;&nbsp; &lt;version&gt;myversion&lt;/version&gt;<BR>
+&nbsp;&nbsp;&nbsp; &lt;packaging&gt;pom&lt;/packaging&gt;<BR>
+&nbsp;&nbsp;&nbsp; &lt;build&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;pluginManagement&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;plugins&gt;<BR>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &lt;plugin&gt;<BR>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;<BR>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;artifactId&gt;maven-archetype-plugin&lt;/artifactId&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;version&gt;1.0-alpha-4&lt;/version&gt;<BR>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &lt;/plugin&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/plugins&gt;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/pluginManagement&gt;<BR>
+&nbsp;&nbsp;&nbsp; &lt;/build&gt;<BR>
+&lt;/project&gt;</P></TD></TR></TABLE>
 
 <H3><A name="HelloWorld-SE-CreatingthestuboftheSUandSA%26nbsp%3B"></A>Creating the stub of the SU and SA&nbsp;</H3>
 
@@ -411,9 +435,35 @@ use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.o
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 28, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13866">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 29, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13878">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      typo<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13823">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
 
