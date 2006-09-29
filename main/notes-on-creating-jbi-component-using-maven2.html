@@ -112,7 +112,9 @@ Notes on Creating JBI Component using maven2
 <!--          
             <div class="pagetitle">Notes on Creating JBI Component using maven2</div>
 -->
-            <DIV class="wiki-content"><P><B>Introduction</B></P>
+            <DIV class="wiki-content"><P>Note: The content of this document is overlapping with <A href="creating-a-standard-jbi-component.html" title="Creating a Standard JBI Component">Creating a Standard JBI Component</A> and <A href="hello-world-se.html" title="Hello World - SE">Hello World &#45; SE</A>. Any changes you might want to do for this document might be relevant for them as well. Questions unanswered by this document may be answered by the other documents.</P>
+
+<P><B>Introduction</B></P>
 
 <P>Before you attempt at creating a JBI component using <SPAN class="nobr"><A href="http://servicemix.org/site/creating-a-standard-jbi-component.html" title="Visit page outside Confluence" rel="nofollow">http://servicemix.org/site/creating-a-standard-jbi-component.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>;. My suggestion is that you should visit Maven&apos;s home page and have a look at the getting started page <SPAN class="nobr"><A href="http://maven.apache.org/guides/getting-started/index.html" title="Visit page outside Confluence" rel="nofollow">http://maven.apache.org/guides/getting-started/index.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>;. Get acquainted with the term archetype&#45; going by definition it&apos;s more of &quot;<EM>an original pattern or model from which all other things of the same kind are made&quot;.</EM> So there you go, Servicemix already has a template which you can use&#33;</P>
 
@@ -125,7 +127,6 @@ Notes on Creating JBI Component using maven2
 <P><FONT color="#cc3300">Check if you have maven2 installed, if not then please install it.</FONT> <SPAN class="nobr"><A href="http://maven.apache.org/download.html#Installation" title="Visit page outside Confluence" rel="nofollow">http://maven.apache.org/download.html#Installation<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
 <P><FONT color="#cc3300">Make sure that you&apos;re using maven-archetype-plugin 1.0-alpha4 or above you can look in (~/.m2/repository/org/apache/maven/plugins/maven-archetype-plugin). To install it you can place a minimal pom.xml in the folder where you&apos;re calling the mvn archetype:create goal in:</FONT></P>
-
 
 <P>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<BR>
 &lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 <SPAN class="nobr"><A href="http://maven.apache.org/maven-v4_0_0.xsd" title="Visit page outside Confluence" rel="nofollow">http://maven.apache.org/maven-v4_0_0.xsd<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>&quot;&gt;</P>
@@ -149,8 +150,6 @@ Notes on Creating JBI Component using maven2
 &nbsp;&nbsp;&nbsp; &lt;/build&gt;</P>
 
 <P>&lt;/project&gt;</P>
-
-
 
 <P><B>1)</B> To&nbsp;create a JBI component as you might have guessed by now &#45;&nbsp;run the mvn command: (needless to say you should create a new directory where you want all your stuff to be generated and you have to remove the trailing backshlashes and make it one line)</P>
 <DIV class="code"><DIV class="codeContent">
@@ -218,9 +217,35 @@ Now you might be wondering why&nbsp;all the classes have the word &quot;My&quot;
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=soumadeep">Soumadeep Sen</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jamie">Jamie McCrindle</A> on Sep 29, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9560&originalId=13873">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 29, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9560&originalId=13875">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      cross references<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=9560">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=9560">edit page</A>)
     </DIV>
 
