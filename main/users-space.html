@@ -181,37 +181,38 @@ Users space
 <P>There is an easy way to do the following: copy the file [Servicemix_binary_distribution_home]/examples/wsdl-first/wsdl-first-sa-3.0-incubating-SNAPSHOT.zip into the /install folder. Watch the Smix console window making sure things go well. You can now open a browser and go <SPAN class="nobr"><A href="http://localhost:8192/PersonService/main.wsdl" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to see the WSDL for the SOAP service.</P>
 
 <P>&nbsp;That was the easy way....but you want to learn about developing so let&apos;s do it the &apos;hard&apos; way. First go to the [Servicemix_binary_distribution_home]/examples/wsdl-first folder and type mvn install. This example project is using a <SPAN class="nobr"><A href="http://servicemix.org/site/maven-jbi-plugin.html" title="Visit page outside Confluence" rel="nofollow">Maven 2 plugin<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for creating specific JBI components. If you look in the module pom.xml files you will see a special packaging type. After the mvn install completes there will be file called wsdl-first-sa-3.0-incubating-SNAPSHOT-installer in the wsdl-first-sa module&apos;s target folder. This is SA for the wsdl-first example project. Now we want to deploy this to our container. The Maven JBI plugin will take care of this for us&#33;&#33;&#33; Note we need to make a small change to the wsdl-first-sa module&apos;s pom.xml. The plugin will normally try to install all the shared libraries needed by the SA when running the Maven goal jbi:projectDeploy. This is sometimes useful. But often it causes problems because another SA in Smix is using the shared lib already. In this case the Maven goal will try to remove and redeploy the shared lib from Smix. This causes a problem and will make the SA deployment fail. So to tell the plugin to not do this make the following change in the pom.xml:</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.apache.servicemix.tooling&lt;/groupId&gt;
+            &lt;artifactId&gt;jbi-maven-plugin&lt;/artifactId&gt;
+            &lt;extensions&gt;true&lt;/extensions&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;
 
-<P>&lt;build&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp; &lt;plugins&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;plugin&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;groupId&gt;org.apache.servicemix.tooling&lt;/groupId&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;artifactId&gt;jbi-maven-plugin&lt;/artifactId&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;extensions&gt;true&lt;/extensions&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/plugin&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp; &lt;/plugins&gt;<BR>
-&lt;/build&gt;</P>
+into....
 
-<P>into....</P>
+&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.apache.servicemix.tooling&lt;/groupId&gt;
+            &lt;artifactId&gt;jbi-maven-plugin&lt;/artifactId&gt;
+            &lt;extensions&gt;true&lt;/extensions&gt;
+            &lt;configuration&gt;
+                &lt;deployDependencies&gt;false&lt;/deployDependencies&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;
 
-<P>&lt;build&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp; &lt;plugins&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;plugin&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;groupId&gt;org.apache.servicemix.tooling&lt;/groupId&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;artifactId&gt;jbi-maven-plugin&lt;/artifactId&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;extensions&gt;true&lt;/extensions&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;configuration&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;deployDependencies&gt;false&lt;/deployDependencies&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/configuration&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/plugin&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp; &lt;/plugins&gt;<BR>
-&lt;/build&gt;</P>
-
-<P>&nbsp;That little config change will prevent some headaches later.</P>
-
+That little config change will prevent some headaches later.
+</PRE>
+</DIV></DIV>
 <P>You are ready to rock. Change directory to the wsdl-first-sa module. Type &apos;mvn jbi:projectDeploy&apos;. You can watch the Smix console for information on the deployment.</P>
 
-<P>&nbsp;Betting that all went well you should be ready to test out the web service you deployed into Smix. Lucky for you a nice little web app has been packaged with the application. In your web browser open the file [Servicemix_binary_distribution_home]/examples/wsdl-first/client.html. This static .html page contains a javascript which will try to contact the web service on your local machine. To make it work simply click the &apos;send&apos; button. If your browser issues any warning make sure you allow the javascript to do what it needs to do. In Firefox I have to &apos;allow&apos; what it calls an unsafe operation. The results of clikcing the &apos;send&apos; button will be a SOAP response posted into the right hand text area.</P>
+<P>Betting that all went well you should be ready to test out the web service you deployed into Smix. Lucky for you a nice little web app has been packaged with the application. In your web browser open the file [Servicemix_binary_distribution_home]/examples/wsdl-first/client.html. This static .html page contains a javascript which will try to contact the web service on your local machine. To make it work simply click the &apos;send&apos; button. If your browser issues any warning make sure you allow the javascript to do what it needs to do. In Firefox I have to &apos;allow&apos; what it calls an unsafe operation. The results of clikcing the &apos;send&apos; button will be a SOAP response posted into the right hand text area.</P>
 
 <H4><A name="Usersspace-Temporaryexcursionintomonitoring"></A><B>Temporary excursion into monitoring</B></H4>
 
@@ -246,8 +247,8 @@ Users space
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=robottaway">Robert Ottaway</A> on Oct 01, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13814&originalId=13891">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=robottaway">Robert Ottaway</A> on Oct 02, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13814&originalId=13892">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13814">edit page</A>)
     </DIV>
