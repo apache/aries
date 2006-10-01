@@ -119,10 +119,16 @@ Users space
 
 <UL>
 	<LI>connect the dots between the documentation already existing on the Servicemix website</LI>
-	<LI>Give a developer interested in Servicemix a run through on getting the software up and running (with examples&#33;)</LI>
+	<LI>Give a developer interested in Servicemix a run through on getting the software up and running</LI>
+	<LI>Give the developer instructions on compiling/installing the packaged Smix examples</LI>
 	<LI>Give the developer information on monitoring/configuring the software via jconsole</LI>
+	<LI>Create two working service assemblies (SA&apos;s) which work together, using out of the box Smix components&#33;</LI>
 </UL>
 
+
+<H4><A name="Usersspace-Also..."></A>Also...</H4>
+
+<P>Check out Georg Dembowski&apos;s <SPAN class="nobr"><A href="hello-world-se.html" title="Visit page outside Confluence" rel="nofollow">tutorial<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> in progress on creating a simple service engine (JBI component).</P>
 
 <H4><A name="Usersspace-Conventions%3A"></A>Conventions:</H4>
 
@@ -148,9 +154,11 @@ Users space
 
 <P>If you are going to be running any of the examples or doing any development with a current SNAPSHOT/release then you may want to do a few things first. It makes sense to check out the 3.0 (SNAPSHOT if you want the newest) source code so that you can install the Smix component dependencies in your local repository. First go here and download the <SPAN class="nobr"><A href="http://servicemix.org/site/download.html" title="Visit page outside Confluence" rel="nofollow">ServiceMix 3.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> sources. Next you will want to build the Servicemix app and it&apos;s included components. Go <SPAN class="nobr"><A href="http://servicemix.org/site/building.html" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for instructions.</P>
 
-<P>Once you have built the 3.0 app, following the instructions linked above, the Smix component modules will be installed locally. If you want to deploy those dependencies to a company repository then keep reading. I can only give information on doing this for Maven 2 as I did not try this for Maven 1. First go into the top level project pom.xml with you favorite editor. This will be in the [Smix_source_folder]/src folder. You are going to first edit out the references to Maven 1. Search for &apos;m1&apos;, or in another case I searched for &apos;maven-one&apos;. There was a property and a plug in section I deleted (maybe some other sections also). I think the plug in is the important one to delete/coment out. Next edit the &apos;distributionManagement&apos; section. Put the relevent information for you company repository here. If you are working with a SNAPSHOT release then you will need to put your snapshot repository information in here.</P>
+<P>Once you have built the 3.0 app, following the instructions linked above, the Smix component modules will be installed locally.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD><B class="strong">Getting the Smix dependencies into your company repository</B><BR>
+<P>If you want to deploy those dependencies to a company repository then keep reading. I can only give information on doing this for Maven 2 as I did not try this for Maven 1. First go into the top level project pom.xml with you favorite editor. This will be in the [Smix_source_folder]/src folder. You are going to first edit out the references to Maven 1. Search for &apos;m1&apos;, or in another case I searched for &apos;maven-one&apos;. There was a property and a plug in section I deleted (maybe some other sections also). I think the plug in is the important one to delete/coment out. Next edit the &apos;distributionManagement&apos; section. Put the relevent information for you company repository here. If you are working with a SNAPSHOT release then you will need to put your snapshot repository information in here.</P>
 
-<P>You should now be able to &apos;mvn &#45;Dmaven.test.skip=true deploy&apos; and the dependencies will upload to the remote repository you defined. This is a good thing when people you are working with will need the Smix component dependencies. If others will be working on a Smix project you create it will also come in handy, as they will not have to chase down dependencies. THANKS MAVEN&#33;&#33;&#33; I think there are other benefits too, such as faster fetching since the dependencies are more local (physically).</P>
+<P>You should now be able to &apos;mvn &#45;Dmaven.test.skip=true deploy&apos; and the dependencies will upload to the remote repository you defined. This is a good thing when people you are working with will need the Smix component dependencies. If others will be working on a Smix project you create it will also come in handy, as they will not have to chase down dependencies. THANKS MAVEN&#33;&#33;&#33; I think there are other benefits too, such as faster fetching since the dependencies are more local (physically).</P></TD></TR></TABLE>
 
 <H4><A name="Usersspace-NextupinstallthecompiledbinaryServicemix..."></A><B>Next up install the compiled binary Servicemix...</B></H4>
 
@@ -207,7 +215,7 @@ Users space
 
 <H4><A name="Usersspace-Temporaryexcursionintomonitoring"></A><B>Temporary excursion into monitoring</B></H4>
 
-<P>One great benefit to JBI and Smix is the monitoring capabilities. Using the jconsole application packaged with the Java SDK you can tap into your Smix instance. In doing so you can get all sorts of information on things like thread and memory usage, and have the ability to configure the Smix environment dynamically. Lets use jconsole&#33; Open a terminal session and type &apos;nohup jconsole &amp;&apos;. If your machine has the Java SDK /bin folder in it&apos;s path then this should launch the jconsole application. If the application has launched then you should be able to close the terminal window now.</P>
+<P>One great benefit to JBI and Smix are the monitoring capabilities. Using the jconsole application packaged with the Java SDK you can tap into your Smix instance. In doing so you can get all sorts of information on things like thread and memory usage, and have the ability to configure the Smix environment dynamically. Lets use jconsole&#33; Open a terminal session and type &apos;nohup jconsole &amp;&apos;. If your machine has the Java SDK&apos;s /bin folder in it&apos;s path then this should launch the jconsole application. If the application has launched then you should be able to close the terminal window now.</P>
 
 <P>You should see a window titled &apos;JConsole: Connect to Agent&apos;. In the &apos;Local&apos; tab&apos;s window you should see an entry. Select this entry and press the &apos;Connect&apos; button. You should now be connected to your local Smix instance. Take some time to play around. Done? Alright now lets do some maintanance to the Smix environment. We are going to shut down the wsdl-first SA, then start it back up.</P>
 <UL>
@@ -239,7 +247,7 @@ Users space
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=robottaway">Robert Ottaway</A> on Oct 01, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13814&originalId=13884">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13814&originalId=13891">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13814">edit page</A>)
     </DIV>
