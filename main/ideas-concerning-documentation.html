@@ -123,7 +123,6 @@ Ideas concerning documentation
 <H2><A name="Ideasconcerningdocumentation-Concerningstructureandorganization"></A>Concerning structure and organization</H2>
 
 <P>The page <A href="documentation.html" title="Documentation">Documentation</A> (more correctly: it&apos;s children) desperately needs to be <B>re-organized</B> and extended with brief information for each entry. The latter requires to add one of these two options</P>
-
 <UL>
 	<LI>{excerpt}summary apperaing{excerpt}</LI>
 	<LI>{excerpt:hidden=true}summary, not be displayed on the page.{excerpt}</LI>
@@ -169,6 +168,16 @@ Ideas concerning documentation
 	<LI>List Maven archetypes and when to use which</LI>
 	<LI>List <EM>all</EM> available components and give some information about them (type, purpose, usage in any example,...)</LI>
 	<LI>undeployment, see <SPAN class="nobr"><A href="http://mail-archives.apache.org/mod_mbox/geronimo-servicemix-dev/200610.mbox/%3Cb23ecedc0610011247v7b435be0ka00ee8e8375230e9@mail.gmail.com%3E" title="Visit page outside Confluence" rel="nofollow">http://mail-archives.apache.org/mod_mbox/geronimo-servicemix-dev/200610.mbox/%3cb23ecedc0610011247v7b435be0ka00ee8e8375230e9@mail.gmail.com%3e<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI>a central debugging page listing the possibilities and linking to the appropriate pages/sections.
+	<UL>
+		<LI>run SMix from source in Eclipse in debug mode</LI>
+		<LI>(permanent) increase the log level to <EM>debug</EM> in <EM>%SERVICEMIX_HOME%\conf\log4j.xml</EM> (by changing everything from &quot;info&quot; to &quot;debug&quot;) or (temporarily) using JConsole and watch the log file</LI>
+		<LI>Eclipse WTP server start in debug mode</LI>
+		<LI>remote debugging of the JVM (default port 5005, can be altered in servicemix.bat in line <EM>set DEFAULT_JAVA_DEBUG_OPTS=</EM>) by first calling <EM>set SERVICEMIX_DEGUG=true</EM> then <EM>servicemix.bat</EM></LI>
+		<LI>your idea</LI>
+	</UL>
+	</LI>
+	<LI>short text telling what SMix is better suited for than the competitors (mule, celtix, webshpere,...). Maybe in form of use cases? Or in terms of missing features, performance, price, ...?</LI>
 </UL>
 </DIV>
           
@@ -181,7 +190,7 @@ Ideas concerning documentation
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 02, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13899&originalId=13922">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13899&originalId=13925">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13899">edit page</A>)
     </DIV>
