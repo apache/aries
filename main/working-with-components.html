@@ -144,6 +144,9 @@ Working with Components
 <B>bootstrap</B> &#45; the name of the class that will be your bootstrap implementation<BR>
 <B>component</B> &#45; the name of the class that will be your component implementation</P>
 
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Using a Default Bootstrap</B><BR>
+<P>Often when you build a new component you don&apos;t need the bootstrap class and end up simply having to create a class to fulfill the specification.  However,  with the Maven JBI tooling you can simply not specify a bootstrap in your configuration for the plugin and the plugin will copy the DefaultBootstrap from the servicemix-common project (which basically just implements the interface) into you project and will correctly reference this in the jbi.xml.  This is because the service-common shared-library is not available to the classloader for bootstrapping.</P></TD></TR></TABLE>
+
 <P>Once you have configured these steps you can run <EM>mvn install</EM> and much like the shared library maven will create both a standard jar and also a component installer.&nbsp; If you have a locally running Apache ServiceMix instance (which its default settings) you can even use the plugin to install the Component by simply typing:</P>
 
 <P><EM>mvn jbi:installComponent</EM></P>
@@ -166,35 +169,9 @@ Working with Components
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 25, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=8918&originalId=13805">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      INS link to further reading<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=8918">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on Oct 03, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=8918&originalId=13932">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=8918">edit page</A>)
     </DIV>
 
