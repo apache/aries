@@ -9,7 +9,7 @@
     <LINK type="text/css" rel="stylesheet" href="resources/site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
-Ideas
+Ideas concerning documentation
     </TITLE>
   <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
   <BODY onload="init()">
@@ -36,7 +36,7 @@ Ideas
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="developers.html" title="Developers">Developers</A>&nbsp;&gt;&nbsp;<A href="" title="Ideas">Ideas</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="developers.html" title="Developers">Developers</A>&nbsp;&gt;&nbsp;<A href="ideas.html" title="Ideas">Ideas</A>&nbsp;&gt;&nbsp;<A href="" title="Ideas concerning documentation">Ideas concerning documentation</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -97,7 +97,7 @@ Ideas
 <UL class="alternate" type="square">
 	<LI><A href="source.html" title="Source">Source</A></LI>
 	<LI><A href="building.html" title="Building">Building</A></LI>
-	<LI><A href="" title="Ideas">Ideas</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
 	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
 	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
 	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
@@ -110,55 +110,55 @@ Ideas
           <DIV id="site-page">
 
 <!--          
-            <div class="pagetitle">Ideas</div>
+            <div class="pagetitle">Ideas concerning documentation</div>
 -->
-            <DIV class="wiki-content">
-<P>This page is a collection of development ideas - a good place to brain dump thoughts or ideas you might.</P>
+            <DIV class="wiki-content"><H1><A name="Ideasconcerningdocumentation-Ideasconcerningdocumentation"></A>Ideas concerning documentation</H1>
 
-<P>Pleaser just add a new child page per idea...</P>
+<P>Here are collected ideas <B>how the documentation may be improved. Feel free to work on any of the tasks or add new ones</B> &ndash; in case you have and want no confluence login, just leave a comment at the bottom of the page. And, by the way, developers as well as total freshmen can contribute to the documentation, as questions/suggestions are as important as the answers.</P>
 
-<H3><A name="Ideas-Ideas"></A>Ideas</H3>
 
-<UL><LI><A href="bpm.html" title="BPM">BPM</A></LI><LI><A href="ideas-concerning-documentation.html" title="Ideas concerning documentation">Ideas concerning documentation</A></LI><LI><A href="jbi-pojo-service-engine.html" title="JBI Pojo Service Engine">JBI Pojo Service Engine</A></LI><LI><A href="logo.html" title="Logo">Logo</A></LI><LI><A href="managment-console.html" title="Managment Console">Managment Console</A></LI><LI><A href="pojo-container.html" title="POJO Container">POJO Container</A></LI><LI><A href="rest-pojos.html" title="REST POJOs">REST POJOs</A></LI><LI><A href="subscription.html" title="Subscription">Subscription</A></LI><LI><A href="uris.html" title="URIs">URIs</A></LI></UL></DIV>
+<H2><A name="Ideasconcerningdocumentation-Concerningthestructureandorganization"></A>Concerning the structure and organization</H2>
+
+
+<P>The page <A href="documentation.html" title="Documentation">Documentation</A> deperately needs to be <B>re-organized</B> and extended with short <B>comments</B> describing the content of the linked page.</P>
+
+
+<P>Cross-referencing pages where appropriate AND instead of having redundand content (then, only one version might be updated, all other occurences stay outdated/incorrect).</P>
+
+
+<P>Several tutorials etc. are related to <B>one specific ServiceMix version</B> but do not mention this. Include this info in the title page, duplicate the page and change the duplicate to suit the current version.</P>
+
+<H2><A name="Ideasconcerningdocumentation-Concerningthecontent"></A>Concerning the content</H2>
+
+<P>Many examples lack <B>comments in the source code</B> (what does a method/XML-entity do? Why is it needed? Was it created manually or by archetypes?). <B>List todo items here.</B></P>
+
+<H3><A name="Ideasconcerningdocumentation-Pagesthatneedacleanup"></A>Pages that need a clean-up</H3>
+
+<P>e.g. formatting, adaption to new ServiceMix version, sequence of content,...</P>
+<UL>
+	<LI><A href="jmx-console.html" title="JMX Console">JConsole / JMX Console</A> / JMX management</LI>
+</UL>
+
+
+
+<H3><A name="Ideasconcerningdocumentation-Pagesthataremissingblocksofcontent"></A>Pages that are missing blocks of content</H3>
+
+<P>Those tutorials, descriptions etc. exist but are not (any more) complete. If possible, a {note} shall be placed where content is missing, so readers get aware of the missing parts.</P>
+<UL>
+	<LI><A href="hello-world-se.html" title="Hello World - SE">Hello World &#45; SE</A> is started but needs some contribution to be completed</LI>
+	<LI>CIMERO plugin</LI>
+	<LI>nearly all example pages do not help / describe enough for newbies.</LI>
+</UL>
+
+
+<H3><A name="Ideasconcerningdocumentation-Contentthatismissingcompletely"></A>Content that is missing completely</H3>
+<UL>
+	<LI>Using out of the box functionality (http component, jsr181 comp, eip comp,...) to create a own SA</LI>
+	<LI>undeployment, see <SPAN class="nobr"><A href="http://mail-archives.apache.org/mod_mbox/geronimo-servicemix-dev/200610.mbox/%3Cb23ecedc0610011247v7b435be0ka00ee8e8375230e9@mail.gmail.com%3E" title="Visit page outside Confluence" rel="nofollow">http://mail-archives.apache.org/mod_mbox/geronimo-servicemix-dev/200610.mbox/%3cb23ecedc0610011247v7b435be0ka00ee8e8375230e9@mail.gmail.com%3e<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI></LI>
+</UL>
+</DIV>
           
-        <!--
-          <div class="tabletitle">
-            Children
-            <span class="smalltext" id="show" style="display: inline;">
-              <a href="javascript:showChildren()">Show Children</a></span>
-            <span class="smalltext" id="hide" style="display: none;">
-              <a href="javascript:hideChildren()">Hide Children</a></span>
-          </div>
-          <div class="greybox" id="children" style="display: none;">
-                                      <a href="http://goopen.org/confluence/display/SM/Subscription" title="Subscription">Subscription</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/BPM" title="BPM">BPM</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/Managment+Console" title="Managment Console">Managment Console</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/Logo" title="Logo">Logo</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/URIs" title="URIs">URIs</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/JBI+Pojo+Service+Engine" title="JBI Pojo Service Engine">JBI Pojo Service Engine</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/REST+POJOs" title="REST POJOs">REST POJOs</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/POJO+Container" title="POJO Container">POJO Container</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/Ideas+concerning+documentation" title="Ideas concerning documentation">Ideas concerning documentation</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                      </div>
--->
                   </DIV>
         </TD>
       </TR>
@@ -166,11 +166,10 @@ Ideas
       </DIV>
     </DIV>
     <DIV id="site-footer">
-          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on May 12, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2130&originalId=5609">view change</A>)
-              
-      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2130">edit page</A>)
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 02, 2006
+                  
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13899">edit page</A>)
     </DIV>
 
   </BODY>
