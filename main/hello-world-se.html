@@ -116,7 +116,7 @@ Hello World - SE
 
 <P><B>Note:</B> The content of this document is overlapping with <A href="creating-a-standard-jbi-component.html" title="Creating a Standard JBI Component">Creating a Standard JBI Component</A> and <A href="notes-on-creating-jbi-component-using-maven2.html" title="Notes on Creating JBI Component using maven2">Notes on Creating JBI Component using maven2</A>. Any changes you might want to do for this document might be relevant for them as well. Questions unanswered by this document may be answered by the other documents.</P>
 
-<P><B>Note:</B> The <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=Roadmap%20for%20a%20perspective%20Servicemix%20developer&linkCreation=true&fromPageId=13823" title="Create Page: Roadmap for a perspective Servicemix developer" class="createlink">Roadmap for a perspective Servicemix developer<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> might be a helpful reading as well, especially for new users. It focuses on using the examples and components shipped with ServiceMix during development in a company.</P>
+<P><B>Note:</B> The <A href="roadmap-for-a-perspective-servicemix-developer.html" title="Roadmap for a perspective Servicemix developer">Roadmap for a perspective Servicemix developer</A> might be a helpful reading as well, especially for new users. It focuses on using the examples and components shipped with ServiceMix during development in a company.</P>
 
 <P>This tutorial describes how to create a <EM>very simple</EM> &quot;Hello world&quot; JBI service engine (SE) component, pack it into a Service Unit (SU) which will be packed to a Service Assambly (SA), and finally how to run the SE inside ServiceMix. The SE will answer received messages with &quot;Hello, I received xyz bytes&#33;&quot;, so we literally see that it works. As it has the same structure as real, useful SE, the given hints help to use the presented code as a blueprint to create own SE-SA-SUs. Still, the example is as minimalistic as possible, so readers shall not get lost in too many details but get an idea of the big picture.</P>
 
@@ -169,7 +169,8 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
 
 <P>Several SUs are packed into a Service Assambly (SA). An SA is a complete &quot;application&quot; consisting of multiple components (reminder: the &quot;smallest appliactions&quot;) interacting with each other and making up the big &quot;application&quot;.</P>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
-<P><FONT color="#ff0000">Further reading: JSR 208</FONT></P></TD></TR></TABLE>
+<P><FONT color="#ff0000">Further reading: JSR 208. Include references from here to sections/pages in the spec. Maybe add an attachment to this wiki page containing a FDF (annotations for the PDF) so skimming the sepc quickly without missing important information is possible.</FONT></P>
+</TD></TR></TABLE>
 
 <H2><A name="HelloWorld-SE-CreatingthemainPOMandthestubsoftheSE%2CSU%2CSA"></A>Creating the main POM and the stubs of the SE, SU, SA</H2>
 
@@ -400,8 +401,7 @@ C:\hello-world-SE-SU-SA\hello-world-SU\src\main\resources
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;/plugins&gt;<BR>
 &lt;/build&gt;</P>
 
-<P>See also <SPAN class="nobr"><A href="https://issues.apache.org/activemq/browse/SM-605?page=all" title="Visit page outside Confluence" rel="nofollow">https://issues.apache.org/activemq/browse/SM-605?page=all<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for command line options.</P>
-</TD></TR></TABLE>
+<P>See also <SPAN class="nobr"><A href="https://issues.apache.org/activemq/browse/SM-605?page=all" title="Visit page outside Confluence" rel="nofollow">https://issues.apache.org/activemq/browse/SM-605?page=all<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for command line options.</P></TD></TR></TABLE>
 
 <H2><A name="HelloWorld-SE-Addingfunctionality"></A>Adding functionality</H2>
 
@@ -441,8 +441,8 @@ use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.o
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 02, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13910">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 02, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13927">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
