@@ -139,6 +139,9 @@ Ideas concerning documentation
 
 <P>Several tutorials etc. are related to <B>one specific ServiceMix version</B> but do not mention this. Include this info in the title page, duplicate the page and change the duplicate to suit the current version.</P>
 
+
+<P>Add links to <A href="cimero-editor.html" title="CIMERO Editor">CIMERO Editor</A> plugin where appropriate (ideas: User Guide, Docu, Download,...). It&apos;s helping newbies a lot.</P>
+
 <H2><A name="Ideasconcerningdocumentation-Concerningcontent"></A>Concerning content</H2>
 
 
@@ -155,7 +158,7 @@ Ideas concerning documentation
 <P>Those tutorials, descriptions etc. exist but are not (any more) complete. If possible, a {note} shall be placed where content is missing, so readers get aware of the missing parts.</P>
 <UL>
 	<LI><A href="hello-world-se.html" title="Hello World - SE">Hello World &#45; SE</A> is started but needs some contribution to be completed</LI>
-	<LI><A href="cimero-editor.html" title="CIMERO Editor">CIMERO Editor</A> plugin</LI>
+	<LI><A href="cimero-editor.html" title="CIMERO Editor">CIMERO Editor</A> plugin has nearly no docu (except for 2 very good SWFs). Some troubleshooting help needed.</LI>
 	<LI>Nearly all example pages do not help / describe enough for newbies.</LI>
 	<LI>Many examples lack <B>comments in the source code</B> (what does a method/XML-entity do? Why is it needed? Was it created manually or by archetypes?). <B>List todo items here.</B></LI>
 </UL>
@@ -190,8 +193,34 @@ Ideas concerning documentation
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 02, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13899&originalId=13925">view change</A>)
-              
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13899&originalId=13926">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      INS further explanation/help<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13899">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13899">edit page</A>)
     </DIV>
 
