@@ -118,7 +118,6 @@ Hello World - SE
 
 <P><B>Note:</B> The <A href="users-space.html" title="Users space">Roadmap for a perspective Servicemix developer</A> might be a helpful reading as well, especially for new users. It focuses on using the examples and components shipped with ServiceMix during development in a company.</P>
 
-
 <P>This tutorial describes how to create a <EM>very simple</EM> &quot;Hello world&quot; JBI service engine (SE) component, pack it into a Service Unit (SU) which will be packed to a Service Assambly (SA), and finally how to run the SE inside ServiceMix. The SE will answer received messages with &quot;Hello, I received xyz bytes&#33;&quot;, so we literally see that it works. As it has the same structure as real, useful SE, the given hints help to use the presented code as a blueprint to create own SE-SA-SUs. Still, the example is as minimalistic as possible, so readers shall not get lost in too many details but get an idea of the big picture.</P>
 
 <P>This tutorial shows the desired/best practices or &quot;clean&quot; way to create a SE-SA-SU using ServiceMix Maven archetypes and the Maven plugin (see <A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A>), so how the workflow <EM>shall</EM> be - of course, other possibilities exist and may be better suited for certain situations. Furthermore, it will explain the reasons for critical choices and how required information can be retrieved. Where appropriate, additional reading is suggested.</P>
@@ -399,7 +398,10 @@ C:\hello-world-SE-SU-SA\hello-world-SU\src\main\resources
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/configuration&gt;<BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/plugin&gt;<BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;/plugins&gt;<BR>
-&lt;/build&gt;</P></TD></TR></TABLE>
+&lt;/build&gt;</P>
+
+<P>See also <SPAN class="nobr"><A href="https://issues.apache.org/activemq/browse/SM-605?page=all" title="Visit page outside Confluence" rel="nofollow">https://issues.apache.org/activemq/browse/SM-605?page=all<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for command line options.</P>
+</TD></TR></TABLE>
 
 <H2><A name="HelloWorld-SE-Addingfunctionality"></A>Adding functionality</H2>
 
@@ -440,7 +442,7 @@ use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.o
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 02, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13904">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=13908">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
