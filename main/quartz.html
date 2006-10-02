@@ -112,8 +112,8 @@ Quartz
 <!--          
             <div class="pagetitle">Quartz</div>
 -->
-            <DIV class="wiki-content">
-<P>We have a QuartzComponent which integrates with the <SPAN class="nobr"><A href="http://www.opensymphony.com/quartz/" title="Visit page outside Confluence" rel="nofollow">Quartz<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> open source scheduler library. This allows you to trigger service invocations at timed intervals to perform periodic tasks.</P>
+            <DIV class="wiki-content"><P> The QuartzComponent integrates with the <SPAN class="nobr"><A href="http://www.opensymphony.com/quartz/" title="Visit page outside Confluence" rel="nofollow">Quartz<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> open source scheduler library. This allows to trigger service invocations at timed intervals to perform periodic tasks.</P>
+
 
 <P>Here&apos;s an example of configuring a quartz component. You can add as many triggers as you wish to the component, at different timing intervals.</P>
 <DIV class="code"><DIV class="codeContent">
@@ -137,8 +137,7 @@ Quartz
     <SPAN class="code-tag">&lt;/property&gt;</SPAN>
   <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
 <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
-<P>&nbsp;</P></DIV>
+</DIV></DIV></DIV>
           
                   </DIV>
         </TD>
@@ -148,9 +147,35 @@ Quartz
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1982&originalId=5193">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 02, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1982&originalId=13919">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      excerpt<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=1982">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1982">edit page</A>)
     </DIV>
 
