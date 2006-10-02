@@ -176,11 +176,13 @@ Ideas concerning documentation
 		<LI>(permanent) increase the log level to <EM>debug</EM> in <EM>%SERVICEMIX_HOME%\conf\log4j.xml</EM> (by changing everything from &quot;info&quot; to &quot;debug&quot;) or (temporarily) using JConsole and watch the log file</LI>
 		<LI>Eclipse WTP server start in debug mode</LI>
 		<LI>remote debugging of the JVM (default port 5005, can be altered in servicemix.bat in line <EM>set DEFAULT_JAVA_DEBUG_OPTS=</EM>) by first calling <EM>set SERVICEMIX_DEGUG=true</EM> then <EM>servicemix.bat</EM></LI>
-		<LI>component debugging in eclipse, see 2nd comment at <SPAN class="nobr"><A href="http://fiveclouds.blogspot.com/2006/01/spent-one-of-those-days-waiting-for.html" title="Visit page outside Confluence" rel="nofollow">http://fiveclouds.blogspot.com/2006/01/spent-one-of-those-days-waiting-for.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+		<LI>component debugging in eclipse: To debug serviceMix components, you want to create a project containing the source code. After that, uncomment the line where remote debugging is enabled in servicemix.bat, and run servicemix. After that, use eclipse to connect a remote debugger, set a break point in your components source code, and trigger a dataflow so that your component gets run. Hey presto&#33;<BR>
+Source: 2nd comment at <SPAN class="nobr"><A href="http://fiveclouds.blogspot.com/2006/01/spent-one-of-those-days-waiting-for.html" title="Visit page outside Confluence" rel="nofollow">http://fiveclouds.blogspot.com/2006/01/spent-one-of-those-days-waiting-for.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 		<LI>your idea</LI>
 	</UL>
 	</LI>
 	<LI>short text telling what SMix is better suited for than the competitors (mule, celtix, webshpere,...). Maybe in form of use cases? Or in terms of missing features, performance, price, ...?</LI>
+	<LI>(just copy &amp; pasted here, review whether still applicable&#33;) E.g. How do I use the JDBC binding component? How is it configured? What are all the options?</LI>
 </UL>
 </DIV>
           
@@ -193,7 +195,7 @@ Ideas concerning documentation
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 03, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13899&originalId=13929">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13899&originalId=13930">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13899">edit page</A>)
     </DIV>
