@@ -185,6 +185,42 @@ Maven JBI plugin
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Deploying Dependencies</B><BR>
 <P>If you are working with the jbi:projectDeploy you should not that you may want to disable dependency deployment,  if you are deploying to a server which has other components sharing these dependencies they you can get problems while trying to undeploy and redeploy them.  Look for the plugin section for the jbi-maven-plugin and under configuration add a new element called deployDependencies with a value of false,  this is usually in your service assembly&apos;s pom.xml or your component&apos;s.  This setting will stop the plugin for undeploying and redeploying dependencies.</P></TD></TR></TABLE>
 
+<P>Starting from 3.0.1, the following options are available for customizing either from the pom.xml or from the command line:</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Options</B><BR>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh"> Name </TH>
+<TH class="confluenceTh"> Description </TH>
+<TH class="confluenceTh"> Default value </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B><TT>deployDependencies</TT></B> </TD>
+<TD class="confluenceTd"> Deploy all dependencies.  If set to <TT>false</TT>, the plugin will only deploy the current artifact. </TD>
+<TD class="confluenceTd"> <TT>true</TT> </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B><TT>deferExceptions</TT></B> </TD>
+<TD class="confluenceTd"> This option instructs the plugin to use ServiceMix hot deployer feature, so that you can update a shared-lbrary or component without having to shutdown all dependent components or assemblies. If this property is set to <TT>false</TT>, exceptions may occur if some of the deployed artifacts are already used by other previously deployed artifacts. </TD>
+<TD class="confluenceTd"> <TT>true</TT> </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B><TT>forceUpdate</TT></B> </TD>
+<TD class="confluenceTd"> If set to <TT>true</TT>, all artifacts will be deployed, even those already deployed. Using default value will only deploy missing dependencies </TD>
+<TD class="confluenceTd"> <TT>false</TT> </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <B><TT>deployChildren</TT></B> </TD>
+<TD class="confluenceTd"> When using from the command line in a reactor build, the plugin will scan all modules for jbi artifacts to deploy. </TD>
+<TD class="confluenceTd"> <TT>true</TT> </TD>
+</TR>
+</TBODY></TABLE>
+
+<P>To override a default value from the command line, use the following syntax example:</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>mvn jbi:projectDeploy -DforceUpdate=true
+</PRE>
+</DIV></DIV></TD></TR></TABLE>
+
 <H4><A name="MavenJBIplugin-mvnjbi%3Aservicemix"></A>mvn jbi:servicemix</H4>
 
 <P>If you quickly want to get up and running with Apache ServiceMix the best way is to use this goal.&nbsp; As an extension of the deployProject goal is works in much the same way,&nbsp; the difference is that this goal downloads and starts a copy of Apache ServiceMix within Maven so you don&apos;t need to have a version installed,&nbsp; this can be very useful if you are working on trying out functionality and want to simply test your projects.&nbsp;</P>
@@ -271,35 +307,9 @@ Maven JBI plugin
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=pdodds%2540unity-systems.com">pdodds@unity-systems.com</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 25, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1948&originalId=13810">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      typo<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=1948">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 02, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1948&originalId=13898">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1948">edit page</A>)
     </DIV>
 
