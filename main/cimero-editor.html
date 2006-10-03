@@ -178,11 +178,30 @@ CIMERO Editor
 
 <H3><A name="CIMEROEditor-Requirements"></A>Requirements</H3>
 
+<P>The Eclipse IDE <B>WebTools Platform; All-in-one</B> from <SPAN class="nobr"><A href="http://download.eclipse.org/webtools/downloads/" title="Visit page outside Confluence" rel="nofollow">http://download.eclipse.org/webtools/downloads/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or any Eclipse IDE with the following extensions:</P>
+
 <UL>
-	<LI>Eclipse WST/JST: <SPAN class="nobr"><A href="http://www.eclipse.org/webtools/index.html" title="Visit page outside Confluence" rel="nofollow">http://www.eclipse.org/webtools/index.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
-	<LI>EMF: <SPAN class="nobr"><A href="http://download3.eclipse.org/tools/emf/scripts/downloads.php" title="Visit page outside Confluence" rel="nofollow">http://download3.eclipse.org/tools/emf/scripts/downloads.php<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
-	<LI>GEF: <SPAN class="nobr"><A href="http://download3.eclipse.org/tools/gef/downloads/index.php" title="Visit page outside Confluence" rel="nofollow">http://download3.eclipse.org/tools/gef/downloads/index.php<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI>Eclipse Web Standard Tools (WST) and J2EE Standard Tools (JST) <SPAN class="nobr"><A href="http://www.eclipse.org/webtools/index.html" title="Visit page outside Confluence" rel="nofollow">http://www.eclipse.org/webtools/index.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI>Eclipse Modeling Framework (EMF) <SPAN class="nobr"><A href="http://www.eclipse.org/emf/" title="Visit page outside Confluence" rel="nofollow">http://www.eclipse.org/emf/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI>Graphical Editing Framework (GEF) <SPAN class="nobr"><A href="http://www.eclipse.org/gef/" title="Visit page outside Confluence" rel="nofollow">http://www.eclipse.org/gef/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 </UL>
+
+
+<P><B>Note:</B> CIMERO is <B>not able to work within FUSE tooling 1.2</B> even though this is &quot;just&quot; an extended version of WTP. Reason: Some wizards (like &quot;New Server&quot;) were tweaked and do not ask for the same information as WTP, but CIMERO relies on the information not collected any more (see screenshots below). Thus, deploying projects to servers is impossible. Furthermore, starting the ServiceMix server is possible, but FUSE does not detect ServiceMix was started and shuts the process down after 75secs. It may work with FUSE (still to confirm).</P>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh"> Eclipse WTP 3.2 <BR clear="all">
+ Containing field &quot;ServiceMix Root Path&quot;<BR clear="all"> </TH>
+<TH class="confluenceTh"> FUSE 1.2 <BR clear="all">
+ <EM>Not c</EM>ontaining field &quot;ServiceMix Root Path&quot;<BR clear="all"> </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> <IMG src="cimero-editor.data/new%20server%20Eclipse%20WTP,%20step%202.png" align="absmiddle" border="0"> </TD>
+<TD class="confluenceTd"> <IMG src="cimero-editor.data/new%20server%20FUSE1.2,%20step%202.png" align="absmiddle" border="0"> </TD>
+</TR>
+</TBODY></TABLE>
+
+<P>A Java Runtime Environment which is part of JDK 1.5, as <EM>[jdk1.5_home]\jre\bin\server\jvm.dll</EM> is not contained in a JRE distribution.</P>
 
 
 <P>Tested on Debian, Windows 2000, Windows XP with Eclipse 3.1.2 and 3.2.0</P>
@@ -197,6 +216,8 @@ CIMERO Editor
 
 
 <P>To install the plugins, just download and copy them to <EM>\&lt;eclipse_dir&gt;\plugins</EM></P>
+
+<P>In Eclipse, go to Menu, Windows, Preferences, Java, Installed JREs, and add a Java Runtime Environment which is part of JDK 1.5, as <EM>[jdk1.5_home]\jre\bin\server\jvm.dll</EM> is not contained in a JRE distribution. Without doing so, you will be prompted a message <EM>Error: no &apos;server&apos; JVM at &apos;[jdk1.5_home]\jre\bin\server\jvm.dll&apos;.</EM> by the <EM>Java Virtual Machine Launcher</EM>.</P>
 
 <H3><A name="CIMEROEditor-Use"></A>Use</H3>
 
@@ -274,9 +295,35 @@ CIMERO Editor
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 01, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9328&originalId=13887">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 03, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9328&originalId=13945">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      download links were broken, expanded the abbreviations, added notes<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=9328">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=9328">edit page</A>)
     </DIV>
 
