@@ -32,27 +32,28 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 
 <H1><A name="6.ConfiguringServiceMix-6.ConfiguringServiceMix"></A>6. Configuring ServiceMix</H1>
 
+
 <H2><A name="6.ConfiguringServiceMix-Directorylayout"></A>Directory layout</H2>
+
 
 <H3><A name="6.ConfiguringServiceMix-Maindistributionlayout"></A>Main distribution layout</H3>
 
 <P>When you first install ServiceMix, you will see the following directory structure.  Note that some directories (<TT>data</TT> for example) will only be created when you have launched ServiceMix.</P>
-
 <TABLE class="sectionMacro" border="0" cellpadding="5" cellspacing="0" width="100%"><TBODY><TR>
 <TD class="confluenceTd" valign="top">
 <P>List of directories:</P>
 <UL>
-	<LI><B><TT>ant</TT></B>: files for ant task based management</LI>
-	<LI><B><TT>bin</TT></B>: start scripts for unix / windows</LI>
-	<LI><B><TT>components</TT></B>: JBI components installers</LI>
-	<LI><B><TT>components/lib</TT></B>: additional libraries</LI>
-	<LI><B><TT>conf</TT></B>: configuration files for ServiceMix container</LI>
-	<LI><B><TT>data</TT></B>: working directory where persistent data are stored</LI>
-	<LI><B><TT>deploy</TT></B>: hot-deploy directory for service assemblies</LI>
-	<LI><B><TT>examples</TT></B>: contain <A href="4-examples.html" title="4. Examples">distribution examples</A></LI>
-	<LI><B><TT>install</TT></B>: hot-deploy directory for components and shared libraries</LI>
-	<LI><B><TT>lib</TT></B>: container libraries</LI>
-	<LI><B><TT>lib/optional</TT></B>: optional libraries</LI>
+	<LI><TT><B>ant</B></TT>: files for ant task based management</LI>
+	<LI><TT><B>bin</B></TT>: start scripts for unix / windows</LI>
+	<LI><TT><B>components</B></TT>: JBI components installers</LI>
+	<LI><TT><B>components/lib</B></TT>: additional libraries</LI>
+	<LI><TT><B>conf</B></TT>: configuration files for ServiceMix container</LI>
+	<LI><TT><B>data</B></TT>: working directory where persistent data are stored</LI>
+	<LI><TT><B>deploy</B></TT>: hot-deploy directory for service assemblies</LI>
+	<LI><TT><B>examples</B></TT>: contain <A href="4-examples.html" title="4. Examples">distribution examples</A></LI>
+	<LI><TT><B>install</B></TT>: hot-deploy directory for components and shared libraries</LI>
+	<LI><TT><B>lib</B></TT>: container libraries</LI>
+	<LI><TT><B>lib/optional</B></TT>: optional libraries</LI>
 </UL>
 </TD>
 <TD class="confluenceTd" valign="top">
@@ -77,10 +78,10 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 <P>Although the <TT>data</TT> directory is ServiceMix internal directory, it contains some useful informations.<BR>
 The following directories may be created:</P>
 <UL>
-	<LI><B><TT>amq</TT></B>: working directory for ActiveMQ</LI>
-	<LI><B><TT>log</TT></B>: directory containing log files</LI>
-	<LI><B><TT>smx</TT></B>: ServiceMix working directory</LI>
-	<LI><B><TT>txlog</TT></B>: transaction log storage</LI>
+	<LI><TT><B>amq</B></TT>: working directory for ActiveMQ</LI>
+	<LI><TT><B>log</B></TT>: directory containing log files</LI>
+	<LI><TT><B>smx</B></TT>: ServiceMix working directory</LI>
+	<LI><TT><B>txlog</B></TT>: transaction log storage</LI>
 </UL>
 
 
@@ -92,9 +93,7 @@ The following directories may be created:</P>
  \- txlog
 </PRE>
 </DIV></DIV>
-
 <P>The <TT>smx</TT> dir is populated by ServiceMix when installing / deploying JBI artifacts in the container. It has the following structure:</P>
-
 <DIV class="preformatted"><DIV class="preformattedHeader"><B>ServiceMix working directory</B></DIV><DIV class="preformattedContent">
 <PRE>smx
  |- components
@@ -124,7 +123,6 @@ The following directories may be created:</P>
 <P>For a reference guide and to see the XSD see the <A href="../SM/xml-reference.html" title="Xml Reference">Xml Reference</A>.</P>
 
 <P>The default ServiceMix installation comes with a number of configuration files that can be changeg to fit your needs.  These configuration files are all in the {<TT>conf</TT> directory, which is also included in the classpath.</P>
-
 <UL>
 	<LI><TT>activemq.xml</TT>: <SPAN class="nobr"><A href="http://incubator.apache.org/activemq/" title="Visit page outside Confluence" rel="nofollow">ActiveMQ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> configuration file</LI>
 	<LI><TT>jmx.xml</TT>: JMX configuration file</LI>
@@ -188,7 +186,7 @@ The following directories may be created:</P>
 <TR>
 <TD class="confluenceTd"> createJmxConnector </TD>
 <TD class="confluenceTd"> boolean </TD>
-<TD class="confluenceTd"> if, true ServiceMix will create its own JMX connector using the specified rmiPort </TD>
+<TD class="confluenceTd"> if true, ServiceMix will create its own JMX connector using the specified rmiPort </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> rmiPort </TD>
@@ -216,9 +214,14 @@ The following directories may be created:</P>
 <TD class="confluenceTd"> if true, ServiceMix will monitor the deployment directory for new service assembilies to deploy </TD>
 </TR>
 <TR>
+<TD class="confluenceTd"> monitorInterval </TD>
+<TD class="confluenceTd"> int </TD>
+<TD class="confluenceTd"> if set, used as delay (measured in seconds) between checks of the deployment directory. Default is 10sec.<BR clear="all"> </TD>
+</TR>
+<TR>
 <TD class="confluenceTd"> dumpStats </TD>
 <TD class="confluenceTd"> boolean </TD>
-<TD class="confluenceTd"> if true, ServiceMix will dump message throughput statistics to file for individual components </TD>
+<TD class="confluenceTd"> if true, ServiceMix will dump message throughput statistics to file Stats.csv for individual components </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> statsInterval </TD>
@@ -256,7 +259,6 @@ The following directories may be created:</P>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 </TBODY></TABLE></TD></TR></TABLE>
-
 <P>Several elements or references can also be used to configure ServiceMix with existing objects:</P>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Elements</B><BR>
 <TABLE class="confluenceTable"><TBODY>
@@ -301,8 +303,6 @@ The following directories may be created:</P>
 <TD class="confluenceTd">&nbsp;</TD>
 </TR>
 </TBODY></TABLE></TD></TR></TABLE>
-
-
 <STYLE type="text/css">/*<![CDATA[*/
 table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
 table.ScrollbarTable td.ScrollbarPrevIcon {text-align: center;width: 16px;border: none;}
@@ -320,9 +320,35 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 03, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13935&originalId=13940">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 03, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13935&originalId=13948">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      INS monitorInterval<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13935">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13935">edit page</A>)
     </DIV>
 
