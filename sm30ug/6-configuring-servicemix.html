@@ -34,7 +34,274 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 
 <H2><A name="6.ConfiguringServiceMix-Directorylayout"></A>Directory layout</H2>
 
+<H3><A name="6.ConfiguringServiceMix-Maindistributionlayout"></A>Main distribution layout</H3>
+
+<P>When you first install ServiceMix, you will see the following directory structure.  Note that some directories (<TT>data</TT> for example) will only be created when you have launched ServiceMix.</P>
+
+<TABLE class="sectionMacro" border="0" cellpadding="5" cellspacing="0" width="100%"><TBODY><TR>
+<TD class="confluenceTd" valign="top">
+<P>List of directories:</P>
+<UL>
+	<LI><B><TT>ant</TT></B>: files for ant task based management</LI>
+	<LI><B><TT>bin</TT></B>: start scripts for unix / windows</LI>
+	<LI><B><TT>components</TT></B>: JBI components installers</LI>
+	<LI><B><TT>components/lib</TT></B>: additional libraries</LI>
+	<LI><B><TT>conf</TT></B>: configuration files for ServiceMix container</LI>
+	<LI><B><TT>data</TT></B>: working directory where persistent data are stored</LI>
+	<LI><B><TT>deploy</TT></B>: hot-deploy directory for service assemblies</LI>
+	<LI><B><TT>examples</TT></B>: contain <A href="4-examples.html" title="4. Examples">distribution examples</A></LI>
+	<LI><B><TT>install</TT></B>: hot-deploy directory for components and shared libraries</LI>
+	<LI><B><TT>lib</TT></B>: container libraries</LI>
+	<LI><B><TT>lib/optional</TT></B>: optional libraries</LI>
+</UL>
+</TD>
+<TD class="confluenceTd" valign="top">
+<DIV class="preformatted"><DIV class="preformattedHeader"><B>Main distribution</B></DIV><DIV class="preformattedContent">
+<PRE>[root]
+ |- ant
+ |- bin
+ |- components
+ |   \- lib
+ |- conf
+ |- data
+ |- deploy
+ |- examples
+ |- install
+ \- lib
+     \- optional
+</PRE>
+</DIV></DIV></TD></TR></TBODY></TABLE>
+
+<H3><A name="6.ConfiguringServiceMix-Datadirectory"></A>Data directory</H3>
+
+<P>Although the <TT>data</TT> directory is ServiceMix internal directory, it contains some useful informations.<BR>
+The following directories may be created:</P>
+<UL>
+	<LI><B><TT>amq</TT></B>: working directory for ActiveMQ</LI>
+	<LI><B><TT>log</TT></B>: directory containing log files</LI>
+	<LI><B><TT>smx</TT></B>: ServiceMix working directory</LI>
+	<LI><B><TT>txlog</TT></B>: transaction log storage</LI>
+</UL>
+
+
+<DIV class="preformatted"><DIV class="preformattedHeader"><B>Data directory</B></DIV><DIV class="preformattedContent">
+<PRE>data
+ |- amq
+ |- log
+ |- smx
+ \- txlog
+</PRE>
+</DIV></DIV>
+
+<P>The <TT>smx</TT> dir is populated by ServiceMix when installing / deploying JBI artifacts in the container. It has the following structure:</P>
+
+<DIV class="preformatted"><DIV class="preformattedHeader"><B>ServiceMix working directory</B></DIV><DIV class="preformattedContent">
+<PRE>smx
+ |- components
+ |   |- [component-name]
+ |   |   |- version-n
+ |   |   \- workspace
+ |   \- [other-component]
+ |       \- ...
+ |- service-assemblies
+ |   |- [sa-name]
+ |   |   \- version-n
+ |   \- [other-sa]
+ |       \- ...
+ |- sharedlibs
+ |   |- [sl-name]
+ |   |   \- version-n
+ |   \- [other-sl]
+ |       \- ...
+ \- tmp
+</PRE>
+</DIV></DIV>
+
+<H2><A name="6.ConfiguringServiceMix-Configurationfiles"></A>Configuration files</H2>
+
+<P>ServiceMix uses XML configuration files. ServiceMix use the <SPAN class="nobr"><A href="http://geronimo.apache.org/xbean" title="Visit page outside Confluence" rel="nofollow">XBean<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> library to do the XML configuration; which allows you to use regular Spring configuration or our custom XSD based XML configuration.</P>
+
+<P>For a reference guide and to see the XSD see the <A href="../SM/xml-reference.html" title="Xml Reference">Xml Reference</A>.</P>
+
+<P>The default ServiceMix installation comes with a number of configuration files that can be changeg to fit your needs.  These configuration files are all in the {<TT>conf</TT> directory, which is also included in the classpath.</P>
+
+<UL>
+	<LI><TT>activemq.xml</TT>: <SPAN class="nobr"><A href="http://incubator.apache.org/activemq/" title="Visit page outside Confluence" rel="nofollow">ActiveMQ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> configuration file</LI>
+	<LI><TT>jmx.xml</TT>: JMX configuration file</LI>
+	<LI><TT>jndi.properties</TT>: system file for JNDI configuration</LI>
+	<LI><TT>jndi.xml</TT>: JNDI configuration file</LI>
+	<LI><TT>log4j.xml</TT>: <SPAN class="nobr"><A href="http://logging.apache.org/log4j/docs/" title="Visit page outside Confluence" rel="nofollow">Log4J<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> configuration file</LI>
+	<LI><TT>login.properties</TT>: <SPAN class="nobr"><A href="http://java.sun.com/products/jaas/" title="Visit page outside Confluence" rel="nofollow">JAAS<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> configuration file</LI>
+	<LI><TT>security.xml</TT>: ServiceMix security configuration file</LI>
+	<LI><TT>servicemix.conf</TT>: <SPAN class="nobr"><A href="http://classworlds.codehaus.org/" title="Visit page outside Confluence" rel="nofollow">Classworlds<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> configuration file defining the classpath</LI>
+	<LI><TT>servicemix.xml</TT>: ServiceMix JBI container configuration</LI>
+	<LI><TT>tx.xml</TT>: Transaction Manager configuration</LI>
+	<LI><TT>group.properties</TT>: security related configuration file for associating groups to users</LI>
+	<LI><TT>users-credentials.properties</TT>: security related configuration file for associating a certificate to a user</LI>
+	<LI><TT>users-passwords.properties</TT>: security related configuration file for associating a password to a user</LI>
+	<LI><TT>keystore.jks</TT>: security related configuration file for storing certificates</LI>
+</UL>
+
+
 <H2><A name="6.ConfiguringServiceMix-Containerconfiguration"></A>Container configuration</H2>
+
+<P>ServiceMix has a number of parameters that you can set to change it&apos;s runtime behaviour on either the <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/apidocs/org/apache/servicemix/jbi/container/JBIContainer.html" title="Visit page outside Confluence" rel="nofollow">JBIContainer <SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or the derived <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/apidocs/org/apache/servicemix/jbi/container/SpringJBIContainer.html" title="Visit page outside Confluence" rel="nofollow">SpringJBIContainer <SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+
+<P>These are as follows:</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Attributes</B><BR>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh"> Name </TH>
+<TH class="confluenceTh"> type </TH>
+<TH class="confluenceTh"> Description </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> name </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> name of the container - needs to be unique if running in a <B><EM>cluster</EM></B> The default is <B>defaultJBI</B> </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> rootDir </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the path to the directory structure used by ServiceMix - the default is <B><EM>&lt;current directory&gt;/wdir</EM></B> </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> flowName </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> one of <B><EM>seda</EM></B>, <B><EM>st</EM></B>, <B><EM>jms</EM></B> or <B><EM>jca</EM></B> &#45; see <A href="../SM/nmr-flows.html" title="NMR Flows">NMR Flows</A>. The <B>jms</B> and <B>jca</B> flows can also take an optional jmsURL parameter to explicitly reference an <SPAN class="nobr"><A href="http://www.activemq.org/site/configuring-transports.html" title="Visit page outside Confluence" rel="nofollow">activemq transport<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> e.g. flowName=jms?jmsURL=tcp://localhost:61616 <BR clear="all"> </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> flowNames </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> comma separated list of flow names. Note that flows can also be configured using the &lt;sm:flows&gt; element </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> useMBeanServer </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> if true, ServiceMix will try and find an MBeanServer from the MBeanServerFactory if one is not supplied </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> createMBeanServer </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> if true, ServiceMix will create its own MBeanServer if one is not supplied to the container or found from an MBeanServerFactory </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> createJmxConnector </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> if, true ServiceMix will create its own JMX connector using the specified rmiPort </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> rmiPort </TD>
+<TD class="confluenceTd"> int </TD>
+<TD class="confluenceTd"> the port used for the rmi registry (and thus, the JMX connector), defaults to (1099) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> installationDirPath </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the path to the installation directory that ServiceMix can optionally monitor for new component archives </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> monitorInstallationDirectory </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> if true, ServiceMix will monitor the installation directory for new component archives to install </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> deploymentDirPath </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the path to the deployment directory that ServiceMix can optionally monitor for new service assembilies </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> monitorDeploymentDirectory </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> if true, ServiceMix will monitor the deployment directory for new service assembilies to deploy </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> dumpStats </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> if true, ServiceMix will dump message throughput statistics to file for individual components </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> statsInterval </TD>
+<TD class="confluenceTd"> int </TD>
+<TD class="confluenceTd"> interval (in seconds) between collection of statistics for message throughput </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> persistent </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> autoEnlistInTransaction </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> embedded </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> useShutdownHook </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> subscriptionFlowName </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> notifyStatistics </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+</TBODY></TABLE></TD></TR></TABLE>
+
+<P>Several elements or references can also be used to configure ServiceMix with existing objects:</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Elements</B><BR>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh"> Name </TH>
+<TH class="confluenceTh"> type </TH>
+<TH class="confluenceTh"> Description </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> namingContext </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> workManager </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> transactionManager </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> MBeanServer </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> flow </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> flows </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> broker </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd">&nbsp;</TD>
+</TR>
+</TBODY></TABLE></TD></TR></TABLE>
+
 
 <STYLE type="text/css">/*<![CDATA[*/
 table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
@@ -54,7 +321,7 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 03, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13935&originalId=13937">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13935&originalId=13940">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13935">edit page</A>)
     </DIV>
