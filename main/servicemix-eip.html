@@ -220,7 +220,7 @@ This pattern implements the <SPAN class="nobr"><A href="http://www.enterpriseint
 
 <H3><A name="servicemix-eip-MessageFilter"></A>Message Filter</H3>
 
-<P>MessageFilter allows filtering incoming JBI exchanges.<BR>
+<P>MessageFilter allows filtering incoming JBI exchanges. As it drops unwanted messages and in an InOut exchange a response is required, MessageFilter and InOut MEPs cannot be used together.<BR>
 This pattern implements the <SPAN class="nobr"><A href="http://www.enterpriseintegrationpatterns.com/Filter.html" title="Visit page outside Confluence" rel="nofollow">Message Filter<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> pattern.</P>
 
 <P><IMG src="http://www.enterpriseintegrationpatterns.com/img/MessageFilter.gif" align="absmiddle" border="0"></P>
@@ -284,11 +284,11 @@ This component only uses In-Out MEPs and errors or faults sent by targets are re
 
 <H3><A name="servicemix-eip-WireTap"></A>Wire Tap</H3>
 
-<P>A WireTap component can be used to forward a copy of the input message to a listener in a proxy fashion. <BR>
+<P>A WireTap component can be used to forward a copy of the input message to a listener in a proxy fashion.<BR>
 This component implements the <SPAN class="nobr"><A href="http://www.enterpriseintegrationpatterns.com/WireTap.html" title="Visit page outside Confluence" rel="nofollow">WireTap<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> pattern.<BR>
-It can handle all four standard MEPs, but will only send an In-Only MEP to the listener. <BR>
-The originating service must be configured to send messages to the WireTap directly. <BR>
-In the case of an In-Out MEP, this means that the WireTap needs to be configured to send the exchange along to the destination service. </P>
+It can handle all four standard MEPs, but will only send an In-Only MEP to the listener.<BR>
+The originating service must be configured to send messages to the WireTap directly.<BR>
+In the case of an In-Out MEP, this means that the WireTap needs to be configured to send the exchange along to the destination service.</P>
 
 <P><IMG src="http://www.enterpriseintegrationpatterns.com/img/WireTap.gif" align="absmiddle" border="0"></P>
 <DIV class="code"><DIV class="codeContent">
@@ -406,8 +406,8 @@ This element has the following attributes:</P>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Sep 29, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1915&originalId=13880">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 04, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1915&originalId=13950">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1915">edit page</A>)
     </DIV>
