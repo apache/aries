@@ -112,13 +112,11 @@ Management
 <!--          
             <div class="pagetitle">Management</div>
 -->
-            <DIV class="wiki-content">
-<P>Servicemix provides JMX based management of running components and the internals of it&apos;s container. This section provides infomation about how to connect remotely to the Servicemix MBeanServer, the operations and attributes exposed for management and J2EE statistics.</P>
-
+            <DIV class="wiki-content"><P>Servicemix provides JMX based management of running components and the internals of it&apos;s container. This section provides infomation about how to connect remotely to the Servicemix MBeanServer, the operations and attributes exposed for management and J2EE statistics.</P>
 
 <H3><A name="Management-JMXConsole"></A>JMXConsole</H3>
 
-<P><A href="jmx-console.html" title="JMX Console">JMX Console</A> - infomation about connecting to JMX from an application of management console</P>
+<P><A href="jmx-console.html" title="JMX Console">JMX Console</A> &#45; infomation about connecting to JMX from an application of management console</P>
 
 <H3><A name="Management-MBeans"></A>MBeans</H3>
 
@@ -131,25 +129,22 @@ Management
 <A href="nmr-broker-mbean.html" title="NMR Broker MBean">NMR Broker MBean</A><BR>
 <A href="message-flow-mbean.html" title="Message Flow MBean">Message Flow MBean</A></P>
 
-
-
 <H3><A name="Management-Statistics"></A>Statistics</H3>
 
-<P>If ServiceMix is configured (see <A href="configuration.html" title="Configuration">Configuration</A>) to dump statistics, it will for individual component&apos;s in their running directory into the file Stats.csv. Statistics measure inbound/outbound exchange rates for a component&apos;s DeliveryChannel. The format of the statistics dumped is:</P>
-
+<P>If ServiceMix is configured (see <A href="configuration.html" title="Configuration">Configuration</A>) to dump statistics, it will do so for individual JBI components (not lightwight components) in their running directory into the file Stats.csv. Note: for versions prior to v3.1, there is a typo in the filename so .cvs is used instead of .csv, see <SPAN class="nobr"><A href="https://issues.apache.org/activemq/browse/SM-669" title="Visit page outside Confluence" rel="nofollow">SM-669<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. Statistics measure inbound/outbound exchange rates for a component&apos;s DeliveryChannel (same information as available in the JMX console). The format of the statistics dumped is:</P>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Stats format</B><BR>
 <TABLE class="confluenceTable"><TBODY>
 <TR>
-<TD class="confluenceTd">inboundExchanges</TD>
-<TD class="confluenceTd">inboundExchangeRate</TD>
-<TD class="confluenceTd">outboundExchanges</TD>
-<TD class="confluenceTd">outboundExchangeRate</TD>
+<TD class="confluenceTd"> inboundExchanges </TD>
+<TD class="confluenceTd"> inboundExchangeRate </TD>
+<TD class="confluenceTd"> outboundExchanges </TD>
+<TD class="confluenceTd"> outboundExchangeRate </TD>
 </TR>
 <TR>
-<TD class="confluenceTd"> long           </TD>
-<TD class="confluenceTd"> double            </TD>
-<TD class="confluenceTd"> long            </TD>
-<TD class="confluenceTd"> double             </TD>
+<TD class="confluenceTd"> long </TD>
+<TD class="confluenceTd"> double </TD>
+<TD class="confluenceTd"> long </TD>
+<TD class="confluenceTd"> double </TD>
 </TR>
 </TBODY></TABLE></TD></TR></TABLE>
 
@@ -203,8 +198,8 @@ Management
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1914&originalId=5223">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 04, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1914&originalId=13957">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1914">edit page</A>)
     </DIV>
