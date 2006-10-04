@@ -25,7 +25,6 @@ Importing ServiceMix into Eclipse
 
 <P>The Maven website offers some additional information concerning <SPAN class="nobr"><A href="http://maven.apache.org/guides/mini/guide-ide-eclipse.html" title="Visit page outside Confluence" rel="nofollow">Maven and Eclipse<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>, for example how Maven goals can be executed from within Eclipse or alternative ways of importing projects into Eclipse.</P>
 
-
 <H2><A name="ImportingServiceMixintoEclipse-PreInstallationRequirements"></A>Pre-Installation Requirements</H2>
 
 <P><B>Hardware:</B></P>
@@ -275,7 +274,18 @@ Why this directory? Well, have a closer look at the error message presented abov
 </UL>
 
 
-<P>Redo this until no class/JAR is missing any more.</P></DIV>
+<P>Redo this until no class/JAR is missing any more.</P>
+
+<H3><A name="ImportingServiceMixintoEclipse-ProjectswithfailingbuildinEclipseworkspace"></A>Projects with failing build in Eclipse workspace</H3>
+
+<P>The first line of java classes in projects with failing build will look like this:</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>package ${packageName};
+</PRE>
+</DIV></DIV>
+<P>Reason for the problem is Eclipse which considers the .java files as classes to compile.&nbsp; In the case of archetypes, they are just resources to be bundled, and there is no real code to compile.&nbsp; To tell Eclipse to not compile these archetype files, one may add an exclusion pattern to the source folder in Eclipse&apos;s build path configuration (see screenshot). This has to be done manually every time one imports the projects as the maven eclipse plug-in cannot generate this information in the .classpath files automatically. For ServiceMix 3.0, the change has to be applied in three Eclipse projects: servicemix-binding-component, servicemix-jsr181-annotated-service-unit and servicemix-service-engine.</P>
+
+<P><IMG src="importing-servicemix-into-eclipse.data/archetype-build-path.png" align="absmiddle" border="0"></P></DIV>
           </DIV>
         </TD>
       </TR>
@@ -284,8 +294,8 @@ Why this directory? Well, have a closer look at the error message presented abov
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 25, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13740&originalId=13809">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 05, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13740&originalId=13959">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13740">edit page</A>)
     </DIV>
