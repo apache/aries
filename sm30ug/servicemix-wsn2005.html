@@ -190,7 +190,7 @@ wsnBroker.subscribe(pullPoint.getEndpoint(), topic);</PRE>
 <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
 </DIV></DIV>
 
-<P>When the component is started, it registers itself as a publisher to the WS-Notification broker.  To do so, it activates a JBI endpoint named <TT>subscription</TT> so it can handle demand based publishing. When this component receives an InOnly exchange, let&apos;s say <TT>&lt;hello&gt;world&lt;/hello&gt;</TT>, it will wrap it in a request as shown <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=Notify&linkCreation=true&fromPageId=13583" title="Create Page: Notify" class="createlink">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and send the request as an InOnly exchange to the NotifiationBroker.  Note that, as this component activates two JBI endpoints, you need to explicitely target the endpoint specified in the activationSpec when sending a message.</P>
+<P>When the component is started, it registers itself as a publisher to the WS-Notification broker.  To do so, it activates a JBI endpoint named <TT>subscription</TT> so it can handle demand based publishing. When this component receives an InOnly exchange, let&apos;s say <TT>&lt;hello&gt;world&lt;/hello&gt;</TT>, it will wrap it in a request as shown <A href="#servicemix-wsn2005-Notify" title="Notify on servicemix-wsn2005">here</A> and send the request as an InOnly exchange to the NotifiationBroker.  Note that, as this component activates two JBI endpoints, you need to explicitely target the endpoint specified in the activationSpec when sending a message.</P>
 
 <P>The subscription is created inside a <TT>servicemix-wsn2005</TT> component.  You must fill the <TT>consumer</TT> and <TT>topic</TT> properties, where the <TT>consumer</TT> is the URI-encoded target JBI endpoint, which will be resolved to the first component activated. You could also use the plain spring syntax:</P>
 <DIV class="code"><DIV class="codeContent">
@@ -290,7 +290,7 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 05, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13583&originalId=13965">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13583&originalId=13968">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13583">edit page</A>)
     </DIV>
