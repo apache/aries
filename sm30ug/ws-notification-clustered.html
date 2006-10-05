@@ -45,9 +45,58 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 
 <P>This examples relies on the <A href="servicemix-wsn2005.html" title="servicemix-wsn2005">WS-Notification component</A>.</P>
 
+<H2><A name="WS-NotificationClustered-Launchingtheexample"></A>Launching the example</H2>
+
+<P>To run this example, open three terminals - one for each instance directory. In each terminal, start ServiceMix and feed the configuration like so:</P>
+
+<P>In terminal one:</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>$ cd ./instance1
+$ ../../../bin/servicemix ./servicemix1.xml
+</PRE>
+</DIV></DIV>
+
+<P>In terminal two:</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>$ cd ./instance2
+$ ../../../bin/servicemix ./servicemix2.xml
+</PRE>
+</DIV></DIV>
+
+<P>In terminal three:</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>$ cd ./instance3
+$ ../../../bin/servicemix ./servicemix3.xml
+</PRE>
+</DIV></DIV>
+
+<P>ServiceMix instance3 will publish messages to the topic named MyTopic and ServiceMix instance2 will receive these messages because it is subscribed to the topic named MyTopic.</P>
+
+<P>The output of instance2 will look like:</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>INFO  - TraceComponent                 - Exchange: InOnly[
+  id: ID:guillaumes-2995-1160038439984-8:4
+  status: Active
+  role: provider
+  endpoint: endpoint
+  in: &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;ns2:Notify xmlns:ns2=&quot;http://docs.o
+asis-open.org/wsn/b-2&quot; xmlns=&quot;http://www.w3.org/2005/08/addressing&quot; xmlns:ns3=&quot;h
+ttp://docs.oasis-open.org/wsn/t-1&quot; xmlns:ns4=&quot;http://docs.oasis-open.org/wsrf/bf
+-2&quot;&gt;&lt;ns2:NotificationMessage&gt;&lt;ns2:Topic&gt;myTopic&lt;/ns2:Topic&gt;&lt;ns2:Message&gt;&lt;timer x
+mlns=&quot;&quot; xmlns:ns5=&quot;http://www.w3.org/2005/08/addressing&quot;&gt;&lt;name&gt;My Example Job&lt;/n
+ame&gt;&lt;group&gt;ServiceMix&lt;/group&gt;&lt;fullname&gt;ServiceMix.My Example Job&lt;/fullname&gt;&lt;desc
+ription/&gt;&lt;fireTime&gt;Thu Oct 05 10:54:32 CEST 2006&lt;/fireTime&gt;&lt;/timer&gt;&lt;/ns2:Message
+&gt;&lt;/ns2:NotificationMessage&gt;&lt;/ns2:Notify&gt;
+] received IN message: org.apache.servicemix.jbi.messaging.NormalizedMessageImpl
+@1298826{properties: {}}
+</PRE>
+</DIV></DIV>
+
 <H2><A name="WS-NotificationClustered-Publisherside"></A>Publisher side</H2>
 
 <H3><A name="WS-NotificationClustered-Quartzcomponent"></A>Quartz component</H3>
+
+<P>Refer to <A href="../SM/quartz.html" title="Quartz">SM:Quartz</A> for more informations.</P>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec destinationService=<SPAN class="code-quote">&quot;test:publisher&quot;</SPAN> destinationEndpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
@@ -163,7 +212,7 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 05, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13570&originalId=13964">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13570&originalId=13970">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13570">edit page</A>)
     </DIV>
