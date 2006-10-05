@@ -361,7 +361,7 @@ nohup bin/servicemix &gt; /tmp/smlog  2&gt;&amp;1 &amp;</PRE>
 Caused by: java.lang.<B>ClassNotFoundException</B>: org.apache.<B>servicemix.components</B>.file.FileWriter<BR>
 ...</P>
 </DIV></DIV>
-<P>indicating that the whole servicemix-common package cannot be found. In the Maven repository, <EM>servicemix-components-3.0-incubating.jar</EM> (or newer version) can be found and copied to ServiceMix&apos; lib directory.</P>
+<P>indicating that the whole servicemix-common package cannot be found. In the Maven repository, <EM>servicemix-components-3.0-incubating.jar</EM> (or newer version) can be found and copied to ServiceMix&apos; lib directory. <B>Note:</B> As this is a ServiceMix&apos; sub-project, the jar is available at <EM>[ServiceMix_home]\components</EM> as well.</P>
 
 <P>Slightly trickier is&nbsp;</P>
 <DIV class="panel"><DIV class="panelContent">
@@ -424,34 +424,8 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 06, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=13979">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      formatting shall be okay now (wiki markup edit)<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13489">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=13986">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13489">edit page</A>)
     </DIV>
 
