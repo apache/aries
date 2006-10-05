@@ -187,7 +187,6 @@ CIMERO Editor
 
 
 <P><B>Note:</B> CIMERO is <B>not able to work within FUSE tooling 1.2</B> even though this is &quot;just&quot; an extended version of WTP. Reason: Some wizards (like &quot;New Server&quot;) were tweaked and do not ask for the same information as WTP, but CIMERO relies on the information not collected any more (see screenshots below). Thus, deploying projects to servers is impossible. Furthermore, starting the ServiceMix server in FUSE 1.2 is possible, but FUSE does not detect ServiceMix was successfully started and shuts the process down after 75secs. It may work with the FUSE packaging of ServiceMix (still to confirm). The next release of FUSE tooling shall work fine with CIMERO.</P>
-
 <TABLE class="confluenceTable"><TBODY>
 <TR>
 <TH class="confluenceTh"> Eclipse WTP 3.2 <BR clear="all">
@@ -220,6 +219,8 @@ CIMERO Editor
 <H3><A name="CIMEROEditor-Use"></A>Use</H3>
 
 <P>To actually create a CIMERO file, right-click the &quot;Package Explorer&quot; pane, click new, click other, select and follow the &quot;Cimero File&quot; wizard.</P>
+
+<P>When custom components are used, right clicking the cimero file, Cimero, &quot;Generate JBI package&quot; and installing/deploying the generated package is required first. Afterwards - or when only standard components are used - right clicking the cimero file, Cimero, &quot;Generate XML configuration file&quot; creates the config file that has to be passed <EM>servicemix.bat</EM> as an argument. In case of erros, see <A href="../SM30UG/3-installation.html#3.Installation-Missinglibraries" title="Missing libraries on 3. Installation">User&apos;s Guide: 3. Installation, Troubleshooting</A>.</P>
 
 <P><EM>TIP:</EM> These two plugins are explained in the Eclipse &quot;Help contents&quot;, section &quot;ServiceMix Plug-in&quot;.</P>
 
@@ -293,9 +294,35 @@ CIMERO Editor
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 03, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9328&originalId=13949">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 06, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9328&originalId=13982">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      INS further explanation/help<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=9328">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=9328">edit page</A>)
     </DIV>
 
