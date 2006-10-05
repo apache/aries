@@ -179,7 +179,7 @@ wsnBroker.subscribe(pullPoint.getEndpoint(), topic);</PRE>
 
 <P>The above code snippet creates a publisher proxy, a subscription and a subscriber.</P>
 
-<P>The publisher proxy is a simple component that wraps incoming JBI exchanges into WS-Notification <TT>notify</TT> requests and send them to a notification broker on the given topic.  This could also be written in plain spring style:</P>
+<P>The publisher proxy is a simple component that wraps incoming JBI exchanges into WS-Notification <A href="#servicemix-wsn2005-Notify" title="Notify on servicemix-wsn2005"><TT>notify</TT></A> requests and send them to a notification broker on the given topic.  This could also be written in plain spring style:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec service=<SPAN class="code-quote">&quot;test:publisher&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
   <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
@@ -247,6 +247,17 @@ wsnBroker.subscribe(pullPoint.getEndpoint(), topic);</PRE>
 
 <H3><A name="servicemix-wsn2005-Notify"></A>Notify</H3>
 
+<P>The Notify request is sent by a publisher to the NotificationBroker. This request contains a list of NotificationMessage, each one containing:</P>
+<UL>
+	<LI>a subscription reference (not used)</LI>
+	<LI>a topic (mandatory)</LI>
+	<LI>a producer reference (which may contain the address of the producer that created the message)</LI>
+	<LI>the message</LI>
+</UL>
+
+
+<P>Below is an example of a such a request.</P>
+
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml">&lt;wsnt:Notify 
   <SPAN class="code-keyword">xmlns:wsnt</SPAN>=<SPAN class="code-quote">&quot;http://docs.oasis-open.org/wsn/b-2&quot;</SPAN>&gt;
@@ -276,8 +287,8 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13583&originalId=13592">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 05, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13583&originalId=13963">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13583">edit page</A>)
     </DIV>

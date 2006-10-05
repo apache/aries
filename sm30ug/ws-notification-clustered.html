@@ -43,6 +43,8 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 </UL>
 
 
+<P>This examples relies on the <A href="servicemix-wsn2005.html" title="servicemix-wsn2005">WS-Notification component</A>.</P>
+
 <H2><A name="WS-NotificationClustered-Publisherside"></A>Publisher side</H2>
 
 <H3><A name="WS-NotificationClustered-Quartzcomponent"></A>Quartz component</H3>
@@ -74,6 +76,8 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 
 <H3><A name="WS-NotificationClustered-WSNotificationpublisher"></A>WS-Notification publisher</H3>
 
+<P>The <TT>PublisherComponent</TT> is just a proxy to the WS-Notification component. It receives InOnly JBI exchanges from the components (in this case, the Quartz component) and send them as publish request to the WS-Notification broker.  Hence, you need to specific the WS-Notification topic which will be used to publish the messages in the WS-Notification world.</P>
+
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec service=<SPAN class="code-quote">&quot;test:publisher&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
   <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
@@ -83,8 +87,6 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
   <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
 <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
 </DIV></DIV>
-
-<P>The <TT>PublisherComponent</TT> is just a proxy to the WS-Notification component. It receives JBI exchanges from the quartz component and send them as publish request to the WS-Notification broker.</P>
 
 <H3><A name="WS-NotificationClustered-WSNotificationcomponent"></A>WS-Notification component</H3>
 
@@ -160,8 +162,9 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 10, 2006
-                  
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 05, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13570&originalId=13964">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13570">edit page</A>)
     </DIV>
 
