@@ -53,9 +53,9 @@ Here you will find information about what are pre requisite software, where to d
 </UL></LI>
   <LI><A href="#3.Installation-StartingServiceMix">Starting ServiceMix</A>
 <UL>
-  <LI><A href="#3.Installation-OnWindows">On Windows</A>
+  <LI><A href="#3.Installation-OnWindows">On Windows</A></LI>
+  <LI><A href="#3.Installation-OnUnix">On Unix</A>
 <UL>
-  <LI><A href="#3.Installation-OnUnix">On Unix</A></LI>
   <LI><A href="#3.Installation-TroubleshootingforUnix">Troubleshooting for Unix</A></LI>
 </UL></LI>
 </UL></LI>
@@ -296,7 +296,7 @@ If a source snapshot was downloaded perform steps 6 - 8 (building, uncompressing
 </DIV></DIV>
 <P><EM>Note:</EM> Working directories get created relative to the current directory. For the working directories to be created in the proper place, ServiceMix must be launched from its home/installation directory.</P>
 
-<H4><A name="3.Installation-OnUnix"></A>On Unix</H4>
+<H3><A name="3.Installation-OnUnix"></A>On Unix</H3>
 
 <P>From a command shell, change to the installation directory and run <TT>ServiceMix</TT>. For the binary distribution, go to</P>
 <DIV class="code"><DIV class="codeContent">
@@ -324,7 +324,6 @@ nohup bin/servicemix &gt; /tmp/smlog  2&gt;&amp;1 &amp;</PRE>
 
 <H4><A name="3.Installation-TroubleshootingforUnix"></A>Troubleshooting for Unix</H4>
 
-
 <P>If the <TT>servicemix</TT> start-up script is not executable, change its permisssions. The <TT>servicemix</TT> script is located in the <TT>bin</TT> directory. For example:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">chmod 755 bin/servicemix</PRE>
@@ -345,7 +344,6 @@ nohup bin/servicemix &gt; /tmp/smlog  2&gt;&amp;1 &amp;</PRE>
 <H3><A name="3.Installation-Missinglibraries"></A>Missing libraries</H3>
 
 <P>Starting ServiceMix with old examples, <A href="../SM/cimero-editor.html" title="CIMERO Editor">CIMERO</A>&#45;generated xml configuration files or custom code may cause errors due to missing libraries. Usually, the missing class is displayed at the very end of the output. Here, some examples are shown and explained.</P>
-
 <DIV class="panel"><DIV class="panelContent">
 <P>Caused by: java.lang.<B>NoClassDefFoundError:</B> org/<B>quartz</B>/JobExecutionException<BR>
 &nbsp;&nbsp;&nbsp; at java.lang.Class.forName0(Native Method)<BR>
@@ -357,7 +355,6 @@ nohup bin/servicemix &gt; /tmp/smlog  2&gt;&amp;1 &amp;</PRE>
 </DIV></DIV>
 <P>Obviously (bold typed text), a class inside the quartz package cannot be found. A quick search for &quot;quartz&quot; in the Maven repository reveals <EM>[user_home]\.m2\repository\quartz\quartz\1.5.2\quartz-1.5.2.jar</EM> (or newer version) which has to be copied to <EM>[ServiceMix_home]\lib\quartz-1.5.2.jar</EM> &#45; the error shall be resolved now. Of course, adding the directory containing the jar to the classpath is another possibility.</P>
 
-
 <P>Very similar is</P>
 <DIV class="panel"><DIV class="panelContent">
 <P>...<BR>
@@ -366,15 +363,13 @@ Caused by: java.lang.<B>ClassNotFoundException</B>: org.apache.<B>servicemix.com
 </DIV></DIV>
 <P>indicating that the whole servicemix-common package cannot be found. In the Maven repository, <EM>servicemix-components-3.0-incubating.jar</EM> (or newer version) can be found and copied to ServiceMix&apos; lib directory.</P>
 
-
 <P>Slightly trickier is&nbsp;</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">...
-Caused by: org.springframework.beans.factory.BeanDefinitionStoreException: Unrecognized xbean namespace mapping: http:<SPAN class="code-comment">//servicemix.apache.org/eip/1.0
-</SPAN>...</PRE>
+<DIV class="panel"><DIV class="panelContent">
+<P>...<BR>
+Caused by: org.springframework.beans.factory.BeanDefinitionStoreException: <B>Unrecognized xbean namespace mapping:</B> <SPAN class="nobr"><A href="http://servicemix.apache.org/eip/1.0" title="Visit page outside Confluence" rel="nofollow">http://servicemix.apache.org/eip/1.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+...</P>
 </DIV></DIV>
 <P>A short www search leads to <A href="../SM/unrecognized-xbean-namespace-mapping.html" title="Unrecognized xbean namespace mapping">SM:Unrecognized xbean namespace mapping</A>. With this information, one can infer that <EM>[user_home]\.m2\repository\org\apache\servicemix\servicemix-eip\3.0-incubating\servicemix-eip-3.0-incubating.jar</EM> (or newer version) has to be copied to <EM>[ServiceMix_home]\lib\servicemix-eip-3.0-incubating.jar</EM> so ServiceMix can find the classes.</P>
-
 
 <H2><A name="3.Installation-TestingtheInstallation"></A>Testing the Installation</H2>
 
@@ -428,13 +423,13 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 05, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=13977">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 06, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=13979">view change</A>)
                       <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
         <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
           <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
       <B>Comment:</B>
-      INS troubleshooting for missing libs<BR>
+      formatting shall be okay now (wiki markup edit)<BR>
       <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13489">View page history</A></SPAN>
   </DIV>
 
