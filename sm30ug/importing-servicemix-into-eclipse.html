@@ -116,7 +116,8 @@ Check the &quot;Use default compliance settings&quot; box.&nbsp;
 <BR clear="all">
 A pop-up appears.<BR>
 Enter the Name: M2_REPO<BR>
-Enter the Path of your local maven repository, usually located in &lt;your home directory&gt;\.m2, for example: <EM>C:\Documents and Settings\exjobb\.m2\repository</EM><BR clear="all">
+Enter the Path of your local maven repository, usually located in &lt;your home directory&gt;\.m2, for example: <EM>C:\Documents and Settings\exjobb\.m2\repository</EM>
+<BR clear="all">
 &nbsp;
 <BR clear="all">  <IMG src="importing-servicemix-into-eclipse.data/eclipse-m2-repo-variable.PNG" align="absmiddle" border="0"><BR clear="all">
 &nbsp;</LI>
@@ -213,7 +214,8 @@ In case you want to reference a dependency, proceed in the same way. In case you
 <BR clear="all">  <IMG src="importing-servicemix-into-eclipse.data/Classpath%20-%20Advanced%20Options%20ext%20folder.png" align="absmiddle" border="0"><BR clear="all">
 &nbsp;
 <BR clear="all"></LI>
-				<LI>When S:\ is your servicemix root directory, select/enter <EM>S:\servicemix-components\target\classes</EM><BR clear="all">
+				<LI>When S:\ is your servicemix root directory, select/enter <EM>S:\servicemix-components\target\classes</EM>
+<BR clear="all">
 &nbsp;
 <BR clear="all">
 Why this directory? Well, have a closer look at the error message presented above. The package <EM>org.apache.servicemix.components</EM> indicates the location of the missing bean <EM>FileWriter</EM> is <EM>servicemix-components</EM>, and as we need an executable file, the <EM>target\classes</EM> subdirectory is where to look. Of course we shall proof that <EM>FileWriter</EM> really is located here, so execute <EM>dir /s FileWriter.class</EM> in the given directory and watch the output. For further hints, see below at <A href="#ImportingServiceMixintoEclipse-Troubleshooting" title="Troubleshooting on Importing ServiceMix into Eclipse">Troubleshooting</A>.
@@ -232,6 +234,12 @@ Why this directory? Well, have a closer look at the error message presented abov
 	<LI>Click Run.</LI>
 </OL>
 
+
+<P>Now, ServiceMix shall start with the static configuration file (<EM>servicemix.xml</EM>) you pointed at and in the Console tab all log output will be displayed.</P>
+
+<H3><A name="ImportingServiceMixintoEclipse-DebuggingServiceMix"></A>Debugging ServiceMix</H3>
+
+<P>This is extremely easy when ServiceMix was already running - it just requires to set a breakpoint in the Main.java (or anywhere else) and a press of F11 (debug last launched).</P>
 
 <H2><A name="ImportingServiceMixintoEclipse-Troubleshooting"></A>Troubleshooting</H2>
 
@@ -276,6 +284,8 @@ Why this directory? Well, have a closer look at the error message presented abov
 
 <P>Redo this until no class/JAR is missing any more.</P>
 
+<P>See also <A href="3-installation.html#3.Installation-Missinglibraries" title="Missing libraries on 3. Installation">User&apos;s Guide: 3. Installation, Troubleshooting</A>.</P>
+
 <H3><A name="ImportingServiceMixintoEclipse-ProjectswithfailingbuildinEclipseworkspace"></A>Projects with failing build in Eclipse workspace</H3>
 
 <P>The first line of java classes in projects with failing build will look like this:</P>
@@ -294,8 +304,8 @@ Why this directory? Well, have a closer look at the error message presented abov
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 05, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13740&originalId=13959">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 06, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13740&originalId=13994">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13740">edit page</A>)
     </DIV>
