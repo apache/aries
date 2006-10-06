@@ -114,10 +114,9 @@ Validation
 -->
             <DIV class="wiki-content"><P>The validation component provides schema validation of documents using <SPAN class="nobr"><A href="http://java.sun.com/xml/jaxp/index.jsp" title="Visit page outside Confluence" rel="nofollow">JAXP 1.3<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and <SPAN class="nobr"><A href="http://www.w3.org/XML/Schema" title="Visit page outside Confluence" rel="nofollow">XMLSchema<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or <SPAN class="nobr"><A href="http://relaxng.org/" title="Visit page outside Confluence" rel="nofollow">RelaxNG<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
 
-<P>The component is pretty simple and straightforward; its configured with a schema document and optionally an error handler implementing the MessageAwareErrorHandler interface. If the inbound document is valid, it continues on its way to the ultimate destination. Otherwise a fault is returned in the message exchange.</P>
+<P>The component is pretty simple and straightforward; its configured with a schema document and optionally an error handler factory&nbsp;implementing the MessageAwareErrorHandlerFactory interface. This factory produces an error handler which conforms to the MessageAwareErrorHandler interface.&nbsp; If the inbound document is valid, it continues on its way to the ultimate destination. Otherwise a fault is returned in the message exchange.</P>
 
 <P>ServiceMix configuration using the default error handler:</P>
-
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;SchemaValidator&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:SchemaValidator&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;SchemaValidator&quot;</SPAN>&gt;</SPAN>
     <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
@@ -127,9 +126,7 @@ Validation
     <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
 <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
 </DIV></DIV>
-
-<P>The default error handler simply counts the number of warnings, errors and fatal errors and if the number of errors and fatal errors is greater than zero then a fault message is returned.  Another implementation is available which will capture the messages and output them in an xml format as below:</P>
-
+<P>The default error handler simply counts the number of warnings, errors and fatal errors and if the number of errors and fatal errors is greater than zero then a fault message is returned. Another implementation is available which will capture the messages and output them in an xml format as below:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;rootPath xmlns=<SPAN class="code-quote">&quot;namespace&quot;</SPAN>&gt;</SPAN>
     <SPAN class="code-tag">&lt;warning&gt;</SPAN><SPAN class="code-tag">&lt;![CDATA[ warning message ]]&gt;</SPAN><SPAN class="code-tag">&lt;/warning&gt;</SPAN>
@@ -137,34 +134,26 @@ Validation
     <SPAN class="code-tag">&lt;fatalError&gt;</SPAN><SPAN class="code-tag">&lt;![CDATA[ fatal error message ]]&gt;</SPAN><SPAN class="code-tag">&lt;/fatalError&gt;</SPAN>
 <SPAN class="code-tag">&lt;/rootPath&gt;</SPAN></PRE>
 </DIV></DIV>
-
-<P>Each warning, error or fatal error message will produce a node as shown above.  The rootPath represents an arbitrarily deep node path at which to locate the message nodes.  The root element also has a default xml namespace attached to it.  The ServiceMix configuration for this component is outlined below:</P>
-
+<P>Each warning, error or fatal error message will produce a node as shown above. The rootPath represents an arbitrarily deep node path at which to locate the message nodes. The root element also has a default xml namespace attached to it. The ServiceMix configuration for this component is outlined below:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;SchemaValidator&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:SchemaValidator&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;SchemaValidator&quot;</SPAN>&gt;</SPAN>
     <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
         <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.validation.ValidateComponent&quot;</SPAN>&gt;</SPAN>
             <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;schemaResource&quot;</SPAN> value=<SPAN class="code-quote">&quot;classpath:org/apache/servicemix/components/validation/schema.xsd&quot;</SPAN>/&gt;</SPAN>
-            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;errorHandler&quot;</SPAN> ref=<SPAN class="code-quote">&quot;messageAggregatingErrorHandler&quot;</SPAN>/&gt;</SPAN>
+            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;errorHandlerFactory&quot;</SPAN> ref=<SPAN class="code-quote">&quot;messageAggregatingErrorHandlerFactory&quot;</SPAN>/&gt;</SPAN>
         <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
     <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
 <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
 </DIV></DIV>
-
 <P>And here is the bean definition for the MessageAggregatingErrorHandler:</P>
-
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;messageAggregatingErrorHandler&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.validation.MessageAggregatingErrorHandler&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;constructor-arg index=<SPAN class="code-quote">&quot;0&quot;</SPAN> value=<SPAN class="code-quote">&quot;Fault/payload/messages&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;constructor-arg index=<SPAN class="code-quote">&quot;1&quot;</SPAN> value=<SPAN class="code-quote">&quot;http://www.servicemix.org/fault&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;constructor-arg index=<SPAN class="code-quote">&quot;2&quot;</SPAN> value=<SPAN class="code-quote">&quot;false&quot;</SPAN>/&gt;</SPAN>
-<SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
-</DIV></DIV> 
-
-<P>Constructor arg zero is the rootPath;<BR>
-constructor arg one is the namespace; and<BR>
-constructor arg two is an optional boolean value that if true will output stacktraces of the error messages into the fault xml.</P></DIV>
+<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;messageAggregatingErrorHandlerFactory&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.validation.MessageAggregatingErrorHandlerFactory&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;rootPath&quot;</SPAN> value=<SPAN class="code-quote">&quot;Fault/payload/messages&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;namespace&quot;</SPAN> value=<SPAN class="code-quote">&quot;http://www.servicemix.org/fault&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;includeStackTraces&quot;</SPAN> value=<SPAN class="code-quote">&quot;false&quot;</SPAN>/&gt;</SPAN>
+<SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>Only the first two properties are mandatory, the includeStackTraces property will default to false and is included in the above configuration to highlight it&apos;s use.&nbsp; If it is set to true the error handler&nbsp;will output stacktraces of the error messages into the fault xml.</P></DIV>
           
                   </DIV>
         </TD>
@@ -174,13 +163,13 @@ constructor arg two is an optional boolean value that if true will output stackt
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gmcdonald">Grant McDonald</A> on Aug 16, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1940&originalId=9680">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gmcdonald">Grant McDonald</A> on Oct 06, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1940&originalId=14002">view change</A>)
                       <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
         <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
           <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
       <B>Comment:</B>
-      Updated Validation wiki entry to provide documentation on new error handling implementation<BR>
+      Updated doco to use factory implementation<BR>
       <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=1940">View page history</A></SPAN>
   </DIV>
 
