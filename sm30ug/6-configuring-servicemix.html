@@ -143,6 +143,8 @@ The following directories may be created:</P>
 
 <H2><A name="6.ConfiguringServiceMix-Containerconfiguration"></A>Container configuration</H2>
 
+<H3><A name="6.ConfiguringServiceMix-Properties"></A>Properties</H3>
+
 <P>ServiceMix has a number of parameters that you can set to change it&apos;s runtime behaviour on either the <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/apidocs/org/apache/servicemix/jbi/container/JBIContainer.html" title="Visit page outside Confluence" rel="nofollow">JBIContainer <SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or the derived <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/apidocs/org/apache/servicemix/jbi/container/SpringJBIContainer.html" title="Visit page outside Confluence" rel="nofollow">SpringJBIContainer <SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
 
 <P>These are as follows:</P>
@@ -297,7 +299,131 @@ The following directories may be created:</P>
 <TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/apidocs/org/apache/servicemix/jbi/nmr/Broker.html" title="Visit page outside Confluence" rel="nofollow">Broker<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 <TD class="confluenceTd"> The broker used to dispatch JBI exchanges. </TD>
 </TR>
+<TR>
+<TD class="confluenceTd"> activationSpecs </TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/apidocs/org/apache/servicemix/jbi/container/ActivationSpec.html" title="Visit page outside Confluence" rel="nofollow">ActivationSpec<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>[] </TD>
+<TD class="confluenceTd"> The list of activation specs to use.  Activations specs are used to configure JBI components. </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> componentNames </TD>
+<TD class="confluenceTd"> String[] </TD>
+<TD class="confluenceTd"> An array of Strings identifying the spring ids of components to activate </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> listeners </TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/EventListener.html" title="Visit page outside Confluence" rel="nofollow">EventListener<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>[] </TD>
+<TD class="confluenceTd"> An array of event listeners to configure on the container.  Event listeners can be used to receive several kind of events wrt to the JBI container. </TD>
+</TR>
 </TBODY></TABLE></TD></TR></TABLE>
+
+<P>See <A href="../SM/xml-schemas.html" title="Xml schemas">XML Schemas</A> for a full description of these XML elements.</P>
+
+<H3><A name="6.ConfiguringServiceMix-Examples"></A>Examples</H3>
+
+<P>Attributes listed above are properties of simple types.  They can be set using attributes on the main container tag in xbean:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;beans <SPAN class="code-keyword">xmlns:sm</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/config/1.0&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:container embedded=<SPAN class="code-quote">&quot;true&quot;</SPAN>&gt;</SPAN>
+    ...
+  <SPAN class="code-tag">&lt;/sm:container&gt;</SPAN>
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>or using plain Spring syntax:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;beans&gt;</SPAN>
+  <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.jbi.container.SpringJBIContainer&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;embedded&quot;</SPAN> value=<SPAN class="code-quote">&quot;true&quot;</SPAN> /&gt;</SPAN>
+    ...
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>Elements listed above are properties with complex types, i.e. beans.  They can be set using references in xbean:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;beans <SPAN class="code-keyword">xmlns:sm</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/config/1.0&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:container transactionManager=<SPAN class="code-quote">&quot;#txmgr&quot;</SPAN>&gt;</SPAN>
+    ...
+  <SPAN class="code-tag">&lt;/sm:container&gt;</SPAN>
+  <SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;txmgr&quot;</SPAN> ... /&gt;</SPAN>
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>or using an element and an inner bean definition:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;beans <SPAN class="code-keyword">xmlns:sm</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/config/1.0&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:container&gt;</SPAN>
+    <SPAN class="code-tag">&lt;sm:transactionManager&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean ... /&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/sm:transactionManager&gt;</SPAN>
+    ...
+  <SPAN class="code-tag">&lt;/sm:container&gt;</SPAN>
+  <SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;txmgr&quot;</SPAN> ... /&gt;</SPAN>
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>or using plain spring syntax as a reference:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;beans&gt;</SPAN>
+  <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.jbi.container.SpringJBIContainer&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN> ref=<SPAN class="code-quote">&quot;txmgr&quot;</SPAN> /&gt;</SPAN>
+    ...
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;txmgr&quot;</SPAN> ... /&gt;</SPAN>
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>or using plain spring syntax and an inner bean definition:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;beans&gt;</SPAN>
+  <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.jbi.container.SpringJBIContainer&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean ... /&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+    ...
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>Some beans have corresponsing xbean elements, so the following xml configurations are equivalent:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;beans <SPAN class="code-keyword">xmlns:sm</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/config/1.0&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:container id=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> embedded=<SPAN class="code-quote">&quot;true&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;sm:broker&gt;</SPAN>
+      <SPAN class="code-tag">&lt;sm:securedBroker authorizationMap=<SPAN class="code-quote">&quot;#authorizationMap&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;sm:flows&gt;</SPAN>
+          <SPAN class="code-tag">&lt;sm:sedaFlow /&gt;</SPAN>
+          <SPAN class="code-tag">&lt;sm:jmsFlow jmsURL=<SPAN class="code-quote">&quot;tcp://localhost:61616&quot;</SPAN> /&gt;</SPAN>
+          &lt;sm:jcaFlow connectionManager=<SPAN class="code-quote">&quot;#connectionManager&quot;</SPAN>
+                      jmsURL=<SPAN class="code-quote">&quot;tcp://localhost:61616&quot;</SPAN> /&gt;
+        <SPAN class="code-tag">&lt;/sm:flows&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/sm:securedBroker&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/sm:broker&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/sm:container&gt;</SPAN>
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;beans&gt;</SPAN>
+  <SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.servicemix.jbi.container.SpringJBIContainer&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;embedded&quot;</SPAN> value=<SPAN class="code-quote">&quot;true&quot;</SPAN> /&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;broker&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.jbi.security.SecuredBroker&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;authorizationMap&quot;</SPAN> ref=<SPAN class="code-quote">&quot;authorizationMap&quot;</SPAN> /&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;flows&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;list&gt;</SPAN>
+            <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.jbi.flows.seda.SedaFlow&quot;</SPAN> /&gt;</SPAN>
+            <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.jbi.flows.jms.JMSFlow&quot;</SPAN>&gt;</SPAN>
+              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;jmsURL&quot;</SPAN> value=<SPAN class="code-quote">&quot;tcp://localhost:61616&quot;</SPAN> /&gt;</SPAN>
+            <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+            <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.jbi.flows.jca.JCAFlow&quot;</SPAN>&gt;</SPAN>
+              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;jmsURL&quot;</SPAN> value=<SPAN class="code-quote">&quot;tcp://localhost:61616&quot;</SPAN> /&gt;</SPAN>
+              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionManager&quot;</SPAN> ref=<SPAN class="code-quote">&quot;connectionManager&quot;</SPAN> /&gt;</SPAN>
+            <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/list&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+
+
 <STYLE type="text/css">/*<![CDATA[*/
 table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
 table.ScrollbarTable td.ScrollbarPrevIcon {text-align: center;width: 16px;border: none;}
@@ -316,7 +442,7 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13935&originalId=14025">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13935&originalId=14026">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13935">edit page</A>)
     </DIV>
