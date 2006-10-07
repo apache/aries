@@ -231,32 +231,27 @@ The following directories may be created:</P>
 <TR>
 <TD class="confluenceTd"> persistent </TD>
 <TD class="confluenceTd"> boolean </TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> If set to <TT>true</TT>, all exchanges sent to the JBI broker will have a persistence flag set to <TT>true</TT> by default. This is used to determine the QoS used, hence the flow to choose. Defaults to <TT>false</TT> </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> autoEnlistInTransaction </TD>
 <TD class="confluenceTd"> boolean </TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> If set to <TT>true</TT>, each time a JBI exchange is sent from a component while a transaction is active, it will be enlisted in the current transaction.  Defaults to <TT>false</TT> </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> embedded </TD>
 <TD class="confluenceTd"> boolean </TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> If set to <TT>true</TT>, a number of default parameter values will be changed to allow a more lightweight JBI container configuration (no hotdeploy, no jmx, etc...). Defaults to <TT>false</TT> </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> useShutdownHook </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
-</TR>
-<TR>
-<TD class="confluenceTd"> subscriptionFlowName </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> If set to <TT>false</TT>, the JBI container will not create a jvm shutdown hook to stop itself. Defaults to <TT>true</TT> </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> notifyStatistics </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> If set to <TT>true</TT>, everytime a statistic changes, a JMX notification will be sent.  Defaults to <TT>false</TT> for performance. </TD>
 </TR>
 </TBODY></TABLE></TD></TR></TABLE>
 <P>Several elements or references can also be used to configure ServiceMix with existing objects:</P>
@@ -269,38 +264,38 @@ The following directories may be created:</P>
 </TR>
 <TR>
 <TD class="confluenceTd"> namingContext </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://java.sun.com/j2se/1.4.2/docs/api/javax/naming/InitialContext.html" title="Visit page outside Confluence" rel="nofollow">InitialContext<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
+<TD class="confluenceTd"> the JNDI initial context to use </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> workManager </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://java.sun.com/j2ee/apidocs-1_5-fr/javax/resource/spi/work/WorkManager.html" title="Visit page outside Confluence" rel="nofollow">WorkManager<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
+<TD class="confluenceTd"> The work manager provides a thread pool that ServiceMix container and components will use. If none is provided, a default implementation will be used. </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> transactionManager </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://java.sun.com/products/jta/jta-1_0_1B-doc/javax/transaction/TransactionManager.html" title="Visit page outside Confluence" rel="nofollow">TransactionManager<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
+<TD class="confluenceTd"> The transaction manager that ServiceMix container will use.  It will also be given to components via their ComponentContext. </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> MBeanServer </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://java.sun.com/j2se/1.5.0/docs/api/javax/management/MBeanServer.html" title="Visit page outside Confluence" rel="nofollow">MBeanServer<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
+<TD class="confluenceTd"> JMX mbean server to use </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> flow </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/apidocs/org/apache/servicemix/jbi/nmr/flow/Flow.html" title="Visit page outside Confluence" rel="nofollow">Flow<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
+<TD class="confluenceTd"> A single flow to use </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> flows </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/apidocs/org/apache/servicemix/jbi/nmr/flow/Flow.html" title="Visit page outside Confluence" rel="nofollow">Flow<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>[] </TD>
+<TD class="confluenceTd"> An array of flows to use </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> broker </TD>
-<TD class="confluenceTd">&nbsp;</TD>
-<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/apidocs/org/apache/servicemix/jbi/nmr/Broker.html" title="Visit page outside Confluence" rel="nofollow">Broker<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
+<TD class="confluenceTd"> The broker used to dispatch JBI exchanges. </TD>
 </TR>
 </TBODY></TABLE></TD></TR></TABLE>
 <STYLE type="text/css">/*<![CDATA[*/
@@ -320,35 +315,9 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 03, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13935&originalId=13948">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      INS monitorInterval<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13935">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13935&originalId=14025">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13935">edit page</A>)
     </DIV>
 
