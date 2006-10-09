@@ -9,7 +9,7 @@
     <LINK type="text/css" rel="stylesheet" href="resources/site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
-servicemix-bean
+XMPP Integration Testing
     </TITLE>
   <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
   <BODY onload="init()">
@@ -36,7 +36,7 @@ servicemix-bean
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="jbi-components.html" title="JBI Components">JBI Components</A>&nbsp;&gt;&nbsp;<A href="" title="servicemix-bean">servicemix-bean</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="jbi-components.html" title="JBI Components">JBI Components</A>&nbsp;&gt;&nbsp;<A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix-xmpp</A>&nbsp;&gt;&nbsp;<A href="" title="XMPP Integration Testing">XMPP Integration Testing</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -110,21 +110,24 @@ servicemix-bean
           <DIV id="site-page">
 
 <!--          
-            <div class="pagetitle">servicemix- bean</div>
+            <div class="pagetitle">XMPP Integration Testing</div>
 -->
-            <DIV class="wiki-content"><H1><A name="servicemix-bean-ServiceMixBean"></A>ServiceMix Bean</H1>
+            <DIV class="wiki-content"><H2><A name="XMPPIntegrationTesting-XMPPIntegrationTesting"></A>XMPP Integration Testing</H2>
 
-<P>The ServiceMix Bean component provides integration with beans (POJOs) with the JBI bus to make it easy to use POJOs to process JBI message exchanges.</P>
+<P>To run the integration tests of ServiceMix XMPP you will need to do the following</P>
 
-<H2><A name="servicemix-bean-URI"></A>URI </H2>
+<UL>
+	<LI>install <SPAN class="nobr"><A href="http://www.jivesoftware.org/wildfire/" title="Visit page outside Confluence" rel="nofollow">Wildfire<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI>create the following users, with the passwords the same as the user names
+	<UL>
+		<LI>servicemix-user</LI>
+		<LI>test-user</LI>
+	</UL>
+	</LI>
+</UL>
 
-<P>You can use a handy URI to refer to beans using the Spring names of beans.</P>
 
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">bean:someName</PRE>
-</DIV></DIV>
-
-<P>The above would refer to the bean named <EM>someName</EM> in the Spring ApplicationContext which is used to boot up the bean component.</P></DIV>
+<P>You should now be able to run the unit tests</P></DIV>
           
                   </DIV>
         </TD>
@@ -135,9 +138,8 @@ servicemix-bean
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on Oct 10, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=14030&originalId=14036">view change</A>)
-              
-      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=14030">edit page</A>)
+                  
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=14040">edit page</A>)
     </DIV>
 
   </BODY>
