@@ -145,7 +145,20 @@ Working with Service Units
 </DIV></DIV>
 <P>Once you have configured these steps you can run <EM>mvn install</EM> and you should find that both a jar and zip version of the service unit are created,  this is to allow you to reference the SU as a dependency on the Service Assembly.</P>
 
-<P><EM>Remember that a Service Unit is pretty useless outside a</EM> <EM><A href="working-with-service-assemblies.html" title="Working with Service Assemblies"><EM>Service Assembly</EM></A></EM></P></DIV>
+<P><EM>Remember that a Service Unit is pretty useless outside a</EM> <EM><A href="working-with-service-assemblies.html" title="Working with Service Assemblies"><EM>Service Assembly</EM></A></EM></P>
+
+<P>The maven plugin will generate the ServiceUnit jbi descritor if the component contains a ServiceUnitAnalyzer.  In some cases, the ServiceUnitAnalyzer may fail to create the needed informations and generate an exception (if the service unit requires some runtime dependencies, such as JNDI objects for example).  When such a problem happen, you can disable the <TT>jbi.xml</TT> generation by using the following configuration:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;plugin&gt;
+  &lt;groupId&gt;org.apache.servicemix.tooling&lt;/groupId&gt;
+  &lt;artifactId&gt;jbi-maven-plugin&lt;/artifactId&gt;
+  &lt;version&gt;1.0-incubating-SNAPSHOT&lt;/version&gt;
+  &lt;extensions&gt;<SPAN class="code-keyword">true</SPAN>&lt;/extensions&gt;
+  &lt;configuration&gt;
+    &lt;useServiceUnitAnalyzer&gt;<SPAN class="code-keyword">false</SPAN>&lt;/useServiceUnitAnalyzer&gt;
+  &lt;/configuration&gt;
+&lt;/plugin&gt;</PRE>
+</DIV></DIV></DIV>
           
                   </DIV>
         </TD>
@@ -155,8 +168,8 @@ Working with Service Units
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on Jul 04, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=8919&originalId=8958">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 16, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=8919&originalId=14118">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=8919">edit page</A>)
     </DIV>
