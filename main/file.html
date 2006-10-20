@@ -112,8 +112,7 @@ File
 <!--          
             <div class="pagetitle">File</div>
 -->
-            <DIV class="wiki-content">
-<P>These components write messages to files in a directory or poll files or directories (possibly recursively) to send files into the JBI.</P>
+            <DIV class="wiki-content"><P>These components write messages to files in a directory or poll files or directories (possibly recursively) to send files into the JBI.</P>
 
 <P>Firstly here is the poller which will poll a file or directory (recursively by default) to find files, which are then sent into the JBI bus</P>
 <DIV class="code"><DIV class="codeContent">
@@ -150,7 +149,21 @@ File
 </DIV></DIV>
 <P>&nbsp;</P>
 
-<P>You can if you prefer let the operating system generate temporary file names in the directory specifying an optional prefix and suffix.</P></DIV>
+<P>You can if you prefer let the operating system generate temporary file names in the directory specifying an optional prefix and suffix.</P>
+
+<H3><A name="File-Filteringinboundfiles"></A>Filtering inbound files</H3>
+
+<P>You cna configure a <TT>java.io.FileFilter</TT> to only accept certain files when polling.<BR>
+This can be done by configuring the <TT>filter</TT> property on the poller:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;o.a.s.components.file.FilePoller&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;filter&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean ... /&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+<SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>The <SPAN class="nobr"><A href="http://jakarta.apache.org/oro/" title="Visit page outside Confluence" rel="nofollow">Jakarta ORO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> project contains <SPAN class="nobr"><A href="http://jakarta.apache.org/oro/api/org/apache/oro/io/RegexFilenameFilter.html" title="Visit page outside Confluence" rel="nofollow">RegExp based filters<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>, but you can also define your own filters by implementing <TT>java.io.FileFilter</TT>.</P></DIV>
           
                   </DIV>
         </TD>
@@ -160,8 +173,8 @@ File
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2098&originalId=5184">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 21, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2098&originalId=14365">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2098">edit page</A>)
     </DIV>
