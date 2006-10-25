@@ -102,6 +102,7 @@ Scheduling
 	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
 	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
 	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
 </UL>
 
           </DIV>
@@ -115,10 +116,11 @@ Scheduling
             <DIV class="wiki-content">
 <P>We implement scheduling currently using the Quartz library</P>
 
-
-<P>We have a QuartzComponent which integrates with the <SPAN class="nobr"><A href="http://www.opensymphony.com/quartz/" title="Visit page outside Confluence" rel="nofollow">Quartz<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> open source scheduler library. This allows you to trigger service invocations at timed intervals to perform periodic tasks.</P>
-
-<P>Here&apos;s an example of configuring a quartz component. You can add as many triggers as you wish to the component, at different timing intervals.</P>
+<P>The QuartzComponent integrates with the <SPAN class="nobr"><A href="http://www.opensymphony.com/quartz/" title="Visit page outside Confluence" rel="nofollow">Quartz<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> open source scheduler library. This allows to trigger service invocations at timed intervals to perform periodic tasks.
+<BR clear="all">
+<BR clear="all">
+<BR clear="all">
+Here&apos;s an example of configuring a quartz component. You can add as many triggers as you wish to the component, at different timing intervals.</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;timer&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:timer&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;my:receiver&quot;</SPAN>&gt;</SPAN>
   <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.quartz.QuartzComponent&quot;</SPAN>&gt;</SPAN>
@@ -141,7 +143,41 @@ Scheduling
   <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
 <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
 </DIV></DIV>
-<P>&nbsp;</P></DIV>
+<P><B>Notes:</B></P>
+<UL>
+	<LI>The <SPAN class="nobr"><A href="http://www.opensymphony.com/quartz/api/org/quartz/SimpleTrigger.html" title="Visit page outside Confluence" rel="nofollow">SimpleTrigger<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> repeatCount value count is starting at zero, meaning repeatCount=0 triggers once, <B>repeatCount=1 triggers twice</B> etc. (Quartz v1.5)</LI>
+	<LI>Maybe properties like description or durability are interesting for you - for further details refer to the Quartz project <SPAN class="nobr"><A href="http://www.opensymphony.com/quartz/api/org/quartz/JobDetail.html" title="Visit page outside Confluence" rel="nofollow">JobDetail<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> JavaDoc API.</LI>
+</UL>
+
+
+<P><BR clear="all">
+<BR clear="all">
+A number of properties can be configured on the component:</P>
+<UL>
+	<LI><TT><B>marshaler</B></TT>: a class implementing the <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-components/apidocs/org/apache/servicemix/components/quartz/QuartzMarshaler.html" title="Visit page outside Confluence" rel="nofollow">QuartzMarshaler<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> interface which populates the JBI exchange.  The <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-components/apidocs/org/apache/servicemix/components/quartz/DefaultQuartzMarshaler.html" title="Visit page outside Confluence" rel="nofollow">default<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> one will create something like:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;timer&gt;</SPAN>
+  <SPAN class="code-tag">&lt;name&gt;</SPAN>My Example Job<SPAN class="code-tag">&lt;/name&gt;</SPAN>
+  <SPAN class="code-tag">&lt;group&gt;</SPAN>ServiceMix<SPAN class="code-tag">&lt;/group&gt;</SPAN>
+  <SPAN class="code-tag">&lt;fullname&gt;</SPAN>ServiceMix.My Example Job<SPAN class="code-tag">&lt;/fullname&gt;</SPAN>
+  <SPAN class="code-tag">&lt;description/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;fireTime&gt;</SPAN>Thu Oct 05 10:54:32 CEST 2006<SPAN class="code-tag">&lt;/fireTime&gt;</SPAN>
+<SPAN class="code-tag">&lt;/timer&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>To get some hints on how to set up a marshaler, you may do such a <SPAN class="nobr"><A href="http://google.com/codesearch?q=marshaler%20file:.xml%20package:http:%2F%2Fsvn.apache.org%2Frepos%2Fasf%2Fincubator%2Fservicemix%2Ftrunk&btnG=Search&hl=en&lr" title="Visit page outside Confluence" rel="nofollow">Google Code search<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> revealing how other marshalers are set up in static configuration files (like <EM>servicemix.xml</EM>). You will figure out that you have to create a silbing of &lt;property name=&quot;triggers&quot;&gt; containing this code:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;marshaler&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.quartz.DefaultQuartzMarshaler&quot;</SPAN> /&gt;</SPAN>
+<SPAN class="code-tag">&lt;/property&gt;</SPAN></PRE>
+</DIV></DIV></LI>
+	<LI><TT><B>scheduler</B></TT> the <SPAN class="nobr"><A href="http://www.opensymphony.com/quartz/api/org/quartz/Scheduler.html" title="Visit page outside Confluence" rel="nofollow">Quartz scheduler<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to use. If not specified, the <TT>factory</TT> will be used to create it.</LI>
+</UL>
+
+
+<UL>
+	<LI><TT><B>factory</B></TT> the <SPAN class="nobr"><A href="http://www.opensymphony.com/quartz/api/org/quartz/SchedulerFactory.html" title="Visit page outside Confluence" rel="nofollow">Quartz factory<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to use to create the scheduler.  If not specified, a <SPAN class="nobr"><A href="http://www.opensymphony.com/quartz/api/org/quartz/impl/StdSchedulerFactory.html" title="Visit page outside Confluence" rel="nofollow">default factory<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> will be created.</LI>
+</UL>
+</DIV>
           
                   </DIV>
         </TD>
