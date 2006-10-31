@@ -138,7 +138,36 @@ Classloaders
 
 <H2><A name="Classloaders-Selffirstdelegation."></A>Self-first delegation.</H2>
 
-<P>The common delegation mechanism for classloaders is to delegate to the parent first when loading a class.  Thus, all classes defined in the container classloader are shared.  But when a class reference another class (using an import statement in the java code for example), the referenced classes will be loaded by the same classloader. To avoid such problems, you can use a self-first delegation: classes will be loaded from the classloader, and if not found, it will ask its parent.</P></DIV>
+<P>The common delegation mechanism for classloaders is to delegate to the parent first when loading a class.  Thus, all classes defined in the container classloader are shared.  But when a class reference another class (using an import statement in the java code for example), the referenced classes will be loaded by the same classloader. To avoid such problems, you can use a self-first delegation: classes will be loaded from the classloader, and if not found, it will ask its parent.</P>
+
+<H2><A name="Classloaders-SUClassloaders"></A>SU Classloaders</H2>
+
+<P>XBean based service unit can define their own classloader.  This can be done by adding the following tag in the main xbean configuration file for the SU (<TT>xbean.xml</TT> or <TT>servicemix.xml</TT> for the <TT>servicemix-lwcontainer</TT> component):</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;classpath [inverse=<SPAN class="code-quote">&quot;true&quot;</SPAN>]&gt;</SPAN>
+  [<SPAN class="code-tag">&lt;nonOverrideable&gt;</SPAN>xxx<SPAN class="code-tag">&lt;/nonOverridable&gt;</SPAN>]*
+  [<SPAN class="code-tag">&lt;hidden&gt;</SPAN>xxx<SPAN class="code-tag">&lt;/hidden&gt;</SPAN>]*
+  [<SPAN class="code-tag">&lt;location&gt;</SPAN>xxx<SPAN class="code-tag">&lt;/location&gt;</SPAN>]*
+<SPAN class="code-tag">&lt;/classpath&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>The <TT>inverse</TT> attribute can be set to <TT>true</TT> to use self-first delegation mode.</P>
+
+<P>The <TT>nonOverridable</TT> tag can be used to specify that classes with a name starting by the specified string can not be overriden by this classloader (the classloader will always use the parent classes).</P>
+
+<P>The <TT>hidden</TT> tag is used to hide specific classes (whose name start with the specified string) defined by the parent classloader.</P>
+
+<P>The <TT>location</TT> tag can be used to add jars or directories relative to the SU root to the classloader.</P>
+
+<P>Starting from ServiceMix 3.1, if no classpath is defined, or if no locations are specified, the default ones will be automatically added in the SU classloader:</P>
+<UL>
+	<LI><TT>/</TT></LI>
+	<LI><TT>lib/*.jar</TT></LI>
+	<LI><TT>lib/*.zip</TT></LI>
+</UL>
+
+
+<P>For ServiceMix 3.0.x versions, you need to define the classpath manually, as the default does not include any locations.</P></DIV>
           
                   </DIV>
         </TD>
@@ -148,8 +177,8 @@ Classloaders
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 28, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13870&originalId=13872">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 03, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13870&originalId=14555">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13870">edit page</A>)
     </DIV>
