@@ -113,13 +113,13 @@ Geronimo 1.1 and ServiceMix 3.x
 <!--          
             <div class="pagetitle">Geronimo 1.1 and ServiceMix 3.x</div>
 -->
-            <DIV class="wiki-content"><TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Pre-build plugin for Geronimo 1.1</B><BR>
-<P>Pre-built plugins are available at htt://servicemix.org/geronimo/.<BR>
-You first need to add this repository to the <TT>/var/config/config.xml</TT> Geronimo configuration file:</P>
+            <DIV class="wiki-content"><TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Pre-build plugins for Geronimo 1.1</B><BR>
+<P>Pre-built plugins are available in servicemix standard repository.<BR>
+First, shutdown Geronimo and edit the <TT>/var/config/config.xml</TT> Geronimo configuration file with the following snippet:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;gbean name=<SPAN class="code-quote">&quot;DownloadedPluginRepos&quot;</SPAN>&gt;</SPAN>
 <SPAN class="code-tag">&lt;attribute name=<SPAN class="code-quote">&quot;repositoryList&quot;</SPAN>&gt;</SPAN>http://people.apache.org/~ammulder/plugin-repository-list-1.1.txt<SPAN class="code-tag">&lt;/attribute&gt;</SPAN>
-<SPAN class="code-tag">&lt;attribute name=<SPAN class="code-quote">&quot;userRepositories&quot;</SPAN>&gt;</SPAN>[http://servicemix.org/geronimo/]<SPAN class="code-tag">&lt;/attribute&gt;</SPAN>
+<SPAN class="code-tag">&lt;attribute name=<SPAN class="code-quote">&quot;userRepositories&quot;</SPAN>&gt;</SPAN>[http://people.apache.org/repo/m2-incubating-repository/org/apache/servicemix/geronimo/]<SPAN class="code-tag">&lt;/attribute&gt;</SPAN>
 <SPAN class="code-tag">&lt;attribute name=<SPAN class="code-quote">&quot;downloadRepositories&quot;</SPAN>&gt;</SPAN>[http://www.geronimoplugins.com/repository/geronimo-1.1/]<SPAN class="code-tag">&lt;/attribute&gt;</SPAN>
 <SPAN class="code-tag">&lt;/gbean&gt;</SPAN></PRE>
 </DIV></DIV>
@@ -290,8 +290,8 @@ SET JAVA_HOME=c:\apps\tools\jdk1.5.0</PRE>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=flashard">Michael Lee</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 18, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=14066&originalId=14251">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 06, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=14066&originalId=14576">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=14066">edit page</A>)
     </DIV>
