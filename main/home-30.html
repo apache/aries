@@ -79,7 +79,7 @@ Home-3.0
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="../SM30UG/users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
 	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
 	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
@@ -147,7 +147,7 @@ Home-3.0
 
 <H4><A name="Home-3.0-JBIComponents"></A>JBI Components</H4>
 
-<P>ServiceMix includes many JBI components including BPEL, Drools, WSIF, and many <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=Components%20list&linkCreation=true&fromPageId=1942" title="Create Page: Components list" class="createlink">more ...<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+<P>ServiceMix includes many JBI components including BPEL, Drools, WSIF, and many <A href="components.html" title="Components">more ...</A></P>
 
 <H2><A name="Home-3.0-News"></A>News</H2>
 
@@ -156,6 +156,74 @@ Home-3.0
 <P><BR clear="all">
 <BR clear="all"></P>
     
+                    <DIV class="blogSurtitle">
+                <IMG src="http://goopen.org/confluence/images/icons/blogentry_16.gif" height="16" width="16" border="0" align="absmiddle">
+                <A class="blogDate" href="http://goopen.org/confluence/pages/viewblogposts.action?key=SM&postingDate=2005%2F7%2F25&period=5">Monday, July 25, 2005</A>
+            </DIV>
+        
+
+<DIV class="blogpost" style="margin-bottom: 30px">
+    <DIV class="blogHeading"><A href="2005/07/25/servicemix-10-m1-released-the-first-open-source-esb-based-on-jbi-is-now-available.html">ServiceMix 1.0-M1 Released. The first open source ESB based on JBI is now available</A></DIV>
+
+    <DIV class="pagesubheading">
+                    </DIV>
+        <DIV class="wiki-content">
+         
+<P>We are pleased to announce the 1.0-M1 release of ServiceMix!</P>
+
+<P><SPAN class="nobr"><A href="http://servicemix.org/Download" title="Visit page outside Confluence" rel="nofollow">http://servicemix.org/Download<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<P>ServiceMix is an open source ESB designed from the ground up on JBI (JSR 208) principles, semantics and APIs. ServiceMix includes a complete JBI container including the Normalised Message Service and Router, the <SPAN class="nobr"><A href="http://servicemix.org/Management" title="Visit page outside Confluence" rel="nofollow">JBI Management MBeans<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> support for JBI deployment units and <SPAN class="nobr"><A href="http://servicemix.org/Ant%20Tasks" title="Visit page outside Confluence" rel="nofollow">Ant tasks<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to install components and manage the container.</P>
+
+<P>In addition ServiceMix contains a suite of JBI components</P>
+
+<P>SOAP Bindings:</P>
+<UL>
+	<LI>SAAJ &amp; Apache Axis, WSIF, ActiveSOAP and XFire</LI>
+</UL>
+
+
+<P>Transport components:</P>
+<UL>
+	<LI>JMS, HTTP, email, FTP, Jabber, Mule</LI>
+</UL>
+
+
+<P>JBI services:</P>
+<UL>
+	<LI>caching via JCache</LI>
+	<LI>transformation via XSLT</LI>
+	<LI>timing &amp; scheduler services using JCA and Quartz,</LI>
+	<LI>validation through XSD/RelaxNG</LI>
+	<LI>scripting via JSR 223 and Groovy</LI>
+	<LI>WS-BPEL support via PXE (<SPAN class="nobr"><A href="http://pxe.fivesight.com/" title="Visit page outside Confluence" rel="nofollow">http://pxe.fivesight.com<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>)</LI>
+</UL>
+
+
+<P>For more detail see the <A href="components.html" title="Components">Components</A>.</P>
+
+<P>ServiceMix has support for straight through processing, SEDA based process flows or fully clustered <SPAN class="nobr"><A href="http://servicemix.org/NMR%20Flows" title="Visit page outside Confluence" rel="nofollow">process flows<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+
+<P>ServiceMix includes a <SPAN class="nobr"><A href="http://servicemix.org/JCA" title="Visit page outside Confluence" rel="nofollow">fully integrated JCA container<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for high performance inbound message consumption (e.g. via JMS) with connection &amp; thread pooling, transaction management, exception and retry handling and support for highly concurrent processing.</P>
+
+<P>ServiceMix is completely integrated into Apache Geronimo, which allows you to deploy JBI components and services directly into Geronimo and ServiceMix will be JBI certified as part of the Geronimo project.</P>
+
+<P>We welcome <SPAN class="nobr"><A href="http://servicemix.org/Contributing" title="Visit page outside Confluence" rel="nofollow">contributions<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>, please do come and join our <SPAN class="nobr"><A href="http://servicemix.org/Team" title="Visit page outside Confluence" rel="nofollow">team<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+
+<P>For more information see the <SPAN class="nobr"><A href="http://servicemix.org/Getting%20Started" title="Visit page outside Confluence" rel="nofollow">getting started guide<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+
+<P>Enjoy!</P>
+        </DIV>
+            <DIV class="endsection">
+        <B>Posted at 25 Jul @ 11:40 AM</B> by
+        <IMG src="http://goopen.org/confluence/images/icons/user_16.gif" height="16" width="16" border="0" align="absmiddle" title="User Profile: James Strachan">
+            <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>        |
+        <IMG src="http://goopen.org/confluence/images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle">
+                    <A href="2005/07/25/servicemix-10-m1-released-the-first-open-source-esb-based-on-jbi-is-now-available.html#comments">0 comments</A>
+        
+
+    </DIV>
+</DIV>    
                     <DIV class="blogSurtitle">
                 <IMG src="http://goopen.org/confluence/images/icons/blogentry_16.gif" height="16" width="16" border="0" align="absmiddle">
                 <A class="blogDate" href="http://goopen.org/confluence/pages/viewblogposts.action?key=SM&postingDate=2006%2F10%2F27&period=5">Friday, October 27, 2006</A>
@@ -256,41 +324,6 @@ There are lots of changes since last milestone.  Go to <A href="servicemix-30.ht
         
 
     </DIV>
-</DIV>    
-                    <DIV class="blogSurtitle">
-                <IMG src="http://goopen.org/confluence/images/icons/blogentry_16.gif" height="16" width="16" border="0" align="absmiddle">
-                <A class="blogDate" href="http://goopen.org/confluence/pages/viewblogposts.action?key=SM&postingDate=2006%2F7%2F5&period=5">Wednesday, July 5, 2006</A>
-            </DIV>
-        
-
-<DIV class="blogpost" style="margin-bottom: 30px">
-    <DIV class="blogHeading"><A href="2006/07/05/updated-maven-jbi-plugin.html">Updated Maven JBI Plugin</A></DIV>
-
-    <DIV class="pagesubheading">
-                    </DIV>
-        <DIV class="wiki-content">
-         <P>Check out the updated Maven JBI plugin - offering new features such as :</P>
-<UL>
-	<LI>Creating and installing shared-libraries</LI>
-	<LI>Creating and installing components (BC/SE)</LI>
-	<LI>Creating and packaging service units</LI>
-	<LI>Creating, packaging and deploying service assemblies</LI>
-	<LI>Automatically deploying a project (and its dependencies to a running Servicemix instance)</LI>
-	<LI>Starting a ServiceMix instance under Maven and then deploying a project (with its dependencies) - great for testing&#33;</LI>
-</UL>
-
-
-<P>For more information <A href="maven-jbi-plugin.html" title="Maven JBI plugin">check out the updated documentation</A>. </P>
-        </DIV>
-            <DIV class="endsection">
-        <B>Posted at 05 Jul @ 11:40 AM</B> by
-        <IMG src="http://goopen.org/confluence/images/icons/user_16.gif" height="16" width="16" border="0" align="absmiddle" title="User Profile: Philip Dodds">
-            <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A>        |
-        <IMG src="http://goopen.org/confluence/images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle">
-                    <A href="2006/07/05/updated-maven-jbi-plugin.html#comments">0 comments</A>
-        
-
-    </DIV>
 </DIV>    </DIV>
           
                   </DIV>
@@ -301,8 +334,8 @@ There are lots of changes since last milestone.  Go to <A href="servicemix-30.ht
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=lmalgeri">Lisa Malgeri</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1942&originalId=14675">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=flashard">Michael Lee</A> on Oct 12, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1942&originalId=14062">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1942">edit page</A>)
     </DIV>

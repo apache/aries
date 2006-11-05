@@ -79,7 +79,7 @@ servicemix-jsr181
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="../SM30UG/users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
 	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
 	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
@@ -192,22 +192,9 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <H2><A name="servicemix-jsr181-Endpoint"></A>Endpoint</H2>
 
 <P>A few examples:</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;jsr181:endpoint endpoint=<SPAN class="code-quote">&quot;endpoint1&quot;</SPAN>
-                 typeMapping=<SPAN class="code-quote">&quot;xmlbeans&quot;</SPAN>&gt;
-  <SPAN class="code-tag">&lt;jsr181:pojo&gt;</SPAN>
-    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;test.EchoService&quot;</SPAN> /&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/jsr181:pojo&gt;</SPAN>
-<SPAN class="code-tag">&lt;/jsr181:endpoint&gt;</SPAN></PRE>
-</DIV></DIV>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;myPojo&quot;</SPAN> class=<SPAN class="code-quote">&quot;test.EchoService&quot;</SPAN> /&gt;</SPAN>
-<SPAN class="code-tag">&lt;jsr181:endpoint pojo=<SPAN class="code-quote">&quot;#myPojo&quot;</SPAN> /&gt;</SPAN></PRE>
-</DIV></DIV>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;jsr181:endpoint pojoClass=<SPAN class="code-quote">&quot;test.EchoService2&quot;</SPAN>
-                 annotations=<SPAN class="code-quote">&quot;none&quot;</SPAN> /&gt;</PRE>
-</DIV></DIV>
+
+
+
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Endpoint attributes</B><BR>
 <TABLE class="confluenceTable"><TBODY>
 <TR>
@@ -324,19 +311,7 @@ The spring BeanFactory has a parent factory which contains a bean named &quot;co
 
 <P>The servicemix-jsr181 component can also be configured in a spring/xbean configuration file, for use in an embedded ServiceMix.<BR>
 Here is an example of such a configuration:</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec&gt;</SPAN>
-	<SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
-      <SPAN class="code-tag">&lt;jsr181:component&gt;</SPAN>
-      	<SPAN class="code-tag">&lt;jsr181:endpoints&gt;</SPAN>
-      		&lt;jsr181:endpoint pojoClass=<SPAN class="code-quote">&quot;test.EchoService2&quot;</SPAN>
-                               serviceInterface=<SPAN class="code-quote">&quot;test.Echo&quot;</SPAN>
-   					 annotations=<SPAN class="code-quote">&quot;none&quot;</SPAN> /&gt;
-      	<SPAN class="code-tag">&lt;/jsr181:endpoints&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/jsr181:component&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Classpath issues when embedding servicemix-jsr181 component</B><BR>
 <P>When using the servicemix.xml configuration file to create jsr181 endpoints, you must include the servicemix-jsr181-xxx.jar in your classpath.<BR>
 You will find this file inside the component installer (./components/servicemix-jsr181-xxx.zip).<BR>
@@ -349,26 +324,11 @@ or aanother exception with</P></TD></TR></TABLE>
 <P>You can create java proxies for JBI endpoints, provided that they expose a WSDL.</P>
 
 <P>The basic configuration is the following:</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;jsr181:proxy id=<SPAN class="code-quote">&quot;proxy&quot;</SPAN>
-              container=<SPAN class="code-quote">&quot;#jbi&quot;</SPAN> 
-              interfaceName=<SPAN class="code-quote">&quot;test:EchoPortType&quot;</SPAN>
-              type=<SPAN class="code-quote">&quot;test.Echo&quot;</SPAN> /&gt;</PRE>
-</DIV></DIV>
+
 <P>You can use it from one of you client bean, or from inside another component, and call the JBI endpoint as a plain Java object.</P>
 
 <P>From a jsr181 Service Unit, it could be used as following:</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;jsr181:endpoint serviceInterface=<SPAN class="code-quote">&quot;test.Echo&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;jsr181:pojo&gt;</SPAN>
-    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;test.EchoProxy&quot;</SPAN>&gt;</SPAN>
-      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;echo&quot;</SPAN>&gt;</SPAN>
-        <SPAN class="code-tag">&lt;jsr181:proxy service=<SPAN class="code-quote">&quot;test:EchoService&quot;</SPAN> context=<SPAN class="code-quote">&quot;#context&quot;</SPAN> type=<SPAN class="code-quote">&quot;test.Echo&quot;</SPAN> /&gt;</SPAN>
-      <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/jsr181:pojo&gt;</SPAN>
-<SPAN class="code-tag">&lt;/jsr181:endpoint&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 
 <DIV class="code"><DIV class="codeContent">
