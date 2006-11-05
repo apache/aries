@@ -36,7 +36,7 @@ VFS
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="VFS">VFS</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="VFS">VFS</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -113,17 +113,40 @@ VFS
 <!--          
             <div class="pagetitle">VFS</div>
 -->
-            <DIV class="wiki-content">
-<P>This component uses the <SPAN class="nobr"><A href="http://jakarta.apache.org/commons/vfs.html" title="Visit page outside Confluence" rel="nofollow">Jakarta Commons Net<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> library which provides access to file systems, jars/zips/bzip2, temporary files, WebDAV, Samba (CIFS), HTTP, HTTPS, FTP and SFTP among others.</P>
+            <DIV class="wiki-content"><P>This component uses the <SPAN class="nobr"><A href="http://jakarta.apache.org/commons/vfs.html" title="Visit page outside Confluence" rel="nofollow">Jakarta Commons Net<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> library which provides access to file systems, jars/zips/bzip2, temporary files, WebDAV, Samba (CIFS), HTTP, HTTPS, FTP and SFTP among others.</P>
 
 <P>It works similarly to the <A href="ftp.html" title="FTP">FTP</A> component where it will write files to a directory (on the virtual file system in this case) and poll for files in a file system.</P>
 
 <P>Here is an example of the component configured. First the poller as its much simpler</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;filePoller&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:filePoller&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean  class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.vfs.FilePoller&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;workManager&quot;</SPAN> ref=<SPAN class="code-quote">&quot;workManager&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;path&quot;</SPAN> value=<SPAN class="code-quote">&quot;file:/tmp/servicemix/vfs/test&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;period&quot;</SPAN> value=<SPAN class="code-quote">&quot;1000&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>Then here&apos;s the sender. We&apos;re using a FileMarshaler here to turn JBI messages into files with an expression using XPath from the message content to generate the file name in the directory.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;fileSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:fileSender&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.vfs.FileWriter&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;path&quot;</SPAN> value=<SPAN class="code-quote">&quot;file:/tmp/servicemix/vfs/test&quot;</SPAN>/&gt;</SPAN>
 
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;marshaler&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.util.DefaultFileMarshaler&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;fileName&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;sample_&apos;, /sample/@id, &apos;.xml&apos;)&quot;</SPAN>/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P></DIV>
           
                   </DIV>
@@ -134,8 +157,8 @@ VFS
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2060&originalId=5197">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2060&originalId=14810">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2060">edit page</A>)
     </DIV>

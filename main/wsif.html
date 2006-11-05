@@ -36,7 +36,7 @@ WSIF
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="WSIF">WSIF</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="WSIF">WSIF</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -191,7 +191,19 @@ If you want to invoke EJBs, use <A href="servicemix-jsr181.html" title="servicem
 <P>The following snippet is from the <TT>servicemix.xml</TT> file. Note: that the WSIFBinding class has the <TT>service.wsdl</TT> file as a property.</P>
 
 <P>Following is an example of how to enable a service to be exposed over a JMS topic or queue. This is a snippet of code from the <TT>service.wsdl</TT> file. It shows how to configure the JMS binding:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;service name=&apos;CheckServiceAvailability&apos;&gt;</SPAN>
+  <SPAN class="code-tag">&lt;port name=&apos;CheckAvailabilityPort&apos;  binding=&apos;tns:CheckAvailabilityJMSBinding&apos;&gt;</SPAN>
 
+    <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- ActiveMQ configuration --&gt;</SPAN></SPAN>
+    &lt;jms:address destinationStyle=<SPAN class="code-quote">&quot;queue&quot;</SPAN>
+      jndiDestinationName=<SPAN class="code-quote">&quot;dynamicQueues/test.org.servicemix.example.wsif&quot;</SPAN>
+      jndiConnectionFactoryName=<SPAN class="code-quote">&quot;ConnectionFactory&quot;</SPAN>
+      initialContextFactory=<SPAN class="code-quote">&quot;org.activemq.jndi.ActiveMQInitialContextFactory&quot;</SPAN>
+      jndiProviderURL=<SPAN class="code-quote">&quot;tcp://localhost:61626&quot;</SPAN>/&gt;
+  <SPAN class="code-tag">&lt;/port&gt;</SPAN>
+<SPAN class="code-tag">&lt;/service&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>Here are descriptions of the properties found in the <TT>service.wsdl</TT> file. The descriptions are quoted from the <SPAN class="nobr"><A href="http://cvs.apache.org/viewcvs/~checkout~/ws-wsif/java/doc/wsdl_extensions/jms_bindings.html" title="Visit page outside Confluence" rel="nofollow">WSDL Bindings for JMS<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> web page:</P>
 <UL class="alternate" type="square">
 	<LI>&lt;jms:address&gt; describes a target port that is accessible via JMS.</LI>
@@ -208,9 +220,51 @@ If you want to invoke EJBs, use <A href="servicemix-jsr181.html" title="servicem
 <P>The JBI standard requires encoding WSDL 1.1 parts using an XML encoding mechanism. ServiceMix supports this requirement. However, in addition ServicMix also allows the message properties, of an NMR message, to use the named parts of the <TT>service.wsdl</TT> file, to avoid unnecessary XML marshalling.</P>
 
 <P>A Java client can be programmed as an alternative way of invoking the web service, in lieu of a web form. The following is a Java client example using the ServiceMix <A href="client-api.html" title="Client API">Client API</A> in a WSIF approach, passing in and fetching out named parameters. This Java client is performing the role originally assigned to the HTTP Client above. It also needs to be configured (not shown) to communicate to the &quot;checkAvailability&quot; service via the ServiceMix NMR. In other words, it needs to have &quot;checkAvailability&quot; set as its &quot;destination&quot; for the NMR messages it sends.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">InOut exchange = client.createInOutExchange();
 
+exchange.getInMessage().setProperty(<SPAN class="code-quote">&quot;zipCode&quot;</SPAN>, <SPAN class="code-quote">&quot;10505&quot;</SPAN>);
+client.sendSync(exchange);
+
+NormalizedMessage out = exchange.getOutMessage();
+<SPAN class="code-object">String</SPAN> result = (<SPAN class="code-object">String</SPAN>) out.getProperty(<SPAN class="code-quote">&quot;result&quot;</SPAN>);
+
+<SPAN class="code-object">System</SPAN>.out.println(<SPAN class="code-quote">&quot;Found value: &quot;</SPAN> + result);</PRE>
+</DIV></DIV>
 <P>The previous Java code works against the given WSDL 1.1 <TT>service.wsdl</TT> file using its named parts:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;message name=&apos;checkAvailabilityRequest&apos;&gt;</SPAN>
+  <SPAN class="code-tag">&lt;part name=&apos;zipCode&apos; type=&apos;xsd:string&apos;/&gt;</SPAN>
+<SPAN class="code-tag">&lt;/message&gt;</SPAN>
 
+<SPAN class="code-tag">&lt;message name=&apos;checkAvailabilityResponse&apos;&gt;</SPAN>
+  <SPAN class="code-tag">&lt;part name=&apos;result&apos; type=&apos;xsd:string&apos;/&gt;</SPAN>
+<SPAN class="code-tag">&lt;/message&gt;</SPAN>
+
+<SPAN class="code-tag">&lt;portType name=&apos;CheckAvailabilityPortType&apos;&gt;</SPAN>
+  <SPAN class="code-tag">&lt;operation name=&apos;checkAvailability&apos;&gt;</SPAN>
+    <SPAN class="code-tag">&lt;input message=&apos;tns:checkAvailabilityRequest&apos;/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;output message=&apos;tns:checkAvailabilityResponse&apos;/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/operation&gt;</SPAN>
+<SPAN class="code-tag">&lt;/portType&gt;</SPAN>
+
+<SPAN class="code-tag">&lt;binding name=&apos;CheckAvailabilityJMSBinding&apos; type=&apos;tns:CheckAvailabilityPortType&apos;&gt;</SPAN>
+  <SPAN class="code-tag">&lt;jms:binding type=<SPAN class="code-quote">&quot;TextMessage&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;format:typeMapping encoding=<SPAN class="code-quote">&quot;XML&quot;</SPAN> style=<SPAN class="code-quote">&quot;Java&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;format:typeMap typeName=<SPAN class="code-quote">&quot;xsd:string&quot;</SPAN> formatType=<SPAN class="code-quote">&quot;java.lang.String&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/format:typeMapping&gt;</SPAN>
+  <SPAN class="code-tag">&lt;operation name=&apos;checkAvailability&apos;&gt;</SPAN>
+    <SPAN class="code-tag">&lt;input&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jms:input parts=<SPAN class="code-quote">&quot;zipCode&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jms:property message=<SPAN class="code-quote">&quot;Request&quot;</SPAN> part=<SPAN class="code-quote">&quot;myInt&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jms:propertyValue name=<SPAN class="code-quote">&quot;myLiteralString&quot;</SPAN> type=<SPAN class="code-quote">&quot;xsd:string&quot;</SPAN> value=<SPAN class="code-quote">&quot;Hello World&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/input&gt;</SPAN>
+    <SPAN class="code-tag">&lt;output&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jms:output parts=<SPAN class="code-quote">&quot;result&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/output&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/operation&gt;</SPAN>
+<SPAN class="code-tag">&lt;/binding&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <H3><A name="WSIF-RelatedDocumentation"></A>Related Documentation</H3>
 
@@ -238,8 +292,8 @@ If you want to invoke EJBs, use <A href="servicemix-jsr181.html" title="servicem
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2115&originalId=9591">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2115&originalId=14812">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2115">edit page</A>)
     </DIV>
