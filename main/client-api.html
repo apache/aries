@@ -79,7 +79,7 @@ Client API
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="../SM30UG/users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
 	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
 	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
@@ -168,41 +168,14 @@ NormalizedMessage outMessage = exchange.getOutMessage();</PRE>
 <P>ServiceMix has integrated support for <A href="uris.html" title="URIs">URIs</A> to simplify the accessing of endpoints within the <A href="nmr.html" title="NMR">NMR</A>. The ServiceMixClient (from 3.0-M3 or later) allows you to work with URIs easily via a Destination interface. This interface acts as a factory of MessageExchange objects which are pre-wired to specific endpoints specified via a URI.</P>
 
 <P>The following shows how to work with InOnly for one way messaging</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">Destination destination = client.createDestination(<SPAN class="code-quote">&quot;service:http:<SPAN class="code-comment">//servicemix.org/cheese/receiver&quot;</SPAN>);
-</SPAN>InOnly exchange = destination.createInOnlyExchange();
 
-NormalizedMessage message = exchange.getInMessage();
-message.setProperty(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="code-quote">&quot;James&quot;</SPAN>);
-message.setContent(<SPAN class="code-keyword">new</SPAN> StreamSource(<SPAN class="code-keyword">new</SPAN> StringReader(<SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>)));
-
-client.send(exchange);</PRE>
-</DIV></DIV>
 <P>Or using InOut for request-response</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">Destination destination = client.createDestination(<SPAN class="code-quote">&quot;service:http:<SPAN class="code-comment">//servicemix.org/cheese/myService&quot;</SPAN>);
-</SPAN>InOut exchange = destination.createInOutExchange();
 
-NormalizedMessage request = exchange.getInMessage();
-request.setProperty(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="code-quote">&quot;James&quot;</SPAN>);
-request.setContent(<SPAN class="code-keyword">new</SPAN> StreamSource(<SPAN class="code-keyword">new</SPAN> StringReader(<SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>)));
-
-client.sendSync(exchange);
-
-NormalizedMessage response = exchange.getOutMessage();</PRE>
-</DIV></DIV>
 
 <H3><A name="ClientAPI-SimpleronewaymessagingwithDestinations"></A>Simpler one-way messaging with Destinations</H3>
 
 <P>For one-way messaging its sometimes simpler to just work with a Message instance (you can always refer to the MessageExchange via the getExchange() method if need be). For example</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">Destination destination = client.createDestination(<SPAN class="code-quote">&quot;service:http:<SPAN class="code-comment">//servicemix.org/cheese/receiver&quot;</SPAN>);
-</SPAN>Message message = destination.createInOnlyMessage();
-message.setProperty(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="code-quote">&quot;James&quot;</SPAN>);
-message.setBody(<SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>);
 
-client.send(message);</PRE>
-</DIV></DIV>
 <P>For more detail see the <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-core/src/test/java/org/apache/servicemix/client/ClientDestinationTest.java" title="Visit page outside Confluence" rel="nofollow">unit test case<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
 <H2><A name="ClientAPI-UsingthePOJOmethods"></A>Using the POJO methods</H2>
@@ -246,22 +219,11 @@ properties.put(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="co
 <P>We use the Spring XML configuration files to configure the client. You can then use dependency injection to inject the client into your POJOs.</P>
 
 <P>Here&apos;s an example of using a basic client...</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;client&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.servicemix.client.DefaultServiceMixClient&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;constructor-arg ref=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> /&gt;</SPAN>
-<SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>Note that the jbi bean reference is the ServiceMix JBI container.</P>
 
 <P>This example creates a client which is hard-wired to default to a specific service when an invocation is performed.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;clientWithRouting&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.servicemix.client.DefaultServiceMixClient&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;constructor-arg ref=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> /&gt;</SPAN>
-  <SPAN class="code-tag">&lt;constructor-arg&gt;</SPAN>
-    <SPAN class="code-tag">&lt;sm:activationSpec destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/constructor-arg&gt;</SPAN>
-<SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 <H3><A name="ClientAPI-IfyouhaveaccesstoaComponentContext"></A>If you have access to a ComponentContext</H3>
 

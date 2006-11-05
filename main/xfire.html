@@ -79,7 +79,7 @@ XFire
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="../SM30UG/users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
 	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
 	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
@@ -148,13 +148,7 @@ Before reviewing the partial example below, it is strongly recommended that you 
   <SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
 </DIV></DIV>
 <P>Then, to expose your service on the JBI bus, register a JBI binding for the service:</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;binding&quot;</SPAN> service=<SPAN class="code-quote">&quot;xfire:Echo&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.xfire.XFireBinding&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;xfire&quot;</SPAN> ref=<SPAN class="code-quote">&quot;xfire&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 
 <H3><A name="XFire-LocationoftheServiceMixXFireComponents"></A>Location of the ServiceMix XFire Components</H3>
 

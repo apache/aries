@@ -209,7 +209,7 @@ JBI components often function as a type of container to which artifacts can be d
 <DIV class="panel" style="border-style: solid; border-color: #ccc; "><DIV class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; background-color: #ffffff; "><B>JBI Architecture</B></DIV><DIV class="panelContent" style="background-color: #ffffff; ">
 <P><DIV align="center"><IMG src="5-jbi.data/jbi_architecture.jpg" border="0"></DIV></P>
 </DIV></DIV></TD></TR></TBODY></TABLE>
-<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+<P><A href="#5.JBI-top" title="top on 5. JBI">top</A></P>
 
 <H2><A name="5.JBI-WSDLmessagingmodel"></A>WSDL messaging model</H2>
 
@@ -290,7 +290,7 @@ JBI components often function as a type of container to which artifacts can be d
 
 <P>Note that normally an endpoint is identified by the combination of its service name and its endpoint name. This combination is referred to as the <B>service endpoint</B>.</P>
 
-<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+<P><A href="#5.JBI-top" title="top on 5. JBI">top</A></P>
 
 <H2><A name="5.JBI-NormalizedMessageRouter"></A>Normalized Message Router</H2>
 
@@ -391,7 +391,7 @@ Endpoints refers to a particular address, accessible by a particular protocol, u
 <P>People may wonder why there is a need for a &quot;done&quot; status...  In JBI, all exchanges are terminated by either a &quot;done&quot; or an &quot;error&quot; status.  Errors are different from faults which are parts of the normal exchange processing. So, the done status is very useful to implement reliable message, transactions or passing streams inside the exchange.<BR>
 Let&apos;s take the example a file binding component, which would poll for files, send the content as an InOnly request, and delete them afterwards.  For performance reasons, it will send an opened stream on the file, but it has to close the stream and delete the file once processed.  If the consumer is asynchronous (which is better because it saves threads), it needs a way to know when the file has to be deleted, hence the need for the &quot;done&quot; status.</P>
 
-<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+<P><A href="#5.JBI-top" title="top on 5. JBI">top</A></P>
 
 <H2><A name="5.JBI-JBIpackaging"></A>JBI packaging</H2>
 
@@ -407,9 +407,9 @@ All these artifacts contain a JBI descriptor in the META-INF directory called jb
 </UL>
 
 
-<P>A service assembly is thus a zip of zips.  It can be compared to an EAR in the J2EE world.  To ease the pain of packaging the JBI artifacts, ServiceMix provides a powerful maven based tooling which can package all the JBI artifacts and generate their JBI descriptors automatically.  To ease the development more, we provide maven archetypes for JBI components and service units: archetypes are templates that can generate a project in one command line (see <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=Notes%20on%20Creating%20JBI%20Component%20using%20maven2" title="Create Page in space SM30UG: Notes on Creating JBI Component using maven2" class="createlink">Notes on Creating JBI Component using maven2<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>).</P>
+<P>A service assembly is thus a zip of zips.  It can be compared to an EAR in the J2EE world.  To ease the pain of packaging the JBI artifacts, ServiceMix provides a powerful maven based tooling which can package all the JBI artifacts and generate their JBI descriptors automatically.  To ease the development more, we provide maven archetypes for JBI components and service units: archetypes are templates that can generate a project in one command line (see <A href="notes-on-creating-jbi-component-using-maven2.html" title="Notes on Creating JBI Component using maven2">Notes on Creating JBI Component using maven2</A>).</P>
 
-<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+<P><A href="#5.JBI-top" title="top on 5. JBI">top</A></P>
 
 <H2><A name="5.JBI-Othermaterials"></A>Other materials</H2>
 
@@ -425,12 +425,12 @@ All these artifacts contain a JBI descriptor in the META-INF directory called jb
 	<LI>JBI gains Industry support <SPAN class="nobr"><A href="http://www.ebizq.net/topics/dev_tools/features/6188.html" title="Visit page outside Confluence" rel="nofollow">EbizQ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><SPAN class="nobr"><A href="http://java.sun.com/integration/" title="Visit page outside Confluence" rel="nofollow">Sun&apos;s JBI site<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><SPAN class="nobr"><A href="http://www.chwlund.com/" title="Visit page outside Confluence" rel="nofollow">Carl-Henrik Wolf Lund<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> created a (Norwegian) <SPAN class="nobr"><A href="http://www.chwlund.com/?p=56" title="Visit page outside Confluence" rel="nofollow">presentation on JBI<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
-	<LI><SPAN class="nobr"><A href="http://azur.typepad.com/bpel/2005/12/sca_jbi_and_mor.html" title="Visit page outside Confluence" rel="nofollow">SCA, JBI and more..<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which echos our <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=How%20does%20ServiceMix%20compare%20to%20Tuscany%20or%20SCA" title="Create Page in space SM30UG: How does ServiceMix compare to Tuscany or SCA" class="createlink">FAQ entry<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://azur.typepad.com/bpel/2005/12/sca_jbi_and_mor.html" title="Visit page outside Confluence" rel="nofollow">SCA, JBI and more..<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which echos our <A href="how-does-servicemix-compare-to-tuscany-or-sca.html" title="How does ServiceMix compare to Tuscany or SCA">FAQ entry</A></LI>
 	<LI><SPAN class="nobr"><A href="http://dx.doi.org/10.1571/PSGP7-14-05CC" title="Visit page outside Confluence" rel="nofollow">Java Business Integration (JBI) Gains Industry Support<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> by Patricia Seybold Group</LI>
 </UL>
 
 
-<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+<P><A href="#5.JBI-top" title="top on 5. JBI">top</A></P>
 <STYLE type="text/css">/*<![CDATA[*/
 table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
 table.ScrollbarTable td.ScrollbarPrevIcon {text-align: center;width: 16px;border: none;}
@@ -450,34 +450,8 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13491&originalId=14627">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      INS link to further reading<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13491">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13491&originalId=14728">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13491">edit page</A>)
     </DIV>
 

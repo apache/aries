@@ -191,20 +191,20 @@ The following directories may be created:</P>
 <DIV class="preformatted"><DIV class="preformattedHeader"><B>ServiceMix working directory</B></DIV><DIV class="preformattedContent">
 <PRE>smx
  |- components
- |   |- [SM30UG:component-name]
+ |   |- [component-name]
  |   |   |- version-n
  |   |   \- workspace
- |   \- [SM30UG:other-component]
+ |   \- [other-component]
  |       \- ...
  |- service-assemblies
- |   |- [SM30UG:sa-name]
+ |   |- [sa-name]
  |   |   \- version-n
- |   \- [SM30UG:other-sa]
+ |   \- [other-sa]
  |       \- ...
  |- sharedlibs
- |   |- [SM30UG:sl-name]
+ |   |- [sl-name]
  |   |   \- version-n
- |   \- [SM30UG:other-sl]
+ |   \- [other-sl]
  |       \- ...
  \- tmp
 </PRE>
@@ -214,7 +214,7 @@ The following directories may be created:</P>
 
 <P>ServiceMix uses XML configuration files. ServiceMix use the <SPAN class="nobr"><A href="http://geronimo.apache.org/xbean" title="Visit page outside Confluence" rel="nofollow">XBean<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> library to do the XML configuration; which allows you to use regular Spring configuration or our custom XSD based XML configuration.</P>
 
-<P>For a reference guide and to see the XSD see the <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=Xml%20Reference" title="Create Page in space SM30UG: Xml Reference" class="createlink">Xml Reference<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+<P>For a reference guide and to see the XSD see the <A href="xml-reference.html" title="Xml Reference">Xml Reference</A>.</P>
 
 <P>The default ServiceMix installation comes with a number of configuration files that can be changed to fit your needs.  These configuration files are all in the /<TT>conf</TT> directory, which is also included in the classpath.</P>
 <UL>
@@ -263,7 +263,7 @@ The following directories may be created:</P>
 <TR>
 <TD class="confluenceTd"> flowName </TD>
 <TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd"> one of <B><EM>seda</EM></B>, <B><EM>st</EM></B>, <B><EM>jms</EM></B> or <B><EM>jca</EM></B> &#45; see <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=NMR%20Flows" title="Create Page in space SM30UG: NMR Flows" class="createlink">NMR Flows<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. The <B>jms</B> and <B>jca</B> flows can also take an optional jmsURL parameter to explicitly reference an <SPAN class="nobr"><A href="http://www.activemq.org/site/configuring-transports.html" title="Visit page outside Confluence" rel="nofollow">activemq transport<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> e.g. flowName=jms?jmsURL=tcp://localhost:61616 <BR clear="all"> </TD>
+<TD class="confluenceTd"> one of <B><EM>seda</EM></B>, <B><EM>st</EM></B>, <B><EM>jms</EM></B> or <B><EM>jca</EM></B> &#45; see <A href="nmr-flows.html" title="NMR Flows">NMR Flows</A>. The <B>jms</B> and <B>jca</B> flows can also take an optional jmsURL parameter to explicitly reference an <SPAN class="nobr"><A href="http://www.activemq.org/site/configuring-transports.html" title="Visit page outside Confluence" rel="nofollow">activemq transport<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> e.g. flowName=jms?jmsURL=tcp://localhost:61616 <BR clear="all"> </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> flowNames </TD>
@@ -534,33 +534,7 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
                   &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13935&originalId=14640">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      typo<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13935">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13935">edit page</A>)
     </DIV>
 
