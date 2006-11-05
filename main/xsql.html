@@ -36,7 +36,7 @@ XSQL
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="XSQL">XSQL</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="XSQL">XSQL</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -113,8 +113,7 @@ XSQL
 <!--          
             <div class="pagetitle">XSQL</div>
 -->
-            <DIV class="wiki-content">
-<P><SPAN class="nobr"><A href="http://www.oracle.com/technology/tech/xml/xdkhome.html" title="Visit page outside Confluence" rel="nofollow">XSQL<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> is Oracle&apos;s tool for turning SQL queries into XML or for taking XML and insert/updating it into a database. This can be a handy tool when you wish to either enrich or expose SQL data to an ESB or extract part of an XML document and persist it into a database.</P>
+            <DIV class="wiki-content"><P><SPAN class="nobr"><A href="http://www.oracle.com/technology/tech/xml/xdkhome.html" title="Visit page outside Confluence" rel="nofollow">XSQL<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> is Oracle&apos;s tool for turning SQL queries into XML or for taking XML and insert/updating it into a database. This can be a handy tool when you wish to either enrich or expose SQL data to an ESB or extract part of an XML document and persist it into a database.</P>
 
 <P>Note that XSQL is quite simple, but useful. If you want something more complex and powerful you might want to look at using a <A href="scripting.html" title="Scripting">scripting</A> language like <A href="groovy.html" title="Groovy">Groovy</A>.</P>
 
@@ -122,7 +121,11 @@ XSQL
 
 <P>Firstly here is an example XSQL document. As you can see its a piece of XML which allows embedded SQL statements inside it.</P>
 
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;xsql:query <SPAN class="code-keyword">xmlns:xsql</SPAN>=&apos;urn:oracle-xsql&apos; connection=&apos;demo&apos; tag-case=&apos;lower&apos; row-element=&apos;cheese&apos; rowset-element=&apos;food&apos;&gt;</SPAN>
+ select * from cheese
+<SPAN class="code-tag">&lt;/xsql:query&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <P>This example page could produce something like...</P>
 
@@ -145,11 +148,18 @@ XSQL
 
 <P>Then we can convert this into a JBI component and apply it in a pipeline as follows...</P>
 
-<P><B>ServiceMix 1.1 Version</B> : </P>
-
-
-<P><B>ServiceMix 2.0+ Version</B> : </P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;xsql&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:xsql&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;xsql&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.servicemix.components.xsql.XSQLComponent&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;xsqlResource&quot;</SPAN> value=<SPAN class="code-quote">&quot;classpath:org/servicemix/components/xsql/example.xsql&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;connectionManagerFactory&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.servicemix.components.xsql.DataSourceXSQLConnectionManagerFactory&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;dataSource&quot;</SPAN> ref=<SPAN class="code-quote">&quot;dataSource&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <P>There are 2 main modes of operation for this component</P>
 
@@ -169,8 +179,8 @@ XSQL
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2013&originalId=5180">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2013&originalId=14815">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2013">edit page</A>)
     </DIV>
