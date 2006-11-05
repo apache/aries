@@ -9,7 +9,7 @@
     <LINK type="text/css" rel="stylesheet" href="resources/site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
-RSS-binding
+RSS Binding
     </TITLE>
   <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
   <BODY onload="init()">
@@ -36,7 +36,7 @@ RSS-binding
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="example-use-cases.html" title="Example & Use Cases">Example &amp; Use Cases</A>&nbsp;&gt;&nbsp;<A href="examples.html" title="Examples">Examples</A>&nbsp;&gt;&nbsp;<A href="" title="RSS-binding">RSS-binding</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="users-guide.html" title="User's Guide">User&apos;s Guide</A>&nbsp;&gt;&nbsp;<A href="4-examples.html" title="4. Examples">4. Examples</A>&nbsp;&gt;&nbsp;<A href="" title="RSS Binding">RSS Binding</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -79,7 +79,7 @@ RSS-binding
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="../SM30UG/users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
 	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
 	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
@@ -111,12 +111,25 @@ RSS-binding
           <DIV id="site-page">
 
 <!--          
-            <div class="pagetitle">RSS- binding</div>
+            <div class="pagetitle">RSS Binding</div>
 -->
-            <DIV class="wiki-content">
-<H3><A name="RSS-binding-OverviewoftheServiceMix2.xRSSBindingExample"></A>Overview of the ServiceMix 2.x <EM>RSS Binding</EM> Example</H3>
+            <DIV class="wiki-content"><STYLE type="text/css">/*<![CDATA[*/
+table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
+table.ScrollbarTable td.ScrollbarPrevIcon {text-align: center;width: 16px;border: none;}
+table.ScrollbarTable td.ScrollbarPrevName {text-align: left;border: none;}
+table.ScrollbarTable td.ScrollbarParent {text-align: center;border: none;}
+table.ScrollbarTable td.ScrollbarNextName {text-align: right;border: none;}
+table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border: none;}
 
-<P>The following procedure describes how to run the <EM>RSS Binding</EM> example in ServiceMix and provides details regarding what the RSS Binding does. For information on the business use case, please refer to: <SPAN class="nobr"><A href="http://www.servicemix.org/Use%20Cases" title="Visit page outside Confluence" rel="nofollow">Use Case for RSS Binding<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.
+/*]]>*/</STYLE><DIV class="Scrollbar"><TABLE class="ScrollbarTable"><TR><TD class="ScrollbarPrevIcon"><A href="loan-broker-bpel.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/back_16.gif" width="16" height="16"></A></TD><TD width="33%" class="ScrollbarPrevName"><A href="loan-broker-bpel.html">Loan Broker BPEL</A>&nbsp;</TD><TD width="33%" class="ScrollbarParent"><SUP><A href="4-examples.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/up_16.gif" width="8" height="8"></A></SUP><A href="4-examples.html">4. Examples</A></TD><TD width="33%" class="ScrollbarNextName">&nbsp;<A href="../SM30UG/vfs-binding.html">VFS Binding</A></TD><TD class="ScrollbarNextIcon"><A href="../SM30UG/vfs-binding.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/forwd_16.gif" width="16" height="16"></A></TD></TR></TABLE></DIV>
+<P><A name="RSSBinding-top"></A></P>
+
+<H1><A name="RSSBinding-RSSBindingexample"></A>RSS Binding example</H1>
+
+
+<H2><A name="RSSBinding-Overview"></A>Overview</H2>
+
+<P>The following procedure describes how to run the <EM>RSS Binding</EM> example in ServiceMix and provides details regarding what the RSS Binding does. For information on the business use case, please refer to the <A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">use case</A> section.
 <BR clear="all">
 <BR clear="all">
 The RSS Binding example illustrates:</P>
@@ -131,44 +144,42 @@ The RSS Binding example illustrates:</P>
 <BR clear="all">
 This example shows how to monitor RSS feeds for changes.  The main component of this example periodically polls a list of  RSS news feeds and when an update is found the new RSS items are displayed on the console.</P>
 
-<H3><A name="RSS-binding-RunningtheRSSBindingExample"></A>Running the <EM>RSS Binding</EM> Example</H3>
+<H2><A name="RSSBinding-RunningtheRSSBindingExample"></A>Running the <EM>RSS Binding</EM> Example</H2>
+
 <P><BR clear="all"></P>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
-<P>On a slow news day, you may have wait a while to see any output! <IMG class="emoticon" src="http://goopen.org/confluence/images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"></P></TD></TR></TABLE>
+<P>On a slow news day, you may have wait a while to see any output&#33; <IMG class="emoticon" src="http://goopen.org/confluence/images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"></P></TD></TR></TABLE>
 <P><BR clear="all"></P>
 <OL>
 	<LI>From a command shell, go to the RSS Binding example directory:
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [servicemix_install_dir]\examples\rss-binding</PRE>
+<PRE class="code-java">cd [SM30UG:servicemix_install_dir]\examples\rss-binding</PRE>
 </DIV></DIV>
 <P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed originally.</P></LI>
 	<LI>Then type:
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">[servicemix_install_dir]\bin\servicemix servicemix.xml</PRE>
+<PRE class="code-java">[SM30UG:servicemix_install_dir]\bin\servicemix servicemix.xml</PRE>
 </DIV></DIV>
-<P><BR clear="all"></P>
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hint</B><BR>
-<P>Add <EM>$SERVICEMIX_HOME/bin</EM> directory to <EM>$PATH</EM> variable to simplify execution of the examples.</P></TD></TR></TABLE>
-<P><BR clear="all"></P></LI>
+<P><BR clear="all">
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hint</B><BR>Add <EM>$SERVICEMIX_HOME/bin</EM> directory to <EM>$PATH</EM> variable to simplify execution of the examples.</TD></TR></TABLE><BR clear="all"></P></LI>
 </OL>
 
 
-<H3><A name="RSS-binding-StoppingtheRSSBindingExample"></A>Stopping the <EM>RSS Binding</EM> Example</H3>
+<H2><A name="RSSBinding-StoppingtheRSSBindingExample"></A>Stopping the <EM>RSS Binding</EM> Example</H2>
+
 <P>To terminate the <EM>RSS Binding</EM> example, type &quot;CTRL-C&quot; in the command shell in which it is running and answer &quot;y&quot; to the &quot;Terminate batch job (y/n)?&quot; question.
 <BR clear="all"></P>
 
-<H3><A name="RSS-binding-HowitWorks"></A>How it Works</H3>
+<H2><A name="RSSBinding-HowitWorks"></A>How it Works</H2>
+
 <P>The diagram below illustrates the flow of messages through the <EM>RSS Binding</EM> components:
 <BR clear="all">
 <BR clear="all"></P>
-
 <DIV class="panel" style="border-style: solid; border-color: #ccc; "><DIV class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><B>RSS Binding Example Message Flow Diagram</B></DIV><DIV class="panelContent">
-<P><IMG src="rss-binding.data/rssflow.jpg" align="absmiddle" border="0"></P>
+<P><DIV align="center"><IMG src="rss-binding.data/rssflow.jpg" border="0"></DIV></P>
 </DIV></DIV>
-
 <P><BR clear="all">
 Messages flow through the components as follows:</P>
-
 <OL>
 	<LI>The <EM>rss</EM> component, which is implemented by RssPollingComponent class, uses customEditorConfigurer bean to parse the Date variable lastPolledDate into the specified format (yyyy/MMM/dd).  lastPolledDate will be used to determine the new items added on the RSS feed.</LI>
 	<LI>The <EM>rss</EM> component periodically polls RSS feeds defined on its <TT>urlStrings</TT> property for changes.  In this case <EM>rss</EM> component monitors  the following RSS feeds: <SPAN class="nobr"><A href="http://rss.cnn.com/rss/cnn_topstories.rss" title="Visit page outside Confluence" rel="nofollow">http://rss.cnn.com/rss/cnn_topstories.rss<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and <SPAN class="nobr"><A href="http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/front_page/rss.xml" title="Visit page outside Confluence" rel="nofollow">http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/front_page/rss.xml<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</LI>
@@ -177,9 +188,7 @@ Messages flow through the components as follows:</P>
 </OL>
 
 
-
-<P>Output from running <TT>[servicemix_install_dir]\bin\servicemix servicemix.xml</TT> looks like the following: </P>
-
+<P>Output from running <TT>[SM30UG:servicemix_install_dir]\bin\servicemix servicemix.xml</TT> looks like the following:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">&lt;item&gt;
 &lt;title&gt;Bush supporters&apos; cars allegedly defaced by war veteran&lt;/title&gt;
@@ -201,35 +210,46 @@ Messages flow through the components as follows:</P>
 &lt;/item&gt;</PRE>
 </DIV></DIV>
 
-<H3><A name="RSS-binding-Details"></A>Details</H3>
+<H2><A name="RSSBinding-Details"></A>Details</H2>
 
 <P>The following table provides more details about the function of each component and bean in the servicemix.xml file:
 <BR clear="all">
 <BR clear="all"></P>
 <TABLE class="confluenceTable"><TBODY>
 <TR>
-<TH class="confluenceTh">Component or Bean ID</TH>
-<TH class="confluenceTh">Description</TH>
+<TH class="confluenceTh"> Component or Bean ID </TH>
+<TH class="confluenceTh"> Description </TH>
 </TR>
 <TR>
-<TD class="confluenceTd"><EM>rss</EM></TD>
-<TD class="confluenceTd">This component polls RSS feeds for changes and is implemented by RssPollingComponent class.  The property urlStrings defines the RSS feeds to be monitored.  When one of the RSS feeds being monitored is updated, this component will convert the content of the RSS feed into a normalized message and send it to a trace component via Normalized Message Router (NMR).</TD>
+<TD class="confluenceTd"> <EM>rss</EM> </TD>
+<TD class="confluenceTd"> This component polls RSS feeds for changes and is implemented by RssPollingComponent class.  The property urlStrings defines the RSS feeds to be monitored.  When one of the RSS feeds being monitored is updated, this component will convert the content of the RSS feed into a normalized message and send it to a trace component via Normalized Message Router (NMR). </TD>
 </TR>
 <TR>
-<TD class="confluenceTd"><EM>trace</EM></TD>
-<TD class="confluenceTd">This component accepts a normalized message and display its content to the console.</TD>
+<TD class="confluenceTd"> <EM>trace</EM> </TD>
+<TD class="confluenceTd"> This component accepts a normalized message and display its content to the console. </TD>
 </TR>
 <TR>
-<TD class="confluenceTd"><EM>customEditorConfigurer</EM></TD>
-<TD class="confluenceTd"> This bean allows convenient registration of custom property editors that can modify application context&apos;s bean definitions. It uses CustomDateEditor, a propertyEditor for java.util.Date to reformat date variable lastPolledDate.</TD>
+<TD class="confluenceTd"> <EM>customEditorConfigurer</EM> </TD>
+<TD class="confluenceTd"> This bean allows convenient registration of custom property editors that can modify application context&apos;s bean definitions. It uses CustomDateEditor, a propertyEditor for java.util.Date to reformat date variable lastPolledDate. </TD>
 </TR>
 </TBODY></TABLE>
 
-<H3><A name="RSS-binding-RelatedDocumentation"></A>Related Documentation</H3>
-<P>For more information on the following topics please see:</P>
+<H2><A name="RSSBinding-Usecase"></A>Use case</H2>
 
+<P>The <EM>RSS binding</EM> example shows how to use the RSS bindings to poll RSS feeds for updates.  RSS is an XML format designed for sharing web content between sites.</P>
+
+<P>A hypothetical business scenario, which uses RSS, is a web site constantly polling RSS feeds for its &quot;What&apos;s New&quot; section.  Whenever <EM>rssPoller</EM> detects a change in one of the RSS feeds, <EM>rssPoller</EM> will send an updated list of URLs to <EM>displayNewSites</EM>. The <EM>displayNewSites</EM> component will then auomatically update the web site&apos;s &quot;What&apos;s New&quot; section accordingly.</P>
+
+<P>The following diagram illustrates this:</P>
+<DIV class="panel" style="border-style: solid; border-color: #ccc; "><DIV class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><B>News Feed Monitoring System</B></DIV><DIV class="panelContent">
+<P><DIV align="center"><IMG src="rss-binding.data/usecase_for_rss.jpg" border="0"></DIV></P>
+</DIV></DIV>
+
+<H2><A name="RSSBinding-RelatedDocumentation"></A>Related Documentation</H2>
+
+<P>For more information on the following topics please see:</P>
 <UL>
-	<LI><A href="glossary.html#Glossary-NMR" title="NMR on Glossary">NMR</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=Glossary" title="Create Page in space SM30UG: Glossary" class="createlink">NMR<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 </UL>
 
 
@@ -240,16 +260,22 @@ Messages flow through the components as follows:</P>
 
 <P>We support working with RSS and Atom via the <SPAN class="nobr"><A href="http://wiki.java.net/bin/view/Javawsxml/Rome" title="Visit page outside Confluence" rel="nofollow">Rome<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> library. We support both the polling of existing RSS feeds to generate JBI messages (the example documented above) and the generation of RSS feeds from JBI messages. To see an example of how to generate RSS feeds from JBI messages go <SPAN class="nobr"><A href="http://docs.codehaus.org/x/3XM" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
 
-<P>For a brief explanation of the XML tags in the  <TT>servicemi.xml</TT> file, please see:</P>
-
+<P>For a brief explanation of the XML tags in the <TT>servicemi.xml</TT> file, please see:</P>
 <UL>
 	<LI><SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" title="Visit page outside Confluence" rel="nofollow">XSD<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 </UL>
 
 
 <P><BR clear="all"></P>
+<STYLE type="text/css">/*<![CDATA[*/
+table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
+table.ScrollbarTable td.ScrollbarPrevIcon {text-align: center;width: 16px;border: none;}
+table.ScrollbarTable td.ScrollbarPrevName {text-align: left;border: none;}
+table.ScrollbarTable td.ScrollbarParent {text-align: center;border: none;}
+table.ScrollbarTable td.ScrollbarNextName {text-align: right;border: none;}
+table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border: none;}
 
-</DIV>
+/*]]>*/</STYLE><DIV class="Scrollbar"><TABLE class="ScrollbarTable"><TR><TD class="ScrollbarPrevIcon"><A href="loan-broker-bpel.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/back_16.gif" width="16" height="16"></A></TD><TD width="33%" class="ScrollbarPrevName"><A href="loan-broker-bpel.html">Loan Broker BPEL</A>&nbsp;</TD><TD width="33%" class="ScrollbarParent"><SUP><A href="4-examples.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/up_16.gif" width="8" height="8"></A></SUP><A href="4-examples.html">4. Examples</A></TD><TD width="33%" class="ScrollbarNextName">&nbsp;<A href="../SM30UG/vfs-binding.html">VFS Binding</A></TD><TD class="ScrollbarNextIcon"><A href="../SM30UG/vfs-binding.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/forwd_16.gif" width="16" height="16"></A></TD></TR></TABLE></DIV></DIV>
           
                   </DIV>
         </TD>
@@ -258,11 +284,11 @@ Messages flow through the components as follows:</P>
       </DIV>
     </DIV>
     <DIV id="site-footer">
-          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=lmalgeri">Lisa Malgeri</A> on Dec 23, 2005
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1968&originalId=2745">view change</A>)
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13497&originalId=14654">view change</A>)
               
-      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1968">edit page</A>)
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13497">edit page</A>)
     </DIV>
 
   </BODY>

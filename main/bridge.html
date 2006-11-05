@@ -9,7 +9,7 @@
     <LINK type="text/css" rel="stylesheet" href="resources/site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
-Transformation
+Bridge
     </TITLE>
   <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
   <BODY onload="init()">
@@ -36,7 +36,7 @@ Transformation
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="features.html" title="Features">Features</A>&nbsp;&gt;&nbsp;<A href="" title="Transformation">Transformation</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="users-guide.html" title="User's Guide">User&apos;s Guide</A>&nbsp;&gt;&nbsp;<A href="4-examples.html" title="4. Examples">4. Examples</A>&nbsp;&gt;&nbsp;<A href="" title="Bridge">Bridge</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -79,7 +79,7 @@ Transformation
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="../SM30UG/users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
 	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
 	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
@@ -111,22 +111,31 @@ Transformation
           <DIV id="site-page">
 
 <!--          
-            <div class="pagetitle">Transformation</div>
+            <div class="pagetitle">Bridge</div>
 -->
-            <DIV class="wiki-content">
-<P>Other than <A href="routing.html" title="Routing">Routing</A> and <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=Components%20list&linkCreation=true&fromPageId=2028" title="Create Page: Components list" class="createlink">Connectivity<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> one of the other main features of an ESB is transforming messages to integrate different systems together. This could be to map from one message format to another or to isolate version differences across services. </P>
+            <DIV class="wiki-content"><STYLE type="text/css">/*<![CDATA[*/
+table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
+table.ScrollbarTable td.ScrollbarPrevIcon {text-align: center;width: 16px;border: none;}
+table.ScrollbarTable td.ScrollbarPrevName {text-align: left;border: none;}
+table.ScrollbarTable td.ScrollbarParent {text-align: center;border: none;}
+table.ScrollbarTable td.ScrollbarNextName {text-align: right;border: none;}
+table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border: none;}
 
-<P>We provide a number of different transformation technologies. </P>
+/*]]>*/</STYLE><DIV class="Scrollbar"><TABLE class="ScrollbarTable"><TR><TD class="ScrollbarPrevIcon"><A href="basic.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/back_16.gif" width="16" height="16"></A></TD><TD width="33%" class="ScrollbarPrevName"><A href="basic.html">Basic</A>&nbsp;</TD><TD width="33%" class="ScrollbarParent"><SUP><A href="4-examples.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/up_16.gif" width="8" height="8"></A></SUP><A href="4-examples.html">4. Examples</A></TD><TD width="33%" class="ScrollbarNextName">&nbsp;<A href="../SM30UG/cluster.html">Cluster</A></TD><TD class="ScrollbarNextIcon"><A href="../SM30UG/cluster.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/forwd_16.gif" width="16" height="16"></A></TD></TR></TABLE></DIV>
 
-<UL>
-	<LI>An <A href="xslt.html" title="XSLT">XSLT</A> based transformation component which is integrated into the <A href="xpath-router.html" title="XPath Router">XPath Router</A></LI>
-	<LI>transformations using any <A href="scripting.html" title="Scripting">Scripting</A> language such as <A href="groovy.html" title="Groovy">Groovy</A></LI>
-	<LI>use Java code to perform the transformation via the <A href="pojo-support.html" title="POJO support">POJO Support</A></LI>
-	<LI>use rule based transformation via the <A href="drools.html" title="Drools">Drools</A> service</LI>
-</UL>
+<H1><A name="Bridge-Bridgeexample"></A>Bridge example</H1>
 
+<P>You can take a look at <A href="creating-a-protocol-bridge.html" title="Creating a protocol bridge">Creating a protocol bridge</A></P>
 
-<P>Sometimes transformations can be costly operations so you may want to investigate the various <A href="nmr-flows.html" title="NMR Flows">different process flow topologies</A></P></DIV>
+<STYLE type="text/css">/*<![CDATA[*/
+table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
+table.ScrollbarTable td.ScrollbarPrevIcon {text-align: center;width: 16px;border: none;}
+table.ScrollbarTable td.ScrollbarPrevName {text-align: left;border: none;}
+table.ScrollbarTable td.ScrollbarParent {text-align: center;border: none;}
+table.ScrollbarTable td.ScrollbarNextName {text-align: right;border: none;}
+table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border: none;}
+
+/*]]>*/</STYLE><DIV class="Scrollbar"><TABLE class="ScrollbarTable"><TR><TD class="ScrollbarPrevIcon"><A href="basic.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/back_16.gif" width="16" height="16"></A></TD><TD width="33%" class="ScrollbarPrevName"><A href="basic.html">Basic</A>&nbsp;</TD><TD width="33%" class="ScrollbarParent"><SUP><A href="4-examples.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/up_16.gif" width="8" height="8"></A></SUP><A href="4-examples.html">4. Examples</A></TD><TD width="33%" class="ScrollbarNextName">&nbsp;<A href="../SM30UG/cluster.html">Cluster</A></TD><TD class="ScrollbarNextIcon"><A href="../SM30UG/cluster.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/forwd_16.gif" width="16" height="16"></A></TD></TR></TABLE></DIV></DIV>
           
                   </DIV>
         </TD>
@@ -135,11 +144,11 @@ Transformation
       </DIV>
     </DIV>
     <DIV id="site-footer">
-          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2028&originalId=14677">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13493&originalId=14663">view change</A>)
               
-      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2028">edit page</A>)
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13493">edit page</A>)
     </DIV>
 
   </BODY>

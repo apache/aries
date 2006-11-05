@@ -36,7 +36,7 @@ servicemix-wsn2005
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="jbi-components.html" title="JBI Components">JBI Components</A>&nbsp;&gt;&nbsp;<A href="" title="servicemix-wsn2005">servicemix-wsn2005</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="users-guide.html" title="User's Guide">User&apos;s Guide</A>&nbsp;&gt;&nbsp;<A href="servicemix-components.html" title="ServiceMix Components">ServiceMix Components</A>&nbsp;&gt;&nbsp;<A href="" title="servicemix-wsn2005">servicemix-wsn2005</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -79,7 +79,7 @@ servicemix-wsn2005
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="../SM30UG/users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
 	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
 	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
@@ -113,8 +113,268 @@ servicemix-wsn2005
 <!--          
             <div class="pagetitle">servicemix- wsn2005</div>
 -->
-            <DIV class="wiki-content"><P>ServiceMix ships with an implementation of WS-Notification in the servicemix-wsn2005 jbi component.<BR>
-See <A href="../SM30UG/servicemix-wsn2005.html" title="servicemix-wsn2005">WS Notification</A> for more informations.</P></DIV>
+            <DIV class="wiki-content"><STYLE type="text/css">/*<![CDATA[*/
+table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
+table.ScrollbarTable td.ScrollbarPrevIcon {text-align: center;width: 16px;border: none;}
+table.ScrollbarTable td.ScrollbarPrevName {text-align: left;border: none;}
+table.ScrollbarTable td.ScrollbarParent {text-align: center;border: none;}
+table.ScrollbarTable td.ScrollbarNextName {text-align: right;border: none;}
+table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border: none;}
+
+/*]]>*/</STYLE><DIV class="Scrollbar"><TABLE class="ScrollbarTable"><TR><TD width="33%" class="ScrollbarPrevName">&nbsp;</TD><TD width="33%" class="ScrollbarParent"><SUP><A href="servicemix-components.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/up_16.gif" width="8" height="8"></A></SUP><A href="servicemix-components.html">ServiceMix Components</A></TD><TD width="33%" class="ScrollbarNextName">&nbsp;</TD></TR></TABLE></DIV>
+<P><A name="servicemix-wsn2005-top"></A></P>
+
+<H1><A name="servicemix-wsn2005-servicemixwsn2005"></A>servicemix-wsn2005</H1>
+
+<P>The <TT>servicemix-wsn2005</TT> is a standard JBI Service Engine which implements the <SPAN class="nobr"><A href="http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=wsn" title="Visit page outside Confluence" rel="nofollow">WS-Notification<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> specification from Oasis.</P>
+
+<H2><A name="servicemix-wsn2005-Overview"></A>Overview</H2>
+
+<P>While this article does not intend to be a review of the WS-Notification specification, here is a few terms you need to fully understand:</P>
+<UL>
+	<LI><B>Subscriber</B></LI>
+	<LI><B>Publisher</B></LI>
+	<LI><B>Subscription</B></LI>
+	<LI><B>Publishing request</B></LI>
+	<LI><B>Broker</B></LI>
+	<LI><B>PullPoint</B></LI>
+</UL>
+
+
+<P>The current implementation has several limitations:</P>
+<UL>
+	<LI>subscriptions are not persistent: message will be lost if the subscriber can not be reached</LI>
+	<LI>subscriptions can not be clustered: if you register the same subscriber in a cluster, each node will receive all notifications</LI>
+	<LI>publishing can not be restricted to registered publishers: everyone can publish through an anonymous publisher</LI>
+</UL>
+
+
+<H2><A name="servicemix-wsn2005-Usagescenarii"></A>Usage scenarii</H2>
+
+<P>The WS-Notification SE can be used to provide publish/subscribe routing in the JBI bus. There are several usage:</P>
+<UL>
+	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">configuration using JBI packaging</A></LI>
+	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">dynamic configuration inside the JBI bus</A></LI>
+	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">outside the JBI bus</A></LI>
+	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">embedding WS-Notification SE</A></LI>
+</UL>
+
+
+<H3><A name="servicemix-wsn2005-ConfigurationusingJBIpackaging"></A>Configuration using JBI packaging</H3>
+
+<P>The <TT>servicemix-wsn2005</TT> accepts deployment of Service Units.<BR>
+The SU must contain one or more files with an xml extension, each one containing a single WS-Notification request.  The currently supported set of requests include:</P>
+<UL>
+	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#Subscribe</A></LI>
+	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#CreatePullPoint</A></LI>
+</UL>
+
+
+<P>The requests will be started in this very order, so that you can create a PullPoint and create a Subscription for it inside the same service unit.</P>
+
+<H3><A name="servicemix-wsn2005-DynamicconfigurationinsidetheJBIbus"></A>Dynamic configuration inside the JBI bus</H3>
+
+<P>In addition to the deployment of service units, you can also create pull points or subscriptions dynamically from inside the JBI bus by using a simple API.</P>
+
+<P>To create a subscription for a given JBI endpoint, you can use the following code:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">QName service = ...;
+<SPAN class="code-object">String</SPAN> endpoint = ...;
+<SPAN class="code-object">String</SPAN> topic = ...;
+NotificationBroker wsnBroker = <SPAN class="code-keyword">new</SPAN> NotificationBroker(getContext());
+EndpointReferenceType consumer = <SPAN class="code-keyword">new</SPAN> EndpointReferenceType();
+consumer.setAddress(<SPAN class="code-keyword">new</SPAN> AttributedURIType());
+consumer.getAddress().setValue(service.getNamespaceURI() + <SPAN class="code-quote">&quot;/&quot;</SPAN> + service.getLocalPart() + <SPAN class="code-quote">&quot;/&quot;</SPAN> + endpoint);
+wsnBroker.subscribe(consumer, topic);</PRE>
+</DIV></DIV>
+
+<P>To publish a message on a given topic:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-object">String</SPAN> topic = ...;
+NotificationBroker wsnBroker = <SPAN class="code-keyword">new</SPAN> NotificationBroker(getContext());
+wsnBroker.notify(topic, message);</PRE>
+</DIV></DIV>
+<P>where <TT>message</TT> is a DOM element.</P>
+
+<P>You can also create pull points and subscriptions for them:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">CreatePullPoint wsnCreatePullPoint = <SPAN class="code-keyword">new</SPAN> CreatePullPoint(getContext());
+PullPoint pullPoint = wsnCreatePullPoint.createPullPoint();
+NotificationBroker wsnBroker = <SPAN class="code-keyword">new</SPAN> NotificationBroker(getContext());
+wsnBroker.subscribe(pullPoint.getEndpoint(), topic);</PRE>
+</DIV></DIV>
+
+<P>Later, you can pull notifications from this pull point:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">List&lt;NotificationMessageHolderType&gt; msgs = pullPoint.getMessages(0);</PRE>
+</DIV></DIV>
+
+<H3><A name="servicemix-wsn2005-OutsidetheJBIbus"></A>Outside the JBI bus</H3>
+
+<P>If you want to use WS-Notification ouside the JBI world, you will need to be able to receive incoming requests or send notifications to the external services.  This must be done through by using Binding Components, either using HTTP or JMS.</P>
+
+<P>To expose the NotificationBroker and CreatePullPoint services using HTTP/SOAP, you can deploy the following configuration file to <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=servicemix-http" title="Create Page in space SM30UG: servicemix-http" class="createlink"><TT>servicemix-http</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;beans <SPAN class="code-keyword">xmlns:http</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/http/1.0&quot;</SPAN>
+       <SPAN class="code-keyword">xmlns:wsn</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.org/wsnotification&quot;</SPAN>&gt;
+
+  &lt;http:endpoint service=<SPAN class="code-quote">&quot;wsn:NotificationBroker&quot;</SPAN>
+                 endpoint=<SPAN class="code-quote">&quot;http-binding&quot;</SPAN>
+                 targetService=<SPAN class="code-quote">&quot;wsn:NotificationBroker&quot;</SPAN>
+                 targetEndpoint=<SPAN class="code-quote">&quot;Broker&quot;</SPAN>
+                 role=<SPAN class="code-quote">&quot;consumer&quot;</SPAN>
+                 locationURI=<SPAN class="code-quote">&quot;http://localhost:8192/Broker/&quot;</SPAN>
+                 defaultMep=<SPAN class="code-quote">&quot;http://www.w3.org/2004/08/wsdl/in-out&quot;</SPAN> 
+                 soap=<SPAN class="code-quote">&quot;true&quot;</SPAN>/&gt;	               
+
+  &lt;http:endpoint service=<SPAN class="code-quote">&quot;wsn:CreatePullPoint&quot;</SPAN>
+                 endpoint=<SPAN class="code-quote">&quot;http-binding2&quot;</SPAN>
+                 targetService=<SPAN class="code-quote">&quot;wsn:CreatePullPoint&quot;</SPAN>
+                 targetEndpoint=<SPAN class="code-quote">&quot;Broker&quot;</SPAN>
+                 role=<SPAN class="code-quote">&quot;consumer&quot;</SPAN>
+                 locationURI=<SPAN class="code-quote">&quot;http://localhost:8192/CreatePullPoint/&quot;</SPAN>
+                 defaultMep=<SPAN class="code-quote">&quot;http://www.w3.org/2004/08/wsdl/in-out&quot;</SPAN>
+                 soap=<SPAN class="code-quote">&quot;true&quot;</SPAN>/&gt;
+
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<H3><A name="servicemix-wsn2005-EmbeddingWSNotification"></A>Embedding WS-Notification</H3>
+
+<P>If you use a single static configuration file for ServiceMix, you can easily leverage this component to create subscription, pull-points and publish messages.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-keyword">xmlns:sm</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/config/1.0&quot;</SPAN>
+  <SPAN class="code-keyword">xmlns:wsn</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/wsn/1.0&quot;</SPAN> 
+  <SPAN class="code-keyword">xmlns:test</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.org/test&quot;</SPAN>
+
+<SPAN class="code-tag">&lt;sm:activationSpec id=<SPAN class="code-quote">&quot;receiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;test:service&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.tck.ReceiverComponent&quot;</SPAN> /&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN>
+
+<SPAN class="code-tag">&lt;sm:activationSpec&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+    <SPAN class="code-tag">&lt;wsn:component&gt;</SPAN>
+      <SPAN class="code-tag">&lt;wsn:requests&gt;</SPAN>
+        <SPAN class="code-tag">&lt;wsn:subscribe consumer=<SPAN class="code-quote">&quot;http://servicemix.org/test/service/endpoint&quot;</SPAN> topic=<SPAN class="code-quote">&quot;myTopic&quot;</SPAN> /&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/wsn:requests&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/wsn:component&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN>
+
+<SPAN class="code-tag">&lt;sm:activationSpec service=<SPAN class="code-quote">&quot;test:publisher&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+    <SPAN class="code-tag">&lt;wsn:publisher topic=<SPAN class="code-quote">&quot;myTopic&quot;</SPAN> /&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>The above code snippet creates a publisher proxy, a subscription and a subscriber.</P>
+
+<P>The publisher proxy is a simple component that wraps incoming JBI exchanges into WS-Notification <A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space"><TT>notify</TT></A> requests and send them to a notification broker on the given topic.  This could also be written in plain spring style:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec service=<SPAN class="code-quote">&quot;test:publisher&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.wsn.spring.PublisherComponent&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;topic&quot;</SPAN> value=<SPAN class="code-quote">&quot;myTopic&quot;</SPAN> /&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>When the component is started, it registers itself as a publisher to the WS-Notification broker.  To do so, it activates a JBI endpoint named <TT>subscription</TT> so it can handle demand based publishing. When this component receives an InOnly exchange, let&apos;s say <TT>&lt;hello&gt;world&lt;/hello&gt;</TT>, it will wrap it in a request as shown <A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">here</A> and send the request as an InOnly exchange to the NotifiationBroker.  Note that, as this component activates two JBI endpoints, you need to explicitely target the endpoint specified in the activationSpec when sending a message.</P>
+
+<P>The subscription is created inside a <TT>servicemix-wsn2005</TT> component.  You must fill the <TT>consumer</TT> and <TT>topic</TT> properties, where the <TT>consumer</TT> is the URI-encoded target JBI endpoint, which will be resolved to the first component activated. You could also use the plain spring syntax:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.wsn.spring.WSNSpringComponent&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;requests&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;list&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.wsn.spring.SubscribeFactoryBean&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;consumer&quot;</SPAN> value=<SPAN class="code-quote">&quot;http://servicemix.org/test/service/endpoint&quot;</SPAN> /&gt;</SPAN>
+            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;topic&quot;</SPAN> value=<SPAN class="code-quote">&quot;myTopic&quot;</SPAN> /&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/list&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<H2><A name="servicemix-wsn2005-WSNotificationmessages"></A>WS-Notification messages</H2>
+
+<P>The following xml snippets are just examples of WS-Notification requests.  You should refer to the <SPAN class="nobr"><A href="http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=wsn" title="Visit page outside Confluence" rel="nofollow">specification<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for more informations.</P>
+
+<H3><A name="servicemix-wsn2005-Subscribe"></A>Subscribe</H3>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;wsnt:Subscribe
+  <SPAN class="code-keyword">xmlns:wsnt</SPAN>=<SPAN class="code-quote">&quot;http://docs.oasis-open.org/wsn/b-2&quot;</SPAN>
+  <SPAN class="code-keyword">xmlns:wsa</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/2005/08/addressing&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;wsnt:ConsumerReference&gt;</SPAN>
+    <SPAN class="code-tag">&lt;wsa:Address&gt;</SPAN>
+      http://www.consumer.org/service/endpoint
+    <SPAN class="code-tag">&lt;/wsa:Address&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/wsnt:ConsumerReference&gt;</SPAN>
+  <SPAN class="code-tag">&lt;wsnt:Filter&gt;</SPAN>
+    <SPAN class="code-tag">&lt;wsnt:TopicExpression Dialect=<SPAN class="code-quote">&quot;http://docs.oasis-open.org/wsn/t-1/TopicExpression/Simple&quot;</SPAN>&gt;</SPAN>
+      myTopic
+    <SPAN class="code-tag">&lt;/wsnt:TopicExpression&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/wsnt:Filter&gt;</SPAN>
+<SPAN class="code-tag">&lt;/wsnt:Subscribe&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<H3><A name="servicemix-wsn2005-CreatePullPoint"></A>CreatePullPoint</H3>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;wsnt:CreatePullPoint 
+  <SPAN class="code-keyword">xmlns:wsnt</SPAN>=<SPAN class="code-quote">&quot;http://docs.oasis-open.org/wsn/b-2&quot;</SPAN>
+  <SPAN class="code-keyword">xmlns:sm</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/wsn2005/1.0&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;sm:address&gt;</SPAN> 
+    http://www.consumer.org/service/endpoint
+  <SPAN class="code-tag">&lt;/sm:address&gt;</SPAN>
+<SPAN class="code-tag">&lt;/wsnt:CreatePullPoint&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>Note that the <TT>&lt;sm:address /&gt;</TT> element is a ServiceMix extension that creates a PullPoint on a specific JBI endpoint.  This is very useful when you want to create a subscription for this endpoint at deployment time (see the previous paragraph).</P>
+
+<H3><A name="servicemix-wsn2005-Notify"></A>Notify</H3>
+
+<P>The Notify request is sent by a publisher to the NotificationBroker. This request contains a list of NotificationMessage, each one containing:</P>
+<UL>
+	<LI>a subscription reference (not used)</LI>
+	<LI>a topic (mandatory)</LI>
+	<LI>a producer reference (which may contain the address of the producer that created the message)</LI>
+	<LI>the message</LI>
+</UL>
+
+
+<P>Below is an example of a such a request.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;wsnt:Notify 
+  <SPAN class="code-keyword">xmlns:wsnt</SPAN>=<SPAN class="code-quote">&quot;http://docs.oasis-open.org/wsn/b-2&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;wsnt:NotificationMessage&gt;</SPAN>
+    <SPAN class="code-tag">&lt;wsnt:Topic&gt;</SPAN>myTopic<SPAN class="code-tag">&lt;/wsnt:Topic&gt;</SPAN>
+    <SPAN class="code-tag">&lt;wsnt:Message&gt;</SPAN>
+      <SPAN class="code-tag">&lt;hello&gt;</SPAN>world<SPAN class="code-tag">&lt;/hello&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/wsnt:Message&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/wsnt:NotificationMessage&gt;</SPAN>
+<SPAN class="code-tag">&lt;/wsnt:Notify&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<STYLE type="text/css">/*<![CDATA[*/
+table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
+table.ScrollbarTable td.ScrollbarPrevIcon {text-align: center;width: 16px;border: none;}
+table.ScrollbarTable td.ScrollbarPrevName {text-align: left;border: none;}
+table.ScrollbarTable td.ScrollbarParent {text-align: center;border: none;}
+table.ScrollbarTable td.ScrollbarNextName {text-align: right;border: none;}
+table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border: none;}
+
+/*]]>*/</STYLE><DIV class="Scrollbar"><TABLE class="ScrollbarTable"><TR><TD width="33%" class="ScrollbarPrevName">&nbsp;</TD><TD width="33%" class="ScrollbarParent"><SUP><A href="servicemix-components.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/up_16.gif" width="8" height="8"></A></SUP><A href="servicemix-components.html">ServiceMix Components</A></TD><TD width="33%" class="ScrollbarNextName">&nbsp;</TD></TR></TABLE></DIV></DIV>
           
                   </DIV>
         </TD>
@@ -123,11 +383,11 @@ See <A href="../SM30UG/servicemix-wsn2005.html" title="servicemix-wsn2005">WS No
       </DIV>
     </DIV>
     <DIV id="site-footer">
-          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 05, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2042&originalId=13966">view change</A>)
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13583&originalId=14633">view change</A>)
               
-      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2042">edit page</A>)
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13583">edit page</A>)
     </DIV>
 
   </BODY>
