@@ -79,7 +79,7 @@ WS Notification
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="../SM30UG/users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
 	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
 	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
@@ -114,7 +114,7 @@ WS Notification
             <div class="pagetitle">WS Notification</div>
 -->
             <DIV class="wiki-content"><TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Outdated page</B><BR>
-<P>Refer to the <A href="../SM30UG/servicemix-wsn2005.html" title="servicemix-wsn2005">User&apos;s Guide</A> for uptodate informations}</P></TD></TR></TABLE>
+<P>Refer to the <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-wsn2005&linkCreation=true&fromPageId=1897" title="Create Page: servicemix-wsn2005" class="createlink">User&apos;s Guide<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for uptodate informations}</P></TD></TR></TABLE>
 
 <H3><A name="WSNotification-SOAPstacksandXMLmarshaling"></A>SOAP stacks and XML marshaling</H3>
 
@@ -136,20 +136,11 @@ WS Notification
 
 <P>You can then publish WS-Notification messages as follows...</P>
 
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">EndpointReferenceType consumer = createEPR(ReceiverComponent.SERVICE, ReceiverComponent.ENDPOINT);
-wsnBroker.subscribe(consumer, <SPAN class="code-quote">&quot;myTopic&quot;</SPAN>, <SPAN class="code-keyword">null</SPAN>, <SPAN class="code-keyword">true</SPAN>);
 
-Element body = parse(<SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>);
-wsnBroker.notify(<SPAN class="code-quote">&quot;myTopic&quot;</SPAN>, body);</PRE>
-</DIV></DIV>
 
 <P>You can perform a subscription as follows</P>
 
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">PullPoint pullPoint = wsnCreatePullPoint.createPullPoint();
-Subscription subscription = wsnBroker.subscribe(pullPoint.getEndpoint(), <SPAN class="code-quote">&quot;myTopic&quot;</SPAN>, <SPAN class="code-keyword">null</SPAN>);</PRE>
-</DIV></DIV>
+
 
 <H3><A name="WSNotification-Runtimedependencies"></A>Runtime dependencies</H3>
 
@@ -183,8 +174,8 @@ Subscription subscription = wsnBroker.subscribe(pullPoint.getEndpoint(), <SPAN c
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 05, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1897&originalId=13967">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1897&originalId=14634">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1897">edit page</A>)
     </DIV>

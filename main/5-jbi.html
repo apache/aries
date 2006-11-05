@@ -1,0 +1,486 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <TITLE>
+5. JBI
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/main/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="users-guide.html" title="User's Guide">User&apos;s Guide</A>&nbsp;&gt;&nbsp;<A href="" title="5. JBI">5. JBI</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">5. JBI</div>
+-->
+            <DIV class="wiki-content"><STYLE type="text/css">/*<![CDATA[*/
+table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
+table.ScrollbarTable td.ScrollbarPrevIcon {text-align: center;width: 16px;border: none;}
+table.ScrollbarTable td.ScrollbarPrevName {text-align: left;border: none;}
+table.ScrollbarTable td.ScrollbarParent {text-align: center;border: none;}
+table.ScrollbarTable td.ScrollbarNextName {text-align: right;border: none;}
+table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border: none;}
+
+/*]]>*/</STYLE><DIV class="Scrollbar"><TABLE class="ScrollbarTable"><TR><TD class="ScrollbarPrevIcon"><A href="../SM30UG/4-examples.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/back_16.gif" width="16" height="16"></A></TD><TD width="33%" class="ScrollbarPrevName"><A href="../SM30UG/4-examples.html">4. Examples</A>&nbsp;</TD><TD width="33%" class="ScrollbarParent"><SUP><A href="users-guide.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/up_16.gif" width="8" height="8"></A></SUP><A href="users-guide.html">User&apos;s Guide</A></TD><TD width="33%" class="ScrollbarNextName">&nbsp;<A href="6-configuring-servicemix.html">6. Configuring ServiceMix</A></TD><TD class="ScrollbarNextIcon"><A href="6-configuring-servicemix.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/forwd_16.gif" width="16" height="16"></A></TD></TR></TABLE></DIV>
+<P><A name="5.JBI-top"></A></P>
+
+<H1><A name="5.JBI-5.JBI"></A>5. JBI</H1>
+
+<DIV>
+<UL>
+  <LI><A href="#5.JBI-Overview">Overview</A>
+<UL>
+  <LI><A href="#5.JBI-WhatisJBI%253F">What is JBI ?</A></LI>
+  <LI><A href="#5.JBI-JBIArchitecture">JBI Architecture</A></LI>
+</UL></LI>
+  <LI><A href="#5.JBI-WSDLmessagingmodel">WSDL messaging model</A>
+<UL>
+  <LI><A href="#5.JBI-Abstractmodel">Abstract model</A></LI>
+  <LI><A href="#5.JBI-Concretemodel">Concrete model</A></LI>
+</UL></LI>
+  <LI><A href="#5.JBI-NormalizedMessageRouter">Normalized Message Router</A>
+<UL>
+  <LI><A href="#5.JBI-Consumersandproviders">Consumers and providers</A></LI>
+  <LI><A href="#5.JBI-Normalizedmessage">Normalized message</A></LI>
+  <LI><A href="#5.JBI-DeliveryChannel">Delivery Channel</A></LI>
+  <LI><A href="#5.JBI-Endpointactivation">Endpoint activation</A></LI>
+  <LI><A href="#5.JBI-ServiceinvocationandMEP">Service invocation and MEP</A></LI>
+  <LI><A href="#5.JBI-Endpoints">Endpoints</A></LI>
+</UL></LI>
+  <LI><A href="#5.JBI-Invocationexample">Invocation example</A></LI>
+  <LI><A href="#5.JBI-JBIpackaging">JBI packaging</A></LI>
+  <LI><A href="#5.JBI-Othermaterials">Other materials</A></LI>
+</UL></DIV>
+
+<H2><A name="5.JBI-Overview"></A>Overview</H2>
+
+
+<H3><A name="5.JBI-WhatisJBI%3F"></A>What is JBI ?</H3>
+
+<TABLE class="sectionMacro" border="0" cellpadding="5" cellspacing="0" width="100%"><TBODY><TR>
+<TD class="confluenceTd" valign="top">
+<P>JBI is a java based standard to build integrations systems by using plug-in components which interoperates through mediated normalized message exchanges.<BR>
+The message exchange model is based on the web services description language (WSDL).</P>
+
+<P>The figure at the top shows a high level concept of JBI of the plug-in framework.  The JBI environment provides interfaces to be used by plug-in components, while the components provides interfaces used by the JBI environment.  Components do not interact with each other directly.  Instead, as shown in the bottom figure, JBI acts as an intermediary to route messages between components.  This separation is the key to decoupling between service providers and consumers, which is one of the goal of service oriented architectures.  In addition, it provides a key point for message processing and monitoring.</P>
+
+<P>In this WSDL-based, service-oriented model, JBI plug-in components are responsible for providing and consuming services. By providing a service, a component is making available a function or functions that can be consumed by other components (or even itself). Such functions are modeled as WSDL 2.0 operations, which involve the exchange of one or more messages. A set of four WSDL-defined, basic message exchange patterns (MEPs) crisply defines the sequence of messages allowed during execution of an operation. This shared understanding, between consumer and provider components, of the message exchange pattern is the foundation of interoperability of such components in JBI.</P>
+
+<P>The services provided by components (if any) are described to JBI by the component, using WSDL 1.1 or 2.0.  This provides an abstract, technology-neutral model of services using XML-based message exchanges. WSDL also provides a mechanism for declaring additional service metadata of interest to service consumers and JBI itself.  Components can query JBI for the for the WSDL describing available services.</P></TD>
+<TD class="confluenceTd" valign="top">
+<DIV class="panel" style="border-style: solid; border-color: #ccc; "><DIV class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; background-color: #ffffff; "><B>JBI plugin framework</B></DIV><DIV class="panelContent" style="background-color: #ffffff; ">
+<P><DIV align="center"><IMG src="5-jbi.data/jbi_plugin_framework.png" border="0"></DIV></P>
+</DIV></DIV>
+<DIV class="panel" style="border-style: solid; border-color: #ccc; "><DIV class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; background-color: #ffffff; "><B>JBI decoupling</B></DIV><DIV class="panelContent" style="background-color: #ffffff; ">
+<P><DIV align="center"><IMG src="5-jbi.data/jbi_decoupling.jpg" border="0"></DIV></P>
+</DIV></DIV></TD></TR></TBODY></TABLE>
+
+<H3><A name="5.JBI-JBIArchitecture"></A>JBI Architecture</H3>
+
+<TABLE class="sectionMacro" border="0" cellpadding="5" cellspacing="0" width="100%"><TBODY><TR>
+<TD class="confluenceTd" valign="top">
+<P>This picture describes the architecture of the JBI system.</P>
+<UL>
+	<LI>The JBI environment provides deployment, control &amp; monitoring features through JMX based administration tools</LI>
+	<LI>The Normalized Message Router or NMR, which provides the mediated message exchange infrastructure</LI>
+	<LI>Components (in white rectangles)</LI>
+</UL>
+
+
+<P>Components are divided in two categories:</P>
+<UL>
+	<LI>Service Engines (on top) provides business logic and transformation services and also consumes such services.</LI>
+	<LI>Binding Components provide connectivity to services external to the JBI environment.<BR>
+Service engines and binding components can function as service providers, consumers, or both.  Note that the distinction between SEs and BCs is purely pragmatic, but the separation of business logic from communications logic reduces complexity and increases flexibility.</LI>
+</UL>
+
+
+<P>The JBI environment, in addition to the messaging system, defines a management structure based on JMX which provides standard mechanisms for:</P>
+<UL>
+	<LI>Installing components</LI>
+	<LI>Managing a component&apos;s life cycle (start / stop)</LI>
+	<LI>Deploying service artifacts to components<BR>
+JBI components often function as a type of container to which artifacts can be deployed to add new service or provider logic.  For example, a service engine that provides XSLT-based transformation services would have XSLT style sheets deployed to it, in order to add new transformation operations.  This process of adding such component-specific artifacts to an installed component is called deployment, to distinguish it from component installation.  Such an artifact is called a service unit, while collection of deployment artifacts and associated metadata is called a service assembly.</LI>
+</UL>
+
+
+<P>The core message exchange concept implements WSDL messaging. Service requests are generated by consumer components, routed by the NMR, and delivered to a provider component. For example, the BPEL SE may generate a request, which happens to be provided by the external service provider connected to the WS-I BC. The NMR will route the request to the WS-I binding. The SE in this case is a service consumer, and the BC a provider.</P></TD>
+<TD class="confluenceTd" valign="top">
+<DIV class="panel" style="border-style: solid; border-color: #ccc; "><DIV class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; background-color: #ffffff; "><B>JBI Architecture</B></DIV><DIV class="panelContent" style="background-color: #ffffff; ">
+<P><DIV align="center"><IMG src="5-jbi.data/jbi_architecture.jpg" border="0"></DIV></P>
+</DIV></DIV></TD></TR></TBODY></TABLE>
+<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+
+<H2><A name="5.JBI-WSDLmessagingmodel"></A>WSDL messaging model</H2>
+
+<TABLE class="sectionMacro" border="0" cellpadding="5" cellspacing="0" width="100%"><TBODY><TR>
+<TD class="confluenceTd" valign="top">
+<P>JBI models services produced and consumed by components using Web Service Description Language 1.1 or 2.0.  When the terminology differs between the two version, the 2.0 one is used.  This is mainly the case for the interface and endpoint terms, which are called respectively &quot;port type&quot; and &quot;port&quot; in WSDL 1.1.</P>
+
+<P>WSDL provides a declarative model of message-based services on two levels:</P>
+<UL>
+	<LI>The <A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space"><B>abstract model</B></A> defines services without references to a particular protocol or wire encoding</LI>
+	<LI>The <A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space"><B>concrete model</B></A> is bound to a particular communication protocol and communications endpoint</LI>
+</UL>
+
+
+<P>JBI uses the abstract service model as the main basis for component interactions.  Components play one of two roles in such interactions:</P>
+<UL>
+	<LI><B>Service provider</B>. The component that performs the given service (either directly or as a proxy for an external provider)</LI>
+	<LI><B>Service consumer</B>. The component that invokes a given service (either directly or as a proxy for an external consumer)</LI>
+</UL>
+</TD>
+<TD class="confluenceTd" valign="top">
+<DIV class="panel" style="border-style: solid; border-color: #ccc; "><DIV class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; background-color: #ffffff; "><B>WSDL Messaging Model</B></DIV><DIV class="panelContent" style="background-color: #ffffff; ">
+<P><DIV align="center"><IMG src="5-jbi.data/jbi_wsdl_messaging_model.jpg" border="0"></DIV></P>
+</DIV></DIV></TD></TR></TBODY></TABLE>
+
+<H3><A name="5.JBI-Abstractmodel"></A>Abstract model</H3>
+
+<P>JBI models services produced and consumed by components using Web Service Description Language 1.1 or 2.0.  When the terminology differs between the two version, the 2.0 one is used.  This is mainly the case for the interface and endpoint terms, which are called respectively &quot;port type&quot; and &quot;port&quot; in WSDL 1.1.</P>
+
+<P>WSDL service description always include an abstract service model which defines:</P>
+<UL>
+	<LI><B>Message types</B> are defined using XML schema.  These can be <B>normal</B> messages (for the expected use of the service) or <B>faults</B> (for abnormal processing conditions).</LI>
+	<LI><B>Operations</B> are interactions with a service defined in terms of normal and optional faults messages between a service consumer  and a service provider.  An operation is defined by:
+	<UL>
+		<LI>An <B>operation name</B> which is a qualified name</LI>
+		<LI>A <B>Message Exchange Pattern</B> (MEP) that describes the sequence, direction and cardinality of messages sent between the consumer and provider.</LI>
+		<LI><B>Message types</B> for each message in the MEP.</LI>
+	</UL>
+	</LI>
+	<LI><B>Interfaces</B> are collections of related operations.  Note that this term is unrelated to the Java Language interface definition.  An interface is defined by:
+	<UL>
+		<LI>An <B>interface name</B>: a qualified name identifying the service type globally</LI>
+		<LI>A set of <B>extended interfaces</B>.  This is the same concept as in the Java Language. This means a service type may be composed of other service types.</LI>
+	</UL>
+	</LI>
+</UL>
+
+
+<P>JBI uses the abstract service model as the main basis for component interactions.  Components play one of two roles in such interactions:</P>
+<UL>
+	<LI><B>Service provider</B>. The component that performs the given service (either directly or as a proxy for an external provider)</LI>
+	<LI><B>Service consumer</B>. The component that invokes a given service (either directly or as a proxy for an external consumer)</LI>
+</UL>
+
+
+<H3><A name="5.JBI-Concretemodel"></A>Concrete model</H3>
+
+<P>Concrete service descriptions in WSDL build upon the abstract service model, supplying information needed to &quot;map&quot; the abstract definition to a particular communications protocol and communications endpoint. JBI bases its component interaction model primarily on the abstract service model, thus giving it the desirable property of being communications protocol neutral. However, to be consistent with the WSDL service model, component interactions need to be defined using WSDL&apos;s concrete service model. In JBI this is a very simple model, using the abstract model &quot;as is&quot; wherever possible, thus creating a simple processing model for interacting components.</P>
+
+<P>The concrete service model defines the following items:</P>
+<UL>
+	<LI><B>Binding types</B>. A binding type identifies the type of protocol to which the service is being &quot;bound&quot;.</LI>
+	<LI><B>Endpoints</B>. An endpoint designates the communications endpoint information needed by a service consumer to interact with a service provider, using a particular protocol. In JBI endpoints are pro forma; the only protocol used internally is the standard Java-based JBI messaging contracts, which do not involve the use of normal communications protocols at all. An endpoint definition includes the following items that are of interest to JBI:
+	<UL>
+		<LI><B>Endpoint name</B>. This is a simple name, used to designate the endpoint within its service.</LI>
+		<LI><B>Binding type</B>. This associates a binding type with an endpoint.</LI>
+	</UL>
+	</LI>
+	<LI><B>Service</B>. A service is a collection of endpoints that offer access to the same service. A service &quot;implements&quot; a particular service type (interface). A service has the following items:
+	<UL>
+		<LI><B>Service name</B>. A qualified name used to indicate the particular service implementation.</LI>
+		<LI><B>Service type name</B>. The name of the interface implemented by the service.</LI>
+		<LI><B>Endpoints</B>. The service &quot;contains&quot; one or more endpoints, which are the individual endpoints providing access to the concrete service.</LI>
+	</UL>
+	</LI>
+</UL>
+
+
+<P>Note that normally an endpoint is identified by the combination of its service name and its endpoint name. This combination is referred to as the <B>service endpoint</B>.</P>
+
+<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+
+<H2><A name="5.JBI-NormalizedMessageRouter"></A>Normalized Message Router</H2>
+
+<P>The Normalized Message Router (or NMR) receives message exchanges from JBI components and routes them to the appropriate component for processing.  This decouples the service producers from consumers and enable additional processing.</P>
+
+<H3><A name="5.JBI-Consumersandproviders"></A>Consumers and providers</H3>
+
+<P>JBI components (Service Engines and Binding Components) can act as a servicemix consumer, provider or both.<BR>
+The provider makes a WSDL-described service available through an endpoint.  This service implements a WSDL interface, which is a collection of operations.<BR>
+The consumer can invoke the service by creating a message exchange that invoke a particular operation.<BR>
+Consumers and providers only share the abstract service definition and are thus decoupled, as the consumer does not know the protocol and location of the invoked service.<BR>
+Several services can implement the same WSDL interface so a consumer looking providers of an interface may find more than one endpoint</P>
+
+<H3><A name="5.JBI-Normalizedmessage"></A>Normalized message</H3>
+
+<P>JBI uses the concept of a normalized message for interactions between consumers and providers.<BR>
+A normalized message consists of three parts:</P>
+<UL>
+	<LI>A payload, which is an xml document that conforms to a WSDL message type without any protocol or encoding</LI>
+	<LI>Properties (or metadata) holds extra data associated with the message (security, transactions ...)</LI>
+	<LI>Attachments are arbitrary (non-xml) data that contain a data handler to manipulate them</LI>
+</UL>
+
+
+<H3><A name="5.JBI-DeliveryChannel"></A>Delivery Channel</H3>
+
+<P>A Delivery Channel is a bidirectional asynchronous communication pipes between a component and the NMR.<BR>
+A service consumer uses its delivery channel to initiate a service invocation, while the provider uses its delivery channel to receive such invocations.<BR>
+Each component is provided with a single delivery channel, so the same channel is used for both inbound and outbound communications.</P>
+
+<H3><A name="5.JBI-Endpointactivation"></A>Endpoint activation</H3>
+
+<P>Endpoint activation is the process by which a service provider tells the NMR that it provides services, making them known to the NMR so that it can route service invocations to that service.</P>
+
+<P>The activation is split in two steps&quot;</P>
+<UL>
+	<LI>Declaring a service endpoint (service QName + endpoint name)</LI>
+	<LI>Providing metadata: the component has to provide a WSDL description of the activate endpoint<BR>
+The WSDL description will be used by the NMR to know which interfaces and operations are implemented by the activated endpoint.</LI>
+</UL>
+
+
+<H3><A name="5.JBI-ServiceinvocationandMEP"></A>Service invocation and MEP</H3>
+
+<P>Service invocation refers to an instance of an end-to-end interaction between a service consumer and a service provider.</P>
+
+<P>Four patterns are supported by JBI:</P>
+<UL>
+	<LI><B>In-Only</B>: consumer issues a request to provider with no error (fault) path provided.</LI>
+	<LI><B>Robust-In-Only</B>: consumer issues a request to provider. Provider may respond with a fault if it fails to process request.</LI>
+	<LI><B>In-Out</B>: consumer issues a request to provider, with expectation of response. Provider may respond with a fault if it fails to process request.</LI>
+	<LI><B>In-Optional-Out</B>: consumer issues a request to provider, which may result in a response. Consumer and provider both have the option of generating a fault in response to a message received during the interaction.</LI>
+</UL>
+
+
+<H3><A name="5.JBI-Endpoints"></A>Endpoints</H3>
+
+<P>JBI uses the same concept of endpoints as defined in WSDL 2.0.<BR>
+Endpoints refers to a particular address, accessible by a particular protocol, used to access a particular service.</P>
+
+<P>Endpoints have two distinct types:</P>
+<UL>
+	<LI><B>External endpoints</B> are endpoints outside the JBI environment.  They are endpoints exposed by  binding component acting as service consumers to expose an internal endpoint for the use of external service consumers</LI>
+	<LI><B>Internal endpoints</B> are exposed by service providers inside the JBI environment.  They are accessed using the NMR APIs.</LI>
+</UL>
+
+
+<P>Binding components serve to map between internal and external endpoints.  For example, an internal endpoint exposed outside the JBI environment by a binding component is mapped by the BC to an external provider endpoint for the use of external consumers.</P>
+
+<P>In JBI, endpoints are referred to (or addressed) in three distinct ways:</P>
+<UL>
+	<LI><B>Implicitly</B>: the NMR selects the endpoint based on the service type required</LI>
+	<LI><B>Explicitly</B>: a consumer chooses the endpoint based on its own logic and configuration</LI>
+	<LI><B>Dynamically</B>: an endpoint reference (EPR) is used within a message exchange to provide a &quot; call-back&quot; address that the service provider should use to send further message exchanges.  EPRs are xml fragment created and resolved by JBI components.</LI>
+</UL>
+
+
+<H2><A name="5.JBI-Invocationexample"></A>Invocation example</H2>
+
+<P>This sequence diagram shows a InOut service invocation between a consumer and a provider.</P>
+<DIV class="panel" style="border-style: solid; border-color: #ccc; "><DIV class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; background-color: #ffffff; "><B>Invocation example</B></DIV><DIV class="panelContent" style="background-color: #ffffff; ">
+<P><DIV align="center"><IMG src="5-jbi.data/jbi_invocation.jpg" border="0"></DIV></P>
+</DIV></DIV>
+<OL>
+	<LI>The consumer creates an InOut message exchange, populates the &quot;in&quot; message (the request) and send it to the NMR</LI>
+	<LI>The provider component polls the delivery channel for an exchange</LI>
+	<LI>It processes the request, populates the &quot;out&quot; message and send it back to the NMR</LI>
+	<LI>The consumer polls the delivery channel for the response</LI>
+	<LI>It processes the response and mark the exchange as &quot;done&quot;</LI>
+	<LI>The provider receives the &quot;done&quot; status from the delivery channel</LI>
+</OL>
+
+
+<P>This example is an asynchronous invocation, but JBI also handles synchronous calls.  In such a case, the consumer call to send would be a sendSync and would block the thread until the response is received.  On the provider side, if the provider wish to synchronously deliver the response, the call to send (#3) would block until the consumer acks the response.</P>
+
+<P>When an exchange involves a binding component, either as a consumer or a provider, the same diagram applies.  The difference is that the exchange creation would be triggered by an external request (a JMS message, or an HTTP request) before step #1 and send the response after step #4.  If the provider is a binding component which proxies a remote service, it would invoke the service between the steps #2 and #3.</P>
+
+<P>People may wonder why there is a need for a &quot;done&quot; status...  In JBI, all exchanges are terminated by either a &quot;done&quot; or an &quot;error&quot; status.  Errors are different from faults which are parts of the normal exchange processing. So, the done status is very useful to implement reliable message, transactions or passing streams inside the exchange.<BR>
+Let&apos;s take the example a file binding component, which would poll for files, send the content as an InOnly request, and delete them afterwards.  For performance reasons, it will send an opened stream on the file, but it has to close the stream and delete the file once processed.  If the consumer is asynchronous (which is better because it saves threads), it needs a way to know when the file has to be deleted, hence the need for the &quot;done&quot; status.</P>
+
+<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+
+<H2><A name="5.JBI-JBIpackaging"></A>JBI packaging</H2>
+
+<P>JBI defines a standard packaging for installing new components and deploying artifacts onto these components that can function as &quot;containers&quot;.<BR>
+All these artifacts contain a JBI descriptor in the META-INF directory called jbi.xml.</P>
+
+<P>We have already discussed some of these artifacts, but let&apos;s dive in them a bit more.  There are four types of artifacts, all packaged as zip or jar files:</P>
+<UL>
+	<LI><B>Components</B> installers contain the libraries and resources needed to run the component.  Components can references Shared Libraries.</LI>
+	<LI><B>Shared Libraries</B> are collection of jars that can be shared by several components</LI>
+	<LI><B>Service Units</B> are artifacts meant to be deploy to a specific component.  Aside from the JBI descriptor, the service unit packaging is specific to a component and can take various forms: a single XSLT style sheet, a BPEL process, or some java classes ...</LI>
+	<LI><B>Service assemblies</B> are collections of Service Units.  Service units can not be deployed directly and must be packaged in a service assembly which contains the service units and associated metadata.</LI>
+</UL>
+
+
+<P>A service assembly is thus a zip of zips.  It can be compared to an EAR in the J2EE world.  To ease the pain of packaging the JBI artifacts, ServiceMix provides a powerful maven based tooling which can package all the JBI artifacts and generate their JBI descriptors automatically.  To ease the development more, we provide maven archetypes for JBI components and service units: archetypes are templates that can generate a project in one command line (see <A href="notes-on-creating-jbi-component-using-maven2.html" title="Notes on Creating JBI Component using maven2">Notes on Creating JBI Component using maven2</A>).</P>
+
+<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+
+<H2><A name="5.JBI-Othermaterials"></A>Other materials</H2>
+
+<UL>
+	<LI><SPAN class="nobr"><A href="http://jcp.org/en/jsr/detail?id=208" title="Visit page outside Confluence" rel="nofollow">JSR208: Java Business Integration<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="https://open-esb.dev.java.net/public/pdf/JBI-Components-Theory.pdf" title="Visit page outside Confluence" rel="nofollow">JBI Components: Part 1 (Theory)<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> by Ron Ten-Hove</LI>
+	<LI><SPAN class="nobr"><A href="https://open-esb.dev.java.net/public/whitepapers/JBIforSOI.pdf" title="Visit page outside Confluence" rel="nofollow">Using JBI for service oriented integration<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> by Ron Ten-Hove</LI>
+	<LI><SPAN class="nobr"><A href="http://www.theserverside.com/articles/article.tss?l=JBIforSOA" title="Visit page outside Confluence" rel="nofollow">JBI - A Standard-based approach for SOA<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> by Meeraj Kinnumpurath</LI>
+	<LI>Steve Vinoski&apos;s <SPAN class="nobr"><A href="http://dsonline.computer.org/portal/site/dsonline/menuitem.9ed3d9924aeb0dcd82ccc6716bbe36ec/index.jsp?amp%3Bamp%3Bamp%3BpName=dso_level1&amp%3Bamp%3Bamp%3Bpath=dsonline%2F0507&amp%3Bamp%3Bamp%3Bfile=w4tow.xml&amp%3Bamp%3Bamp%3Bxsl=article.xsl&amp%3Bamp%3Bamp%3B" title="Visit page outside Confluence" rel="nofollow">JBI article<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI>Frank Summer&apos;s <SPAN class="nobr"><A href="http://www.artima.com/lejava/articles/jbi2.html" title="Visit page outside Confluence" rel="nofollow">SOA JBI<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://www.webservices.org/weblog/warren_buckley/jbi_the_only_game_in_town" title="Visit page outside Confluence" rel="nofollow">JBI - the only game in town<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI>Carlos&apos;s <SPAN class="nobr"><A href="http://www.manageability.org/blog/stuff/jbi-containers" title="Visit page outside Confluence" rel="nofollow">blog post<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> on JBI</LI>
+	<LI>JBI gains Industry support <SPAN class="nobr"><A href="http://www.ebizq.net/topics/dev_tools/features/6188.html" title="Visit page outside Confluence" rel="nofollow">EbizQ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://java.sun.com/integration/" title="Visit page outside Confluence" rel="nofollow">Sun&apos;s JBI site<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://www.chwlund.com/" title="Visit page outside Confluence" rel="nofollow">Carl-Henrik Wolf Lund<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> created a (Norwegian) <SPAN class="nobr"><A href="http://www.chwlund.com/?p=56" title="Visit page outside Confluence" rel="nofollow">presentation on JBI<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://azur.typepad.com/bpel/2005/12/sca_jbi_and_mor.html" title="Visit page outside Confluence" rel="nofollow">SCA, JBI and more..<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which echos our <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=How%20does%20ServiceMix%20compare%20to%20Tuscany%20or%20SCA" title="Create Page in space SM30UG: How does ServiceMix compare to Tuscany or SCA" class="createlink">FAQ entry<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://dx.doi.org/10.1571/PSGP7-14-05CC" title="Visit page outside Confluence" rel="nofollow">Java Business Integration (JBI) Gains Industry Support<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> by Patricia Seybold Group</LI>
+</UL>
+
+
+<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+<STYLE type="text/css">/*<![CDATA[*/
+table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
+table.ScrollbarTable td.ScrollbarPrevIcon {text-align: center;width: 16px;border: none;}
+table.ScrollbarTable td.ScrollbarPrevName {text-align: left;border: none;}
+table.ScrollbarTable td.ScrollbarParent {text-align: center;border: none;}
+table.ScrollbarTable td.ScrollbarNextName {text-align: right;border: none;}
+table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border: none;}
+
+/*]]>*/</STYLE><DIV class="Scrollbar"><TABLE class="ScrollbarTable"><TR><TD class="ScrollbarPrevIcon"><A href="../SM30UG/4-examples.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/back_16.gif" width="16" height="16"></A></TD><TD width="33%" class="ScrollbarPrevName"><A href="../SM30UG/4-examples.html">4. Examples</A>&nbsp;</TD><TD width="33%" class="ScrollbarParent"><SUP><A href="users-guide.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/up_16.gif" width="8" height="8"></A></SUP><A href="users-guide.html">User&apos;s Guide</A></TD><TD width="33%" class="ScrollbarNextName">&nbsp;<A href="6-configuring-servicemix.html">6. Configuring ServiceMix</A></TD><TD class="ScrollbarNextIcon"><A href="6-configuring-servicemix.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/forwd_16.gif" width="16" height="16"></A></TD></TR></TABLE></DIV></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13491&originalId=14627">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      INS link to further reading<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13491">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13491">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>
