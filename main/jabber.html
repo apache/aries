@@ -79,7 +79,7 @@ Jabber
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="../SM30UG/users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
 	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
 	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
@@ -119,47 +119,18 @@ Jabber
 <H3><A name="Jabber-SendingmessagesfromJBItoJabber"></A>Sending messages from JBI to Jabber</H3>
 
 <P>Both individual based and group chat mechanisms are supported. Here&apos;s an example regular chat sender component.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJabberSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJabberSender&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;myJabberSender&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jabber.JabberChatSender&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;host&quot;</SPAN> value=<SPAN class="code-quote">&quot;localhost&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;port&quot;</SPAN> value=<SPAN class="code-quote">&quot;6222&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;user&quot;</SPAN> value=<SPAN class="code-quote">&quot;test1@servicemix.org&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;password&quot;</SPAN> value=<SPAN class="code-quote">&quot;rocks&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;participant&quot;</SPAN> value=<SPAN class="code-quote">&quot;test2@servicemix.org&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>&nbsp;</P>
 
 <P>Notice how you specify a participant for the person to talk to.</P>
 
 <P>For group chats you specify a room</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJabberSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJabberSender&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;myJabberSender&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jabber.JabberGroupChatSender&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;host&quot;</SPAN> value=<SPAN class="code-quote">&quot;localhost&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;port&quot;</SPAN> value=<SPAN class="code-quote">&quot;6222&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;user&quot;</SPAN> value=<SPAN class="code-quote">&quot;test1@servicemix.org&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;password&quot;</SPAN> value=<SPAN class="code-quote">&quot;rocks&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;room&quot;</SPAN> value=<SPAN class="code-quote">&quot;servicemixroom&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>&nbsp;</P>
 
 <H3><A name="Jabber-ReceivingmessagesfromJabberandsendingthemintoJBItoberoutedbytheNMR"></A>Receiving messages from Jabber and sending them into JBI to be routed by the NMR</H3>
 
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJabberReceiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJabberReceiver&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;myJabberReceiver&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jabber.JabberReceiver&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;host&quot;</SPAN> value=<SPAN class="code-quote">&quot;localhost&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;port&quot;</SPAN> value=<SPAN class="code-quote">&quot;6222&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;user&quot;</SPAN> value=<SPAN class="code-quote">&quot;test2@servicemix.org&quot;</SPAN>/&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;password&quot;</SPAN> value=<SPAN class="code-quote">&quot;rocks&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>&nbsp;</P></DIV>
           
                   </DIV>

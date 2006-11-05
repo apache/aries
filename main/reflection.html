@@ -79,7 +79,7 @@ Reflection
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="../SM30UG/users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
 	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
 	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
@@ -121,30 +121,13 @@ Reflection
 <H3><A name="Reflection-InOnly"></A>InOnly</H3>
 
 <P>This example shows an InOnly reflection component being configured. This component then creates a dynamic proxy which when a method is invoked it will be passed into the JBI container.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;proxyCounter&quot;</SPAN>
-      endpoint=<SPAN class="code-quote">&quot;proxyCounter&quot;</SPAN> 
-      service=<SPAN class="code-quote">&quot;foo:proxyCounter&quot;</SPAN> 
-      destinationService=<SPAN class="code-quote">&quot;foo:reflectionCounter&quot;</SPAN>&gt;
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.reflection.ProxyInOnlyBinding&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;target&quot;</SPAN> ref=<SPAN class="code-quote">&quot;counter&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>&nbsp;</P>
 
 <H3><A name="Reflection-InOut"></A>InOut</H3>
 
 <P>This example performs an InOut. So the dynamic proxy will call into the JBI container, block until a response is available and then return the unmarshalled value to the caller of the dynamic proxy&apos;s method.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;reflectionCounter&quot;</SPAN>
-           service=<SPAN class="code-quote">&quot;foo:reflectionCounter&quot;</SPAN> 
-           endpoint=<SPAN class="code-quote">&quot;reflectionCounter&quot;</SPAN>&gt;
-  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.reflection.ReflectionOutBinding&quot;</SPAN>&gt;</SPAN>
-    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;target&quot;</SPAN> ref=<SPAN class="code-quote">&quot;counter&quot;</SPAN>/&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
+
 <P>&nbsp;</P></DIV>
           
                   </DIV>

@@ -128,11 +128,11 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 
 <P>ServiceMix distribution comes with several examples categories.  The following sections of this document will help you understanding the differences between these examples and explain alternative methods to start them</P>
 <UL>
-	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#Maven configuration</A></LI>
-	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#JBI packaging</A></LI>
-	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#Static configuration using Maven</A></LI>
-	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#Static configuration using Ant</A></LI>
-	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#Web application</A></LI>
+	<LI><A href="#4.Examples-Mavenconfiguration" title="Maven configuration on 4. Examples">Maven configuration</A></LI>
+	<LI><A href="#4.Examples-JBIpackaging" title="JBI packaging on 4. Examples">JBI packaging</A></LI>
+	<LI><A href="#4.Examples-StaticconfigurationusingMaven" title="Static configuration using Maven on 4. Examples">Static configuration using Maven</A></LI>
+	<LI><A href="#4.Examples-StaticconfigurationusingAnt" title="Static configuration using Ant on 4. Examples">Static configuration using Ant</A></LI>
+	<LI><A href="#4.Examples-Webapplication" title="Web application on 4. Examples">Web application</A></LI>
 </UL>
 
 
@@ -152,7 +152,7 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 </UL>
 
 
-<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+<P><A href="#4.Examples-top" title="top on 4. Examples">top</A></P>
 
 <H2><A name="4.Examples-Mavenconfiguration"></A>Maven configuration</H2>
 
@@ -197,12 +197,12 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 
 <P>You will need a ServiceMix server running to deploy this assembly.  From the distribution root directory, launch:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [SM30UG:servicemix_install_dir]
+<PRE class="code-java">cd [servicemix_install_dir]
 bin/servicemix</PRE>
 </DIV></DIV>
 <P>Using maven, you can launch the following command to build the Service Assembly:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [SM30UG:servicemix_install_dir]/examples/wsdl-first
+<PRE class="code-java">cd [servicemix_install_dir]/examples/wsdl-first
 mvn install</PRE>
 </DIV></DIV>
 <P>Then, you can deploy the Service Assembly along with the needed JBI components on an <B>already started</B> ServiceMix container:</P>
@@ -217,12 +217,12 @@ mvn jbi:projectDeploy</PRE>
 
 <P>First, start a ServiceMix server:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [SM30UG:servicemix_install_dir]
+<PRE class="code-java">cd [servicemix_install_dir]
 bin/servicemix</PRE>
 </DIV></DIV>
 <P>Install the needed components and shared libraries:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [SM30UG:servicemix_install_dir]/components
+<PRE class="code-java">cd [servicemix_install_dir]/components
 cp servicemix-shared* ../install
 cp xxx* ../install</PRE>
 </DIV></DIV>
@@ -230,15 +230,15 @@ cp xxx* ../install</PRE>
 
 <P>From another console, launch the following commands:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [SM30UG:servicemix_install_dir]/examples/wsdl-first/wsdl-first-sa
-cp xxx-sa-3.0-incubating.zip [SM30UG:servicemix_install_dir]/deploy</PRE>
+<PRE class="code-java">cd [servicemix_install_dir]/examples/wsdl-first/wsdl-first-sa
+cp xxx-sa-3.0-incubating.zip [servicemix_install_dir]/deploy</PRE>
 </DIV></DIV>
 
 <H3><A name="4.Examples-Antdeployment"></A>Ant deployment</H3>
 
 <P>You can also use the ant tasks to deploy the JBI artifacts:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [SM30UG:servicemix_install_dir]/components
+<PRE class="code-java">cd [servicemix_install_dir]/components
 
 ant -f ../ant/servicemix-ant-task.xml \
     -Dsm.username=smx \
@@ -262,7 +262,7 @@ ant -f ../ant/servicemix-ant-task.xml \
 
 <P>Then, you can deploy the service assembly:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [SM30UG:servicemix_install_dir]/examples/wsdl-first/
+<PRE class="code-java">cd [servicemix_install_dir]/examples/wsdl-first/
 
 ant -f ../../ant/servicemix-ant-task.xml \
     -Dsm.username=smx \
@@ -270,7 +270,7 @@ ant -f ../../ant/servicemix-ant-task.xml \
     -Dsm.deploy.file=wsdl-first-sa-3.0-incubating.zip
     deploy-service-assembly</PRE>
 </DIV></DIV>
-<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+<P><A href="#4.Examples-top" title="top on 4. Examples">top</A></P>
 
 <H2><A name="4.Examples-StaticconfigurationusingMaven"></A>Static configuration using Maven</H2>
 
@@ -280,7 +280,7 @@ ant -f ../../ant/servicemix-ant-task.xml \
 </UL>
 
 
-<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+<P><A href="#4.Examples-top" title="top on 4. Examples">top</A></P>
 
 <H2><A name="4.Examples-JBIpackagingusingAnt"></A>JBI packaging using Ant</H2>
 
@@ -291,7 +291,7 @@ ant -f ../../ant/servicemix-ant-task.xml \
 </UL>
 
 
-<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+<P><A href="#4.Examples-top" title="top on 4. Examples">top</A></P>
 
 <H2><A name="4.Examples-StaticconfigurationusingAnt"></A>Static configuration using Ant</H2>
 
@@ -305,16 +305,16 @@ ant -f ../../ant/servicemix-ant-task.xml \
 </UL>
 
 
-<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+<P><A href="#4.Examples-top" title="top on 4. Examples">top</A></P>
 
 <H2><A name="4.Examples-Webapplication"></A>Web application</H2>
 
 <UL>
-	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=servicemix-web" title="Create Page in space SM30UG: servicemix-web" class="createlink">SM30UG:servicemix&#45;web<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-web&linkCreation=true&fromPageId=13490" title="Create Page: servicemix-web" class="createlink">servicemix&#45;web<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 </UL>
 
 
-<P><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#top</A></P>
+<P><A href="#4.Examples-top" title="top on 4. Examples">top</A></P>
 <STYLE type="text/css">/*<![CDATA[*/
 table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
 table.ScrollbarTable td.ScrollbarPrevIcon {text-align: center;width: 16px;border: none;}
@@ -375,7 +375,7 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13490&originalId=14674">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13490&originalId=14725">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13490">edit page</A>)
     </DIV>

@@ -79,7 +79,7 @@ RSS
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><A href="../SM30UG/users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
 	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
 	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
@@ -129,27 +129,7 @@ RSS
 <P>This component is used to consume inbound JBI messages and write them to an RSS/Atom feed. You can then use expressions to extract the title and entry content for the items.</P>
 
 <P>The following example shows using XPath expression</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;feedWriter&quot;</SPAN> 
-					 service=<SPAN class="code-quote">&quot;foo:feedWriter&quot;</SPAN>&gt;
-	<SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.rss.FeedWriter&quot;</SPAN>&gt;</SPAN>
 
-   <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;feedFile&quot;</SPAN> value=<SPAN class="code-quote">&quot;file:target/serviceMixFeed.xml&quot;</SPAN> /&gt;</SPAN>
-	
-   <SPAN class="code-tag"><SPAN class="code-comment">&lt;!--  define expressions for the entry title and value --&gt;</SPAN></SPAN>
-   <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;entryTitle&quot;</SPAN>&gt;</SPAN>
-     <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
-       <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;Message &apos;, /sample/@id, &apos; - &apos;, /sample/@sent)&quot;</SPAN> /&gt;</SPAN>
-     <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-   <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-   <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;entryValue&quot;</SPAN>&gt;</SPAN>
-     <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
-       <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;This is an entry with ID &apos;, /sample/@id, &apos; sent: &apos;, /sample/@sent, &apos;. There is not much else in the message to tell :)&apos;)&quot;</SPAN> /&gt;</SPAN>
-     <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
-   <SPAN class="code-tag">&lt;/property&gt;</SPAN>
-  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
-<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
-</DIV></DIV>
 <P>&nbsp;</P></DIV>
           
                   </DIV>
