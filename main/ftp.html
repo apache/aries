@@ -36,7 +36,7 @@ FTP
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="FTP">FTP</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="FTP">FTP</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -113,30 +113,94 @@ FTP
 <!--          
             <div class="pagetitle">FTP</div>
 -->
-            <DIV class="wiki-content">
-<P>This component supports FTP via the <SPAN class="nobr"><A href="http://jakarta.apache.org/commons/net.html" title="Visit page outside Confluence" rel="nofollow">Jakarta Commons Net<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> library.</P>
+            <DIV class="wiki-content"><P>This component supports FTP via the <SPAN class="nobr"><A href="http://jakarta.apache.org/commons/net.html" title="Visit page outside Confluence" rel="nofollow">Jakarta Commons Net<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> library.</P>
 
 <H2><A name="FTP-SendingfilesoverFTP"></A>Sending files over FTP</H2>
 
 <P>The default behaviour of sending files over FTP is for the message content to be the text which gets written into the file. For example this example..</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">InOnly exchange = client.createInOnlyExchange();
+NormalizedMessage message = exchange.getInMessage();
 
+message.setContent(<SPAN class="code-keyword">new</SPAN> StringSource(<SPAN class="code-quote">&quot;&lt;hello&gt;world!&lt;/hello&gt;&quot;</SPAN>));
+
+client.sendSync(exchange);</PRE>
+</DIV></DIV>
 <P>will generate an XML text file on the FTP server. Here is an example of the FTP configuration on the server side.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;ftpSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:ftpSender&quot;</SPAN>&gt;</SPAN>
+   	<SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.net.FTPSender&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;clientPool&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;ftpClientPool&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.net.FTPClientPool&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;host&quot;</SPAN> value=<SPAN class="code-quote">&quot;localhost&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;username&quot;</SPAN> value=<SPAN class="code-quote">&quot;servicemix&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;password&quot;</SPAN> value=<SPAN class="code-quote">&quot;rocks&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <H3><A name="FTP-Usingpropertiestospecifythefilenameorcontent"></A>Using properties to specify the file name or content</H3>
 
 <P>You can use properties on the message to override the destination file name and content. e.g.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">InOnly exchange = client.createInOnlyExchange();
+NormalizedMessage message = exchange.getInMessage();
 
+message.setProperty(<SPAN class="code-quote">&quot;org.apache.servicemix.file.name&quot;</SPAN>, <SPAN class="code-quote">&quot;cheese.txt&quot;</SPAN>);
+message.setProperty(<SPAN class="code-quote">&quot;org.apache.servicemix.file.content&quot;</SPAN>, <SPAN class="code-quote">&quot;Hello World!&quot;</SPAN>);
+
+client.sendSync(exchange);</PRE>
+</DIV></DIV>
 
 <H3><A name="FTP-YoucanalsousepluggableExpressionstoconfigurethefilenameand%2Forfilecontent."></A>You can also use pluggable <A href="expressions.html" title="Expressions">Expressions</A> to configure the file name and/or file content.</H3>
 
 <P>If you do not specify a file name then a unique file name is created using a prefix you can specify (the <EM>uniqueFileName</EM> property).</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;ftpSenderWithExpression&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:ftpSenderWithExpression&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.net.FTPSender&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;clientPool&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;ftpClientPool&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.net.FTPClientPool&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;host&quot;</SPAN> value=<SPAN class="code-quote">&quot;localhost&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;username&quot;</SPAN> value=<SPAN class="code-quote">&quot;servicemix&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;password&quot;</SPAN> value=<SPAN class="code-quote">&quot;rocks&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
 
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;marshaler&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.util.DefaultFileMarshaler&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;fileName&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;order_&apos;, order/@id, &apos;.csv&apos;)&quot;</SPAN>/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;content&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(/order/customer, &apos;,&apos;, /order/value, &apos;,&apos;, /order/@id)&quot;</SPAN>/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <H3><A name="FTP-Pollingforfiles"></A>Polling for files</H3>
 
 <P>The FTPPoller will poll the server (with an optional path) for files on the FTP server then download them, fire them into the normalised message router and then delete them from the FTP server. Here&apos;s an example of this in action.</P>
-</DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;ftpPoller&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:ftpPoller&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.net.FTPPoller&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;clientPool&quot;</SPAN> ref=<SPAN class="code-quote">&quot;ftpClientPool&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;workManager&quot;</SPAN> ref=<SPAN class="code-quote">&quot;workManager&quot;</SPAN>/&gt;</SPAN>
+    &lt;!--
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;path&quot;</SPAN> value=<SPAN class="code-quote">&quot;foo&quot;</SPAN>/&gt;</SPAN>
+    --&gt;
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;period&quot;</SPAN> value=<SPAN class="code-quote">&quot;1000&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV></DIV>
           
                   </DIV>
         </TD>
@@ -146,8 +210,8 @@ FTP
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1999&originalId=5185">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1999&originalId=14796">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1999">edit page</A>)
     </DIV>
