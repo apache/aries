@@ -113,15 +113,35 @@ RSS
 <!--          
             <div class="pagetitle">RSS</div>
 -->
-            <DIV class="wiki-content">
-<P>We support working with RSS and Atom via the <SPAN class="nobr"><A href="http://wiki.java.net/bin/view/Javawsxml/Rome" title="Visit page outside Confluence" rel="nofollow">Rome<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>library. We support both the polling of existing RSS feeds to generate JBI messages and the generation of RSS feeds from JBI messages.</P>
+            <DIV class="wiki-content"><P>We support working with RSS and Atom via the <SPAN class="nobr"><A href="http://wiki.java.net/bin/view/Javawsxml/Rome" title="Visit page outside Confluence" rel="nofollow">Rome<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>library. We support both the polling of existing RSS feeds to generate JBI messages and the generation of RSS feeds from JBI messages.</P>
 
 <H2><A name="RSS-PollingRSS%2FAtomfeeds"></A>Polling RSS/Atom feeds</H2>
 
-<P>To see this component in action see the <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=RSS-binding&linkCreation=true&fromPageId=1899" title="Create Page: RSS-binding" class="createlink">Example<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> in the <A href="download.html" title="Download">binary distribution</A>.</P>
+<P>To see this component in action see the <A href="rss-binding.html" title="RSS-binding">Example</A> in the <A href="download.html" title="Download">binary distribution</A>.</P>
 
 <P>You can configure the RSS component as follows in your servicemix.xml</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- lets poll for updates to news sites --&gt;</SPAN></SPAN>
+<SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;rss&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:rss&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;my:trace&quot;</SPAN>&gt;</SPAN>
+	<SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+		<SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.rss.RssPollingComponent&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;outputType&quot;</SPAN> value=<SPAN class="code-quote">&quot;rss_2.0&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;period&quot;</SPAN> value=<SPAN class="code-quote">&quot;5000&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;lastPolledDate&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;value&gt;</SPAN>2005/08/10<SPAN class="code-tag">&lt;/value&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
 
+
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;urlStrings&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;list&gt;</SPAN>
+      <SPAN class="code-tag">&lt;value&gt;</SPAN>http://newsrss.bbc.co.uk/rss/newsonline_uk_edition/front_page/rss.xml<SPAN class="code-tag">&lt;/value&gt;</SPAN>
+      <SPAN class="code-tag">&lt;value&gt;</SPAN>http://rss.cnn.com/rss/cnn_topstories.rss<SPAN class="code-tag">&lt;/value&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/list&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+		<SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+	<SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <H2><A name="RSS-GeneratingRSS%2FAtomfeeds"></A>Generating RSS/Atom feeds</H2>
@@ -129,7 +149,27 @@ RSS
 <P>This component is used to consume inbound JBI messages and write them to an RSS/Atom feed. You can then use expressions to extract the title and entry content for the items.</P>
 
 <P>The following example shows using XPath expression</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;feedWriter&quot;</SPAN> 
+					 service=<SPAN class="code-quote">&quot;foo:feedWriter&quot;</SPAN>&gt;
+	<SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.rss.FeedWriter&quot;</SPAN>&gt;</SPAN>
 
+   <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;feedFile&quot;</SPAN> value=<SPAN class="code-quote">&quot;file:target/serviceMixFeed.xml&quot;</SPAN> /&gt;</SPAN>
+	
+   <SPAN class="code-tag"><SPAN class="code-comment">&lt;!--  define expressions for the entry title and value --&gt;</SPAN></SPAN>
+   <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;entryTitle&quot;</SPAN>&gt;</SPAN>
+     <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
+       <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;Message &apos;, /sample/@id, &apos; - &apos;, /sample/@sent)&quot;</SPAN> /&gt;</SPAN>
+     <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+   <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+   <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;entryValue&quot;</SPAN>&gt;</SPAN>
+     <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
+       <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;This is an entry with ID &apos;, /sample/@id, &apos; sent: &apos;, /sample/@sent, &apos;. There is not much else in the message to tell :)&apos;)&quot;</SPAN> /&gt;</SPAN>
+     <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+   <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P></DIV>
           
                   </DIV>
@@ -141,7 +181,7 @@ RSS
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1899&originalId=14785">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1899&originalId=14806">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1899">edit page</A>)
     </DIV>

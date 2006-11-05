@@ -36,7 +36,7 @@ Reflection
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="Reflection">Reflection</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="Reflection">Reflection</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -113,21 +113,37 @@ Reflection
 <!--          
             <div class="pagetitle">Reflection</div>
 -->
-            <DIV class="wiki-content">
-<P>There are two JBI components for InOnly and InOut which create dynamic proxies which when methods are invoked they are dispatched into the JBI container.</P>
+            <DIV class="wiki-content"><P>There are two JBI components for InOnly and InOut which create dynamic proxies which when methods are invoked they are dispatched into the JBI container.</P>
 
-<P>For input the JBI components attach the reflection method invocation proxy, method name and arguments to the inbound MessageExchange for the JBI container to route. For output, the attached <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/apidocs/org/servicemix/client/Marshaler.html" title="Visit page outside Confluence" rel="nofollow">Marshaler<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> is used to turn the response into a POJO.</P>
+<P>For input the JBI components attach the reflection method invocation proxy, method name and arguments to the inbound MessageExchange for the JBI container to route. For output, the attached <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/apidocs/org/apache/servicemix/jbi/messaging/PojoMarshaler.html" title="Visit page outside Confluence" rel="nofollow">Marshaler<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> is used to turn the response into a POJO.</P>
 
 <H3><A name="Reflection-InOnly"></A>InOnly</H3>
 
 <P>This example shows an InOnly reflection component being configured. This component then creates a dynamic proxy which when a method is invoked it will be passed into the JBI container.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;proxyCounter&quot;</SPAN>
+      endpoint=<SPAN class="code-quote">&quot;proxyCounter&quot;</SPAN> 
+      service=<SPAN class="code-quote">&quot;foo:proxyCounter&quot;</SPAN> 
+      destinationService=<SPAN class="code-quote">&quot;foo:reflectionCounter&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.reflection.ProxyInOnlyBinding&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;target&quot;</SPAN> ref=<SPAN class="code-quote">&quot;counter&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <H3><A name="Reflection-InOut"></A>InOut</H3>
 
 <P>This example performs an InOut. So the dynamic proxy will call into the JBI container, block until a response is available and then return the unmarshalled value to the caller of the dynamic proxy&apos;s method.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;reflectionCounter&quot;</SPAN>
+           service=<SPAN class="code-quote">&quot;foo:reflectionCounter&quot;</SPAN> 
+           endpoint=<SPAN class="code-quote">&quot;reflectionCounter&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.reflection.ReflectionOutBinding&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;target&quot;</SPAN> ref=<SPAN class="code-quote">&quot;counter&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P></DIV>
           
                   </DIV>
@@ -138,8 +154,8 @@ Reflection
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2008&originalId=5194">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2008&originalId=14805">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2008">edit page</A>)
     </DIV>
