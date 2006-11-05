@@ -1,0 +1,270 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <TITLE>
+BPEL example
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+    </DIV>
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-page">
+            <DIV class="wiki-content">
+<H3><A name="BPELexample-OverviewoftheServiceMix1.xBPELExample"></A>Overview of the ServiceMix 1.x <EM>BPEL</EM> Example</H3>
+
+<P>This document describes how to run ServiceMix&apos;s <EM>BPEL</EM> example and provides details about what it does. For information on the business use case, please refer to: <SPAN class="nobr"><A href="http://www.servicemix.org/Use%20Cases" title="Visit page outside Confluence" rel="nofollow">Use Case for BPEL<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+
+<P>The <EM>BPEL</EM> example illustrates the following:</P>
+<UL>
+	<LI>an example of declarative programming</LI>
+	<LI>how to perform <EM>BPEL</EM> integration with ServiceMix</LI>
+	<LI>how to use <EM>JmsTemplate</EM> for publishing and subscribing to ActiveMQ topics</LI>
+</UL>
+
+
+<P>The XML code for the <EM>BPEL</EM> example is located in the ServiceMix installation directory under the <TT>examples\bpel</TT> directory in the <TT>servicemix.xml</TT> file. It is recommended that you refer to the <TT>servicemix.xml</TT> file while reading this document.</P>
+
+<P>This example has a client application, <EM>JMSClient</EM>, which sends a SOAP message to a ServiceMix binding component called <EM>myComponent</EM>. <EM>myComponent</EM> forwards the request to the PXE BPEL engine and waits for a response. In other words, <EM>JMSClient</EM> places a book order and <EM>myComponent</EM> receives the order and then sends it to the Webservice that takes orders. The client, <EM>JMSClient</EM>, and the binding component, <EM>myComponent</EM>, communicate via JMS; this communication is external to the ServiceMix JBI. <EM>myComponent</EM> and the PXE BPEL service engine communicate internally over the Normalized Message Router (NMR).</P>
+
+<H3><A name="BPELexample-PrerequisitestoRuntheBPELExample"></A>Prerequisites to Run the <EM>BPEL</EM> Example</H3>
+
+<P>The following must be installed to run this example:</P>
+<UL>
+	<LI>Java Standard Edition 5.0</LI>
+	<LI>Ant - <SPAN class="nobr"><A href="http://ant.apache.org/" title="Visit page outside Confluence" rel="nofollow">http://ant.apache.org<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI>PXE - We support <SPAN class="nobr"><A href="http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=wsbpel" title="Visit page outside Confluence" rel="nofollow">WS-BPEL<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> via the <SPAN class="nobr"><A href="http://pxe.fivesight.com/" title="Visit page outside Confluence" rel="nofollow">PXE BPEL Engine<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> from <SPAN class="nobr"><A href="http://www.fivesight.com/" title="Visit page outside Confluence" rel="nofollow">FiveSight<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.
+<BR clear="all">
+<BR clear="all">
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Warning</B><BR>
+<P><B>NOTE:</B> ServiceMix works on any Java SE 1.4 or later environment; however to use PXE a Java SE 5 or later platform is required. Before running this example, use Java 1.5 to start up ServiceMix.</P></TD></TR></TABLE></LI>
+</UL>
+
+
+<H3><A name="BPELexample-RunningtheBPELExample"></A>Running the <EM>BPEL</EM> Example</H3>
+
+<P>Before running this example, the following setup must be done. PXE has a JBI component and deployment unit, which can be auto-deployed in any JBI compliant container, in this case ServiceMix. To use PXE with ServiceMix, the PXE deployment unit must be placed in the <TT>install</TT> directory so it will be auto-deployed in ServiceMix. <B>NOTE:</B> The PXE deployment unit has already been placed into the <TT>install</TT> directory for you - take a look at the <TT>servicemix_install_dir\examples\bpel\install</TT> directory to see the PXE jar file.</P>
+
+<P>Perform the following steps to run the <EM>BPEL</EM> example:</P>
+<OL>
+	<LI>From a command shell, go to the <EM>BPEL</EM> example directory:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [SM:servicemix_install_dir]\examples\bpel</PRE>
+</DIV></DIV>
+<P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed.</P></LI>
+	<LI>Then type:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">[SM:servicemix_install_dir]\bin\servicemix servicemix.xml
+
+OR
+
+..\..\bin\servicemix servicemix.xml</PRE>
+</DIV></DIV>
+<P><BR clear="all"></P></LI>
+	<LI>To trigger the BPEL business process, send it some messages. To do this, compile and run a simple JMS client. The client is built and run from source code using Ant. Execute Ant from the <EM>BPEL</EM> directory: <TT>servicemix_install_dir\examples\bpel</TT>. To run the JMS client type:
+<BR clear="all">
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">ant</PRE>
+</DIV></DIV>
+<P><BR clear="all">
+Ant will compile and run the simple JMS client, <EM>JMSClient</EM>, which performs a JMS based request-response into the ServiceMix container before returning the results to the console.
+<BR clear="all"></P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hint</B><BR>
+<P>Add <EM>$SERVICEMIX_HOME\bin</EM> directory to <EM>$PATH</EM> variable to simplify execution of the example.</P></TD></TR></TABLE></LI>
+</OL>
+
+
+<H3><A name="BPELexample-StoppingtheBPELExample"></A>Stopping the <EM>BPEL</EM> Example</H3>
+
+<P>To terminate the <EM>BPEL</EM> example type &quot;CTRL-C&quot; in the command shell in which it is running and answer &quot;y&quot; to the &quot;Terminate batch job (y/n)?&quot; question.
+<BR clear="all"></P>
+
+<H3><A name="BPELexample-HowitWorks"></A>How it Works</H3>
+
+<P>The diagram below illustrates the logical flow of the program through the <EM>BPEL</EM> components:</P>
+
+<P><BR clear="all">
+<BR clear="all"></P>
+<DIV class="panel" style="border-style: solid; border-color: #ccc; "><DIV class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><B>BPEL Logical Flow Diagram</B></DIV><DIV class="panelContent">
+<P><DIV align="center"><IMG src="bpel-example.data/bpelflow.jpg" border="0"></DIV></P>
+</DIV></DIV>
+<P><BR clear="all">
+<BR clear="all"></P>
+
+<P>The logical flow of the program is:</P>
+<OL>
+	<LI>The <EM>JMSClient</EM>, through ActiveMQConnectionFactory, connects to the topic named &quot;demo.org.servicemix.source&quot; and sends a text message containing the <TT>message.soap</TT> file.</LI>
+	<LI><EM>myComponent</EM>, being a subscriber of the topic &quot;demo.org.servicemix.source,&quot; receives the message.</LI>
+	<LI>The <EM>myComponent</EM> implementation class, JmsServiceComponent, sends the message over the ServiceMix bus to the <EM>PxeBpelEngine</EM> by executing its onMessage() method. The destinationService property defines the destination of the message. <B>NOTE:</B> the destinationService property is found in the <TT>servicemix.xml</TT> file.</LI>
+	<LI><EM>PxeBpelEngine</EM> sends a response back to <EM>myComponent</EM> through the ServiceMix bus, the NMR.</LI>
+	<LI><EM>myComponent</EM> uses the <EM>jmsTemplate</EM> bean to publish the message.</LI>
+	<LI><EM>jmsTemplate</EM> uses the <EM>jmsFactory</EM> bean to get a connection to the port associated with the JMS topic called &quot;demo.org.servicemix.source.&quot; The message is published on the &quot;demo.org.servicemix.source&quot; topic.</LI>
+	<LI><EM>JMSClient</EM>, being a subscriber of topic &quot;demo.org.servicemix.source,&quot; receives the message.</LI>
+	<LI>The response is printed on the console.</LI>
+</OL>
+
+
+<P>Typical output looks like the following:
+<BR clear="all"></P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">ServiceMix ESB: 1.0
+
+Loading ServiceMix from file: servicemix.xml
+[SM:INFO] XmlBeanDefinitionReader - -Loading XML bean definitions from file C:\exist\servicemix\servicemix-1.0.1\examples\bpel\servicemix.xml]
+[SM:INFO] CollectionFactory - -JDK 1.4+ collections available
+[SM:INFO] CollectionFactory - -Commons Collections 3.x available
+[SM:INFO] FileSystemXmlApplicationContext - -Bean factory <SPAN class="code-keyword">for</SPAN> application context
+[SM:org.springframework.context.support.FileSystemXmlApplicationContext;hashCode=110
+2920]: org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans
+[SM:jndi,broker,transactionManager,jmsFactory,jbi];
+ root of BeanFactory hierarchy[SM:INFO] FileSystemXmlApplicationContext - -5 beans defined in application context
+ [SM:org.springframework.context.support.FileSystemXmlApplicationContext;hashCode=1102920]
+[SM:INFO] FileSystemXmlApplicationContext - -Unable to locate MessageSource with name &apos;messageSource&apos;: using <SPAN class="code-keyword">default</SPAN>
+[SM:org.springframework.context.support.DelegatingMessageSource@18e2b22]
+[SM:INFO] FileSystemXmlApplicationContext - -Unable to locate ApplicationEventMulticaster with name &apos;applicationEventMulticaster&apos;:
+using <SPAN class="code-keyword">default</SPAN> [SM:org.springframework.context.event.SimpleApplicationEventMulticaster@13caecd]
+[SM:INFO] DefaultListableBeanFactory - -Pre-instantiating singletons in factory
+ [org.springframework.beans.factory.support.DefaultListableBeanFactory
+defining beans [SM:jndi,broker,transactionManager,jmsFactory,jbi]; root of BeanFactory hierarchy]
+[SM:INFO] DefaultListableBeanFactory - -Creating shared instance of singleton bean&apos;jndi&apos;
+[SM:INFO] DefaultListableBeanFactory - -Creating shared instance of singleton bean &apos;broker&apos;
+[SM:INFO] SpringBrokerContainerFactory - -Loading ActiveMQ broker from configuration: class path resource [SM:activemq.xml]
+[SM:INFO] ActiveMQBeanDefinitionReader - -Loading XML bean definitions from class path resource [SM:activemq.xml]
+[SM:INFO] ActiveMQBeanFactory - -Creating shared instance of singleton bean &apos;broker&apos;
+[SM:INFO] ActiveMQBeanFactory - -Creating shared instance of singleton bean &apos;memoryManager&apos;
+[SM:INFO] ActiveMQBeanFactory - -Creating shared instance of singleton bean &apos;derby-ds&apos;
+[SM:INFO] ActiveMQBeanFactory - -Creating shared instance of singleton bean &apos;mysql-ds&apos;
+[SM:INFO] BrokerContainerImpl - -ActiveMQ 3.1-M6 JMS Message Broker (ID:el2tong-1095-1129854563062-0:0) is starting
+[SM:INFO] BrokerContainerImpl - -For help or more information please see: http:<SPAN class="code-comment">//www.logicblaze.com
+</SPAN>[SM:INFO] JDBCPersistenceAdapter - -Database driver recognized: [SM:apache_derby_embedded_jdbc_driver]
+[SM:INFO] DefaultJDBCAdapter - -Could not create JDBC tables; they could already exist. Failure was:
+CREATE TABLE ACTIVEMQ_MSGS(ID INTEGER NOT NULL, CONTAINER VARCHAR(250), MSGID VARCHAR(250), MSG BLOB, PRIMARY KEY ( ID ) )
+Message: Table/View &apos;ACTIVEMQ_MSGS&apos; already exists in Schema &apos;APP&apos;. SQLState: X0Y32 Vendor code: 20000
+[SM:INFO] DefaultJDBCAdapter - -Could not create JDBC tables; they could already exist. Failure was:
+CREATE TABLE ACTIVEMQ_TXS(XID VARCHAR(250) NOT NULL, PRIMARY KEY ( XID )) Message: Table/View &apos;ACTIVEMQ_TXS&apos; already exists in Schema &apos;APP&apos;. SQLState: X0Y32 Vendor code: 20000
+[SM:INFO] DefaultJDBCAdapter - -Could not create JDBC tables; they could already exist. Failure was:
+CREATE TABLE ACTIVEMQ_ACKS(SUB VARCHAR(250) NOT NULL, CONTAINER VARCHAR(250) NOT NULL, LAST_ACKED_ID INTEGER, SE_ID INTEGER,
+SE_CLIENT_ID VARCHAR(250), SE_CONSUMER_NAME VARCHAR(250), SE_SELECTOR VARCHAR(250), PRIMARY KEY (
+ SUB, CONTAINER )) Message: Table/View &apos;ACTIVEMQ_ACKS&apos; already exists in Schema &apos;APP&apos;. SQLState: X0Y32 Vendor code: 20000
+[SM:INFO] DefaultJDBCAdapter - -Could not create JDBC tables; they could already exist. Failure was:
+ALTER TABLE ACTIVEMQ_MSGS ADD EXPIRATION BIGINT Message: Column &apos;EXPIRATION&apos; already exists in Table/View &apos;APP.ACTIVEMQ_MSGS&apos;. SQLState: X0Y32 Vendor code: 20000
+[SM:INFO] JournalPersistenceAdapter - -Opening journal.
+[SM:INFO] JournalPersistenceAdapter - -Opened journal: Active Journal: using 2 x 20.0 Megs at: ..\<SPAN class="code-keyword">var</SPAN>\journal
+[SM:INFO] JournalPersistenceAdapter - -Journal Recovery Started.
+[SM:INFO] JournalPersistenceAdapter - -Journal Recovered: 0 message(s) in transactions recovered.
+[SM:INFO] TcpTransportServerChannel - -Listening <SPAN class="code-keyword">for</SPAN> connections at: tcp:<SPAN class="code-comment">//el2tong:61616
+</SPAN>[SM:INFO] BrokerConnectorImpl - -ActiveMQ connector started: TcpTransportServerChannel@tcp:<SPAN class="code-comment">//el2tong:61616
+</SPAN>[SM:INFO] BrokerContainerImpl - -ActiveMQ JMS Message Broker (ID:el2tong-1095-1129854563062-0:0) has started
+[SM:INFO] DefaultListableBeanFactory - -Creating shared instance of singleton bean &apos;transactionManager&apos;
+[SM:INFO] DefaultListableBeanFactory - -Creating shared instance of singleton bean &apos;jmsFactory&apos;
+[SM:INFO] DefaultListableBeanFactory - -Creating shared instance of singleton bean &apos;jbi&apos;
+[SM:INFO] ActiveMQConnection - -channel status changed: Channel: TcpTransportChannel: Socket[SM:addr=localhost/127.0.0.1,port=61616,localport=1096] has connected
+[SM:INFO] BrokerContainerImpl - -Adding <SPAN class="code-keyword">new</SPAN> client: ID:el2tong-1095-1129854563062-5:0 on transport: TcpTransportChannel: Socket[SM:addr=/127.0.0.1,port=1096,localport=61616]
+[SM:INFO] JBIContainer - -ServiceMix JBI Container (http:<SPAN class="code-comment">//servicemix.org/) name: defaultJBI running version: ServiceMix.
+</SPAN>[SM:INFO] JBIContainer - -Activating component <SPAN class="code-keyword">for</SPAN>: [SM:container=defaultJBI,name=myComponent,id=myComponent]
+ with service: {uri:fivesight.com/examples/AsyncProcessJBI}JmsService component: org.servicemix.components.jms.JmsServiceComponent@1b82d69
+[SM:INFO] ComponentContextImpl - -Component: myComponent activated endpoint: {uri:fivesight.com/examples/AsyncProcessJBI}JmsService : myComponent</PRE>
+</DIV></DIV>
+
+<H3><A name="BPELexample-Details"></A>Details</H3>
+
+<P>The following table provides more details about the function of each component and bean in the <TT>servicemix.xml</TT> file:
+<BR clear="all">
+<BR clear="all"></P>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh"> Component or Bean ID </TH>
+<TH class="confluenceTh"> Description </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> <EM>jbi</EM> </TD>
+<TD class="confluenceTd"> jbi is the &quot;id&quot; of the JBI container and provides the basic infrastructure services for <EM>myComponent</EM>. During initialization, several singletons are instantiated: <EM>transactionManager</EM>, <EM>broker</EM>, <EM>jmsFactory</EM>, and <EM>jbi</EM>. Also, take note of the properties installationDirPath and deploymentDirPath defined in <TT>servicemix.xml</TT>. ServiceMix automatically installs components found in the folder specified in the installationDirPath property. It automatically deploys component-specific artifacts found in the folder specified in the deploymentDirPath property. </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <EM>JMSClient</EM> </TD>
+<TD class="confluenceTd"> This Java standalone program, through the ActiveMQConnectionFactory, connects to topic &quot;demo.org.servicemix.source.&quot; It then creates a text message from the file <TT>message.soap</TT> and publishes it to the topic &quot;demo.org.servicemix.source,&quot; then requests and waits for a response. It eventually prints the response to the console. </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <EM>myComponent</EM> </TD>
+<TD class="confluenceTd"> This JMS service component subscribes to the &quot;demo.org.servicemix.source&quot; topic via its defaultDestinationName property specified in the <TT>servicemix.xml</TT> configuration file. Through its template property, it uses <EM>jmsFactory</EM> to listen on port 61616 via ActiveMQConnectionFactory. It is implemented by the <EM>JmsServiceComponent</EM> that has an onMessage() method which is called by ActiveMQ when a message arrives on the topic. This method creates a normalized message, which is sent over the ServiceMix bus to the PxeBpelEngine as specified on its destinationService property. </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <EM>jndi</EM> </TD>
+<TD class="confluenceTd"> This bean loads up database and transaction manager resources, which will be used by the other components in the system. More importantly, the JNDI context must be configured so that PXE can be deployed. </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <EM>Pxe-install.jar</EM> </TD>
+<TD class="confluenceTd"> This jarfile is located in the <TT>examples\bpel\install</TT> directory. It contains many files, which in turn contain the classes that implement the PXE BPEL engine. It also has a <TT>jbi.xml</TT> file, which is used by ServiceMix to install the PXE BPEL engine as a ServiceMix service-engine component. Note, that in this file the component type is &quot;service-engine&quot; and the component name is <EM>PxeBpelEngine</EM>. When processes are deployed to the PXE engine (see next row with AsyncProcess-sa.jar), it exposes them as services on the JBI, which can be referenced by other components as destinationService(s), with destinationEnpoint(s) - see the <TT>servicemix.xml</TT> file. </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <EM>AsyncProcess-sa.jar</EM> </TD>
+<TD class="confluenceTd"> This jarfile is located in the <TT>examples\bpel\deploy</TT> directory. It contains a <TT>jbi.xml</TT> file, which references the <EM>PxeBpelEngine</EM>. This ties the processes to the PXE engine described in the previous section. The <TT>jbi.xml</TT> file also references the <TT>AsyncProcess-su.zip</TT> file, which is also contained in the <EM>AsycnProcess-sa.jar</EM> file. This zipfile contains other configuration files and WSDL files, i.e., <TT>pxe-system.xml</TT> and <TT>resource_X.stream</TT>, which describe the services deployed on the PXE engine. </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <EM>broker</EM> </TD>
+<TD class="confluenceTd"> The broker bean uses the <TT>activemq.xml</TT> file to configure the message broker, which handles the JMS messages for the components that require JMS messaging services. </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <EM>transactionManager</EM> </TD>
+<TD class="confluenceTd"> This bean is configured to be the default transaction manager for the jbi container. This transaction manager provides transactional services between the resource adapter (in this case the ActiveMQ resource adapter provided by the jencks JCA container) and components in the jbi container. </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <EM>jmsFactory</EM> </TD>
+<TD class="confluenceTd"> This bean listens on port 61616 and provides a pooled ActiveMQ connection. </TD>
+</TR>
+</TBODY></TABLE>
+
+<H3><A name="BPELexample-RelatedDocumentation"></A>Related Documentation</H3>
+
+<P>For more information on the following topics please see:</P>
+<UL>
+	<LI><SPAN class="nobr"><A href="http://www.activemq.org/Spring%20Support" title="Visit page outside Confluence" rel="nofollow">ActiveMQ related components, jmsFactory, jmsTemplate, broker<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+</UL>
+
+
+<UL>
+	<LI><A href="../SM/glossary.html#Glossary-NMR" title="NMR on Glossary">NMR</A></LI>
+</UL>
+
+
+<UL>
+	<LI><SPAN class="nobr"><A href="http://pxe.fivesight.com/" title="Visit page outside Confluence" rel="nofollow">PXE BPEL Engine<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+</UL>
+
+
+<UL>
+	<LI><SPAN class="nobr"><A href="http://www.servicemix.org/Spring%20support" title="Visit page outside Confluence" rel="nofollow">Spring<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+</UL>
+
+
+<P>For a brief explanation of the XML tags in the <TT>servicemix.xml</TT> file, please see:</P>
+<UL>
+	<LI><SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" title="Visit page outside Confluence" rel="nofollow">XSD<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+</UL>
+</DIV>
+          </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2066&originalId=14755">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2066">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

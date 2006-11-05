@@ -1,0 +1,244 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <TITLE>
+HTTP binding
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+    </DIV>
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-page">
+            <DIV class="wiki-content">
+<H3><A name="HTTPbinding-OverviewoftheServiceMix2.xHTTPBindingExample"></A>Overview of the ServiceMix 2.x <EM>HTTP Binding</EM> Example</H3>
+
+<P>The following procedure describes how to run the <EM>HTTP Binding</EM> example in ServiceMix and provides details regarding what the HTTP Binding does. For information on the business use case, please refer to: <SPAN class="nobr"><A href="http://www.servicemix.org/Use%20Cases" title="Visit page outside Confluence" rel="nofollow">Use Case for HTTP Binding<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.
+<BR clear="all">
+<BR clear="all">
+The HTTP Binding example illustrates:</P>
+<UL>
+	<LI>use of declarative programming</LI>
+	<LI>how to perform an HTTP binding in ServiceMix</LI>
+</UL>
+
+
+<P>The source code for the <EM>HTTP Binding</EM> example is located in the ServiceMix installation directory under the <TT>examples\http-binding</TT> directory in the <TT>servicemix.xml</TT> file. It is recommended that you refer to the source code while reading this document.
+<BR clear="all">
+<BR clear="all">
+In short, this example invokes a web service to ask for a stock price. In more detail, this example shows how to use an HTTP binding to handle a simple HTTP post.  One component acts as the HTTP server, which listens on <SPAN class="nobr"><A href="http://localhost:8912/" title="Visit page outside Confluence" rel="nofollow">http://localhost:8912<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>, while another component invokes a remote service, implemented as an URLEndpoint.  A simple HTTP client is provided so that a simple post can be sent to the server.</P>
+
+<H3><A name="HTTPbinding-RunningtheHTTPBindingExample"></A>Running the <EM>HTTP Binding</EM> Example</H3>
+
+<OL>
+	<LI>From a command shell, go to the HTTP Binding example directory:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [SM:servicemix_install_dir]\examples\http-binding</PRE>
+</DIV></DIV>
+<P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed originally.</P></LI>
+	<LI>Then type:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">[SM:servicemix_install_dir]\bin\servicemix servicemix.xml</PRE>
+</DIV></DIV></LI>
+	<LI>To start sending and receiving messages from the HTTP server, send an initial message. To do this, compile and then run a simple HTTP client. The HTTP client used in this example, is built and run from source code using Ant. Execute Ant from the <EM>HTTP Binding</EM> directory: <TT>servicemix_install_dir\examples\http-binding</TT>. To run the HTTP client type:
+<BR clear="all">
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">ant</PRE>
+</DIV></DIV>
+<P><BR clear="all">
+Ant will compile and run the simple HTTP client, <EM>HttpClient</EM>, which performs a simple post on the HTTP Server into the ServiceMix container, before returning the results to the console.</P></LI>
+</OL>
+
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hint</B><BR>
+<P>Add <EM>$SERVICEMIX_HOME\bin</EM> directory to <EM>$PATH</EM> variable to simplify execution of the example.</P></TD></TR></TABLE>
+<P><BR clear="all"></P>
+
+<H3><A name="HTTPbinding-StoppingtheHTTPBindingExample"></A>Stopping the <EM>HTTP Binding</EM> Example</H3>
+<P>To terminate the <EM>HTTP Binding</EM> example, type &quot;CTRL-C&quot; in the command shell in which it is running and answer &quot;y&quot; to the &quot;Terminate batch job (y/n)?&quot; question.
+<BR clear="all"></P>
+
+<H3><A name="HTTPbinding-HowitWorks"></A>How it Works</H3>
+<P>The diagram below illustrates the flow of messages through the <EM>HTTP Binding</EM> components:
+<BR clear="all">
+<BR clear="all"></P>
+
+<DIV class="panel" style="border-style: solid; border-color: #ccc; "><DIV class="panelHeader" style="border-bottom-style: solid; border-bottom-color: #ccc; "><B>HTTP Binding Example Message Flow Diagram</B></DIV><DIV class="panelContent">
+<P><DIV align="center"><IMG src="http-binding.data/httpflow.jpg" border="0"></DIV></P>
+</DIV></DIV>
+
+<P><BR clear="all">
+Messages flow through the components as follows:</P>
+
+<OL>
+	<LI>HttpClient, a Java stand-alone program, connects to <SPAN class="nobr"><A href="http://localhost:8912/" title="Visit page outside Confluence" rel="nofollow">http://localhost:8912<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> through the URLConnection class. HttpClient sends the file <TT>request.xml</TT> to this port.</LI>
+	<LI>httpReceiver, an HTTP server, being a listener on <SPAN class="nobr"><A href="http://localhost:8912/" title="Visit page outside Confluence" rel="nofollow">http://localhost:8912<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> receives the message.</LI>
+	<LI>httpReceiver sends the message to stockQuote as specified in its destinationService property, via NMR.</LI>
+	<LI>stockQuote sends the message into another service, soapEndpoint for processing.</LI>
+	<LI>soapEndpoint sends the response to stockQuote.</LI>
+	<LI>stockQuote sends the response to httpReceiver via NMR.</LI>
+	<LI>httpReceiver sends the response to <SPAN class="nobr"><A href="http://localhost:8912/" title="Visit page outside Confluence" rel="nofollow">http://localhost:8912<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</LI>
+	<LI>HttpClient reads the response.</LI>
+	<LI>The response is printed on the console.</LI>
+</OL>
+
+
+<P>Typical output looks like the following two screens.</P>
+
+<P>Output from running <TT>[SM:servicemix_install_dir]\bin\servicemix servicemix.xml</TT>: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Loading ServiceMix from file: C:\exist\servicemix\servicemix-2.0.2\examples\http
+-binding\servicemix.xml
+17:34:34.768 EVENT  Starting Jetty/4.2.20RC0
+17:34:34.848 EVENT  Started ServletHttpContext[/]
+17:34:34.858 EVENT  Started SocketListener on 127.0.0.1:8912
+17:34:34.858 EVENT  Started org.mortbay.jetty.Server@1f06dc3</PRE>
+</DIV></DIV>
+
+<P>Output from running Ant: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Buildfile: build.xml
+
+init:
+
+compile:
+
+run:
+     [SM:echo] Running example client
+     [SM:java] &lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;&lt;soap:Envelope xmlns:soap=&quot;htt
+p:<SPAN class="code-comment">//schemas.xmlsoap.org/soap/envelope/<SPAN class="code-quote">&quot; xmlns:xsi=&quot;</SPAN>http://www.w3.org/2001/XMLSch
+</SPAN>ema-instance<SPAN class="code-quote">&quot; xmlns:xsd=&quot;</SPAN>http:<SPAN class="code-comment">//www.w3.org/2001/XMLSchema<SPAN class="code-quote">&quot; xmlns:soapenc=&quot;</SPAN>http:/
+</SPAN>/schemas.xmlsoap.org/soap/encoding/<SPAN class="code-quote">&quot; soap:encodingStyle=&quot;</SPAN>http:<SPAN class="code-comment">//schemas.xmlsoap.
+</SPAN>org/soap/encoding/<SPAN class="code-quote">&quot;&gt;&lt;soap:Body&gt;&lt;n:getQuoteResponse xmlns:n=&quot;</SPAN>urn:xmethods-delayed
+-quotes<SPAN class="code-quote">&quot;&gt;&lt;Result xsi:type=&quot;</SPAN>xsd:<SPAN class="code-object">float</SPAN>&quot;&gt;88.8&lt;/Result&gt;&lt;/n:getQuoteResponse&gt;&lt;/soap:B
+ody&gt;&lt;/soap:Envelope&gt;asdf
+
+BUILD SUCCESSFUL
+Total time: 6 seconds</PRE>
+</DIV></DIV>
+
+<H3><A name="HTTPbinding-Details"></A>Details</H3>
+
+<P>The following table provides more details about the function of each component and bean in the servicemix.xml file:
+<BR clear="all">
+<BR clear="all"></P>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh">Component or Bean ID</TH>
+<TH class="confluenceTh">Description</TH>
+</TR>
+<TR>
+<TD class="confluenceTd"><EM>jbi</EM></TD>
+<TD class="confluenceTd"><EM>jbi</EM> is the &quot;id&quot; of the JBI container and provides the basic infrastructure services for the following components: httpReceiver and stockQuote. During initialization, several singletons are instantiated: URLEndpoint and JBI. After initialization, the components in the JBI container are activated.</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"><EM>httpReceiver</EM></TD>
+<TD class="confluenceTd">This component is an HTTP server that listens at <SPAN class="nobr"><A href="http://localhost/8912" title="Visit page outside Confluence" rel="nofollow">http://localhost/8912<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. It forwards the message it receives from this URL to <EM>stockQuote</EM> as specified in its destinationService property in the <TT>servicemix.xml</TT> file.</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"><EM>stockQuote</EM></TD>
+<TD class="confluenceTd">This is a SaajBinding component that invokes an endpoint service called soapEndpoint. It is implemented by the SaajBinding class which converts an inbound JBI message into a SAAJ (Soap With Attachments for Java) request-response and sends the response back to httpReceiver. This provides a message centric way of invoking SOAP services inside providers such as Apache Axis.  This component invokes a web service to get a stock price. </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"><EM>soapEndpoint</EM></TD>
+<TD class="confluenceTd"> A URLEndpoint object contains a URL, which is used to make connections to the remote party. A stand-alone client can pass a URLEndpoint object to the SOAPConnection method call to send a message.</TD>
+</TR>
+</TBODY></TABLE>
+
+<H3><A name="HTTPbinding-UsefulCodeHints"></A>Useful Code Hints</H3>
+<P>This section describes the start-up sequence and how the ServiceMix container interacts with the <EM>HTTP Binding</EM> application. The Java class files are located in the servicemix-2.0.2.jar file in the ServiceMix installation directory. To review the Java source code, unjar and decompile the .class files or <SPAN class="nobr"><A href="http://www.servicemix.org/Download" title="Visit page outside Confluence" rel="nofollow">download<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> the source code. </P>
+
+<P>Viewing the Java source code is recommended for understanding the information in this section.</P>
+
+<OL>
+	<LI>The ServiceMix container reads the <TT>servicemix.xml</TT> file and instantiates the components specified through SpringJBIContainer class.</LI>
+	<LI>The container calls the afterPropertiesSet() method of the SpringJBIContainer to register the components and the activationSpecs.  In this case, httpReceiver and stockQuote are registered as activationSpecs.</LI>
+	<LI>The SpringJBIContainer uses the ActivationSpec class as the container for component specific properties, such as routing information.</LI>
+</OL>
+
+
+<P>Some of the ActivationSpec methods are:</P>
+<OL>
+	<LI>setId - takes the spring:id=jbi and sets the id of the container to &quot;jbi&quot;</LI>
+	<LI>setcomponentName - sets componentName to httpReceiver on first invocation and &quot;stockQuote&quot; in the next</LI>
+	<LI>setEndpoint - sets the endpoint properties from the servicemix.xml file</LI>
+	<LI>setService - sets the service properties from xml file</LI>
+	<LI>setDestinationService - sets the destinationService for each component</LI>
+</OL>
+
+
+<P><B><EM>HttpConnector</EM> Details</B></P>
+
+<OL>
+	<LI>The ServiceMix container reads the <TT>servicemix.xml</TT> file and to determine that it needs to instantiate a <B>HttpConnector</B>.</LI>
+	<LI>The container calls the init() method of <B>HttpConnector</B>.  The init() method sets the listener&apos;s host and port property for which the <B>HttpConnector</B> will listen.</LI>
+	<LI>The container calls the start() method of <B>HttpConnector</B>. The start() method will:<BR>
+A. Add a listener object to the server property of <B>HttpConnector</B>.<BR>
+B. Create a new HttpContext that contains a ServletHandler class.  The ServletHandler maps requests to servlets that implement the javax.servlet.http.HttpServlet API.  In this case, the ServletHandler maps the request to the BindingServlet class.<BR>
+C. The server property of <B>HttpConnector</B> is started. </LI>
+</OL>
+
+
+<P><B><EM>stockQuote</EM> Details</B></P>
+
+<OL>
+	<LI>HttpConnector sends messages to this component as specified on its destinationService property.  When this component receives a message, its onMessageExchange() method is called by the container.  The onMessageExchange() method will:<BR>
+A. Create a SOAPConnection to be used in sending the message to URLEndpoint.<BR>
+B. Marshall an inbound JBI inbound into a SOAPMessage, before sending it to the URLEndpoint, as specified in the soapEndpoint property of stockQuote.  A response is also requested from the URLEndpoint.<BR>
+C. The response, which is a SOAPMessage, is marshalled into a Normalized Message and is eventually sent to HttpConnector.</LI>
+</OL>
+
+
+<H3><A name="HTTPbinding-RelatedDocumentation"></A>Related Documentation</H3>
+<P>For more information on the following topics please see:</P>
+
+<UL>
+	<LI><A href="../SM/glossary.html#Glossary-NMR" title="NMR on Glossary">NMR</A></LI>
+</UL>
+
+
+<UL>
+	<LI><SPAN class="nobr"><A href="http://java.sun.com/webservices/saaj/index.jsp" title="Visit page outside Confluence" rel="nofollow">SAAJ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+</UL>
+
+
+<P>For more details on the web service which supplies the stock prices, please see: <SPAN class="nobr"><A href="http://xmethods.net/ve2/ViewListing.po?key=uuid:889A05A5-5C03-AD9B-D456-0E54A527EDEE" title="Visit page outside Confluence" rel="nofollow">XMethods<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+
+<P>For a brief explanation of the XML tags in the <TT>servicemi.xml</TT> file, please see:</P>
+
+<UL>
+	<LI><SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix.xsd.html" title="Visit page outside Confluence" rel="nofollow">XSD<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+</UL>
+
+
+<P><BR clear="all"></P>
+
+</DIV>
+          </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2058&originalId=14762">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2058">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

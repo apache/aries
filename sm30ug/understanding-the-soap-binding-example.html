@@ -1,0 +1,77 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <TITLE>
+Understanding the &apos;soap-binding&apos; example
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+    </DIV>
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-page">
+            <DIV class="wiki-content"><P>The soap-binding example aims to demonstrate how one can use the Servicemix-http and servicemix-jsr181 components  to invoke a pojo object as a web service over HTTP.</P>
+
+<P>Here is a breakdown of what happens when you hit the &apos;send&apos; button on the client.html page.</P>
+
+
+<OL>
+	<LI>When send button is clicked, a javascript function(send()) is invoked.</LI>
+	<LI>The javascript function submits an Ajax request to the http endpoint deployed using the serviceunit(binding-su.zip) on the Servicemix-http component.The soap request present in the textfield on the left hand side(see circled content in the above image) is sent a parameter to Ajax request.</LI>
+	<LI>The Httpendpoint  receives the http+soap request and sends the request to the &apos;proxied&apos; pojo endpoint(proxied endpoint reference configuration is shown in the xbean.xml excerpt below) deployed using engine-su.zip over the NMR.<BR>
+Here is the excerpt from the xbean.xml file under<BR>
+[SM:Serivemix installation directory]\servicemix-3.0-M1\examples\soap-binding\src\components\soap
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;http:endpoint service=<SPAN class="code-quote">&quot;demo:simple-service&quot;</SPAN>
+				         endpoint=<SPAN class="code-quote">&quot;simple-service&quot;</SPAN>
+	               role=<SPAN class="code-quote">&quot;consumer&quot;</SPAN>
+	               locationURI=<SPAN class="code-quote">&quot;http://localhost:8192/Service/&quot;</SPAN>
+	               defaultMep=<SPAN class="code-quote">&quot;http://www.w3.org/2004/08/wsdl/in-out&quot;</SPAN>
+                 soap=<SPAN class="code-quote">&quot;true&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV></LI>
+	<LI>The servicemix-jsr181 receives the request from the NMR and invokes the &apos;SimpleService&apos; pojo&apos; &apos;ping&apos; method.</LI>
+	<LI>The &apos;SimpleService&apos; returns the response to the &apos;ping&apos; method and servicemix-jsr181 sends to response back the Httpendpoint over the NMR.<BR>
+Here is the excerpt of the implemenation for the ping method
+<DIV class="code" style="border-style: solid; "><DIV class="codeHeader" style="border-bottom-style: solid; "><B>SimpleService.java</B></DIV><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> PingResponse ping(PingRequest request)
+{  PingResponse response = <SPAN class="code-keyword">new</SPAN> PingResponse();  response.setMessage(<SPAN class="code-quote">&quot;Ping: &quot;</SPAN> + request.getMessage());  <SPAN class="code-keyword">return</SPAN> response;  }</PRE>
+</DIV></DIV>
+<P>This method prefixes a &quot;Ping:&quot; to request recieved and sends it back as the response</P></LI>
+	<LI>The Servicemix-http sends the response back the browser instance from which the ajax request was sent.</LI>
+	<LI>The browser invokes java script function that sets the response field value to the response received.<BR>
+<IMG src="http://photos1.blogger.com/blogger/6580/2940/1600/Soap-client-response.1.jpg" align="absmiddle" border="0"></LI>
+</OL>
+
+
+<P>There are some subtle points to note here</P>
+<OL>
+	<LI>The proxied endpoint is configured using the service=&quot;demo:simple-service&quot; and endpoint=&quot;simple-service&quot; attributes in the http:endpoint configuration in the binding-su&apos;s xbeans.xml file. The values demo:simple-service and simple-service point to service name and endpoint name of the pojo endpoint configuration( service=&quot;demo:simple-service&quot; endpoint=&quot;simple-service&quot; attributes of jsr181:endpoint configuration) in engine-su&apos;s xbean.xml file.</LI>
+	<LI>The Servicemix-http and servicemix-jsr181 components are installed at runtime and not using the servicemix.xml file under [SM:servicemix-home]\examples\soap-binding folder.</LI>
+</OL>
+</DIV>
+          </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=vamsi">Mohan Vamsi</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9006&originalId=14750">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=9006">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>
