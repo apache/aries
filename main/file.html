@@ -36,7 +36,7 @@ File
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="File">File</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="File">File</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -116,11 +116,38 @@ File
             <DIV class="wiki-content"><P>These components write messages to files in a directory or poll files or directories (possibly recursively) to send files into the JBI.</P>
 
 <P>Firstly here is the poller which will poll a file or directory (recursively by default) to find files, which are then sent into the JBI bus</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;filePoller&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:filePoller&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.file.FilePoller&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;workManager&quot;</SPAN> ref=<SPAN class="code-quote">&quot;workManager&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;file&quot;</SPAN> value=<SPAN class="code-quote">&quot;target/test-data/file&quot;</SPAN>/&gt;</SPAN>
+    &lt;!--
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;delete&quot;</SPAN> value=<SPAN class="code-quote">&quot;false&quot;</SPAN>/&gt;</SPAN>
+    --&gt;
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;period&quot;</SPAN> value=<SPAN class="code-quote">&quot;1000&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>Then here&apos;s the sender. We&apos;re using a FileMarshaler here to turn JBI messages into files with an expression using XPath from the message content to generate the file name in the directory.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;fileSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:fileSender&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.file.FileWriter&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;directory&quot;</SPAN> value=<SPAN class="code-quote">&quot;target/test-data/file&quot;</SPAN>/&gt;</SPAN>
 
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;marshaler&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.util.DefaultFileMarshaler&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;fileName&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;sample_&apos;, /sample/@id, &apos;.xml&apos;)&quot;</SPAN>/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>You can if you prefer let the operating system generate temporary file names in the directory specifying an optional prefix and suffix.</P>
@@ -147,8 +174,8 @@ This can be done by configuring the <TT>filter</TT> property on the poller:</P>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 21, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2098&originalId=14365">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2098&originalId=14795">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2098">edit page</A>)
     </DIV>
