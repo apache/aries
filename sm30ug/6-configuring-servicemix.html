@@ -27,7 +27,7 @@ table.ScrollbarTable td.ScrollbarParent {text-align: center;border: none;}
 table.ScrollbarTable td.ScrollbarNextName {text-align: right;border: none;}
 table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border: none;}
 
-/*]]>*/</STYLE><DIV class="Scrollbar"><TABLE class="ScrollbarTable"><TR><TD class="ScrollbarPrevIcon"><A href="5-jbi.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/back_16.gif" width="16" height="16"></A></TD><TD width="33%" class="ScrollbarPrevName"><A href="5-jbi.html">5. JBI</A>&nbsp;</TD><TD width="33%" class="ScrollbarParent"><SUP><A href="users-guide.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/up_16.gif" width="8" height="8"></A></SUP><A href="users-guide.html">User&apos;s Guide</A></TD><TD width="33%" class="ScrollbarNextName">&nbsp;<A href="components.html">Components</A></TD><TD class="ScrollbarNextIcon"><A href="components.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/forwd_16.gif" width="16" height="16"></A></TD></TR></TABLE></DIV>
+/*]]>*/</STYLE><DIV class="Scrollbar"><TABLE class="ScrollbarTable"><TR><TD class="ScrollbarPrevIcon"><A href="5-jbi.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/back_16.gif" width="16" height="16"></A></TD><TD width="33%" class="ScrollbarPrevName"><A href="5-jbi.html">5. JBI</A>&nbsp;</TD><TD width="33%" class="ScrollbarParent"><SUP><A href="../SM/users-guide.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/up_16.gif" width="8" height="8"></A></SUP><A href="../SM/users-guide.html">User&apos;s Guide</A></TD><TD width="33%" class="ScrollbarNextName">&nbsp;<A href="deployment-models.html">Deployment models</A></TD><TD class="ScrollbarNextIcon"><A href="deployment-models.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/forwd_16.gif" width="16" height="16"></A></TD></TR></TABLE></DIV>
 <P><A name="6.ConfiguringServiceMix-top"></A></P>
 
 <H1><A name="6.ConfiguringServiceMix-6.ConfiguringServiceMix"></A>6. Configuring ServiceMix</H1>
@@ -58,7 +58,7 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 </TD>
 <TD class="confluenceTd" valign="top">
 <DIV class="preformatted"><DIV class="preformattedHeader"><B>Main distribution</B></DIV><DIV class="preformattedContent">
-<PRE>[root]
+<PRE>[SM30UG:root]
  |- ant
  |- bin
  |- components
@@ -97,20 +97,20 @@ The following directories may be created:</P>
 <DIV class="preformatted"><DIV class="preformattedHeader"><B>ServiceMix working directory</B></DIV><DIV class="preformattedContent">
 <PRE>smx
  |- components
- |   |- [component-name]
+ |   |- [SM30UG:component-name]
  |   |   |- version-n
  |   |   \- workspace
- |   \- [other-component]
+ |   \- [SM30UG:other-component]
  |       \- ...
  |- service-assemblies
- |   |- [sa-name]
+ |   |- [SM30UG:sa-name]
  |   |   \- version-n
- |   \- [other-sa]
+ |   \- [SM30UG:other-sa]
  |       \- ...
  |- sharedlibs
- |   |- [sl-name]
+ |   |- [SM30UG:sl-name]
  |   |   \- version-n
- |   \- [other-sl]
+ |   \- [SM30UG:other-sl]
  |       \- ...
  \- tmp
 </PRE>
@@ -120,7 +120,7 @@ The following directories may be created:</P>
 
 <P>ServiceMix uses XML configuration files. ServiceMix use the <SPAN class="nobr"><A href="http://geronimo.apache.org/xbean" title="Visit page outside Confluence" rel="nofollow">XBean<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> library to do the XML configuration; which allows you to use regular Spring configuration or our custom XSD based XML configuration.</P>
 
-<P>For a reference guide and to see the XSD see the <A href="../SM/xml-reference.html" title="Xml Reference">Xml Reference</A>.</P>
+<P>For a reference guide and to see the XSD see the <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=Xml%20Reference&linkCreation=true&fromPageId=13935" title="Create Page: Xml Reference" class="createlink">Xml Reference<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
 
 <P>The default ServiceMix installation comes with a number of configuration files that can be changed to fit your needs.  These configuration files are all in the /<TT>conf</TT> directory, which is also included in the classpath.</P>
 <UL>
@@ -169,7 +169,7 @@ The following directories may be created:</P>
 <TR>
 <TD class="confluenceTd"> flowName </TD>
 <TD class="confluenceTd"> String </TD>
-<TD class="confluenceTd"> one of <B><EM>seda</EM></B>, <B><EM>st</EM></B>, <B><EM>jms</EM></B> or <B><EM>jca</EM></B> &#45; see <A href="../SM/nmr-flows.html" title="NMR Flows">NMR Flows</A>. The <B>jms</B> and <B>jca</B> flows can also take an optional jmsURL parameter to explicitly reference an <SPAN class="nobr"><A href="http://www.activemq.org/site/configuring-transports.html" title="Visit page outside Confluence" rel="nofollow">activemq transport<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> e.g. flowName=jms?jmsURL=tcp://localhost:61616 <BR clear="all"> </TD>
+<TD class="confluenceTd"> one of <B><EM>seda</EM></B>, <B><EM>st</EM></B>, <B><EM>jms</EM></B> or <B><EM>jca</EM></B> &#45; see <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=NMR%20Flows&linkCreation=true&fromPageId=13935" title="Create Page: NMR Flows" class="createlink">NMR Flows<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. The <B>jms</B> and <B>jca</B> flows can also take an optional jmsURL parameter to explicitly reference an <SPAN class="nobr"><A href="http://www.activemq.org/site/configuring-transports.html" title="Visit page outside Confluence" rel="nofollow">activemq transport<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> e.g. flowName=jms?jmsURL=tcp://localhost:61616 <BR clear="all"> </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> flowNames </TD>
@@ -316,7 +316,7 @@ The following directories may be created:</P>
 <TD class="confluenceTd"> An array of event listeners to configure on the container.  Event listeners can be used to receive several kind of events wrt to the JBI container. </TD>
 </TR>
 </TBODY></TABLE></TD></TR></TABLE>
-<P>See <A href="../SM/xml-schemas.html" title="Xml schemas">XML Schemas</A> for a full description of these XML elements.</P>
+<P>See <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=Xml%20schemas&linkCreation=true&fromPageId=13935" title="Create Page: Xml schemas" class="createlink">XML Schemas<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for a full description of these XML elements.</P>
 
 <H3><A name="6.ConfiguringServiceMix-Examples"></A>Examples</H3>
 
@@ -428,7 +428,7 @@ table.ScrollbarTable td.ScrollbarParent {text-align: center;border: none;}
 table.ScrollbarTable td.ScrollbarNextName {text-align: right;border: none;}
 table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border: none;}
 
-/*]]>*/</STYLE><DIV class="Scrollbar"><TABLE class="ScrollbarTable"><TR><TD class="ScrollbarPrevIcon"><A href="5-jbi.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/back_16.gif" width="16" height="16"></A></TD><TD width="33%" class="ScrollbarPrevName"><A href="5-jbi.html">5. JBI</A>&nbsp;</TD><TD width="33%" class="ScrollbarParent"><SUP><A href="users-guide.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/up_16.gif" width="8" height="8"></A></SUP><A href="users-guide.html">User&apos;s Guide</A></TD><TD width="33%" class="ScrollbarNextName">&nbsp;<A href="components.html">Components</A></TD><TD class="ScrollbarNextIcon"><A href="components.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/forwd_16.gif" width="16" height="16"></A></TD></TR></TABLE></DIV></DIV>
+/*]]>*/</STYLE><DIV class="Scrollbar"><TABLE class="ScrollbarTable"><TR><TD class="ScrollbarPrevIcon"><A href="5-jbi.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/back_16.gif" width="16" height="16"></A></TD><TD width="33%" class="ScrollbarPrevName"><A href="5-jbi.html">5. JBI</A>&nbsp;</TD><TD width="33%" class="ScrollbarParent"><SUP><A href="../SM/users-guide.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/up_16.gif" width="8" height="8"></A></SUP><A href="../SM/users-guide.html">User&apos;s Guide</A></TD><TD width="33%" class="ScrollbarNextName">&nbsp;<A href="deployment-models.html">Deployment models</A></TD><TD class="ScrollbarNextIcon"><A href="deployment-models.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/forwd_16.gif" width="16" height="16"></A></TD></TR></TABLE></DIV></DIV>
           </DIV>
         </TD>
       </TR>
@@ -437,8 +437,8 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Oct 19, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13935&originalId=14322">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13935&originalId=14602">view change</A>)
                       <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
         <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
           <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">

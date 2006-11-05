@@ -57,7 +57,7 @@ Importing ServiceMix into Eclipse
 <H2><A name="ImportingServiceMixintoEclipse-PreparingtheFilesforEclipse"></A>Preparing the Files for Eclipse</H2>
 
 <OL>
-	<LI>Grab the sources from <A href="../SM/source.html" title="Source">svn</A> or <SPAN class="nobr"><A href="http://servicemix.org/Download" title="Visit page outside Confluence" rel="nofollow">download<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> servicemix source distribution.
+	<LI>Grab the sources from <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=Source&linkCreation=true&fromPageId=13740" title="Create Page: Source" class="createlink">svn<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or <SPAN class="nobr"><A href="http://servicemix.org/Download" title="Visit page outside Confluence" rel="nofollow">download<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> servicemix source distribution.
 <BR clear="all"></LI>
 	<LI>Open a command line and change to the source root folder. Execute the following Maven 2 command to ready the project for Eclipse. It will take around two minutes.
 <DIV class="code"><DIV class="codeContent">
@@ -65,15 +65,15 @@ Importing ServiceMix into Eclipse
 </DIV></DIV>
 <P>In case you did never use Maven before and get errors stating that some plugins or the like are missing, like for example:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">[INFO] Searching repository <SPAN class="code-keyword">for</SPAN> plugin with prefix: &apos;eclipse&apos;.
+<PRE class="code-java">[SM30UG:INFO] Searching repository <SPAN class="code-keyword">for</SPAN> plugin with prefix: &apos;eclipse&apos;.
 Downloading: http:<SPAN class="code-comment">//mirrors.sunsite.dk/maven2/org/apache/servicemix/tooling/jbi-maven-plugin/3.0-incubating/jbi-maven-plugin-3.0-incubating.jar
-</SPAN>[WARNING] Unable to get resource from repository central (http:<SPAN class="code-comment">//repo1.maven.org/maven2)
-</SPAN>[INFO] ------------------------------------------------------------------------
-[ERROR] BUILD ERROR
-[INFO] ------------------------------------------------------------------------
-[INFO] Plugin could not be found - check that the goal name is correct: Unable to download the artifact from any repository</PRE>
+</SPAN>[SM30UG:WARNING] Unable to get resource from repository central (http:<SPAN class="code-comment">//repo1.maven.org/maven2)
+</SPAN>[SM30UG:INFO] ------------------------------------------------------------------------
+[SM30UG:ERROR] BUILD ERROR
+[SM30UG:INFO] ------------------------------------------------------------------------
+[SM30UG:INFO] Plugin could not be found - check that the goal name is correct: Unable to download the artifact from any repository</PRE>
 </DIV></DIV>
-<P>execute the commands stated under &quot;Build ServiceMix...&quot; in the chapters <A href="3-installation.html#3.Installation-WindowsSourceInstallation" title="Windows Source Installation on 3. Installation">Windows</A> / <A href="3-installation.html#3.Installation-UnixSourceInstallation" title="Unix Source Installation on 3. Installation">Unix</A> source installation:</P>
+<P>execute the commands stated under &quot;Build ServiceMix...&quot; in the chapters <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=3.%20Installation&linkCreation=true&fromPageId=13740" title="Create Page: 3. Installation" class="createlink">Windows<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> / <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=3.%20Installation&linkCreation=true&fromPageId=13740" title="Create Page: 3. Installation" class="createlink">Unix<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> source installation:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn -Dprofile=step1
 mvn -Dprofile=step2</PRE>
@@ -192,7 +192,7 @@ There are three main ways to add classes to the classpath:
 <BR clear="all">
 &nbsp;
 <BR clear="all">
-In case you want to reference a dependency, proceed in the same way. In case you do not know which package you shall select, see below at <A href="#ImportingServiceMixintoEclipse-Troubleshooting" title="Troubleshooting on Importing ServiceMix into Eclipse">Troubleshooting</A>.
+In case you want to reference a dependency, proceed in the same way. In case you do not know which package you shall select, see below at <A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#Troubleshooting</A>.
 <BR clear="all">
 &nbsp;
 <BR clear="all">  <IMG src="importing-servicemix-into-eclipse.data/Classpath%20-%20Advanced%20Options%20-%20Variable%20-%20Extend.png" align="absmiddle" border="0"><BR clear="all">
@@ -203,7 +203,7 @@ In case you want to reference a dependency, proceed in the same way. In case you
 			</LI>
 			<LI>You can <B>add arbitrary folders</B> to the classpath. This is usually only needed for your own code. To explain the workflow, let&apos;s assume you did not add any projects, thus your file-binding example does not run but thows errors and the console window contains this message:
 <DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>Error &apos;Bean class [org.apache.servicemix.components.file.FileWriter] not found&apos;
+<PRE>Error &apos;Bean class [SM30UG:org.apache.servicemix.components.file.FileWriter] not found&apos;
 </PRE>
 </DIV></DIV>
 			<OL>
@@ -218,7 +218,7 @@ In case you want to reference a dependency, proceed in the same way. In case you
 <BR clear="all">
 &nbsp;
 <BR clear="all">
-Why this directory? Well, have a closer look at the error message presented above. The package <EM>org.apache.servicemix.components</EM> indicates the location of the missing bean <EM>FileWriter</EM> is <EM>servicemix-components</EM>, and as we need an executable file, the <EM>target\classes</EM> subdirectory is where to look. Of course we shall proof that <EM>FileWriter</EM> really is located here, so execute <EM>dir /s FileWriter.class</EM> in the given directory and watch the output. For further hints, see below at <A href="#ImportingServiceMixintoEclipse-Troubleshooting" title="Troubleshooting on Importing ServiceMix into Eclipse">Troubleshooting</A>.
+Why this directory? Well, have a closer look at the error message presented above. The package <EM>org.apache.servicemix.components</EM> indicates the location of the missing bean <EM>FileWriter</EM> is <EM>servicemix-components</EM>, and as we need an executable file, the <EM>target\classes</EM> subdirectory is where to look. Of course we shall proof that <EM>FileWriter</EM> really is located here, so execute <EM>dir /s FileWriter.class</EM> in the given directory and watch the output. For further hints, see below at <A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#Troubleshooting</A>.
 <BR clear="all">
 &nbsp;
 <BR clear="all">  <IMG src="importing-servicemix-into-eclipse.data/Classpath%20-%20Advanced%20Options%20-%20external%20folder.png" align="absmiddle" border="0"><BR clear="all">
@@ -264,7 +264,7 @@ Why this directory? Well, have a closer look at the error message presented abov
 
 <P>Messages may look like one of the following</P>
 <DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>Error &apos;Bean class [org.apache.servicemix.components.file.FileWriter] not found&apos;
+<PRE>Error &apos;Bean class [SM30UG:org.apache.servicemix.components.file.FileWriter] not found&apos;
 </PRE>
 </DIV></DIV>
 <P>or&nbsp;</P>
@@ -284,7 +284,7 @@ Why this directory? Well, have a closer look at the error message presented abov
 
 <P>Redo this until no class/JAR is missing any more.</P>
 
-<P>See also <A href="3-installation.html#3.Installation-Missinglibraries" title="Missing libraries on 3. Installation">User&apos;s Guide: 3. Installation, Troubleshooting</A>.</P>
+<P>See also <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=3.%20Installation&linkCreation=true&fromPageId=13740" title="Create Page: 3. Installation" class="createlink">User&apos;s Guide: 3. Installation, Troubleshooting<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
 
 <H3><A name="ImportingServiceMixintoEclipse-ProjectswithfailingbuildinEclipseworkspace"></A>Projects with failing build in Eclipse workspace</H3>
 
@@ -304,8 +304,8 @@ Why this directory? Well, have a closer look at the error message presented abov
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Oct 06, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13740&originalId=13995">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13740&originalId=14623">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13740">edit page</A>)
     </DIV>
