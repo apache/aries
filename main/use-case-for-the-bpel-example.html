@@ -36,7 +36,7 @@ Use Case For the BPEL Example
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="example-use-cases.html" title="Example & Use Cases">Example &amp; Use Cases</A>&nbsp;&gt;&nbsp;<A href="use-cases.html" title="Use Cases">Use Cases</A>&nbsp;&gt;&nbsp;<A href="" title="Use Case For the BPEL Example">Use Case For the BPEL Example</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="sandbox.html" title="Sandbox">Sandbox</A>&nbsp;&gt;&nbsp;<A href="example-use-cases.html" title="Example & Use Cases">Example &amp; Use Cases</A>&nbsp;&gt;&nbsp;<A href="use-cases.html" title="Use Cases">Use Cases</A>&nbsp;&gt;&nbsp;<A href="" title="Use Case For the BPEL Example">Use Case For the BPEL Example</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -113,8 +113,7 @@ Use Case For the BPEL Example
 <!--          
             <div class="pagetitle">Use Case For the BPEL Example</div>
 -->
-            <DIV class="wiki-content">
-<P>The <EM>BPEL</EM> example shows how to integrate the PXE BPEL Engine with ServiceMix.  Business Process Execution Language (BPEL) defines a notation for specifying business process behavior based on Web Services.  PXE is a runtime component for executing processes defined by the BPEL4WS 1.1 specification and forthcoming WS-BPEL 2.0 OASIS standard.  The PXE BPEL engine uses JMX to provide management and introspection functionality.   </P>
+            <DIV class="wiki-content"><P>The <EM>BPEL</EM> example shows how to integrate the PXE BPEL Engine with ServiceMix.  Business Process Execution Language (BPEL) defines a notation for specifying business process behavior based on Web Services.  PXE is a runtime component for executing processes defined by the BPEL4WS 1.1 specification and forthcoming WS-BPEL 2.0 OASIS standard.  The PXE BPEL engine uses JMX to provide management and introspection functionality.   </P>
 
 <P>A hypothetical business scenario, which illustrates the BPEL example, is the example of travel agent airline ticketing system that offers online reservations to its customers.  When a customer books a flight, the <EM>reserveTicket</EM> class of the online ticket reservation system publishes its request to the ticketing topic.  The Binding Component, which is capable of communicating both to the external reserveTicket class and the Airline Reservation System, is a subscriber to the ticketing topic and thus receives the request.  The Binding Component then forwards the request via the NMR to the Airline Reservation System inside the PxeBpelEngine service container.  The Airline Reservation System checks its database to see if it can still accommodate the request and generates a response.  After that, the Airline Reservation system sends the response back to the Binding Component again via the NMR.  The Binding Component then publishes it on the ticketing topic.  The reserveTicket class is also a subscriber of the topic and thus receives the message.  Whether the request is granted or not, the reply is published to the customer.</P>
 
@@ -133,8 +132,8 @@ Use Case For the BPEL Example
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=mjarillas">mjarillas</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1920&originalId=5159">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1920&originalId=14759">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1920">edit page</A>)
     </DIV>
