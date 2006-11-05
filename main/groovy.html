@@ -36,7 +36,7 @@ Groovy
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="Groovy">Groovy</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="Groovy">Groovy</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -113,25 +113,69 @@ Groovy
 <!--          
             <div class="pagetitle">Groovy</div>
 -->
-            <DIV class="wiki-content">
-<P>ServiceMix supports <SPAN class="nobr"><A href="http://groovy.codehaus.org/" title="Visit page outside Confluence" rel="nofollow">Groovy<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which allows Groovy scripts to be used as endpoints, transformers or services. This allows you to combine the power of the Groovy scripting language with the ServiceMix JBI container and any off the shelf JBI components to create a very flexible and agile integration solution.</P>
+            <DIV class="wiki-content"><P>ServiceMix supports <SPAN class="nobr"><A href="http://groovy.codehaus.org/" title="Visit page outside Confluence" rel="nofollow">Groovy<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which allows Groovy scripts to be used as endpoints, transformers or services. This allows you to combine the power of the Groovy scripting language with the ServiceMix JBI container and any off the shelf JBI components to create a very flexible and agile integration solution.</P>
 
 <P><IMG src="http://groovy.codehaus.org/images/groovy-logo.png" align="absmiddle" border="0"></P>
 
-<P>The <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/apidocs/org/servicemix/components/groovy/GroovyComponent.html" title="Visit page outside Confluence" rel="nofollow">GroovyComponent<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> is an extension of the <A href="scripting.html" title="Scripting">Scripting</A> support and supports the same variable bindings.</P>
+<P>The <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-components/apidocs/org/apache/servicemix/components/groovy/GroovyComponent.html" title="Visit page outside Confluence" rel="nofollow">GroovyComponent<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> is an extension of the <A href="scripting.html" title="Scripting">Scripting</A> support and supports the same variable bindings.</P>
 
 <H2><A name="Groovy-Example"></A>Example</H2>
 
 <P>Before we go into detail of how you can work with JBI and Groovy in ServiceMix, lets show a simple hello world kinda example.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myServiceUsingXMLText&quot;</SPAN>
+        service=<SPAN class="code-quote">&quot;foo:myServiceUsingXMLText&quot;</SPAN>&gt;
+        <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.groovy.GroovyComponent&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;scriptText&quot;</SPAN>&gt;</SPAN>
+              <SPAN class="code-tag">&lt;value&gt;</SPAN>
+                &lt;![CDATA[
 
-<P>As you can see the component is configured with a piece of Groovy to execute when the service is invoked. (BTW if you wanna see this script in action try the <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/xref-test/org/servicemix/client/ServiceMixClientTest.html" title="Visit page outside Confluence" rel="nofollow">test case<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and <SPAN class="nobr"><A href="http://svn.servicemix.codehaus.org/*checkout*/branches/servicemix-1.1/base/src/test/resources/org/servicemix/client/example.xml" title="Visit page outside Confluence" rel="nofollow">XML config file<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+// lets output some message properties
+outMessage.properties = [foo:<SPAN class="code-quote">&quot;hello&quot;</SPAN>, someList:[1, 2, 3]]
+
+// lets output some non-xml body
+outMessage.bodyText = &quot;&quot;&quot;
+<SPAN class="code-tag">&lt;hello&gt;</SPAN>
+  <SPAN class="code-tag">&lt;world person=<SPAN class="code-quote">&quot;$inMessage.properties.name&quot;</SPAN> location=<SPAN class="code-quote">&quot;London&quot;</SPAN>/&gt;</SPAN>
+<SPAN class="code-tag">&lt;/hello&gt;</SPAN>
+&quot;&quot;&quot;
+                ]]&gt;
+              <SPAN class="code-tag">&lt;/value&gt;</SPAN>
+            <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>As you can see the component is configured with a piece of Groovy to execute when the service is invoked. (BTW if you wanna see this script in action try the <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/xref-test/org/apache/servicemix/client/ServiceMixClientTest.html" title="Visit page outside Confluence" rel="nofollow">test case<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and <SPAN class="nobr"><A href="http://svn.apache.org/viewvc/incubator/servicemix/trunk/core/servicemix-core/src/test/resources/org/apache/servicemix/client/example.xml?revision=HEAD" title="Visit page outside Confluence" rel="nofollow">XML config file<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
 
 <P>Now we&apos;ll go through the various options which are available when working with JBI and Groovy in ServiceMix</P>
 
 <H2><A name="Groovy-Maintainingstateacrossrequests"></A>Maintaining state across requests</H2>
 
 <P>Its often handy to keep track of state across requests. There is a variable called &apos;bindings&apos; which you can use to maintain state...</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;activationSpec componentName=<SPAN class="code-quote">&quot;myServiceImpl&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myServiceImpl&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;component&gt;</SPAN>
+       <SPAN class="code-tag">&lt;bean xmlns=<SPAN class="code-quote">&quot;&quot; class=&quot;</SPAN>org.apache.servicemix.components.groovy.GroovyComponent&quot;&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;scriptText&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;value&gt;</SPAN>
+            &lt;![CDATA[
+if (bindings.counter == null) {
+    bindings.counter = 1
+}
+else {
+    ++bindings.counter
+}
 
+def date = new Date()
+
+outMessage.bodyText = <SPAN class="code-quote">&quot;<SPAN class="code-tag">&lt;response counter=&apos;$bindings.counter&apos; date=&apos;$date&apos;&gt;</SPAN><SPAN class="code-tag">&lt;/response&gt;</SPAN>&quot;</SPAN>
+            ]]&gt;
+          <SPAN class="code-tag">&lt;/value&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/component&gt;</SPAN><SPAN class="code-tag">&lt;/activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <H2><A name="Groovy-WorkingwithJBIproperties"></A>Working with JBI properties</H2>
 
@@ -154,7 +198,7 @@ props.someList = [1, 2, 3]</PRE>
 
 <H2><A name="Groovy-Generatingoutput"></A>Generating output</H2>
 
-<P>Groovy provides various mechanism for generating the output (whether it is the result of a service or a transformation). Which mechnism you use depends on your use case and personal preference.</P>
+<P>Groovy provides various mechanism for generating the output (whether it is the result of a service or a transformation). Which mechanism you use depends on your use case and personal preference.</P>
 
 <H3><A name="Groovy-Stringtemplates"></A>String templates</H3>
 
@@ -173,7 +217,7 @@ props.someList = [1, 2, 3]</PRE>
 
 <H3><A name="Groovy-POJOreturnvalues"></A>POJO return values</H3>
 
-<P>You can return a POJO as the body of a message - which other components can either transform or the default <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/apidocs/org/servicemix/client/Marshaler.html" title="Visit page outside Confluence" rel="nofollow">Marshaler<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> will figure out the right thing to do.</P>
+<P>You can return a POJO as the body of a message - which other components can either transform or the default <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/apidocs/org/apache/servicemix/jbi/messaging/PojoMarshaler.html" title="Visit page outside Confluence" rel="nofollow">Marshaler<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> will figure out the right thing to do.</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-comment">// lets output the body as a POJO
 </SPAN>outMessage.body = [3, 2, 1]</PRE>
@@ -197,8 +241,8 @@ props.someList = [1, 2, 3]</PRE>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2007&originalId=5186">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2007&originalId=14797">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2007">edit page</A>)
     </DIV>
