@@ -46,7 +46,7 @@ There are several components in the <TT>servicemix.xml</TT>file. One component s
 
 <P>From a command shell, go to the Basic example directory:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [SM:servicemix_install_dir]\examples\basic</PRE>
+<PRE class="code-java">cd [servicemix_install_dir]\examples\basic</PRE>
 </DIV></DIV>
 <P><BR clear="all"></P>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hint</B><BR>
@@ -55,7 +55,7 @@ There are several components in the <TT>servicemix.xml</TT>file. One component s
 you probably need to run &quot;ant setup&quot; in <TT>\examples\basic</TT> directory to download additional packages (as Quartz, Common Pools and Common Collection)</P></TD></TR></TABLE>
 <P>Then type:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">[SM:servicemix_install_dir]\bin\servicemix servicemix.xml</PRE>
+<PRE class="code-java">[servicemix_install_dir]\bin\servicemix servicemix.xml</PRE>
 </DIV></DIV>
 <P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed.
 <BR clear="all">
@@ -101,7 +101,7 @@ you probably need to run &quot;ant setup&quot; in <TT>\examples\basic</TT> direc
 <P>Every 5 seconds logging information is written to the console, followed by information from the trace component. Note, that the triggers&apos; property values of &quot;name&quot;, &quot;My Example Job&quot;, &quot;group&quot;, and &quot;ServiceMix&quot; are displayed along with a timestamp. Typical output looks like the following:
 <BR clear="all"></P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">[SM:INFO] TraceComponent - -Exchange: org.servicemix.jbi.messaging.InOnlyImpl@4fdf11 received IN message:
+<PRE class="code-java">[INFO] TraceComponent - -Exchange: org.servicemix.jbi.messaging.InOnlyImpl@4fdf11 received IN message:
 org.servicemix.jbi.messaging.NormalizedMessageImpl@1be0369{properties: {org.servicemix.jms.message=ACTIVEMQ_TEXT_MESSAGE:
 id = 0 ActiveMQMessage{ , jmsMessageID = <SPAN class="code-keyword">null</SPAN>, bodyAsBytes = org.activemq.io.util.ByteArray@1d1fc02,
 readOnlyMessage = <SPAN class="code-keyword">true</SPAN>, jmsClientID = &apos;ID:Lisas-2828-1126207917359-23:0&apos; ,
@@ -175,17 +175,17 @@ Thu Sep 08 12:32:18 PDT 2005&lt;/fireTime&gt;&lt;/timer&gt;}}</PRE>
 
 <H3><A name="Basicold-Issues"></A>Issues</H3>
 
-<P>The ServiceMix 2.0.2 distribution has a known logging bug, so output is not logged to the console. This can be corrected in the <B>source</B>distribution of ServiceMix 2.0.2, by replacing the jencks-all-1.1.1.jar with the jencks-all-1.1.2.jar file. Upgrading to 2.0.3 will also resolve the problem. 2.0.3 release is a developer&apos;s release at this time. Please see <A href="../SM/download.html" title="Download">SM:Download</A> for the latest developer&apos;s release.</P>
+<P>The ServiceMix 2.0.2 distribution has a known logging bug, so output is not logged to the console. This can be corrected in the <B>source</B>distribution of ServiceMix 2.0.2, by replacing the jencks-all-1.1.1.jar with the jencks-all-1.1.2.jar file. Upgrading to 2.0.3 will also resolve the problem. 2.0.3 release is a developer&apos;s release at this time. Please see <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=Download&linkCreation=true&fromPageId=2093" title="Create Page: Download" class="createlink">Download<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for the latest developer&apos;s release.</P>
 
 <P>This procedure explains the work around for 2.0.2.</P>
 <OL>
 	<LI>Download the jencks-all-1.2.jar <SPAN class="nobr"><A href="http://dist.codehaus.org/jencks/jars/jencks-all-1.1.2.jar" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</LI>
-	<LI>Copy the jar file to [SM:servicemix_src_install_dir]\assembly\target\servicemix-2.0.2\bin\servicemix-2.0.2\lib, where [SM:servicemix_src_install_dir] is the directory in which the ServiceMix distribution is located.</LI>
+	<LI>Copy the jar file to [servicemix_src_install_dir]\assembly\target\servicemix-2.0.2\bin\servicemix-2.0.2\lib, where [servicemix_src_install_dir] is the directory in which the ServiceMix distribution is located.</LI>
 	<LI>Delete jencks-all-1.1.1.jar from that directory.</LI>
-	<LI>Place a copy of the jar file in the ServiceMix web directory at [SM:servicemix_src_install_dir]\servicemix-2.0.2\tooling\servicemix-web\target\servicemix-web\WEB-INF as well.</LI>
+	<LI>Place a copy of the jar file in the ServiceMix web directory at [servicemix_src_install_dir]\servicemix-2.0.2\tooling\servicemix-web\target\servicemix-web\WEB-INF as well.</LI>
 	<LI>To run the example in the source distribution:
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [SM:servicemix_src_install_dir]\assembly\target\servicemix-2.0.2\bin\servicemix-2.0.2\bin
+<PRE class="code-java">cd [servicemix_src_install_dir]\assembly\target\servicemix-2.0.2\bin\servicemix-2.0.2\bin
 
 ..\..\bin\servicemix servicemix.xml</PRE>
 </DIV></DIV></LI>
@@ -229,7 +229,7 @@ Thu Sep 08 12:32:18 PDT 2005&lt;/fireTime&gt;&lt;/timer&gt;}}</PRE>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2093&originalId=14763">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2093&originalId=14790">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2093">edit page</A>)
     </DIV>

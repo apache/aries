@@ -40,7 +40,7 @@ The file to be transmitted from the inbox to outbox must be in XML format.</TD><
 
 <P>From a command shell, go to the <EM>File Binding</EM> example directory:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [SM:servicemix_install_dir]\examples\file-binding</PRE>
+<PRE class="code-java">cd [servicemix_install_dir]\examples\file-binding</PRE>
 </DIV></DIV>
 <P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed.</P>
 
@@ -50,7 +50,7 @@ The file to be transmitted from the inbox to outbox must be in XML format.</TD><
 </DIV></DIV>
 <P>Then type:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">[SM:servicemix_install_dir]\bin\servicemix servicemix.xml
+<PRE class="code-java">[servicemix_install_dir]\bin\servicemix servicemix.xml
 
 OR
 
@@ -59,7 +59,7 @@ OR
 <P><BR clear="all">
 After a few seconds, the <TT>sample_xxx.xml</TT>file will appear in the outbox directory. To see this open another command window and do a directory listing on the outbox directory, for example:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">dir [SM:servicemix_install_dir]\examples\file-binding\outbox</PRE>
+<PRE class="code-java">dir [servicemix_install_dir]\examples\file-binding\outbox</PRE>
 </DIV></DIV>
 <P>If you would like to see more files moved from <TT>inbox</TT> to <TT>outbox</TT>, copy another file into the <TT>inbox</TT> directory. The <EM>file binding</EM> program continually polls (every 1000 ms) for new files, so any new file placed in <TT>inbox</TT>, will be transmitted to <TT>outbox</TT>.
 <BR clear="all"> <TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hint</B><BR><BR>
@@ -97,33 +97,33 @@ Add <EM>$SERVICEMIX_HOME/bin</EM> directory to <EM>$PATH</EM> variable to simpli
 <PRE class="code-java">ServiceMix ESB: 1.0.1
 
 Loading ServiceMix from file: servicemix.xml
-[SM:INFO] XmlBeanDefinitionReader - -Loading XML bean definitions from file [C:\Program Files\servicemix-1.0.1\examples\file-binding\servicemi.xml]
-[SM:INFO] FileSystemXmlApplicationContext - -Bean factory <SPAN class="code-keyword">for</SPAN> application context [SM:org.springframework.context.support.FileSystemXmlApplication
-Context;hashCode=7486844]: org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [SM:workManager,jbi]; root of BeanFactory hierarchy
-[SM:INFO] FileSystemXmlApplicationContext - -2 beans defined in application context
-[SM:org.springframework.context.support.FileSystemXmlApplicationContext;hashCode=7486844]
-[SM:INFO] CollectionFactory - -JDK 1.4+ collections available
-[SM:INFO] CollectionFactory - -Commons Collections 3.x available
-[SM:INFO] FileSystemXmlApplicationContext - -Unable to locate MessageSource with name &apos;messageSource&apos;: using <SPAN class="code-keyword">default</SPAN> [SM:org.springframework.conte
+[INFO] XmlBeanDefinitionReader - -Loading XML bean definitions from file [C:\Program Files\servicemix-1.0.1\examples\file-binding\servicemi.xml]
+[INFO] FileSystemXmlApplicationContext - -Bean factory <SPAN class="code-keyword">for</SPAN> application context [org.springframework.context.support.FileSystemXmlApplication
+Context;hashCode=7486844]: org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [workManager,jbi]; root of BeanFactory hierarchy
+[INFO] FileSystemXmlApplicationContext - -2 beans defined in application context
+[org.springframework.context.support.FileSystemXmlApplicationContext;hashCode=7486844]
+[INFO] CollectionFactory - -JDK 1.4+ collections available
+[INFO] CollectionFactory - -Commons Collections 3.x available
+[INFO] FileSystemXmlApplicationContext - -Unable to locate MessageSource with name &apos;messageSource&apos;: using <SPAN class="code-keyword">default</SPAN> [org.springframework.conte
 xt.support.DelegatingMessageSource@1d6776d]
-[SM:INFO] FileSystemXmlApplicationContext - -Unable to locate ApplicationEventMulticaster with name &apos;applicationEventMulticaster&apos;: using defaul
-t [SM:org.springframework.context.event.SimpleApplicationEventMulticaster@4fce71]
-[SM:INFO] DefaultListableBeanFactory - -Pre-instantiating singletons in factory [org.springframework.beans.factory.support.DefaultListableBeanF
-actory defining beans [SM:workManager,jbi]; root of BeanFactory hierarchy]
-[SM:INFO] DefaultListableBeanFactory - -Creating shared instance of singleton bean &apos;workManager&apos;
-[SM:INFO] DefaultListableBeanFactory - -Creating shared instance of singleton bean &apos;jbi&apos;
+[INFO] FileSystemXmlApplicationContext - -Unable to locate ApplicationEventMulticaster with name &apos;applicationEventMulticaster&apos;: using defaul
+t [org.springframework.context.event.SimpleApplicationEventMulticaster@4fce71]
+[INFO] DefaultListableBeanFactory - -Pre-instantiating singletons in factory [org.springframework.beans.factory.support.DefaultListableBeanF
+actory defining beans [workManager,jbi]; root of BeanFactory hierarchy]
+[INFO] DefaultListableBeanFactory - -Creating shared instance of singleton bean &apos;workManager&apos;
+[INFO] DefaultListableBeanFactory - -Creating shared instance of singleton bean &apos;jbi&apos;
 Created MBeanServer with ID: 203c31:106bd250a5b:-7fff:Lisas:1
-[SM:INFO] SpringInitialContextFactory - -Loading JNDI context from: class path resource [SM:jndi.xml]
-[SM:INFO] XmlBeanDefinitionReader - -Loading XML bean definitions from class path resource [SM:jndi.xml]
-[SM:INFO] XmlBeanFactory - -Creating shared instance of singleton bean &apos;jndi&apos;
+[INFO] SpringInitialContextFactory - -Loading JNDI context from: class path resource [jndi.xml]
+[INFO] XmlBeanDefinitionReader - -Loading XML bean definitions from class path resource [jndi.xml]
+[INFO] XmlBeanFactory - -Creating shared instance of singleton bean &apos;jndi&apos;
 RMIConnectorServer started at: service:jmx:rmi:<SPAN class="code-comment">//lisas/jndi/rmi://localhost:1099/defaultJBIJMX
-</SPAN>[SM:INFO] JBIContainer - -ServiceMix JBI Container (http:<SPAN class="code-comment">//servicemix.org/) name: defaultJBI running version: ServiceMix.
-</SPAN>[SM:INFO] JBIContainer - -Activating component <SPAN class="code-keyword">for</SPAN>: [SM:container=defaultJBI,name=fileSender,id=fileSender] with service: fileSender component: org.servicemix.components.file.FileWriter@b1cc87
-[SM:INFO] ComponentContextImpl - -Component: fileSender activated endpoint: fileSender : fileSender
-[SM:INFO] JBIContainer - -Activating component <SPAN class="code-keyword">for</SPAN>: [SM:container=defaultJBI,name=filePoller,id=filePoller] with service: filePoller component: or
+</SPAN>[INFO] JBIContainer - -ServiceMix JBI Container (http:<SPAN class="code-comment">//servicemix.org/) name: defaultJBI running version: ServiceMix.
+</SPAN>[INFO] JBIContainer - -Activating component <SPAN class="code-keyword">for</SPAN>: [container=defaultJBI,name=fileSender,id=fileSender] with service: fileSender component: org.servicemix.components.file.FileWriter@b1cc87
+[INFO] ComponentContextImpl - -Component: fileSender activated endpoint: fileSender : fileSender
+[INFO] JBIContainer - -Activating component <SPAN class="code-keyword">for</SPAN>: [container=defaultJBI,name=filePoller,id=filePoller] with service: filePoller component: or
 g.servicemix.components.file.FilePoller@183e7de
-[SM:INFO] ComponentContextImpl - -Component: filePoller activated endpoint: filePoller : filePoller
-[SM:INFO] DeliveryChannel - -<SPAN class="code-keyword">default</SPAN> destination serviceName <SPAN class="code-keyword">for</SPAN> filePoller = fileSender</PRE>
+[INFO] ComponentContextImpl - -Component: filePoller activated endpoint: filePoller : filePoller
+[INFO] DeliveryChannel - -<SPAN class="code-keyword">default</SPAN> destination serviceName <SPAN class="code-keyword">for</SPAN> filePoller = fileSender</PRE>
 </DIV></DIV>
 <P>Note: In the <TT>servicemix.xml</TT> file, the &quot;destinationService&quot; attribute of the <EM>filePoller</EM> component is &quot;foo:fileSender.&quot; The last line of output (above) shows the NMR using that to deliver the normalized message to <EM>fileSender</EM>.</P>
 
@@ -210,7 +210,7 @@ H. The start() method of PollingComponentSupport, will eventually call super.sta
 
 <P>For more information on the following topics please see:</P>
 <UL>
-	<LI><A href="../SM/glossary.html#Glossary-NMR" title="NMR on Glossary">NMR</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=Glossary&linkCreation=true&fromPageId=1893" title="Create Page: Glossary" class="createlink">NMR<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 </UL>
 
 
@@ -234,7 +234,7 @@ For a brief explanation of the XML tags in the <TT>servicemi.xml</TT> file, plea
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1893&originalId=14764">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1893&originalId=14791">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1893">edit page</A>)
     </DIV>

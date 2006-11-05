@@ -42,12 +42,12 @@ In short, this example invokes a web service to ask for a stock price. In more d
 <OL>
 	<LI>From a command shell, go to the HTTP Binding example directory:
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [SM:servicemix_install_dir]\examples\http-binding</PRE>
+<PRE class="code-java">cd [servicemix_install_dir]\examples\http-binding</PRE>
 </DIV></DIV>
 <P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed originally.</P></LI>
 	<LI>Then type:
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">[SM:servicemix_install_dir]\bin\servicemix servicemix.xml</PRE>
+<PRE class="code-java">[servicemix_install_dir]\bin\servicemix servicemix.xml</PRE>
 </DIV></DIV></LI>
 	<LI>To start sending and receiving messages from the HTTP server, send an initial message. To do this, compile and then run a simple HTTP client. The HTTP client used in this example, is built and run from source code using Ant. Execute Ant from the <EM>HTTP Binding</EM> directory: <TT>servicemix_install_dir\examples\http-binding</TT>. To run the HTTP client type:
 <BR clear="all">
@@ -94,7 +94,7 @@ Messages flow through the components as follows:</P>
 
 <P>Typical output looks like the following two screens.</P>
 
-<P>Output from running <TT>[SM:servicemix_install_dir]\bin\servicemix servicemix.xml</TT>: </P>
+<P>Output from running <TT>[servicemix_install_dir]\bin\servicemix servicemix.xml</TT>: </P>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">Loading ServiceMix from file: C:\exist\servicemix\servicemix-2.0.2\examples\http
@@ -115,8 +115,8 @@ init:
 compile:
 
 run:
-     [SM:echo] Running example client
-     [SM:java] &lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;&lt;soap:Envelope xmlns:soap=&quot;htt
+     [echo] Running example client
+     [java] &lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;&lt;soap:Envelope xmlns:soap=&quot;htt
 p:<SPAN class="code-comment">//schemas.xmlsoap.org/soap/envelope/<SPAN class="code-quote">&quot; xmlns:xsi=&quot;</SPAN>http://www.w3.org/2001/XMLSch
 </SPAN>ema-instance<SPAN class="code-quote">&quot; xmlns:xsd=&quot;</SPAN>http:<SPAN class="code-comment">//www.w3.org/2001/XMLSchema<SPAN class="code-quote">&quot; xmlns:soapenc=&quot;</SPAN>http:/
 </SPAN>/schemas.xmlsoap.org/soap/encoding/<SPAN class="code-quote">&quot; soap:encodingStyle=&quot;</SPAN>http:<SPAN class="code-comment">//schemas.xmlsoap.
@@ -204,7 +204,7 @@ C. The response, which is a SOAPMessage, is marshalled into a Normalized Message
 <P>For more information on the following topics please see:</P>
 
 <UL>
-	<LI><A href="../SM/glossary.html#Glossary-NMR" title="NMR on Glossary">NMR</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=Glossary&linkCreation=true&fromPageId=2058" title="Create Page: Glossary" class="createlink">NMR<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 </UL>
 
 
@@ -234,7 +234,7 @@ C. The response, which is a SOAPMessage, is marshalled into a Normalized Message
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2058&originalId=14762">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2058&originalId=14789">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2058">edit page</A>)
     </DIV>

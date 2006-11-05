@@ -46,12 +46,12 @@ This example shows how to connect the JMS bindings to a simple service component
 <OL>
 	<LI>From a command shell, go to the JMS Binding example directory:
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [SM:servicemix_install_dir]\examples\jms-binding</PRE>
+<PRE class="code-java">cd [servicemix_install_dir]\examples\jms-binding</PRE>
 </DIV></DIV>
 <P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed.</P></LI>
 	<LI>Then type:
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">[SM:servicemix_install_dir]\bin\servicemix servicemix.xml</PRE>
+<PRE class="code-java">[servicemix_install_dir]\bin\servicemix servicemix.xml</PRE>
 </DIV></DIV></LI>
 	<LI>To start sending and receiving of messages from the JMS topics, send JMS an initial message. To do this, compile and run a simple JMS client. The client is built and run from source code using Ant. Execute Ant from the <EM>JMS Binding</EM> directory: <TT>servicemix_install_dir\examples\jms-binding</TT>. To run the JMS client type:
 <BR clear="all">
@@ -99,62 +99,62 @@ Messages flow through the components as follows:</P>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">Loading ServiceMix from file: C:\exist\servicemix\servicemix-2.0.1\examples\jms--binding\servicemix.xml
-[SM:INFO] XBeanXmlBeanDefinitionReader - Loading XML bean definitions from file [C:\exist\servicemix\servicemix-2.0.1\examples\jms-binding\servicemix.xml]
-[SM:INFO] FileSystemXmlApplicationContext - Bean factory <SPAN class="code-keyword">for</SPAN> application context [SM:org.xbean.spring.context.FileSystemXmlApplicationContext;hashCode=22540508]: 
- org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans[SM:jbi,jencks,broker,
+[INFO] XBeanXmlBeanDefinitionReader - Loading XML bean definitions from file [C:\exist\servicemix\servicemix-2.0.1\examples\jms-binding\servicemix.xml]
+[INFO] FileSystemXmlApplicationContext - Bean factory <SPAN class="code-keyword">for</SPAN> application context [org.xbean.spring.context.FileSystemXmlApplicationContext;hashCode=22540508]: 
+ org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans[jbi,jencks,broker,
 transactionContextManager,transactionManager,jmsFactory]; root of BeanFactory hierarchy
-[SM:INFO] FileSystemXmlApplicationContext - 6 beans defined in application context [SM:org.xbean.spring.context.FileSystemXmlApplicationContext;hashCode=22540508]
-[SM:INFO] CollectionFactory - JDK 1.4+ collections available
-[SM:INFO] CollectionFactory - Commons Collections 3.x available
-[SM:INFO] FileSystemXmlApplicationContext - Unable to locate MessageSource with name &apos;messageSource&apos;: using <SPAN class="code-keyword">default</SPAN> [SM:org.springframework.context.support.Delegating
+[INFO] FileSystemXmlApplicationContext - 6 beans defined in application context [org.xbean.spring.context.FileSystemXmlApplicationContext;hashCode=22540508]
+[INFO] CollectionFactory - JDK 1.4+ collections available
+[INFO] CollectionFactory - Commons Collections 3.x available
+[INFO] FileSystemXmlApplicationContext - Unable to locate MessageSource with name &apos;messageSource&apos;: using <SPAN class="code-keyword">default</SPAN> [org.springframework.context.support.Delegating
 MessageSource@a8c488]
-[SM:INFO] FileSystemXmlApplicationContext - Unable to locate ApplicationEventMulticaster with name &apos;applicationEventMulticaster&apos;: 
-using <SPAN class="code-keyword">default</SPAN> [SM:org.springframework.context.event.SimpleApplicationEventMulticaster@76cbf7]
-[SM:INFO] DefaultListableBeanFactory - Pre-instantiating singletons in factory [org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans
- [SM:jbi,jencks,broker,transactionContextManager,transactionManager,jmsFactory]; root of BeanFactory hierarchy]
-[SM:INFO] SpringBrokerContainerFactory - Loading ActiveMQ broker from configuration: class path resource [SM:activemq.xml]
-[SM:INFO] ActiveMQBeanDefinitionReader - Loading XML bean definitions from class path resource [SM:activemq.xml]
-[SM:INFO] BrokerContainerImpl - ActiveMQ 3.2 JMS Message Broker (ID:el2tong-1857-1132035585799-1:0) is starting
-[SM:INFO] BrokerContainerImpl - For help or more information please see: http:<SPAN class="code-comment">//www.logicblaze.com
-</SPAN>[SM:INFO] JDBCPersistenceAdapter - Database driver recognized: [SM:apache_derby_embedded_jdbc_driver]
-[SM:INFO] DefaultJDBCAdapter - Could not create JDBC tables; they could already exist. Failure was: 
+[INFO] FileSystemXmlApplicationContext - Unable to locate ApplicationEventMulticaster with name &apos;applicationEventMulticaster&apos;: 
+using <SPAN class="code-keyword">default</SPAN> [org.springframework.context.event.SimpleApplicationEventMulticaster@76cbf7]
+[INFO] DefaultListableBeanFactory - Pre-instantiating singletons in factory [org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans
+ [jbi,jencks,broker,transactionContextManager,transactionManager,jmsFactory]; root of BeanFactory hierarchy]
+[INFO] SpringBrokerContainerFactory - Loading ActiveMQ broker from configuration: class path resource [activemq.xml]
+[INFO] ActiveMQBeanDefinitionReader - Loading XML bean definitions from class path resource [activemq.xml]
+[INFO] BrokerContainerImpl - ActiveMQ 3.2 JMS Message Broker (ID:el2tong-1857-1132035585799-1:0) is starting
+[INFO] BrokerContainerImpl - For help or more information please see: http:<SPAN class="code-comment">//www.logicblaze.com
+</SPAN>[INFO] JDBCPersistenceAdapter - Database driver recognized: [apache_derby_embedded_jdbc_driver]
+[INFO] DefaultJDBCAdapter - Could not create JDBC tables; they could already exist. Failure was: 
 CREATE TABLE ACTIVEMQ_MSGS(ID INTEGER NOT NULL, CONTAINER VARCHAR(250), MSGID VARCHAR(250), MSG BLOB, PRIMARY KEY ( ID ) ) Message: Table/View
 &apos;ACTIVEMQ_MSGS&apos; already exists in Schema &apos;APP&apos;. SQLState: X0Y32 Vendor code: 20000
-[SM:INFO] DefaultJDBCAdapter - Could not create JDBC tables; they could already exist. Failure was:
+[INFO] DefaultJDBCAdapter - Could not create JDBC tables; they could already exist. Failure was:
  CREATE TABLE ACTIVEMQ_TXS(XID VARCHAR(250) NOT NULL, PRIMARY KE
 Y ( XID )) Message: Table/View &apos;ACTIVEMQ_TXS&apos; already exists in Schema &apos;APP&apos;. SQLState: X0Y32 Vendor code: 20000
-[SM:INFO] DefaultJDBCAdapter - Could not create JDBC tables; they could already exist. Failure was: CREATE TABLE ACTIVEMQ_ACKS(SUB VARCHAR(250) NOT NULL, CONTAINER
+[INFO] DefaultJDBCAdapter - Could not create JDBC tables; they could already exist. Failure was: CREATE TABLE ACTIVEMQ_ACKS(SUB VARCHAR(250) NOT NULL, CONTAINER
  VARCHAR(250) NOT NULL, LAST_ACKED_ID INTEGER, SE_ID INTEGER, SE_CLIENT_ID VARCHAR(250), SE_CONSUMER_NAME VARCHAR(250), SE_SELECTOR VARCHAR(250), PRIMARY KEY (
 SUB, CONTAINER )) Message: Table/View &apos;ACTIVEMQ_ACKS&apos; already exists in Schema &apos;APP&apos;. SQLState: X0Y32 Vendor code: 20000
-[SM:INFO] DefaultJDBCAdapter - Could not create JDBC tables; they could already exist. Failure was: ALTER TABLE ACTIVEMQ_MSGS ADD EXPIRATION BIGINT Message: Column
+[INFO] DefaultJDBCAdapter - Could not create JDBC tables; they could already exist. Failure was: ALTER TABLE ACTIVEMQ_MSGS ADD EXPIRATION BIGINT Message: Column
  &apos;EXPIRATION&apos; already exists in Table/View &apos;APP.ACTIVEMQ_MSGS&apos;. SQLState: X0Y32 Vendor code: 20000
-[SM:INFO] DefaultJDBCAdapter - Could not create JDBC tables; they could already exist. Failure was: ALTER TABLE ACTIVEMQ_MSGS ADD SENT_TO_DEADLETTER CHAR(1) 
+[INFO] DefaultJDBCAdapter - Could not create JDBC tables; they could already exist. Failure was: ALTER TABLE ACTIVEMQ_MSGS ADD SENT_TO_DEADLETTER CHAR(1) 
 Message: Column &apos;SENT_TO_DEADLETTER&apos; already exists in Table/View &apos;APP.ACTIVEMQ_MSGS&apos;. SQLState: X0Y32 Vendor code: 20000
-[SM:INFO] JournalPersistenceAdapter - Opening journal.
-[SM:INFO] JournalPersistenceAdapter - Opened journal: Active Journal: using 2 x 20.0 Megs at: ..\<SPAN class="code-keyword">var</SPAN>\journal
-[SM:INFO] JournalPersistenceAdapter - Journal Recovery Started.
-[SM:INFO] JournalPersistenceAdapter - Journal Recovered: 0 message(s) in transactions recovered.
-[SM:INFO] TcpTransportServerChannel - Listening <SPAN class="code-keyword">for</SPAN> connections at: tcp:<SPAN class="code-comment">//el2tong:61616
-</SPAN>[SM:INFO] BrokerConnectorImpl - ActiveMQ connector started: TcpTransportServerChannel@tcp:<SPAN class="code-comment">//el2tong:61616
-</SPAN>[SM:INFO] BrokerContainerImpl - ActiveMQ JMS Message Broker (ID:el2tong-1857-1132035585799-1:0) has started
-[SM:INFO] JCAContainer - Jencks JCA Container (http:<SPAN class="code-comment">//jencks.org/) has started running version: 1.1
-</SPAN>[SM:INFO] SpringInitialContextFactory - Loading JNDI context from: class path resource [SM:jndi.xml]
-[SM:INFO] XBeanXmlBeanDefinitionReader - Loading XML bean definitions from class path resource [SM:jndi.xml]
-[SM:INFO] JBIContainer - Activating component <SPAN class="code-keyword">for</SPAN>: [SM:container=defaultJBI,name=#SubscriptionManager#,id=#SubscriptionManager#]
+[INFO] JournalPersistenceAdapter - Opening journal.
+[INFO] JournalPersistenceAdapter - Opened journal: Active Journal: using 2 x 20.0 Megs at: ..\<SPAN class="code-keyword">var</SPAN>\journal
+[INFO] JournalPersistenceAdapter - Journal Recovery Started.
+[INFO] JournalPersistenceAdapter - Journal Recovered: 0 message(s) in transactions recovered.
+[INFO] TcpTransportServerChannel - Listening <SPAN class="code-keyword">for</SPAN> connections at: tcp:<SPAN class="code-comment">//el2tong:61616
+</SPAN>[INFO] BrokerConnectorImpl - ActiveMQ connector started: TcpTransportServerChannel@tcp:<SPAN class="code-comment">//el2tong:61616
+</SPAN>[INFO] BrokerContainerImpl - ActiveMQ JMS Message Broker (ID:el2tong-1857-1132035585799-1:0) has started
+[INFO] JCAContainer - Jencks JCA Container (http:<SPAN class="code-comment">//jencks.org/) has started running version: 1.1
+</SPAN>[INFO] SpringInitialContextFactory - Loading JNDI context from: class path resource [jndi.xml]
+[INFO] XBeanXmlBeanDefinitionReader - Loading XML bean definitions from class path resource [jndi.xml]
+[INFO] JBIContainer - Activating component <SPAN class="code-keyword">for</SPAN>: [container=defaultJBI,name=#SubscriptionManager#,id=#SubscriptionManager#]
  with service: <SPAN class="code-keyword">null</SPAN> component: org.servicemix.jbi.nmr.SubscriptionManager@1315415
-[SM:INFO] JBIContainer - ServiceMix JBI Container (http:<SPAN class="code-comment">//servicemix.org/) name: defaultJBI running version: 2.0.1
-</SPAN>[SM:INFO] JBIContainer - Activating component <SPAN class="code-keyword">for</SPAN>: [SM:container=defaultJBI,name=inputReceiver,id=inputReceiver]
+[INFO] JBIContainer - ServiceMix JBI Container (http:<SPAN class="code-comment">//servicemix.org/) name: defaultJBI running version: 2.0.1
+</SPAN>[INFO] JBIContainer - Activating component <SPAN class="code-keyword">for</SPAN>: [container=defaultJBI,name=inputReceiver,id=inputReceiver]
  with service: {http:<SPAN class="code-comment">//servicemix.org/demo/}inputReceiver component: org.servicemix.components.jms.JmsInUsingJCABinding@1786a3c
-</SPAN>[SM:INFO] JCAConnector - Activating endpoint <SPAN class="code-keyword">for</SPAN> activationSpec: ActiveMQActivationSpec{acknowledgeMode=&apos;Auto-acknowledge&apos;, destinationType=&apos;javax.jms.Topic&apos;, mess
+</SPAN>[INFO] JCAConnector - Activating endpoint <SPAN class="code-keyword">for</SPAN> activationSpec: ActiveMQActivationSpec{acknowledgeMode=&apos;Auto-acknowledge&apos;, destinationType=&apos;javax.jms.Topic&apos;, mess
 ageSelector=&apos;<SPAN class="code-keyword">null</SPAN>&apos;, destination=&apos;demo.org.servicemix.source&apos;, clientId=&apos;<SPAN class="code-keyword">null</SPAN>&apos;, subscriptionName=&apos;<SPAN class="code-keyword">null</SPAN>&apos;, subscriptionDurability=&apos;NonDurable&apos;} using endpointFacto
-ry: org.jencks.SingletonEndpointFactory@d0d12e[SM:transactionManager=org.apache.geronimo.transaction.context.GeronimoTransactionManager@1554233]
-[SM:INFO] ComponentContextImpl - Component: inputReceiver activated endpoint: {http:<SPAN class="code-comment">//servicemix.org/demo/}inputReceiver : inputReceiver
-</SPAN>[SM:INFO] JBIContainer - Activating component <SPAN class="code-keyword">for</SPAN>: [SM:container=defaultJBI,name=outputSender,id=outputSender] with service:
+ry: org.jencks.SingletonEndpointFactory@d0d12e[transactionManager=org.apache.geronimo.transaction.context.GeronimoTransactionManager@1554233]
+[INFO] ComponentContextImpl - Component: inputReceiver activated endpoint: {http:<SPAN class="code-comment">//servicemix.org/demo/}inputReceiver : inputReceiver
+</SPAN>[INFO] JBIContainer - Activating component <SPAN class="code-keyword">for</SPAN>: [container=defaultJBI,name=outputSender,id=outputSender] with service:
  {http:<SPAN class="code-comment">//servicemix.org/demo/}outputSender component: org.servicemix.components.jms.JmsSenderComponent@1c6d11a
-</SPAN>[SM:INFO] ComponentContextImpl - Component: outputSender activated endpoint: {http:<SPAN class="code-comment">//servicemix.org/demo/}outputSender : outputSender
-</SPAN>[SM:INFO] ActiveMQConnection - channel status changed: Channel: TcpTransportChannel: Socket[SM:addr=localhost/127.0.0.1,port=61616,localport=1863] has connected
-[SM:INFO] BrokerContainerImpl - Adding <SPAN class="code-keyword">new</SPAN> client: ID:el2tong-1857-1132035585799-11:0 on transport: TcpTransportChannel:
- Socket[SM:addr=/127.0.0.1,port=1863,localport=61616]</PRE>
+</SPAN>[INFO] ComponentContextImpl - Component: outputSender activated endpoint: {http:<SPAN class="code-comment">//servicemix.org/demo/}outputSender : outputSender
+</SPAN>[INFO] ActiveMQConnection - channel status changed: Channel: TcpTransportChannel: Socket[addr=localhost/127.0.0.1,port=61616,localport=1863] has connected
+[INFO] BrokerContainerImpl - Adding <SPAN class="code-keyword">new</SPAN> client: ID:el2tong-1857-1132035585799-11:0 on transport: TcpTransportChannel:
+ Socket[addr=/127.0.0.1,port=1863,localport=61616]</PRE>
 </DIV></DIV>
 
 <H3><A name="jms-binding-Details"></A>Details</H3>
@@ -208,7 +208,7 @@ ry: org.jencks.SingletonEndpointFactory@d0d12e[SM:transactionManager=org.apache.
 
 
 <UL>
-	<LI><A href="../SM/glossary.html#Glossary-NMR" title="NMR on Glossary">NMR</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=Glossary&linkCreation=true&fromPageId=2073" title="Create Page: Glossary" class="createlink">NMR<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 </UL>
 
 
@@ -237,7 +237,7 @@ For a brief explanation of the XML tags in the <TT>servicemi.xml</TT> file, plea
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2073&originalId=14761">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2073&originalId=14788">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2073">edit page</A>)
     </DIV>

@@ -43,11 +43,11 @@ This example shows how to use a Quartz component to set off a trigger, that send
 
 <P>From a command shell, go to the Quartz example directory:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [SM:servicemix_install_dir]\examples\quartz-binding</PRE>
+<PRE class="code-java">cd [servicemix_install_dir]\examples\quartz-binding</PRE>
 </DIV></DIV>
 <P>Then type:</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">[SM:servicemix_install_dir]\bin\servicemix servicemix.xml</PRE>
+<PRE class="code-java">[servicemix_install_dir]\bin\servicemix servicemix.xml</PRE>
 </DIV></DIV>
 <P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed.
 <BR clear="all"></P>
@@ -77,7 +77,7 @@ This example shows how to use a Quartz component to set off a trigger, that send
 <BR clear="all">
 <BR clear="all">
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">[SM:INFO] TraceComponent - -Exchange: org.servicemix.jbi.messaging.InOnlyImpl@4fdf11 received IN message: 
+<PRE class="code-java">[INFO] TraceComponent - -Exchange: org.servicemix.jbi.messaging.InOnlyImpl@4fdf11 received IN message: 
 org.servicemix.jbi.messaging.NormalizedMessageImpl@1be0369{properties: {org.servicemix.jms.message=ACTIVEMQ_TEXT_MESSAGE: 
 id = 0 ActiveMQMessage{ , jmsMessageID = <SPAN class="code-keyword">null</SPAN>, bodyAsBytes = org.activemq.io.util.ByteArray@1d1fc02, 
 readOnlyMessage = <SPAN class="code-keyword">true</SPAN>, jmsClientID = &apos;ID:Lisas-2828-1126207917359-23:0&apos; ,
@@ -117,20 +117,20 @@ Thu Sep 08 12:32:18 PDT 2005&lt;/fireTime&gt;&lt;/timer&gt;}}</PRE>
 </TBODY></TABLE>
 
 <H3><A name="quartz-binding-Issues"></A>Issues</H3>
-<P>The ServiceMix 2.0.2 distribution has a known logging bug, so output is not logged to the console, currently.  There are two ways to fix this problem. The first solution is to upgrade to 2.0.3 or greater. Please see <A href="../SM/download.html" title="Download">SM:Download</A> for the latest releases. If 2.0.2 is still the latest/current release, then download a developer&apos;s release of 2.0.3.</P>
+<P>The ServiceMix 2.0.2 distribution has a known logging bug, so output is not logged to the console, currently.  There are two ways to fix this problem. The first solution is to upgrade to 2.0.3 or greater. Please see <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=Download&linkCreation=true&fromPageId=2114" title="Create Page: Download" class="createlink">Download<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for the latest releases. If 2.0.2 is still the latest/current release, then download a developer&apos;s release of 2.0.3.</P>
 
 <P>The other solution is to replace the jencks-all-1.1.1.jar with the jencks-all-1.1.2.jar file. Note: This can only be done for the <B>source</B> version of ServiceMix 2.0.2. To apply the fix, perform the following steps:</P>
 <OL>
 	<LI>Download the jencks-all-1.2.jar <SPAN class="nobr"><A href="http://dist.codehaus.org/jencks/jars/jencks-all-1.1.2.jar" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</LI>
-	<LI>Copy the jar file to [SM:servicemix_src_install_dir]\assembly\target\servicemix-2.0.2\bin\servicemix-2.0.2\lib, where [SM:servicemix_src_install_dir] is the directory in which the ServiceMix distribution is located.</LI>
+	<LI>Copy the jar file to [servicemix_src_install_dir]\assembly\target\servicemix-2.0.2\bin\servicemix-2.0.2\lib, where [servicemix_src_install_dir] is the directory in which the ServiceMix distribution is located.</LI>
 	<LI>Delete jencks-all-1.1.1.jar from that directory.</LI>
-	<LI>Place a copy of the jar file in the ServiceMix web directory  at [SM:servicemix_src_install_dir]\servicemix-2.0.2\tooling\servicemix-web\target\servicemix-web\WEB-INF as well.</LI>
+	<LI>Place a copy of the jar file in the ServiceMix web directory  at [servicemix_src_install_dir]\servicemix-2.0.2\tooling\servicemix-web\target\servicemix-web\WEB-INF as well.</LI>
 	<LI>To run the example in the source distribution:</LI>
 </OL>
 
 
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">cd [SM:servicemix_src_install_dir]\assembly\target\servicemix-2.0.2\bin\servicemix-2.0.2\bin
+<PRE class="code-java">cd [servicemix_src_install_dir]\assembly\target\servicemix-2.0.2\bin\servicemix-2.0.2\bin
 
 ..\..\bin\servicemix servicemix.xml</PRE>
 </DIV></DIV>
@@ -166,7 +166,7 @@ Thu Sep 08 12:32:18 PDT 2005&lt;/fireTime&gt;&lt;/timer&gt;}}</PRE>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=rajdavies">Rob Davies</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2114&originalId=14748">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2114&originalId=14780">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2114">edit page</A>)
     </DIV>
