@@ -36,7 +36,7 @@ HTTP
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="HTTP">HTTP</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="HTTP">HTTP</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -121,23 +121,59 @@ HTTP
 <H3><A name="HTTP-ClientsideHTTPinvocation"></A>Client side HTTP invocation</H3>
 
 <P>This JBI component uses <SPAN class="nobr"><A href="http://jakarta.apache.org/commons/httpclient/" title="Visit page outside Confluence" rel="nofollow">Commons HttpClient<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to perform client side HTTP invocations. Here is a typical example of a JBI component which performs a HTTP invocation when it is invoked.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;httpSender&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:httpSender&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.http.HttpInvoker&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;url&quot;</SPAN> value=<SPAN class="code-quote">&quot;http://localhost:8912&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <H3><A name="HTTP-ServersideHTTPbinding"></A>Server side HTTP binding</H3>
 
 <P>This JBI component will expose another JBI component over HTTP on some port and HTTP configuration. We use an embedded <SPAN class="nobr"><A href="http://mortbay.com/jetty/index.html" title="Visit page outside Confluence" rel="nofollow">Jetty<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> component for this, though we also have a <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/apidocs/org/servicemix/components/http/BindingServlet.html" title="Visit page outside Confluence" rel="nofollow">BindingServlet<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which can be configured from inside any web.xml in a Servlet WAR.</P>
 
 <P>Here&apos;s an example of configuring the default HTTP connector.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;httpReceiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:httpBinding&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:httpSender2&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.http.HttpConnector&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;host&quot;</SPAN> value=<SPAN class="code-quote">&quot;localhost&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;port&quot;</SPAN> value=<SPAN class="code-quote">&quot;8912&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <H2><A name="HTTP-UsingHTTPbindinginaWAR"></A>Using HTTP binding in a WAR</H2>
 
 <P>You may wish to configure ServiceMix&apos;s HTTP binding inside a WAR. To do this you need to register one or more instances of the SpringBindingServlet in your web.xml then map the servlet to the URI you wish.</P>
 
 <P>Here&apos;s an example</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;servlet&gt;</SPAN>
+  <SPAN class="code-tag">&lt;servlet-name&gt;</SPAN>BindingServlet<SPAN class="code-tag">&lt;/servlet-name&gt;</SPAN>
+  <SPAN class="code-tag">&lt;servlet-class&gt;</SPAN>
+    org.apache.servicemix.components.http.SpringBindingServlet
+  <SPAN class="code-tag">&lt;/servlet-class&gt;</SPAN>
+  <SPAN class="code-tag">&lt;init-param&gt;</SPAN>
+    <SPAN class="code-tag">&lt;param-name&gt;</SPAN>endpoint<SPAN class="code-tag">&lt;/param-name&gt;</SPAN>
+    <SPAN class="code-tag">&lt;param-value&gt;</SPAN>httpBinding<SPAN class="code-tag">&lt;/param-value&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/init-param&gt;</SPAN>
+  <SPAN class="code-tag">&lt;load-on-startup&gt;</SPAN>1<SPAN class="code-tag">&lt;/load-on-startup&gt;</SPAN>
+<SPAN class="code-tag">&lt;/servlet&gt;</SPAN>
 
+<SPAN class="code-tag">&lt;servlet-mapping&gt;</SPAN>
+  <SPAN class="code-tag">&lt;servlet-name&gt;</SPAN>BindingServlet<SPAN class="code-tag">&lt;/servlet-name&gt;</SPAN>
+  <SPAN class="code-tag">&lt;url-pattern&gt;</SPAN>/jbi/*<SPAN class="code-tag">&lt;/url-pattern&gt;</SPAN>
+<SPAN class="code-tag">&lt;/servlet-mapping&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>Notice that the web.xml then refers to the endpoint name <B>httpBinding</B> in the ServiceMix configuration file. e.g. this component</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;httpBinding&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:httpBinding&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:echo&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.http.HttpInOutBinding&quot;</SPAN> /&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <H3><A name="HTTP-ExampleofusingtheHTTPbindinginaWAR"></A>Example of using the HTTP binding in a WAR</H3>
 
@@ -168,8 +204,8 @@ maven run</PRE>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Aug 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2083&originalId=9588">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2083&originalId=14798">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2083">edit page</A>)
     </DIV>

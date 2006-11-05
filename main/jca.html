@@ -36,7 +36,7 @@ JCA
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="JCA">JCA</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="JCA">JCA</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -113,8 +113,7 @@ JCA
 <!--          
             <div class="pagetitle">JCA</div>
 -->
-            <DIV class="wiki-content">
-<P>The JCA <SPAN class="nobr"><A href="http://java.sun.com/j2ee/connector/" title="Visit page outside Confluence" rel="nofollow">Java Connector Architecture<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> provides the most efficient way of thread pooling, resource pooling, transaction handling and consumption on JMS and other Resource Adapters. For example if you are consuming JMS messages, the JCA container provides the most efficient way of pooling the JMS sessions and connections, pooling threads and processing messages in parallel as well as transaction and exception handling.</P>
+            <DIV class="wiki-content"><P>The JCA <SPAN class="nobr"><A href="http://java.sun.com/j2ee/connector/" title="Visit page outside Confluence" rel="nofollow">Java Connector Architecture<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> provides the most efficient way of thread pooling, resource pooling, transaction handling and consumption on JMS and other Resource Adapters. For example if you are consuming JMS messages, the JCA container provides the most efficient way of pooling the JMS sessions and connections, pooling threads and processing messages in parallel as well as transaction and exception handling.</P>
 
 <P>ServiceMix provides JCA versions of its components for easy deployment in our <SPAN class="nobr"><A href="http://jencks.org/" title="Visit page outside Confluence" rel="nofollow">JCA Container<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
 
@@ -127,7 +126,25 @@ JCA
 <H3><A name="JCA-ConfiguretheJCAContainer"></A>Configure the JCA Container</H3>
 
 <P>Just add the following to your Spring configuration file</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;jencks&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.jencks.JCAContainer&quot;</SPAN>&gt;</SPAN>
 
+  <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- lets use the default configuration of work manager and transaction manager--&gt;</SPAN></SPAN>
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;bootstrapContext&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.jencks.factory.BootstrapContextFactoryBean&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;threadPoolSize&quot;</SPAN> value=<SPAN class="code-quote">&quot;25&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+
+
+  <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- the JCA Resource Adapter --&gt;</SPAN></SPAN>
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;resourceAdapter&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;activeMQResourceAdapter&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.activemq.ra.ActiveMQResourceAdapter&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;serverUrl&quot;</SPAN> value=<SPAN class="code-quote">&quot;tcp://localhost:61626&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+<SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>Which will create the JCA container. Notice that there is a work manager you can configure to set the thread pooling limits. Also you can associate whichever <EM>JCA Resource Adapter</EM> you wish, such as to use another JMS provider.</P>
@@ -135,21 +152,54 @@ JCA
 <H3><A name="JCA-ConfiguretheJMSwithJCAcomponent."></A>Configure the JMS with JCA component.</H3>
 
 <P>We have a JmsInUsingJCABinding which works nicely with our JCA container to provide a JBI component for consuming inbound JMS messages using JCA for all the session, connection and thread pooling as well as handling parallel processing of inbound messages and transaction handling.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJmsReceiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJmsReceiver&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsInUsingJCABinding&quot;</SPAN>&gt;</SPAN>
 
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;jcaContainer&quot;</SPAN> ref=<SPAN class="code-quote">&quot;jencks&quot;</SPAN>/&gt;</SPAN>
+
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;activationSpec&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.activemq.ra.ActiveMQActivationSpec&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;destination&quot;</SPAN> value=<SPAN class="code-quote">&quot;test.org.apache.servicemix.example.jca&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;destinationType&quot;</SPAN> value=<SPAN class="code-quote">&quot;javax.jms.Topic&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>You will notice that its not very different from the regular <A href="jms.html" title="JMS">JMS</A> component; the main difference is the use of the J2EE activation spec object to register with the JCA container.</P>
 
-<P>The activation specification is dependent on the JCA Resource Adapter being used. If you are using <SPAN class="nobr"><A href="http://activemq.org/" title="Visit page outside Confluence" rel="nofollow">ActiveMQ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> as your resource adapter then here are all the <SPAN class="nobr"><A href="http://activemq.codehaus.org/maven/multiproject/activemq-ra/apidocs/org/codehaus/activemq/ra/ActiveMQActivationSpec.html" title="Visit page outside Confluence" rel="nofollow">various properties<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> you can configure, giving you full control over every aspect of the JMS subscription, pooling and delivery mode.</P>
+<P>The activation specification is dependent on the JCA Resource Adapter being used. If you are using <SPAN class="nobr"><A href="http://activemq.org/" title="Visit page outside Confluence" rel="nofollow">ActiveMQ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> as your resource adapter then here are all the <SPAN class="nobr"><A href="http://incubator.apache.org/activemq/maven/activemq-ra/apidocs/org/apache/activemq/ra/ActiveMQActivationSpec.html" title="Visit page outside Confluence" rel="nofollow">various properties<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> you can configure, giving you full control over every aspect of the JMS subscription, pooling and delivery mode.</P>
 
 <H2><A name="JCA-UsingXA"></A>Using XA</H2>
 
 <P>To use XA for an inbound connection in the JCA container you&apos;ll need to specify a transaction manager to the connector. Here&apos;s an example</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myJmsReceiver&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myJmsReceiver&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.jms.JmsInUsingJCABinding&quot;</SPAN>&gt;</SPAN>
 
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;jcaContainer&quot;</SPAN> ref=<SPAN class="code-quote">&quot;jencks&quot;</SPAN>/&gt;</SPAN>
+
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;activationSpec&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.activemq.ra.ActiveMQActivationSpec&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;destination&quot;</SPAN> value=<SPAN class="code-quote">&quot;test.org.apache.servicemix.example.jca&quot;</SPAN>/&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;destinationType&quot;</SPAN> value=<SPAN class="code-quote">&quot;javax.jms.Topic&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+
+    <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- use XA transactions --&gt;</SPAN></SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN> ref=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>You also need to provide a transaction manager implementation to use. Here this exampe uses <SPAN class="nobr"><A href="http://jencks.org/" title="Visit page outside Confluence" rel="nofollow">Geronimo&apos;s Transaction Manager<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.jencks.factory.TransactionManagerFactoryBean&quot;</SPAN>/&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P></DIV>
           
                   </DIV>
@@ -160,8 +210,8 @@ JCA
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2126&originalId=5190">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2126&originalId=14801">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2126">edit page</A>)
     </DIV>

@@ -36,7 +36,7 @@ JAX WS
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="JAX WS">JAX WS</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="JAX WS">JAX WS</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -113,8 +113,7 @@ JAX WS
 <!--          
             <div class="pagetitle">JAX WS</div>
 -->
-            <DIV class="wiki-content">
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Warning</B><BR>
+            <DIV class="wiki-content"><TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Warning</B><BR>
 <P>This component has been deprecated in favor to <A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A> component.</P></TD></TR></TABLE>
 <P>&nbsp;</P>
 
@@ -123,7 +122,13 @@ JAX WS
 <H2><A name="JAXWS-MakingaWebServiceInvocationThroughJBI"></A>Making a Web Service Invocation Through JBI</H2>
 
 <P>The JBI binding for JAX-WS allows the JAX-WS API to invoke a web service from a JBI message, i.e., the binding component uses JAX-WS to act as a web service client. The following example shows how to configure a service as a JAX-WS client:</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;component id=<SPAN class="code-quote">&quot;addNumbersService&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:AddNumbersService&quot;</SPAN> 
+           class=<SPAN class="code-quote">&quot;org.servicemix.components.jaxws.JAXWSOutBinding&quot;</SPAN>&gt;
+  &lt;property name=<SPAN class="code-quote">&quot;wsdlResource&quot;</SPAN> 
+            value=<SPAN class="code-quote">&quot;classpath:org/servicemix/components/jaxws/AddNumbers.wsdl&quot;</SPAN>/&gt;
+<SPAN class="code-tag">&lt;/component&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>To automatically generate the service and the client, point to the WSDL file. The above assumes the WSDL has only a single port available; if a WSDL exposes multiple ports then you must also supply the port QName.</P>
@@ -131,11 +136,27 @@ JAX WS
 <H2><A name="JAXWS-HostingaJAXWSServiceInsideServiceMix"></A>Hosting a JAX-WS Service Inside ServiceMix</H2>
 
 <P>The other option is to host the actual Java and JAX-WS based web service implementation inside ServiceMix and then to expose it as an endpoint over one or more transport protocols.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;component id=<SPAN class="code-quote">&quot;addNumbersService&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:AddNumbersService&quot;</SPAN> 
+           class=<SPAN class="code-quote">&quot;org.servicemix.components.jaxws.JAXWSInBinding&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;implementor&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.servicemix.components.jaxws.AddNumbersImpl&quot;</SPAN> /&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+ <SPAN class="code-tag">&lt;/component&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>The JAX-WS service needs to be defined with JAX-WS annotations as follows:</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">@WebService
+@SOAPBinding(style = Style.RPC)
+<SPAN class="code-keyword">public</SPAN> class AddNumbersImpl <SPAN class="code-keyword">implements</SPAN> AddNumbers {
+	
+    <SPAN class="code-keyword">public</SPAN> <SPAN class="code-object">int</SPAN> addNumbers (<SPAN class="code-object">int</SPAN> number1, <SPAN class="code-object">int</SPAN> number2) {
+        <SPAN class="code-keyword">return</SPAN> number1 + number2;
+    }
+}</PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>The &quot;@&quot; annotation allows programmers to avoid writing boilerplate code. For example, <TT>@Webservice</TT> is a shorthand notation that specificies this class is a Web Service. Tools that understand the notation, such as the <TT>apt</TT> tool in Java 1.5, will automatically generate the Web service artifacts including the WSDL file. This annotation is described in <SPAN class="nobr"><A href="http://jcp.org/aboutJava/communityprocess/pfd/jsr181/index.html" title="Visit page outside Confluence" rel="nofollow">JSR 181<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
@@ -164,8 +185,8 @@ where <TT>[servicemix_src_install_dir]</TT> is the directory in which ServiceMix
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2048&originalId=5189">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2048&originalId=14800">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2048">edit page</A>)
     </DIV>
