@@ -36,7 +36,7 @@ servicemix-file
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="jbi-components.html" title="JBI Components">JBI Components</A>&nbsp;&gt;&nbsp;<A href="" title="servicemix-file">servicemix-file</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="jbi-components.html" title="JBI Components">JBI Components</A>&nbsp;&gt;&nbsp;<A href="" title="servicemix-file">servicemix-file</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -105,6 +105,27 @@ servicemix-file
 	<LI><A href="resources.html" title="Resources">Resources</A></LI>
 </UL>
 
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-beans&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-beans" class="createlink">servicemix&#45;beans<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-drools&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-drools" class="createlink">servicemix&#45;drools<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-script&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-script" class="createlink">servicemix&#45;script<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
           </DIV>
         </TD>
         <TD valign="top">
@@ -117,6 +138,8 @@ servicemix-file
 
 <P>The ServiceMix File component provides JBI integration to the file system. It can be used to read &amp; write files via URI or to periodically poll directories for new files.</P>
 
+<P>Note that this component is only available in releases &gt;= 3.1.</P>
+
 <H2><A name="servicemix-file-URI"></A>URI</H2>
 
 <P>You can use the familiar file URI to communicate with files</P>
@@ -124,7 +147,36 @@ servicemix-file
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">file:foo.xml
 file:<SPAN class="code-comment">//path/to/something</SPAN></PRE>
-</DIV></DIV></DIV>
+</DIV></DIV>
+
+<H2><A name="servicemix-file-Endpoints"></A>Endpoints</H2>
+
+<DIV class="code"><DIV class="codeHeader"><B>Provider endpoint</B></DIV><DIV class="codeContent">
+<PRE class="code-xml">&lt;file:endpoint service=<SPAN class="code-quote">&quot;test:service&quot;</SPAN>
+               endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>
+               directory=<SPAN class="code-quote">&quot;file:target/pollerFiles&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
+
+<DIV class="code"><DIV class="codeHeader"><B>Polling (consumer) endpoint</B></DIV><DIV class="codeContent">
+<PRE class="code-xml">&lt;file:pollingEndpoint service=<SPAN class="code-quote">&quot;test:poller&quot;</SPAN>
+                      endpoint=<SPAN class="code-quote">&quot;poller&quot;</SPAN>
+                      targetService=<SPAN class="code-quote">&quot;test:receiver&quot;</SPAN>
+                      file=<SPAN class="code-quote">&quot;file:target/pollerFiles&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
+
+<DIV class="code"><DIV class="codeHeader"><B>Marshalers</B></DIV><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;file:endpoint service=<SPAN class="code-quote">&quot;test:service&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN> directory=<SPAN class="code-quote">&quot;file:target/componentOutput&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;file:marshaler&gt;</SPAN>
+    <SPAN class="code-tag">&lt;sm:defaultFileMarshaler&gt;</SPAN>
+      <SPAN class="code-tag">&lt;sm:fileName&gt;</SPAN>
+        <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- lets use a header from the message --&gt;</SPAN></SPAN>
+        <SPAN class="code-tag">&lt;sm:xpathString xpath=<SPAN class="code-quote">&quot;concat($name, &apos;.xml&apos;)&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/sm:fileName&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/sm:defaultFileMarshaler&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/file:marshaler&gt;</SPAN>
+<SPAN class="code-tag">&lt;/file:endpoint&gt;</SPAN></PRE>
+</DIV></DIV>
+</DIV>
           
                   </DIV>
         </TD>
@@ -134,8 +186,8 @@ file:<SPAN class="code-comment">//path/to/something</SPAN></PRE>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on Oct 10, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=14033&originalId=14034">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 13, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=14033&originalId=15035">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=14033">edit page</A>)
     </DIV>

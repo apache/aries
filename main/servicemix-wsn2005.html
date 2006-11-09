@@ -105,6 +105,27 @@ servicemix-wsn2005
 	<LI><A href="resources.html" title="Resources">Resources</A></LI>
 </UL>
 
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-beans&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-beans" class="createlink">servicemix&#45;beans<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-drools&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-drools" class="createlink">servicemix&#45;drools<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-script&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-script" class="createlink">servicemix&#45;script<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
           </DIV>
         </TD>
         <TD valign="top">
@@ -153,10 +174,10 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 
 <P>The WS-Notification SE can be used to provide publish/subscribe routing in the JBI bus. There are several usage:</P>
 <UL>
-	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">configuration using JBI packaging</A></LI>
-	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">dynamic configuration inside the JBI bus</A></LI>
-	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">outside the JBI bus</A></LI>
-	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">embedding WS-Notification SE</A></LI>
+	<LI><A href="#servicemix-wsn2005-ConfigurationusingJBIpackaging" title="Configuration using JBI packaging on servicemix-wsn2005">configuration using JBI packaging</A></LI>
+	<LI><A href="#servicemix-wsn2005-DynamicconfigurationinsidetheJBIbus" title="Dynamic configuration inside the JBI bus on servicemix-wsn2005">dynamic configuration inside the JBI bus</A></LI>
+	<LI><A href="#servicemix-wsn2005-OutsidetheJBIbus" title="Outside the JBI bus on servicemix-wsn2005">outside the JBI bus</A></LI>
+	<LI><A href="#servicemix-wsn2005-EmbeddingWSNotification" title="Embedding WS-Notification on servicemix-wsn2005">embedding WS-Notification SE</A></LI>
 </UL>
 
 
@@ -165,8 +186,8 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
 <P>The <TT>servicemix-wsn2005</TT> accepts deployment of Service Units.<BR>
 The SU must contain one or more files with an xml extension, each one containing a single WS-Notification request.  The currently supported set of requests include:</P>
 <UL>
-	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#Subscribe</A></LI>
-	<LI><A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">SM30UG:#CreatePullPoint</A></LI>
+	<LI><A href="#servicemix-wsn2005-Subscribe" title="Subscribe on servicemix-wsn2005">Subscribe</A></LI>
+	<LI><A href="#servicemix-wsn2005-CreatePullPoint" title="CreatePullPoint on servicemix-wsn2005">CreatePullPoint</A></LI>
 </UL>
 
 
@@ -213,7 +234,7 @@ wsnBroker.subscribe(pullPoint.getEndpoint(), topic);</PRE>
 
 <P>If you want to use WS-Notification ouside the JBI world, you will need to be able to receive incoming requests or send notifications to the external services.  This must be done through by using Binding Components, either using HTTP or JMS.</P>
 
-<P>To expose the NotificationBroker and CreatePullPoint services using HTTP/SOAP, you can deploy the following configuration file to <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=servicemix-http" title="Create Page in space SM30UG: servicemix-http" class="createlink"><TT>servicemix-http</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN>:</P>
+<P>To expose the NotificationBroker and CreatePullPoint services using HTTP/SOAP, you can deploy the following configuration file to <A href="servicemix-http.html" title="servicemix-http"><TT>servicemix-http</TT></A>:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml">&lt;beans <SPAN class="code-keyword">xmlns:http</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/http/1.0&quot;</SPAN>
        <SPAN class="code-keyword">xmlns:wsn</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.org/wsnotification&quot;</SPAN>&gt;
@@ -284,7 +305,7 @@ wsnBroker.subscribe(pullPoint.getEndpoint(), topic);</PRE>
 <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
 </DIV></DIV>
 
-<P>When the component is started, it registers itself as a publisher to the WS-Notification broker.  To do so, it activates a JBI endpoint named <TT>subscription</TT> so it can handle demand based publishing. When this component receives an InOnly exchange, let&apos;s say <TT>&lt;hello&gt;world&lt;/hello&gt;</TT>, it will wrap it in a request as shown <A href="/confluence/display/SM30UG" title="View ServiceMix 3.0 User Guide space">here</A> and send the request as an InOnly exchange to the NotifiationBroker.  Note that, as this component activates two JBI endpoints, you need to explicitely target the endpoint specified in the activationSpec when sending a message.</P>
+<P>When the component is started, it registers itself as a publisher to the WS-Notification broker.  To do so, it activates a JBI endpoint named <TT>subscription</TT> so it can handle demand based publishing. When this component receives an InOnly exchange, let&apos;s say <TT>&lt;hello&gt;world&lt;/hello&gt;</TT>, it will wrap it in a request as shown <A href="#servicemix-wsn2005-Notify" title="Notify on servicemix-wsn2005">here</A> and send the request as an InOnly exchange to the NotifiationBroker.  Note that, as this component activates two JBI endpoints, you need to explicitely target the endpoint specified in the activationSpec when sending a message.</P>
 
 <P>The subscription is created inside a <TT>servicemix-wsn2005</TT> component.  You must fill the <TT>consumer</TT> and <TT>topic</TT> properties, where the <TT>consumer</TT> is the URI-encoded target JBI endpoint, which will be resolved to the first component activated. You could also use the plain spring syntax:</P>
 <DIV class="code"><DIV class="codeContent">
@@ -384,8 +405,8 @@ table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13583&originalId=14633">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 13, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13583&originalId=15034">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13583">edit page</A>)
     </DIV>
