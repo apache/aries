@@ -152,39 +152,38 @@ We will leverage ServiceMix archetypes and maven plugin (see <A href="maven-jbi-
 <PRE class="code-java">mvn archetype:create \
         -DarchetypeGroupId=org.apache.servicemix.tooling \
         -DarchetypeArtifactId=servicemix-http-consumer-service-unit \
-        -DarchetypeVersion=3.0-incubating-SNAPSHOT \
+        -DarchetypeVersion=3.0-incubating \
         -DgroupId=org.apache.servicemix.samples.bridge \
         -DartifactId=bridge-http-su
 
 mvn archetype:create \
         -DarchetypeGroupId=org.apache.servicemix.tooling \
         -DarchetypeArtifactId=servicemix-jms-provider-service-unit \
-        -DarchetypeVersion=3.0-incubating-SNAPSHOT \
+        -DarchetypeVersion=3.0-incubating \
         -DgroupId=org.apache.servicemix.samples.bridge \
         -DartifactId=bridge-jms-su
 
 mvn archetype:create \
         -DarchetypeGroupId=org.apache.servicemix.tooling \
         -DarchetypeArtifactId=servicemix-eip-service-unit \
-        -DarchetypeVersion=3.0-incubating-SNAPSHOT \
+        -DarchetypeVersion=3.0-incubating \
         -DgroupId=org.apache.servicemix.samples.bridge \
         -DartifactId=bridge-eip-su
 
 mvn archetype:create \
         -DarchetypeGroupId=org.apache.servicemix.tooling \
         -DarchetypeArtifactId=servicemix-lwcontainer-service-unit \
-        -DarchetypeVersion=3.0-incubating-SNAPSHOT \
+        -DarchetypeVersion=3.0-incubating \
         -DgroupId=org.apache.servicemix.samples.bridge \
         -DartifactId=bridge-xslt-su
 
 mvn archetype:create \
         -DarchetypeGroupId=org.apache.servicemix.tooling \
         -DarchetypeArtifactId=servicemix-service-assembly \
-        -DarchetypeVersion=3.0-incubating-SNAPSHOT \
+        -DarchetypeVersion=3.0-incubating \
         -DgroupId=org.apache.servicemix.samples.bridge \
         -DartifactId=bridge-sa</PRE>
 </DIV></DIV>
-<P>The version information may have to be changed from <EM>3.0-incubating-SNAPSHOT</EM> to your used ServiceMix version (e.g. <EM>3.0-incubating</EM>).</P>
 
 <H2><A name="Creatingaprotocolbridge-Mainpom"></A>Main pom</H2>
 
@@ -370,35 +369,9 @@ mvn jbi:projectDeploy</PRE>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A> on Sep 25, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9511&originalId=13812">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      INS further explanation/help<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=9511">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 12, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9511&originalId=15032">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=9511">edit page</A>)
     </DIV>
 
