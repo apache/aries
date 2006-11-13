@@ -36,7 +36,7 @@ servicemix-jms
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components.html" title="Components">Components</A>&nbsp;&gt;&nbsp;<A href="jbi-components.html" title="JBI Components">JBI Components</A>&nbsp;&gt;&nbsp;<A href="" title="servicemix-jms">servicemix-jms</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="jbi-components.html" title="JBI Components">JBI Components</A>&nbsp;&gt;&nbsp;<A href="" title="servicemix-jms">servicemix-jms</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -104,6 +104,27 @@ servicemix-jms
 	<LI><A href="tools.html" title="Tools">Tools</A></LI>
 	<LI><A href="resources.html" title="Resources">Resources</A></LI>
 </UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-beans&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-beans" class="createlink">servicemix&#45;beans<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-script&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-script" class="createlink">servicemix&#45;script<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
 
           </DIV>
         </TD>
@@ -332,6 +353,12 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <TD class="confluenceTd"> used to select the destination type used with the jmsProviderDestinationName </TD>
 <TD class="confluenceTd"> no (unless jmsProviderDestinationName is used) </TD>
 </TR>
+<TR>
+<TD class="confluenceTd"> useMsgIdInResponse </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> true indicates that the JMS correlation id will be set to the id of the JMS request message; false indicates that an artificial correlation id will be used instead </TD>
+<TD class="confluenceTd"> no (in this case the default behaviour is to use the message exchange id as the correlation id) </TD>
+</TR>
 </TBODY></TABLE></TD></TR></TABLE>
 <P>The <B>targetService</B>, <B>targetEndpoint</B> and <B>targetInterfaceName</B> attributes can be used to specify the routing method to use (routing by interface, service or endpoint) and is also useful to allow several proxy endpoints to be created for the same JBI endpoint.  For example to create an JMS only endpoint and an JMS+SOAP endpoint, both jms endpoints will have the same targetEndpoint and targetService, but they must have different endpoint names.</P>
 
@@ -339,7 +366,7 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 
 <P>A provider endpoint is a client-side jbi endpoint which can receive requests from the NMR and send them to a given url where the service is provided.</P>
 
-<P>Here is an example of an http provider endpoint:</P>
+<P>Here is an example of an jms provider endpoint:</P>
 
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Provider endpoint attributes</B><BR>
 <TABLE class="confluenceTable"><TBODY>
@@ -462,6 +489,7 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 
 <H3><A name="servicemix-jms-ConfiguringtheConnectionFactoryandDestination"></A>Configuring the ConnectionFactory and Destination</H3>
 
+
 <H4><A name="servicemix-jms-JNDIconfiguration"></A>JNDI configuration</H4>
 
 <P>When the ConnectionFactory or the Destination is lookup in JNDI, the JNDI context will be created in the following order:</P>
@@ -501,7 +529,6 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
     jndiConnectionFactoryName=<SPAN class="code-quote">&quot;java:comp/env/jms/ConnectionFactory&quot;</SPAN>
     jndiDestinationName=<SPAN class="code-quote">&quot;java:comp/env/jms/MyQueue&quot;</SPAN> /&gt;</PRE>
 </DIV></DIV>
-
 <P>If you use ActiveMQ, you can use the following definition:</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml">&lt;jms:endpoint ...
@@ -614,9 +641,35 @@ Failing this, an IllegalArgumentException will be thrown with the following mess
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 23, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1954&originalId=13795">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gmcdonald">Grant McDonald</A> on Nov 17, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1954&originalId=15042">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      Added useMsgIdInResponse option to JMS consumer endpoint configuration<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=1954">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1954">edit page</A>)
     </DIV>
 
