@@ -105,6 +105,27 @@ servicemix-saxon
 	<LI><A href="resources.html" title="Resources">Resources</A></LI>
 </UL>
 
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-beans&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-beans" class="createlink">servicemix&#45;beans<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-script&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-script" class="createlink">servicemix&#45;script<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
           </DIV>
         </TD>
         <TD valign="top">
@@ -117,12 +138,12 @@ servicemix-saxon
 
 <P>The servicemix-saxon component is a standard JBI Service Engine for XSLT / XQuery.  This component is based on <SPAN class="nobr"><A href="http://saxon.sourceforge.net/" title="Visit page outside Confluence" rel="nofollow">Saxon<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and supports XSLT 2.0 and XPath 2.0, and XQuery 1.0.</P>
 
-<H2><A name="servicemix-saxon-UsingservicemixeipasastandardJBIcomponent"></A>Using servicemix-eip as a standard JBI component</H2>
+<H2><A name="servicemix-saxon-UsingservicemixsaxonasastandardJBIcomponent"></A>Using servicemix-saxon as a standard JBI component</H2>
 
 
 <H3><A name="servicemix-saxon-Installation"></A>Installation</H3>
 
-<P>Installing the servicemix-eip component can be done in several ways:</P>
+<P>Installing the servicemix-saxon component can be done in several ways:</P>
 <UL>
 	<LI>drop the installer zip in an hotdeploy directory monitored by ServiceMix</LI>
 	<LI>using <A href="ant-tasks.html" title="Ant Tasks">ant tasks</A></LI>
@@ -149,7 +170,7 @@ servicemix-saxon
 <SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
 </DIV></DIV>
 
-<H2><A name="servicemix-saxon-UsingservicemixeipinaServiceMixxmlconfigurationfile"></A>Using servicemix-eip in a ServiceMix xml configuration file</H2>
+<H2><A name="servicemix-saxon-UsingservicemixsaxoninaServiceMixxmlconfigurationfile"></A>Using servicemix-saxon in a ServiceMix xml configuration file</H2>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml">&lt;beans <SPAN class="code-keyword">xmlns:sm</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/config/1.0&quot;</SPAN>
@@ -213,7 +234,7 @@ servicemix-saxon
 </TR>
 <TR>
 <TD class="confluenceTd"> expression </TD>
-<TD class="confluenceTd"> <SPAN class="error">&#91;ServiceMix expression|&#93;</SPAN> </TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/apidocs/org/apache/servicemix/expression/Expression.html" title="Visit page outside Confluence" rel="nofollow">ServiceMix expression<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 <TD class="confluenceTd"> expression used to dynamically load the stylesheet </TD>
 <TD class="confluenceTd"> one of (resource, expression) </TD>
 </TR>
@@ -231,7 +252,7 @@ servicemix-saxon
 </TR>
 <TR>
 <TD class="confluenceTd"> configuration </TD>
-<TD class="confluenceTd"> <SPAN class="error">&#91;Saxon configuration|&#93;</SPAN> </TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://www.saxonica.com/documentation/javadoc/net/sf/saxon/Configuration.html" title="Visit page outside Confluence" rel="nofollow">Saxon configuration<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 <TD class="confluenceTd"> Saxon configuration </TD>
 <TD class="confluenceTd"> no </TD>
 </TR>
@@ -318,7 +339,7 @@ servicemix-saxon
 </TR>
 <TR>
 <TD class="confluenceTd"> expression </TD>
-<TD class="confluenceTd"> <SPAN class="error">&#91;ServiceMix expression|&#93;</SPAN> </TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/apidocs/org/apache/servicemix/expression/Expression.html" title="Visit page outside Confluence" rel="nofollow">ServiceMix expression<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 <TD class="confluenceTd"> expression used to dynamically load the xquery </TD>
 <TD class="confluenceTd"> one of (query, resource, expression) </TD>
 </TR>
@@ -336,7 +357,7 @@ servicemix-saxon
 </TR>
 <TR>
 <TD class="confluenceTd"> configuration </TD>
-<TD class="confluenceTd"> <SPAN class="error">&#91;Saxon configuration|&#93;</SPAN> </TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://www.saxonica.com/documentation/javadoc/net/sf/saxon/Configuration.html" title="Visit page outside Confluence" rel="nofollow">Saxon configuration<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
 <TD class="confluenceTd"> Saxon configuration </TD>
 <TD class="confluenceTd"> no </TD>
 </TR>
@@ -374,8 +395,9 @@ servicemix-saxon
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 28, 2006
-                  
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 18, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13865&originalId=15107">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13865">edit page</A>)
     </DIV>
 
