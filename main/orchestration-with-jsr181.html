@@ -143,7 +143,73 @@ Orchestration with JSR181
 </UL>
 
 
-<P>We will call them in a simple way to provide an aggregate web service which will return the weather forecast for a given city / state.</P></DIV>
+<P>We will call them in a simple way to provide an aggregate web service which will return the weather forecast for a given city / state and expose it through as an HTTP/SOAP service.</P>
+
+<P>For this tutorial, you will need a 3.1-incubating-SNAPSHOT version of ServiceMix built from sources.</P>
+
+<H2><A name="OrchestrationwithJSR181-Projectstructure%2CSUsandSA"></A>Project structure, SUs and SA</H2>
+
+<P>In this example, we will only use two components:</P>
+<UL>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A> for the orchestration part</LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A> to expose and consume services through HTTP/SOAP</LI>
+</UL>
+
+
+<P>Thus we will have to create two service units and a service assembly.</P>
+
+<P>First, we need to create the root maven project which will hold our SUs and SA.  Launch the following commands:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mkdir weather
+cd weather</PRE>
+</DIV></DIV>
+
+<P>And create a file named <TT>pom.xml</TT> with the following content:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;project&gt;</SPAN>
+  <SPAN class="code-tag">&lt;modelVersion&gt;</SPAN>4.0.0<SPAN class="code-tag">&lt;/modelVersion&gt;</SPAN>
+  <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.apache.servicemix.samples<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
+  <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>weather<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
+  <SPAN class="code-tag">&lt;version&gt;</SPAN>1.0-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>
+  <SPAN class="code-tag">&lt;packaging&gt;</SPAN>pom<SPAN class="code-tag">&lt;/packaging&gt;</SPAN>
+<SPAN class="code-tag">&lt;/project&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<P>Then, we can use maven archetypes to create the two SUs and the SA.  In the <TT>weather</TT> directory, launch the following commands:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn archetype:create \
+        -DarchetypeGroupId=org.apache.servicemix.tooling \
+        -DarchetypeArtifactId=servicemix-http-consumer-service-unit \
+        -DarchetypeVersion=3.1-incubating-SNAPSHOT \
+        -DgroupId=org.apache.servicemix.samples.weather \
+        -DartifactId=weather-http-su
+
+mvn archetype:create \
+        -DarchetypeGroupId=org.apache.servicemix.tooling \
+        -DarchetypeArtifactId=servicemix-jsr181-wsdl-first-service-unit \
+        -DarchetypeVersion=3.1-incubating-SNAPSHOT \
+        -DgroupId=org.apache.servicemix.samples.weather \
+        -DartifactId=bridge-http-su
+
+mvn archetype:create \
+        -DarchetypeGroupId=org.apache.servicemix.tooling \
+        -DarchetypeArtifactId=servicemix-service-assembly \
+        -DarchetypeVersion=3.1-incubating-SNAPSHOT \
+        -DgroupId=org.apache.servicemix.samples.weather \
+        -DartifactId=weather-sa</PRE>
+</DIV></DIV>
+
+<P>This will create the following directory structure:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">bridge\
+  pom.xml
+  weather-http-su\
+    ...
+  weather-jsr181-su\
+    ...
+  weather-sa\
+    ...</PRE>
+</DIV></DIV></DIV>
           
                   </DIV>
         </TD>
@@ -154,7 +220,8 @@ Orchestration with JSR181
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 20, 2006
-                  
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=15116&originalId=15117">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=15116">edit page</A>)
     </DIV>
 
