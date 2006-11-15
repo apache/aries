@@ -290,7 +290,7 @@ mvn eclipse:eclipse</PRE>
 			<SPAN class="code-tag">&lt;/wsdl:output&gt;</SPAN>
 		<SPAN class="code-tag">&lt;/wsdl:operation&gt;</SPAN>
 	<SPAN class="code-tag">&lt;/wsdl:binding&gt;</SPAN>
-	<SPAN class="code-tag">&lt;wsdl:service name=<SPAN class="code-quote">&quot;WeatherService&quot;</SPAN>&gt;</SPAN>
+	<SPAN class="code-tag">&lt;wsdl:service name=<SPAN class="code-quote">&quot;Weather&quot;</SPAN>&gt;</SPAN>
 		<SPAN class="code-tag">&lt;wsdl:port name=<SPAN class="code-quote">&quot;Soap&quot;</SPAN> binding=<SPAN class="code-quote">&quot;tns:WeatherSoapBinding&quot;</SPAN>&gt;</SPAN>
 			<SPAN class="code-tag">&lt;soap:address location=<SPAN class="code-quote">&quot;http://www.example.org/&quot;</SPAN> /&gt;</SPAN>
 		<SPAN class="code-tag">&lt;/wsdl:port&gt;</SPAN>
@@ -330,6 +330,61 @@ wget http:<SPAN class="code-comment">//ws.strikeiron.com/InnerGears/ZipByCitySta
 <PRE class="code-java">cd weather/weather-jsr181-su
 mvn generate-sources</PRE>
 </DIV></DIV>
+
+<P>Before refreshing your project, you can create the folder that will hold our implementation:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd weather/weather-jsr181-su
+mkdir src/main/java
+mvn eclipse:eclipse</PRE>
+</DIV></DIV>
+
+<P>In Eclipse, after having refreshed the project, create a new class in the java source folder:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">package</SPAN> org.apache.servicemix.samples.weather;
+
+<SPAN class="code-keyword">import</SPAN> javax.jws.WebService;
+
+@WebService(serviceName = <SPAN class="code-quote">&quot;Weather&quot;</SPAN>, 
+            targetNamespace = <SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//servicemix.apache.org/samples/weather&quot;</SPAN>, 
+</SPAN>            endpointInterface = <SPAN class="code-quote">&quot;org.apache.servicemix.samples.weather.WeatherPortType&quot;</SPAN>)
+<SPAN class="code-keyword">public</SPAN> class WeatherImpl <SPAN class="code-keyword">implements</SPAN> WeatherPortType {
+
+    <SPAN class="code-keyword">public</SPAN> GetWeatherResponse getWeather(GetWeatherRequest GetWeatherRequest) {
+    	<SPAN class="code-keyword">return</SPAN> <SPAN class="code-keyword">null</SPAN>;
+    }
+
+}</PRE>
+</DIV></DIV>
+
+<P>Now, create two properties for the services we use:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">private</SPAN> ForecastByZipSoap forecastByZip;
+<SPAN class="code-keyword">private</SPAN> ZipByCityStateSoap zipByCityState;
+	
+<SPAN class="code-keyword">public</SPAN> void setForecastByZip(ForecastByZipSoap forecastByZip) {
+    <SPAN class="code-keyword">this</SPAN>.forecastByZip = forecastByZip;
+}
+
+<SPAN class="code-keyword">public</SPAN> void setZipByCityState(ZipByCityStateSoap zipByCityState) {
+    <SPAN class="code-keyword">this</SPAN>.zipByCityState = zipByCityState;
+}</PRE>
+</DIV></DIV>
+
+<P>We can now code our orchestration logic in the <TT>getWeather</TT> method:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> GetWeatherResponse getWeather(GetWeatherRequest getWeatherRequest) {
+	List&lt;<SPAN class="code-object">String</SPAN>&gt; zips = zipByCityState.getZipByCityState(getWeatherRequest.getCity(), 
+                                                             getWeatherRequest.getState(), 
+                                                             licenseInfo, 
+                                                             <SPAN class="code-keyword">new</SPAN> Holder&lt;SubscriptionInfo&gt;()).getString();
+	GetForecastByZip getForecastByZip = <SPAN class="code-keyword">new</SPAN> GetForecastByZip();
+	getForecastByZip.setZipCode(zips.get(0));
+	GetForecastByZipResponse forecast =  forecastByZip.getForecastByZip(getForecastByZip, licenseInfo, <SPAN class="code-keyword">new</SPAN> Holder&lt;SubscriptionInfo&gt;());
+	GetWeatherResponse response = <SPAN class="code-keyword">new</SPAN> GetWeatherResponse();
+	response.getString().addAll(forecast.getGetForecastByZipResult().getString());
+	<SPAN class="code-keyword">return</SPAN> response;
+}</PRE>
+</DIV></DIV>
 </DIV>
           
                   </DIV>
@@ -341,7 +396,7 @@ mvn generate-sources</PRE>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 20, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=15116&originalId=15119">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=15116&originalId=15120">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=15116">edit page</A>)
     </DIV>
