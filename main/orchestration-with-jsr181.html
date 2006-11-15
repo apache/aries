@@ -9,7 +9,7 @@
     <LINK type="text/css" rel="stylesheet" href="resources/site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
     <TITLE>
-Tutorials
+Orchestration with JSR181
     </TITLE>
   <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
   <BODY onload="init()">
@@ -36,7 +36,7 @@ Tutorials
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="" title="Tutorials">Tutorials</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="tutorials.html" title="Tutorials">Tutorials</A>&nbsp;&gt;&nbsp;<A href="" title="Orchestration with JSR181">Orchestration with JSR181</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -132,39 +132,19 @@ Tutorials
           <DIV id="site-page">
 
 <!--          
-            <div class="pagetitle">Tutorials</div>
+            <div class="pagetitle">Orchestration with JSR181</div>
 -->
-            <DIV class="wiki-content"><UL><LI><A href="creating-a-protocol-bridge.html" title="Creating a protocol bridge">Creating a protocol bridge</A></LI><LI><A href="creating-a-standard-jbi-component.html" title="Creating a Standard JBI Component">Creating a Standard JBI Component</A></LI><LI><A href="deploying-lightweight-components-tutorial.html" title="Deploying Lightweight Components Tutorial">Deploying Lightweight Components Tutorial</A></LI><LI><A href="orchestration-with-jsr181.html" title="Orchestration with JSR181">Orchestration with JSR181</A></LI><LI><A href="spring-client-toolkit.html" title="Spring Client Toolkit">Spring Client Toolkit</A></LI></UL>
+            <DIV class="wiki-content"><H1><A name="OrchestrationwithJSR181-OrchestrationwithJSR181"></A>Orchestration with JSR181</H1>
 
-<P>Created by <SPAN class="nobr"><A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet" title="View profile for Guillaume Nodet"><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/user_12.gif" height="12" width="12" align="absmiddle" alt="" border="0"></SUP>Guillaume Nodet</A></SPAN><BR>
-Using <FONT color="blue">TimTam</FONT></P></DIV>
+<P>This tutorial will explain how you can leverage the <A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A> component to orchestrate web services.  We will use two public web services:</P>
+<UL>
+	<LI><SPAN class="nobr"><A href="http://ws.strikeiron.com/InnerGears/ZipByCityState2?WSDL" title="Visit page outside Confluence" rel="nofollow">ZIP Code Given City and State<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://ws.strikeiron.com/InnerGears/ForecastByZip2?WSDL" title="Visit page outside Confluence" rel="nofollow">Forecast by ZIP Code<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+</UL>
+
+
+<P>We will call them in a simple way to provide an aggregate web service which will return the weather forecast for a given city / state.</P></DIV>
           
-        <!--
-          <div class="tabletitle">
-            Children
-            <span class="smalltext" id="show" style="display: inline;">
-              <a href="javascript:showChildren()">Show Children</a></span>
-            <span class="smalltext" id="hide" style="display: none;">
-              <a href="javascript:hideChildren()">Hide Children</a></span>
-          </div>
-          <div class="greybox" id="children" style="display: none;">
-                                      <a href="http://goopen.org/confluence/display/SM/Spring+Client+Toolkit" title="Spring Client Toolkit">Spring Client Toolkit</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/Deploying+Lightweight+Components+Tutorial" title="Deploying Lightweight Components Tutorial">Deploying Lightweight Components Tutorial</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/Creating+a+Standard+JBI+Component" title="Creating a Standard JBI Component">Creating a Standard JBI Component</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/Creating+a+protocol+bridge" title="Creating a protocol bridge">Creating a protocol bridge</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                          <a href="http://goopen.org/confluence/display/SM/Orchestration+with+JSR181" title="Orchestration with JSR181">Orchestration with JSR181</a>
-              <span class="smalltext">(ServiceMix)</span>
-              <br>
-                      </div>
--->
                   </DIV>
         </TD>
       </TR>
@@ -173,10 +153,9 @@ Using <FONT color="blue">TimTam</FONT></P></DIV>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5237&originalId=5239">view change</A>)
-              
-      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5237">edit page</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 20, 2006
+                  
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=15116">edit page</A>)
     </DIV>
 
   </BODY>
