@@ -105,6 +105,27 @@ servicemix-eip
 	<LI><A href="resources.html" title="Resources">Resources</A></LI>
 </UL>
 
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-beans&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-beans" class="createlink">servicemix&#45;beans<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-script&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-script" class="createlink">servicemix&#45;script<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
           </DIV>
         </TD>
         <TD valign="top">
@@ -128,6 +149,7 @@ This component is based on the great <SPAN class="nobr"><A href="http://www.ente
 	<LI><A href="#servicemix-eip-WireTap" title="Wire Tap on servicemix-eip">Wire Tap</A></LI>
 	<LI><A href="#servicemix-eip-XPathSplitter" title="XPath Splitter on servicemix-eip">XPath Splitter</A></LI>
 	<LI><A href="#servicemix-eip-SplitAggregator" title="Split Aggregator on servicemix-eip">Aggregator</A></LI>
+	<LI><A href="#servicemix-eip-ContentEnricher" title="Content Enricher on servicemix-eip">Content Enricher</A></LI>
 </UL>
 
 
@@ -331,6 +353,23 @@ It relies on several properties that should be set on the exchanges (count, inde
 <SPAN class="code-tag">&lt;/eip:split-aggregator&gt;</SPAN></PRE>
 </DIV></DIV>
 
+<H3><A name="servicemix-eip-ContentEnricher"></A>Content Enricher</H3>
+
+<P>With a Content Enricher you can extract additional information from a source and add this information to your message. This is useful if the calling service for example extracts a &apos;userID&apos; and your target system is only aware of a &apos;userName&apos;. By using the Content-Enricher you could extract this information from a source system and add this additional information (&apos;userName&apos;) to your message.</P>
+
+<P><IMG src="http://www.enterpriseintegrationpatterns.com/img/DataEnricher.gif" align="absmiddle" border="0"></P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;eip:content-enricher service=<SPAN class="code-quote">&quot;test:contentEnricher&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;eip:enricherTarget&gt;</SPAN>
+    <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;test:additionalInformationExtracter&quot;</SPAN> /&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/eip:enricherTarget&gt;</SPAN>
+  <SPAN class="code-tag">&lt;eip:target&gt;</SPAN>
+    <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;test:myTarget&quot;</SPAN> /&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/eip:target&gt;</SPAN>
+<SPAN class="code-tag">&lt;/eip:content-enricher&gt;</SPAN></PRE>
+</DIV></DIV>
+
+
 <H2><A name="servicemix-eip-Tips"></A>Tips</H2>
 
 
@@ -407,8 +446,8 @@ This element has the following attributes:</P>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 12, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1915&originalId=14935">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 24, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1915&originalId=15152">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1915">edit page</A>)
     </DIV>
