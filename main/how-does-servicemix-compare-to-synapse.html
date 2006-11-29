@@ -8,6 +8,12 @@
 -->
     <LINK type="text/css" rel="stylesheet" href="resources/site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
     <TITLE>
 How does ServiceMix compare to Synapse
     </TITLE>
@@ -79,7 +85,7 @@ How does ServiceMix compare to Synapse
 <H3><A name="Navigation-Community"></A>Community</H3>
 
 <UL class="alternate" type="square">
-	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM30UG&title=User's%20Guide" title="Create Page in space SM30UG: User's Guide" class="createlink">User&apos;s Guide<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
 	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
 	<LI><A href="support.html" title="Support">Support</A></LI>
 	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
@@ -104,6 +110,27 @@ How does ServiceMix compare to Synapse
 	<LI><A href="tools.html" title="Tools">Tools</A></LI>
 	<LI><A href="resources.html" title="Resources">Resources</A></LI>
 </UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-beans&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-beans" class="createlink">servicemix&#45;beans<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-script&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-script" class="createlink">servicemix&#45;script<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
 
           </DIV>
         </TD>
@@ -144,7 +171,7 @@ How does ServiceMix compare to Synapse
 
 <P>In providing management through WS-&#42; to Apache Axis, the Apache Synapse project provides a very important and useful capability to Web services. However, in its current implementation Apache Synapse would be overextended as an &quot;architectural&quot; solution. Building an SOA on Apache Synapse would presume that all exchanges in the SOA would be made through SOAP-based Web Services, that the management of the exchanges would be invoked exclusively by means of WS-*, and that the underlying SOAP stack(s) implement the relevant protocols.</P>
 
-<P>ServiceMix is a full ESB that can work with many different <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=Components%20list&linkCreation=true&fromPageId=2063" title="Create Page: Components list" class="createlink">SOAP Stacks<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> such as Axis, WSIF, XFire, ActiveSOAP and JAX-WS. ServiceMix also has full support for <A href="routing.html" title="Routing">Routing</A>, <A href="transformation.html" title="Transformation">Transformation</A> and <A href="bpel.html" title="BPEL">Orchestration</A>. Like Apache Synapse, Apache ServiceMix provides mediation for web services exchanges and is designed to support transformation, management and routing through WS-&#42; standards. However, this capability is provided without dependency on the SOAP stack, and most importantly, is provided through the same services architecture used for all message formats and transports, including, but certainly not limited to, Web services.</P>
+<P>ServiceMix is a full ESB that can work with many different <A href="components-list.html" title="Components list">SOAP Stacks</A> such as Axis, WSIF, XFire, ActiveSOAP and JAX-WS. ServiceMix also has full support for <A href="routing.html" title="Routing">Routing</A>, <A href="transformation.html" title="Transformation">Transformation</A> and <A href="bpel.html" title="BPEL">Orchestration</A>. Like Apache Synapse, Apache ServiceMix provides mediation for web services exchanges and is designed to support transformation, management and routing through WS-&#42; standards. However, this capability is provided without dependency on the SOAP stack, and most importantly, is provided through the same services architecture used for all message formats and transports, including, but certainly not limited to, Web services.</P>
 
 <P>Lastly, it is also worth noting that the ServiceMix <A href="team.html" title="Team">Team</A> are working with the Synapse community to add JBI support to Synapse, so ServiceMix and Synapse could work together and integrate nicely with each other using JBI; deploying Synase as a JBI component within ServiceMix&apos;s JBI container allowing it to integrate with other JBI components such as smart routers or BPEL engines etc.</P></DIV>
           
