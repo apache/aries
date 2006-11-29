@@ -8,6 +8,12 @@
 -->
     <LINK type="text/css" rel="stylesheet" href="resources/site.css">
     <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
     <TITLE>
 Scheduling
     </TITLE>
@@ -105,6 +111,27 @@ Scheduling
 	<LI><A href="resources.html" title="Resources">Resources</A></LI>
 </UL>
 
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-beans&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-beans" class="createlink">servicemix&#45;beans<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-script&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-script" class="createlink">servicemix&#45;script<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
           </DIV>
         </TD>
         <TD valign="top">
@@ -121,7 +148,28 @@ Scheduling
 <BR clear="all">
 <BR clear="all">
 Here&apos;s an example of configuring a quartz component. You can add as many triggers as you wish to the component, at different timing intervals.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;timer&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:timer&quot;</SPAN> destinationService=<SPAN class="code-quote">&quot;my:receiver&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.quartz.QuartzComponent&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;triggers&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;map&gt;</SPAN>
+        <SPAN class="code-tag">&lt;entry&gt;</SPAN>
+          <SPAN class="code-tag">&lt;key&gt;</SPAN>
+            <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.quartz.SimpleTrigger&quot;</SPAN>&gt;</SPAN>
+              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;repeatInterval&quot;</SPAN> value=<SPAN class="code-quote">&quot;200&quot;</SPAN>/&gt;</SPAN>
+              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;repeatCount&quot;</SPAN> value=<SPAN class="code-quote">&quot;20&quot;</SPAN>/&gt;</SPAN>
+            <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/key&gt;</SPAN>
+            <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.quartz.JobDetail&quot;</SPAN>&gt;</SPAN>
+              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;name&quot;</SPAN> value=<SPAN class="code-quote">&quot;My Example Job&quot;</SPAN>/&gt;</SPAN>
+              <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;group&quot;</SPAN> value=<SPAN class="code-quote">&quot;ServiceMix&quot;</SPAN>/&gt;</SPAN>
+            <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/entry&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/map&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P><B>Notes:</B></P>
 <UL>
 	<LI>The <SPAN class="nobr"><A href="http://www.opensymphony.com/quartz/api/org/quartz/SimpleTrigger.html" title="Visit page outside Confluence" rel="nofollow">SimpleTrigger<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> repeatCount value count is starting at zero, meaning repeatCount=0 triggers once, <B>repeatCount=1 triggers twice</B> etc. (Quartz v1.5)</LI>
