@@ -566,6 +566,15 @@ pom.xml
 
 <P>We&apos;re now ready to add a bit of functionality to the component. Using an IDE like <SPAN class="nobr"><A href="http://www.jetbrains.com/idea/" title="Visit page outside Confluence" rel="nofollow">IntelliJ IDEA<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or <SPAN class="nobr"><A href="http://eclipse.org/" title="Visit page outside Confluence" rel="nofollow">Eclipse<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> make this task much easier. The steps described here apply to Eclipse. </P>
 
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Generate Eclipse Project Files</B><BR>
+<P>In order to import the SE into Eclipse, tell Maven to generate the necessary project and classpath files, switch to the <TT>hello-world-se</TT> directory and execute the following Maven goal: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">$ mvn eclipse:eclipse</PRE>
+</DIV></DIV>
+
+<P>This will allow the SE to be imported into Eclipse for adding functionality. </P></TD></TR></TABLE>
+
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
 <P>The default implementation of the component accepts InOut MEPs (ADD<BR>
 LINK TO FURTHER READING CONCERNING MEPs) and return the input content<BR>
@@ -603,7 +612,7 @@ use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.o
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Dec 01, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15193">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15194">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
