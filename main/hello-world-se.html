@@ -126,7 +126,7 @@ Hello World - SE
 	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
 	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
 	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
-	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-script&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-script" class="createlink">servicemix&#45;script<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
 	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
 	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
 </UL>
@@ -140,21 +140,20 @@ Hello World - SE
 <!--          
             <div class="pagetitle">Hello World -  SE</div>
 -->
-            <DIV class="wiki-content"><H1><A name="HelloWorld-SE-Tutorial%3ACreationofa%22HelloWorldSE%22"></A>Tutorial: Creation of a &quot;Hello World - SE&quot;</H1>
+            <DIV class="wiki-content"><H1><A name="HelloWorld-SE-Tutorial%3ACreationofaHelloWorldStyleofJBIComponent"></A>Tutorial: Creation of a Hello World Style of JBI Component </H1>
 
-<P><B>Note:</B> The content of this document is overlapping with <A href="creating-a-standard-jbi-component.html" title="Creating a Standard JBI Component">Creating a Standard JBI Component</A> and <A href="notes-on-creating-jbi-component-using-maven2.html" title="Notes on Creating JBI Component using maven2">Notes on Creating JBI Component using maven2</A>. Any changes you might want to do for this document might be relevant for them as well. Questions unanswered by this document may be answered by the other documents.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
+<P>The content of this document overlaps a bit with <A href="creating-a-standard-jbi-component.html" title="Creating a Standard JBI Component">Creating a Standard JBI Component</A> and <A href="notes-on-creating-jbi-component-using-maven2.html" title="Notes on Creating JBI Component using maven2">Notes on Creating JBI Component using maven2</A>. Any changes you might want to make to this document may be relevant for these documents as well. In addition, questions not answered by this document may be answered by the one of those documents.</P></TD></TR></TABLE>
 
-<P><B>Note:</B> The <A href="roadmap-for-a-perspective-servicemix-developer.html" title="Roadmap for a perspective Servicemix developer">Roadmap for a perspective Servicemix developer</A> might be a helpful reading as well, especially for new users. It focuses on using the examples and components shipped with ServiceMix during development in a company.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
+<P>The <A href="roadmap-for-a-perspective-servicemix-developer.html" title="Roadmap for a perspective Servicemix developer">Roadmap for a perspective Servicemix developer</A> can be very useful, especially for new users as it focuses on using the samples and components shipped with ServiceMix.</P></TD></TR></TABLE>
 
-<P>This tutorial describes how to create a <EM>very simple</EM> &quot;Hello world&quot; JBI service engine (SE) component, pack it into a Service Unit (SU) which will be packed to a Service Assambly (SA), and finally how to run the SE inside ServiceMix. The SE will answer received messages with &quot;Hello, I received xyz bytes&#33;&quot;, so we literally see that it works. As it has the same structure as real, useful SE, the given hints help to use the presented code as a blueprint to create own SE-SA-SUs. Still, the example is as minimalistic as possible, so readers shall not get lost in too many details but get an idea of the big picture.</P>
+<P>This tutorial describes how to create a very simple Hello World style of JBI service engine (SE) component. It demonstrates some best practices for creating JBI components. The example in this tutorial is as minimalistic as possible so as to focus on key concepts and not drown in details. The example component will respond to all requests with the message: </P>
 
-<P>This tutorial shows the desired/best practices or &quot;clean&quot; way to create a SE-SA-SU using ServiceMix Maven archetypes and the Maven plugin (see <A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A>), so how the workflow <EM>shall</EM> be - of course, other possibilities exist and may be better suited for certain situations. Furthermore, it will explain the reasons for critical choices and how required information can be retrieved. Where appropriate, additional reading is suggested.</P>
+<DIV class="panel"><DIV class="panelContent">
+<P>Hello, I received &lt;xyz&gt; bytes&#33;</P>
+</DIV></DIV>
 
-<P>To make it as easy as possible to follow the descriptions, they contain only the <EM>relevant</EM> code snippets, while the <EM>full</EM> code is available in the SVN repository. Please note that the code snippets are fetched directly from the full code in the SVN repository, thus the wiki and the code share always at the same, up to date state.</P>
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hints</B><BR>
-<P>This tutorial is especially useful for ServiceMix beginners.</P>
-
-<P>The Maven <SPAN class="nobr"><A href="http://maven.apache.org/guides/getting-started/index.html" title="Visit page outside Confluence" rel="nofollow">Getting Started Guide<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> is a recommended and short  reading. It explains most of the Maven related things needed.</P></TD></TR></TABLE>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
 <P>INS When to use this JBI Component<BR>
 INS Using the component that you created</P>
@@ -179,41 +178,85 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
 
 <H2><A name="HelloWorld-SE-Prerequisites"></A>Prerequisites</H2>
 
-<P>The following is required:</P>
 <UL>
-	<LI>Around 15 minutes of time</LI>
-	<LI>A running copy of ServiceMix 3.0 and Maven 2.0.4 or higher</LI>
-	<LI>A connection to the Internet to download dependencies</LI>
-	<LI>A text editor to alter XML files</LI>
-	<LI>An editor or IDE for Java files</LI>
+	<LI>Maven 2.0.4 or higher
+	<UL>
+		<LI>If you have never used Maven previously the Maven <SPAN class="nobr"><A href="http://maven.apache.org/guides/getting-started/index.html" title="Visit page outside Confluence" rel="nofollow">Getting Started Guide<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> explains some valuable concepts surrounding Maven</LI>
+	</UL>
+	</LI>
+	<LI>ServiceMix 3.0 or higher
+	<UL>
+		<LI>See the <SPAN class="nobr"><A href="http://servicemix.org/site/download.html" title="Visit page outside Confluence" rel="nofollow">ServiceMix downloads<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	</UL>
+	</LI>
+	<LI>A broadband internet connection (so Maven can automatically download dependencies)</LI>
 </UL>
 
 
-<H2><A name="HelloWorld-SE-OverviewSESUSA"></A>Overview SE-SU-SA</H2>
+<H2><A name="HelloWorld-SE-AVeryBriefIntroductiontoJavaBusinessIntegration"></A>A Very Brief Introduction to Java Business Integration </H2>
 
-<P>JBI components are can be tought of as the &quot;smallest applications&quot; you can access in an ESB. They have a very specific purpose, thus a narrow scope and set of functionallity. Components come in two flavours: Service Engine (SE) and Binding Components (BC).</P>
+<P>The <SPAN class="nobr"><A href="http://jcp.org/en/jsr/detail?id=208" title="Visit page outside Confluence" rel="nofollow">Java Business Integration (JBI) spec<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> provides a standards-based, service-oriented approach to application integration through the use of an abstract messaging model, without reference to a particular protocol or wire encoding. JBI introduces the concepts of Binding Components (BCs), Service Engines (SEs) to  Service Units (SUs) and Service Assemblies (SAs) to define an architecture for vendor-neutral pluggable components. The purpose of this architecture is to provide standards-based interoperability amongst components/services. </P>
 
-<P>Components are enriched by metadata (<FONT color="#ff0000">which?</FONT>) and the whole is packed into a Service Unit (SU) - basically a JAR archive.</P>
+<P>JBI components are can be thought of as the <EM>smallest applications</EM> or <EM>services</EM> accessible in a service-oriented architecture. Each service has a very specific purpose and therefore a narrow scope and set of functionality. Components come in two flavours: Service Engine (SE) and Binding Components (BC). Several SUs are packed into a SA. An SA is a <EM>complete application</EM> consisting of one or more services interacting with one another. </P>
 
-<P>Several SUs are packed into a Service Assambly (SA). An SA is a complete &quot;application&quot; consisting of multiple components (reminder: the &quot;smallest appliactions&quot;) interacting with each other and making up the big &quot;application&quot;.</P>
+<P>See also the page providing information on <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/main/working-with-service-units.html" title="Visit page outside Confluence" rel="nofollow">working with service units<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<P>Below are some quick definitions: </P>
+
+<UL>
+	<LI>Component Architecture
+	<UL>
+		<LI>Binding Components - Components that provide or consume services via some sort of communications protocol or other remoting technology</LI>
+		<LI>Service Engines - Components that supply or consume services locally (within the JBI container)</LI>
+	</UL>
+	</LI>
+</UL>
+
+
+<UL>
+	<LI>Component Packaging
+	<UL>
+		<LI>Service Units - Packaging for an individual service that allows deployment to the JBI container; similar to a WAR file from J2EE</LI>
+		<LI>Service Assemblies - Packaging for groups of SUs for deployment to the JBI container; similar to an EAR file from J2EE</LI>
+	</UL>
+	</LI>
+</UL>
+
+
+<P>For further reading, see the <SPAN class="nobr"><A href="https://open-esb.dev.java.net/public/whitepapers/JBIforSOI.pdf" title="Visit page outside Confluence" rel="nofollow">JBIforSOI<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> document for a good introduction to JBI.</P>
+
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
 <P><FONT color="#ff0000">Further reading: JSR 208. Include references from here to sections/pages in the spec. Maybe add an attachment to this wiki page containing a FDF (annotations for the PDF) so skimming the sepc quickly without missing important information is possible.</FONT></P></TD></TR></TABLE>
 
-<H2><A name="HelloWorld-SE-CreatingthemainPOMandthestubsoftheSE%2CSU%2CSA"></A>Creating the main POM and the stubs of the SE, SU, SA</H2>
+<H2><A name="HelloWorld-SE-CreatingtheMavenProjectsforEachComponent"></A>Creating the Maven Projects for Each Component </H2>
 
+<H3><A name="HelloWorld-SE-CreatingaSkeletonProjectFortheJBIServiceEngine%28SE%29"></A>Creating a Skeleton Project For the JBI Service Engine (SE) </H3>
 
-<H3><A name="HelloWorld-SE-CreatingthestuboftheSE"></A>Creating the stub of the SE</H3>
+<P>The focus of this section is on the creation of a JBI component. For this task, a <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-archetypes.html" title="Visit page outside Confluence" rel="nofollow">Maven archetype<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> will be used to create a Maven project skeleton to house the component. Maven archetypes are templates for Maven projects that jumpstart project creation via the automation of repetitive tasks by following standard conventions. The result of using an archetype to create a Maven project is a directory structure, a <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html" title="Visit page outside Confluence" rel="nofollow">Maven POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> file and, depending on the archetype being used, sometimes Java objects and JUnit tests. </P>
 
-<P>First, a JBI component has to be created. Here, we use archetypes, just like shown at <A href="creating-a-standard-jbi-component.html" title="Creating a Standard JBI Component">Creating a Standard JBI Component</A> and <A href="notes-on-creating-jbi-component-using-maven2.html" title="Notes on Creating JBI Component using maven2">Notes on Creating JBI Component using maven2</A> and <A href="creating-a-protocol-bridge.html" title="Creating a protocol bridge">Creating a protocol bridge</A>. The Maven 2 archetypes are a kind of pattern, generic model, blueprint or template, or as <SPAN class="nobr"><A href="http://www.m-w.com/cgi-bin/dictionary?book=Dictionary&va=archetype" title="Visit page outside Confluence" rel="nofollow">Merriam-Webster<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> defines &quot;<EM>the original pattern or model of which all things of the same type are representations or copies</EM>&quot;. Using archetypes, Maven creates the basis for components, settings and so on, thus archetypes spare developers repetetive work and avoid errors like typos etc.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
+<P>As this text describes how to create a Hello World service engine and pack it into a SU and SA, the project name is <TT>hello-world-se</TT> and each piece of the SA puzzle are named using a similar pattern. For a given project, the IDs and names shall be altered such that they describe the purpose or function of the given piece of the SA.</P></TD></TR></TABLE>
 
-<P><EM>Note:</EM> As this text describes how to create a &quot;Hello World&quot; Service Engine and pack it into an SU and SA, the project name is <EM>hello-world-SE-SU-SA</EM> and the single pieces are named analogous. For a custom project, the IDs and names shall be altered such that they describe the purpose or function of the given piece of the SA.</P>
+<P>1) Create a directory named <EM>hello-world-se</EM>: </P>
 
-<P>First, we create a directory <EM>hello-world-SE-SU-SA</EM> and open a command line in this folder. Now we execute the following command (it has to be one line but was split to be readable):</P>
-<DIV class="panel"><DIV class="panelContent">
-<P>mvn archetype:create &#45;DarchetypeGroupId=org.apache.servicemix.tooling &#45;DarchetypeArtifactId=servicemix-service-engine<BR>
-&#45;DarchetypeVersion=<FONT color="#993366">3.0-incubating</FONT> &#45;DgroupId=<FONT color="#ff00ff">org.apache.servicemix.samples.helloWorldSE</FONT> &#45;DartifactId=<FONT color="#009900">hello-world-SE</FONT></P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">$ mkdir hello-world-se</PRE>
 </DIV></DIV>
-<P>The first three parameters identify the maven 2 archetype to use, while the last two parameters define the generated maven 2 project. The version information &quot;<FONT color="#993366">3.0-incubating</FONT>&quot; may have to be changed; a look at any of ServiceMix&apos; <EM>pom.xml</EM> reveals the version to use. Maven uses the group ID (printed in <FONT color="#ff00ff">pink</FONT>) as default Java package (see output below as well), thus invalid characters like minus, percent etc. must be avoided or a custom package name has to be given as parameter. Mavens output following the command looks like this (only relevant information preserved):</P>
+
+<P>2) Use a Maven archetype to generate a Maven project for the SE:</P>
+
+<DIV class="panel"><DIV class="panelContent">
+<P>mvn archetype:create &#45;DarchetypeGroupId=org.apache.servicemix.tooling &#45;DarchetypeArtifactId=servicemix-service-engine \<BR>
+&#45;DarchetypeVersion=<FONT color="#993366">3.1-incubating-SNAPSHOT</FONT> &#45;DgroupId=<FONT color="#ff00ff">org.apache.servicemix.samples.helloworld</FONT> &#45;DartifactId=<FONT color="#009900">hello-world-se</FONT></P>
+</DIV></DIV>
+
+<P>The first three parameters to the <TT>mvn</TT> command (-DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-engine &#45;DarchetypeVersion=3.1-incubating-SNAPSHOT) identify which Maven archetype to use for the <TT>archetype:create</TT> goal, while the last two parameters (-DgroupId=org.apache.servicemix.samples.helloworld -DartifactId=hello-world-se) uniquely identify the Maven project that is being generated. The <TT>groupId</TT> (printed in <FONT color="#ff00ff">pink</FONT>) is used as the Java package and the <TT>artifactId</TT> is used as the project name. Therefore, only alphanumeric characters valid values for the <TT>groupId</TT> and <TT>artifactId</TT> parameters. </P>
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
+<P>The value of the <TT>archetypeVersion</TT> parameter in the command above (<FONT color="#993366">3.1-incubating-SNAPSHOT</FONT>) may need to be updated to the current ServiceMix version in order for the command to work correctly. The latest version can always be found <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/pom.xml" title="Visit page outside Confluence" rel="nofollow">in the top level ServiceMix POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> in the <TT>&lt;version&gt;</TT> element. </P></TD></TR></TABLE>
+
+<P>The output from executing the <TT>archetype:create</TT> goal is shown below (only relevant information has been preserved):</P>
+
 <DIV class="panel"><DIV class="panelContent">
 <P>[INFO] Scanning for projects...<BR>
 [INFO] Searching repository for plugin with prefix: &apos;archetype&apos;.<BR>
@@ -230,146 +273,178 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
 [INFO] BUILD SUCCESSFUL<BR>
 [INFO] &#45;----------------------------------------------------------------------&#45;</P>
 </DIV></DIV>
-<P>Maven creates a new folder having the same name as the artifact ID provided (printed in <FONT color="#009900">green</FONT> in the command and output). Inside this folder, a file called <EM>pom.xml</EM> is created. This contains the Project Object Model providing Maven with all needed information for building (see <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html" title="Visit page outside Confluence" rel="nofollow">Introduction to the POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> at the Maven website). Moreover, Java source files and tests were created.</P>
+
+<P>Maven creates a directory using the <TT>artifactId</TT> provided (printed in <FONT color="#009900">green</FONT> in the command and output). Inside this directory resides the <TT>pom.xml</TT> and the <TT>src</TT> directory. </P>
+
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">In case of a BUILD ERROR: Maven plugin version requirement</B><BR>
-<P>The&nbsp; maven-archetype-plugin <B>1.0-alpha4</B> or above is required for this tutorial. When an older version is installed, a BUILD ERROR will occur. The version can be checked by having a look at the name of the directories contained in <EM>&#126;/.m2/repository/org/apache/maven/plugins/maven-archetype-plugin</EM> (&#126; is you user directory, on Windows <EM>C:\Documents and Settings\&lt;USERNAME</EM>&gt;). In case only an older version is present, we create a minimal <EM>pom.xml</EM> in the folder where we&apos;re calling the <EM>mvn archetype:create</EM> goal in (so the current folder) and fill the created file with the following content:&nbsp;</P>
+<P>The maven-archetype-plugin <B>1.0-alpha4</B> or above is required for this tutorial. When an older version is installed, a build error will occur. The version of this plugin can be checked by verifying the name of the following directories: </P>
 
-<P>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<BR>
-&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 <SPAN class="nobr"><A href="http://maven.apache.org/maven-v4_0_0.xsd" title="Visit page outside Confluence" rel="nofollow">http://maven.apache.org/maven-v4_0_0.xsd<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>&quot;&gt;<BR>
-&nbsp;&nbsp;&nbsp; &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;<BR>
-&nbsp;&nbsp;&nbsp; &lt;groupId&gt;mygroup&lt;/groupId&gt;<BR>
-&nbsp;&nbsp;&nbsp; &lt;artifactId&gt;myartifact&lt;/artifactId&gt;<BR>
-&nbsp;&nbsp;&nbsp; &lt;version&gt;myversion&lt;/version&gt;<BR>
-&nbsp;&nbsp;&nbsp; &lt;packaging&gt;pom&lt;/packaging&gt;<BR>
-&nbsp;&nbsp;&nbsp; &lt;build&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;pluginManagement&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;plugins&gt;<BR>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &lt;plugin&gt;<BR>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;<BR>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;artifactId&gt;maven-archetype-plugin&lt;/artifactId&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;version&gt;1.0-alpha-4&lt;/version&gt;<BR>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &lt;/plugin&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/plugins&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/pluginManagement&gt;<BR>
-&nbsp;&nbsp;&nbsp; &lt;/build&gt;<BR>
-&lt;/project&gt;</P></TD></TR></TABLE>
+<DIV class="code"><DIV class="codeHeader"><B>Unix</B></DIV><DIV class="codeContent">
+<PRE class="code-java">\~/.m2/repository/org/apache/maven/plugins/maven-archetype-plugin</PRE>
+</DIV></DIV>
 
-<H3><A name="HelloWorld-SE-CreatingthestuboftheSUandSA%26nbsp%3B"></A>Creating the stub of the SU and SA&nbsp;</H3>
+<DIV class="code"><DIV class="codeHeader"><B>Windows</B></DIV><DIV class="codeContent">
+<PRE class="code-java">C:\Documents and Settings\&lt;USERNAME_&gt;</PRE>
+</DIV></DIV> 
+
+<P>In case the only version available is an older one, a minimal <TT>pom.xml</TT> file will need to be created manually in the <TT>hello-world-se</TT> directory: </P>
+
+<DIV class="code"><DIV class="codeHeader"><B>Minimal pom.xml</B></DIV><DIV class="codeContent">
+<PRE class="code-java">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;
+&lt;project xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0&quot;</SPAN> 
+</SPAN>         xmlns:xsi=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//www.w3.org/2001/XMLSchema-instance&quot;</SPAN>    
+</SPAN>         xsi:schemaLocation=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0&quot;</SPAN>&gt;
+</SPAN>
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+  &lt;groupId&gt;mygroup&lt;/groupId&gt;
+  &lt;artifactId&gt;myartifact&lt;/artifactId&gt;
+  &lt;version&gt;myversion&lt;/version&gt;
+  &lt;packaging&gt;pom&lt;/packaging&gt;
+
+  &lt;build&gt;
+    &lt;pluginManagement&gt;
+      &lt;plugins&gt;
+        &lt;plugin&gt;
+          &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+          &lt;artifactId&gt;maven-archetype-plugin&lt;/artifactId&gt;
+          &lt;version&gt;1.0-alpha-4&lt;/version&gt;
+        &lt;/plugin&gt;
+      &lt;/plugins&gt;
+    &lt;/pluginManagement&gt;
+  &lt;/build&gt;
+&lt;/project&gt;</PRE>
+</DIV></DIV></TD></TR></TABLE>
+
+<H3><A name="HelloWorld-SE-CreatingtheProjectFortheSUandSA"></A>Creating the Project For the SU and SA</H3>
 
 <P>The archetypes for SUs and SAs do not contain much code, but rather help with tasks related to Maven. Later, we will only need to adapt the POMs to our project - just little work.</P>
 
-<P>In the directory <EM>hello-world-SE-SU-SA</EM> we execute the following commands (they have to be one line but were split to be readable) for the SU</P>
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>mvn archetype:create -DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-unit
--DarchetypeVersion=3.0-incubating -DgroupId=org.apache.servicemix.samples.helloWorldSE -DartifactId=hello-world-SU
-</PRE>
+<P>From within the directory <TT>hello-world-se</TT>, execute the following commands to create the project for the SU: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn archetype:create -DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-unit \
+-DarchetypeVersion=3.1-incubating-SNAPSHOT -DgroupId=org.apache.servicemix.samples.helloworld -DartifactId=hello-world-su</PRE>
 </DIV></DIV>
-<P>and the SA</P>
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>mvn archetype:create -DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-assembly
--DarchetypeVersion=3.0-incubating -DgroupId=org.apache.servicemix.samples.helloWorldSE -DartifactId=hello-world-SA
-</PRE>
+
+<P>From within the directory <TT>hello-world-se</TT>, execute the following commands to create the project for the SA:</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn archetype:create -DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-assembly \
+-DarchetypeVersion=3.1-incubating-SNAPSHOT -DgroupId=org.apache.servicemix.samples.helloworld -DartifactId=hello-world-sa</PRE>
 </DIV></DIV>
-<P>By now, the full structure of files is created by Maven and looks like this:</P>
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>C:\hello-world-SE-SU-SA\hello-world-SA
-C:\hello-world-SE-SU-SA\hello-world-SA\pom.xml
+
+<P>The directory structures for each project should appear as follows: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">C:\hello-world-se\hello-world-sa
+C:\hello-world-se\hello-world-sa\pom.xml
 
 
-C:\hello-world-SE-SU-SA\hello-world-SE
-C:\hello-world-SE-SU-SA\hello-world-SE\pom.xml
+C:\hello-world-se\hello-world-se
+C:\hello-world-se\hello-world-se\pom.xml
 
-C:\hello-world-SE-SU-SA\hello-world-SE\src\main\java\org\apache\servicemix\samples\helloWorldSE
-C:\hello-world-SE-SU-SA\hello-world-SE\src\main\java\org\apache\servicemix\samples\helloWorldSE\MyBootstrap.java
-C:\hello-world-SE-SU-SA\hello-world-SE\src\main\java\org\apache\servicemix\samples\helloWorldSE\MyComponent.java
-C:\hello-world-SE-SU-SA\hello-world-SE\src\main\java\org\apache\servicemix\samples\helloWorldSE\MyDeployer.java
-C:\hello-world-SE-SU-SA\hello-world-SE\src\main\java\org\apache\servicemix\samples\helloWorldSE\MyEndpoint.java
-C:\hello-world-SE-SU-SA\hello-world-SE\src\main\java\org\apache\servicemix\samples\helloWorldSE\MyLifeCycle.java
-C:\hello-world-SE-SU-SA\hello-world-SE\src\main\java\org\apache\servicemix\samples\helloWorldSE\MySpringComponent.java
+C:\hello-world-se\hello-world-se\src\main\java\org\apache\servicemix\samples\helloworld
+C:\hello-world-se\hello-world-se\src\main\java\org\apache\servicemix\samples\helloworld\MyBootstrap.java
+C:\hello-world-se\hello-world-se\src\main\java\org\apache\servicemix\samples\helloworld\MyComponent.java
+C:\hello-world-se\hello-world-se\src\main\java\org\apache\servicemix\samples\helloworld\MyDeployer.java
+C:\hello-world-se\hello-world-se\src\main\java\org\apache\servicemix\samples\helloworld\MyEndpoint.java
+C:\hello-world-se\hello-world-se\src\main\java\org\apache\servicemix\samples\helloworld\MyLifeCycle.java
+C:\hello-world-se\hello-world-se\src\main\java\org\apache\servicemix\samples\helloworld\MySpringComponent.java
 
-C:\hello-world-SE-SU-SA\hello-world-SE\src\test\java\org\apache\servicemix\samples\helloWorldSE
-C:\hello-world-SE-SU-SA\hello-world-SE\src\test\java\org\apache\servicemix\samples\helloWorldSE\MySpringComponentTest.java
+C:\hello-world-se\hello-world-se\src\test\java\org\apache\servicemix\samples\helloworld
+C:\hello-world-se\hello-world-se\src\test\java\org\apache\servicemix\samples\helloworld\MySpringComponentTest.java
 
-C:\hello-world-SE-SU-SA\hello-world-SE\src\test\resources
-C:\hello-world-SE-SU-SA\hello-world-SE\src\test\resources\spring.xml
+C:\hello-world-se\hello-world-se\src\test\resources
+C:\hello-world-se\hello-world-se\src\test\resources\spring.xml
 
 
-C:\hello-world-SE-SU-SA\hello-world-SU
-C:\hello-world-SE-SU-SA\hello-world-SU\pom.xml
-C:\hello-world-SE-SU-SA\hello-world-SU\src\main\resources
-</PRE>
+C:\hello-world-se\hello-world-su
+C:\hello-world-se\hello-world-su\pom.xml
+C:\hello-world-se\hello-world-su\src\main\resources</PRE>
+</DIV></DIV> 
+
+<P>According to the template rules, all Java objects are prefixed with the word My. These Java objects can be renamed to whatever you prefer, making sure to also change the names in the corresponding resource files (all tests and {{pom.xml}}s) as well.</P>
+
+<H3><A name="HelloWorld-SE-IncorporatingtheSUandSAIntotheTopLevelPOM"></A>Incorporating the SU and SA Into the Top Level POM</H3>
+
+<P>Now that we have created the SU and SA projects, the top level <TT>pom.xml} must be made aware of each one. In the {{hello-world-se</TT> directory create a file named <TT>pom.xml</TT> containing the following content:</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;project&gt;
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+  &lt;groupId&gt;org.apache.servicemix.samples&lt;/groupId&gt;
+  &lt;artifactId&gt;hello-world-se&lt;/artifactId&gt;
+  &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+  &lt;packaging&gt;pom&lt;/packaging&gt;
+
+  &lt;modules&gt;
+    &lt;module&gt;hello-world-sa&lt;/module&gt;
+    &lt;module&gt;hello-world-su&lt;/module&gt;
+  &lt;/modules&gt;
+
+  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.apache.servicemix.samples.helloWorldse&lt;/groupId&gt;
+      &lt;artifactId&gt;hello-world-su&lt;/artifactId&gt;
+      &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+
+&lt;/project&gt;</PRE>
 </DIV></DIV>
-<P>According to the template rules, all the classes have the word &quot;My&quot; prefixed to them. We can rename the prefix to whatever we want to, as long as we make sure we change the corresponding resource files (all tests and the <EM>pom.xml</EM>) as well.</P>
 
-<H3><A name="HelloWorld-SE-IncorporatingtheSUandSAintothemainPOM"></A>Incorporating the SU and SA into the main POM</H3>
+<P>The <TT>&lt;modules&gt;</TT> element denotes the child projects that were created using the Maven archetypes and the <TT>&lt;dependencies&gt;</TT> element tells Maven to include the SU into the SA when it is constructed.</P>
 
-<P>Now that we have created the SU and SA structure, we incorporate them into the main POM. We create a file called <EM>pom.xml</EM> in the <EM>hello-world-SE-SU-SA</EM> directory and instert the following content:</P>
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>&lt;project&gt;
-	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-	&lt;groupId&gt;org.apache.servicemix.samples&lt;/groupId&gt;
-	&lt;artifactId&gt;helloWorldSE&lt;/artifactId&gt;
-	&lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-	&lt;packaging&gt;pom&lt;/packaging&gt;
-	&lt;modules&gt;
-		&lt;module&gt;hello-world-SA&lt;/module&gt;
-		&lt;module&gt;hello-world-SU&lt;/module&gt;
-	&lt;/modules&gt;
-	&lt;dependencies&gt;
-		&lt;dependency&gt;
-			&lt;groupId&gt;org.apache.servicemix.samples.helloWorldSE&lt;/groupId&gt;
-			&lt;artifactId&gt;hello-world-SU&lt;/artifactId&gt;
-			&lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-		&lt;/dependency&gt;
-	&lt;/dependencies&gt;
-&lt;/project&gt;
-</PRE>
-</DIV></DIV>
-<P>The &lt;modules&gt; entity defines which child projects belong to the main project. The &lt;dependencies&gt; entity causes Maven to include the SU into the SA.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
+<P>The content of the <TT>&lt;version&gt;</TT> element is arbitrary and is used to describe <EM>not</EM> the version of ServiceMix but of the version of projects that were just created. We just have to use consistently the same version when we reference this project.</P></TD></TR></TABLE>
 
-<P><EM>Note:</EM> The content of &lt;version&gt; describes <EM>not</EM> the version of ServiceMix but of the project we create, thus we may choose any desired version (e.g. <EM>3.0-final</EM>). We just have to use consitently the same version when we reference this project.</P>
-
-<H2><A name="HelloWorld-SE-Mavencommands%26nbsp%3B"></A>Maven commands&nbsp;</H2>
+<H2><A name="HelloWorld-SE-UsingMaventoBuildandPackagetheComponents"></A>Using Maven to Build and Package the Components </H2>
 
 <P>By now, it is already possible to call Maven with the relevant goals.</P>
 
-<H3><A name="HelloWorld-SE-CompilingtheSE%27scode"></A>Compiling the SE&apos;s code</H3>
+<H3><A name="HelloWorld-SE-CompilingtheComponents"></A>Compiling the Components </H3>
 
-<P>We can build the code by executing</P>
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>mvn compile
-</PRE>
+<P>In order to build, package and place a copy of each component in the Maven repository onyour local machine, execute the following from within <TT>hello-world-se</TT> directory: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn install</PRE>
 </DIV></DIV>
+
 <P>in the <EM>hello-world-SE-SU-SA/hello-world-SE</EM> directory and Maven shall present as one of the last lines of output</P>
 <DIV class="preformatted"><DIV class="preformattedContent">
 <PRE>[INFO] BUILD SUCCESSFUL
 </PRE>
 </DIV></DIV>
-<P>In case this success information is not appearing, the output shall give information on the reasons. Further information can be found in the <A href="mailing-lists.html" title="Mailing Lists">ServiceMix mailing lists archive</A> and the <SPAN class="nobr"><A href="http://maven.apache.org/" title="Visit page outside Confluence" rel="nofollow">Maven website<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
 
-<H3><A name="HelloWorld-SE-TestingtheSE%27scode"></A>Testing the SE&apos;s code</H3>
+<P>In case this success information does not appear, the output will provide some information about what might have gone awry. Assistance with any issue you might experience is available from the ServiceMix community via the <A href="mailing-lists.html" title="Mailing Lists">ServiceMix mailing lists archive</A>. </P>
 
-<P>Doing automated testing of the code is possible as well. As ServiceMix&apos; root POM disables testing, we have to be activate it for the subprojects that shall be tested. To do so, the &lt;build&gt; entity of our <EM>hello-world-SE-SU-SA/hello-world-SE/</EM><EM>pom.xml</EM> has to be enriched by</P>
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>&lt;pluginManagement&gt;
-     &lt;plugins&gt;
-          &lt;plugin&gt;
-               &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-               &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
-               &lt;configuration&gt;
-                    &lt;skip&gt;false&lt;/skip&gt;&lt;!-- this overrides ServiceMix&apos; root POM and forces to execute the tests --&gt;
-               &lt;/configuration&gt;
-          &lt;/plugin&gt;
-     &lt;/plugins&gt;
-&lt;/pluginManagement&gt;
-</PRE>
+<H3><A name="HelloWorld-SE-TestingtheComponents"></A>Testing the Components </H3>
+
+<P>Performing automated testing of the components is possible via Maven as well. Because the ServiceMix root POM prevents tests from being executed at the top level, this functionality must be activated so that the coponents can be tested. To do so, the <TT>&lt;build&gt;</TT> element of the <TT>hello-world-se/pom.xml</TT> must be augmented using the following content: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;pluginManagement&gt;
+  &lt;plugins&gt;
+    &lt;plugin&gt;
+      &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+      &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+        &lt;configuration&gt;
+          &lt;skip&gt;<SPAN class="code-keyword">false</SPAN>&lt;/skip&gt;&lt;!-- <SPAN class="code-keyword">this</SPAN> overrides the ServiceMix root POM&apos;s setting <SPAN class="code-keyword">for</SPAN> test execution --&gt;
+        &lt;/configuration&gt;
+      &lt;/plugin&gt;
+   &lt;/plugins&gt;
+&lt;/pluginManagement&gt;</PRE>
 </DIV></DIV>
-<P>where <EM>&lt;skip&gt;false&lt;/skip&gt;</EM> is the relevant line of code. Now, when executing</P>
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>mvn test
-</PRE>
+
+<P>By adding the configuation above, the <TT>install</TT> goal will now including test execution in addition to building and packaging the components. To run the tests, execute the <TT>test</TT> goal this time and you should see the following output: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">$ mvn test</PRE>
 </DIV></DIV>
-<P>tests will be done and Maven outputs the following (truncated to the relevant information):</P>
+
+
 <DIV class="preformatted"><DIV class="preformattedContent">
 <PRE>[INFO] Scanning for projects...
 [INFO] ----------------------------------------------------------------------------
@@ -393,47 +468,51 @@ C:\hello-world-SE-SU-SA\hello-world-SU\src\main\resources
 ...
 </PRE>
 </DIV></DIV>
+
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
 <P>Maybe add further testing at the end of the tutarial (&quot;how to continue when having the working example&quot;)</P></TD></TR></TABLE>
 
-<H3><A name="HelloWorld-SE-GenerationanddeploymentoftheSA"></A>Generation and deployment of the SA</H3>
+<H3><A name="HelloWorld-SE-GenerationandDeploymentoftheSA"></A>Generation and Deployment of the SA</H3>
 
-<P>By running</P>
+<P>The execution of the <TT>install</TT> goal above packages not only each component individually, it also packages the components together into a single SA. Of course, the code does not yet do anything, but we can already deploy the SA ServiceMix by switching to the <TT>hello-world-se/hello-world-sa</TT> directory and executing the <TT>jbi:projectDeploy</TT> goal like so: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">$ mvn jbi:projectDeploy</PRE>
+</DIV></DIV>
+
+<P>This tells the <A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A> to deploy the components to ServiceMix. When the deployment is complete, ServiceMix will output the following: </P>
+
 <DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>mvn install
+<PRE>INFO  - ServiceAssemblyLifeCycle       - Starting service assembly: hello-world-sa
 </PRE>
 </DIV></DIV>
-<P>from the <EM>hello-world-SE-SU-SA</EM> directory, the SA is generated in the <EM>hello-world-SE-SU-SA/</EM><EM>hello-world-SA/target/</EM> directory. Of course, our code does not yet do anything, but we can already deploy the SA and needed components to a running ServiceMix container by switching to the <EM>hello-world-SE-SU-SA/hello-world-SA/</EM> directory and calling</P>
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>mvn jbi:projectDeploy
-</PRE>
+
+<P>This output tells us that the SA was successfully deployed to ServiceMix. </P>
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Deploying Component Dependencies</B><BR>
+<P>When working with the <TT>jbi:projectDeploy</TT> you may want to disable dependency deployment. When deploying to a server which has other components sharing these dependencies, they can cause problems during deployment. To stop the Maven JBI plugin from undeploying and redeploying dependencies each time, alter its configuration by disabling the deployment of dependencies using the following: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;build&gt;
+&lt;plugins&gt;
+  &lt;plugin&gt;
+    &lt;artifactId&gt;jbi-maven-plugin&lt;/artifactId&gt;
+    &lt;configuration&gt;
+      &lt;deployDependencies&gt;<SPAN class="code-keyword">false</SPAN>&lt;/deployDependencies&gt;
+    &lt;/configuration&gt;
+  &lt;/plugin&gt;
+&lt;/plugins&gt;
+&lt;/build&gt;</PRE>
 </DIV></DIV>
-<P>Essentially, the plugin will walk the dependencies starting in the current project, then deploy each of the dependencies in reverse order. So it copies contents of the <EM>hello-world-SA-1.0-SNAPSHOT.zip</EM> and orther sources to ServiceMix subdirectories. For further information see <A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A>. When the deployment is complete, ServiceMix will output this confirmation:</P>
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>INFO  - ServiceAssemblyLifeCycle       - Starting service assembly: hello-world-SA
-</PRE>
-</DIV></DIV>
-<P><EM>Note:</EM> The command <EM>mvn install</EM> executed in the <EM>hello-world-SE</EM> directory creates a JAR and also a component installer. For installation, <EM>mvn jbi:installComponent</EM> has to be executed.</P>
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Deploying Dependencies</B><BR>
-<P>When working with the <EM>jbi:projectDeploy</EM> one may want to disable dependency deployment. When deploying to a server which has other components sharing these dependencies, they can cause problems while trying to undeploy and redeploy them. To stop the jbi-maven-plugin undeploying and redeploying dependencies, the configuration files (usually in the SA&apos;s or the component&apos;s <EM>pom.xml</EM>) have to be extended by a new entity called deployDependencies with a value of false. This has to be placed in the configuration section for the jbi-maven-plugin. The final structure looks like this (reduced to the bare minimum, the inserted entity is <B>bold</B>):</P>
 
-<P>&lt;build&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;plugins&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;plugin&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;jbi-maven-plugin&lt;/artifactId&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;configuration&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>&lt;deployDependencies&gt;false&lt;/deployDependencies&gt;</B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/configuration&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/plugin&gt;<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;/plugins&gt;<BR>
-&lt;/build&gt;</P>
+<P>The configuration above introduces the <TT>deployDependencies</TT> element to the Maven JBI plugin and sets it to false. </P>
 
-<P>See also <SPAN class="nobr"><A href="https://issues.apache.org/activemq/browse/SM-605?page=all" title="Visit page outside Confluence" rel="nofollow">https://issues.apache.org/activemq/browse/SM-605?page=all<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for command line options.</P></TD></TR></TABLE>
+<P>For a few more configurable options on the Maven JBI plugin, see also <SPAN class="nobr"><A href="https://issues.apache.org/activemq/browse/SM-605" title="Visit page outside Confluence" rel="nofollow">Ability to configure jbi:projectDeploy goal to exclude updating dependencies<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P></TD></TR></TABLE>
 
-<H2><A name="HelloWorld-SE-Addingfunctionality"></A>Adding functionality</H2>
+<H2><A name="HelloWorld-SE-AddingFunctionalitytotheComponent"></A>Adding Functionality to the Component </H2>
 
-<P>The structure is done, so the functionality have to be added. Using an IDE like IDEA or<BR>
-Eclipse this is easier; here, the workflow with Eclipse is described.</P>
+<P>We&apos;re now ready to add a bit of functionality to the component. Using an IDE like <SPAN class="nobr"><A href="http://www.jetbrains.com/idea/" title="Visit page outside Confluence" rel="nofollow">IntelliJ IDEA<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or <SPAN class="nobr"><A href="http://eclipse.org/" title="Visit page outside Confluence" rel="nofollow">Eclipse<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> make this task much easier. The steps described here apply to Eclipse. </P>
+
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
 <P>The default implementation of the component accepts InOut MEPs (ADD<BR>
 LINK TO FURTHER READING CONCERNING MEPs) and return the input content<BR>
@@ -455,10 +534,9 @@ C:\hello-world-SE-SU-SA\hello-world-SU\src\main\resources\servicemix.xml</LI>
 </UL>
 
 
-<P>Classpath for SU to include manually&nbsp; till v3.1, see <SPAN class="nobr"><A href="http://mail-archives.apache.org/mod_mbox/geronimo-servicemix-users/200610.mbox/%3Cb23ecedc0610042315k30c03d67y240be0bb97358784@mail.gmail.com%3E" title="Visit page outside Confluence" rel="nofollow">mail<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+<P>Classpath for SU to include manually till v3.1, see <SPAN class="nobr"><A href="http://mail-archives.apache.org/mod_mbox/geronimo-servicemix-users/200610.mbox/%3Cb23ecedc0610042315k30c03d67y240be0bb97358784@mail.gmail.com%3E" title="Visit page outside Confluence" rel="nofollow">mail<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
-
-<P> manually editing <SPAN class="nobr"><A href="working-with-service-units.html" title="Visit page outside Confluence" rel="nofollow">http://goopen.org/confluence/display/SM/Working+with+Service+Units<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+<P>manually editing <SPAN class="nobr"><A href="working-with-service-units.html" title="Visit page outside Confluence" rel="nofollow">http://goopen.org/confluence/display/SM/Working+with+Service+Units<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
 manually editing <SPAN class="nobr"><A href="http://www.servicemix.org/site/working-with-service-assemblies.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/working-with-service-assemblies.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
 use the SU archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
 use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P></TD></TR></TABLE></DIV>
@@ -471,8 +549,8 @@ use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.o
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=14736">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Dec 01, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15192">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
