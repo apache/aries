@@ -126,7 +126,7 @@ servicemix-jms
 	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
 	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
 	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
-	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-script&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-script" class="createlink">servicemix&#45;script<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
 	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
 	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
 </UL>
@@ -217,7 +217,7 @@ servicemix-jms
 <P>You can deploy Service Units containing a file named xbean.xml for activating consumer and provider endpoints.</P>
 
 <P>This xml file should respect the given syntax, though this is a spring based xml configuration file from where all beans of class <SPAN class="nobr"><A href="http://servicemix.org/maven/servicemix-jms/apidocs/org/apache/servicemix/jms/JmsEndpoint.html" title="Visit page outside Confluence" rel="nofollow">JmsEndpoint<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> are retrieved.<BR>
-See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-jms/src/test/resources/xbean/xbean.xml" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.&nbsp; Note that you have to define the jms namespace with</P>
+See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/deployables/bindingcomponents/servicemix-jms/src/test/resources/xbean/xbean.xml" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.&nbsp; Note that you have to define the jms namespace with</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-xml"><SPAN class="code-tag">&lt;beans <SPAN class="code-keyword">xmlns:jms</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/jms/1.0&quot;</SPAN>&gt;</SPAN>
     ...
@@ -230,7 +230,18 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <P>A consumer endpoint is a server-side http endpoint that will consumer plain JMS, or JMS+SOAP requests and send them into the NMR to a given JBI endpoint, which is called the proxied endpoint.</P>
 
 <P>Following is an example of an jms consumer endpoint.</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;jms:endpoint service=<SPAN class="code-quote">&quot;test:MyConsumerService&quot;</SPAN>
+              endpoint=<SPAN class="code-quote">&quot;jms&quot;</SPAN>
+              targetService=<SPAN class="code-quote">&quot;test:MyConsumerService&quot;</SPAN>
+              targetEndpoint=<SPAN class="code-quote">&quot;myConsumer&quot;</SPAN>
+              role=<SPAN class="code-quote">&quot;consumer&quot;</SPAN> 
+              destinationStyle=<SPAN class="code-quote">&quot;queue&quot;</SPAN>
+              jmsProviderDestinationName=<SPAN class="code-quote">&quot;queue/A&quot;</SPAN>
+              jndiConnectionFactoryName=<SPAN class="code-quote">&quot;ConnectionFactory&quot;</SPAN>
+              defaultMep=<SPAN class="code-quote">&quot;http://www.w3.org/2004/08/wsdl/in-out&quot;</SPAN>
+              defaultOperation=<SPAN class="code-quote">&quot;test:Echo&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Consumer endpoint attributes</B><BR>
 <TABLE class="confluenceTable"><TBODY>
 <TR>
@@ -373,7 +384,15 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <P>A provider endpoint is a client-side jbi endpoint which can receive requests from the NMR and send them to a given url where the service is provided.</P>
 
 <P>Here is an example of an jms provider endpoint:</P>
-
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;jms:endpoint service=<SPAN class="code-quote">&quot;test:MyProviderService&quot;</SPAN>
+              endpoint=<SPAN class="code-quote">&quot;myProvider&quot;</SPAN>
+              role=<SPAN class="code-quote">&quot;provider&quot;</SPAN> 
+              destinationStyle=<SPAN class="code-quote">&quot;queue&quot;</SPAN>
+              jmsProviderDestinationName=<SPAN class="code-quote">&quot;queue/A&quot;</SPAN>
+              jndiConnectionFactoryName=<SPAN class="code-quote">&quot;ConnectionFactory&quot;</SPAN>
+              wsdlResource=<SPAN class="code-quote">&quot;classpath:provider.wsdl&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Provider endpoint attributes</B><BR>
 <TABLE class="confluenceTable"><TBODY>
 <TR>
@@ -491,7 +510,7 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 
 <P>The processor used on a given endpoint can be configured using the <TT>processorName</TT> attribute on the endpoint.</P>
 
-<P>JCA enabled endpoints need specific configuration.  A full example is available <SPAN class="nobr"><A href="http://svn.apache.org/viewvc/incubator/servicemix/tags/servicemix-3.0/servicemix-jms/src/test/resources/org/apache/servicemix/jms/spring-jca.xml?revision=HEAD" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+<P>JCA enabled endpoints need specific configuration.  A full example is available <SPAN class="nobr"><A href="http://svn.apache.org/viewvc/incubator/servicemix/trunk/deployables/bindingcomponents/servicemix-jms/src/test/resources/org/apache/servicemix/jms/spring-jca.xml?revision=HEAD" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
 <H3><A name="servicemix-jms-ConfiguringtheConnectionFactoryandDestination"></A>Configuring the ConnectionFactory and Destination</H3>
 
@@ -554,13 +573,61 @@ The service unit may contain any number of WSDL files, each one being parsed and
 To retrieve the necessary informations from the wsdl, the component can recognize a jms extension to provide JNDI informations and a jbi extension which specifies the role of the component and the default MEP to use for JBI exchanges.</P>
 
 <P>Here is an example of a WSDL:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;definitions name=&apos;Echo&apos; 
+             targetNamespace=&apos;http://jms.servicemix.org/Test&apos; 
+             <SPAN class="code-keyword">xmlns:tns</SPAN>=&apos;http://jms.servicemix.org/Test&apos; 
+             <SPAN class="code-keyword">xmlns:jms</SPAN>=&apos;http://servicemix.org/wsdl/jms/&apos; 
+             xmlns=&apos;http://schemas.xmlsoap.org/wsdl/&apos;
+             <SPAN class="code-keyword">xmlns:jbi</SPAN>=&apos;http://servicemix.org/wsdl/jbi/&apos;&gt;
 
+    <SPAN class="code-tag">&lt;portType name=&apos;EchoInterface&apos;&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/portType&gt;</SPAN>
+
+    <SPAN class="code-tag">&lt;binding name=&apos;EchoJmsBinding&apos; type=&apos;tns:EchoInterface&apos;&gt;</SPAN>
+        <SPAN class="code-tag">&lt;jms:binding /&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/binding&gt;</SPAN>
+
+    <SPAN class="code-tag">&lt;service name=&apos;Echo&apos;&gt;</SPAN>
+        <SPAN class="code-tag">&lt;port name=&apos;EchoEndpoint&apos; binding=&apos;tns:EchoJmsBinding&apos;&gt;</SPAN>
+            &lt;jms:address destinationStyle=<SPAN class="code-quote">&quot;queue&quot;</SPAN>
+                         jmsProviderDestinationName=<SPAN class="code-quote">&quot;queue/A&quot;</SPAN>
+                         jndiConnectionFactoryName=<SPAN class="code-quote">&quot;ConnectionFactory&quot;</SPAN>/&gt;
+            &lt;jbi:endpoint role=<SPAN class="code-quote">&quot;consumer&quot;</SPAN>
+                          defaultOperation=<SPAN class="code-quote">&quot;tns:Echo&quot;</SPAN>/&gt;
+        <SPAN class="code-tag">&lt;/port&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/service&gt;</SPAN>
+<SPAN class="code-tag">&lt;/definitions&gt;</SPAN></PRE>
+</DIV></DIV>
 
 <H2><A name="servicemix-jms-Lightweightmode"></A>Lightweight mode</H2>
 
 <P>The servicemix-jms component can also be configured in a spring/xbean configuration file, for use in an embedded ServiceMix.<BR>
 Here is an example of such a configuration:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+    <SPAN class="code-tag">&lt;jms:component&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jms:endpoints&gt;</SPAN>
+        &lt;jms:endpoint service=<SPAN class="code-quote">&quot;test:MyConsumerService&quot;</SPAN>
+                      endpoint=<SPAN class="code-quote">&quot;myConsumer&quot;</SPAN>
+                      role=<SPAN class="code-quote">&quot;consumer&quot;</SPAN> 
+                      defaultMep=<SPAN class="code-quote">&quot;http://www.w3.org/2004/08/wsdl/in-out&quot;</SPAN>
+                      destinationStyle=<SPAN class="code-quote">&quot;queue&quot;</SPAN>
+                      jmsProviderDestinationName=<SPAN class="code-quote">&quot;queue/A&quot;</SPAN>
+                      jndiConnectionFactoryName=<SPAN class="code-quote">&quot;jms/ConnectionFactory&quot;</SPAN> /&gt;
 
+        &lt;jms:endpoint service=<SPAN class="code-quote">&quot;test:MyProviderService&quot;</SPAN>
+                      endpoint=<SPAN class="code-quote">&quot;myProvider&quot;</SPAN>
+                      role=<SPAN class="code-quote">&quot;provider&quot;</SPAN> 
+                      destinationStyle=<SPAN class="code-quote">&quot;queue&quot;</SPAN>
+                      jmsProviderDestinationName=<SPAN class="code-quote">&quot;queue/A&quot;</SPAN>
+                      connectionFactory=<SPAN class="code-quote">&quot;#connectionFactory&quot;</SPAN> /&gt;
+      <SPAN class="code-tag">&lt;/jms:endpoints&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/jms:component&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Classpath issues when embedding servicemix-jms component</B><BR>
 <P>When using the servicemix.xml configuration file to create jms endpoints, you must include the servicemix-jms-xxx.jar in your classpath.<BR>
 You will find this file inside the component installer (./components/servicemix-jms-xxx.zip).<BR>
@@ -647,35 +714,9 @@ Failing this, an IllegalArgumentException will be thrown with the following mess
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gmcdonald">Grant McDonald</A> on Nov 17, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1954&originalId=15042">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      Added useMsgIdInResponse option to JMS consumer endpoint configuration<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=1954">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Dec 06, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1954&originalId=15203">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1954">edit page</A>)
     </DIV>
 
