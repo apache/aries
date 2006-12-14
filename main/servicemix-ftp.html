@@ -180,7 +180,7 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
             uri=<SPAN class="code-quote">&quot;ftp://servicemix:rocks@localhost/smx/test&quot;</SPAN> /&gt;</PRE>
 </DIV></DIV>
 
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Consumer endpoint attributes</B><BR>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Poller endpoint attributes</B><BR>
 <TABLE class="confluenceTable"><TBODY>
 <TR>
 <TH class="confluenceTh"> Name </TH>
@@ -210,25 +210,25 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 <TD class="confluenceTd"> targetService </TD>
 <TD class="confluenceTd"> QName </TD>
 <TD class="confluenceTd"> the service name of the target endpoint </TD>
-<TD class="confluenceTd"> no (one of targetService, targetInterface or targetUri must be specified)  </TD>
+<TD class="confluenceTd"> one of targetService, targetInterface or targetUri must be specified </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> targetEndpoint </TD>
 <TD class="confluenceTd"> String </TD>
 <TD class="confluenceTd"> the endpoint name of the target endpoint </TD>
-<TD class="confluenceTd"> no (one of targetService, targetInterface or targetUri must be specified)  </TD>
+<TD class="confluenceTd"> one of targetService, targetInterface or targetUri must be specified </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> targetInterface </TD>
 <TD class="confluenceTd"> QName </TD>
 <TD class="confluenceTd"> the interface name of the target endpoint </TD>
-<TD class="confluenceTd"> no (one of targetService, targetInterface or targetUri must be specified) </TD>
+<TD class="confluenceTd"> one of targetService, targetInterface or targetUri must be specified </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> targetUri </TD>
 <TD class="confluenceTd"> String </TD>
 <TD class="confluenceTd"> the uri of the target endpoint </TD>
-<TD class="confluenceTd"> no (one of targetService, targetInterface or targetUri must be specified) </TD>
+<TD class="confluenceTd"> one of targetService, targetInterface or targetUri must be specified </TD>
 </TR>
 <TR>
 <TD class="confluenceTd"> uri </TD>
@@ -285,6 +285,64 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
             uri=<SPAN class="code-quote">&quot;ftp://servicemix:rocks@localhost/smx/test&quot;</SPAN> /&gt;</PRE>
 </DIV></DIV>
 
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Sender endpoint attributes</B><BR>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh"> Name </TH>
+<TH class="confluenceTh"> Type </TH>
+<TH class="confluenceTh"> Description </TH>
+<TH class="confluenceTh"> Required </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> service </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> the service name of the proxied endpoint </TD>
+<TD class="confluenceTd"> yes </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> endpoint </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the endpoint name of the proxied endpoint </TD>
+<TD class="confluenceTd"> yes </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> interfaceName </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> the interface name of the proxied endpoint </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> uri </TD>
+<TD class="confluenceTd"> URI </TD>
+<TD class="confluenceTd"> the ftp uri to access the FTP server (see <A href="#servicemix-ftp-URI" title="URI on servicemix-ftp">URI</A>) </TD>
+<TD class="confluenceTd"> yes </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> overwrite </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> if a file with the same name already exists on the FTP server, overwrite it </TD>
+<TD class="confluenceTd"> no (defaults to <TT>false</TT>) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> uniqueFileName </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> name used to create unique files when the marshaler can not give a specific file name </TD>
+<TD class="confluenceTd"> no (defaults to &quot;ServiceMix&quot;) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> marshaler </TD>
+<TD class="confluenceTd"> FileMarshaler </TD>
+<TD class="confluenceTd"> a marshaler can be used to customize how the file is read / written (see <A href="#servicemix-ftp-Marshalers" title="Marshalers on servicemix-ftp">Marshalers</A>) </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> clientPool </TD>
+<TD class="confluenceTd"> FTPClientPool </TD>
+<TD class="confluenceTd"> provide specific configuration for the FTP client pool  (see {#FTPClientPool]) </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+</TBODY></TABLE></TD></TR></TABLE>
+
 <H2><A name="servicemix-ftp-URI"></A>URI</H2>
 
 <P>You can use the familiar file URI to communicate with FTP servers. All types of endpoints use this standard URI to retrieve the needed parameters.</P>
@@ -305,7 +363,11 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
 
 <H2><A name="servicemix-ftp-Marshalers"></A>Marshalers</H2>
 
-<P>By default, poller endpoints expect the content of the file to be an xml, and sender endpoints write the xml content of the imcoming NormalizedMessage to the remote file.  This behavior can be customized by using a custom FileMarshaler.</P></DIV>
+<P>By default, poller endpoints expect the content of the file to be an xml, and sender endpoints write the xml content of the imcoming NormalizedMessage to the remote file.  This behavior can be customized by using a custom FileMarshaler.</P>
+
+<H2><A name="servicemix-ftp-FTPClientPool"></A>FTPClientPool</H2>
+
+<P>The FTPClientPool is used to to retrieve connections and perform FTP calls to the server.  By default, one is created and populated with the information retrieved from the URI (login, password, host, port).  However, if more informations need to be configured, this is the place to do so.</P></DIV>
           
                   </DIV>
         </TD>
@@ -316,7 +378,7 @@ See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/i
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Dec 16, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=14031&originalId=15209">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=14031&originalId=15210">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=14031">edit page</A>)
     </DIV>
