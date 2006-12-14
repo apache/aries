@@ -126,7 +126,7 @@ servicemix-ftp
 	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
 	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
 	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
-	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-script&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-script" class="createlink">servicemix&#45;script<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
 	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
 	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
 </UL>
@@ -144,13 +144,168 @@ servicemix-ftp
 
 <P>The ServiceMix FTP component provides JBI integration to the FTP servers. It can be used to read &amp; write files over FTPor to periodically poll directories for new files.</P>
 
+<H2><A name="servicemix-ftp-Installation"></A>Installation</H2>
+
+<P>Installing the servicemix-http component can be done in several ways:</P>
+<UL>
+	<LI>drop the installer zip in an hotdeploy directory monitored by ServiceMix</LI>
+	<LI>using <A href="ant-tasks.html" title="Ant Tasks">ant tasks</A></LI>
+</UL>
+
+
+<P>Note that when using ant tasks, the component is not started, you will have to start it manually using ant tasks or a console.</P>
+
+<H2><A name="servicemix-ftp-XBeandeployment"></A>XBean deployment</H2>
+
+<P>You can deploy Service Units containing a file named xbean.xml for activating consumer and provider endpoints.</P>
+
+<P>This xml file should respect the given syntax, though this is a spring based xml configuration file from where all beans of class <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-http/apidocs/org/apache/servicemix/http/HttpEndpoint.html" title="Visit page outside Confluence" rel="nofollow">HttpEndpoint<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> are retrieved.<BR>
+See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/deployables/bindingcomponents/servicemix-ftp/src/test/resources/spring.xml" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.&nbsp; Note that you have to define the ftp namespace with</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;beans <SPAN class="code-keyword">xmlns:ftp</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/ftp/1.0&quot;</SPAN>&gt;</SPAN>
+    ...
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>Any numbers of endpoints can be specified in the xbean.xml file.</P>
+
+<H2><A name="servicemix-ftp-Pollerendpoint"></A>Poller endpoint</H2>
+
+<P>Poller endpoints can be used to poll a FTP server directory for files, download them, and send an InOnly JBI exchange to the configured JBI service.</P>
+
+<P>The following snipped shows a minimal definition of a poller endpoint:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;ftp:poller service=<SPAN class="code-quote">&quot;test:poller&quot;</SPAN>
+            endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>
+            targetService=<SPAN class="code-quote">&quot;test:receiver&quot;</SPAN>
+            uri=<SPAN class="code-quote">&quot;ftp://servicemix:rocks@localhost/smx/test&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Consumer endpoint attributes</B><BR>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh"> Name </TH>
+<TH class="confluenceTh"> Type </TH>
+<TH class="confluenceTh"> Description </TH>
+<TH class="confluenceTh"> Required </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> service </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> the service name of the proxied endpoint </TD>
+<TD class="confluenceTd"> yes </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> endpoint </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the endpoint name of the proxied endpoint </TD>
+<TD class="confluenceTd"> yes </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> interfaceName </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> the interface name of the proxied endpoint </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> targetService </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> the service name of the target endpoint </TD>
+<TD class="confluenceTd"> no (one of targetService, targetInterface or targetUri must be specified)  </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> targetEndpoint </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the endpoint name of the target endpoint </TD>
+<TD class="confluenceTd"> no (one of targetService, targetInterface or targetUri must be specified)  </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> targetInterface </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> the interface name of the target endpoint </TD>
+<TD class="confluenceTd"> no (one of targetService, targetInterface or targetUri must be specified) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> targetUri </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the uri of the target endpoint </TD>
+<TD class="confluenceTd"> no (one of targetService, targetInterface or targetUri must be specified) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> uri </TD>
+<TD class="confluenceTd"> URI </TD>
+<TD class="confluenceTd"> the ftp uri to access the FTP server (see <A href="#servicemix-ftp-URI" title="URI on servicemix-ftp">URI</A>) </TD>
+<TD class="confluenceTd"> yes </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> deleteFile </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> whether the file should be deleted from the FTP server after processing </TD>
+<TD class="confluenceTd"> no (defaults to <TT>true</TT>) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> recursive </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> whether subdirectories should be polled </TD>
+<TD class="confluenceTd"> no (defaults to <TT>true</TT>) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> filter </TD>
+<TD class="confluenceTd"> java.io.FileFilter </TD>
+<TD class="confluenceTd"> a filter used when polling files: files that do not match this filter will be ignored </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> marshaler </TD>
+<TD class="confluenceTd"> FileMarshaler </TD>
+<TD class="confluenceTd"> a marshaler can be used to customize how the file is read / written (see <A href="#servicemix-ftp-Marshalers" title="Marshalers on servicemix-ftp">Marshalers</A>) </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> lockManager </TD>
+<TD class="confluenceTd"> o.a.s.locks.LockManager </TD>
+<TD class="confluenceTd"> a custom lock manager can be used to cluster poller endpoints or to keep track of processed files when the <TT>deleteFile</TT> attribute is set to <TT>false</TT> </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> clientPool </TD>
+<TD class="confluenceTd"> FTPClientPool </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+</TBODY></TABLE></TD></TR></TABLE>
+
+<H2><A name="servicemix-ftp-Senderendpoint"></A>Sender endpoint</H2>
+
+<P>Sender endpoints are used are provider endpoints (in the JBI sense) which accepts incoming InOnly exchanges and write the content of the exchange to a file on the FTP server.</P>
+
+<P>Here is an example of a simple sender endpoint.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;ftp:sender service=<SPAN class="code-quote">&quot;test:service&quot;</SPAN>
+            endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN> 
+            uri=<SPAN class="code-quote">&quot;ftp://servicemix:rocks@localhost/smx/test&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
+
 <H2><A name="servicemix-ftp-URI"></A>URI</H2>
 
-<P>You can use the familiar file URI to communicate with FTP servers</P>
+<P>You can use the familiar file URI to communicate with FTP servers. All types of endpoints use this standard URI to retrieve the needed parameters.</P>
 
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">ftp:<SPAN class="code-comment">//host/path/to/something</SPAN></PRE>
-</DIV></DIV></DIV>
+<PRE class="code-java">ftp:<SPAN class="code-comment">//[username[:password]@]host[:port]/[path]</SPAN></PRE>
+</DIV></DIV>
+
+<P>where the parameters are:</P>
+<UL>
+	<LI><TT>username</TT>: the login to use to access the FTP server</LI>
+	<LI><TT>password</TT>: the password</LI>
+	<LI><TT>host</TT>: adress of the FTP server (IP or name)</LI>
+	<LI><TT>port</TT>: port of the FTP server (defaults to 21)</LI>
+	<LI><TT>path</TT>: the directory on the FTP server to change into</LI>
+</UL>
+
+
+<H2><A name="servicemix-ftp-Marshalers"></A>Marshalers</H2>
+
+<P>By default, poller endpoints expect the content of the file to be an xml, and sender endpoints write the xml content of the imcoming NormalizedMessage to the remote file.  This behavior can be customized by using a custom FileMarshaler.</P></DIV>
           
                   </DIV>
         </TD>
@@ -160,8 +315,8 @@ servicemix-ftp
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on Oct 10, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=14031&originalId=14035">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Dec 16, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=14031&originalId=15209">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=14031">edit page</A>)
     </DIV>
