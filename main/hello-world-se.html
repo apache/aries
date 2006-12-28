@@ -338,7 +338,7 @@ $ cd hello-world-smx</PRE>
 
 <H3><A name="HelloWorld-SE-IncorporatingtheServiceUnitandServiceAssemblyIntoaTopLevelPOM"></A>Incorporating the Service Unit and Service Assembly Into a Top Level POM</H3>
 
-<P>Now that we have created the SU and SA projects, a the top level <TT>pom.xml} must be manually created and made aware of each one. In the {{hello-world-se</TT> directory create a file named <TT>pom.xml</TT> containing the following content:</P>
+<P>Now that we have created the SU and SA projects, a the top level <TT>pom.xml</TT> must be manually created and made aware of each one. In the <TT>hello-world-se</TT> directory create a file named <TT>pom.xml</TT> containing the following content:</P>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;
@@ -612,8 +612,34 @@ use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.o
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=ericmick%2540gmail.com">Eric Mickelson</A> on Dec 28, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15214">view change</A>)
-              
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15215">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      Format change only.<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13823">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
 
