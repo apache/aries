@@ -115,7 +115,7 @@ JCA
 <H3><A name="Navigation-Components"></A>Components</H3>
 
 <UL class="alternate" type="square">
-	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-beans&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-beans" class="createlink">servicemix&#45;beans<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
 	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
 	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
 	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
@@ -126,7 +126,7 @@ JCA
 	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
 	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
 	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
-	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=servicemix-script&linkCreation=true&fromPageId=2021" title="Create Page: servicemix-script" class="createlink">servicemix&#45;script<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
 	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
 	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
 </UL>
@@ -160,6 +160,7 @@ JCA
   <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;bootstrapContext&quot;</SPAN>&gt;</SPAN>
     <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.jencks.factory.BootstrapContextFactoryBean&quot;</SPAN>&gt;</SPAN>
       <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;threadPoolSize&quot;</SPAN> value=<SPAN class="code-quote">&quot;25&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN> ref=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN>/&gt;</SPAN>
     <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
   <SPAN class="code-tag">&lt;/property&gt;</SPAN>
 
@@ -218,6 +219,7 @@ JCA
 
     <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- use XA transactions --&gt;</SPAN></SPAN>
     <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN> ref=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;synchronous&quot;</SPAN> value=<SPAN class="code-quote">&quot;true&quot;</SPAN>/&gt;</SPAN>
   <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
 <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
 </DIV></DIV>
@@ -225,7 +227,9 @@ JCA
 
 <P>You also need to provide a transaction manager implementation to use. Here this exampe uses <SPAN class="nobr"><A href="http://jencks.org/" title="Visit page outside Confluence" rel="nofollow">Geronimo&apos;s Transaction Manager<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.jencks.factory.TransactionManagerFactoryBean&quot;</SPAN>/&gt;</SPAN></PRE>
+<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.jencks.factory.TransactionManagerFactoryBean&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;transactionLogDir&quot;</SPAN> value=<SPAN class="code-quote">&quot;target/txlog&quot;</SPAN> /&gt;</SPAN>
+<SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
 </DIV></DIV>
 <P>&nbsp;</P></DIV>
           
