@@ -1,3 +1,0 @@
-RewriteEngine On
-RewriteBase /servicemix/sm30ug
-RewriteRule   ^$  users-guide.html [R,L]
