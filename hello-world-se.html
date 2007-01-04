@@ -324,7 +324,13 @@ $ cd hello-world-smx</PRE>
 
 <H3><A name="HelloWorld-SE-CreatingtheJBIServiceEngine"></A>Creating the JBI Service Engine</H3>
 
-<P>1) </P>
+<P>Let&apos;s examine the classes created by the servicemix-service-engine Maven archetype in this simple SE we&apos;re developing: </P>
+
+<P><TT>MyBootstrap.java</TT> - Implements <SPAN class="nobr"><A href="http://java.sun.com/integration/1.0/docs/sdk/api/javax/jbi/component/Bootstrap.html" title="Visit page outside Confluence" rel="nofollow"><TT>javax.jbi.component.Boostrap</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which is called by the JBI container when the component is installed and uninstalled. This is where you place logic to set up and tear down things when the component is started and stopped. </P>
+
+<P><TT>MyComponent.java</TT> - Extends the <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/DefaultComponent.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>DefaultComponent</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>, a convience class that makes creating JBI components much easier and provides lifecycle management of components deployed to the JBI container. This is where the </P>
+
+<P><TT>MyEndpoint.java</TT> - </P>
 
 <H3><A name="HelloWorld-SE-CreatingtheMavenSubprojectsFortheServiceUnitandServiceAssembly"></A>Creating the Maven Subprojects For the Service Unit and Service Assembly</H3>
 
@@ -641,7 +647,7 @@ use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.o
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 06, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15237">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15238">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
