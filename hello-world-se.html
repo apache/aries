@@ -203,9 +203,6 @@ Hello World - SE
 
 <P>The focus of this section is on the creation of a JBI component. For this task, a <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-archetypes.html" title="Visit page outside Confluence" rel="nofollow">Maven archetype<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> will be used to create a Maven project skeleton to house the component. Maven archetypes are templates for Maven projects that jumpstart project creation via the automation of repetitive tasks by following standard conventions. The result of using an archetype to create a Maven project is a directory structure, a <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html" title="Visit page outside Confluence" rel="nofollow">Maven POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> file and, depending on the archetype being used, sometimes Java objects and JUnit tests. </P>
 
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
-<P>As this text describes how to create a Hello World service engine and pack it into a SU and SA, the project name is <TT>hello-world-se</TT> and each piece of the SA puzzle are named using a similar pattern. For a given project, the IDs and names shall be altered such that they describe the purpose or function of the given piece of the SA.</P></TD></TR></TABLE>
-
 <P>1) Create a directory named <TT>hello-world-smx</TT> and switch to that directory: </P>
 
 <DIV class="code"><DIV class="codeContent">
@@ -250,7 +247,7 @@ $ cd hello-world-smx</PRE>
 [INFO] &#45;----------------------------------------------------------------------&#45;</P>
 </DIV></DIV>
 
-<P>Again, Maven creates a directory using the <TT>artifactId</TT> provided (printed in <FONT color="#009900">green</FONT> in the command and output). Inside this directory resides the <TT>pom.xml</TT> and the <TT>src</TT> directory. </P>
+<P>Again, Maven creates a directory using the <TT>artifactId</TT> provided (printed in <FONT color="#009900">green</FONT> in the command and output) as the directory name. Inside this directory resides the <TT>pom.xml</TT> and the <TT>src</TT> directory. </P>
 
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">In case of a BUILD ERROR: Maven plugin version requirement</B><BR>
 <P>The maven-archetype-plugin <B>1.0-alpha4</B> or above is required for this tutorial. When an older version is installed, a build error will occur. The version of this plugin can be checked by verifying the name of the following directories: </P>
@@ -377,11 +374,14 @@ $ cd hello-world-smx</PRE>
     }</PRE>
 </DIV></DIV>
 
-<P>The implementation of this method was provided by the servicemix-service-engine Maven archetype and is shown in the code snippet above. Because the archetype can be used to create a consumer or a provider, this method is very generic and contains a conditional block for handling either a consumer or a provider role. But this method will still require us to make the decision of which style of <SPAN class="nobr"><A href="http://servicemix.org/site/5-jbi.html#5.JBI-ServiceinvocationandMEP" title="Visit page outside Confluence" rel="nofollow">Message Exchange Pattern (MEP)<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to handle as well. In the case of the Hello World SE, we know that it is a provider so it will need to send a return message. Therefore it will need to handle an In-Out MEP.  </P>
+<P>The implementation of this method was provided by the servicemix-service-engine Maven archetype and is shown in the code snippet above. Because the archetype can be used to create a consumer or a provider service engine, this method is very generic and contains a conditional block for handling either a consumer or a provider role. But this method will still require us to make the decision of which style of <SPAN class="nobr"><A href="http://servicemix.org/site/5-jbi.html#5.JBI-ServiceinvocationandMEP" title="Visit page outside Confluence" rel="nofollow">Message Exchange Pattern (MEP)<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to handle as well. In the case of the Hello World SE, we know that it is a provider so it will need to send a return message. Therefore it will need to handle an In-Out MEP.  </P>
+
+<P>So instead of having <TT>MyEndpoint</TT> extend the very basic <TT>Endpoint</TT> class, we&apos;re going to extend a different class that is specifically for provider endpoints named <BR>
+<SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/endpoints/ProviderEndpoint.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>ProviderEndpoint</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. </P>
 
 <P><IMG src="hello-world-se.data/simple_endpoint_hierarchy.png" align="absmiddle" border="0"></P>
 
-<P>Instead of having <TT>MyEndpoint</TT> extend the very basic <TT>Endpoint</TT> class, we&apos;re going to extend a different class that is specifically for provider endpoints named <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/endpoints/ProviderEndpoint.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>ProviderEndpoint</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. Notice the diagram above showing the class hierarchy of <TT>Endpoint</TT>. The <TT>ProviderEndpoint</TT> supplies some additional conveniences for provider components and will make the job of implementing <TT>MyEndpoint</TT> as a provider much easier. So change the definition of <TT>MyEndpoint</TT> from this: </P>
+<P>Notice the diagram above showing the class hierarchy of <TT>Endpoint</TT>. The <TT>ProviderEndpoint</TT> supplies some additional conveniences for provider components and will make the job of implementing <TT>MyEndpoint</TT> as a provider much easier. So change the definition of <TT>MyEndpoint</TT> from this: </P>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class MyEndpoint <SPAN class="code-keyword">extends</SPAN> Endpoint <SPAN class="code-keyword">implements</SPAN> ExchangeProcessor</PRE>
@@ -393,7 +393,7 @@ $ cd hello-world-smx</PRE>
 <PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class MyEndpoint <SPAN class="code-keyword">extends</SPAN> ProviderEndpoint <SPAN class="code-keyword">implements</SPAN> ExchangeProcessor</PRE>
 </DIV></DIV> 
 
-<P>Because the <TT>ProviderEndpoint.process()</TT> method already handles an In-Out MEP, <TT>MyEndpoint</TT> will simply need to override the <TT>ProviderEndpoint.processInOut()</TT> method. Below is the content for this method: </P>
+<P>Because the <TT>ProviderEndpoint.process()</TT> method already handles an In-Out MEP, <TT>MyEndpoint</TT> will simply need to override the <TT>ProviderEndpoint.processInOut()</TT> method. Below is the content for implementing this method: </P>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-keyword">protected</SPAN> void processInOut(MessageExchange exchange, NormalizedMessage in, NormalizedMessage out) <SPAN class="code-keyword">throws</SPAN> Exception {
@@ -403,9 +403,11 @@ $ cd hello-world-smx</PRE>
 }</PRE>
 </DIV></DIV>
 
+<P>This method is the logic for the Hello World SE. We&apos;re not doing anything complex here at all in order to keep this tutorial very simple. Now it&apos;s time to test the component. </P>
+
 <H3><A name="HelloWorld-SE-TestingtheHelloWorldSE"></A>Testing the Hello World SE</H3>
 
-<P>Thanks to the archetype, testing the component is very easy because it already created a test. All that is necessary is to change the string being sent by the client code. In the <TT>src/test/java</TT> directory is the <TT>org.apache.servicemix.samples.helloworld.se.MySpringComponentTest</TT> test. Simple open this test and change line #36 from this: </P>
+<P>Thanks to the archetype, testing the component is very easy because it already created a test. The only change we&apos;ll make is to the string being sent by the client code. In the <TT>src/test/java</TT> directory is the <TT>org.apache.servicemix.samples.helloworld.se.MySpringComponentTest</TT> test. Simply open this test and change line #36 from this: </P>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">me.getInMessage().setContent(<SPAN class="code-keyword">new</SPAN> StringSource(<SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>));</PRE>
@@ -488,7 +490,7 @@ Tests run: 1, Failures: 0, Errors: 0, Skipped: 0</P>
 [INFO] ------------------------------------------------------------------------</P>
 </DIV></DIV>
 
-<P>Notice that not only do we see that the build was successful, but notice the bold text of the message that was printed. If you see this, you just wrote your a JBI component and tested it successfully.  </P>
+<P>Notice that not only do we see that the build was successful, but also note the bold text of the message that was printed (<B>&lt;hello&gt;Hello World! Message [&lt;hello&gt;Ski Colorado!&lt;/hello&gt;] contains [28] bytes.&lt;/hello&gt;</B>). This is the message we were expecting to be output. If you see this, you just wrote a JBI service engine component and tested it successfully.  </P>
 
 
 <HR>
@@ -838,7 +840,7 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 06, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15249">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15250">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
