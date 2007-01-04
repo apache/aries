@@ -184,7 +184,7 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
 		<LI>If you have never used Maven previously the Maven <SPAN class="nobr"><A href="http://maven.apache.org/guides/getting-started/index.html" title="Visit page outside Confluence" rel="nofollow">Getting Started Guide<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> explains some valuable concepts surrounding Maven</LI>
 	</UL>
 	</LI>
-	<LI>ServiceMix 3.0 or higher
+	<LI>ServiceMix 3.1 or higher
 	<UL>
 		<LI>See the <SPAN class="nobr"><A href="http://servicemix.org/site/download.html" title="Visit page outside Confluence" rel="nofollow">ServiceMix downloads<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	</UL>
@@ -251,11 +251,11 @@ $ cd hello-world-smx</PRE>
     -DarchetypeGroupId=org.apache.servicemix.tooling \<BR>
     -DarchetypeArtifactId=servicemix-service-engine \<BR>
     -DarchetypeVersion=<FONT color="#993366">3.1-incubating-SNAPSHOT</FONT> \<BR>
-    -DgroupId=<FONT color="#ff00ff">org.apache.servicemix.samples.helloworld</FONT> \<BR>
+    -DgroupId=<FONT color="#ff00ff">org.apache.servicemix.samples.helloworld.se</FONT> \<BR>
     -DartifactId=<FONT color="#009900">hello-world-se</FONT></P>
 </DIV></DIV>
 
-<P>The command above will create a directory named <TT>hello-world-se</TT> that houses a Maven project for the JBI service engine being created here. </P>
+<P>The command above will create a directory named <TT>hello-world-se</TT> that houses a Maven project for the JBI service engine being created here. The name of the directory is taken from the <TT>artifactId</TT> parameter. </P>
 
 <P>The first three parameters to the <TT>mvn</TT> command (-DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-engine -DarchetypeVersion=3.1-incubating-SNAPSHOT) identify which Maven archetype to use for the <TT>archetype:create</TT> goal, while the last two parameters (-DgroupId=org.apache.servicemix.samples.helloworld -DartifactId=hello-world-se) uniquely identify the Maven project that is being generated. The <TT>groupId</TT> (printed in <FONT color="#ff00ff">pink</FONT>) is used as the Java package and the <TT>artifactId</TT> is used as the project name. Therefore, only alphanumeric characters are valid values for the <TT>groupId</TT> and <TT>artifactId</TT> parameters. </P>
 
@@ -281,7 +281,7 @@ $ cd hello-world-smx</PRE>
 [INFO] &#45;----------------------------------------------------------------------&#45;</P>
 </DIV></DIV>
 
-<P>Maven creates a directory using the <TT>artifactId</TT> provided (printed in <FONT color="#009900">green</FONT> in the command and output). Inside this directory resides the <TT>pom.xml</TT> and the <TT>src</TT> directory. </P>
+<P>Again, Maven creates a directory using the <TT>artifactId</TT> provided (printed in <FONT color="#009900">green</FONT> in the command and output). Inside this directory resides the <TT>pom.xml</TT> and the <TT>src</TT> directory. </P>
 
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">In case of a BUILD ERROR: Maven plugin version requirement</B><BR>
 <P>The maven-archetype-plugin <B>1.0-alpha4</B> or above is required for this tutorial. When an older version is installed, a build error will occur. The version of this plugin can be checked by verifying the name of the following directories: </P>
@@ -291,17 +291,18 @@ $ cd hello-world-smx</PRE>
 </DIV></DIV>
 
 <DIV class="code"><DIV class="codeHeader"><B>Windows</B></DIV><DIV class="codeContent">
-<PRE class="code-java">C:\Documents and Settings\&lt;USERNAME_&gt;</PRE>
+<PRE class="code-java">C:\Documents and Settings\&lt;USERNAME&gt;</PRE>
 </DIV></DIV> 
 
-<P>In case the only version available is an older one, a minimal <TT>pom.xml</TT> file will need to be created manually in the <TT>hello-world-se</TT> directory. Below is a simple POM to use for this purpose: </P>
+<P>In case the only version available of the maven-archetype-plugin is an older one, a minimal <TT>pom.xml</TT> file will need to be created manually in the <TT>hello-world-se</TT> directory. Below is a simple POM to use for this purpose: </P>
 
 <DIV class="code"><DIV class="codeHeader"><B>Minimal pom.xml</B></DIV><DIV class="codeContent">
 <PRE class="code-java">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;
 &lt;project xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0&quot;</SPAN> 
 </SPAN>    xmlns:xsi=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
 </SPAN>    xsi:schemaLocation=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
-</SPAN>  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+</SPAN>    
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
   &lt;groupId&gt;org.apache.servicemix.samples&lt;/groupId&gt;
   &lt;artifactId&gt;hello-world-se&lt;/artifactId&gt;
   &lt;packaging&gt;pom&lt;/packaging&gt;
@@ -320,6 +321,10 @@ $ cd hello-world-smx</PRE>
   &lt;/build&gt;
 &lt;/project&gt;</PRE>
 </DIV></DIV></TD></TR></TABLE>
+
+<H3><A name="HelloWorld-SE-CreatingtheJBIServiceEngine"></A>Creating the JBI Service Engine</H3>
+
+<P>1) </P>
 
 <H3><A name="HelloWorld-SE-CreatingtheMavenSubprojectsFortheServiceUnitandServiceAssembly"></A>Creating the Maven Subprojects For the Service Unit and Service Assembly</H3>
 
@@ -635,8 +640,8 @@ use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.o
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 05, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15235">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 06, 2007
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15237">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
