@@ -337,11 +337,93 @@ $ cd hello-world-smx</PRE>
 
 
 <UL>
-	<LI><TT>MyEndpoint.java</TT> - Extends <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/Endpoint.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>Endpoint</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and implements <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/ExchangeProcessor.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>ExchangeProcessor</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. <TT>Endpoint</TT> provides a referenceable resource for the component and the <TT>ExchangeProcessor</TT> provides the ability for the JBI container to process a message exchange with the component. The <TT>ExchangeProcessor.process()</TT> method is where we will place the logic to print out the Hello World message.</LI>
+	<LI><TT>MyEndpoint.java</TT> - Extends <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/Endpoint.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>Endpoint</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and implements <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/ExchangeProcessor.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>ExchangeProcessor</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. <TT>Endpoint</TT> provides a referenceable resource for the component and the <TT>ExchangeProcessor</TT> provides the ability for the JBI container to process a message exchange with the component. The <TT>ExchangeProcessor.process()</TT> method is where we will make a call to a method containing the logic to print out the Hello World message.</LI>
 </UL>
 
 
-<H4><A name="HelloWorld-SE-"></A></H4>
+<H4><A name="HelloWorld-SE-AddingtheLogictoPrinttheMessage"></A>Adding the Logic to Print the Message</H4>
+
+<P>When creating a JBI component, how a message exchange is handled depends on whether a component is a consumer or a provider. Because the Hello World SE will not be consuming any other service (i.e., sending a message to another service), it is a provider (i.e., it will only be providing its service via a return message). As mentioned above, the <TT>ExchangeProcessor.process()</TT> method is of interest because it is where the message exchange is handled, so let&apos;s examine this method: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> void process(MessageExchange exchange) <SPAN class="code-keyword">throws</SPAN> Exception {
+        <SPAN class="code-comment">// The component acts as a provider, <SPAN class="code-keyword">this</SPAN> means that another component has requested our service
+</SPAN>        <SPAN class="code-comment">// As <SPAN class="code-keyword">this</SPAN> exchange is active, <SPAN class="code-keyword">this</SPAN> is either an in or a fault (out are send by <SPAN class="code-keyword">this</SPAN> component)
+</SPAN>        <SPAN class="code-keyword">if</SPAN> (exchange.getRole() == MessageExchange.Role.PROVIDER) {
+            <SPAN class="code-comment">// Check here <SPAN class="code-keyword">if</SPAN> the mep is supported by <SPAN class="code-keyword">this</SPAN> component
+</SPAN>            <SPAN class="code-keyword">if</SPAN> (exchange <SPAN class="code-keyword">instanceof</SPAN> InOut == <SPAN class="code-keyword">false</SPAN>) {
+               <SPAN class="code-keyword">throw</SPAN> <SPAN class="code-keyword">new</SPAN> UnsupportedOperationException(<SPAN class="code-quote">&quot;Unsupported MEP: &quot;</SPAN> + exchange.getPattern());
+            }
+            <SPAN class="code-comment">// In message
+</SPAN>            <SPAN class="code-keyword">if</SPAN> (exchange.getMessage(<SPAN class="code-quote">&quot;in&quot;</SPAN>) != <SPAN class="code-keyword">null</SPAN>) {
+                NormalizedMessage in = exchange.getMessage(<SPAN class="code-quote">&quot;in&quot;</SPAN>);
+                <SPAN class="code-comment">// TODO ... handle the in message
+</SPAN>                <SPAN class="code-comment">// If the MEP is an InOnly, RobustInOnly, you have to set the exchange to DONE status
+</SPAN>                <SPAN class="code-comment">// <SPAN class="code-keyword">else</SPAN>, you have to create an Out message and populate it
+</SPAN>                <SPAN class="code-comment">// For now, just echo back
+</SPAN>                NormalizedMessage out = exchange.createMessage();
+                out.setContent(in.getContent());
+                exchange.setMessage(out, <SPAN class="code-quote">&quot;out&quot;</SPAN>);
+                channel.send(exchange);
+            <SPAN class="code-comment">// Fault message
+</SPAN>            } <SPAN class="code-keyword">else</SPAN> <SPAN class="code-keyword">if</SPAN> (exchange.getFault() != <SPAN class="code-keyword">null</SPAN>) {
+                <SPAN class="code-comment">// TODO ... handle the fault
+</SPAN>                exchange.setStatus(ExchangeStatus.DONE);
+                channel.send(exchange);
+            <SPAN class="code-comment">// This is not compliant with the <SPAN class="code-keyword">default</SPAN> MEPs
+</SPAN>            } <SPAN class="code-keyword">else</SPAN> {
+                <SPAN class="code-keyword">throw</SPAN> <SPAN class="code-keyword">new</SPAN> IllegalStateException(<SPAN class="code-quote">&quot;Provider exchange is ACTIVE, but no in or fault is provided&quot;</SPAN>);
+            }
+        <SPAN class="code-comment">// The component acts as a consumer, <SPAN class="code-keyword">this</SPAN> means <SPAN class="code-keyword">this</SPAN> exchange is received because
+</SPAN>        <SPAN class="code-comment">// we sent it to another component.  As it is active, <SPAN class="code-keyword">this</SPAN> is either an out or a fault
+</SPAN>        <SPAN class="code-comment">// If <SPAN class="code-keyword">this</SPAN> component does not create / send exchanges, you may just <SPAN class="code-keyword">throw</SPAN> an UnsupportedOperationException
+</SPAN>        } <SPAN class="code-keyword">else</SPAN> <SPAN class="code-keyword">if</SPAN> (exchange.getRole() == MessageExchange.Role.CONSUMER) {
+            <SPAN class="code-comment">// Exchange is finished
+</SPAN>            <SPAN class="code-keyword">if</SPAN> (exchange.getStatus() == ExchangeStatus.DONE) {
+                <SPAN class="code-keyword">return</SPAN>;
+            <SPAN class="code-comment">// Exchange has been aborted with an exception
+</SPAN>            } <SPAN class="code-keyword">else</SPAN> <SPAN class="code-keyword">if</SPAN> (exchange.getStatus() == ExchangeStatus.ERROR) {
+                <SPAN class="code-keyword">return</SPAN>;
+            <SPAN class="code-comment">// Exchange is active
+</SPAN>            } <SPAN class="code-keyword">else</SPAN> {
+                <SPAN class="code-comment">// Out message
+</SPAN>                <SPAN class="code-keyword">if</SPAN> (exchange.getMessage(<SPAN class="code-quote">&quot;out&quot;</SPAN>) != <SPAN class="code-keyword">null</SPAN>) {
+                    <SPAN class="code-comment">// TODO ... handle the response
+</SPAN>                    exchange.setStatus(ExchangeStatus.DONE);
+                    channel.send(exchange);
+                <SPAN class="code-comment">// Fault message
+</SPAN>                } <SPAN class="code-keyword">else</SPAN> <SPAN class="code-keyword">if</SPAN> (exchange.getFault() != <SPAN class="code-keyword">null</SPAN>) {
+                    <SPAN class="code-comment">// TODO ... handle the fault
+</SPAN>                    exchange.setStatus(ExchangeStatus.DONE);
+                    channel.send(exchange);
+                <SPAN class="code-comment">// This is not compliant with the <SPAN class="code-keyword">default</SPAN> MEPs
+</SPAN>                } <SPAN class="code-keyword">else</SPAN> {
+                    <SPAN class="code-keyword">throw</SPAN> <SPAN class="code-keyword">new</SPAN> IllegalStateException(<SPAN class="code-quote">&quot;Consumer exchange is ACTIVE, but no out or fault is provided&quot;</SPAN>);
+                }
+            }
+        <SPAN class="code-comment">// Unknown role
+</SPAN>        } <SPAN class="code-keyword">else</SPAN> {
+            <SPAN class="code-keyword">throw</SPAN> <SPAN class="code-keyword">new</SPAN> IllegalStateException(<SPAN class="code-quote">&quot;Unkown role: &quot;</SPAN> + exchange.getRole());
+        }
+    }</PRE>
+</DIV></DIV>
+
+<P>The implementation of this method was provided by the servicemix-service-engine Maven archetype and is shown in the code snippet above. Because the archetype can be used to create a consumer or a provider, this snippet contains a conditional block for handling either a consuemr or a provider role. In the case of the Hello World SE, we are only interested in the provider role so we&apos;re going to make some changes to <TT>MyEndpoint</TT>. </P>
+
+<P><IMG src="hello-world-se.data/simple_endpoint_hierarchy.png" align="absmiddle" border="0"></P>
+
+<P>Instead of having <TT>MyEndpoint</TT> extend the very basic <TT>Endpoint</TT> class, we&apos;re going to extend a different class that is specifically for provider endpoints named <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/endpoints/ProviderEndpoint.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>ProviderEndpoint</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. Notice the diagram above showing the class hierarchy of <TT>Endpoint</TT>. The <TT>ProviderEndpoint</TT> supplies some additional conveniences for provider components and will make the job of implementing <TT>MyEndpoint</TT> as a provider much easier. So change the definition of <TT>MyEndpoint</TT> from this: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class MyEndpoint <SPAN class="code-keyword">extends</SPAN> Endpoint <SPAN class="code-keyword">implements</SPAN> ExchangeProcessor</PRE>
+</DIV></DIV>
+
+<P>to this: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class MyEndpoint <SPAN class="code-keyword">extends</SPAN> ProviderEndpoint <SPAN class="code-keyword">implements</SPAN> ExchangeProcessor</PRE>
+</DIV></DIV>
+<HR>
 
 <H3><A name="HelloWorld-SE-CreatingtheMavenSubprojectsFortheServiceUnitandServiceAssembly"></A>Creating the Maven Subprojects For the Service Unit and Service Assembly</H3>
 
@@ -658,7 +740,7 @@ use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.o
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 06, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15242">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15244">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
