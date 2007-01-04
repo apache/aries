@@ -140,41 +140,13 @@ Hello World - SE
 <!--          
             <div class="pagetitle">Hello World -  SE</div>
 -->
-            <DIV class="wiki-content"><H1><A name="HelloWorld-SE-Tutorial%3ACreationofaHelloWorldStyleofJBIComponent"></A>Tutorial: Creation of a Hello World Style of JBI Component </H1>
-
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
-<P>The content of this document overlaps a bit with <A href="creating-a-standard-jbi-component.html" title="Creating a Standard JBI Component">Creating a Standard JBI Component</A> and <A href="notes-on-creating-jbi-component-using-maven2.html" title="Notes on Creating JBI Component using maven2">Notes on Creating JBI Component using maven2</A>. Any changes you might want to make to this document may be relevant for these documents as well. In addition, questions not answered by this document may be answered by the one of those documents.</P></TD></TR></TABLE>
-
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
-<P>The <A href="roadmap-for-a-perspective-servicemix-developer.html" title="Roadmap for a perspective Servicemix developer">Roadmap for a perspective Servicemix developer</A> can be very useful, especially for new users as it focuses on using the samples and components shipped with ServiceMix.</P></TD></TR></TABLE>
+            <DIV class="wiki-content"><H1><A name="HelloWorld-SE-CreatingaHelloWorldJBIServiceEngine"></A>Creating a Hello World JBI Service Engine </H1>
 
 <P>This tutorial describes how to create a very simple Hello World style of JBI service engine (SE) component. It demonstrates some best practices for creating JBI components. The example in this tutorial is as minimalistic as possible so as to focus on key concepts and not drown in details. The example component will respond to all requests with the message: </P>
 
 <DIV class="panel"><DIV class="panelContent">
 <P>Hello, I received &lt;xyz&gt; bytes&#33;</P>
 </DIV></DIV>
-
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
-<P>INS When to use this JBI Component<BR>
-INS Using the component that you created</P>
-
-<P>provide exact position in the SVN&#33;<BR>
-/samples/hello-world-SE-SU-SA/<BR>
-integrate from SVN source like it is done at Configuration at <SPAN class="nobr"><A href="http://www.servicemix.org/site/visualisation.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/visualisation.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
-
-<P>maybe moving the content of overlapping existing docus to this new tut and - where appropriate - delete the old ones (only leaving a redirect).<BR>
-<SPAN class="nobr"><A href="http://www.servicemix.org/site/notes-on-creating-jbi-component-using-maven2.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/notes-on-creating-jbi-component-using-maven2.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> version14<BR>
-<SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-standard-jbi-component.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-standard-jbi-component.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> version26<BR>
-are already fully incorporated in the mentioned versions, so delete content and point from there to here (and delete note at the very top)</P>
-
-<P> This shall already include everything stated at<BR>
-<SPAN class="nobr"><A href="http://www.servicemix.org/site/maven-jbi-plugin.html#MavenJBIplugin-GettingStarted" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/maven-jbi-plugin.html#MavenJBIplugin-GettingStarted<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-and<BR>
-<SPAN class="nobr"><A href="http://www.servicemix.org/site/working-with-components.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/working-with-components.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
-
-<P>provide additional reading<BR>
-<A href="creating-a-protocol-bridge.html" title="Creating a protocol bridge">Creating a protocol bridge</A>.for a &quot;bigger&quot; example<BR>
-The <A href="examples.html" title="Examples">examples</A> page lists examples providing more information, showing further possibilities and components.</P></TD></TR></TABLE>
 
 <H2><A name="HelloWorld-SE-Prerequisites"></A>Prerequisites</H2>
 
@@ -223,10 +195,7 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
 </UL>
 
 
-<P>For further reading, see the <SPAN class="nobr"><A href="https://open-esb.dev.java.net/public/whitepapers/JBIforSOI.pdf" title="Visit page outside Confluence" rel="nofollow">JBIforSOI<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> document for a good introduction to JBI.</P>
-
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
-<P><FONT color="#ff0000">Further reading: JSR 208. Include references from here to sections/pages in the spec. Maybe add an attachment to this wiki page containing a FDF (annotations for the PDF) so skimming the sepc quickly without missing important information is possible.</FONT></P></TD></TR></TABLE>
+<P>For further information on JBI, see the <A href="5-jbi.html" title="5. JBI">JBI</A> section of the <A href="users-guide.html" title="User's Guide">User&apos;s Guide</A>. See also the <SPAN class="nobr"><A href="https://open-esb.dev.java.net/public/whitepapers/JBIforSOI.pdf" title="Visit page outside Confluence" rel="nofollow">JBIforSOI<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> document for a decent introduction to JBI.</P>
 
 <H2><A name="HelloWorld-SE-CreatingtheMavenProjectsforEachComponent"></A>Creating the Maven Projects for Each Component </H2>
 
@@ -729,7 +698,37 @@ C:\hello-world-SE-SU-SA\hello-world-SU\src\main\resources\servicemix.xml</LI>
 <P>manually editing <SPAN class="nobr"><A href="working-with-service-units.html" title="Visit page outside Confluence" rel="nofollow">http://goopen.org/confluence/display/SM/Working+with+Service+Units<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
 manually editing <SPAN class="nobr"><A href="http://www.servicemix.org/site/working-with-service-assemblies.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/working-with-service-assemblies.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
 use the SU archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P></TD></TR></TABLE></DIV>
+use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-protocol-bridge.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-protocol-bridge.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<P>INS When to use this JBI Component<BR>
+INS Using the component that you created</P>
+
+<P>provide exact position in the SVN&#33;<BR>
+/samples/hello-world-SE-SU-SA/<BR>
+integrate from SVN source like it is done at Configuration at <SPAN class="nobr"><A href="http://www.servicemix.org/site/visualisation.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/visualisation.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<P>maybe moving the content of overlapping existing docus to this new tut and - where appropriate - delete the old ones (only leaving a redirect).<BR>
+<SPAN class="nobr"><A href="http://www.servicemix.org/site/notes-on-creating-jbi-component-using-maven2.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/notes-on-creating-jbi-component-using-maven2.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> version14<BR>
+<SPAN class="nobr"><A href="http://www.servicemix.org/site/creating-a-standard-jbi-component.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/creating-a-standard-jbi-component.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> version26<BR>
+are already fully incorporated in the mentioned versions, so delete content and point from there to here (and delete note at the very top)</P>
+
+<P> This shall already include everything stated at<BR>
+<SPAN class="nobr"><A href="http://www.servicemix.org/site/maven-jbi-plugin.html#MavenJBIplugin-GettingStarted" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/maven-jbi-plugin.html#MavenJBIplugin-GettingStarted<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+and<BR>
+<SPAN class="nobr"><A href="http://www.servicemix.org/site/working-with-components.html" title="Visit page outside Confluence" rel="nofollow">http://www.servicemix.org/site/working-with-components.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<P>provide additional reading<BR>
+<A href="creating-a-protocol-bridge.html" title="Creating a protocol bridge">Creating a protocol bridge</A>.for a &quot;bigger&quot; example<BR>
+The <A href="examples.html" title="Examples">examples</A> page lists examples providing more information, showing further possibilities and components.</P></TD></TR></TABLE>
+
+<H2><A name="HelloWorld-SE-AdditionalResources"></A>Additional Resources </H2>
+
+<UL>
+	<LI><A href="creating-a-standard-jbi-component.html" title="Creating a Standard JBI Component">Creating a Standard JBI Component</A></LI>
+	<LI><A href="notes-on-creating-jbi-component-using-maven2.html" title="Notes on Creating JBI Component using maven2">Notes on Creating JBI Component using maven2</A></LI>
+	<LI><A href="roadmap-for-a-perspective-servicemix-developer.html" title="Roadmap for a perspective Servicemix developer">Roadmap for a perspective Servicemix developer</A></LI>
+</UL>
+</DIV>
           
                   </DIV>
         </TD>
@@ -740,7 +739,7 @@ use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.o
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 06, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15245">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15246">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
