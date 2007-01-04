@@ -377,7 +377,7 @@ $ cd hello-world-smx</PRE>
     }</PRE>
 </DIV></DIV>
 
-<P>The implementation of this method was provided by the servicemix-service-engine Maven archetype and is shown in the code snippet above. Because the archetype can be used to create a consumer or a provider, this method is very generic and contains a conditional block for handling either a consumer or a provider role. But this method will still require us to make the decision of which style of <SPAN class="nobr"><A href="http://servicemix.org/site/5-jbi.html#5.JBI-ServiceinvocationandMEP" title="Visit page outside Confluence" rel="nofollow">Message Exchange Pattern (MEP)<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to handle as well. In the case of the Hello World SE, we know that it is a provider so it will need to send a return message. Therefore it will need to handle an InOut MEP.  </P>
+<P>The implementation of this method was provided by the servicemix-service-engine Maven archetype and is shown in the code snippet above. Because the archetype can be used to create a consumer or a provider, this method is very generic and contains a conditional block for handling either a consumer or a provider role. But this method will still require us to make the decision of which style of <SPAN class="nobr"><A href="http://servicemix.org/site/5-jbi.html#5.JBI-ServiceinvocationandMEP" title="Visit page outside Confluence" rel="nofollow">Message Exchange Pattern (MEP)<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to handle as well. In the case of the Hello World SE, we know that it is a provider so it will need to send a return message. Therefore it will need to handle an In-Out MEP.  </P>
 
 <P><IMG src="hello-world-se.data/simple_endpoint_hierarchy.png" align="absmiddle" border="0"></P>
 
@@ -391,8 +391,16 @@ $ cd hello-world-smx</PRE>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class MyEndpoint <SPAN class="code-keyword">extends</SPAN> ProviderEndpoint <SPAN class="code-keyword">implements</SPAN> ExchangeProcessor</PRE>
+</DIV></DIV> 
+
+<P>Because the <TT>ProviderEndpoint.process()</TT> method already handles an In-Out MEP, <TT>MyEndpoint</TT> will simply need to override the <TT>ProviderEndpoint.processInOut()</TT> method. Below is the content for this method: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">protected</SPAN> void processInOut(MessageExchange exchange, NormalizedMessage in, NormalizedMessage out) <SPAN class="code-keyword">throws</SPAN> Exception {
+    <SPAN class="code-object">String</SPAN> inMessage = in.getContent().toString(); 
+    out.setContent(<SPAN class="code-keyword">new</SPAN> StringSource(<SPAN class="code-quote">&quot;Hello World! Message [&quot;</SPAN> + inMessage + <SPAN class="code-quote">&quot;] contains [&quot;</SPAN> + inMessage.getBytes().length + <SPAN class="code-quote">&quot;] bytes.&quot;</SPAN>));
+}</PRE>
 </DIV></DIV>
-<HR>
 
 <H3><A name="HelloWorld-SE-CreatingtheMavenSubprojectsFortheServiceUnitandServiceAssembly"></A>Creating the Maven Subprojects For the Service Unit and Service Assembly</H3>
 
@@ -739,7 +747,7 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 06, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15246">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15247">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
