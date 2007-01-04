@@ -397,10 +397,101 @@ $ cd hello-world-smx</PRE>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-keyword">protected</SPAN> void processInOut(MessageExchange exchange, NormalizedMessage in, NormalizedMessage out) <SPAN class="code-keyword">throws</SPAN> Exception {
-    <SPAN class="code-object">String</SPAN> inMessage = in.getContent().toString(); 
-    out.setContent(<SPAN class="code-keyword">new</SPAN> StringSource(<SPAN class="code-quote">&quot;Hello World! Message [&quot;</SPAN> + inMessage + <SPAN class="code-quote">&quot;] contains [&quot;</SPAN> + inMessage.getBytes().length + <SPAN class="code-quote">&quot;] bytes.&quot;</SPAN>));
+	SourceTransformer sourceTransformer = <SPAN class="code-keyword">new</SPAN> SourceTransformer();
+	<SPAN class="code-object">String</SPAN> inMessage = sourceTransformer.toString(in.getContent()); 
+	out.setContent(<SPAN class="code-keyword">new</SPAN> StringSource(<SPAN class="code-quote">&quot;&lt;hello&gt;Hello World! Message [&quot;</SPAN> + inMessage + <SPAN class="code-quote">&quot;] contains [&quot;</SPAN> + inMessage.getBytes().length + <SPAN class="code-quote">&quot;] bytes&lt;/hello&gt;.&quot;</SPAN>));
 }</PRE>
 </DIV></DIV>
+
+<H3><A name="HelloWorld-SE-TestingtheHelloWorldSE"></A>Testing the Hello World SE</H3>
+
+<P>Thanks to the archetype, testing the component is very easy because it already created a test. All that is necessary is to change the string being sent by the client code. In the <TT>src/test/java</TT> directory is the <TT>org.apache.servicemix.samples.helloworld.se.MySpringComponentTest</TT> test. Simple open this test and change line #36 from this: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">me.getInMessage().setContent(<SPAN class="code-keyword">new</SPAN> StringSource(<SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>));</PRE>
+</DIV></DIV>
+
+<P>to something more meaningful, like this: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">me.getInMessage().setContent(<SPAN class="code-keyword">new</SPAN> StringSource(<SPAN class="code-quote">&quot;&lt;hello&gt;Ski Colorado!&lt;/hello&gt;&quot;</SPAN>));</PRE>
+</DIV></DIV>
+
+<P>To execute the test, simply run the Maven <TT>install</TT> goal from within the <TT>hello-world-se</TT> directory like so: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">$ mvn install</PRE>
+</DIV></DIV>
+
+<P>Below is the output that will print to the console: </P>
+
+<DIV class="panel"><DIV class="panelContent">
+<P>[INFO] Scanning for projects...<BR>
+[INFO] ----------------------------------------------------------------------------<BR>
+[INFO] Building Hello World Service Engine<BR>
+[INFO]    task-segment: [install]<BR>
+[INFO] ----------------------------------------------------------------------------<BR>
+[INFO] [xbean:mapping {execution: default}]<BR>
+Checking: org.apache.servicemix.samples.helloworld.se.MyComponent<BR>
+Checking: org.apache.servicemix.samples.helloworld.se.MyEndpoint<BR>
+[INFO] Generating META-INF properties file: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/META-INF/services/org/apache/xbean/spring/http/org.apache.servicemix.samples.helloworld/1.0 for namespace: <SPAN class="nobr"><A href="http://org.apache.servicemix.samples.helloworld/1.0" title="Visit page outside Confluence" rel="nofollow">http://org.apache.servicemix.samples.helloworld/1.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+[INFO] Generating Spring 2.0 handler mapping: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/META-INF/spring.handlers for namespace: <SPAN class="nobr"><A href="http://org.apache.servicemix.samples.helloworld/1.0" title="Visit page outside Confluence" rel="nofollow">http://org.apache.servicemix.samples.helloworld/1.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+[INFO] Generating Spring 2.0 schema mapping: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/META-INF/spring.schemas for namespace: <SPAN class="nobr"><A href="http://org.apache.servicemix.samples.helloworld/1.0" title="Visit page outside Confluence" rel="nofollow">http://org.apache.servicemix.samples.helloworld/1.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+[INFO] Generating HTML documentation file: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/hello-world-se.xsd.html for namespace: <SPAN class="nobr"><A href="http://org.apache.servicemix.samples.helloworld/1.0" title="Visit page outside Confluence" rel="nofollow">http://org.apache.servicemix.samples.helloworld/1.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+[INFO] Generating XSD file: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/hello-world-se.xsd for namespace: <SPAN class="nobr"><A href="http://org.apache.servicemix.samples.helloworld/1.0" title="Visit page outside Confluence" rel="nofollow">http://org.apache.servicemix.samples.helloworld/1.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+[INFO] Generating WIKI documentation file: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/hello-world-se.xsd.wiki for namespace: <SPAN class="nobr"><A href="http://org.apache.servicemix.samples.helloworld/1.0" title="Visit page outside Confluence" rel="nofollow">http://org.apache.servicemix.samples.helloworld/1.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+Warning, could not load class: org.apache.servicemix.samples.helloworld.se.MyEndpoint<BR>
+[INFO] ...done.<BR>
+Downloading: <SPAN class="nobr"><A href="http://repo.mergere.com/maven2/xml-security/xmlsec/1.3.0/xmlsec-1.3.0.pom" title="Visit page outside Confluence" rel="nofollow">http://repo.mergere.com/maven2/xml-security/xmlsec/1.3.0/xmlsec-1.3.0.pom<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+[WARNING] Unable to get resource from repository central (<SPAN class="nobr"><A href="http://repo1.maven.org/maven2" title="Visit page outside Confluence" rel="nofollow">http://repo1.maven.org/maven2<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>)<BR>
+Downloading: <SPAN class="nobr"><A href="http://repo.mergere.com/maven2/wss4j/wss4j/1.5.0/wss4j-1.5.0.pom" title="Visit page outside Confluence" rel="nofollow">http://repo.mergere.com/maven2/wss4j/wss4j/1.5.0/wss4j-1.5.0.pom<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+[WARNING] Unable to get resource from repository central (<SPAN class="nobr"><A href="http://repo1.maven.org/maven2" title="Visit page outside Confluence" rel="nofollow">http://repo1.maven.org/maven2<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>)<BR>
+[INFO] [jbi:generate-jbi-component-descriptor]<BR>
+[INFO] Generating jbi.xml<BR>
+[INFO] [resources:resources]<BR>
+[INFO] Using default encoding to copy filtered resources.<BR>
+[INFO] [compiler:compile]<BR>
+[INFO] Nothing to compile - all classes are up to date<BR>
+[INFO] [resources:testResources]<BR>
+[INFO] Using default encoding to copy filtered resources.<BR>
+[INFO] [compiler:testCompile]<BR>
+[INFO] Nothing to compile - all classes are up to date<BR>
+[INFO] [surefire:test]<BR>
+[INFO] Surefire report directory: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/surefire-reports</P>
+
+<P>-------------------------------------------------------<BR>
+ T E S T S<BR>
+-------------------------------------------------------<BR>
+Running org.apache.servicemix.samples.helloworld.se.MySpringComponentTest<BR>
+<B>&lt;hello&gt;Hello World! Message [&lt;hello&gt;Ski Colorado!&lt;/hello&gt;] contains [28] bytes&lt;/hello&gt;.</B><BR>
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.009 sec</P>
+
+<P>Results :<BR>
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0</P>
+
+<P>[INFO] [jar:jar]<BR>
+[INFO] Building jar: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/hello-world-se-1.0-SNAPSHOT.jar<BR>
+[INFO] [jbi:jbi-component]<BR>
+[INFO] Generating installer /Users/bsnyder/src/hello-world-smx/hello-world-se/target/hello-world-se-1.0-SNAPSHOT-installer.zip<BR>
+[INFO] Building jar: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/hello-world-se-1.0-SNAPSHOT-installer.zip<BR>
+[INFO] [install:install]<BR>
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-se/target/hello-world-se-1.0-SNAPSHOT.jar to /Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-se/1.0-SNAPSHOT/hello-world-se-1.0-SNAPSHOT.jar<BR>
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/hello-world-se.xsd to /Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-se/1.0-SNAPSHOT/hello-world-se-1.0-SNAPSHOT.xsd<BR>
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/hello-world-se.xsd.html to /Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-se/1.0-SNAPSHOT/hello-world-se-1.0-SNAPSHOT-schema.html<BR>
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-se/target/hello-world-se-1.0-SNAPSHOT-installer.zip to /Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-se/1.0-SNAPSHOT/hello-world-se-1.0-SNAPSHOT-installer.zip<BR>
+[INFO] ------------------------------------------------------------------------<BR>
+[INFO] BUILD SUCCESSFUL<BR>
+[INFO] ------------------------------------------------------------------------<BR>
+[INFO] Total time: 15 seconds<BR>
+[INFO] Finished at: Thu Jan 04 15:21:00 MST 2007<BR>
+[INFO] Final Memory: 13M/24M<BR>
+[INFO] ------------------------------------------------------------------------</P>
+</DIV></DIV>
+
+<P>Notice that not only do we see that the build was successful, but notice the bold text of the message that was printed. If you see this, you just wrote your a JBI component and tested it successfully.  </P>
+
+
+<HR>
 
 <H3><A name="HelloWorld-SE-CreatingtheMavenSubprojectsFortheServiceUnitandServiceAssembly"></A>Creating the Maven Subprojects For the Service Unit and Service Assembly</H3>
 
@@ -747,7 +838,7 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 06, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15247">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15248">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
