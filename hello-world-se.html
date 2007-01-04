@@ -230,7 +230,7 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
 
 <H2><A name="HelloWorld-SE-CreatingtheMavenProjectsforEachComponent"></A>Creating the Maven Projects for Each Component </H2>
 
-<H3><A name="HelloWorld-SE-CreatingaSkeletonProjectFortheJBIServiceEngine"></A>Creating a Skeleton Project For the JBI Service Engine  </H3>
+<H3><A name="HelloWorld-SE-CreatingaMavenSubprojectFortheJBIServiceEngine"></A>Creating a Maven Subproject For the JBI Service Engine  </H3>
 
 <P>The focus of this section is on the creation of a JBI component. For this task, a <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-archetypes.html" title="Visit page outside Confluence" rel="nofollow">Maven archetype<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> will be used to create a Maven project skeleton to house the component. Maven archetypes are templates for Maven projects that jumpstart project creation via the automation of repetitive tasks by following standard conventions. The result of using an archetype to create a Maven project is a directory structure, a <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html" title="Visit page outside Confluence" rel="nofollow">Maven POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> file and, depending on the archetype being used, sometimes Java objects and JUnit tests. </P>
 
@@ -247,13 +247,17 @@ $ cd hello-world-smx</PRE>
 <P>2) Use the <SPAN class="nobr"><A href="http://svn.apache.org/viewvc/incubator/servicemix/trunk/archetypes/servicemix-service-engine/" title="Visit page outside Confluence" rel="nofollow">servicemix-service-engine<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> Maven archetype to generate a Maven project for the SE:</P>
 
 <DIV class="panel"><DIV class="panelContent">
-<P>$ mvn archetype:create &#45;DarchetypeGroupId=org.apache.servicemix.tooling &#45;DarchetypeArtifactId=servicemix-service-engine \<BR>
-&#45;DarchetypeVersion=<FONT color="#993366">3.1-incubating-SNAPSHOT</FONT> &#45;DgroupId=<FONT color="#ff00ff">org.apache.servicemix.samples.helloworld</FONT> &#45;DartifactId=<FONT color="#009900">hello-world-se</FONT></P>
+<P>$ mvn archetype:create \<BR>
+    -DarchetypeGroupId=org.apache.servicemix.tooling \<BR>
+    -DarchetypeArtifactId=servicemix-service-engine \<BR>
+    -DarchetypeVersion=<FONT color="#993366">3.1-incubating-SNAPSHOT</FONT> \<BR>
+    -DgroupId=<FONT color="#ff00ff">org.apache.servicemix.samples.helloworld</FONT> \<BR>
+    -DartifactId=<FONT color="#009900">hello-world-se</FONT></P>
 </DIV></DIV>
 
 <P>The command above will create a directory named <TT>hello-world-se</TT> that houses a Maven project for the JBI service engine being created here. </P>
 
-<P>The first three parameters to the <TT>mvn</TT> command (-DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-engine &#45;DarchetypeVersion=3.1-incubating-SNAPSHOT) identify which Maven archetype to use for the <TT>archetype:create</TT> goal, while the last two parameters (-DgroupId=org.apache.servicemix.samples.helloworld -DartifactId=hello-world-se) uniquely identify the Maven project that is being generated. The <TT>groupId</TT> (printed in <FONT color="#ff00ff">pink</FONT>) is used as the Java package and the <TT>artifactId</TT> is used as the project name. Therefore, only alphanumeric characters valid values for the <TT>groupId</TT> and <TT>artifactId</TT> parameters. </P>
+<P>The first three parameters to the <TT>mvn</TT> command (-DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-engine -DarchetypeVersion=3.1-incubating-SNAPSHOT) identify which Maven archetype to use for the <TT>archetype:create</TT> goal, while the last two parameters (-DgroupId=org.apache.servicemix.samples.helloworld -DartifactId=hello-world-se) uniquely identify the Maven project that is being generated. The <TT>groupId</TT> (printed in <FONT color="#ff00ff">pink</FONT>) is used as the Java package and the <TT>artifactId</TT> is used as the project name. Therefore, only alphanumeric characters are valid values for the <TT>groupId</TT> and <TT>artifactId</TT> parameters. </P>
 
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
 <P>The value of the <TT>archetypeVersion</TT> parameter in the command above (<FONT color="#993366">3.1-incubating-SNAPSHOT</FONT>) may need to be updated to the current ServiceMix version in order for the command to work correctly. The latest version can always be found <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/pom.xml?r=trunk" title="Visit page outside Confluence" rel="nofollow">in the top level ServiceMix POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> in the <TT>&lt;version&gt;</TT> element. </P></TD></TR></TABLE>
@@ -290,12 +294,13 @@ $ cd hello-world-smx</PRE>
 <PRE class="code-java">C:\Documents and Settings\&lt;USERNAME_&gt;</PRE>
 </DIV></DIV> 
 
-<P>In case the only version available is an older one, a minimal <TT>pom.xml</TT> file will need to be created manually in the <TT>hello-world-se</TT> directory: </P>
+<P>In case the only version available is an older one, a minimal <TT>pom.xml</TT> file will need to be created manually in the <TT>hello-world-se</TT> directory. Below is a simple POM to use for this purpose: </P>
 
 <DIV class="code"><DIV class="codeHeader"><B>Minimal pom.xml</B></DIV><DIV class="codeContent">
 <PRE class="code-java">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;
-&lt;project xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0&quot;</SPAN> xmlns:xsi=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
-</SPAN>  xsi:schemaLocation=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
+&lt;project xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0&quot;</SPAN> 
+</SPAN>    xmlns:xsi=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
+</SPAN>    xsi:schemaLocation=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
 </SPAN>  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
   &lt;groupId&gt;org.apache.servicemix.samples&lt;/groupId&gt;
   &lt;artifactId&gt;hello-world-se&lt;/artifactId&gt;
@@ -316,34 +321,53 @@ $ cd hello-world-smx</PRE>
 &lt;/project&gt;</PRE>
 </DIV></DIV></TD></TR></TABLE>
 
-<H3><A name="HelloWorld-SE-CreatingtheProjectFortheServiceUnitandServiceAssembly"></A>Creating the Project For the Service Unit and Service Assembly</H3>
+<H3><A name="HelloWorld-SE-CreatingtheMavenSubprojectsFortheServiceUnitandServiceAssembly"></A>Creating the Maven Subprojects For the Service Unit and Service Assembly</H3>
 
-<P>The archetypes for SUs and SAs do not contain much code, but rather help with tasks related to Maven. Later, we will only need to adapt the POMs to our project - just little work.</P>
+<P>The archetypes for SUs and SAs do not contain much code, but rather help with tasks related to Maven. Later, we will only need to adapt the POMs to our project. Below are the steps for to achieve this: </P>
 
 <P>1) From within the <TT>hello-world-smx</TT> directory, execute the following commands to create the project for the SU: </P>
 
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">$ mvn archetype:create -DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-unit \
--DarchetypeVersion=3.1-incubating-SNAPSHOT -DgroupId=org.apache.servicemix.samples.helloworld -DartifactId=hello-world-su</PRE>
+<PRE class="code-java">$ mvn archetype:create \
+    -DarchetypeGroupId=org.apache.servicemix.tooling \
+    -DarchetypeArtifactId=servicemix-service-unit \
+    -DarchetypeVersion=3.1-incubating-SNAPSHOT \
+    -DgroupId=org.apache.servicemix.samples.helloworld \
+    -DartifactId=hello-world-su</PRE>
 </DIV></DIV>
 
 <P>2) From within the <TT>hello-world-smx</TT> directory, execute the following commands to create the project for the SA:</P>
 
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">$ mvn archetype:create -DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-assembly \
--DarchetypeVersion=3.1-incubating-SNAPSHOT -DgroupId=org.apache.servicemix.samples.helloworld -DartifactId=hello-world-sa</PRE>
+<PRE class="code-java">$ mvn archetype:create \
+    -DarchetypeGroupId=org.apache.servicemix.tooling \
+    -DarchetypeArtifactId=servicemix-service-assembly \
+    -DarchetypeVersion=3.1-incubating-SNAPSHOT \
+    -DgroupId=org.apache.servicemix.samples.helloworld \
+    -DartifactId=hello-world-sa</PRE>
 </DIV></DIV>
 
-<P>Upon successful execution of the <TT>archetype:create</TT> goal, look for the <TT>BUILD SUCCESSFUL</TT> output. If instead you see the <TT>BUILD FAILED</TT> output, you&apos;ll need to look at the rest of the output to troubleshoot the issue. In case this success information does not appear, the output will provide some information about what might have gone awry. Assistance with any issue you might experience is available from the ServiceMix community via the <A href="mailing-lists.html" title="Mailing Lists">ServiceMix mailing lists archive</A>. </P>
+<P>Upon successful execution of the <TT>archetype:create</TT> goals, look for the <TT>BUILD SUCCESSFUL</TT> output. The <TT>hello-world-smx</TT> directory should now contain the following directories: </P>
 
-<H3><A name="HelloWorld-SE-IncorporatingtheServiceUnitandServiceAssemblyIntoaTopLevelPOM"></A>Incorporating the Service Unit and Service Assembly Into a Top Level POM</H3>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">hello-world-sa
+hello-world-se
+hello-world-su</PRE>
+</DIV></DIV>
 
-<P>Now that we have created the SU and SA projects, a the top level <TT>pom.xml</TT> must be manually created and made aware of each one. In the <TT>hello-world-se</TT> directory create a file named <TT>pom.xml</TT> containing the following content:</P>
+<P>If you see the above directories, proceed to the next section. </P>
+
+<P>If instead you see the <TT>BUILD FAILED</TT> output, you&apos;ll need to analyze the rest of the output to troubleshoot the issue. Assistance with any issue you might experience is available from the ServiceMix community via the <A href="mailing-lists.html" title="Mailing Lists">ServiceMix mailing lists archive</A>. </P>
+
+<H3><A name="HelloWorld-SE-IncorporatingtheSubprojectsIntoaTopLevelPOM"></A>Incorporating the Subprojects Into a Top Level POM</H3>
+
+<P>Now that we have created the SU and SA projects, a top level <TT>pom.xml</TT> must be manually created and made aware of each subproject. In the <TT>hello-world-se</TT> directory create a file named <TT>pom.xml</TT> containing the following content:</P>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;
-&lt;project xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0&quot;</SPAN> xmlns:xsi=<SPAN class="code-quote">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
-</SPAN>  xsi:schemaLocation=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
+&lt;project xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0&quot;</SPAN> 
+</SPAN>    xmlns:xsi=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
+</SPAN>    xsi:schemaLocation=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
 </SPAN>  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
   &lt;groupId&gt;org.apache.servicemix.samples&lt;/groupId&gt;
   &lt;artifactId&gt;hello-world-se&lt;/artifactId&gt;
@@ -367,9 +391,9 @@ $ cd hello-world-smx</PRE>
 &lt;/project&gt;</PRE>
 </DIV></DIV>
 
-<P>This POM will allow this example to be easily folded in to the ServiceMix samples. The <TT>&lt;modules&gt;</TT> element denotes the child projects that were created using the Maven archetypes and the <TT>&lt;dependencies&gt;</TT> element tells Maven to include the SU into the SA when it is constructed.</P>
+<P>This POM will allow the example to be easily folded in to the ServiceMix samples. The <TT>&lt;modules&gt;</TT> element denotes the subprojects that were created using the Maven archetypes and the <TT>&lt;dependencies&gt;</TT> element tells Maven to include the SU into the SA when it is constructed.</P>
 
-<H3><A name="HelloWorld-SE-GiveEachoftheComponentProjectsaName"></A>Give Each of the Component Projects a Name </H3>
+<H3><A name="HelloWorld-SE-GiveEachoftheMavenSubprojectsaName"></A>Give Each of the Maven Subprojects a Name </H3>
 
 <P>When sitting in the <TT>hello-world-smx</TT> directory, you should now see the following: </P>
 
@@ -384,9 +408,9 @@ pom.xml
 <P>Now we need to give each component&apos;s <TT>pom.xml</TT> an appropriate name. This name will allow Maven&apos;s output to denote a component&apos;s name in its output making our development work a bit easier. To name each project, simply edit each <TT>pom.xml</TT> and replace <TT>&lt;name&gt;A custom project&lt;/name&gt;</TT> with an appropriate name. Below are the instructions for naming each component&apos;s project: </P>
 
 <UL>
-	<LI>Edit <TT>hello-world-sa/pom.xml</TT> and change <TT>&lt;name&gt;a custom project&lt;/name&gt;</TT> with <TT>&lt;name&gt;Hello World Service Assembly&lt;/name&gt;</TT></LI>
-	<LI>Edit <TT>hello-world-se/pom.xml</TT> and change <TT>&lt;name&gt;a custom project&lt;/name&gt;</TT> with <TT>&lt;name&gt;Hello World Service Engine&lt;/name&gt;</TT></LI>
-	<LI>Edit <TT>hello-world-su/pom.xml</TT> and change <TT>&lt;name&gt;a custom project&lt;/name&gt;</TT> with <TT>&lt;name&gt;Hello World Service Unit&lt;/name&gt;</TT></LI>
+	<LI>Edit <TT>hello-world-sa/pom.xml</TT> and replace <TT>&lt;name&gt;a custom project&lt;/name&gt;</TT> with <TT>&lt;name&gt;Hello World Service Assembly&lt;/name&gt;</TT></LI>
+	<LI>Edit <TT>hello-world-se/pom.xml</TT> and replace <TT>&lt;name&gt;a custom project&lt;/name&gt;</TT> with <TT>&lt;name&gt;Hello World Service Engine&lt;/name&gt;</TT></LI>
+	<LI>Edit <TT>hello-world-su/pom.xml</TT> and replace <TT>&lt;name&gt;a custom project&lt;/name&gt;</TT> with <TT>&lt;name&gt;Hello World Service Unit&lt;/name&gt;</TT></LI>
 </UL>
 
 
@@ -435,7 +459,7 @@ pom.xml
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Windows</B><BR>
 <P>To show the entire directory hierarchy, simply execute <TT>find</TT> from the command line</P></TD></TR></TABLE>
 
-<P>According to the archetype rules, all Java objects are prefixed with the word <EM>My</EM>. The Java objects can be renamed to whatever you prefer, making sure to also change the names in the corresponding resource files (all tests and {{pom.xml}}s) as well.</P>
+<P>According to the archetype rules, all Java objects generated from the <TT>archetype:create</TT> goal are prefixed with the word <EM>My</EM>. The Java objects can be renamed to whatever you prefer, making sure to also change the names in the corresponding resource files and all tests and {{pom.xml}}s) as well.</P>
 
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
 <P>The content of the <TT>&lt;version&gt;</TT> element is arbitrary and is used to describe <EM>not</EM> the version of ServiceMix but of the version of projects that were just created. We just have to use consistently the same version when we reference this project.</P></TD></TR></TABLE>
@@ -446,7 +470,7 @@ pom.xml
 
 <H3><A name="HelloWorld-SE-CompilingtheComponents"></A>Compiling the Components </H3>
 
-<P>In order to, among other things, build and package the components, execute the following from within <TT>hello-world-smx</TT> directory: </P>
+<P>In order to, among other things, build and package the components, execute the following command from within <TT>hello-world-smx</TT> directory: </P>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn install</PRE>
@@ -611,35 +635,9 @@ use the SA archetype like in <SPAN class="nobr"><A href="http://www.servicemix.o
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=ericmick%2540gmail.com">Eric Mickelson</A> on Dec 28, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15215">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      Format change only.<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=13823">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 05, 2007
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15235">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
 
