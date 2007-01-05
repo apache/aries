@@ -140,19 +140,66 @@ XPath Router
 <!--          
             <div class="pagetitle">XPath Router</div>
 -->
-            <DIV class="wiki-content">
-<P>Its often a requirement to perform <EM>content based routing</EM> in an ESB. This means you route messages around your service bus based on the message properties or the content of the messages. When integrating systems across language boundaries its common to use XML as a universal message format; so XPath is an ideal tool to perform content based routing and transformation.</P>
+            <DIV class="wiki-content"><P>Its often a requirement to perform <EM>content based routing</EM> in an ESB. This means you route messages around your service bus based on the message properties or the content of the messages. When integrating systems across language boundaries its common to use XML as a universal message format; so XPath is an ideal tool to perform content based routing and transformation.</P>
 
 <P>We support a XPath based routing and transformation mechanism designed for high performance and power.</P>
 
 <H3><A name="XPathRouter-Example"></A>Example</H3>
 
 <P>The following is an example routing and transformation template. Firstly we reuse the XSLT basd transform component.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;transformer&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:transformer&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;sm:component&gt;</SPAN><SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.xslt.XsltComponent&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;xsltResource&quot;</SPAN> value=<SPAN class="code-quote">&quot;classpath:org/apache/servicemix/components/xslt/router.xsl&quot;</SPAN>/&gt;</SPAN>
 
+    &lt;!-- lets disable automatic output of the result of the transform; only if we perform
+        an invoke in the XSLT will we invoke another endpoint --&gt;
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;disableOutput&quot;</SPAN> value=<SPAN class="code-quote">&quot;true&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>Then we provide a file in XSLT format, with some JBI extensions</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;<SPAN class="code-keyword">xsl:stylesheet</SPAN> <SPAN class="code-keyword">xmlns:xsl</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/1999/XSL/Transform&quot;</SPAN>
+  <SPAN class="code-keyword">xmlns:jbi</SPAN>=<SPAN class="code-quote">&quot;xalan://org.apache.servicemix.components.xslt.XalanExtension&quot;</SPAN>
+  extension-element-prefixes=<SPAN class="code-quote">&quot;jbi&quot;</SPAN>
 
+  <SPAN class="code-keyword">xmlns:foo</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.org/cheese/&quot;</SPAN>
+  version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN>&gt;
+
+  <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:template</SPAN> match=<SPAN class="code-quote">&quot;/*&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:choose</SPAN>&gt;</SPAN>
+
+      <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- lets forward the inbound message to a service --&gt;</SPAN></SPAN>
+      <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:when</SPAN> test=<SPAN class="code-quote">&quot;@id = &apos;4&apos;&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;jbi:forward service=<SPAN class="code-quote">&quot;foo:trace&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:when</SPAN>&gt;</SPAN>
+
+      <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- lets generate the output XML to use as input, copy the input properties and define some new propertes --&gt;</SPAN></SPAN>
+      <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:when</SPAN> test=<SPAN class="code-quote">&quot;@id = &apos;12&apos;&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;jbi:invoke service=<SPAN class="code-quote">&quot;foo:script&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;jbi:copyProperties/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;jbi:setOutProperty name=<SPAN class="code-quote">&quot;foo&quot;</SPAN> select=<SPAN class="code-quote">&quot;@sent&quot;</SPAN>/&gt;</SPAN>
+          <SPAN class="code-tag">&lt;cheese code=<SPAN class="code-quote">&quot;{@id}&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;description&gt;</SPAN>This is some content generated from the routing XSL<SPAN class="code-tag">&lt;/description&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/cheese&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/jbi:invoke&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:when</SPAN>&gt;</SPAN>
+
+      <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:when</SPAN> test=<SPAN class="code-quote">&quot;@id != &apos;2&apos;&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;jbi:forward service=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:when</SPAN>&gt;</SPAN>
+
+      <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:otherwise</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;jbi:forward service=<SPAN class="code-quote">&quot;foo:trace&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:otherwise</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:choose</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:template</SPAN>&gt;</SPAN>
+
+<SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:stylesheet</SPAN>&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <P>In the above example, depending on the value of the @id attribute, we invoke different services.</P>
@@ -180,13 +227,88 @@ XPath Router
 <H3><A name="XPathRouter-Invokingmultipleserviceendpoints"></A>Invoking multiple service endpoints</H3>
 
 <P>The following example shows a number of services being invoked one after the other, using optionally different properties. In each case the original XML message is used as the body of the new inbound request.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;<SPAN class="code-keyword">xsl:stylesheet</SPAN> <SPAN class="code-keyword">xmlns:xsl</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/1999/XSL/Transform&quot;</SPAN>
+                <SPAN class="code-keyword">xmlns:jbi</SPAN>=<SPAN class="code-quote">&quot;xalan://org.apache.servicemix.components.xslt.XalanExtension&quot;</SPAN>
+                extension-element-prefixes=<SPAN class="code-quote">&quot;jbi&quot;</SPAN>
 
+                <SPAN class="code-keyword">xmlns:foo</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.org/cheese/&quot;</SPAN>
+                version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN>&gt;
+
+  <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:strip-space</SPAN> elements=<SPAN class="code-quote">&quot;*&quot;</SPAN>/&gt;</SPAN>
+
+  <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:template</SPAN> match=<SPAN class="code-quote">&quot;/&quot;</SPAN>&gt;</SPAN>
+
+    <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- lets invoke a number of services one after the other --&gt;</SPAN></SPAN>
+    <SPAN class="code-tag">&lt;jbi:invoke service=<SPAN class="code-quote">&quot;foo:service1&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jbi:copyProperties/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jbi:setOutProperty name=<SPAN class="code-quote">&quot;foo&quot;</SPAN> select=<SPAN class="code-quote">&quot;/sample&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:copy-of</SPAN> select=<SPAN class="code-quote">&quot;/&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/jbi:invoke&gt;</SPAN>
+
+    <SPAN class="code-tag">&lt;jbi:invoke service=<SPAN class="code-quote">&quot;foo:service2&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jbi:copyProperties/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jbi:setOutProperty name=<SPAN class="code-quote">&quot;bar&quot;</SPAN> select=<SPAN class="code-quote">&quot;/sample/@id&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:copy-of</SPAN> select=<SPAN class="code-quote">&quot;/&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/jbi:invoke&gt;</SPAN>
+
+    <SPAN class="code-tag">&lt;jbi:invoke service=<SPAN class="code-quote">&quot;foo:service3&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jbi:copyProperties/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jbi:setOutProperty name=<SPAN class="code-quote">&quot;foo&quot;</SPAN> select=<SPAN class="code-quote">&quot;string(/sample)&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jbi:setOutProperty name=<SPAN class="code-quote">&quot;bar&quot;</SPAN> select=<SPAN class="code-quote">&quot;string(/sample/@id)&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:copy-of</SPAN> select=<SPAN class="code-quote">&quot;/&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/jbi:invoke&gt;</SPAN>
+
+    <SPAN class="code-tag">&lt;jbi:invoke service=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jbi:copyProperties/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jbi:setOutProperty name=<SPAN class="code-quote">&quot;bar&quot;</SPAN> select=<SPAN class="code-quote">&quot;/sample/@id&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:copy-of</SPAN> select=<SPAN class="code-quote">&quot;/&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/jbi:invoke&gt;</SPAN>
+
+  <SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:template</SPAN>&gt;</SPAN>
+
+<SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:stylesheet</SPAN>&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <H3><A name="XPathRouter-SplittingupanXMLmessageintomultipleserviceinvocations"></A>Splitting up an XML message into multiple service invocations</H3>
 
 <P>This example demonstrates a message being split into multiple different sections of XML which are then invoked on different services.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;<SPAN class="code-keyword">xsl:stylesheet</SPAN> <SPAN class="code-keyword">xmlns:xsl</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/1999/XSL/Transform&quot;</SPAN>
+                <SPAN class="code-keyword">xmlns:jbi</SPAN>=<SPAN class="code-quote">&quot;xalan://org.apache.servicemix.components.xslt.XalanExtension&quot;</SPAN>
+                extension-element-prefixes=<SPAN class="code-quote">&quot;jbi&quot;</SPAN>
+                <SPAN class="code-keyword">xmlns:foo</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.org/cheese/&quot;</SPAN> version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN>&gt;
 
+  <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:template</SPAN> match=<SPAN class="code-quote">&quot;/&quot;</SPAN>&gt;</SPAN>
+
+    <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- lets pass a new message body --&gt;</SPAN></SPAN>
+    <SPAN class="code-tag">&lt;jbi:invoke service=<SPAN class="code-quote">&quot;foo:service1&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;cheese id=<SPAN class="code-quote">&quot;{/foo/@id}&quot;</SPAN>&gt;</SPAN>Edam<SPAN class="code-tag">&lt;/cheese&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/jbi:invoke&gt;</SPAN>
+
+    <SPAN class="code-tag"><SPAN class="code-comment">&lt;!--  lets split the message  --&gt;</SPAN></SPAN>
+    <SPAN class="code-tag">&lt;jbi:invoke service=<SPAN class="code-quote">&quot;foo:service2&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:copy-of</SPAN> select=<SPAN class="code-quote">&quot;/foo/beer&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/jbi:invoke&gt;</SPAN>
+
+    <SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- 1-many split --&gt;</SPAN></SPAN>
+    <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:for-each</SPAN> select=<SPAN class="code-quote">&quot;/foo/lineitem&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jbi:invoke service=<SPAN class="code-quote">&quot;foo:service3&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:copy-of</SPAN> select=<SPAN class="code-quote">&quot;.&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/jbi:invoke&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:for-each</SPAN>&gt;</SPAN>
+
+    <SPAN class="code-tag"><SPAN class="code-comment">&lt;!--  pass the  entire message to the final endpoint  --&gt;</SPAN></SPAN>
+    <SPAN class="code-tag">&lt;jbi:invoke service=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jbi:copyProperties/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jbi:setOutProperty name=<SPAN class="code-quote">&quot;bar&quot;</SPAN> select=<SPAN class="code-quote">&quot;/sample/@id&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:copy-of</SPAN> select=<SPAN class="code-quote">&quot;/&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/jbi:invoke&gt;</SPAN>
+
+  <SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:template</SPAN>&gt;</SPAN>
+<SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:stylesheet</SPAN>&gt;</SPAN></PRE>
+</DIV></DIV>
 <P>&nbsp;</P>
 
 <H3><A name="XPathRouter-WhyuseXalan%3F"></A>Why use Xalan?</H3>
@@ -207,8 +329,8 @@ XPath Router
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A> on Dec 30, 2005
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2045&originalId=4125">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jan 07, 2007
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2045&originalId=15254">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2045">edit page</A>)
     </DIV>
