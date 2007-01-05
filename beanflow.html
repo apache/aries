@@ -147,7 +147,7 @@ BeanFlow
 <UL>
 	<LI><SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/" title="Visit page outside Confluence" rel="nofollow">BeanFlow JavaDoc<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	<LI><A href="beanflow-patterns.html" title="BeanFlow Patterns">BeanFlow Patterns</A></LI>
-	<LI><SPAN class="nobr"><A href="https://svn.apache.org/repos/asf/incubator/servicemix/trunk/servicemix-beanflow/" title="Visit page outside Confluence" rel="nofollow">BeanFlow Source Code<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/common/servicemix-beanflow/" title="Visit page outside Confluence" rel="nofollow">BeanFlow Source Code<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 </UL>
 
 
@@ -248,7 +248,21 @@ BeanFlow
 
 <P>Here is an example of performing joins using collections of child workflows</P>
 
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-comment">// lets create a join on a number of child flows completing
+</SPAN>JoinAll flow = <SPAN class="code-keyword">new</SPAN> JoinAll(child1, child2, child3);
+flow.startWithTimeout(timer, timeout);
 
+<SPAN class="code-comment">// now lets test the flow
+</SPAN>child1.stop();
+assertStarted(flow);
+
+child2.stop();
+assertStarted(flow);
+
+child3.stop();
+assertStopped(flow);</PRE>
+</DIV></DIV>
 
 <H3><A name="BeanFlow-Joinconditions"></A>Join conditions</H3>
 
@@ -272,7 +286,36 @@ join on A and (B or C)</PRE>
 
 <P>Here is an example activity implemented in Java code for the above code.</P>
 
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-comment">// lets create some child workflows
+</SPAN><SPAN class="code-keyword">final</SPAN> Activity a = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+<SPAN class="code-keyword">final</SPAN> Activity b = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+<SPAN class="code-keyword">final</SPAN> Activity c = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
 
+<SPAN class="code-comment">// lets create the activity with a custom join condition
+</SPAN>Activity activity = <SPAN class="code-keyword">new</SPAN> JoinSupport(a, b, c) {
+    @Override
+    <SPAN class="code-keyword">protected</SPAN> void onChildStateChange(<SPAN class="code-object">int</SPAN> childCount, <SPAN class="code-object">int</SPAN> stoppedCount, <SPAN class="code-object">int</SPAN> failedCount) {
+
+        <SPAN class="code-keyword">if</SPAN> (a.isStopped() &amp;&amp; (b.isStopped() || c.isStopped())) {
+            <SPAN class="code-comment">// lets stop the activity we&apos;re done
+</SPAN>            stop();
+        }
+    }
+};
+
+<SPAN class="code-comment">// lets start the activities
+</SPAN>activity.startWithTimeout(timer, timeout);
+
+<SPAN class="code-comment">// now lets test things behave properly
+</SPAN>assertStarted(activity);
+
+a.stop();
+assertStarted(activity);
+
+b.stop();
+assertStopped(activity);</PRE>
+</DIV></DIV>
 
 <H2><A name="BeanFlow-Buildingworkflows"></A>Building workflows</H2>
 
@@ -305,7 +348,32 @@ Another option is to use a method which returns a String or enum value; a non-nu
 
 <P>There now follows a simple workflow example...</P>
 
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class SimpleWorkflow <SPAN class="code-keyword">extends</SPAN> Workflow&lt;SimpleWorkflow.Step&gt; {
 
+    <SPAN class="code-keyword">public</SPAN> <SPAN class="code-keyword">static</SPAN> <SPAN class="code-keyword">enum</SPAN> Step {
+        stepA, stepB, stepC, stop
+    };
+
+    <SPAN class="code-keyword">public</SPAN> SimpleWorkflow() {
+        <SPAN class="code-keyword">super</SPAN>(Step.stepA);
+    }
+
+    <SPAN class="code-comment">// Workflow steps
+</SPAN>    <SPAN class="code-comment">// -------------------------------------------------------------------------
+</SPAN>    <SPAN class="code-keyword">public</SPAN> Step stepA() {
+        <SPAN class="code-keyword">return</SPAN> Step.stepB;
+    }
+    
+    <SPAN class="code-keyword">public</SPAN> Step stepB() {
+        <SPAN class="code-keyword">return</SPAN> Step.stepC;
+    }
+    
+    <SPAN class="code-keyword">public</SPAN> Step stepC() {
+        <SPAN class="code-keyword">return</SPAN> Step.stop;
+    }
+}</PRE>
+</DIV></DIV>
 
 <P>As you can see the step is defined by an enumeration <B>Step</B> and we have a regular Java method to implement each step. The <EM>step method</EM> can then return the step to go to next after the current method terminates. If you return null or use a void method then the workflow suspends. </P>
 
@@ -321,7 +389,91 @@ Another option is to use a method which returns a String or enum value; a non-nu
 </UL>
 
 
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class ExampleWorkflow <SPAN class="code-keyword">extends</SPAN> Workflow&lt;ExampleWorkflow.Step&gt; {
+    <SPAN class="code-keyword">private</SPAN> <SPAN class="code-keyword">static</SPAN> <SPAN class="code-keyword">final</SPAN> Log log = LogFactory.getLog(ExampleWorkflow.class);
 
+    <SPAN class="code-keyword">private</SPAN> <SPAN class="code-object">int</SPAN> loopCount;
+    <SPAN class="code-keyword">private</SPAN> <SPAN class="code-object">long</SPAN> timeout = 500;
+    <SPAN class="code-keyword">private</SPAN> <SPAN class="code-object">String</SPAN> userEmailAddress;
+
+    <SPAN class="code-keyword">public</SPAN> <SPAN class="code-keyword">static</SPAN> <SPAN class="code-keyword">enum</SPAN> Step {
+        startStep, afterEnteredEmailStep, loopStep, waitForUserInputStep, forkStep, 
+        aCompletedStep, abcCompletedStep, stop
+    };
+
+    <SPAN class="code-keyword">public</SPAN> ExampleWorkflow() {
+        <SPAN class="code-keyword">super</SPAN>(Step.startStep);
+    }
+
+    <SPAN class="code-comment">// Workflow steps
+</SPAN>    <SPAN class="code-comment">// -------------------------------------------------------------------------
+</SPAN>
+    <SPAN class="code-keyword">public</SPAN> void startStep() {
+        <SPAN class="code-comment">// lets use an explicit goTo() to tell the workflow
+</SPAN>        <SPAN class="code-comment">// which step to go to next; though we can just <SPAN class="code-keyword">return</SPAN> Strings
+</SPAN>        addStep(Step.loopStep);
+    }
+
+    <SPAN class="code-comment">// lets use the <SPAN class="code-keyword">return</SPAN> value to specify the next step
+</SPAN>    <SPAN class="code-keyword">public</SPAN> Step loopStep() {
+        <SPAN class="code-keyword">if</SPAN> (++loopCount &gt; 3) {
+            <SPAN class="code-keyword">return</SPAN> Step.waitForUserInputStep;
+        }
+        <SPAN class="code-comment">// lets keep looping
+</SPAN>        <SPAN class="code-keyword">return</SPAN> Step.loopStep;
+    }
+
+    <SPAN class="code-keyword">public</SPAN> void waitForUserInputStep() {
+        <SPAN class="code-comment">// we are going to park here until a user
+</SPAN>        <SPAN class="code-comment">// enters a valid email address
+</SPAN>        <SPAN class="code-comment">// so lets park the workflow engine
+</SPAN>    }
+
+    <SPAN class="code-keyword">public</SPAN> Step afterEnteredEmailStep() {
+        <SPAN class="code-comment">// we are going to park here until a user
+</SPAN>        <SPAN class="code-comment">// enters a valid email address
+</SPAN>        log.info(<SPAN class="code-quote">&quot;User entered email address: &quot;</SPAN> + userEmailAddress);
+        <SPAN class="code-keyword">return</SPAN> Step.forkStep;
+    }
+
+    <SPAN class="code-keyword">public</SPAN> void forkStep() {
+        <SPAN class="code-comment">// lets fork some child flows
+</SPAN>        TimeoutActivity a = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+        TimeoutActivity b = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+        TimeoutActivity c = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+
+        log.info(<SPAN class="code-quote">&quot;Forking off processes a, b, c&quot;</SPAN>);
+        fork(a, b, c);
+
+        <SPAN class="code-comment">// now lets add some joins
+</SPAN>        joinAll(Step.aCompletedStep, timeout, a);
+        joinAll(Step.abcCompletedStep, timeout, a, b, c);
+    }
+
+    <SPAN class="code-keyword">public</SPAN> void aCompletedStep() {
+        log.info(<SPAN class="code-quote">&quot;child flow A completed!&quot;</SPAN>);
+    }
+
+    <SPAN class="code-keyword">public</SPAN> Step abcCompletedStep() {
+        log.info(<SPAN class="code-quote">&quot;child flows A, B and C completed!&quot;</SPAN>);
+
+        <SPAN class="code-comment">// we are completely done now
+</SPAN>        <SPAN class="code-keyword">return</SPAN> Step.stop;
+    }
+
+    <SPAN class="code-comment">// External events
+</SPAN>    <SPAN class="code-comment">// -------------------------------------------------------------------------
+</SPAN>    <SPAN class="code-keyword">public</SPAN> void userEntered(<SPAN class="code-object">String</SPAN> emailAddress) {
+        <SPAN class="code-keyword">if</SPAN> (emailAddress != <SPAN class="code-keyword">null</SPAN> &amp;&amp; emailAddress.indexOf(<SPAN class="code-quote">&quot;@&quot;</SPAN>) &gt; 0) {
+            <SPAN class="code-keyword">this</SPAN>.userEmailAddress = emailAddress;
+
+            log.info(<SPAN class="code-quote">&quot;Lets re-start the suspended workflow&quot;</SPAN>);
+            addStep(Step.afterEnteredEmailStep);
+        }
+    }
+}</PRE>
+</DIV></DIV>
 
 <P>In the above example, each workflow step is implemented as a method. If the method returns a String it is interpreted as the next step which will be executed. Returning null (or using a void return type) will suspend the workflow.</P>
 
@@ -333,7 +485,28 @@ Another option is to use a method which returns a String or enum value; a non-nu
 
 <P>To avoid typos between the workflow step enum and the methods in the workflow class, on startup we check that there are suitable methods available for the enum. Many thanks to <SPAN class="nobr"><A href="http://www.javarants.com/" title="Visit page outside Confluence" rel="nofollow">Sam<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for this idea! <IMG class="emoticon" src="http://goopen.org/confluence/images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"> e.g. the following bad workflow is automatically caught and a useful error is generated.</P>
 
-</DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class BadWorkflow <SPAN class="code-keyword">extends</SPAN> Workflow&lt;BadWorkflow.Step&gt; {
+    
+    <SPAN class="code-keyword">public</SPAN> <SPAN class="code-keyword">static</SPAN> <SPAN class="code-keyword">enum</SPAN> Step {
+        startStep, fooStep, doesNotExistStep
+    };
+
+    <SPAN class="code-keyword">public</SPAN> BadWorkflow() {
+        <SPAN class="code-keyword">super</SPAN>(Step.startStep);
+    }
+
+    <SPAN class="code-comment">// Workflow steps
+</SPAN>    <SPAN class="code-comment">// -------------------------------------------------------------------------
+</SPAN>    <SPAN class="code-keyword">public</SPAN> Step startStep() {
+        <SPAN class="code-keyword">return</SPAN> Step.fooStep;
+    }
+    
+    <SPAN class="code-keyword">public</SPAN> Step fooStep() {
+        <SPAN class="code-keyword">return</SPAN> Step.doesNotExistStep;
+    }
+}</PRE>
+</DIV></DIV></DIV>
           
         <!--
           <div class="tabletitle">
@@ -357,8 +530,8 @@ Another option is to use a method which returns a String or enum value; a non-nu
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on May 30, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=8483">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jan 07, 2007
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=15253">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5092">edit page</A>)
     </DIV>
