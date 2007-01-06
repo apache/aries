@@ -140,13 +140,15 @@ Hello World - SE
 <!--          
             <div class="pagetitle">Hello World -  SE</div>
 -->
-            <DIV class="wiki-content"><H1><A name="HelloWorld-SE-CreatingaHelloWorldJBIServiceEngine"></A>Creating a Hello World JBI Service Engine </H1>
+            <DIV class="wiki-content"><H1><A name="HelloWorld-SE-CreatingaHelloWorldJBIComponent"></A>Creating a Hello World JBI Component</H1>
 
-<P>This tutorial describes how to create a very simple Hello World style of JBI service engine (SE) component. It demonstrates some best practices for creating JBI components. The example in this tutorial is as minimalistic as possible so as to focus on key concepts and not drown in details. The example component will respond to all requests with the message: </P>
+<P>This tutorial describes how to create a very simple Hello World style of JBI component. This tutorial is as minimalistic as possible so as to focus on key concepts and not drown in details. The Hello World component will respond to all requests with the message: </P>
 
 <DIV class="panel"><DIV class="panelContent">
 <P>&lt;hello&gt;Hello World! Message [&lt;original message here&gt;] contains [??] bytes.&lt;/hello&gt;</P>
 </DIV></DIV>
+
+<P>The following sections will walk through the creation, packaging, testing and deployment of the Hello World component. </P>
 
 <H2><A name="HelloWorld-SE-Prerequisites"></A>Prerequisites</H2>
 
@@ -161,7 +163,7 @@ Hello World - SE
 		<LI>See the <SPAN class="nobr"><A href="http://servicemix.org/site/download.html" title="Visit page outside Confluence" rel="nofollow">ServiceMix downloads<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
 	</UL>
 	</LI>
-	<LI>A broadband internet connection (so Maven can automatically download dependencies)</LI>
+	<LI>A broadband internet connection so Maven can automatically download dependencies</LI>
 </UL>
 
 
@@ -169,39 +171,52 @@ Hello World - SE
 
 <P>The <SPAN class="nobr"><A href="http://jcp.org/en/jsr/detail?id=208" title="Visit page outside Confluence" rel="nofollow">Java Business Integration (JBI) spec<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> provides a standards-based, service-oriented approach to application integration through the use of an abstract messaging model, without reference to a particular protocol or wire encoding. JBI introduces the concepts of Binding Components (BCs), Service Engines (SEs) to  Service Units (SUs) and Service Assemblies (SAs) to define an architecture for vendor-neutral pluggable components. The purpose of this architecture is to provide standards-based interoperability amongst components/services. </P>
 
-<P>JBI components are can be thought of as the <EM>smallest applications</EM> or <EM>services</EM> accessible in a service-oriented architecture. Each service has a very specific purpose and therefore a narrow scope and set of functionality. Components come in two flavours: Service Engine (SE) and Binding Components (BC). Several SUs are packed into a SA. An SA is a <EM>complete application</EM> consisting of one or more services interacting with one another. </P>
+<P>JBI components are can be thought of as the <EM>smallest applications</EM> or <EM>services</EM> accessible in a service-oriented architecture. Each service has a very specific purpose and therefore a narrow scope and set of functionality. Components come in two flavors: Service Engines (SE) and Binding Components (BC). SUs must be packaged into a SA to be deployed to the JBI container. An SA is a <EM>complete application</EM> consisting of one or more services. By comparison, this is similar to the way that WAR files must be packaged inside of an EAR file to be deployed to a J2EE container. </P>
 
 <P>See also the page providing information on <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/main/working-with-service-units.html" title="Visit page outside Confluence" rel="nofollow">working with service units<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
 
-<P>Below are some quick definitions: </P>
+<P>Below are some quick definitions the are dominant throughout the JBI spec: </P>
 
 <UL>
-	<LI>Component Architecture
+	<LI><B>Component Architecture</B>
 	<UL>
-		<LI>Binding Components - Components that provide or consume services via some sort of communications protocol or other remoting technology</LI>
-		<LI>Service Engines - Components that supply or consume services locally (within the JBI container)</LI>
+		<LI><B>Binding Components</B> - Components that provide or consume services via some sort of communications protocol or other remoting technology</LI>
+		<LI><B>Service Engines</B> - Components that supply or consume services locally (within the JBI container)</LI>
 	</UL>
 	</LI>
 </UL>
 
 
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
+<P>The difference between binding components (BCs) and service engines (SEs) is definitely subtle and is not denoted by the JBI APIs. In fact, the only real true difference between the two is in the <TT>jbi.xml</TT> descriptor in the packaging. What it really boils down to is the fact that BCs are used to do integration with a service outside the bus and SEs are services that deployed to and solely contained within the bus. Hopefully the JBI 2.0 spec will provide more distinction. </P></TD></TR></TABLE>
+
 <UL>
-	<LI>Component Packaging
+	<LI><B>Component Packaging</B>
 	<UL>
-		<LI>Service Units - Packaging for an individual service that allows deployment to the JBI container; similar to a WAR file from J2EE</LI>
-		<LI>Service Assemblies - Packaging for groups of SUs for deployment to the JBI container; similar to an EAR file from J2EE</LI>
+		<LI><B>Service Units</B> - Packaging for an individual service that allows deployment to the JBI container; similar to a WAR file from J2EE</LI>
+		<LI><B>Service Assemblies</B> - Packaging for groups of SUs for deployment to the JBI container; similar to an EAR file from J2EE</LI>
 	</UL>
 	</LI>
 </UL>
 
 
-<P>For further information on JBI, see the <A href="5-jbi.html" title="5. JBI">JBI</A> section of the <A href="users-guide.html" title="User's Guide">User&apos;s Guide</A>. See also the <SPAN class="nobr"><A href="https://open-esb.dev.java.net/public/whitepapers/JBIforSOI.pdf" title="Visit page outside Confluence" rel="nofollow">JBIforSOI<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> document for a decent introduction to JBI.</P>
+<P>This tutorial focuses on both component architecture and component packaging. For further information and details on JBI, see the following: </P>
 
-<H2><A name="HelloWorld-SE-CreatingtheMavenProjectsforEachComponent"></A>Creating the Maven Projects for Each Component </H2>
+<UL>
+	<LI>The <SPAN class="nobr"><A href="http://jcp.org/en/jsr/detail?id=208" title="Visit page outside Confluence" rel="nofollow">JBI spec<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI>The <A href="5-jbi.html" title="5. JBI">JBI</A> section of the <A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI>The <SPAN class="nobr"><A href="https://open-esb.dev.java.net/public/whitepapers/JBIforSOI.pdf" title="Visit page outside Confluence" rel="nofollow">JBIforSOI<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> article</LI>
+	<LI>The <SPAN class="nobr"><A href="http://www.javaworld.com/javaworld/jw-12-2005/jw-1212-esb.html" title="Visit page outside Confluence" rel="nofollow">ServiceMix as an enterprise service bus<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> JavaWorld article</LI>
+</UL>
 
-<H3><A name="HelloWorld-SE-CreatingaMavenSubprojectFortheJBIServiceEngine"></A>Creating a Maven Subproject For the JBI Service Engine  </H3>
+
+<P>Now let&apos;s move on to creating the Maven projects for the Hello World component. </P>
+
+<H2><A name="HelloWorld-SE-CreatingaMavenProjectFortheJBIServiceEngine"></A>Creating a Maven Project For the JBI Service Engine  </H2>
 
 <P>The focus of this section is on the creation of a JBI component. For this task, a <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-archetypes.html" title="Visit page outside Confluence" rel="nofollow">Maven archetype<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> will be used to create a Maven project skeleton to house the component. Maven archetypes are templates for Maven projects that jumpstart project creation via the automation of repetitive tasks by following standard conventions. The result of using an archetype to create a Maven project is a directory structure, a <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html" title="Visit page outside Confluence" rel="nofollow">Maven POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> file and, depending on the archetype being used, sometimes Java objects and JUnit tests. </P>
+
+<P>Below are the steps to follow for creating the directory structure and project. All instructions laid out to take place on a Unix command-line. </P>
 
 <P>1) Create a directory named <TT>hello-world-smx</TT> and switch to that directory: </P>
 
@@ -210,57 +225,126 @@ Hello World - SE
 $ cd hello-world-smx</PRE>
 </DIV></DIV>
 
-<P>2) Use the <SPAN class="nobr"><A href="http://svn.apache.org/viewvc/incubator/servicemix/trunk/archetypes/servicemix-service-engine/" title="Visit page outside Confluence" rel="nofollow">servicemix-service-engine<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> Maven archetype to generate a Maven project for the SE:</P>
+<P>2) Use either the <SPAN class="nobr"><A href="http://svn.apache.org/viewvc/incubator/servicemix/trunk/archetypes/servicemix-service-engine/" title="Visit page outside Confluence" rel="nofollow">servicemix-service-engine<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or the <SPAN class="nobr"><A href="http://svn.apache.org/viewvc/incubator/servicemix/trunk/archetypes/servicemix-binding-component/" title="Visit page outside Confluence" rel="nofollow">servicemix-binding-component<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> Maven archetype to generate a Maven project for the component. </P>
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
+<P>Being that the difference between a BC and a SE is not denoted by the JBI APIs but rather the functionality of the component (see comments above on BCs vs SEs) it is up to you what type of component you create. This tutorial will show the commands for creating both a BC and a SE. </P></TD></TR></TABLE>
+
+<P>To create a SE, execute the following command on the command-line: </P>
 
 <DIV class="panel"><DIV class="panelContent">
 <P>$ mvn archetype:create \<BR>
     -DarchetypeGroupId=org.apache.servicemix.tooling \<BR>
     -DarchetypeArtifactId=servicemix-service-engine \<BR>
-    -DarchetypeVersion=<FONT color="#993366">3.1-incubating-SNAPSHOT</FONT> \<BR>
-    -DgroupId=<FONT color="#ff00ff">org.apache.servicemix.samples.helloworld.se</FONT> \<BR>
-    -DartifactId=<FONT color="#009900">hello-world-se</FONT></P>
+    -DarchetypeVersion=3.1-incubating-SNAPSHOT \<BR>
+    -DgroupId=org.apache.servicemix.samples.helloworld \<BR>
+    -DartifactId=hello-world-su</P>
 </DIV></DIV>
 
-<P>The command above will create a directory named <TT>hello-world-se</TT> that houses a Maven project for the JBI service engine being created here. The name of the directory is taken from the <TT>artifactId</TT> parameter. </P>
 
-<P>The first three parameters to the <TT>mvn</TT> command (-DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-engine -DarchetypeVersion=3.1-incubating-SNAPSHOT) identify which Maven archetype to use for the <TT>archetype:create</TT> goal, while the last two parameters (-DgroupId=org.apache.servicemix.samples.helloworld -DartifactId=hello-world-se) uniquely identify the Maven project that is being generated. The <TT>groupId</TT> (printed in <FONT color="#ff00ff">pink</FONT>) is used as the Java package and the <TT>artifactId</TT> is used as the project name. Therefore, only alphanumeric characters are valid values for the <TT>groupId</TT> and <TT>artifactId</TT> parameters. </P>
-
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
-<P>The value of the <TT>archetypeVersion</TT> parameter in the command above (<FONT color="#993366">3.1-incubating-SNAPSHOT</FONT>) may need to be updated to the current ServiceMix version in order for the command to work correctly. The latest version can always be found <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/pom.xml?r=trunk" title="Visit page outside Confluence" rel="nofollow">in the top level ServiceMix POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> in the <TT>&lt;version&gt;</TT> element. </P></TD></TR></TABLE>
-
-<P>The output from executing the <TT>archetype:create</TT> goal is shown below (only relevant information has been preserved):</P>
+<P>To create a BC, execute the following command on the command-line: </P>
 
 <DIV class="panel"><DIV class="panelContent">
-<P>[INFO] Scanning for projects...<BR>
-[INFO] Searching repository for plugin with prefix: &apos;archetype&apos;.<BR>
-[INFO] &#45;--------------------------------------------------------------------------&#45;<BR>
-[INFO] Building Maven Default Project<BR>
-[INFO]    task-segment: [archetype:create] (aggregator-style)<BR>
-[INFO] &#45;--------------------------------------------------------------------------&#45;<BR>
-...<BR>
-[INFO] <FONT color="#ff00ff">Defaulting package to group ID: org.apache.servicemix.samples.helloWorldSE</FONT><BR>
-...<BR>
-[INFO] *<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42;</B>&#42;<B>&#42;</B>&#42; End of debug info from resources from generated POM *<B>&#42;</B>&#42;*****************&#42;<BR>
-[INFO] <FONT color="#009900">Archetype created in dir: /Users/bsnyder/src/hello-world-se/hello-world-se</FONT><BR>
-[INFO] &#45;----------------------------------------------------------------------&#45;<BR>
-[INFO] BUILD SUCCESSFUL<BR>
-[INFO] &#45;----------------------------------------------------------------------&#45;</P>
+<P>$ mvn archetype:create \<BR>
+    -DarchetypeGroupId=org.apache.servicemix.tooling \<BR>
+    -DarchetypeArtifactId=servicemix-service-engine \<BR>
+    -DarchetypeVersion=3.1-incubating-SNAPSHOT \<BR>
+    -DgroupId=org.apache.servicemix.samples.helloworld \<BR>
+    -DartifactId=hello-world-su</P>
 </DIV></DIV>
 
-<P>Again, Maven creates a directory using the <TT>artifactId</TT> provided (printed in <FONT color="#009900">green</FONT> in the command and output) as the directory name. Inside this directory resides the <TT>pom.xml</TT> and the <TT>src</TT> directory. </P>
+<P>The command above will create a directory named <TT>hello-world-su</TT> that houses a Maven project for the JBI service engine being created here. The name of the directory is taken from the <TT>artifactId</TT> parameter. </P>
+
+<P>The first three parameters to the <TT>mvn</TT> command (-DarchetypeGroupId=org.apache.servicemix.tooling -DarchetypeArtifactId=servicemix-service-engine -DarchetypeVersion=3.1-incubating-SNAPSHOT) identify which Maven archetype to use for the <TT>archetype:create</TT> goal, while the last two parameters (-DgroupId=org.apache.servicemix.samples.helloworld -DartifactId=hello-world-su) uniquely identify the Maven project that is being generated. The <TT>groupId</TT> is used as the Java package and the <TT>artifactId</TT> is used as the project name. Therefore, only alphanumeric characters are valid values for the <TT>groupId</TT> and <TT>artifactId</TT> parameters. </P>
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
+<P>The value of the <TT>archetypeVersion</TT> parameter in the command above (3.1-incubating-SNAPSHOT) may need to be updated to the current ServiceMix version in order for the command to work correctly. The latest version can always be found <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/pom.xml?r=trunk" title="Visit page outside Confluence" rel="nofollow">in the top level ServiceMix POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> in the <TT>&lt;version&gt;</TT> element. </P></TD></TR></TABLE>
+
+<P>The output from executing the <TT>archetype:create</TT> goal is shown below:</P>
+
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>[INFO] Scanning for projects...
+[INFO] Searching repository for plugin with prefix: &apos;archetype&apos;.
+[INFO] ----------------------------------------------------------------------------
+[INFO] Building Maven Default Project
+[INFO]    task-segment: [archetype:create] (aggregator-style)
+[INFO] ----------------------------------------------------------------------------
+[INFO] Setting property: classpath.resource.loader.class =&gt; &apos;org.codehaus.plexus.velocity.ContextClassLoaderResourceLoader&apos;.
+[INFO] Setting property: velocimacro.messages.on =&gt; &apos;false&apos;.
+[INFO] Setting property: resource.loader =&gt; &apos;classpath&apos;.
+[INFO] Setting property: resource.manager.logwhenfound =&gt; &apos;false&apos;.
+[INFO] ************************************************************** 
+[INFO] Starting Jakarta Velocity v1.4
+[INFO] RuntimeInstance initializing.
+[INFO] Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+[INFO] Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+[INFO] Resource Loader Instantiated: org.codehaus.plexus.velocity.ContextClassLoaderResourceLoader
+[INFO] ClasspathResourceLoader : initialization starting.
+[INFO] ClasspathResourceLoader : initialization complete.
+[INFO] ResourceCache : initialized. (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+[INFO] Default ResourceManager initialization complete.
+[INFO] Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+[INFO] Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+[INFO] Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+[INFO] Loaded System Directive: org.apache.velocity.runtime.directive.Include
+[INFO] Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+[INFO] Created: 20 parsers.
+[INFO] Velocimacro : initialization starting.
+[INFO] Velocimacro : adding VMs from VM library template : VM_global_library.vm
+[ERROR] ResourceManager : unable to find resource &apos;VM_global_library.vm&apos; in any resource loader.
+[INFO] Velocimacro : error using  VM library template VM_global_library.vm : org.apache.velocity.exception.ResourceNotFoundException: 
+Unable to find resource &apos;VM_global_library.vm&apos;
+[INFO] Velocimacro :  VM library template macro registration complete.
+[INFO] Velocimacro : allowInline = true : VMs can be defined inline in templates
+[INFO] Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+[INFO] Velocimacro : allowInlineLocal = false : VMs defined inline will be  global in scope if allowed.
+[INFO] Velocimacro : initialization complete.
+[INFO] Velocity successfully started.
+[INFO] [archetype:create]
+[INFO] Defaulting package to group ID: org.apache.servicemix.samples.helloworld
+[INFO] ----------------------------------------------------------------------------
+[INFO] Using following parameters for creating Archetype: servicemix-service-engine:3.1-incubating-SNAPSHOT
+[INFO] ----------------------------------------------------------------------------
+[INFO] Parameter: groupId, Value: org.apache.servicemix.samples.helloworld
+[INFO] Parameter: packageName, Value: org.apache.servicemix.samples.helloworld
+[INFO] Parameter: basedir, Value: /Users/bsnyder/src/hello-world-smx
+[INFO] Parameter: package, Value: org.apache.servicemix.samples.helloworld
+[INFO] Parameter: version, Value: 1.0-SNAPSHOT
+[INFO] Parameter: artifactId, Value: hello-world-su
+[WARNING] org.apache.velocity.runtime.exception.ReferenceException: reference : template = archetype-resources/pom.xml [line 63,column 16] : 
+${servicemix-version} is not a valid reference.
+[WARNING] org.apache.velocity.runtime.exception.ReferenceException: reference : template = archetype-resources/pom.xml [line 68,column 16] : 
+${servicemix-version} is not a valid reference.
+[WARNING] org.apache.velocity.runtime.exception.ReferenceException: reference : template = archetype-resources/pom.xml [line 83,column 18] : 
+${servicemix-version} is not a valid reference.
+[WARNING] org.apache.velocity.runtime.exception.ReferenceException: reference : template = archetype-resources/pom.xml [line 94,column 18] : 
+${xbean-version} is not a valid reference.
+[INFO] ********************* End of debug info from resources from generated POM ***********************
+[INFO] Archetype created in dir: /Users/bsnyder/src/hello-world-smx/hello-world-su
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 3 seconds
+[INFO] Finished at: Fri Jan 05 17:24:39 MST 2007
+[INFO] Final Memory: 5M/9M
+[INFO] ------------------------------------------------------------------------
+</PRE>
+</DIV></DIV>
+
+<P>Again, Maven creates a directory using the <TT>artifactId</TT> provided as the directory name. Inside this directory resides the <TT>pom.xml</TT> and the <TT>src</TT> directory. If you see the BUILD SUCCESSFUL message, proceed to the next section. Otherwise see the note below about a BUILD ERROR. </P>
 
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">In case of a BUILD ERROR: Maven plugin version requirement</B><BR>
 <P>The maven-archetype-plugin <B>1.0-alpha4</B> or above is required for this tutorial. When an older version is installed, a build error will occur. The version of this plugin can be checked by verifying the name of the following directories: </P>
 
 <DIV class="code"><DIV class="codeHeader"><B>Unix</B></DIV><DIV class="codeContent">
-<PRE class="code-java">\~/.m2/repository/org/apache/maven/plugins/maven-archetype-plugin</PRE>
+<PRE class="code-java">~/.m2/repository/org/apache/maven/plugins/maven-archetype-plugin</PRE>
 </DIV></DIV>
 
 <DIV class="code"><DIV class="codeHeader"><B>Windows</B></DIV><DIV class="codeContent">
 <PRE class="code-java">C:\Documents and Settings\&lt;USERNAME&gt;</PRE>
 </DIV></DIV> 
 
-<P>In case the only version available of the maven-archetype-plugin is an older one, a minimal <TT>pom.xml</TT> file will need to be created manually in the <TT>hello-world-se</TT> directory. Below is a simple POM to use for this purpose: </P>
+<P>In case the only version available of the maven-archetype-plugin is an older one, a minimal <TT>pom.xml</TT> file will need to be created manually in the <TT>hello-world-su</TT> directory. Below is a simple POM to use for this purpose: </P>
 
 <DIV class="code"><DIV class="codeHeader"><B>Minimal pom.xml</B></DIV><DIV class="codeContent">
 <PRE class="code-java">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;
@@ -269,8 +353,8 @@ $ cd hello-world-smx</PRE>
 </SPAN>    xsi:schemaLocation=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
 </SPAN>    
   &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-  &lt;groupId&gt;org.apache.servicemix.samples&lt;/groupId&gt;
-  &lt;artifactId&gt;hello-world-se&lt;/artifactId&gt;
+  &lt;groupId&gt;org.apache.servicemix.samples.helloworld&lt;/groupId&gt;
+  &lt;artifactId&gt;hello-world-su&lt;/artifactId&gt;
   &lt;packaging&gt;pom&lt;/packaging&gt;
   &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
 
@@ -290,26 +374,43 @@ $ cd hello-world-smx</PRE>
 
 <H3><A name="HelloWorld-SE-CreatingtheJBIServiceEngine"></A>Creating the JBI Service Engine</H3>
 
-<P>Let&apos;s first examine the classes created by the servicemix-service-engine Maven archetype in this simple SE we&apos;re developing. These classes extend class from either the <SPAN class="nobr"><A href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html" title="Visit page outside Confluence" rel="nofollow">JBI spec APIs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or from the <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common" title="Visit page outside Confluence" rel="nofollow"><TT>servicemix-common</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> package. Now let&apos;s look at the classes created by the servicemix-service-engine Maven archetype: </P>
+<P>Before we create any custom functionality, let&apos;s first examine some of the items generated by the servicemix-service-engine Maven archetype in this simple component we&apos;re developing. These classes extend class from either the <SPAN class="nobr"><A href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html" title="Visit page outside Confluence" rel="nofollow">JBI spec APIs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or from the <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common" title="Visit page outside Confluence" rel="nofollow"><TT>servicemix-common</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> package. </P>
 
 <UL>
-	<LI><TT>MyBootstrap.java</TT> - Implements <SPAN class="nobr"><A href="http://java.sun.com/integration/1.0/docs/sdk/api/javax/jbi/component/Bootstrap.html" title="Visit page outside Confluence" rel="nofollow"><TT>javax.jbi.component.Boostrap</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which is called by the JBI container when the component is installed and uninstalled. This is where you place logic to set up and tear down things when the component is started and stopped.</LI>
+	<LI><TT>pom.xml</TT> - This is the <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html" title="Visit page outside Confluence" rel="nofollow">Maven POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>] file. This XML file contains all the metadata related to the project so Maven can carry out its functionality.</LI>
 </UL>
 
 
 <UL>
-	<LI><TT>MyComponent.java</TT> - Extends the <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/DefaultComponent.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>DefaultComponent</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>, a convience class that makes creating JBI components much easier and provides lifecycle management of components deployed to the JBI container. This class should be fleshed out by overriding methods in the <TT>DefaultComponent</TT> to configure and initialize the component.</LI>
+	<LI><TT>MyBootstrap.java</TT> - Implements <SPAN class="nobr"><A href="http://java.sun.com/integration/1.0/docs/sdk/api/javax/jbi/component/Bootstrap.html" title="Visit page outside Confluence" rel="nofollow"><TT>javax.jbi.component.Boostrap</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which is called by the JBI container as part of the component lifecycle (i.e.g, when the component is installed and uninstalled). This is where you place logic to set up and tear down things when the component is started and stopped.</LI>
 </UL>
 
 
 <UL>
-	<LI><TT>MyEndpoint.java</TT> - Extends <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/Endpoint.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>Endpoint</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and implements <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/ExchangeProcessor.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>ExchangeProcessor</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. <TT>Endpoint</TT> provides a referenceable resource for the component and the <TT>ExchangeProcessor</TT> provides the ability for the JBI container to process a message exchange with the component. The <TT>ExchangeProcessor.process()</TT> method is where we will make a call to a method containing the logic to print out the Hello World message.</LI>
+	<LI><TT>MyComponent.java</TT> - Extends the <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/DefaultComponent.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>DefaultComponent</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>, a convenience class that makes creating JBI components much easier and provides some additional lifecycle management of components deployed to the JBI container. This class should be fleshed out by overriding methods in the <TT>DefaultComponent</TT> to configure and initialize the component.</LI>
 </UL>
 
 
-<H4><A name="HelloWorld-SE-AddingtheLogictoPrinttheMessage"></A>Adding the Logic to Print the Message</H4>
+<UL>
+	<LI><TT>MyEndpoint.java</TT> - Extends <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/Endpoint.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>Endpoint</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and implements <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/ExchangeProcessor.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>ExchangeProcessor</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. <TT>Endpoint</TT> provides a referencable resource for the component and the <TT>ExchangeProcessor</TT> provides the ability for the JBI container to process a message exchange with the component. The <TT>ExchangeProcessor.process()</TT> method is where we will add custom functionality to print out the Hello World message.</LI>
+</UL>
 
-<P>When creating a JBI component, how a message exchange is handled depends on whether a component is a consumer or a provider. Because the Hello World SE will not be consuming any other service (i.e., sending a message to another service), it is a provider (i.e., it will only be providing its service via a return message). As mentioned above, the <TT>ExchangeProcessor.process()</TT> method is of interest because it is where the message exchange is handled, so let&apos;s examine this method: </P>
+
+<UL>
+	<LI><TT>MySpringComponentTest.java</TT> - A simple JUnit test class that extends a helper class to make configuring ServiceMix very easy.</LI>
+</UL>
+
+
+<UL>
+	<LI><TT>src/test/resources/spring.xml</TT> - The very simple and generic ServiceMix configuration file.</LI>
+</UL>
+
+
+<P>Now that we&apos;ve gotten a bird&apos;s eye view of what we&apos;re working with, let&apos;s proceed to adding the custom functionality. </P>
+
+<H4><A name="HelloWorld-SE-AddingCustomFunctionality"></A>Adding Custom Functionality </H4>
+
+<P>When creating a JBI component, how a message exchange is handled depends on whether a component is a consumer or a provider. Because the Hello World component will not be consuming any other service (i.e., sending a message to another service), it is a provider (i.e., it will only be providing its service via a return message). As mentioned above, the <TT>ExchangeProcessor.process()</TT> method is of interest because it is where the message exchange is handled, so let&apos;s examine this method: </P>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-keyword">public</SPAN> void process(MessageExchange exchange) <SPAN class="code-keyword">throws</SPAN> Exception {
@@ -374,14 +475,12 @@ $ cd hello-world-smx</PRE>
     }</PRE>
 </DIV></DIV>
 
-<P>The implementation of this method was provided by the servicemix-service-engine Maven archetype and is shown in the code snippet above. Because the archetype can be used to create a consumer or a provider service engine, this method is very generic and contains a conditional block for handling either a consumer or a provider role. But this method will still require us to make the decision of which style of <SPAN class="nobr"><A href="http://servicemix.org/site/5-jbi.html#5.JBI-ServiceinvocationandMEP" title="Visit page outside Confluence" rel="nofollow">Message Exchange Pattern (MEP)<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to handle as well. In the case of the Hello World SE, we know that it is a provider so it will need to send a return message. Therefore it will need to handle an In-Out MEP.  </P>
-
-<P>So instead of having <TT>MyEndpoint</TT> extend the very basic <TT>Endpoint</TT> class, we&apos;re going to extend a different class that is specifically for provider endpoints named <BR>
-<SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/endpoints/ProviderEndpoint.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>ProviderEndpoint</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. </P>
+<P>The implementation of the method above was provided by the servicemix-service-engine Maven archetype. Because the archetype can be used to create either a consumer or a provider service engine, this method is very generic and contains a conditional block for handling either a consumer or a provider role. But this method will still require us to make the decision of which style of <SPAN class="nobr"><A href="http://servicemix.org/site/5-jbi.html#5.JBI-ServiceinvocationandMEP" title="Visit page outside Confluence" rel="nofollow">Message Exchange Pattern (MEP)<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to handle. In the case of the Hello World component, we know that it is a provider so it will need to send a return message. Therefore it will need to handle an <SPAN class="nobr"><A href="http://www.w3.org/TR/2004/WD-wsdl20-extensions-20040803/#in-out" title="Visit page outside Confluence" rel="nofollow">In-Out MEP<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. So instead of having <TT>MyEndpoint</TT> extend the very basic <TT>Endpoint</TT> class and implement its own <TT>process()</TT> method, we&apos;re going to extend a different class that is specifically for provider endpoints named <BR>
+<SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/endpoints/ProviderEndpoint.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>ProviderEndpoint</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.  </P>
 
 <P><IMG src="hello-world-se.data/simple_endpoint_hierarchy.png" align="absmiddle" border="0"></P>
 
-<P>Notice the diagram above showing the class hierarchy of <TT>Endpoint</TT>. The <TT>ProviderEndpoint</TT> supplies some additional conveniences for provider components and will make the job of implementing <TT>MyEndpoint</TT> as a provider much easier. So change the definition of <TT>MyEndpoint</TT> from this: </P>
+<P>Notice the diagram above showing the class hierarchy of <TT>Endpoint</TT>. The <TT>ProviderEndpoint</TT> supplies some additional conveniences for provider components beyond what the <TT>Endpoint</TT> class provides and will make the job of implementing <TT>MyEndpoint</TT> as a provider much easier. So let&apos;s make some changes to the <TT>MyEndpoint</TT> class. First remove the <TT>process()</TT> method shown above. Second, change the definition of the <TT>MyEndpoint</TT> class from this: </P>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class MyEndpoint <SPAN class="code-keyword">extends</SPAN> Endpoint <SPAN class="code-keyword">implements</SPAN> ExchangeProcessor</PRE>
@@ -393,7 +492,7 @@ $ cd hello-world-smx</PRE>
 <PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class MyEndpoint <SPAN class="code-keyword">extends</SPAN> ProviderEndpoint <SPAN class="code-keyword">implements</SPAN> ExchangeProcessor</PRE>
 </DIV></DIV> 
 
-<P>Because the <TT>ProviderEndpoint.process()</TT> method already handles an In-Out MEP, <TT>MyEndpoint</TT> will simply need to override the <TT>ProviderEndpoint.processInOut()</TT> method. Below is the content for implementing this method: </P>
+<P>Third, because the <TT>ProviderEndpoint.process()</TT> method already handles an In-Out MEP, <TT>MyEndpoint</TT> will simply need to override the <TT>ProviderEndpoint.processInOut()</TT> method. Below is the content for implementing this method. Copy/paste this method: </P>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java"><SPAN class="code-keyword">protected</SPAN> void processInOut(MessageExchange exchange, NormalizedMessage in, NormalizedMessage out) <SPAN class="code-keyword">throws</SPAN> Exception {
@@ -403,9 +502,9 @@ $ cd hello-world-smx</PRE>
 }</PRE>
 </DIV></DIV>
 
-<P>This method is the logic for the Hello World SE. We&apos;re not doing anything complex here at all in order to keep this tutorial very simple. Now it&apos;s time to test the component. </P>
+<P>This method is the logic for the Hello World component. We&apos;re not doing anything complex here at all in order to keep this tutorial very simple. Now it&apos;s time to test the component. </P>
 
-<H3><A name="HelloWorld-SE-TestingtheHelloWorldSE"></A>Testing the Hello World SE</H3>
+<H3><A name="HelloWorld-SE-TestingtheHelloWorldComponent"></A>Testing the Hello World Component</H3>
 
 <P>Thanks to the archetype, testing the component is very easy because it already created a test. The only change we&apos;ll make is to the string being sent by the client code. In the <TT>src/test/java</TT> directory is the <TT>org.apache.servicemix.samples.helloworld.se.MySpringComponentTest</TT> test. Simply open this test and change line #36 from this: </P>
 
@@ -419,7 +518,7 @@ $ cd hello-world-smx</PRE>
 <PRE class="code-java">me.getInMessage().setContent(<SPAN class="code-keyword">new</SPAN> StringSource(<SPAN class="code-quote">&quot;&lt;hello&gt;Ski Colorado!&lt;/hello&gt;&quot;</SPAN>));</PRE>
 </DIV></DIV>
 
-<P>To execute the test, simply run the Maven <TT>install</TT> goal from within the <TT>hello-world-se</TT> directory like so: </P>
+<P>To execute the test, simply run the Maven <TT>install</TT> goal from within the <TT>hello-world-su</TT> directory like so: </P>
 
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">$ mvn install</PRE>
@@ -427,67 +526,9 @@ $ cd hello-world-smx</PRE>
 
 <P>Below is the output that will print to the console: </P>
 
-<DIV class="panel"><DIV class="panelContent">
-<P>[INFO] Scanning for projects...<BR>
-[INFO] ----------------------------------------------------------------------------<BR>
-[INFO] Building Hello World Service Engine<BR>
-[INFO]    task-segment: [install]<BR>
-[INFO] ----------------------------------------------------------------------------<BR>
-[INFO] [xbean:mapping {execution: default}]<BR>
-Checking: org.apache.servicemix.samples.helloworld.se.MyComponent<BR>
-Checking: org.apache.servicemix.samples.helloworld.se.MyEndpoint<BR>
-[INFO] Generating META-INF properties file: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/META-INF/services/org/apache/xbean/spring/http/org.apache.servicemix.samples.helloworld/1.0 for namespace: <SPAN class="nobr"><A href="http://org.apache.servicemix.samples.helloworld/1.0" title="Visit page outside Confluence" rel="nofollow">http://org.apache.servicemix.samples.helloworld/1.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-[INFO] Generating Spring 2.0 handler mapping: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/META-INF/spring.handlers for namespace: <SPAN class="nobr"><A href="http://org.apache.servicemix.samples.helloworld/1.0" title="Visit page outside Confluence" rel="nofollow">http://org.apache.servicemix.samples.helloworld/1.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-[INFO] Generating Spring 2.0 schema mapping: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/META-INF/spring.schemas for namespace: <SPAN class="nobr"><A href="http://org.apache.servicemix.samples.helloworld/1.0" title="Visit page outside Confluence" rel="nofollow">http://org.apache.servicemix.samples.helloworld/1.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-[INFO] Generating HTML documentation file: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/hello-world-se.xsd.html for namespace: <SPAN class="nobr"><A href="http://org.apache.servicemix.samples.helloworld/1.0" title="Visit page outside Confluence" rel="nofollow">http://org.apache.servicemix.samples.helloworld/1.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-[INFO] Generating XSD file: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/hello-world-se.xsd for namespace: <SPAN class="nobr"><A href="http://org.apache.servicemix.samples.helloworld/1.0" title="Visit page outside Confluence" rel="nofollow">http://org.apache.servicemix.samples.helloworld/1.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-[INFO] Generating WIKI documentation file: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/hello-world-se.xsd.wiki for namespace: <SPAN class="nobr"><A href="http://org.apache.servicemix.samples.helloworld/1.0" title="Visit page outside Confluence" rel="nofollow">http://org.apache.servicemix.samples.helloworld/1.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-Warning, could not load class: org.apache.servicemix.samples.helloworld.se.MyEndpoint<BR>
-[INFO] ...done.<BR>
-Downloading: <SPAN class="nobr"><A href="http://repo.mergere.com/maven2/xml-security/xmlsec/1.3.0/xmlsec-1.3.0.pom" title="Visit page outside Confluence" rel="nofollow">http://repo.mergere.com/maven2/xml-security/xmlsec/1.3.0/xmlsec-1.3.0.pom<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-[WARNING] Unable to get resource from repository central (<SPAN class="nobr"><A href="http://repo1.maven.org/maven2" title="Visit page outside Confluence" rel="nofollow">http://repo1.maven.org/maven2<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>)<BR>
-Downloading: <SPAN class="nobr"><A href="http://repo.mergere.com/maven2/wss4j/wss4j/1.5.0/wss4j-1.5.0.pom" title="Visit page outside Confluence" rel="nofollow">http://repo.mergere.com/maven2/wss4j/wss4j/1.5.0/wss4j-1.5.0.pom<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
-[WARNING] Unable to get resource from repository central (<SPAN class="nobr"><A href="http://repo1.maven.org/maven2" title="Visit page outside Confluence" rel="nofollow">http://repo1.maven.org/maven2<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>)<BR>
-[INFO] [jbi:generate-jbi-component-descriptor]<BR>
-[INFO] Generating jbi.xml<BR>
-[INFO] [resources:resources]<BR>
-[INFO] Using default encoding to copy filtered resources.<BR>
-[INFO] [compiler:compile]<BR>
-[INFO] Nothing to compile - all classes are up to date<BR>
-[INFO] [resources:testResources]<BR>
-[INFO] Using default encoding to copy filtered resources.<BR>
-[INFO] [compiler:testCompile]<BR>
-[INFO] Nothing to compile - all classes are up to date<BR>
-[INFO] [surefire:test]<BR>
-[INFO] Surefire report directory: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/surefire-reports</P>
-
-<P>-------------------------------------------------------<BR>
- T E S T S<BR>
--------------------------------------------------------<BR>
-Running org.apache.servicemix.samples.helloworld.se.MySpringComponentTest<BR>
-<B>&lt;hello&gt;Hello World! Message [&lt;hello&gt;Ski Colorado!&lt;/hello&gt;] contains [28] bytes.&lt;/hello&gt;</B><BR>
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.009 sec</P>
-
-<P>Results :<BR>
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0</P>
-
-<P>[INFO] [jar:jar]<BR>
-[INFO] Building jar: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/hello-world-se-1.0-SNAPSHOT.jar<BR>
-[INFO] [jbi:jbi-component]<BR>
-[INFO] Generating installer /Users/bsnyder/src/hello-world-smx/hello-world-se/target/hello-world-se-1.0-SNAPSHOT-installer.zip<BR>
-[INFO] Building jar: /Users/bsnyder/src/hello-world-smx/hello-world-se/target/hello-world-se-1.0-SNAPSHOT-installer.zip<BR>
-[INFO] [install:install]<BR>
-[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-se/target/hello-world-se-1.0-SNAPSHOT.jar to /Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-se/1.0-SNAPSHOT/hello-world-se-1.0-SNAPSHOT.jar<BR>
-[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/hello-world-se.xsd to /Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-se/1.0-SNAPSHOT/hello-world-se-1.0-SNAPSHOT.xsd<BR>
-[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-se/target/xbean/hello-world-se.xsd.html to /Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-se/1.0-SNAPSHOT/hello-world-se-1.0-SNAPSHOT-schema.html<BR>
-[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-se/target/hello-world-se-1.0-SNAPSHOT-installer.zip to /Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-se/1.0-SNAPSHOT/hello-world-se-1.0-SNAPSHOT-installer.zip<BR>
-[INFO] ------------------------------------------------------------------------<BR>
-[INFO] BUILD SUCCESSFUL<BR>
-[INFO] ------------------------------------------------------------------------<BR>
-[INFO] Total time: 15 seconds<BR>
-[INFO] Finished at: Thu Jan 04 15:21:00 MST 2007<BR>
-[INFO] Final Memory: 13M/24M<BR>
-[INFO] ------------------------------------------------------------------------</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>
+</PRE>
 </DIV></DIV>
 
 <P>Notice that not only do we see that the build was successful, but also note the bold text of the message that was printed (<B>&lt;hello&gt;Hello World! Message [&lt;hello&gt;Ski Colorado!&lt;/hello&gt;] contains [28] bytes.&lt;/hello&gt;</B>). This is the message we were expecting to be output. If you see this, you just wrote a JBI service engine component and tested it successfully.  </P>
@@ -839,8 +880,8 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 06, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15250">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 07, 2007
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15255">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
