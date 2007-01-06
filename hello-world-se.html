@@ -212,7 +212,7 @@ Hello World - SE
 
 <P>Now let&apos;s move on to creating the Maven projects for the Hello World component. </P>
 
-<H2><A name="HelloWorld-SE-CreatingaMavenProjectFortheJBIServiceEngine"></A>Creating a Maven Project For the JBI Service Engine  </H2>
+<H2><A name="HelloWorld-SE-CreatingaMavenProjectFortheJBIComponent"></A>Creating a Maven Project For the JBI Component </H2>
 
 <P>The focus of this section is on the creation of a JBI component. For this task, a <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-archetypes.html" title="Visit page outside Confluence" rel="nofollow">Maven archetype<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> will be used to create a Maven project skeleton to house the component. Maven archetypes are templates for Maven projects that jumpstart project creation via the automation of repetitive tasks by following standard conventions. The result of using an archetype to create a Maven project is a directory structure, a <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html" title="Visit page outside Confluence" rel="nofollow">Maven POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> file and, depending on the archetype being used, sometimes Java objects and JUnit tests. </P>
 
@@ -372,7 +372,165 @@ ${xbean-version} is not a valid reference.
 &lt;/project&gt;</PRE>
 </DIV></DIV></TD></TR></TABLE>
 
-<H3><A name="HelloWorld-SE-CreatingtheJBIServiceEngine"></A>Creating the JBI Service Engine</H3>
+<H2><A name="HelloWorld-SE-CompilingtheProject"></A>Compiling the Project </H2>
+
+<P>Since we just created this project, we should first compile it just to make sure nothing is wrong with what the archetype generated. To compile, package and test the project, execute the following command from the command-line: </P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">$ cd ./hello-world-su
+$ mvn install</PRE>
+</DIV></DIV>
+
+<P>This command should produce the following output: </P>
+
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>[INFO] Scanning for projects...
+[INFO] ----------------------------------------------------------------------------
+[INFO] Building A custom project
+[INFO]    task-segment: [install]
+[INFO] ----------------------------------------------------------------------------
+[INFO] [xbean:mapping {execution: default}]
+Checking: org.apache.servicemix.samples.helloworld.MyComponent
+Checking: org.apache.servicemix.samples.helloworld.MyEndpoint
+[INFO] Generating META-INF properties file: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/META-INF/services/org/apache/xbean/spring/http/
+org.apache.servicemix.samples.helloworld/1.0 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating Spring 2.0 handler mapping: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/META-INF/spring.handlers 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating Spring 2.0 schema mapping: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/META-INF/spring.schemas 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating HTML documentation file: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd.html 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating XSD file: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating WIKI documentation file: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd.wiki 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+Warning, could not load class: org.apache.servicemix.samples.helloworld.MyEndpoint
+[INFO] ...done.
+Downloading: http://repo.mergere.com/maven2/xml-security/xmlsec/1.3.0/xmlsec-1.3.0.pom
+[WARNING] Unable to get resource from repository central (http://repo1.maven.org/maven2)
+Downloading: http://repo.mergere.com/maven2/wss4j/wss4j/1.5.0/wss4j-1.5.0.pom
+[WARNING] Unable to get resource from repository central (http://repo1.maven.org/maven2)
+[INFO] [jbi:generate-jbi-component-descriptor]
+[INFO] Generating jbi.xml
+[INFO] [resources:resources]
+[INFO] Using default encoding to copy filtered resources.
+[INFO] [compiler:compile]
+Compiling 3 source files to /Users/bsnyder/src/hello-world-smx/hello-world-su/target/classes
+[INFO] [resources:testResources]
+[INFO] Using default encoding to copy filtered resources.
+[INFO] [compiler:testCompile]
+Compiling 1 source file to /Users/bsnyder/src/hello-world-smx/hello-world-su/target/test-classes
+[INFO] [surefire:test]
+[INFO] Surefire report directory: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running org.apache.servicemix.samples.helloworld.MySpringComponentTest
+&lt;hello&gt;world&lt;/hello&gt;
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.366 sec
+
+Results :
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] [jar:jar]
+[INFO] Building jar: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT.jar
+[INFO] [jbi:jbi-component]
+[INFO] Generating installer /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT-installer.zip
+[INFO] Building jar: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT-installer.zip
+[INFO] [install:install]
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT.jar to 
+/Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-su/1.0-SNAPSHOT/hello-world-su-1.0-SNAPSHOT.jar
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd to 
+/Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-su/1.0-SNAPSHOT/hello-world-su-1.0-SNAPSHOT.xsd
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd.html to 
+/Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-su/1.0-SNAPSHOT/hello-world-su-1.0-SNAPSHOT-schema.html
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT-installer.zip to 
+/Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-su/1.0-SNAPSHOT/hello-world-su-1.0-SNAPSHOT-installer.zip
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 16 seconds
+[INFO] Finished at: Fri Jan 05 22:52:45 MST 2007
+[INFO] Final Memory: 12M/33M
+[INFO] ------------------------------------------------------------------------
+[INFO] Scanning for projects...
+[INFO] ----------------------------------------------------------------------------
+[INFO] Building A custom project
+[INFO]    task-segment: [install]
+[INFO] ----------------------------------------------------------------------------
+[INFO] [xbean:mapping {execution: default}]
+Checking: org.apache.servicemix.samples.helloworld.MyComponent
+Checking: org.apache.servicemix.samples.helloworld.MyEndpoint
+[INFO] Generating META-INF properties file: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/META-INF/services/org/apache/xbean/spring/http/
+org.apache.servicemix.samples.helloworld/1.0 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating Spring 2.0 handler mapping: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/META-INF/spring.handlers 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating Spring 2.0 schema mapping: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/META-INF/spring.schemas 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating HTML documentation file: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd.html 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating XSD file: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating WIKI documentation file: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd.wiki 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+Warning, could not load class: org.apache.servicemix.samples.helloworld.MyEndpoint
+[INFO] ...done.
+Downloading: http://repo.mergere.com/maven2/xml-security/xmlsec/1.3.0/xmlsec-1.3.0.pom
+[WARNING] Unable to get resource from repository central (http://repo1.maven.org/maven2)
+Downloading: http://repo.mergere.com/maven2/wss4j/wss4j/1.5.0/wss4j-1.5.0.pom
+[WARNING] Unable to get resource from repository central (http://repo1.maven.org/maven2)
+[INFO] [jbi:generate-jbi-component-descriptor]
+[INFO] Generating jbi.xml
+[INFO] [resources:resources]
+[INFO] Using default encoding to copy filtered resources.
+[INFO] [compiler:compile]
+Compiling 3 source files to /Users/bsnyder/src/hello-world-smx/hello-world-su/target/classes
+[INFO] [resources:testResources]
+[INFO] Using default encoding to copy filtered resources.
+[INFO] [compiler:testCompile]
+Compiling 1 source file to /Users/bsnyder/src/hello-world-smx/hello-world-su/target/test-classes
+[INFO] [surefire:test]
+[INFO] Surefire report directory: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running org.apache.servicemix.samples.helloworld.MySpringComponentTest
+&lt;hello&gt;world&lt;/hello&gt;
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.366 sec
+
+Results :
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] [jar:jar]
+[INFO] Building jar: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT.jar
+[INFO] [jbi:jbi-component]
+[INFO] Generating installer /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT-installer.zip
+[INFO] Building jar: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT-installer.zip
+[INFO] [install:install]
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT.jar to 
+/Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-su/1.0-SNAPSHOT/hello-world-su-1.0-SNAPSHOT.jar
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd to 
+/Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-su/1.0-SNAPSHOT/hello-world-su-1.0-SNAPSHOT.xsd
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd.html to 
+/Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-su/1.0-SNAPSHOT/hello-world-su-1.0-SNAPSHOT-schema.html
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT-installer.zip to 
+/Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-su/1.0-SNAPSHOT/hello-world-su-1.0-SNAPSHOT-installer.zip
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 16 seconds
+[INFO] Finished at: Fri Jan 05 22:52:45 MST 2007
+[INFO] Final Memory: 12M/33M
+[INFO] ------------------------------------------------------------------------
+</PRE>
+</DIV></DIV>
+
+<P>Again, the key here is to make sure you see BUILD SUCCESSFUL. This means that the project skeleton created by the archetype was compiled, packaged and tested successfully. Now we just need to add some custom functionality. </P>
+
+<H2><A name="HelloWorld-SE-CreatingtheJBIServiceEngine"></A>Creating the JBI Service Engine</H2>
 
 <P>Before we create any custom functionality, let&apos;s first examine some of the items generated by the servicemix-service-engine Maven archetype in this simple component we&apos;re developing. These classes extend class from either the <SPAN class="nobr"><A href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html" title="Visit page outside Confluence" rel="nofollow">JBI spec APIs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or from the <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common" title="Visit page outside Confluence" rel="nofollow"><TT>servicemix-common</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> package. </P>
 
@@ -408,7 +566,7 @@ ${xbean-version} is not a valid reference.
 
 <P>Now that we&apos;ve gotten a bird&apos;s eye view of what we&apos;re working with, let&apos;s proceed to adding the custom functionality. </P>
 
-<H4><A name="HelloWorld-SE-AddingCustomFunctionality"></A>Adding Custom Functionality </H4>
+<H3><A name="HelloWorld-SE-AddingCustomFunctionality"></A>Adding Custom Functionality </H3>
 
 <P>When creating a JBI component, how a message exchange is handled depends on whether a component is a consumer or a provider. Because the Hello World component will not be consuming any other service (i.e., sending a message to another service), it is a provider (i.e., it will only be providing its service via a return message). As mentioned above, the <TT>ExchangeProcessor.process()</TT> method is of interest because it is where the message exchange is handled, so let&apos;s examine this method: </P>
 
@@ -504,7 +662,7 @@ ${xbean-version} is not a valid reference.
 
 <P>This method is the logic for the Hello World component. We&apos;re not doing anything complex here at all in order to keep this tutorial very simple. Now it&apos;s time to test the component. </P>
 
-<H3><A name="HelloWorld-SE-TestingtheHelloWorldComponent"></A>Testing the Hello World Component</H3>
+<H2><A name="HelloWorld-SE-TestingtheHelloWorldComponent"></A>Testing the Hello World Component</H2>
 
 <P>Thanks to the archetype, testing the component is very easy because it already created a test. The only change we&apos;ll make is to the string being sent by the client code. In the <TT>src/test/java</TT> directory is the <TT>org.apache.servicemix.samples.helloworld.se.MySpringComponentTest</TT> test. Simply open this test and change line #36 from this: </P>
 
@@ -881,7 +1039,7 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 07, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15255">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15256">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
