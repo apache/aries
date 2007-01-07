@@ -188,7 +188,7 @@ Hello World - SE
 
 
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
-<P>The difference between binding components (BCs) and service engines (SEs) is definitely subtle and is not denoted by the JBI APIs. In fact, the only real true difference between the two is in the <TT>jbi.xml</TT> descriptor in the packaging. What it really boils down to is the fact that BCs are used to do integration with a service outside the bus and SEs are services that deployed to and solely contained within the bus. Hopefully the JBI 2.0 spec will provide more distinction. </P></TD></TR></TABLE>
+<P>The difference between binding components (BCs) and service engines (SEs) is definitely subtle and is not denoted by the JBI APIs. In fact, the only real true difference between the two is in the <TT>jbi.xml</TT> descriptor in the packaging. What it really boils down to is the fact that BCs are used to do integration with a service outside the bus and SEs are services that are deployed to and solely contained within the bus. Hopefully the JBI 2.0 spec will provide more distinction. </P></TD></TR></TABLE>
 
 <UL>
 	<LI><B>Component Packaging</B>
@@ -925,203 +925,192 @@ Downloading: http://repo.mergere.com/maven2/wss4j/wss4j/1.5.0/wss4j-1.5.0.pom
 &lt;project xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0&quot;</SPAN> 
 </SPAN>    xmlns:xsi=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
 </SPAN>    xsi:schemaLocation=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
-</SPAN>  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-  &lt;groupId&gt;org.apache.servicemix.samples&lt;/groupId&gt;
-  &lt;artifactId&gt;hello-world-se&lt;/artifactId&gt;
+</SPAN>
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+  &lt;groupId&gt;org.apache.servicemix.samples.helloworld&lt;/groupId&gt;
+  &lt;artifactId&gt;hello-world-smx&lt;/artifactId&gt;
   &lt;packaging&gt;pom&lt;/packaging&gt;
   &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-  &lt;name&gt;Hello World JBI Sample&lt;/name&gt;
+  &lt;name&gt;Hello World JBI Component&lt;/name&gt;
 
   &lt;modules&gt;
     &lt;module&gt;hello-world-sa&lt;/module&gt;
     &lt;module&gt;hello-world-su&lt;/module&gt;
   &lt;/modules&gt;
 
-  &lt;dependencies&gt;
-    &lt;dependency&gt;
-      &lt;groupId&gt;org.apache.servicemix.samples.helloworld&lt;/groupId&gt;
-      &lt;artifactId&gt;hello-world-su&lt;/artifactId&gt;
-      &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-    &lt;/dependency&gt;
-  &lt;/dependencies&gt;
-
 &lt;/project&gt;</PRE>
 </DIV></DIV>
 
-<P>This POM will allow the example to be easily folded in to the ServiceMix samples. The <TT>&lt;modules&gt;</TT> element denotes the subprojects that were created using the Maven archetypes and the <TT>&lt;dependencies&gt;</TT> element tells Maven to include the SU into the SA when it is constructed.</P>
-
-<H3><A name="HelloWorld-SE-GiveEachoftheMavenSubprojectsaName"></A>Give Each of the Maven Subprojects a Name </H3>
-
-<P>When sitting in the <TT>hello-world-smx</TT> directory, you should now see the following: </P>
-
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>hello-world-sa
-hello-world-se
-hello-world-su
-pom.xml
-</PRE>
-</DIV></DIV>
-
-<P>Now we need to give each component&apos;s <TT>pom.xml</TT> an appropriate name. This name will allow Maven&apos;s output to denote a component&apos;s name in its output making our development work a bit easier. To name each project, simply edit each <TT>pom.xml</TT> and replace <TT>&lt;name&gt;A custom project&lt;/name&gt;</TT> with an appropriate name. Below are the instructions for naming each component&apos;s project: </P>
-
-<UL>
-	<LI>Edit <TT>hello-world-sa/pom.xml</TT> and replace <TT>&lt;name&gt;a custom project&lt;/name&gt;</TT> with <TT>&lt;name&gt;Hello World Service Assembly&lt;/name&gt;</TT></LI>
-	<LI>Edit <TT>hello-world-se/pom.xml</TT> and replace <TT>&lt;name&gt;a custom project&lt;/name&gt;</TT> with <TT>&lt;name&gt;Hello World Service Engine&lt;/name&gt;</TT></LI>
-	<LI>Edit <TT>hello-world-su/pom.xml</TT> and replace <TT>&lt;name&gt;a custom project&lt;/name&gt;</TT> with <TT>&lt;name&gt;Hello World Service Unit&lt;/name&gt;</TT></LI>
-</UL>
-
-
-<H2><A name="HelloWorld-SE-AQuickLookattheDirectoryHierarchy"></A>A Quick Look at the Directory Hierarchy</H2>
-
-<P>After executing the Maven archetypes above, you should now be able to see the following directory hierarchy: </P>
-
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>./hello-world-sa
-./hello-world-sa/pom.xml
-./hello-world-se
-./hello-world-se/pom.xml
-./hello-world-se/src
-./hello-world-se/src/main
-./hello-world-se/src/main/java
-./hello-world-se/src/main/java/org
-./hello-world-se/src/main/java/org/apache
-./hello-world-se/src/main/java/org/apache/servicemix
-./hello-world-se/src/main/java/org/apache/servicemix/samples
-./hello-world-se/src/main/java/org/apache/servicemix/samples/helloworld
-./hello-world-se/src/main/java/org/apache/servicemix/samples/helloworld/MyBootstrap.java
-./hello-world-se/src/main/java/org/apache/servicemix/samples/helloworld/MyComponent.java
-./hello-world-se/src/main/java/org/apache/servicemix/samples/helloworld/MyEndpoint.java
-./hello-world-se/src/test
-./hello-world-se/src/test/java
-./hello-world-se/src/test/java/org
-./hello-world-se/src/test/java/org/apache
-./hello-world-se/src/test/java/org/apache/servicemix
-./hello-world-se/src/test/java/org/apache/servicemix/samples
-./hello-world-se/src/test/java/org/apache/servicemix/samples/helloworld
-./hello-world-se/src/test/java/org/apache/servicemix/samples/helloworld/MySpringComponentTest.java
-./hello-world-se/src/test/resources
-./hello-world-se/src/test/resources/log4j.properties
-./hello-world-se/src/test/resources/spring.xml
-./hello-world-su
-./hello-world-su/pom.xml
-./hello-world-su/src
-./hello-world-su/src/main
-./hello-world-su/src/main/resources
-</PRE>
-</DIV></DIV> 
-
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Unix</B><BR>
-<P>To show the entire directory hierarchy, simply execute <TT>find .</TT> from the command line</P></TD></TR></TABLE>
-
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Windows</B><BR>
-<P>To show the entire directory hierarchy, simply execute <TT>find</TT> from the command line</P></TD></TR></TABLE>
-
-<P>According to the archetype rules, all Java objects generated from the <TT>archetype:create</TT> goal are prefixed with the word <EM>My</EM>. The Java objects can be renamed to whatever you prefer, making sure to also change the names in the corresponding resource files and all tests and {{pom.xml}}s) as well.</P>
-
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
-<P>The content of the <TT>&lt;version&gt;</TT> element is arbitrary and is used to describe <EM>not</EM> the version of ServiceMix but of the version of projects that were just created. We just have to use consistently the same version when we reference this project.</P></TD></TR></TABLE>
-
-<H2><A name="HelloWorld-SE-HowtoBuildandPackagetheComponents"></A>How to Build and Package the Components </H2>
-
-<P>By now, it is already possible to call Maven with the relevant goals.</P>
-
-<H3><A name="HelloWorld-SE-CompilingtheComponents"></A>Compiling the Components </H3>
-
-<P>In order to, among other things, build and package the components, execute the following command from within <TT>hello-world-smx</TT> directory: </P>
+<P>This POM will allow the example to be easily folded in to the ServiceMix samples. The <TT>&lt;modules&gt;</TT> element denotes the other projects that were created using the Maven archetypes. Once the <TT>pom.xml</TT> file from above is saved into the <TT>hello-world-smx</TT> directory, you should now see the following: </P>
 
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">mvn install</PRE>
+<PRE class="code-java">$ ls 
+hello-world-sa hello-world-su pom.xml</PRE>
 </DIV></DIV>
 
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>...
-[INFO] ------------------------------------------------------------------------
-[INFO] Reactor Summary:
-[INFO] ------------------------------------------------------------------------
-[INFO] Hello World Service Assembly .......................... SUCCESS [11.583s]
-[INFO] Hello World Service Unit .............................. SUCCESS [0.656s]
-[INFO] Hello World JBI Sample ................................ SUCCESS [1.517s]
-[INFO] ------------------------------------------------------------------------
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESSFUL
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time: 14 seconds
-[INFO] Finished at: Fri Dec 01 00:35:06 MST 2006
-[INFO] Final Memory: 13M/25M
-[INFO] ------------------------------------------------------------------------
-</PRE>
-</DIV></DIV>
-
-<P>Upon successful execution of the <TT>install</TT> goal, look for the <TT>BUILD SUCCESSFUL</TT> output as shown above. In addition, because each <TT>pom.xml</TT> has been given a name, each project can be easily identified. If instead you see the <TT>BUILD FAILED</TT> output, you&apos;ll need to look at the rest of the output to troubleshoot the issue. In case this success information does not appear, the output will provide some information about what might have gone awry. Assistance with any issue you might experience is available from the ServiceMix community via the <A href="mailing-lists.html" title="Mailing Lists">ServiceMix mailing lists archive</A>. </P>
-
-<H3><A name="HelloWorld-SE-TestingtheComponents"></A>Testing the Components </H3>
-
-<P>Performing automated testing of the components is possible via Maven as well. Because the ServiceMix root POM prevents tests from being executed at the top level, this functionality must be activated so that the coponents can be tested. To do so, the <TT>&lt;build&gt;</TT> element of the <TT>hello-world-se/pom.xml</TT> must be augmented using the following content: </P>
+<P>All projects can now be built using the following command on the command-line: </P>
 
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">&lt;pluginManagement&gt;
-  &lt;plugins&gt;
-    &lt;plugin&gt;
-      &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-      &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
-        &lt;configuration&gt;
-          &lt;skip&gt;<SPAN class="code-keyword">false</SPAN>&lt;/skip&gt;&lt;!-- <SPAN class="code-keyword">this</SPAN> overrides the ServiceMix root POM&apos;s setting <SPAN class="code-keyword">for</SPAN> test execution --&gt;
-        &lt;/configuration&gt;
-      &lt;/plugin&gt;
-   &lt;/plugins&gt;
-&lt;/pluginManagement&gt;</PRE>
+<PRE class="code-java">$ mvn clean install</PRE>
 </DIV></DIV>
 
-<P>By adding the configuation above, the <TT>install</TT> goal will now including test execution in addition to building and packaging the components. To run the tests, execute the <TT>test</TT> goal this time and you should see the following output: </P>
-
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">$ mvn test</PRE>
-</DIV></DIV>
-
+<P>The command above should display the output below: </P>
 
 <DIV class="preformatted"><DIV class="preformattedContent">
 <PRE>[INFO] Scanning for projects...
+[INFO] Reactor build order: 
+[INFO]   A custom project
+[INFO]   A custom project
+[INFO]   Hello World JBI Component
 [INFO] ----------------------------------------------------------------------------
 [INFO] Building A custom project
-[INFO]    task-segment: [test]
+[INFO]    task-segment: [clean, install]
 [INFO] ----------------------------------------------------------------------------
-...
+[INFO] [clean:clean]
+[INFO] Deleting directory /Users/bsnyder/src/hello-world-smx/hello-world-su/target
+[INFO] Deleting directory /Users/bsnyder/src/hello-world-smx/hello-world-su/target/classes
+[INFO] Deleting directory /Users/bsnyder/src/hello-world-smx/hello-world-su/target/test-classes
+[INFO] [xbean:mapping {execution: default}]
+Checking: org.apache.servicemix.samples.helloworld.MyComponent
+Checking: org.apache.servicemix.samples.helloworld.MyEndpoint
+[INFO] Generating META-INF properties file: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/META-INF/services/org/apache/xbean/spring/http/
+org.apache.servicemix.samples.helloworld/1.0 for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating Spring 2.0 handler mapping: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/META-INF/spring.handlers 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating Spring 2.0 schema mapping: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/META-INF/spring.schemas 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating HTML documentation file: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd.html 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating XSD file: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+[INFO] Generating WIKI documentation file: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd.wiki 
+for namespace: http://org.apache.servicemix.samples.helloworld/1.0
+Warning, could not load class: org.apache.servicemix.samples.helloworld.MyEndpoint
+[INFO] ...done.
+Downloading: http://repo.mergere.com/maven2/xml-security/xmlsec/1.3.0/xmlsec-1.3.0.pom
+[WARNING] Unable to get resource from repository central (http://repo1.maven.org/maven2)
+Downloading: http://repo.mergere.com/maven2/wss4j/wss4j/1.5.0/wss4j-1.5.0.pom
+[WARNING] Unable to get resource from repository central (http://repo1.maven.org/maven2)
+[INFO] [jbi:generate-jbi-component-descriptor]
+[INFO] Generating jbi.xml
+[INFO] [resources:resources]
+[INFO] Using default encoding to copy filtered resources.
 [INFO] [compiler:compile]
-...
+Compiling 3 source files to /Users/bsnyder/src/hello-world-smx/hello-world-su/target/classes
+[INFO] [resources:testResources]
+[INFO] Using default encoding to copy filtered resources.
+[INFO] [compiler:testCompile]
+Compiling 1 source file to /Users/bsnyder/src/hello-world-smx/hello-world-su/target/test-classes
 [INFO] [surefire:test]
-[INFO] Setting reports dir: c:\java\tmp\servicemix-helloWorldSE\target/surefire-reports
+[INFO] Surefire report directory: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/surefire-reports
+
 -------------------------------------------------------
  T E S T S
 -------------------------------------------------------
-[surefire] Running org.apache.servicemix.samples.helloWorldSE.MySpringComponentTest
-...
-[surefire] Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 1,422 sec
+Running org.apache.servicemix.samples.helloworld.MySpringComponentTest
+&lt;hello&gt;Hello World! Message [&lt;hello&gt;Ski Colorado!&lt;/hello&gt;] contains [28] bytes&lt;/hello&gt;.
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.47 sec
+
+Results :
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] [jar:jar]
+[INFO] Building jar: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT.jar
+[INFO] [jbi:jbi-component]
+[INFO] Generating installer /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT-installer.zip
+[INFO] Building jar: /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT-installer.zip
+[INFO] [install:install]
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT.jar to 
+/Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-su/1.0-SNAPSHOT/hello-world-su-1.0-SNAPSHOT.jar
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd to 
+/Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-su/1.0-SNAPSHOT/hello-world-su-1.0-SNAPSHOT.xsd
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-su/target/xbean/hello-world-su.xsd.html to 
+/Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-su/1.0-SNAPSHOT/hello-world-su-1.0-SNAPSHOT-schema.html
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-su/target/hello-world-su-1.0-SNAPSHOT-installer.zip to 
+/Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-su/1.0-SNAPSHOT/hello-world-su-1.0-SNAPSHOT-installer.zip
+[INFO] ----------------------------------------------------------------------------
+[INFO] Building A custom project
+[INFO]    task-segment: [clean, install]
+[INFO] ----------------------------------------------------------------------------
+[INFO] [clean:clean]
+[INFO] Deleting directory /Users/bsnyder/src/hello-world-smx/hello-world-sa/target
+[INFO] Deleting directory /Users/bsnyder/src/hello-world-smx/hello-world-sa/target/classes
+[INFO] Deleting directory /Users/bsnyder/src/hello-world-smx/hello-world-sa/target/test-classes
+[WARNING] 
+        Artifact junit:junit:jar:3.8.1:test retains local scope &apos;test&apos; overriding broader scope &apos;compile&apos;
+        given by a dependency. If this is not intended, modify or remove the local scope.
+
+[INFO] [jbi:generate-jbi-service-assembly-descriptor]
+[INFO] Generating jbi.xml
+[INFO] [resources:resources]
+[INFO] Using default encoding to copy filtered resources.
+[INFO] [compiler:compile]
+[INFO] No sources to compile
+[INFO] [resources:testResources]
+[INFO] Using default encoding to copy filtered resources.
+[INFO] [compiler:testCompile]
+[INFO] No sources to compile
+[INFO] [surefire:test]
+[INFO] No tests to run.
+[INFO] [jbi:jbi-service-assembly]
+[INFO] [jar:jar]
+[INFO] Building jar: /Users/bsnyder/src/hello-world-smx/hello-world-sa/target/hello-world-sa-1.0-SNAPSHOT.jar
+[INFO] [install:install]
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/hello-world-sa/target/hello-world-sa-1.0-SNAPSHOT.jar to 
+/Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-sa/1.0-SNAPSHOT/hello-world-sa-1.0-SNAPSHOT.zip
+[INFO] ----------------------------------------------------------------------------
+[INFO] Building Hello World JBI Component
+[INFO]    task-segment: [clean, install]
+[INFO] ----------------------------------------------------------------------------
+[INFO] [clean:clean]
+[INFO] Deleting directory /Users/bsnyder/src/hello-world-smx/target
+[INFO] Deleting directory /Users/bsnyder/src/hello-world-smx/target/classes
+[INFO] Deleting directory /Users/bsnyder/src/hello-world-smx/target/test-classes
+[INFO] [site:attach-descriptor]
+[INFO] [install:install]
+[INFO] Installing /Users/bsnyder/src/hello-world-smx/pom.xml to 
+/Users/bsnyder/.m2/repository/org/apache/servicemix/samples/helloworld/hello-world-smx/1.0-SNAPSHOT/hello-world-smx-1.0-SNAPSHOT.pom
+[INFO] 
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] ------------------------------------------------------------------------
+[INFO] A custom project ...................................... SUCCESS [30.738s]
+[INFO] A custom project ...................................... SUCCESS [3.080s]
+[INFO] Hello World JBI Component ............................. SUCCESS [1.547s]
+[INFO] ------------------------------------------------------------------------
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESSFUL
 [INFO] ------------------------------------------------------------------------
-...
+[INFO] Total time: 36 seconds
+[INFO] Finished at: Sat Jan 06 16:59:57 MST 2007
+[INFO] Final Memory: 15M/28M
+[INFO] ------------------------------------------------------------------------
 </PRE>
-</DIV></DIV>
+</DIV></DIV> 
 
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
-<P>Maybe add further testing at the end of the tutarial (&quot;how to continue when having the working example&quot;)</P></TD></TR></TABLE>
+<P>As long as you see the BUILD SUCCESSFUL message in the output continue to the next section to give each project a unique name. </P>
 
-<H3><A name="HelloWorld-SE-GenerationandDeploymentoftheSA"></A>Generation and Deployment of the SA</H3>
+<H2><A name="HelloWorld-SE-GiveEachoftheMavenSubprojectsaName"></A>Give Each of the Maven Subprojects a Name </H2>
 
-<P>The execution of the <TT>install</TT> goal above packages not only each component individually, it also packages the components together into a single SA. Of course, the code does not yet do anything, but we can already deploy the SA ServiceMix by switching to the <TT>hello-world-se/hello-world-sa</TT> directory and executing the <TT>jbi:projectDeploy</TT> goal like so: </P>
+<P>Notice in the output above that there are a two projects named <EM>A custom project</EM>. This is because the archetypes create projects with this generic name. Let&apos;s give each project a unique name via each component&apos;s <TT>pom.xml</TT> file. This name will allow Maven&apos;s output to denote a component&apos;s name in its output making our development work a bit easier. To name each project, simply edit each <TT>pom.xml</TT> and replace <TT>&lt;name&gt;A custom project&lt;/name&gt;</TT> with an appropriate name. Below are the instructions for naming each component&apos;s project: </P>
 
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">$ mvn jbi:projectDeploy</PRE>
-</DIV></DIV>
+<UL>
+	<LI>Edit <TT>hello-world-sa/pom.xml</TT> and replace <TT>&lt;name&gt;A custom project&lt;/name&gt;</TT> with <TT>&lt;name&gt;Hello World Service Assembly&lt;/name&gt;</TT></LI>
+	<LI>Edit <TT>hello-world-su/pom.xml</TT> and replace <TT>&lt;name&gt;A custom project&lt;/name&gt;</TT> with <TT>&lt;name&gt;Hello World Service Unit&lt;/name&gt;</TT></LI>
+</UL>
 
-<P>This tells the <A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A> to deploy the components to ServiceMix. When the deployment is complete, ServiceMix will output the following: </P>
 
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>INFO  - ServiceAssemblyLifeCycle       - Starting service assembly: hello-world-sa
-</PRE>
-</DIV></DIV>
+<P>Now when the projects are built you will no longer see a project named <EM>A custom project</EM>. Instead you&apos;ll now see <EM>Hello World Service Unit</EM> and <EM>Hello World Service Assembly</EM>. Rebuild the projects again using the <TT>mvn clean install</TT> command on the command-line to see the change. </P>
 
-<P>This output tells us that the SA was successfully deployed to ServiceMix. </P>
+<H3><A name="HelloWorld-SE-DeployingtheComponent"></A>Deploying the Component </H3>
+
+<P>Now that the SA is built, we&apos;re ready to deploy it to the JBI container. </P>
+
+<P><EM>This is a work in progress. I will finish this up very soon.</EM></P>
+
+<HR>
 
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Deploying Component Dependencies</B><BR>
 <P>When working with the <TT>jbi:projectDeploy</TT> you may want to disable dependency deployment. When deploying to a server which has other components sharing these dependencies, they can cause problems during deployment. To stop the Maven JBI plugin from undeploying and redeploying dependencies each time, alter its configuration by disabling the deployment of dependencies using the following: </P>
@@ -1142,19 +1131,6 @@ pom.xml
 <P>The configuration above introduces the <TT>deployDependencies</TT> element to the Maven JBI plugin and sets it to false. </P>
 
 <P>For a few more configurable options on the Maven JBI plugin, see also <SPAN class="nobr"><A href="https://issues.apache.org/activemq/browse/SM-605" title="Visit page outside Confluence" rel="nofollow">Ability to configure jbi:projectDeploy goal to exclude updating dependencies<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P></TD></TR></TABLE>
-
-<H2><A name="HelloWorld-SE-AddingFunctionalitytotheComponent"></A>Adding Functionality to the Component </H2>
-
-<P>We&apos;re now ready to add a bit of functionality to the component. Using an IDE like <SPAN class="nobr"><A href="http://www.jetbrains.com/idea/" title="Visit page outside Confluence" rel="nofollow">IntelliJ IDEA<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or <SPAN class="nobr"><A href="http://eclipse.org/" title="Visit page outside Confluence" rel="nofollow">Eclipse<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> make this task much easier. The steps described here apply to Eclipse. </P>
-
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Generate Eclipse Project Files</B><BR>
-<P>In order to import the SE into Eclipse, tell Maven to generate the necessary project and classpath files, switch to the <TT>hello-world-se</TT> directory and execute the following Maven goal: </P>
-
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">$ mvn eclipse:eclipse</PRE>
-</DIV></DIV>
-
-<P>This will allow the SE to be imported into Eclipse for adding functionality. </P></TD></TR></TABLE>
 
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
 <P>The default implementation of the component accepts InOut MEPs (ADD<BR>
@@ -1223,7 +1199,7 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 08, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15258">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15261">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
