@@ -651,7 +651,7 @@ Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 <PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class MyEndpoint <SPAN class="code-keyword">extends</SPAN> ProviderEndpoint <SPAN class="code-keyword">implements</SPAN> ExchangeProcessor</PRE>
 </DIV></DIV> 
 
-<P>By the way, making this change will require the import of the full class (<TT>org.apache.servicemix.common.endpoints.ProviderEndpoint</TT>). </P>
+<P>By the way, making this change will require the import of the full class (<TT>org.apache.servicemix.common.endpoints.ProviderEndpoint</TT>). This class can be found in the <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/servicemix-common/" title="Visit page outside Confluence" rel="nofollow">servicemix-common<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> project. </P>
 
 <P>Third, because the <TT>ProviderEndpoint.process()</TT> method already handles an In-Out MEP, <TT>MyEndpoint</TT> will simply need to override the <TT>ProviderEndpoint.processInOut()</TT> method. Below is the content for implementing this method. Copy/paste this method: </P>
 
@@ -670,6 +670,8 @@ Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 	<LI><TT>org.apache.servicemix.jbi.jaxp.StringSource</TT></LI>
 </UL>
 
+
+<P>These classes can be found in the <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/servicemix-core/" title="Visit page outside Confluence" rel="nofollow">servicemix-core<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> project.</P>
 
 <P>This method is the logic for the Hello World component. We&apos;re not doing anything complex here at all in order to keep this tutorial very simple. Now it&apos;s time to test the component. </P>
 
@@ -1198,8 +1200,8 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 08, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15261">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 13, 2007
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15270">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
