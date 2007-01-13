@@ -159,7 +159,7 @@ You can build it using the following commands.</P>
 </SPAN>cd jboss-deployer
 mvn install</PRE>
 </DIV></DIV>
-<P>You will then find a jboss-deployer-3.0-incubating-SNAPSHOT.sar in the target directory,  simply take this and drop it in your JBoss deploy directory (tested on JBos 4.0.3 and 4.0.5), and away you go&#33;&#33;&#33; Want to see it in action?  You should be able to drop the JBI RI Transformation Engine example straight into the deploy directory and watch it pick up.  Suddenly you have JBI enabled your JBoss Server&#33;</P>
+<P>You will then find a servicemix-jboss-deployer-3.1-SNAPSHOT.sar in the target directory,  simply take this and drop it in your JBoss deploy directory (tested on JBoss 4.0.3 and 4.0.5), and away you go&#33;&#33;&#33; Want to see it in action?  You should be able to drop the JBI RI Transformation Engine example straight into the deploy directory and watch it pick up.  Suddenly you have JBI enabled your JBoss Server&#33;</P>
 
 <H3><A name="JBossDeployer-DeployingstandardJBIartifacts"></A>Deploying standard JBI artifacts</H3>
 
@@ -173,7 +173,7 @@ To work around that, you can change your servicemix.xml file and deploy it as a 
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Useful Information</B><BR>
 <P>Note that if you are planning on using the components that ship with ServiceMix there libraries are not included in the ServiceMix JBoss deployer,  therefore you will need to copy your $SERVICEMIX_HOME/lib and $SERVICEMIX_HOME/lib/optional directories to your application server&apos;s library path (ie. $JBOSS_HOME/server/default/lib).</P></TD></TR></TABLE>
 <P>&nbsp;<BR>
-Since it is this approach that most people start with we added the ability to deploy this Spring JBI configurations onto JBoss.&nbsp;  In order to do this, deploy the jboss-deployer-2.0.sar deployer that you see below . Next, take a servicemix.xml configuration file and rename it so that it ends in &#45;sm.xml (ie. filebind-sm.xml).&nbsp; Place the configuration file in the JBoss deploy directory.&nbsp;&nbsp;  Before you do that, you will need to make some basic modifications to the configuration file to get it running, namely you will need to make sure that the <EM>createMBeanServer</EM> property is <EM>false</EM>.&nbsp; Below is the file binding example configured to run under JBoss.</P>
+Since it is this approach that most people start with we added the ability to deploy this Spring JBI configurations onto JBoss.&nbsp;  In order to do this, deploy the servicemix-jboss-deployer-3.1-SNAPSHOT.sar deployer that you see below . Next, take a servicemix.xml configuration file and rename it so that it ends in &#45;sm.xml (ie. filebind-sm.xml).&nbsp; Place the configuration file in the JBoss deploy directory.&nbsp;&nbsp;  Before you do that, you will need to make some basic modifications to the configuration file to get it running, namely you will need to make sure that the <EM>createMBeanServer</EM> property is <EM>false</EM>.&nbsp; Below is the file binding example configured to run under JBoss.</P>
 
 <P><B>Example filebinding-sm.xml for ServiceMix 3.0</B></P>
 <DIV class="code"><DIV class="codeContent">
@@ -255,34 +255,8 @@ Since it is this approach that most people start with we added the ability to de
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=pdodds%2540unity-systems.com">pdodds@unity-systems.com</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=keogaa">Gr&eacute;goire A.</A> on Jan 16, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1932&originalId=15288">view change</A>)
-                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
-        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
-          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
-      <B>Comment:</B>
-      add jboss version tested<BR>
-      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=1932">View page history</A></SPAN>
-  </DIV>
-
-    <SCRIPT>
-      var show = document.getElementById('show');
-      var hide = document.getElementById('hide');
-      var versionComment = document.getElementById('versionComment');
-
-      function showComment(){
-        show.style.display = 'none';
-        hide.style.display = 'inline';
-        versionComment.style.display = 'block';
-      }
-
-      function hideComment(){
-        show.style.display = 'inline';
-        hide.style.display = 'none';
-        versionComment.style.display = 'none';
-      }
-
-    </SCRIPT>
-    
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1932&originalId=15290">view change</A>)
+              
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1932">edit page</A>)
     </DIV>
 
