@@ -482,6 +482,8 @@ Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 <H3><A name="HelloWorld-SE-AddingCustomFunctionality"></A>Adding Custom Functionality </H3>
 
+<P>Before we proceed to creating some custom functionality for the SE, you need to understand the role a JBI SE is meant to fulfill. A SE is an engine that provides a service that is local to the JBI normalized message router (NMR). It does not communicate directly with anything external to the NMR. If communication needs to occur with a service that is external to the NMR, this should take place using a JBI binding component (see the <SPAN class="nobr"><A href="http://goopen.org/confluence/pages/createpage.action?spaceKey=SM&title=Hello%20World%20BC&linkCreation=true&fromPageId=13823" title="Create Page: Hello World BC" class="createlink">Hello World BC<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/plus.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for a tutorial on creating a JBI binding component). The SE is deployed to the JBI container and provides a service directly to the NMR by communicating with the NMR using <SPAN class="nobr"><A href="http://servicemix.org/site/5-jbi.html#5.JBI-Normalizedmessage" title="Visit page outside Confluence" rel="nofollow">Normalized Messages<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. More on this later in the tutorial. For now, let&apos;s proceed with the custom functionality. </P>
+
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Using an IDE</B><BR>
 <P>It is at this stage that you should employ the use of an IDE. An IDE can dramatically reduce the work necessary to import clases, override methods and so much more. Because Maven can generate project files for Eclipse and IntelliJ IDEA, either one can be used. Throughout this tutorial, Eclipse will be used. To generate project files for Eclipse, execute the Maven <TT>eclipse:eclipse</TT> goal and then import the project into your Eclipse IDE. </P></TD></TR></TABLE>
 
@@ -1113,8 +1115,8 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=georg_dembowski">Georg Dembowski</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 15, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15305">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 16, 2007
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13823&originalId=15322">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13823">edit page</A>)
     </DIV>
