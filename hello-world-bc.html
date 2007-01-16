@@ -15,7 +15,7 @@ _uacct = "UA-398545-1";
 urchinTracker();
     </SCRIPT>
     <TITLE>
-Copy of Hello World - BC
+Hello World - BC
     </TITLE>
   <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
   <BODY onload="init()">
@@ -42,7 +42,7 @@ Copy of Hello World - BC
         <TR>
           <TD align="left" valign="middle" nowrap="">
             <DIV id="site-breadcrumbs">
-<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="sandbox.html" title="Sandbox">Sandbox</A>&nbsp;&gt;&nbsp;<A href="" title="Copy of Hello World - BC">Copy of Hello World - BC</A>
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="sandbox.html" title="Sandbox">Sandbox</A>&nbsp;&gt;&nbsp;<A href="" title="Hello World - BC">Hello World - BC</A>
             </DIV>
           </TD>
           <TD align="right" valign="middle" nowrap="">
@@ -138,9 +138,9 @@ Copy of Hello World - BC
           <DIV id="site-page">
 
 <!--          
-            <div class="pagetitle">Copy of Hello World -  BC</div>
+            <div class="pagetitle">Hello World -  BC</div>
 -->
-            <DIV class="wiki-content"><H1><A name="CopyofHelloWorld-BC-CreatingaHelloWorldJBIBindingComponent"></A>Creating a Hello World JBI Binding Component</H1>
+            <DIV class="wiki-content"><H1><A name="HelloWorld-BC-CreatingaHelloWorldJBIBindingComponent"></A>Creating a Hello World JBI Binding Component</H1>
 
 <P>This tutorial describes how to create a very simple Hello World style of JBI binding component. This tutorial is as minimalistic as possible so as to focus on key concepts and not drown in details. The Hello World binding component will respond to all requests with the message: </P>
 
@@ -150,7 +150,7 @@ Copy of Hello World - BC
 
 <P>The following sections will walk through the creation, packaging, testing and deployment of the Hello World binding component. </P>
 
-<H2><A name="CopyofHelloWorld-BC-Prerequisites"></A>Prerequisites</H2>
+<H2><A name="HelloWorld-BC-Prerequisites"></A>Prerequisites</H2>
 
 <UL>
 	<LI>Maven 2.0.4 or higher
@@ -167,7 +167,7 @@ Copy of Hello World - BC
 </UL>
 
 
-<H2><A name="CopyofHelloWorld-BC-AVeryBriefIntroductiontoJavaBusinessIntegration"></A>A Very Brief Introduction to Java Business Integration </H2>
+<H2><A name="HelloWorld-BC-AVeryBriefIntroductiontoJavaBusinessIntegration"></A>A Very Brief Introduction to Java Business Integration </H2>
 
 <P>The <SPAN class="nobr"><A href="http://jcp.org/en/jsr/detail?id=208" title="Visit page outside Confluence" rel="nofollow">Java Business Integration (JBI) spec<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> provides a standards-based, service-oriented approach to application integration through the use of an abstract messaging model, without reference to a particular protocol or wire encoding. JBI introduces the concepts of Binding Components (BCs), Service Engines (SEs) to  Service Units (SUs) and Service Assemblies (SAs) to define an architecture for vendor-neutral pluggable components. The purpose of this architecture is to provide standards-based interoperability amongst components/services. </P>
 
@@ -212,7 +212,7 @@ Copy of Hello World - BC
 
 <P>Now let&apos;s move on to creating the Maven projects for the Hello World binding component. </P>
 
-<H2><A name="CopyofHelloWorld-BC-CreatingaMavenProjectFortheJBIBC"></A>Creating a Maven Project For the JBI BC </H2>
+<H2><A name="HelloWorld-BC-CreatingaMavenProjectFortheJBIBC"></A>Creating a Maven Project For the JBI BC </H2>
 
 <P>The focus of this section is on the creation of a JBI binding component. For this task, a <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-archetypes.html" title="Visit page outside Confluence" rel="nofollow">Maven archetype<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> will be used to create a Maven project skeleton to house the component. Maven archetypes are templates for Maven projects that jumpstart project creation via the automation of repetitive tasks by following standard conventions. The result of using an archetype to create a Maven project is a directory structure, a <SPAN class="nobr"><A href="http://maven.apache.org/guides/introduction/introduction-to-the-pom.html" title="Visit page outside Confluence" rel="nofollow">Maven POM<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> file and, depending on the archetype being used, sometimes Java objects and JUnit tests. </P>
 
@@ -359,7 +359,7 @@ ${xbean-version} is not a valid reference.
 &lt;/project&gt;</PRE>
 </DIV></DIV></TD></TR></TABLE>
 
-<H2><A name="CopyofHelloWorld-BC-CompilingtheProject"></A>Compiling the Project </H2>
+<H2><A name="HelloWorld-BC-CompilingtheProject"></A>Compiling the Project </H2>
 
 <P>Since we just created this project, we should first compile it just to make sure nothing is wrong with what the archetype generated. To compile, package and test the project, execute the following command from the command-line: </P>
 
@@ -453,7 +453,7 @@ Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 <P>Again, the key here is to make sure you see BUILD SUCCESSFUL. This means that the project skeleton created by the archetype was compiled, packaged and tested successfully. Now we just need to add some custom functionality. </P>
 
-<H2><A name="CopyofHelloWorld-BC-CreatingtheJBIComponent"></A>Creating the JBI Component </H2>
+<H2><A name="HelloWorld-BC-CreatingtheJBIComponent"></A>Creating the JBI Component </H2>
 
 <P>Before we create any custom functionality, let&apos;s first examine some of the items generated by the servicemix-service-engine Maven archetype in this simple component we&apos;re developing. These classes extend class from either the <SPAN class="nobr"><A href="http://java.sun.com/integration/1.0/docs/sdk/api/index.html" title="Visit page outside Confluence" rel="nofollow">JBI spec APIs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or from the <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common" title="Visit page outside Confluence" rel="nofollow"><TT>servicemix-common</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> package. </P>
 
@@ -499,14 +499,14 @@ Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 <P>Now that we&apos;ve gotten a bird&apos;s eye view of what we&apos;re working with, let&apos;s proceed to adding the custom functionality. </P>
 
-<H3><A name="CopyofHelloWorld-BC-AddingCustomFunctionality"></A>Adding Custom Functionality </H3>
+<H3><A name="HelloWorld-BC-AddingCustomFunctionality"></A>Adding Custom Functionality </H3>
 
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Using an IDE</B><BR>
 <P>It is at this stage that you should employ the use of an IDE. An IDE can dramatically reduce the work necessary to import clases, override methods and so much more. Because Maven can generate project files for Eclipse and IntelliJ IDEA, either one can be used. Throughout this tutorial, Eclipse will be used. To generate project files for Eclipse, execute the Maven <TT>eclipse:eclipse</TT> goal and then import the project into your Eclipse IDE. </P></TD></TR></TABLE>
 
 <P><EM>This is a work in progress. I will finish this up very soon.</EM></P>
 
-<H2><A name="CopyofHelloWorld-BC-TestingtheHelloWorldBindingComponent"></A>Testing the Hello World Binding Component</H2>
+<H2><A name="HelloWorld-BC-TestingtheHelloWorldBindingComponent"></A>Testing the Hello World Binding Component</H2>
 
 <P>Thanks to the archetype, testing the component is very easy because it already created a test. The only change we&apos;ll make is to the string being sent by the client code. In the <TT>src/test/java</TT> directory is the <TT>org.apache.servicemix.samples.helloworld.bc.MySpringComponentTest</TT> test. Simply open this test and change line #36 from this: </P>
 
@@ -535,7 +535,7 @@ Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 <P>Notice that not only do we see that the build was successful, but also note the text in the output above that was printed by the test (<B>&lt;hello&gt;Hello World! Message [&lt;hello&gt;Ski Colorado!&lt;/hello&gt;] contains [28] bytes.&lt;/hello&gt;</B>). This is the message we were expecting to be output from the test. So if you see this, you just wrote a JBI component and tested it successfully. Now this SU needs to be wrapped in a SA so it can be deployed to the JBI container. </P>
 
-<H2><A name="CopyofHelloWorld-BC-WrappingtheServiceUnitinaServiceAssembly"></A>Wrapping the Service Unit in a Service Assembly </H2>
+<H2><A name="HelloWorld-BC-WrappingtheServiceUnitinaServiceAssembly"></A>Wrapping the Service Unit in a Service Assembly </H2>
 
 <P>The component we created above and packaged as a SU cannot be directly deployed to a JBI container until it&apos;s wrapped in a SA. This can be done by creating a SA with a dependency on the SA. From within the <TT>hello-world-smx</TT> directory, execute the following commands to create the project for the SA: </P>
 
@@ -647,7 +647,7 @@ $ mvn install</PRE>
 </PRE>
 </DIV></DIV>
 
-<H2><A name="CopyofHelloWorld-BC-IncorporatingtheProjectsIntoaTopLevelPOM"></A>Incorporating the Projects Into a Top Level POM</H2>
+<H2><A name="HelloWorld-BC-IncorporatingtheProjectsIntoaTopLevelPOM"></A>Incorporating the Projects Into a Top Level POM</H2>
 
 <P>Now that we have created the SU and SA projects, a top level <TT>pom.xml</TT> must be manually created and made aware of each subproject. This will allow all the projects to be built automatically without having to build each project in order manually. Maven will discover all the projects and build them in the proper order. In the <TT>hello-world-bc-su</TT> directory, create a file named <TT>pom.xml</TT> containing the following content:</P>
 
@@ -695,7 +695,7 @@ hello-world-sa hello-world-bc-su pom.xml</PRE>
 
 <P>As long as you see the BUILD SUCCESSFUL message in the output continue to the next section to give each project a unique name. </P>
 
-<H2><A name="CopyofHelloWorld-BC-GiveEachoftheMavenSubprojectsaName"></A>Give Each of the Maven Subprojects a Name </H2>
+<H2><A name="HelloWorld-BC-GiveEachoftheMavenSubprojectsaName"></A>Give Each of the Maven Subprojects a Name </H2>
 
 <P>Notice in the output above that there are a two projects named <EM>A custom project</EM>. This is because the archetypes create projects with this generic name. Let&apos;s give each project a unique name via each component&apos;s <TT>pom.xml</TT> file. This name will allow Maven&apos;s output to denote a component&apos;s name in its output making our development work a bit easier. To name each project, simply edit each <TT>pom.xml</TT> and replace <TT>&lt;name&gt;A custom project&lt;/name&gt;</TT> with an appropriate name. Below are the instructions for naming each component&apos;s project: </P>
 
@@ -707,7 +707,7 @@ hello-world-sa hello-world-bc-su pom.xml</PRE>
 
 <P>Now when the projects are built you will no longer see a project named <EM>A custom project</EM>. Instead you&apos;ll now see <EM>Hello World SE Service Unit</EM> and <EM>Hello World Service Assembly</EM>. Rebuild the projects again using the <TT>mvn clean install</TT> command on the command-line to see the change. </P>
 
-<H3><A name="CopyofHelloWorld-BC-DeployingtheComponent"></A>Deploying the Component </H3>
+<H3><A name="HelloWorld-BC-DeployingtheComponent"></A>Deploying the Component </H3>
 
 <P>Now that the SA is built, we&apos;re ready to deploy it to the JBI container. </P>
 
@@ -784,7 +784,7 @@ and<BR>
 <A href="creating-a-protocol-bridge.html" title="Creating a protocol bridge">Creating a protocol bridge</A>.for a &quot;bigger&quot; example<BR>
 The <A href="examples.html" title="Examples">examples</A> page lists examples providing more information, showing further possibilities and components.</P></TD></TR></TABLE>
 
-<H2><A name="CopyofHelloWorld-BC-AdditionalResources"></A>Additional Resources </H2>
+<H2><A name="HelloWorld-BC-AdditionalResources"></A>Additional Resources </H2>
 
 <UL>
 	<LI><A href="creating-a-standard-jbi-component.html" title="Creating a Standard JBI Component">Creating a Standard JBI Component</A></LI>
@@ -802,7 +802,7 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 16, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=15306&originalId=15308">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=15306&originalId=15309">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=15306">edit page</A>)
     </DIV>
