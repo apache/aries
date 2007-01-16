@@ -510,68 +510,128 @@ Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Using an IDE</B><BR>
 <P>It is at this stage that you should employ the use of an IDE. An IDE can dramatically reduce the work necessary to import clases, override methods and so much more. Because Maven can generate project files for Eclipse and IntelliJ IDEA, either one can be used. Throughout this tutorial, Eclipse will be used. To generate project files for Eclipse, execute the Maven <TT>eclipse:eclipse</TT> goal and then import the project into your Eclipse IDE. </P></TD></TR></TABLE>
 
+<P>The creation of a binding component is dependent upon the role that it will play. BCs are consumers, providers or both. Below are definitions of the two roles as they pertain to BCs: </P>
+
+<UL>
+	<LI><B>Consumer</B> - A consumer BC receives requests from an external service and publishes those requests to the NMR.</LI>
+	<LI><B>Provider</B> - A provider BC receives requests from the NMR and publishes those requests to an external service.</LI>
+</UL>
 
 
-<P><EM>This is a work in progress. I will finish this up very soon.</EM></P>
+<P>This is why both the <TT>MyConsumerEndpoint.java</TT> and the <TT>MyProviderEndpoint.java</TT> exist when using the servicemix-binding-component archetype to create a Maven project for a SU. This way the BC that you&apos;re creating can play both the consumer role and the provider role. For the sake of this tutorial, we will create implement both roles. </P>
 
-<H2><A name="HelloWorld-BC-TestingtheHelloWorldBindingComponent"></A>Testing the Hello World Binding Component</H2>
-
-<P>Thanks to the archetype, testing the component is very easy because it already created a test. The only change we&apos;ll make is to the string being sent by the client code. In the <TT>src/test/java</TT> directory is the <TT>org.apache.servicemix.samples.helloworld.bc.MySpringComponentTest</TT> test. Simply open this test and change line #36 from this: </P>
-
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">me.getInMessage().setContent(<SPAN class="code-keyword">new</SPAN> StringSource(<SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>));</PRE>
-</DIV></DIV>
-
-<P>to something more meaningful, like this: </P>
+<P>First let&apos;s implement the consumer functionality. To do so, open <TT>MyConsumerEndpoint.java</TT> and let&apos;s take a look at he <TT>process()</TT> method as shown below: </P>
 
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">me.getInMessage().setContent(<SPAN class="code-keyword">new</SPAN> StringSource(<SPAN class="code-quote">&quot;&lt;hello&gt;Ski Colorado!&lt;/hello&gt;&quot;</SPAN>));</PRE>
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> void process(MessageExchange exchange) <SPAN class="code-keyword">throws</SPAN> Exception {
+    <SPAN class="code-comment">// TODO: As we act as a consumer (we just send JBI exchanges)
+</SPAN>    <SPAN class="code-comment">// we will receive responses or DONE / ERROR status here
+</SPAN>}</PRE>
 </DIV></DIV>
 
-<P>To execute the test, simply run the Maven <TT>install</TT> goal from within the <TT>hello-world-bc-su</TT> directory like so: </P>
+<P>One important item of note before we get started is that this tutorial will not be accessing any services external to the JBI container. The reason for this is that setting up a service external to the JBI container would dramatically increase the complexity of this tutorial. Instead, we will just simulate such functionality by hard-coding some text to be returned. </P>
 
+<P>This method is just a stub that needs to be filled in with our custom functionality. Take note of the comment in that method stub stating that this method will send JBI message exchanges and will receive responses or status messages in this method. Based on these comments, we know that we have a few tasks to handle in the implementation of this method. So let&apos;s get started. </P>
+
+<P>Below is the method body that can be copied and pasted into the method stub. Following the display of this method, we will pick apart this method a bit to explain the various pieces of logic: </P>
+
+<P>{code:title=The <TT>MyConsumerEndpoint.process()</TT> Method}<BR>
+public void process(MessageExchange exchange) throws Exception {<BR>
+    // TODO: As we act as a consumer (we just send JBI exchanges)<BR>
+    // we will receive responses or DONE / ERROR status here</P>
+
+<P>	// The component acts as a consumer, this means this exchange is received because<BR>
+    // we sent it to another component.  As it is active, this is either an out or a fault<BR>
+    // If this component does not create / send exchanges, you may just throw an UnsupportedOperationException<BR>
+    if (exchange.getRole() == MessageExchange.Role.CONSUMER) {<BR>
+        // Exchange is finished<BR>
+        if (exchange.getStatus() == ExchangeStatus.DONE) <DIV class="error"><SPAN class="error">Unknown macro: {
+            return;
+        // Exchange has been aborted with an exception
+        }</SPAN> </DIV> else if (exchange.getStatus() == ExchangeStatus.ERROR) <DIV class="error"><SPAN class="error">Unknown macro: {
+            return;
+        // Exchange is active
+        }</SPAN> </DIV> else {<BR>
+            // Out message<BR>
+            if (exchange.getMessage(&quot;out&quot;) != null) <DIV class="error"><SPAN class="error">Unknown macro: {
+                // TODO ... handle the response
+                exchange.setStatus(ExchangeStatus.DONE);
+                getChannel().send(exchange);
+            // Fault message
+            }</SPAN> </DIV> else if (exchange.getFault() != null) <DIV class="error"><SPAN class="error">Unknown macro: {
+                // TODO ... handle the fault
+                exchange.setStatus(ExchangeStatus.DONE);
+                getChannel().send(exchange);
+            // This is not compliant with the default MEPs
+            }</SPAN> </DIV> else <DIV class="error"><SPAN class="error">Unknown macro: {
+                throw new IllegalStateException(&quot;Consumer exchange is ACTIVE, but no out or fault is provided&quot;);
+            }</SPAN> </DIV><BR>
+        }<BR>
+    // Unknown role<BR>
+    } else <DIV class="error"><SPAN class="error">Unknown macro: {
+        throw new IllegalStateException(&quot;Unkown role}</SPAN> </DIV><BR>
+}</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">$ mvn install</PRE>
+<PRE class="code-java">{note:title=Important Information!}
+This tutorial will not be accessing any services external to the JBI container. Instead, we will just simulate such functionality by hard-coding some text to be returned. 
+{note}
+
+imports
+
+* {{javax.jbi.messaging.ExchangeStatus}} 
+* 
+
+_This is a work in progress. I will finish <SPAN class="code-keyword">this</SPAN> up very soon._
+
+h2. Testing the Hello World Binding Component
+
+Thanks to the archetype, testing the component is very easy because it already created a test. The only change we&apos;ll make is to the string being sent by the client code. In the {{src/test/java}} directory is the {{org.apache.servicemix.samples.helloworld.bc.MySpringComponentTest}} test. Simply open <SPAN class="code-keyword">this</SPAN> test and change line #36 from <SPAN class="code-keyword">this</SPAN>:</PRE>
 </DIV></DIV>
-
-<P>Below is the output that will print to the console: </P>
-
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>
-</PRE>
-</DIV></DIV>
-
-<P>Notice that not only do we see that the build was successful, but also note the text in the output above that was printed by the test (<B>&lt;hello&gt;Hello World! Message [&lt;hello&gt;Ski Colorado!&lt;/hello&gt;] contains [28] bytes.&lt;/hello&gt;</B>). This is the message we were expecting to be output from the test. So if you see this, you just wrote a JBI component and tested it successfully. Now this SU needs to be wrapped in a SA so it can be deployed to the JBI container. </P>
-
-<H2><A name="HelloWorld-BC-WrappingtheServiceUnitinaServiceAssembly"></A>Wrapping the Service Unit in a Service Assembly </H2>
-
-<P>The component we created above and packaged as a SU cannot be directly deployed to a JBI container until it&apos;s wrapped in a SA. This can be done by creating a SA with a dependency on the SA. From within the <TT>hello-world-smx</TT> directory, execute the following commands to create the project for the SA: </P>
-
+<P>me.getInMessage().setContent(new StringSource(&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;));</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">$ pwd
-/Users/bsnyder/src/hello-world-smx/hello-world-bc-su
-$ cd .. 
-$ mvn archetype:create \
-    -DarchetypeGroupId=org.apache.servicemix.tooling \
-    -DarchetypeArtifactId=servicemix-service-assembly \
-    -DarchetypeVersion=3.1-incubating-SNAPSHOT \
-    -DgroupId=org.apache.servicemix.samples.helloworld \
-    -DartifactId=hello-world-sa</PRE>
+<PRE class="code-java">to something more meaningful, like <SPAN class="code-keyword">this</SPAN>:</PRE>
 </DIV></DIV>
+<P>me.getInMessage().setContent(new StringSource(&quot;&lt;hello&gt;Ski Colorado!&lt;/hello&gt;&quot;));</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">To execute the test, simply run the Maven {{install}} goal from within the {{hello-world-bc-su}} directory like so:</PRE>
+</DIV></DIV>
+<P>$ mvn install </P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Below is the output that will print to the console: 
 
-<P>Upon successful execution of the <TT>archetype:create</TT> goal, look for the BUILD SUCCESSFUL output as displayed below: </P>
+{noformat}
 
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>[INFO] Scanning for projects...
-[INFO] Searching repository for plugin with prefix: &apos;archetype&apos;.
+{noformat}
+
+Notice that not only <SPAN class="code-keyword">do</SPAN> we see that the build was successful, but also note the text in the output above that was printed by the test (*&lt;hello&gt;Hello World! Message \[&lt;hello&gt;Ski Colorado!&lt;/hello&gt;\] contains \[28\] bytes.&lt;/hello&gt;*). This is the message we were expecting to be output from the test. So <SPAN class="code-keyword">if</SPAN> you see <SPAN class="code-keyword">this</SPAN>, you just wrote a JBI component and tested it successfully. Now <SPAN class="code-keyword">this</SPAN> SU needs to be wrapped in a SA so it can be deployed to the JBI container. 
+
+h2. Wrapping the Service Unit in a Service Assembly 
+
+The component we created above and packaged as a SU cannot be directly deployed to a JBI container until it&apos;s wrapped in a SA. This can be done by creating a SA with a dependency on the SA. From within the {{hello-world-smx}} directory, execute the following commands to create the project <SPAN class="code-keyword">for</SPAN> the SA:</PRE>
+</DIV></DIV>
+<P>$ pwd<BR>
+/Users/bsnyder/src/hello-world-smx/hello-world-bc-su<BR>
+$ cd .. <BR>
+$ mvn archetype:create \<BR>
+    -DarchetypeGroupId=org.apache.servicemix.tooling \<BR>
+    -DarchetypeArtifactId=servicemix-service-assembly \<BR>
+    -DarchetypeVersion=3.1-incubating-SNAPSHOT \<BR>
+    -DgroupId=org.apache.servicemix.samples.helloworld \<BR>
+    -DartifactId=hello-world-sa</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Upon successful execution of the {{archetype:create}} goal, look <SPAN class="code-keyword">for</SPAN> the BUILD SUCCESSFUL output as displayed below: 
+
+{noformat}
+[INFO] Scanning <SPAN class="code-keyword">for</SPAN> projects...
+[INFO] Searching repository <SPAN class="code-keyword">for</SPAN> plugin with prefix: &apos;archetype&apos;.
 [INFO] ----------------------------------------------------------------------------
 [INFO] Building Maven Default Project
 [INFO]    task-segment: [archetype:create] (aggregator-style)
 [INFO] ----------------------------------------------------------------------------
 [INFO] Setting property: classpath.resource.loader.class =&gt; &apos;org.codehaus.plexus.velocity.ContextClassLoaderResourceLoader&apos;.
-[INFO] Setting property: velocimacro.messages.on =&gt; &apos;false&apos;.
+[INFO] Setting property: velocimacro.messages.on =&gt; &apos;<SPAN class="code-keyword">false</SPAN>&apos;.
 [INFO] Setting property: resource.loader =&gt; &apos;classpath&apos;.
-[INFO] Setting property: resource.manager.logwhenfound =&gt; &apos;false&apos;.
+[INFO] Setting property: resource.manager.logwhenfound =&gt; &apos;<SPAN class="code-keyword">false</SPAN>&apos;.
 [INFO] ************************************************************** 
 [INFO] Starting Jakarta Velocity v1.4
 [INFO] RuntimeInstance initializing.
@@ -582,11 +642,11 @@ $ mvn archetype:create \
 [INFO] ClasspathResourceLoader : initialization complete.
 [INFO] ResourceCache : initialized. (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
 [INFO] Default ResourceManager initialization complete.
-[INFO] Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-[INFO] Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-[INFO] Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-[INFO] Loaded System Directive: org.apache.velocity.runtime.directive.Include
-[INFO] Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+[INFO] Loaded <SPAN class="code-object">System</SPAN> Directive: org.apache.velocity.runtime.directive.Literal
+[INFO] Loaded <SPAN class="code-object">System</SPAN> Directive: org.apache.velocity.runtime.directive.Macro
+[INFO] Loaded <SPAN class="code-object">System</SPAN> Directive: org.apache.velocity.runtime.directive.Parse
+[INFO] Loaded <SPAN class="code-object">System</SPAN> Directive: org.apache.velocity.runtime.directive.Include
+[INFO] Loaded <SPAN class="code-object">System</SPAN> Directive: org.apache.velocity.runtime.directive.Foreach
 [INFO] Created: 20 parsers.
 [INFO] Velocimacro : initialization starting.
 [INFO] Velocimacro : adding VMs from VM library template : VM_global_library.vm
@@ -594,20 +654,20 @@ $ mvn archetype:create \
 [INFO] Velocimacro : error using  VM library template VM_global_library.vm : org.apache.velocity.exception.ResourceNotFoundException: 
 Unable to find resource &apos;VM_global_library.vm&apos;
 [INFO] Velocimacro :  VM library template macro registration complete.
-[INFO] Velocimacro : allowInline = true : VMs can be defined inline in templates
-[INFO] Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-[INFO] Velocimacro : allowInlineLocal = false : VMs defined inline will be  global in scope if allowed.
+[INFO] Velocimacro : allowInline = <SPAN class="code-keyword">true</SPAN> : VMs can be defined inline in templates
+[INFO] Velocimacro : allowInlineToOverride = <SPAN class="code-keyword">false</SPAN> : VMs defined inline may NOT replace previous VM definitions
+[INFO] Velocimacro : allowInlineLocal = <SPAN class="code-keyword">false</SPAN> : VMs defined inline will be  global in scope <SPAN class="code-keyword">if</SPAN> allowed.
 [INFO] Velocimacro : initialization complete.
 [INFO] Velocity successfully started.
 [INFO] [archetype:create]
-[INFO] Defaulting package to group ID: org.apache.servicemix.samples.helloworld
+[INFO] Defaulting <SPAN class="code-keyword">package</SPAN> to group ID: org.apache.servicemix.samples.helloworld
 [INFO] ----------------------------------------------------------------------------
-[INFO] Using following parameters for creating Archetype: servicemix-service-assembly:3.1-incubating-SNAPSHOT
+[INFO] Using following parameters <SPAN class="code-keyword">for</SPAN> creating Archetype: servicemix-service-assembly:3.1-incubating-SNAPSHOT
 [INFO] ----------------------------------------------------------------------------
 [INFO] Parameter: groupId, Value: org.apache.servicemix.samples.helloworld
 [INFO] Parameter: packageName, Value: org.apache.servicemix.samples.helloworld
 [INFO] Parameter: basedir, Value: /Users/bsnyder/src/hello-world-smx
-[INFO] Parameter: package, Value: org.apache.servicemix.samples.helloworld
+[INFO] Parameter: <SPAN class="code-keyword">package</SPAN>, Value: org.apache.servicemix.samples.helloworld
 [INFO] Parameter: version, Value: 1.0-SNAPSHOT
 [INFO] Parameter: artifactId, Value: hello-world-sa
 [WARNING] org.apache.velocity.runtime.exception.ReferenceException: reference : template = archetype-resources/pom.xml [line 71,column 18] : 
@@ -621,129 +681,114 @@ ${servicemix-version} is not a valid reference.
 [INFO] Finished at: Fri Jan 05 23:40:32 MST 2007
 [INFO] Final Memory: 4M/8M
 [INFO] ------------------------------------------------------------------------
-</PRE>
-</DIV></DIV>
+{noformat}
 
-<P>The <TT>hello-world-smx</TT> directory should now contain the following two directories: </P>
+The {{hello-world-smx}} directory should now contain the following two directories:</PRE>
+</DIV></DIV>
+<P>$ ls <BR>
+hello-world-sa hello-world-bc-su</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">If you see the above directories, proceed to the next step below. If instead you see the BUILD FAILED output, you&apos;ll need to analyze the <SPAN class="code-keyword">rest</SPAN> of the output to troubleshoot the issue. Assistance with any issue you might experience is available from the ServiceMix community via the [ServiceMix mailing lists archive|Mailing Lists]. 
+
+Now that we have a project <SPAN class="code-keyword">for</SPAN> the SA, we need to edit the POM so that the project depends upon the JBI component we created above. This can be done by editing the POM <SPAN class="code-keyword">for</SPAN> the SA to add a dependency upon the {{hello-world-bc-su}} as listed below:</PRE>
+</DIV></DIV>
+<P>&lt;dependency&gt;<BR>
+  &lt;groupId&gt;org.apache.servicemix.samples.helloworld.bc&lt;/groupId&gt;<BR>
+  &lt;artifactId&gt;hello-world-bc-su&lt;/artifactId&gt;<BR>
+  &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;<BR>
+&lt;/dependency&gt;</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Upon adding <SPAN class="code-keyword">this</SPAN> dependency to the POM, build the project using the command below:</PRE>
+</DIV></DIV>
+<P>$ cd hello-world-sa<BR>
+$ mvn install </P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">{noformat}
+
+{noformat}
+
+h2. Incorporating the Projects Into a Top Level POM
+
+Now that we have created the SU and SA projects, a top level {{pom.xml}} must be manually created and made aware of each subproject. This will allow all the projects to be built automatically without having to build each project in order manually. Maven will discover all the projects and build them in the proper order. In the {{hello-world-bc-su}} directory, create a file named {{pom.xml}} containing the following content:</PRE>
+</DIV></DIV>
+<P>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<BR>
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; <BR>
+    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;<BR>
+    xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 <SPAN class="nobr"><A href="http://maven.apache.org/maven-v4_0_0.xsd" title="Visit page outside Confluence" rel="nofollow">http://maven.apache.org/maven-v4_0_0.xsd<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>&quot;&gt;</P>
+
+<P>  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</P>
+
+<P>  &lt;groupId&gt;org.apache.servicemix.samples.helloworld&lt;/groupId&gt;<BR>
+  &lt;artifactId&gt;hello-world-smx&lt;/artifactId&gt;<BR>
+  &lt;packaging&gt;pom&lt;/packaging&gt;<BR>
+  &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;<BR>
+  &lt;name&gt;Hello World JBI Component&lt;/name&gt;</P>
+
+<P>  &lt;modules&gt;<BR>
+    &lt;module&gt;hello-world-sa&lt;/module&gt;<BR>
+    &lt;module&gt;hello-world-bc-su&lt;/module&gt;<BR>
+  &lt;/modules&gt;</P>
+
+<P>&lt;/project&gt;</P>
 
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">$ ls 
-hello-world-sa hello-world-bc-su</PRE>
+<PRE class="code-java">This POM will allow the example to be easily folded in to the ServiceMix samples. The {{&lt;modules&gt;}} element denotes the other projects that were created above using the Maven archetypes. Once the {{pom.xml}} file from above is saved into the {{hello-world-smx}} directory, you should now see the following:</PRE>
 </DIV></DIV>
-
-<P>If you see the above directories, proceed to the next step below. If instead you see the BUILD FAILED output, you&apos;ll need to analyze the rest of the output to troubleshoot the issue. Assistance with any issue you might experience is available from the ServiceMix community via the <A href="mailing-lists.html" title="Mailing Lists">ServiceMix mailing lists archive</A>. </P>
-
-<P>Now that we have a project for the SA, we need to edit the POM so that the project depends upon the JBI component we created above. This can be done by editing the POM for the SA to add a dependency upon the <TT>hello-world-bc-su</TT> as listed below: </P>
-
+<P>$ ls <BR>
+hello-world-sa hello-world-bc-su pom.xml</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">&lt;dependency&gt;
-  &lt;groupId&gt;org.apache.servicemix.samples.helloworld.bc&lt;/groupId&gt;
-  &lt;artifactId&gt;hello-world-bc-su&lt;/artifactId&gt;
-  &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-&lt;/dependency&gt;</PRE>
+<PRE class="code-java">All projects can now be built using the following command on the command-line from the top level {{hello-world-smx}} directory:</PRE>
 </DIV></DIV>
-
-<P>Upon adding this dependency to the POM, build the project using the command below: </P>
-
+<P>$ mvn clean install </P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">$ cd hello-world-sa
-$ mvn install</PRE>
+<PRE class="code-java">The command above should display the output below: 
+
+{noformat}
+
+{noformat} 
+
+As <SPAN class="code-object">long</SPAN> as you see the BUILD SUCCESSFUL message in the output <SPAN class="code-keyword">continue</SPAN> to the next section to give each project a unique name. 
+
+h2. Give Each of the Maven Subprojects a Name 
+
+Notice in the output above that there are a two projects named _A custom project_. This is because the archetypes create projects with <SPAN class="code-keyword">this</SPAN> <SPAN class="code-keyword">generic</SPAN> name. Let&apos;s give each project a unique name via each component&apos;s {{pom.xml}} file. This name will allow Maven&apos;s output to denote a component&apos;s name in its output making our development work a bit easier. To name each project, simply edit each {{pom.xml}} and replace {{&lt;name&gt;A custom project&lt;/name&gt;}} with an appropriate name. Below are the instructions <SPAN class="code-keyword">for</SPAN> naming each component&apos;s project: 
+
+* Edit {{hello-world-sa/pom.xml}} and replace {{&lt;name&gt;A custom project&lt;/name&gt;}} with {{&lt;name&gt;Hello World Service Assembly&lt;/name&gt;}}
+* Edit {{hello-world-bc-su/pom.xml}} and replace {{&lt;name&gt;A custom project&lt;/name&gt;}} with {{&lt;name&gt;Hello World BC Service Unit&lt;/name&gt;}}
+
+Now when the projects are built you will no longer see a project named _A custom project_. Instead you&apos;ll now see _Hello World SE Service Unit_ and _Hello World Service Assembly_. Rebuild the projects again using the {{mvn clean install}} command on the command-line to see the change. 
+
+h3. Deploying the Component 
+
+Now that the SA is built, we&apos;re ready to deploy it to the JBI container. 
+
+_This is a work in progress. I will finish <SPAN class="code-keyword">this</SPAN> up very soon._
+
+----
+
+{note:title=Deploying Component Dependencies}
+When working with the {{jbi:projectDeploy}} you may want to disable dependency deployment. When deploying to a server which has other components sharing these dependencies, they can cause problems during deployment. To stop the Maven JBI plugin from undeploying and redeploying dependencies each time, alter its configuration by disabling the deployment of dependencies using the following:</PRE>
 </DIV></DIV>
-
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>
-</PRE>
-</DIV></DIV>
-
-<H2><A name="HelloWorld-BC-IncorporatingtheProjectsIntoaTopLevelPOM"></A>Incorporating the Projects Into a Top Level POM</H2>
-
-<P>Now that we have created the SU and SA projects, a top level <TT>pom.xml</TT> must be manually created and made aware of each subproject. This will allow all the projects to be built automatically without having to build each project in order manually. Maven will discover all the projects and build them in the proper order. In the <TT>hello-world-bc-su</TT> directory, create a file named <TT>pom.xml</TT> containing the following content:</P>
-
+<P>&lt;build&gt;<BR>
+&lt;plugins&gt;<BR>
+  &lt;plugin&gt;<BR>
+    &lt;artifactId&gt;jbi-maven-plugin&lt;/artifactId&gt;<BR>
+    &lt;configuration&gt;<BR>
+      &lt;deployDependencies&gt;false&lt;/deployDependencies&gt;<BR>
+    &lt;/configuration&gt;<BR>
+  &lt;/plugin&gt;<BR>
+&lt;/plugins&gt;<BR>
+&lt;/build&gt;</P>
 <DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;
-&lt;project xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0&quot;</SPAN> 
-</SPAN>    xmlns:xsi=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//www.w3.org/2001/XMLSchema-instance&quot;</SPAN>
-</SPAN>    xsi:schemaLocation=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd&quot;</SPAN>&gt;
-</SPAN>
-  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-
-  &lt;groupId&gt;org.apache.servicemix.samples.helloworld&lt;/groupId&gt;
-  &lt;artifactId&gt;hello-world-smx&lt;/artifactId&gt;
-  &lt;packaging&gt;pom&lt;/packaging&gt;
-  &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-  &lt;name&gt;Hello World JBI Component&lt;/name&gt;
-
-  &lt;modules&gt;
-    &lt;module&gt;hello-world-sa&lt;/module&gt;
-    &lt;module&gt;hello-world-bc-su&lt;/module&gt;
-  &lt;/modules&gt;
-
-&lt;/project&gt;</PRE>
-</DIV></DIV>
-
-<P>This POM will allow the example to be easily folded in to the ServiceMix samples. The <TT>&lt;modules&gt;</TT> element denotes the other projects that were created above using the Maven archetypes. Once the <TT>pom.xml</TT> file from above is saved into the <TT>hello-world-smx</TT> directory, you should now see the following: </P>
-
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">$ ls 
-hello-world-sa hello-world-bc-su pom.xml</PRE>
-</DIV></DIV>
-
-<P>All projects can now be built using the following command on the command-line from the top level <TT>hello-world-smx</TT> directory: </P>
-
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">$ mvn clean install</PRE>
-</DIV></DIV>
-
-<P>The command above should display the output below: </P>
-
-<DIV class="preformatted"><DIV class="preformattedContent">
-<PRE>
-</PRE>
-</DIV></DIV> 
-
-<P>As long as you see the BUILD SUCCESSFUL message in the output continue to the next section to give each project a unique name. </P>
-
-<H2><A name="HelloWorld-BC-GiveEachoftheMavenSubprojectsaName"></A>Give Each of the Maven Subprojects a Name </H2>
-
-<P>Notice in the output above that there are a two projects named <EM>A custom project</EM>. This is because the archetypes create projects with this generic name. Let&apos;s give each project a unique name via each component&apos;s <TT>pom.xml</TT> file. This name will allow Maven&apos;s output to denote a component&apos;s name in its output making our development work a bit easier. To name each project, simply edit each <TT>pom.xml</TT> and replace <TT>&lt;name&gt;A custom project&lt;/name&gt;</TT> with an appropriate name. Below are the instructions for naming each component&apos;s project: </P>
-
-<UL>
-	<LI>Edit <TT>hello-world-sa/pom.xml</TT> and replace <TT>&lt;name&gt;A custom project&lt;/name&gt;</TT> with <TT>&lt;name&gt;Hello World Service Assembly&lt;/name&gt;</TT></LI>
-	<LI>Edit <TT>hello-world-bc-su/pom.xml</TT> and replace <TT>&lt;name&gt;A custom project&lt;/name&gt;</TT> with <TT>&lt;name&gt;Hello World BC Service Unit&lt;/name&gt;</TT></LI>
-</UL>
-
-
-<P>Now when the projects are built you will no longer see a project named <EM>A custom project</EM>. Instead you&apos;ll now see <EM>Hello World SE Service Unit</EM> and <EM>Hello World Service Assembly</EM>. Rebuild the projects again using the <TT>mvn clean install</TT> command on the command-line to see the change. </P>
-
-<H3><A name="HelloWorld-BC-DeployingtheComponent"></A>Deploying the Component </H3>
-
-<P>Now that the SA is built, we&apos;re ready to deploy it to the JBI container. </P>
-
-<P><EM>This is a work in progress. I will finish this up very soon.</EM></P>
-
-<HR>
-
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Deploying Component Dependencies</B><BR>
-<P>When working with the <TT>jbi:projectDeploy</TT> you may want to disable dependency deployment. When deploying to a server which has other components sharing these dependencies, they can cause problems during deployment. To stop the Maven JBI plugin from undeploying and redeploying dependencies each time, alter its configuration by disabling the deployment of dependencies using the following: </P>
-
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">&lt;build&gt;
-&lt;plugins&gt;
-  &lt;plugin&gt;
-    &lt;artifactId&gt;jbi-maven-plugin&lt;/artifactId&gt;
-    &lt;configuration&gt;
-      &lt;deployDependencies&gt;<SPAN class="code-keyword">false</SPAN>&lt;/deployDependencies&gt;
-    &lt;/configuration&gt;
-  &lt;/plugin&gt;
-&lt;/plugins&gt;
-&lt;/build&gt;</PRE>
+<PRE class="code-java"></PRE>
 </DIV></DIV>
 
 <P>The configuration above introduces the <TT>deployDependencies</TT> element to the Maven JBI plugin and sets it to false. </P>
 
-<P>For a few more configurable options on the Maven JBI plugin, see also <SPAN class="nobr"><A href="https://issues.apache.org/activemq/browse/SM-605" title="Visit page outside Confluence" rel="nofollow">Ability to configure jbi:projectDeploy goal to exclude updating dependencies<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P></TD></TR></TABLE>
+<P>For a few more configurable options on the Maven JBI plugin, see also <SPAN class="nobr"><A href="https://issues.apache.org/activemq/browse/SM-605" title="Visit page outside Confluence" rel="nofollow">Ability to configure jbi:projectDeploy goal to exclude updating dependencies<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
 
-<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">TODO</B><BR></TD></TR></TABLE>
 <P>The default implementation of the component accepts InOut MEPs (ADD<BR>
 LINK TO FURTHER READING CONCERNING MEPs) and return the input content<BR>
 as the out message. This is already nearly what we want.</P>
@@ -809,8 +854,8 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 16, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=15306&originalId=15324">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 17, 2007
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=15306&originalId=15325">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=15306">edit page</A>)
     </DIV>
