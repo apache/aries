@@ -473,17 +473,17 @@ Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 
 <UL>
-	<LI><TT>MyConsumerEndpoint.java</TT> - Extends <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/endpoints/ConsumerEndpoint.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>ConsumerEndpoint</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and implements <TT>MyEndpointType</TT>.</LI>
+	<LI><TT>MyConsumerEndpoint.java</TT> - Extends <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/endpoints/ConsumerEndpoint.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>ConsumerEndpoint</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and implements <TT>MyEndpointType</TT>. If you&apos;d like to create a BC that fulfills the consumer role, implement the <TT>process()</TT> method in this class.</LI>
 </UL>
 
 
 <UL>
-	<LI><TT>MyEndpointType.java</TT> -</LI>
+	<LI><TT>MyEndpointType.java</TT> - This class is simply an interface marker for <SPAN class="nobr"><A href="http://geronimo.apache.org/xbean" title="Visit page outside Confluence" rel="nofollow">Apache XBean<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> so it can generate an XML schema document.</LI>
 </UL>
 
 
 <UL>
-	<LI><TT>MyProviderEndpoint.java</TT> - Extends <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/endpoints/ProviderEndpoint.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>ProviderEndpoint</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and implements <TT>MyEndpointType</TT>.</LI>
+	<LI><TT>MyProviderEndpoint.java</TT> - Extends <SPAN class="nobr"><A href="http://fisheye3.cenqua.com/browse/servicemix/trunk/common/servicemix-common/src/main/java/org/apache/servicemix/common/endpoints/ProviderEndpoint.java?r=trunk" title="Visit page outside Confluence" rel="nofollow"><TT>ProviderEndpoint</TT><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and implements <TT>MyEndpointType</TT>. If you&apos;d like to create a BC that fulfills the provider role, depending on the MEP being supported, implement the <TT>processInOnly()</TT> method or the <TT>processInOut()</TT> method in this class.</LI>
 </UL>
 
 
@@ -501,8 +501,16 @@ Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 
 <H3><A name="HelloWorld-BC-AddingCustomFunctionality"></A>Adding Custom Functionality </H3>
 
+<P>Before creating custom functionality for the BC, you need to understand the role of a JBI BC. A BC is simply a binding to a service that is external to the JBI normalized message router (NMR) using some type of communications protocol (e.g., FTP, HTTP, JMS, etc.). It&apos;s also the responsibility of the BC to handle any conversion of the message format into <SPAN class="nobr"><A href="http://servicemix.org/site/5-jbi.html#5.JBI-Normalizedmessage" title="Visit page outside Confluence" rel="nofollow">Normalized Messages<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> that can be sent along to the NMR. This is known as message normalization. </P>
+
+<P>For example, if we were to create a BC that uses <SPAN class="nobr"><A href="http://www.protocols.com/pbook/tcpip9.htm#SNMP" title="Visit page outside Confluence" rel="nofollow">SNMP<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> as the application layer protocol, the SNMP RFC specifies the message format to be used with particular versions of SNMP. It would be the responsibility of the BC to handle not only the communication via the SNMP protocol but also to handling the marshalling of SNMP messages to/from JBI normalized messages. The BC would simply be a binding to a service external to the NMR that speaks SNMP messages via the SNMP protocol. </P>
+
+<P>More on this later in the tutorial. For now, let&apos;s proceed with the custom functionality. </P>
+
 <TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Using an IDE</B><BR>
 <P>It is at this stage that you should employ the use of an IDE. An IDE can dramatically reduce the work necessary to import clases, override methods and so much more. Because Maven can generate project files for Eclipse and IntelliJ IDEA, either one can be used. Throughout this tutorial, Eclipse will be used. To generate project files for Eclipse, execute the Maven <TT>eclipse:eclipse</TT> goal and then import the project into your Eclipse IDE. </P></TD></TR></TABLE>
+
+
 
 <P><EM>This is a work in progress. I will finish this up very soon.</EM></P>
 
@@ -802,7 +810,7 @@ The <A href="examples.html" title="Examples">examples</A> page lists examples pr
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A>,
     last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 16, 2007
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=15306&originalId=15309">view change</A>)
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=15306&originalId=15324">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=15306">edit page</A>)
     </DIV>
