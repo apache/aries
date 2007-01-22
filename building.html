@@ -14,8 +14,10 @@
 _uacct = "UA-398545-1";
 urchinTracker();
     </SCRIPT>
+<META name="keywords" content="business integration, enterprise service bus, enterprise application integration, ESB, EAI, SOA, Service Oriented Architecture, web services, SOAP, JBI, JMS, WSDL, business-to-business, b2b, XML, EDI, Electronic Data Interchange, standards support, integration standards, application integration, java message service, middleware, message broker, software, solutions, services, ActiveMQ, ServiceMix, open source, MQ, message queue, message bus">
+<META name="description" content="">
     <TITLE>
-Building
+Apache ServiceMix, the Agile Open Source ESB -- Building
     </TITLE>
   <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
   <BODY onload="init()">
@@ -171,16 +173,15 @@ To build previous versions, you need to run:</P>
 cd tooling<BR>
 mvn install &#45;Dmaven.test.skip=true<BR>
 cd ..<BR>
-mvn install &#45;Dmaven.test.skip=true</P>
-</TD></TR></TABLE>
+mvn install &#45;Dmaven.test.skip=true</P></TD></TR></TABLE>
 
 <H2><A name="Building-UsinganIDE"></A>Using an IDE</H2>
 
-<P>If you prefer to use an IDE then you can autogenerate the IDE&apos;s project files using maven plugins. e.g.</P>
-<DIV class="code"><DIV class="codeContent">
-<PRE class="code-java">mvn eclipse:eclipse</PRE>
-</DIV></DIV>
-<P>or</P>
+<H3><A name="Building-UsingEclipse"></A>Using Eclipse</H3>
+<P>For <SPAN class="nobr"><A href="http://www.eclipse.org/" title="Visit page outside Confluence" rel="nofollow">Eclipse<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>, a detailed description is given at <A href="importing-servicemix-into-eclipse.html" title="Importing ServiceMix into Eclipse">Importing ServiceMix into Eclipse</A>. In addition, this page also describes how to start ServiceMix inside Eclipse with all debugging possibilities.</P>
+
+<H3><A name="Building-OtherIDEs"></A>Other IDEs</H3>
+<P>If you prefer to use another IDE then you can autogenerate the IDE&apos;s project files using maven plugins. e.g.</P>
 <DIV class="code"><DIV class="codeContent">
 <PRE class="code-java">mvn idea:idea</PRE>
 </DIV></DIV>
@@ -198,9 +199,35 @@ mvn install &#45;Dmaven.test.skip=true</P>
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 20, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5955&originalId=13767">view change</A>)
-              
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=prossma">Philipp Rossmanith</A> on Jan 23, 2007
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5955&originalId=15335">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      Changed and restructured the &quot;Using an IDE&quot; section. Added cross-link to &quot;Importing ServiceMix...&quot;.<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=5955">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5955">edit page</A>)
     </DIV>
 
