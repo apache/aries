@@ -14,8 +14,10 @@
 _uacct = "UA-398545-1";
 urchinTracker();
     </SCRIPT>
+<META name="keywords" content="business integration, enterprise service bus, enterprise application integration, ESB, EAI, SOA, Service Oriented Architecture, web services, SOAP, JBI, JMS, WSDL, business-to-business, b2b, XML, EDI, Electronic Data Interchange, standards support, integration standards, application integration, java message service, middleware, message broker, software, solutions, services, ActiveMQ, ServiceMix, open source, MQ, message queue, message bus">
+<META name="description" content="">
     <TITLE>
-Classloaders
+Apache ServiceMix, the Agile Open Source ESB -- Classloaders
     </TITLE>
   <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
   <BODY onload="init()">
@@ -151,7 +153,8 @@ Classloaders
 </UL>
 
 
-<P>The container class loader contains: JRE + <TT>/conf</TT> + <TT>/lib/&#42;.jar</TT> + <TT>/lib/optional/&#42;.jar</TT>.</P>
+<P>The container class loader contains: JRE + <TT>/conf</TT> + <TT>/lib/<B>.jar</TT> + <TT>/lib/optional/</B>.jar</TT>. ServiceMix 3.1, uses classworld project from <SPAN class="nobr"><A href="http://classworlds.codehaus.org/" title="Visit page outside Confluence" rel="nofollow">Codehaus<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to configure his classloader finding path. You can add your own path into servicemix.conf.</P>
+
 
 <P>The components are libraries class loaders are defined in the JBI spec and contain the jars referenced in the jbi descriptor.  These class loaders can use a parent-first (default) or self-first delegation: when a class is loaded, the class loader will first ask its parent(s), or  will first load the class from its referenced jars.</P>
 
@@ -159,7 +162,7 @@ Classloaders
 
 <P>Let&apos;s say you deploy a pojo on the lwcontainer.  When building the configuration, xbean need to find the class.  It will ask the SU classloader to do so.  So the component may be inside this classloader, or one of its parent (servicemix-lwcontainer, servicemix-shared and the container classloader).  However, the component and SL classloaders are not easily modified (you need to repackage the artifact and redeploy it), so you can put this class in the SU or the container.</P>
 
-<P>If you put this class in the container, you will need to restart the container after having added the jar in the classpath, which is not what we want.  So usually, we put it in the SU. </P>
+<P>If you put this class in the container, you will need to restart the container after having added the jar in the classpath, which is not what we want.  So usually, we put it in the SU.</P>
 
 <P>The other benefit of using classloaders is that you can have isolated components.  You could deploy two components (or SU) which use different version of the same library without any problems.  This is not possible if you put all the dependencies in the container classpath.</P>
 
@@ -177,7 +180,6 @@ Classloaders
   [<SPAN class="code-tag">&lt;location&gt;</SPAN>xxx<SPAN class="code-tag">&lt;/location&gt;</SPAN>]*
 <SPAN class="code-tag">&lt;/classpath&gt;</SPAN></PRE>
 </DIV></DIV>
-
 <P>The <TT>inverse</TT> attribute can be set to <TT>true</TT> to use self-first delegation mode.</P>
 
 <P>The <TT>nonOverridable</TT> tag can be used to specify that classes with a name starting by the specified string can not be overriden by this classloader (the classloader will always use the parent classes).</P>
@@ -204,8 +206,8 @@ Classloaders
     </DIV>
     <DIV id="site-footer">
           Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
-    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 03, 2006
-                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13870&originalId=14555">view change</A>)
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=keogaa">Gr&eacute;goire A.</A> on Jan 26, 2007
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13870&originalId=15353">view change</A>)
               
       (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13870">edit page</A>)
     </DIV>
