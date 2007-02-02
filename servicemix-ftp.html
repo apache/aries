@@ -1,0 +1,388 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+servicemix-ftp
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="jbi-components.html" title="JBI Components">JBI Components</A>&nbsp;&gt;&nbsp;<A href="" title="servicemix-ftp">servicemix-ftp</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">servicemix- ftp</div>
+-->
+            <DIV class="wiki-content"><H1><A name="servicemix-ftp-ServiceMixFTP"></A>ServiceMix FTP</H1>
+
+<P>The ServiceMix FTP component provides JBI integration to the FTP servers. It can be used to read &amp; write files over FTPor to periodically poll directories for new files.</P>
+
+<H2><A name="servicemix-ftp-Installation"></A>Installation</H2>
+
+<P>Installing the servicemix-http component can be done in several ways:</P>
+<UL>
+	<LI>drop the installer zip in an hotdeploy directory monitored by ServiceMix</LI>
+	<LI>using <A href="ant-tasks.html" title="Ant Tasks">ant tasks</A></LI>
+</UL>
+
+
+<P>Note that when using ant tasks, the component is not started, you will have to start it manually using ant tasks or a console.</P>
+
+<H2><A name="servicemix-ftp-XBeandeployment"></A>XBean deployment</H2>
+
+<P>You can deploy Service Units containing a file named xbean.xml for activating consumer and provider endpoints.</P>
+
+<P>This xml file should respect the given syntax, though this is a spring based xml configuration file from where all beans of class <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-http/apidocs/org/apache/servicemix/http/HttpEndpoint.html" title="Visit page outside Confluence" rel="nofollow">HttpEndpoint<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> are retrieved.<BR>
+See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/deployables/bindingcomponents/servicemix-ftp/src/test/resources/spring.xml" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.&nbsp; Note that you have to define the ftp namespace with</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;beans <SPAN class="code-keyword">xmlns:ftp</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/ftp/1.0&quot;</SPAN>&gt;</SPAN>
+    ...
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>Any numbers of endpoints can be specified in the xbean.xml file.</P>
+
+<H2><A name="servicemix-ftp-Pollerendpoint"></A>Poller endpoint</H2>
+
+<P>Poller endpoints can be used to poll a FTP server directory for files, download them, and send an InOnly JBI exchange to the configured JBI service.</P>
+
+<P>The following snipped shows a minimal definition of a poller endpoint:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;ftp:poller service=<SPAN class="code-quote">&quot;test:poller&quot;</SPAN>
+            endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>
+            targetService=<SPAN class="code-quote">&quot;test:receiver&quot;</SPAN>
+            uri=<SPAN class="code-quote">&quot;ftp://servicemix:rocks@localhost/smx/test&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Poller endpoint attributes</B><BR>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh"> Name </TH>
+<TH class="confluenceTh"> Type </TH>
+<TH class="confluenceTh"> Description </TH>
+<TH class="confluenceTh"> Required </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> service </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> the service name of the proxied endpoint </TD>
+<TD class="confluenceTd"> yes </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> endpoint </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the endpoint name of the proxied endpoint </TD>
+<TD class="confluenceTd"> yes </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> interfaceName </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> the interface name of the proxied endpoint </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> targetService </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> the service name of the target endpoint </TD>
+<TD class="confluenceTd"> one of targetService, targetInterface or targetUri must be specified </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> targetEndpoint </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the endpoint name of the target endpoint </TD>
+<TD class="confluenceTd"> one of targetService, targetInterface or targetUri must be specified </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> targetInterface </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> the interface name of the target endpoint </TD>
+<TD class="confluenceTd"> one of targetService, targetInterface or targetUri must be specified </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> targetUri </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the uri of the target endpoint </TD>
+<TD class="confluenceTd"> one of targetService, targetInterface or targetUri must be specified </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> uri </TD>
+<TD class="confluenceTd"> URI </TD>
+<TD class="confluenceTd"> the ftp uri to access the FTP server (see <A href="#servicemix-ftp-URI" title="URI on servicemix-ftp">URI</A>) </TD>
+<TD class="confluenceTd"> yes </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> deleteFile </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> whether the file should be deleted from the FTP server after processing </TD>
+<TD class="confluenceTd"> no (defaults to <TT>true</TT>) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> recursive </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> whether subdirectories should be polled </TD>
+<TD class="confluenceTd"> no (defaults to <TT>true</TT>) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> filter </TD>
+<TD class="confluenceTd"> java.io.FileFilter </TD>
+<TD class="confluenceTd"> a filter used when polling files: files that do not match this filter will be ignored </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> marshaler </TD>
+<TD class="confluenceTd"> FileMarshaler </TD>
+<TD class="confluenceTd"> a marshaler can be used to customize how the file is read / written (see <A href="#servicemix-ftp-Marshalers" title="Marshalers on servicemix-ftp">Marshalers</A>) </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> lockManager </TD>
+<TD class="confluenceTd"> o.a.s.locks.LockManager </TD>
+<TD class="confluenceTd"> a custom lock manager can be used to cluster poller endpoints or to keep track of processed files when the <TT>deleteFile</TT> attribute is set to <TT>false</TT> </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> clientPool </TD>
+<TD class="confluenceTd"> FTPClientPool </TD>
+<TD class="confluenceTd">&nbsp;</TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+</TBODY></TABLE></TD></TR></TABLE>
+
+<H2><A name="servicemix-ftp-Senderendpoint"></A>Sender endpoint</H2>
+
+<P>Sender endpoints are used are provider endpoints (in the JBI sense) which accepts incoming InOnly exchanges and write the content of the exchange to a file on the FTP server.</P>
+
+<P>Here is an example of a simple sender endpoint.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;ftp:sender service=<SPAN class="code-quote">&quot;test:service&quot;</SPAN>
+            endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN> 
+            uri=<SPAN class="code-quote">&quot;ftp://servicemix:rocks@localhost/smx/test&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Sender endpoint attributes</B><BR>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh"> Name </TH>
+<TH class="confluenceTh"> Type </TH>
+<TH class="confluenceTh"> Description </TH>
+<TH class="confluenceTh"> Required </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> service </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> the service name of the proxied endpoint </TD>
+<TD class="confluenceTd"> yes </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> endpoint </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the endpoint name of the proxied endpoint </TD>
+<TD class="confluenceTd"> yes </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> interfaceName </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> the interface name of the proxied endpoint </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> uri </TD>
+<TD class="confluenceTd"> URI </TD>
+<TD class="confluenceTd"> the ftp uri to access the FTP server (see <A href="#servicemix-ftp-URI" title="URI on servicemix-ftp">URI</A>) </TD>
+<TD class="confluenceTd"> yes </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> overwrite </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> if a file with the same name already exists on the FTP server, overwrite it </TD>
+<TD class="confluenceTd"> no (defaults to <TT>false</TT>) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> uniqueFileName </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> name used to create unique files when the marshaler can not give a specific file name </TD>
+<TD class="confluenceTd"> no (defaults to &quot;ServiceMix&quot;) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> marshaler </TD>
+<TD class="confluenceTd"> FileMarshaler </TD>
+<TD class="confluenceTd"> a marshaler can be used to customize how the file is read / written (see <A href="#servicemix-ftp-Marshalers" title="Marshalers on servicemix-ftp">Marshalers</A>) </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> clientPool </TD>
+<TD class="confluenceTd"> FTPClientPool </TD>
+<TD class="confluenceTd"> provide specific configuration for the FTP client pool  (see {#FTPClientPool]) </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+</TBODY></TABLE></TD></TR></TABLE>
+
+<H2><A name="servicemix-ftp-URI"></A>URI</H2>
+
+<P>You can use the familiar file URI to communicate with FTP servers. All types of endpoints use this standard URI to retrieve the needed parameters.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">ftp:<SPAN class="code-comment">//[username[:password]@]host[:port]/[path]</SPAN></PRE>
+</DIV></DIV>
+
+<P>where the parameters are:</P>
+<UL>
+	<LI><TT>username</TT>: the login to use to access the FTP server</LI>
+	<LI><TT>password</TT>: the password</LI>
+	<LI><TT>host</TT>: adress of the FTP server (IP or name)</LI>
+	<LI><TT>port</TT>: port of the FTP server (defaults to 21)</LI>
+	<LI><TT>path</TT>: the directory on the FTP server to change into</LI>
+</UL>
+
+
+<H2><A name="servicemix-ftp-Marshalers"></A>Marshalers</H2>
+
+<P>By default, poller endpoints expect the content of the file to be an xml, and sender endpoints write the xml content of the imcoming NormalizedMessage to the remote file.  This behavior can be customized by using a custom FileMarshaler.</P>
+
+<H2><A name="servicemix-ftp-FTPClientPool"></A>FTPClientPool</H2>
+
+<P>The FTPClientPool is used to to retrieve connections and perform FTP calls to the server.  By default, one is created and populated with the information retrieved from the URI (login, password, host, port).  However, if more informations need to be configured, this is the place to do so.</P></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Dec 16, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=14031&originalId=15210">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=14031">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

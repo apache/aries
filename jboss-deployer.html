@@ -1,0 +1,265 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+JBoss Deployer
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="integration.html" title="Integration">Integration</A>&nbsp;&gt;&nbsp;<A href="" title="JBoss Deployer">JBoss Deployer</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">JBoss Deployer</div>
+-->
+            <DIV class="wiki-content"><H3><A name="JBossDeployer-DeployingJBIJarstoJBoss"></A>Deploying JBI Jars to JBoss</H3>
+
+<P>This document discusses how to deploy ServiceMix to the JBoss application server.</P>
+
+<P>The <SPAN class="nobr"><A href="http://www.jboss.org/" title="Visit page outside Confluence" rel="nofollow">JBoss<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> deployer has been enhanced to allow JBI components and service-assemblies to be installed and deployed directly into the JBoss 4.0 deploy directory. From the deploy directory, JBoss picks them up and and passes them to a ServiceMix JBI container running inside of the JBoss application server.  After deployment, JBI MBeans can be seen in a JMX console and  J2EE resources can be accessed as you would with a standard JBoss deployable component.</P>
+
+<P>The JBoss JMX Console Showing the ServiceMix Deployment:</P>
+
+<P><IMG src="http://www.servicemix.org/jboss-screenshot.png" align="absmiddle" border="0"></P>
+
+<H3><A name="JBossDeployer-InstallingtheJBossDeployer"></A>Installing the JBoss Deployer</H3>
+
+<P>Due to licensing reasons, the JBoss deployer is available at Codehaus.<BR>
+You can build it using the following commands.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">svn co http:<SPAN class="code-comment">//svn.codehaus.org/servicemix/trunk/jboss-deployer
+</SPAN>cd jboss-deployer
+mvn install</PRE>
+</DIV></DIV>
+<P>You will then find a servicemix-jboss-deployer-3.1-SNAPSHOT.sar in the target directory,  simply take this and drop it in your JBoss deploy directory (tested on JBoss 4.0.3 and 4.0.5), and away you go&#33;&#33;&#33; Want to see it in action?  You should be able to drop the JBI RI Transformation Engine example straight into the deploy directory and watch it pick up.  Suddenly you have JBI enabled your JBoss Server&#33;</P>
+
+<H3><A name="JBossDeployer-DeployingstandardJBIartifacts"></A>Deploying standard JBI artifacts</H3>
+
+<P>You can deploy standard JBI components and Service Assemblies on your JBI-enabled JBoss, by simply copying these artifacts to the deploy directory in JBoss.  They will all use the same JBI container and will be able to communicate together.<BR>
+Note that if you use XBean configuration files (see below), each file dropped will create a new JBI container.<BR>
+To work around that, you can change your servicemix.xml file and deploy it as a Service Unit on the <A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">lightweight container</A>.</P>
+
+<H3><A name="JBossDeployer-DeployingServiceMixXBeanConfigurations"></A>Deploying ServiceMix XBean Configurations</H3>
+
+<P>Most of the examples that ship with ServiceMix are not delivered in the JBI component/service assembly form but as servicemix.xml configurations that utilize the <EM>XBean</EM> infrastructure in ServiceMix.  This approach lets you quickly get a JBI architecture up and running and while not directly in-line with the JSR-208 specification it is a powerful approach.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Useful Information</B><BR>
+<P>Note that if you are planning on using the components that ship with ServiceMix there libraries are not included in the ServiceMix JBoss deployer,  therefore you will need to copy your $SERVICEMIX_HOME/lib and $SERVICEMIX_HOME/lib/optional directories to your application server&apos;s library path (ie. $JBOSS_HOME/server/default/lib).</P></TD></TR></TABLE>
+<P>&nbsp;<BR>
+Since it is this approach that most people start with we added the ability to deploy this Spring JBI configurations onto JBoss.&nbsp;  In order to do this, deploy the servicemix-jboss-deployer-3.1-SNAPSHOT.sar deployer that you see below . Next, take a servicemix.xml configuration file and rename it so that it ends in &#45;sm.xml (ie. filebind-sm.xml).&nbsp; Place the configuration file in the JBoss deploy directory.&nbsp;&nbsp;  Before you do that, you will need to make some basic modifications to the configuration file to get it running, namely you will need to make sure that the <EM>createMBeanServer</EM> property is <EM>false</EM>.&nbsp; Below is the file binding example configured to run under JBoss.</P>
+
+<P><B>Example filebinding-sm.xml for ServiceMix 3.0</B></P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;</SPAN>
+&lt;beans <SPAN class="code-keyword">xmlns:sm</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/config/1.0&quot;</SPAN>
+       <SPAN class="code-keyword">xmlns:foo</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.org/demo/&quot;</SPAN>&gt;
+
+	<SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- the JBI container --&gt;</SPAN></SPAN>
+	&lt;sm:container id=<SPAN class="code-quote">&quot;jbi&quot;</SPAN>
+                useMBeanServer=<SPAN class="code-quote">&quot;false&quot;</SPAN>
+   	            createMBeanServer=<SPAN class="code-quote">&quot;false&quot;</SPAN>
+                dumpStats=<SPAN class="code-quote">&quot;true&quot;</SPAN>
+                statsInterval=<SPAN class="code-quote">&quot;10&quot;</SPAN>&gt;
+
+		<SPAN class="code-tag">&lt;sm:activationSpecs&gt;</SPAN>
+
+			<SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- Write files to the outbox directory --&gt;</SPAN></SPAN>
+			&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;fileSender&quot;</SPAN>
+				                service=<SPAN class="code-quote">&quot;foo:fileSender&quot;</SPAN>&gt;
+				<SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+					<SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.file.FileWriter&quot;</SPAN>&gt;</SPAN>
+						<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;directory&quot;</SPAN> value=<SPAN class="code-quote">&quot;outbox&quot;</SPAN> /&gt;</SPAN>
+						<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;marshaler&quot;</SPAN>&gt;</SPAN>
+							<SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.util.DefaultFileMarshaler&quot;</SPAN>&gt;</SPAN>
+								<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;fileName&quot;</SPAN>&gt;</SPAN>
+									<SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.expression.JaxenStringXPathExpression&quot;</SPAN>&gt;</SPAN>
+										<SPAN class="code-tag">&lt;constructor-arg value=<SPAN class="code-quote">&quot;concat(&apos;sample_&apos;, /sample/@id, &apos;.xml&apos;)&quot;</SPAN> /&gt;</SPAN>
+									<SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+								<SPAN class="code-tag">&lt;/property&gt;</SPAN>
+							<SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+						<SPAN class="code-tag">&lt;/property&gt;</SPAN>
+					<SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+				<SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+			<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN>
+
+			<SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- Look for files in the inbox directory --&gt;</SPAN></SPAN>
+			&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;filePoller&quot;</SPAN>
+				                 destinationService=<SPAN class="code-quote">&quot;foo:fileSender&quot;</SPAN>
+                         service=<SPAN class="code-quote">&quot;foo:filePoller&quot;</SPAN>&gt;
+				<SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+					<SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.file.FilePoller&quot;</SPAN>&gt;</SPAN>
+						<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;workManager&quot;</SPAN> ref=<SPAN class="code-quote">&quot;workManager&quot;</SPAN> /&gt;</SPAN>
+						<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;file&quot;</SPAN> value=<SPAN class="code-quote">&quot;inbox&quot;</SPAN> /&gt;</SPAN>
+						<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;period&quot;</SPAN> value=<SPAN class="code-quote">&quot;1000&quot;</SPAN> /&gt;</SPAN>
+					<SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+				<SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+			<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN>
+		<SPAN class="code-tag">&lt;/sm:activationSpecs&gt;</SPAN>
+	<SPAN class="code-tag">&lt;/sm:container&gt;</SPAN>
+
+	<SPAN class="code-tag"><SPAN class="code-comment">&lt;!-- the work manager (thread pool) for this container --&gt;</SPAN></SPAN>
+	<SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;workManager&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.jencks.factory.WorkManagerFactoryBean&quot;</SPAN>&gt;</SPAN>
+		<SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;threadPoolSize&quot;</SPAN> value=<SPAN class="code-quote">&quot;30&quot;</SPAN> /&gt;</SPAN>
+	<SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV></DIV>
+          
+        <!--
+          <div class="tabletitle">
+            Children
+            <span class="smalltext" id="show" style="display: inline;">
+              <a href="javascript:showChildren()">Show Children</a></span>
+            <span class="smalltext" id="hide" style="display: none;">
+              <a href="javascript:hideChildren()">Hide Children</a></span>
+          </div>
+          <div class="greybox" id="children" style="display: none;">
+                                      <a href="http://goopen.org/confluence/display/SM/JBoss+Deployer+for+2.0" title="JBoss Deployer for 2.0">JBoss Deployer for 2.0</a>
+              <span class="smalltext">(ServiceMix)</span>
+              <br>
+                      </div>
+-->
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=pdodds%2540unity-systems.com">pdodds@unity-systems.com</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=keogaa">Gr&eacute;goire A.</A> on Jan 16, 2007
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1932&originalId=15290">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1932">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

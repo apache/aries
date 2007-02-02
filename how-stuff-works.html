@@ -1,0 +1,493 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+How Stuff Works
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="architecture.html" title="Architecture">Architecture</A>&nbsp;&gt;&nbsp;<A href="" title="How Stuff Works">How Stuff Works</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">How Stuff Works</div>
+-->
+            <DIV class="wiki-content">
+<P><A name="HowStuffWorks-top"></A></P>
+
+<H2><A name="HowStuffWorks-DocumentationOverview"></A>Documentation Overview</H2>
+
+<P>The following diagrams and notes are my understanding of part of the ServiceMix architecture based on a study of the source code </P>
+
+<P>&ndash; PS </P>
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
+<P>ServiceMix code is evolving faster than I can keep up with it so some of the information in this document may be already be out-of-date. Diagram comments indicate what version of the code was studied.</P></TD></TR></TABLE>
+
+<P><B>Contents</B></P>
+<UL>
+	<LI><A href="#HowStuffWorks-nmrflowtypes" title="nmrflowtypes on How Stuff Works">NMR flow types</A>
+	<UL>
+		<LI><A href="#HowStuffWorks-stflow" title="stflow on How Stuff Works">st</A></LI>
+		<LI><A href="#HowStuffWorks-sedaflow" title="sedaflow on How Stuff Works">seda</A></LI>
+		<LI><A href="#HowStuffWorks-jmsflow" title="jmsflow on How Stuff Works">jms</A></LI>
+		<LI><A href="#HowStuffWorks-jcaflow" title="jcaflow on How Stuff Works">jca</A></LI>
+	</UL>
+	</LI>
+</UL>
+
+
+<P><A name="HowStuffWorks-nmrflowtypes"></A></P>
+<H2><A name="HowStuffWorks-NMRFlowtypes"></A>NMR Flow types</H2>
+
+<P>The flow type determines the mechanism by which the Normalized Message Router (NMR) Broker sends messages from one BC/SE to another.</P>
+
+<H3><A name="HowStuffWorks-Flowimplementationclasses"></A>Flow implementation classes</H3>
+
+<P><IMG src="how-stuff-works.data/FlowClassDiagram.JPG" align="absmiddle" border="0"></P>
+
+<UL>
+	<LI>JBIContainer &quot;flowName&quot; attribute determines the flow type used</LI>
+</UL>
+
+
+<UL>
+	<LI>There is only 1 flow per Broker (and 1 Broker per JBIContainer)</LI>
+</UL>
+
+
+<UL>
+	<LI>Flow name/class mappings are in the ServiceMix JAR. See META-INF/services/org/servicemix/jbi/nmr/flow</LI>
+</UL>
+
+
+<UL>
+	<LI>There are a number of flow implementations as shown in the following table
+<BR clear="all">
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh">Flow Name</TH>
+<TH class="confluenceTh">Flow implementation Class</TH>
+</TR>
+<TR>
+<TD class="confluenceTd">st</TD>
+<TD class="confluenceTd">org.servicemix.jbi.nmr.flow.st.STFlow</TD>
+</TR>
+<TR>
+<TD class="confluenceTd">seda</TD>
+<TD class="confluenceTd">org.servicemix.jbi.nmr.flow.seda.SedaFlow</TD>
+</TR>
+<TR>
+<TD class="confluenceTd">cluster</TD>
+<TD class="confluenceTd">org.servicemix.jbi.nmr.flow.jms.JMSFlow</TD>
+</TR>
+<TR>
+<TD class="confluenceTd">jms</TD>
+<TD class="confluenceTd">org.servicemix.jbi.nmr.flow.jms.JMSFlow</TD>
+</TR>
+<TR>
+<TD class="confluenceTd">jca</TD>
+<TD class="confluenceTd">org.servicemix.jbi.nmr.flow.jca.JCAFlow</TD>
+</TR>
+</TBODY></TABLE></LI>
+</UL>
+
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
+<P>The &apos;cluster&apos; flow (present in ServiceMix version 1.x) is now just a synonym for &apos;jms&apos; flow type</P></TD></TR></TABLE>
+
+<P><A href="#HowStuffWorks-top" title="top on How Stuff Works">goto top</A></P>
+
+<H3><A name="HowStuffWorks-Brokersendsequencediagram"></A>Broker send sequence diagram</H3>
+
+<P><IMG src="how-stuff-works.data/BrokerSequenceDiagram.JPG" align="absmiddle" border="0"></P>
+
+<UL>
+	<LI>The NMR Broker calls sendExchangePacket to deliver a message</LI>
+</UL>
+
+
+<UL>
+	<LI>The flow implementation of abstract doSend Method determines how the message sending mechanism works</LI>
+</UL>
+
+
+<P><A href="#HowStuffWorks-top" title="top on How Stuff Works">goto top</A></P>
+
+<P><A name="HowStuffWorks-stflow"></A></P>
+<H2><A name="HowStuffWorks-STFlow"></A>STFlow</H2>
+
+<P>STFlow = &quot;Straight Through&quot; Flow. This is the simplest mechanism. </P>
+
+<P>There is no staging or buffering.</P>
+
+<H3><A name="HowStuffWorks-sequencediagram"></A>sequence diagram</H3>
+
+<P><IMG src="how-stuff-works.data/STFlowSequenceDiagram.JPG" align="absmiddle" border="0"></P>
+
+<P><A href="#HowStuffWorks-top" title="top on How Stuff Works">goto top</A></P>
+
+<P><A name="HowStuffWorks-sedaflow"></A></P>
+<H2><A name="HowStuffWorks-SedaFlow"></A>SedaFlow</H2>
+
+<P>SEDA = &quot;Staged Event Driven Architecture&quot; Flow. </P>
+
+<P>SEDA decomposes a complex, event-driven application into a set of stages connected by queues.</P>
+
+<H3><A name="HowStuffWorks-SedaFlow%2FSedaQueueclasses"></A>SedaFlow / SedaQueue classes</H3>
+
+<P><IMG src="how-stuff-works.data/SedaFlowClassDiagram.JPG" align="absmiddle" border="0"></P>
+
+<UL>
+	<LI>There is 1 SedaFlow instance and a number of SedaQueue instances (1 per component)</LI>
+</UL>
+
+
+<UL>
+	<LI>The SedaFlow &quot;enqueues&quot; an ME to send a message</LI>
+</UL>
+
+
+<UL>
+	<LI>The SedaQueue instance &quot;dequeues&quot; the ME and processes it</LI>
+</UL>
+
+
+<UL>
+	<LI>Each SedaQueue holds a concurrent HashMap of MessageExchanges (MEs) to the component. Enqueue/Dequeue is simply put/get of this HashMap</LI>
+</UL>
+
+
+<P><A href="#HowStuffWorks-top" title="top on How Stuff Works">goto top</A></P>
+
+<H3><A name="HowStuffWorks-sequencediagram"></A>sequence diagram</H3>
+
+<P><IMG src="how-stuff-works.data/SedaFlowSequenceDiagram.JPG" align="absmiddle" border="0"></P>
+
+<UL>
+	<LI>SedaQueue instances are lazily created as needed and referenced in a queueMap</LI>
+</UL>
+
+
+<UL>
+	<LI>Each SedaQueue instance runs as JCA1.5 asynchronous Work thread polling the HashMap at fixed intervals</LI>
+</UL>
+
+
+<UL>
+	<LI>Having enqueued the ME, the SedaFlow doSend Method may return</LI>
+</UL>
+
+
+<UL>
+	<LI>When the SedaQueue Worker (run Method) finds (dequeues) an ME, it processes it in another JCA Worker thread created solely for that purpose</LI>
+</UL>
+
+
+<P><A href="#HowStuffWorks-top" title="top on How Stuff Works">goto top</A></P>
+
+<P><A name="HowStuffWorks-jmsflow"></A></P>
+<H2><A name="HowStuffWorks-JMSFlow"></A>JMSFlow</H2>
+
+<P>Uses JMS for message routing among a network of remote containers.</P>
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD>
+<P>&quot;remote&quot; just means separate. In fact, it makes no difference if the JMSFlow containers are on the same or separate machines.</P></TD></TR></TABLE>
+
+<H3><A name="HowStuffWorks-JMSFlowclassesandJMSDestinations"></A>JMSFlow classes and JMS Destinations</H3>
+
+<P><IMG src="how-stuff-works.data/JMSFlowClassDiagram.JPG" align="absmiddle" border="0"></P>
+
+<UL>
+	<LI>There is one single Topic across all containers.
+	<UL>
+		<LI>This Topic is created during JMSFlow init.</LI>
+		<LI>A <EM>ConsumerAdvisor</EM> configured for this Topic allows container to be &quot;aware&quot; of each other.</LI>
+		<LI>Special messages sent to this Topic broadcasting awareness of your components to other containers in the network.</LI>
+	</UL>
+	</LI>
+</UL>
+
+
+<UL>
+	<LI>There is one Queue per container.
+	<UL>
+		<LI>This is created during JMSFlow init.</LI>
+		<LI>This Queue is for sending response MEs to.</LI>
+	</UL>
+	</LI>
+</UL>
+
+
+<UL>
+	<LI>There is one Queue per unique <EM>destination</EM> component.
+	<UL>
+		<LI>This is created when a component is activated.</LI>
+		<LI>These Queues is for sending request MEs to.</LI>
+	</UL>
+	</LI>
+</UL>
+
+
+<UL>
+	<LI>Outbound (request) messages get routed to a Queue for a named component (so are load balanced) and responses get sent back to the Queue for the originating container.</LI>
+</UL>
+
+
+<UL>
+	<LI>The JMSFlow is a JMS <EM>MessageListener</EM> (ie it implements onMessage Method) for the Topic and all Queues</LI>
+</UL>
+
+
+<UL>
+	<LI>The JMSFlow is also an ActiveMQ <EM>ConsumerAdvisoryEventListener</EM> for the Topic.
+	<UL>
+		<LI>This means all JMSFlow instances will be aware of remote container startup/shutdown</LI>
+	</UL>
+	</LI>
+</UL>
+
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">JMS provider requirements</B><BR>
+<P>This JMSFlow implementation relies on an ActiveMQ JMS 1.1 provider because it uses some non standard JMS features such as the ConsumerAdvisor and dynamic Topic/Queue creation, as well as some JMS 1.1 features.</P></TD></TR></TABLE>
+
+<P><A href="#HowStuffWorks-top" title="top on How Stuff Works">goto top</A></P>
+
+<H3><A name="HowStuffWorks-Notificationofremotecomponentstatechanges"></A>Notification of remote component state changes</H3>
+
+<P><IMG src="how-stuff-works.data/JMSFlowTopicSequenceDiagram.JPG" align="absmiddle" border="0"></P>
+
+<UL>
+	<LI>The diagram shows a &quot;local&quot; and &quot;remote&quot; JMSFlow instance for clarity although they may be the same instance</LI>
+</UL>
+
+
+<UL>
+	<LI>A container needs to be made aware when the state of a remote container&apos;s components changes.
+	<UL>
+		<LI>JMSFlow uses an ActiveMQ <EM>ConsumerAdvisoryEvent</EM> to detect a change in status of a remote Consumer of the Topic</LI>
+		<LI>If remote Topic Consumer is <B>activated</B> - eg container started - information of <EM>all</EM> (local) components are re-broadcast to the Topic so the new container can learn about them</LI>
+		<LI>If remote Topic Consumer is <B>deactivated</B> - eg container shutdown - all (local) knowledge of the remote container&apos;s components is removed</LI>
+	</UL>
+	</LI>
+</UL>
+
+
+<UL>
+	<LI>Conversely, a remote container needs to be made aware if there is some state change with any component of the local container.
+	<UL>
+		<LI>The JMSFlow instance is a JMS <EM>MessageListener</EM> on the Topic</LI>
+		<LI>If a component state changes, a <EM>ComponentPacketEvent</EM> (which container component state information) is serialized and sent as a JMS ObjectMessage to the Topic.</LI>
+		<LI>All remote JMSFlows receive this message and adjust their knowledge of our component accordingly</LI>
+		<LI>If the component is becoming <B>activated</B>, then a Queue is created (for remote containers to send request MEs to)</LI>
+	</UL>
+	</LI>
+</UL>
+
+
+
+<P><A href="#HowStuffWorks-top" title="top on How Stuff Works">goto top</A></P>
+
+<H3><A name="HowStuffWorks-JMSFlowsendMEsequencediagram"></A>JMSFlow send ME sequence diagram</H3>
+
+<P><IMG src="how-stuff-works.data/JMSFlowSendSequenceDiagram.JPG" align="absmiddle" border="0"></P>
+<UL>
+	<LI>The diagram shows a &quot;local&quot; and &quot;remote&quot; JMSFLow instance for clarity although they may be the same instance</LI>
+</UL>
+
+
+<UL>
+	<LI>The ME is serialized and sent as a JMS ObjectMessage</LI>
+</UL>
+
+
+<UL>
+	<LI>Requests are sent to a component Queue on some remote container
+	<UL>
+		<LI>They are load balanced</LI>
+	</UL>
+	</LI>
+</UL>
+
+
+<UL>
+	<LI>Responses are sent back to the container Queue of the conatiner that originated the request (because the sender may have done a synchronous send and is awaiting a response)</LI>
+</UL>
+
+
+<UL>
+	<LI>The JMSFlow instance is a <EM>MessageListener</EM> for both Queues</LI>
+</UL>
+
+
+<UL>
+	<LI>When the MessageListener&apos;s onMessage is triggered, the ObjectMessage content is deserialized. If the deserialized Object is a ME then it is routed to the appropriate component.</LI>
+</UL>
+
+
+<P><A href="#HowStuffWorks-top" title="top on How Stuff Works">goto top</A></P>
+
+<P><A name="HowStuffWorks-jcaflow"></A></P>
+<H2><A name="HowStuffWorks-JCAFlow"></A>JCAFlow</H2>
+
+<P>The JCAFlow uses a JCA1.5 inbound resource adapters for message routing among a network of remote containers. </P>
+
+<P>The resource adapters encapsulate JMS functionality.</P>
+
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="noteMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/warning.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Similarities to JMSFlow</B><BR>
+<P>The logic of JCAFlow and JMSFlow seems basically the same. </P>
+
+<P>Like JMSFlow, the JCA resource adapters are hardwired to use ActiveMQ (JMS). </P>
+
+<P>The main difference between the JCAFlow and JMSFlow is that in the jca flow, message may be delivered concurrently within an XA transaction.</P></TD></TR></TABLE>
+
+<P><A href="#HowStuffWorks-top" title="top on How Stuff Works">goto top</A></P>
+
+<P>[END OF DOCUMENT]</P></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=peters">peters</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1991&originalId=5253">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1991">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

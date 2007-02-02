@@ -1,0 +1,199 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+WS Notification XMLBeans
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="ws-notification.html" title="WS Notification">WS Notification</A>&nbsp;&gt;&nbsp;<A href="" title="WS Notification XMLBeans">WS Notification XMLBeans</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">WS Notification XMLBeans</div>
+-->
+            <DIV class="wiki-content">
+<P>This page describes the WS-Notification support created for Java 1.4 using XMLBeans as the XML Marshalling layer.</P>
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">We recommend you migrate to JAX-WS</B><BR>
+<P>Going forward we believe JAXB 2.0 is the idea XSD &lt;=&gt; Java mapping layer and JAX-WS the ideal API for working with web services. So going forward all of our WS-* implementations will use JAX-WS for its POJO and service interface creation.</P>
+
+<P>We&apos;ve left the XMLBeans code around in case folks need to use it but we recommend you migrate to <A href="ws-notification.html" title="WS Notification">WS Notification</A> instead. Hopefully we can figure out how to patch something like <SPAN class="nobr"><A href="http://retroweaver.sourceforge.net/" title="Visit page outside Confluence" rel="nofollow">Retroweaver<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to turn Java 5 specific code into a 1.4 binary so that folks can use JAX-WS and JAXB 2.0 on Java 1.4 JVMs. Incidentally it was the Java 5 dependency of JAXB 2.0 and JAX-WS that led us down the path of XMLBeans.</P></TD></TR></TABLE>
+
+<P>The WS-Notification support is currently implemented as a POJO; which can then either be called directly inside an application or can be wrapped up as a remote web service using some web service stack such as <SPAN class="nobr"><A href="http://activesoap.codehaus.org/" title="Visit page outside Confluence" rel="nofollow">ActiveSOAP<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. </P>
+
+<P>For more detail, try the <SPAN class="nobr"><A href="http://servicemix.org/maven/ws/xmlbeans/apidocs/index.html" title="Visit page outside Confluence" rel="nofollow">javadocs<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<P>We have interfaces for the WS-Notification services in the <SPAN class="nobr"><A href="http://servicemix.org/maven/ws/apidocs/org/servicemix/ws/notification/package-summary.html" title="Visit page outside Confluence" rel="nofollow">org. servicemix.ws.notification<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> package. These interfaces just depend on the XMLBeans generated from the WSDLs.</P>
+
+<P>e.g. here&apos;s the <SPAN class="nobr"><A href="http://servicemix.org/maven/ws/xmlbeans/apidocs/org/servicemix/ws/notification/NotificationConsumer.html" title="Visit page outside Confluence" rel="nofollow">NotificationConsumer<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> interface</P>
+
+<H3><A name="WSNotificationXMLBeans-UsingWSNotification"></A>Using WS-Notification</H3>
+
+<P>To be able to publish or subscribe you need either a NotificationConsumer or NotificationBroker. The current implementation of both is the <SPAN class="nobr"><A href="http://servicemix.org/maven/ws/xmlbeans/apidocs/org/servicemix/ws/notification/impl/ActiveMQNotificationBroker.html" title="Visit page outside Confluence" rel="nofollow">ActiveMQNotificationBroker<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> - which will create a connection to an ActiveMQ broker (by default making an embedded broker inside the same JVM].</P>
+
+<P>You can then publish WS-Notification messages as follows...</P>
+
+
+
+<P>You can perform a subscription as follows</P>
+
+
+
+<H3><A name="WSNotificationXMLBeans-Runtimedependencies"></A>Runtime dependencies</H3>
+
+<P>Apart from the usual ActiveMQ dependencies (either client side only or full server side dependencies depending on if you&apos;re using an embedded broker) the WS-Notification provider has the following dependencies</P>
+
+<UL>
+	<LI>xmlbeans-*.jar</LI>
+	<LI>StAX API (stax-api-*.jar)</LI>
+	<LI>a StAX implementation (either stax-ri-<B>.jar or woodstox-</B>.jar)</LI>
+	<LI>activesoap-*.jar (only required for invoking remote WS services when dispatching notifications)</LI>
+</UL>
+</DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A> on Sep 02, 2005
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1937&originalId=4533">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1937">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

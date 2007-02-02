@@ -1,0 +1,232 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+Introduction to ESB
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="overview.html" title="Overview">Overview</A>&nbsp;&gt;&nbsp;<A href="" title="Introduction to ESB">Introduction to ESB</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">Introduction to ESB</div>
+-->
+            <DIV class="wiki-content"><H3><A name="IntroductiontoESB-Introduction"></A>Introduction</H3>
+
+<P>This document introduces the general concept of an Enterprise Service Bus (ESB) and the Java Business Integration (JBI) specification, followed by a discussion of ServiceMix, an open source ESB implementation based on the JBI standard <SPAN class="nobr"><A href="http://www.jcp.org/en/jsr/detail?id=208" title="Visit page outside Confluence" rel="nofollow">JSR 208<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+
+<H3><A name="IntroductiontoESB-TheProblem"></A>The Problem</H3>
+
+<P>Enterprise networks commonly deploy disparate applications, platforms, and business processes that need to communicate or exchange data with each other. The applications, platforms and processes have non-compatible data formats and non-compatible communications protocols. If an enterprise needs to interface with external systems, the integration problem extends outside of a company, encompassing its business partners&apos; IT systems and processes as well.</P>
+
+<P>In recent years, there have been several technologies attempting to solve these problems such as Enterprise Applicaton Integration <A href="glossary.html#Glossary-EAI" title="EAI on Glossary">(EAI)</A>, Business-to-Business <A href="glossary.html#Glossary-B2B" title="B2B on Glossary">(B2B)</A>, Service Oriented Architecture (<A href="glossary.html#Glossary-SOA" title="SOA on Glossary">SOA)</A>, and <A href="glossary.html#Glossary-webservices" title="webservices on Glossary">Web Services</A>. These solutions addressed some of the integration problems, but were proprietary, expensive, and time-consuming to implement. These solutions range from expensive vendor solutions (high cost, vendor lock-in) to home-grown custom solutions (high maintenance, high cost). The overwhelming disadvantages of these solutions are high cost and low flexibility due to non-standard implementations.</P>
+
+<H3><A name="IntroductiontoESB-TheESBApproach"></A>The ESB Approach</H3>
+
+<P>A standards-based ESB solves the integration problem without the drawbacks of the other solutions. The purpose of an ESB is to facilitate application and process integration by providing distributed processing, intelligent <A href="glossary.html#Glossary-routing" title="routing on Glossary">routing</A>, security, and dynamic data <A href="glossary.html#Glossary-transformation" title="transformation on Glossary">transformation</A>. In an ESB these services are infrastructure services so each application does not have to implement these requirements independently and in a proprietary manner.</P>
+
+<P>The ESB addresses the disadvantages of existing solutions by creating a standard infrastructure for integration. Point-to-point solutions, where each of <EM>n</EM> components requires <EM>n</EM>&#45;1 interfaces for full communication, are replaced by a bus solution where each component requires a single interface to the bus for global communication. An ESB provides distributed messaging, routing, business process orchestration, reliability and security. It also provides pluggable services and, because of the standard bus, these pluggable services can be provided by third parties and still interoperate reliably with the bus.</P>
+
+<P>Attributes of an ESB integration infrastructure are:</P>
+<OL>
+	<LI>distributed - to remove geographical constraints</LI>
+	<LI>message-based - to promote loose coupling</LI>
+	<LI>open standards-based - to preserve investment and encourage partipicipation</LI>
+	<LI>reliable - to meet the requirements of mission-critical business operations</LI>
+</OL>
+
+
+<P>As an integration infrastructure, the ESB provides a number of functions including:</P>
+<OL>
+	<LI>routing</LI>
+	<LI>transformation</LI>
+	<LI>visibility - into messages for content-based routing</LI>
+</OL>
+
+
+<P>An ESB also supports requirements such as security, <A href="glossary.html#Glossary-orchestration" title="orchestration on Glossary">orchestration</A>, and <A href="glossary.html#Glossary-transaction" title="transaction on Glossary">transactionality</A>. These exist in &quot;hard-wired&quot; integration methods, but are not available automatically in a service-oriented architecture. One of the key requirements for the ESB is to give loosely coupled, service-based integration methods a level of enterprise-class reliability and security.</P>
+
+<P>A newer requirement for ESBs is the ability to allow not only loosely-coupled requests found in a service oriented architecture, but also to provide the infrastructure for an Event Driven Architecture <A href="glossary.html#Glossary-EDA" title="EDA on Glossary">(EDA)</A>. SOA and EDA provide complementary functionality. In EDA an event triggers a message to be sent to other applications that are decoupled from the application that triggered the event. This is an asynchronous operation as the recipient applications may receive or pick-up their messages at a later time, whereas the SOA messaging model is typically synchronous in nature.</P>
+
+<H3><A name="IntroductiontoESB-WhatisJavaBusinessIntegration%28JBI%29%3F"></A>What is Java Business Integration (JBI)?</H3>
+
+<P>JBI is an architecture for integration systems specifying plug-in components that interoperate by exchanging messages, rather than by interacting directly. This decoupling increases flexibility because each component needs to know how to interact with the JBI bus only and not with <EM>n</EM> number of other components. JBI components provide services, consume services, or sometimes both. There are two types of components: Service Engines (SE) and Binding Components (BC). The SEs provide business logic and transformation services. The BCs provide connectivity for applications that are external to the JBI. The separation of business and processing logic from communication logic makes the implementation of components much less complex.</P>
+
+<P>The mediated message exchange between components is provided by the Normalized Message Router (NMR). The NMR routes normalized messages between service providers and consumers. A normalized message consists of two parts: the message content (payload) and the message metadata. The message metadata contains information such as security information, that can affect the processing of the message as it routes through the JBI. Messages flowing into the JBI, via binding components, are translated into a normalized (neutral) format, then routed to their destination. Prior to final delivery the normalized message is translated into the appropriate format for the recipient. A message can be routed through several JBI components depending on what processing is needed.</P>
+
+<P>The JBI environment also supplies a set of services for self management, including services for component installation and life cycle management of components.</P>
+
+<P>In summary, the JBI specification creates a standards-based technology for enterprise application integration. For more details on the JBI specification please see: <SPAN class="nobr"><A href="http://www.jcp.org/en/jsr/detail?id=208" title="Visit page outside Confluence" rel="nofollow">JSR 208<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+
+<H3><A name="IntroductiontoESB-WhyServiceMix"></A>Why ServiceMix</H3>
+
+<P>There are many vendors that provide ESB solutions, but there is not universal agreement as to the best design or architecture for an ESB. LogicBlaze has implemented the ServiceMix ESB based on the JBI (JSR 208) specification in order to create a standards based ESB and the ServiceMix ESB combines the functionality of both a Service Oriented Architecture (S0A) and Event Driven Architecture (EDA) to achieve an agile, enterprise ESB.</P>
+
+<P>As previously stated, ServiceMix is an open source ESB that is based on the Java Business Integration (JBI) standard. These two factors, open source and open standards-based, allow for low entry cost, maximum flexibility, reuse, and investment protection.</P>
+
+<P>Low entry cost is a result of the open source model, which allows developers to leverage the work of the development community when implementing components to plug into the ESB, or using the ESB as an integral part of a larger solution.</P>
+
+<P>Flexibility results from the fact that any number of third party vendors supply components and bindings that conform to the JBI open standard specification can be supported. These components and bindings not only interoperate with each other and external applications via the ServiceMix ESB, but can easily be replaced with alternate components that provide the same or enhanced services.</P>
+
+<P>Reuse and investment protection also results from the adherence to standards. Not only can developers swap out ESB components, or use components in another JBI-standard ESB, but they can swap out the entire ESB and still use the standard plug-in components.</P>
+
+<P>As an agile ESB, ServiceMix allows plug-in services which can combine to create a service oriented architecture. ServiceMix allows services to operate in an event driven way as well. In other words, the services are decoupled and listen on the bus for service requests. The bus is responsible for quality of service (QoS) features such as message persistence, guaranteed delivery, failure handling, and transaction support.</P>
+
+<P>ServiceMix supports event driven architecture for events occurring both internal and external to the bus. In other words, JMS binding components can listen for the arrival of messages, i.e., the &quot;event&quot; on topics or queues which are external to the bus, while other components can listen for messages on the normalized message bus.</P>
+
+<P>While decoupled (EDA) operation (as described in the previous two paragraphs) is more appropriate for the scalability and reliabilty required for high transaction production environments, synchronous request/response communication found in SOA implementations, is also supported. Thus, ServiceMix effectively combines SOA and EDA for the development and deployment of composite enterprise applications.</P>
+
+<P>Please see <A href="background-to-servicemix.html" title="Background to ServiceMix">Background to ServiceMix</A> for the philosophy behind the development of ServiceMix.</P>
+
+<P>Please see <A href="home.html" title="Home">Home</A> for a complete list of features, services and components, available with ServiceMix.</P>
+
+<H3><A name="IntroductiontoESB-DefinitionofTerms"></A>Definition of Terms</H3>
+
+<P>For definitions of terms used in this document please see the <A href="glossary.html" title="Glossary">Glossary</A>. </P></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=lmalgeri">Lisa Malgeri</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=elsan">elavarasan muthusamy</A> on Jun 14, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1892&originalId=8745">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1892">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

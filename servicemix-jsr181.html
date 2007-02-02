@@ -1,0 +1,476 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+servicemix-jsr181
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="jbi-components.html" title="JBI Components">JBI Components</A>&nbsp;&gt;&nbsp;<A href="" title="servicemix-jsr181">servicemix-jsr181</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">servicemix- jsr181</div>
+-->
+            <DIV class="wiki-content"><H1><A name="servicemix-jsr181-servicemixjsr181"></A>servicemix-jsr181</H1>
+
+<P>ServiceMix jsr181 component is a JBI Service Engine exposing (annotated) POJO as services on the JBI Bus.<BR>
+It uses <SPAN class="nobr"><A href="http://xfire.codehaus.org/" title="Visit page outside Confluence" rel="nofollow">xfire<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> internally to perform service invocations and xml marshaling.</P>
+
+<P>Features:</P>
+<UL>
+	<LI>no annotations</LI>
+	<LI>jsr181 annotations</LI>
+	<LI><SPAN class="nobr"><A href="http://jakarta.apache.org/commons/attributes/" title="Visit page outside Confluence" rel="nofollow">commons-attributes<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> annotations</LI>
+	<LI>aegis binding</LI>
+	<LI>jaxb2 binding</LI>
+	<LI>xmlbeans binding</LI>
+	<LI>wsdl auto generation</LI>
+	<LI>MTOM / attachments support</LI>
+</UL>
+
+
+<H2><A name="servicemix-jsr181-Installation"></A>Installation</H2>
+
+<P>Installing the servicemix-jsr181 component can be done in several ways:</P>
+<UL>
+	<LI>drop the installer zip in an hotdeploy directory monitored by ServiceMix</LI>
+	<LI>using <A href="ant-tasks.html" title="Ant Tasks">ant tasks</A></LI>
+</UL>
+
+
+<P>Note that when using ant tasks, the component is not started, you will have to start it manually using ant tasks or a console.</P>
+
+<H2><A name="servicemix-jsr181-Configuration"></A>Configuration</H2>
+
+<P>Several parameters can be configured using a JMX console.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Configuration</B><BR>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh"> Name </TH>
+<TH class="confluenceTh"> Type </TH>
+<TH class="confluenceTh"> Description </TH>
+<TH class="confluenceTh"> Default </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> printStackTraceInFaults </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> print the full stack trace in faults when an exception occurs </TD>
+<TD class="confluenceTd"> false </TD>
+</TR>
+</TBODY></TABLE></TD></TR></TABLE>
+
+<H2><A name="servicemix-jsr181-Deployment"></A>Deployment</H2>
+
+<P>You can deploy Service Units containing a file named xbean.xml for activating consumer and provider endpoints.</P>
+
+<P>This xml file should respect the given syntax, though this is a spring based xml configuration file from where all beans of class <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-jsr181/apidocs/org/apache/servicemix/jsr181/Jsr181Endpoint.html" title="Visit page outside Confluence" rel="nofollow">Jsr181Endpoint<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> are retrieved.<BR>
+See a full example <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/deployables/serviceengines/servicemix-jsr181/src/test/resources/good2/xbean.xml" title="Visit page outside Confluence" rel="nofollow">here<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.&nbsp; Note that you have to define the http namespace with</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;beans <SPAN class="code-keyword">xmlns:jsr181</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/jsr181/1.0&quot;</SPAN>&gt;</SPAN>
+    ...
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>Any numbers of endpoints can be specified in the xbean.xml file.</P>
+
+<P>As the main purpose is to expose a POJO, you will have to include the needed class files / jars in the service unit and reference them using the following tags in your xbean.xml configuration file:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;classpath&gt;</SPAN>
+  <SPAN class="code-tag">&lt;location&gt;</SPAN>.<SPAN class="code-tag">&lt;/location&gt;</SPAN>
+<SPAN class="code-tag">&lt;/classpath&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>This will add the content of the <B>location</B> tags (relative to the unzipped service unit) to the classpath.  The previous configuration will just add the class files contained in the service unit, as if it is a plain jar.</P>
+
+<P>If you want to embed jars, just use something like</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;classpath&gt;</SPAN>
+  <SPAN class="code-tag">&lt;location&gt;</SPAN>lib/foo.jar<SPAN class="code-tag">&lt;/location&gt;</SPAN>
+<SPAN class="code-tag">&lt;/classpath&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<H2><A name="servicemix-jsr181-Endpoint"></A>Endpoint</H2>
+
+<P>A few examples:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;jsr181:endpoint endpoint=<SPAN class="code-quote">&quot;endpoint1&quot;</SPAN>
+                 typeMapping=<SPAN class="code-quote">&quot;xmlbeans&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;jsr181:pojo&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;test.EchoService&quot;</SPAN> /&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/jsr181:pojo&gt;</SPAN>
+<SPAN class="code-tag">&lt;/jsr181:endpoint&gt;</SPAN></PRE>
+</DIV></DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;myPojo&quot;</SPAN> class=<SPAN class="code-quote">&quot;test.EchoService&quot;</SPAN> /&gt;</SPAN>
+<SPAN class="code-tag">&lt;jsr181:endpoint pojo=<SPAN class="code-quote">&quot;#myPojo&quot;</SPAN> /&gt;</SPAN></PRE>
+</DIV></DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;jsr181:endpoint pojoClass=<SPAN class="code-quote">&quot;test.EchoService2&quot;</SPAN>
+                 annotations=<SPAN class="code-quote">&quot;none&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Endpoint attributes</B><BR>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh"> Name </TH>
+<TH class="confluenceTh"> Type </TH>
+<TH class="confluenceTh"> Description </TH>
+<TH class="confluenceTh"> Required </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> annotations </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> The annotations used to configure the service.  Can be &quot;none&quot;, &quot;java5&quot;, &quot;jsr181&quot;, &quot;commons&quot;.  If not specified, the annotations type will be discovered by looking at the class. </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> endpoint </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> JBI Endpoint name </TD>
+<TD class="confluenceTd"> no (will be auto-generated if not specified) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> interfaceName </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> Interface QName implemented by the JBI endpoint </TD>
+<TD class="confluenceTd"> no (will be auto-generated if not specified) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> mtomEnabled </TD>
+<TD class="confluenceTd"> boolean </TD>
+<TD class="confluenceTd"> Enable MTOM / attachment support </TD>
+<TD class="confluenceTd"> no (defaults to false) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> pojo </TD>
+<TD class="confluenceTd"> Object </TD>
+<TD class="confluenceTd"> the instanciated POJO to service requests </TD>
+<TD class="confluenceTd"> one of pojo or pojoClass </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> pojoClass </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the class name of the POJO to service requests </TD>
+<TD class="confluenceTd"> one of pojo or pojoClass </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> service </TD>
+<TD class="confluenceTd"> QName </TD>
+<TD class="confluenceTd"> JBI Service name </TD>
+<TD class="confluenceTd"> no (will be auto-generated if not specified) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> serviceInterface </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> the class name of the interface to expose as a service </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> typeMapping </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> Can be &quot;default&quot;, &quot;xmlbeans&quot;, &quot;jaxb2&quot;.  Defaults to &quot;default&quot; (Aegis) if no annotations used, else defaults to &quot;jaxb2&quot; </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> wsdlResource </TD>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://springframework.org/docs/api/org/springframework/core/io/Resource.html" title="Visit page outside Confluence" rel="nofollow">Spring resource<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
+<TD class="confluenceTd"> if set, the wsdl will be retrieved from the given Spring resource </TD>
+<TD class="confluenceTd"> no </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> style </TD>
+<TD class="confluenceTd"> String </TD>
+<TD class="confluenceTd"> The SOAP style to use (document, wrapped, rpc) </TD>
+<TD class="confluenceTd"> no (defaults to &quot;wrapped&quot;) </TD>
+</TR>
+</TBODY></TABLE></TD></TR></TABLE>
+
+<H2><A name="servicemix-jsr181-AccessingtheJBIbus"></A>Accessing the JBI bus</H2>
+
+<P>The prefered way to access the JBI bus is by retrieving a ComponentContext implementation.<BR>
+The spring BeanFactory has a parent factory which contains a bean named &quot;context&quot; that you can refer to.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;jsr181:endpoint ...&gt;</SPAN>
+  <SPAN class="code-tag">&lt;jsr181:pojo&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;xxx&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;context&quot;</SPAN> ref=<SPAN class="code-quote">&quot;context&quot;</SPAN> /&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/jsr181:pojo&gt;</SPAN>
+<SPAN class="code-tag">&lt;/jsr181:endpoint&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>If you want to send a request to another service from your POJO, you can add the following method on your POJO:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">private</SPAN> javax.jbi.component.ComponentContext context;
+
+<SPAN class="code-keyword">public</SPAN> void setContext(javax.jbi.component.ComponentContext context) {
+  <SPAN class="code-keyword">this</SPAN>.context = context;
+}</PRE>
+</DIV></DIV>
+<P>You will be able to use the provided DeliveryChannel to send requests.</P>
+
+<P>Note that only sendSync is allowed for active JBI exchanges (but you have to use send for DONE or ERROR status exchanges).</P>
+
+<P>You can also use the <A href="client-api.html" title="Client API">client api</A>:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> void myMethod() {
+  ServiceMixClient client = <SPAN class="code-keyword">new</SPAN> ServiceMixClientFacade(<SPAN class="code-keyword">this</SPAN>.context);
+  QName service = <SPAN class="code-keyword">new</SPAN> QName(<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//servicemix.org/cheese/&quot;</SPAN>, <SPAN class="code-quote">&quot;receiver&quot;</SPAN>);
+</SPAN>  EndpointResolver resolver = client.createResolverForService(service);
+  client.send(resolver, <SPAN class="code-keyword">null</SPAN>, <SPAN class="code-keyword">null</SPAN>, <SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>);
+}</PRE>
+</DIV></DIV>
+
+<H2><A name="servicemix-jsr181-Lightweightmode"></A>Lightweight mode</H2>
+
+<P>The servicemix-jsr181 component can also be configured in a spring/xbean configuration file, for use in an embedded ServiceMix.<BR>
+Here is an example of such a configuration:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;sm:activationSpec&gt;</SPAN>
+	<SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+      <SPAN class="code-tag">&lt;jsr181:component&gt;</SPAN>
+      	<SPAN class="code-tag">&lt;jsr181:endpoints&gt;</SPAN>
+      		&lt;jsr181:endpoint pojoClass=<SPAN class="code-quote">&quot;test.EchoService2&quot;</SPAN>
+                               serviceInterface=<SPAN class="code-quote">&quot;test.Echo&quot;</SPAN>
+   					 annotations=<SPAN class="code-quote">&quot;none&quot;</SPAN> /&gt;
+      	<SPAN class="code-tag">&lt;/jsr181:endpoints&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/jsr181:component&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+<SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Classpath issues when embedding servicemix-jsr181 component</B><BR>
+<P>When using the servicemix.xml configuration file to create jsr181 endpoints, you must include the servicemix-jsr181-xxx.jar in your classpath.<BR>
+You will find this file inside the component installer (./components/servicemix-jsr181-xxx.zip).<BR>
+Failing this, an IllegalArgumentException will be thrown with the following message:<BR>
+ Component name: xxxxxx is bound to an object which is not a JBI component, it is of type: javax.xml.namespace.QName<BR>
+or aanother exception with</P></TD></TR></TABLE>
+
+<H2><A name="servicemix-jsr181-Proxies"></A>Proxies</H2>
+
+<P>You can create java proxies for JBI endpoints, provided that they expose a WSDL.</P>
+
+<P>The basic configuration is the following:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;jsr181:proxy id=<SPAN class="code-quote">&quot;proxy&quot;</SPAN>
+              container=<SPAN class="code-quote">&quot;#jbi&quot;</SPAN> 
+              interfaceName=<SPAN class="code-quote">&quot;test:EchoPortType&quot;</SPAN>
+              type=<SPAN class="code-quote">&quot;test.Echo&quot;</SPAN> /&gt;</PRE>
+</DIV></DIV>
+<P>You can use it from one of you client bean, or from inside another component, and call the JBI endpoint as a plain Java object.</P>
+
+<P>From a jsr181 Service Unit, it could be used as following:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;jsr181:endpoint serviceInterface=<SPAN class="code-quote">&quot;test.Echo&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;jsr181:pojo&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;test.EchoProxy&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;echo&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;jsr181:proxy service=<SPAN class="code-quote">&quot;test:EchoService&quot;</SPAN> context=<SPAN class="code-quote">&quot;#context&quot;</SPAN> type=<SPAN class="code-quote">&quot;test.Echo&quot;</SPAN> /&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/jsr181:pojo&gt;</SPAN>
+<SPAN class="code-tag">&lt;/jsr181:endpoint&gt;</SPAN></PRE>
+</DIV></DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">private</SPAN> Echo echo;
+
+  <SPAN class="code-keyword">public</SPAN> void setEcho(Echo echo) {
+    <SPAN class="code-keyword">this</SPAN>.echo = echo;
+  }
+
+  <SPAN class="code-keyword">public</SPAN> void myMethod() {
+    <SPAN class="code-object">String</SPAN> result = echo.echo(<SPAN class="code-quote">&quot;world&quot;</SPAN>);
+    ...
+  }</PRE>
+</DIV></DIV>
+
+<H2><A name="servicemix-jsr181-EJBs"></A>EJBs</H2>
+
+<P>Using spring EJB proxies, you can easily expose an existing EJB on the JBI bus.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;jsr181:endpoint annotations=<SPAN class="code-quote">&quot;none&quot;</SPAN> service=<SPAN class="code-quote">&quot;my:ejb&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;ejb&quot;</SPAN>
+                 serviceInterface=<SPAN class="code-quote">&quot;foo.bar.Hello&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;jsr181:pojo&gt;</SPAN>
+    <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;jndiName&quot;</SPAN> value=<SPAN class="code-quote">&quot;my/jndi/path&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;businessInterface&quot;</SPAN> value=<SPAN class="code-quote">&quot;foo.bar.Hello&quot;</SPAN>/&gt;</SPAN>
+      <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;jndiTemplate&quot;</SPAN> ref=<SPAN class="code-quote">&quot;jndiTemplate&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/jsr181:pojo&gt;</SPAN>
+<SPAN class="code-tag">&lt;/jsr181:endpoint&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<H2><A name="servicemix-jsr181-MTOMsupport"></A>MTOM support</H2>
+
+<P>MTOM is a way to handle large amounts of binary data in your services. Unlike attachments, the XML infoset stays the same. MTOM just &quot;optimizes&quot; any base64Binary data you have in your messages. When MTOM is turned on, this base64 data gets sent as a binary attachment saving time and space.</P>
+
+<P>MTOM support can be turned on using:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;jsr181:endpoint mtomEnabled=<SPAN class="code-quote">&quot;true&quot;</SPAN> ... /&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>MTOM is supported for the following classes:</P>
+<UL>
+	<LI>DataSource</LI>
+	<LI>DataHandler</LI>
+	<LI>byte[]</LI>
+</UL>
+
+
+<P>If you have a bean with the following method:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> <SPAN class="code-object">String</SPAN> echo(<SPAN class="code-object">String</SPAN> msg, DataHandler binary) {
+  ...
+}</PRE>
+</DIV></DIV>
+<P>you will be able to call it using the following requests:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;echo <SPAN class="code-keyword">xmlns:xop</SPAN>=&apos;http://www.w3.org/2004/08/xop/include&apos;&gt;</SPAN>
+  <SPAN class="code-tag">&lt;msg&gt;</SPAN>hello world<SPAN class="code-tag">&lt;/msg&gt;</SPAN>
+  <SPAN class="code-tag">&lt;binary&gt;</SPAN>
+    <SPAN class="code-tag">&lt;xop:Include href=&apos;binary&apos;/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/binary&gt;</SPAN>
+<SPAN class="code-tag">&lt;/echo&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>provided that the JBI message contains an attachment named &quot;binary&quot;.</P></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=philip.dodds%2540gmail.com">Philip Dodds</A> on Nov 20, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2057&originalId=15149">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2057">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

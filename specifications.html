@@ -1,0 +1,339 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+Specifications
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="guides.html" title="Guides">Guides</A>&nbsp;&gt;&nbsp;<A href="management.html" title="Management">Management</A>&nbsp;&gt;&nbsp;<A href="" title="Specifications">Specifications</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">Specifications</div>
+-->
+            <DIV class="wiki-content">
+<H2><A name="Specifications-Systemservices"></A>System services</H2>
+
+<UL>
+	<LI>Each service should have a corresponding LifeCycle MBean registered<BR>
+      with an ObjectName independant of the implementation (use the interface <BR>
+      instead of the class name)</LI>
+</UL>
+
+
+<UL>
+	<LI>Management services should always throw RuntimeException with a message<BR>
+      compliant with the xml description</LI>
+</UL>
+
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN> standalone=<SPAN class="code-quote">&quot;yes&quot;</SPAN>?&gt;</SPAN>
+&lt;jbi-task version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN>
+          xmlns=<SPAN class="code-quote">&quot;http://java.sun.com/xml/ns/jbi/management-message&quot;</SPAN>&gt;
+  <SPAN class="code-tag">&lt;jbi-task-result&gt;</SPAN>
+    <SPAN class="code-tag">&lt;frmwk-task-result&gt;</SPAN>
+      <SPAN class="code-tag">&lt;frmwk-task-result-details&gt;</SPAN>
+        <SPAN class="code-tag">&lt;task-result-details&gt;</SPAN>
+          <SPAN class="code-tag">&lt;task-id&gt;</SPAN>deploy<SPAN class="code-tag">&lt;/task-id&gt;</SPAN>
+          <SPAN class="code-tag">&lt;task-result&gt;</SPAN>FAILED<SPAN class="code-tag">&lt;/task-result&gt;</SPAN>
+          <SPAN class="code-tag">&lt;message-type&gt;</SPAN>ERROR<SPAN class="code-tag">&lt;/message-type&gt;</SPAN>
+          <SPAN class="code-tag">&lt;exception-info&gt;</SPAN>
+            <SPAN class="code-tag">&lt;nesting-level&gt;</SPAN>1<SPAN class="code-tag">&lt;/nesting-level&gt;</SPAN>
+            <SPAN class="code-tag">&lt;msg-loc-info&gt;</SPAN>
+              <SPAN class="code-tag">&lt;loc-token&gt;</SPAN>JBI1009<SPAN class="code-tag">&lt;/loc-token&gt;</SPAN>
+              <SPAN class="code-tag">&lt;loc-message&gt;</SPAN>Unable to deploy {1}. Missing {2} section in jbi.xml
+              <SPAN class="code-tag">&lt;/loc-message&gt;</SPAN>
+              <SPAN class="code-tag">&lt;loc-param&gt;</SPAN>file://d/jbi/samples/1/sampleAU.jar<SPAN class="code-tag">&lt;/loc-param&gt;</SPAN>
+              <SPAN class="code-tag">&lt;loc-param&gt;</SPAN>service-unit<SPAN class="code-tag">&lt;/loc-param&gt;</SPAN>
+            <SPAN class="code-tag">&lt;/msg-loc-info&gt;</SPAN>
+            <SPAN class="code-tag">&lt;stack-trace&gt;</SPAN>....<SPAN class="code-tag">&lt;/stack-trace&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/exception-info&gt;</SPAN>
+          <SPAN class="code-tag">&lt;locale&gt;</SPAN>en<SPAN class="code-tag">&lt;/locale&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/task-result-details&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/frmwk-task-result-details&gt;</SPAN>
+      <SPAN class="code-tag">&lt;is-cause-framework&gt;</SPAN>YES<SPAN class="code-tag">&lt;/is-cause-framework&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/frmwk-task-result&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/jbi-task-result&gt;</SPAN>
+<SPAN class="code-tag">&lt;/jbi-task&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<UL>
+	<LI>Internationalisation</LI>
+</UL>
+
+
+<H2><A name="Specifications-InstallationService%3A"></A>InstallationService:</H2>
+
+<H3><A name="Specifications-loadNewInstaller"></A>loadNewInstaller</H3>
+
+<UL>
+	<LI>unpack jar in a temp dir</LI>
+	<LI>parse / validate the jbi descriptor</LI>
+	<LI>if a component with the same name is already loaded (installed or not installed but with an installer loaded)<BR>
+           fail the request</LI>
+	<LI>create a directory for this installer<BR>
+           check the component name first, then patterns with (component name + &quot;.&quot; + index)<BR>
+           until one non existing directory is found</LI>
+	<LI>create / init bootstrap</LI>
+	<LI>create and register the installer mbean</LI>
+</UL>
+
+
+<H3><A name="Specifications-loadInstaller"></A>loadInstaller</H3>
+
+<UL>
+	<LI>check for an already loaded installer and return it if found</LI>
+	<LI>check that the requested component is installed</LI>
+	<LI>create / init bootstrap</LI>
+	<LI>create and register the installer mbean</LI>
+</UL>
+
+
+<H3><A name="Specifications-unloadInstaller"></A>unloadInstaller</H3>
+
+<UL>
+	<LI>if the component is installed throw an exception</LI>
+	<LI>locate the installer mbean</LI>
+	<LI>if found, unregister it</LI>
+	<LI>delete directory if requested<BR>
+           if not possible to delete directory, put a &quot;.delete&quot; file at root<BR>
+           these directories should be removed when container restarts</LI>
+</UL>
+
+
+<H3><A name="Specifications-installSharedLibrary"></A>installSharedLibrary</H3>
+
+<UL>
+	<LI>TODO</LI>
+</UL>
+
+
+<H3><A name="Specifications-uninstallSharedLibrary"></A>uninstallSharedLibrary</H3>
+
+<UL>
+	<LI>TODO</LI>
+</UL>
+
+
+<H2><A name="Specifications-Installer"></A>Installer</H2>
+
+<H3><A name="Specifications-getInstallerConfigurationMBean"></A>getInstallerConfigurationMBean</H3>
+
+<UL>
+	<LI>query the bootstrap for the configuration bean name and return it</LI>
+</UL>
+
+
+<H3><A name="Specifications-install"></A>install</H3>
+
+<UL>
+	<LI>call bootstrap onInstall / cleanUp sequence</LI>
+	<LI>create the component (no lifecycle involved)</LI>
+	<LI>save its state (SHUTDOWN)</LI>
+</UL>
+
+
+<H3><A name="Specifications-uninstall"></A>uninstall</H3>
+
+<UL>
+	<LI>check that the component is stopped and has no service units</LI>
+	<LI>shutdown the component</LI>
+	<LI>call bootstrap onUninstall / cleanUp sequence</LI>
+</UL>
+
+
+<H2><A name="Specifications-ComponentLifeCycle"></A>ComponentLifeCycle</H2>
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">NOTE</B><BR>
+<P> The jbi container must ensure that valid transitions are propagated to<BR>
+      the component</P></TD></TR></TABLE>
+
+<H3><A name="Specifications-start"></A>start</H3>
+
+<UL>
+	<LI>if component is running, do nothing</LI>
+	<LI>if component is shutdown, call init on its lifecycle</LI>
+	<LI>call start</LI>
+	<LI>persist state if not system restart</LI>
+	<LI>if system restart,<BR>
+          initialize all SUs (they become stopped)<BR>
+          restore previous state (started, stopped or shutdown)</LI>
+</UL>
+
+
+<H3><A name="Specifications-stop"></A>stop</H3>
+
+<UL>
+	<LI>if component is shutdown, throw an exception</LI>
+	<LI>if component is stopped, return</LI>
+	<LI>if component is running,<BR>
+          stop all service units<BR>
+          call stop on component lifecycle<BR>
+        persist state if not system shutdown</LI>
+</UL>
+
+
+<H3><A name="Specifications-shutdown"></A>shutdown</H3>
+
+<UL>
+	<LI>if component is running, stop it</LI>
+	<LI>if component is stopped,<BR>
+          shutdown all service units<BR>
+          call shutdown on component lifecycle</LI>
+	<LI>persist state if not system restart</LI>
+</UL>
+
+
+
+<H2><A name="Specifications-DeploymentService"></A>DeploymentService</H2>
+
+<H3><A name="Specifications-TODO"></A>TODO</H3>
+
+</DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A> on Nov 22, 2005
+                  
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2128">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

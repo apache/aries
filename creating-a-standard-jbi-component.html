@@ -1,0 +1,268 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+Creating a Standard JBI Component
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="tutorials.html" title="Tutorials">Tutorials</A>&nbsp;&gt;&nbsp;<A href="" title="Creating a Standard JBI Component">Creating a Standard JBI Component</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">Creating a Standard JBI Component</div>
+-->
+            <DIV class="wiki-content"><P><B>Note:</B> The content of this document is overlapping with <A href="notes-on-creating-jbi-component-using-maven2.html" title="Notes on Creating JBI Component using maven2">Notes on Creating JBI Component using maven2</A> and <A href="hello-world-bc.html" title="Hello World - BC">Hello World &#45; BC</A> and <A href="hello-world-se.html" title="Hello World - SE">Hello World &#45; SE</A>. Any changes you might want to do for this document might be relevant for them as well. Questions unanswered by this document may be answered by the other documents.</P>
+
+<P>This document is a tutorial that describes the steps involved in the creation of a standard JBI Component using servicemix-common module.<BR>
+We will write a full XSLT Service Engine.</P>
+
+<P>First, we will use the servicemix-service-engine maven 2 archetype to create the basis of our JBI component.</P>
+
+<H2><A name="CreatingaStandardJBIComponent-Usingthemaven2archetype"></A>Using the maven2 archetype</H2>
+
+<P>Run the following command (remove the trailing backshlashes and make it one line):</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn archetype:create \
+        -DarchetypeGroupId=org.apache.servicemix.tooling \
+        -DarchetypeArtifactId=servicemix-service-engine \
+        -DarchetypeVersion=3.0-incubating \
+        -DgroupId=org.apache.servicemix.xslt \
+        -DartifactId=servicemix-xslt</PRE>
+</DIV></DIV>
+<P>The first three parameters identify the maven 2 archetype to use, while the last two parameters are used for the generated maven 2 project. The version information &quot;3.0-incubating&quot; may have to be changed; just look at any of ServiceMix&apos; <EM>pom.xml</EM> for the version you are using.</P>
+
+<P>This will create the following files:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">servicemix-xslt\
+  pom.xml
+  src\
+    main\
+      java\
+        org\
+          apache\
+            servicemix\
+              xslt\
+                MyBootstrap.java
+                MyComponent.java
+                MyDeployer.java
+                MyEndpoint.java
+                MyLifeCycle.java
+                MySpringComponent.java
+    test\
+      java\
+        org\
+          apache\
+            servicemix\
+              xslt\
+                MySpringComponentTest.java
+      resources\
+        spring.xml</PRE>
+</DIV></DIV>
+
+<H2><A name="CreatingaStandardJBIComponent-Testingthegeneratedcomponent"></A>Testing the generated component</H2>
+
+<P>The default implementation of the component accepts InOut MEPs and return the input content as the out message.</P>
+
+<P>To test it, just run</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn test</PRE>
+</DIV></DIV>
+<P>You should see something like:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">[INFO] Scanning <SPAN class="code-keyword">for</SPAN> projects...
+[INFO] ----------------------------------------------------------------------------
+[INFO] Building A custom project
+[INFO]    task-segment: [test]
+[INFO] ----------------------------------------------------------------------------
+[INFO] [xbean:mapping {execution: <SPAN class="code-keyword">default</SPAN>}]
+[INFO] Generating META-INF properties file: c:\java\tmp\servicemix-xslt\target\xbea
+n\META-INF\services\org\apache\xbean\spring\http\org.apache.servicemix.xslt\1.0 <SPAN class="code-keyword">for</SPAN>
+ namespace: http:<SPAN class="code-comment">//org.apache.servicemix.xslt/1.0
+</SPAN>[INFO] Generating HTML documentation file: c:\java\tmp\servicemix-xslt\target\xbean
+\servicemix-xslt.xsd.html <SPAN class="code-keyword">for</SPAN> namespace: http:<SPAN class="code-comment">//org.apache.servicemix.xslt/1.0
+</SPAN>[INFO] Generating XSD file: c:\java\tmp\servicemix-xslt\target\xbean\servicemix-xsl
+t.xsd <SPAN class="code-keyword">for</SPAN> namespace: http:<SPAN class="code-comment">//org.apache.servicemix.xslt/1.0
+</SPAN>[INFO] ...done.
+[INFO] [2-jbi:generate-jbi-descriptor]
+[INFO] Generating jbi.xml
+[INFO] [resources:resources]
+[INFO] Using <SPAN class="code-keyword">default</SPAN> encoding to copy filtered resources.
+[INFO] [compiler:compile]
+Compiling 6 source files to c:\java\tmp\servicemix-xslt\target\classes
+[INFO] [resources:testResources]
+[INFO] Using <SPAN class="code-keyword">default</SPAN> encoding to copy filtered resources.
+[INFO] [compiler:testCompile]
+Compiling 1 source file to c:\java\tmp\servicemix-xslt\target\test-classes
+[INFO] [surefire:test]
+[INFO] Setting reports dir: c:\java\tmp\servicemix-xslt\target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+[surefire] Running org.apache.servicemix.xslt.MySpringComponentTest
+log4j:WARN No appenders could be found <SPAN class="code-keyword">for</SPAN> logger (org.apache.xbean.spring.context.
+impl.XBeanXmlBeanDefinitionReader).
+log4j:WARN Please initialize the log4j system properly.
+&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;&lt;hello&gt;world&lt;/hello&gt;
+[surefire] Tests run: 1, Failures: 0, Errors: 0, Time elapsed: 1,422 sec
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 42 seconds
+[INFO] Finished at: Thu May 11 22:50:58 CEST 2006
+[INFO] Final Memory: 8M/18M
+[INFO] ------------------------------------------------------------------------</PRE>
+</DIV></DIV>
+
+<P>Note: For problems with archetypes in Eclipse, see <A href="importing-servicemix-into-eclipse.html#ImportingServiceMixintoEclipse-ProjectswithfailingbuildinEclipseworkspace" title="Projects with failing build in Eclipse workspace on Importing ServiceMix into Eclipse">Importing ServiceMix into Eclipse#Projects with failing build in Eclipse workspace</A></P>
+
+<P>Created by <SPAN class="nobr"><A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet" title="View profile for Guillaume Nodet"><SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/user_12.gif" height="12" width="12" align="absmiddle" alt="" border="0"></SUP>Guillaume Nodet</A></SPAN><BR>
+ On Thu May 11 15:07:33 CEST 2006<BR>
+Using <FONT color="blue">TimTam</FONT></P></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=bsnyder">Bruce Snyder</A> on Jan 16, 2007
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5293&originalId=15312">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5293">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

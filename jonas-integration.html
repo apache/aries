@@ -1,0 +1,309 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+JOnAS Integration
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="integration.html" title="Integration">Integration</A>&nbsp;&gt;&nbsp;<A href="" title="JOnAS Integration">JOnAS Integration</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">JOnAS Integration</div>
+-->
+            <DIV class="wiki-content">
+<H1><A name="JOnASIntegration-JOnASIntegration"></A>JOnAS Integration</H1>
+
+<P> The Bull R&amp;D team in charge of JOnAS development is pleased to announce the Service Mix integration in the lastest JOnAS stable release (<SPAN class="nobr"><A href="http://forge.objectweb.org/project/download.php?group_id=5&file_id=5189" title="Visit page outside Confluence" rel="nofollow">jonas4.6.6-tomcat5.5.12.tgz<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>). This version is the latest J2EE 1.4 certfied release.</P>
+
+<P>The Service Mix version needed for this integration must be one up to servicemix-3.0-M1.</P>
+
+<P>Thanks to Guillaume Nodet for the overnigth fix on the standard jms processor &#33;</P>
+
+<H2><A name="JOnASIntegration-Installation"></A>Installation</H2>
+
+<P>In order to deploy the ServiceMix web application into the JOnAS server, follow the next configuration steps.</P>
+
+<P>First of all, download the latest ServiceMix version (servicemix-3.0-M1) or SNAPSHOT released after the 2006-04-07. Then you can extract it in a directory of your choice to be able to update configuration files.</P>
+
+<P>ServiceMix web application configuration :</P>
+<UL>
+	<LI>configure JORAM jms provider instead of activeMQ in the web app WEB-INF/applicationContext.xml
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;bean id=<SPAN class="code-quote">&quot;jmsFactory&quot;</SPAN>
+	class=<SPAN class="code-quote">&quot;org.objectweb.joram.client.jms.local.LocalConnectionFactory&quot;</SPAN>&gt;
+&lt;/bean&gt;</PRE>
+</DIV></DIV></LI>
+	<LI><FONT color="#000000">remove references to activeMQ</FONT> in the web app WEB-INF/
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;context-param&gt;
+	&lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+	&lt;param-value&gt;/WEB-INF/applicationContext.xml&lt;/param-value&gt;
+&lt;/context-param&gt;</PRE>
+</DIV></DIV>
+<P>instead of</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;context-param&gt;
+	&lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+	&lt;param-value&gt;/WEB-INF/applicationContext.xml WEB-INF/activeMQ.xml&lt;/param-value&gt;
+&lt;/context-param&gt;</PRE>
+</DIV></DIV></LI>
+</UL>
+
+
+<UL>
+	<LI>&nbsp;remove references to activeMQ in the web app WEB-INF/applicationContext.xml</LI>
+</UL>
+
+
+<P>You can take the following code these files :<BR>
+&nbsp;</P>
+
+<P><B>applicationContext.xml</B></P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;
+&lt;beans xmlns=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//xbean.org/schemas/spring/1.0&quot;</SPAN>
+</SPAN>	xmlns:sm=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//servicemix.apache.org/config/1.0&quot;</SPAN>
+</SPAN>	xmlns:my=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//servicemix.apache.org/demo/&quot;</SPAN>
+</SPAN>	xmlns:foo=<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//servicemix.apache.org/demo/&quot;</SPAN>&gt;
+</SPAN>
+	&lt;!-- the JBI container --&gt;
+	&lt;sm:container id=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> rootDir=<SPAN class="code-quote">&quot;@rootDir@&quot;</SPAN>
+		useMBeanServer=<SPAN class="code-quote">&quot;<SPAN class="code-keyword">true</SPAN>&quot;</SPAN> createMBeanServer=<SPAN class="code-quote">&quot;<SPAN class="code-keyword">true</SPAN>&quot;</SPAN>
+		installationDirPath=<SPAN class="code-quote">&quot;@installationDirPath@&quot;</SPAN>
+		deploymentDirPath=<SPAN class="code-quote">&quot;@deploymentDirPath@&quot;</SPAN>
+		monitorInstallationDirectory=<SPAN class="code-quote">&quot;<SPAN class="code-keyword">true</SPAN>&quot;</SPAN> dumpStats=<SPAN class="code-quote">&quot;<SPAN class="code-keyword">true</SPAN>&quot;</SPAN>
+		statsInterval=<SPAN class="code-quote">&quot;10&quot;</SPAN> transactionManager=<SPAN class="code-quote">&quot;#transactionManager&quot;</SPAN>&gt;
+
+	&lt;/sm:container&gt;
+
+	&lt;bean id=<SPAN class="code-quote">&quot;transactionManager&quot;</SPAN>
+		class=<SPAN class="code-quote">&quot;org.jencks.factory.TransactionManagerFactoryBean&quot;</SPAN> /&gt;
+
+
+	&lt;bean id=<SPAN class="code-quote">&quot;jmsFactory&quot;</SPAN>
+		class=<SPAN class="code-quote">&quot;org.objectweb.joram.client.jms.local.LocalConnectionFactory&quot;</SPAN>&gt;
+	&lt;/bean&gt;
+
+&lt;/beans&gt;</PRE>
+</DIV></DIV>
+<P><B>web.xml</B></P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;ISO-8859-1&quot;</SPAN>?&gt;
+
+&lt;!DOCTYPE web-app
+    PUBLIC <SPAN class="code-quote">&quot;-<SPAN class="code-comment">//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot;</SPAN>
+</SPAN>    <SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//java.sun.com/dtd/web-app_2_3.dtd&quot;</SPAN>&gt;
+</SPAN>
+&lt;web-app&gt;
+
+  &lt;display-name&gt;ServiceMix Web Application&lt;/display-name&gt;
+  &lt;description&gt;Deploys ServiceMix inside a Web Application&lt;/description&gt;
+
+  &lt;context-param&gt;
+    &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+    &lt;param-value&gt;/WEB-INF/applicationContext.xml&lt;/param-value&gt;
+  &lt;/context-param&gt;
+  &lt;context-param&gt;
+    &lt;param-name&gt;contextClass&lt;/param-name&gt;
+    &lt;param-value&gt;org.apache.xbean.spring.context.XmlWebApplicationContext&lt;/param-value&gt;
+  &lt;/context-param&gt;
+
+  &lt;listener&gt;
+    &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+  &lt;/listener&gt;
+
+  &lt;!-- servlet mappings --&gt;
+
+  &lt;!-- the main JMX servlet --&gt;
+  &lt;servlet&gt;
+    &lt;servlet-name&gt;JMXServlet&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.apache.servicemix.web.jmx.JMXServlet&lt;/servlet-class&gt;
+    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+  &lt;/servlet&gt;
+
+
+  &lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;JMXServlet&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/jmx/*&lt;/url-pattern&gt;
+  &lt;/servlet-mapping&gt;
+
+&lt;/web-app&gt;</PRE>
+</DIV></DIV>
+<P><B>Warning</B> <B>:</B> ServiceMix is delivering the web application with a set of jar files which is not enough to use all components. You can add any required jar into the WEB-INF/lib directory of the web application.<BR>
+You can find a lot of used jars in ServiceMix standalone lib directory.</P>
+
+<P>Once you have generated the new web application, you can deploy it into your JOnAS server and then install any components and deploy any service assemblies you want &#33;</P>
+
+<H2><A name="JOnASIntegration-Example"></A>Example</H2>
+
+<P>Here is an example running into ServiceMix deployed as a web application into JOnAS application server.</P>
+
+<P>This example called ServiceMixOnJOnASExample1 is using three different components:</P>
+<OL>
+	<LI>servicemix-http (Binding Component)</LI>
+	<LI>drools (Service Engine)</LI>
+	<LI>servicemix-jms (Binding Component)</LI>
+</OL>
+
+
+<P>The client sends a SOAP message with an attachment over http to servicemix-http<BR>
+which post it to the NMR. Then the message is forwarded to the drools component. If the SOAP body of the sent message contains the keyword &apos;keep&apos;, then the message is posted to the NMR without any modification. Else, the attachment is remove from the message. Then the message is routed to the servicemix-jms component which transforms it into a JMS Message sent to the ServiceMixOnJOnASExample1Queue queue. The client (which was waiting on this queue) received the message.</P>
+
+<P>Here is a schema of the flow :<BR>
+<IMG src="jonas-integration.data/schemaExample.gif" align="absmiddle" border="0"><BR>
+&nbsp;<BR>
+You can download an archive containing all the example ; <SPAN class="nobr"><A href="jonas-integration.data/ServiceMixOnJOnASExample1.tgz" title="ServiceMixOnJOnASExample1.tgz attached to JOnAS Integration">ServiceMixOnJOnASExample1<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<H2><A name="JOnASIntegration-Limitations"></A>Limitations</H2>
+
+<P>ServiceMix clustering is using ActiveMQ classes so this functionnality is not supported in JOnAS which is using JORAM.</P>
+
+<P>JORAM could not be configured through spring xm files, so servicemix lightweight jms component could not be used.&nbsp;</P></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnt">gnt</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on May 11, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1906&originalId=5121">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1906">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

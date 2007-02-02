@@ -1,0 +1,362 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+CIMERO Editor
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="tooling-and-utilities.html" title="Tooling and Utilities">Tooling and Utilities</A>&nbsp;&gt;&nbsp;<A href="" title="CIMERO Editor">CIMERO Editor</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">CIMERO Editor</div>
+-->
+            <DIV class="wiki-content"><P><DIV align="center"><A href="cimero-editor.data/logo_bull.jpg" target="logo_bull.jpg" onclick="window.open(&quot;http://goopen.org/confluence/download/attachments/9328/logo_bull.jpg&quot;, &quot;logo_bull.jpg&quot;, &quot;height=165,width=286,menubar=no,status=no,toolbar=no&quot;); return false;"><IMG src="cimero-editor.data/logo_bull.jpg.jpeg" border="0"></A></DIV><BR>
+&nbsp;<BR>
+<DIV align="center"><IMG src="cimero-editor.data/logo.jpg" border="0"></DIV></P>
+
+<H1><A name="CIMEROEditor-TheCIMEROproject%3AagraphicalEclipsetoolforServiceMix"></A>The CIMERO project: a graphical Eclipse tool for ServiceMix</H1>
+
+<P>This Eclipse plugin permits to create graphically a configuration of a ServiceMix flow. With the created graph, user can build an XML configuration file to ServiceMix or a JBI package. The graphical configuration contains a toolbox (which contains some Binding Components and some Service Engines), a drawing area and a properties area.</P>
+
+<P>To use it, you have just to choose the component you want in the toolbox and to drop it on the drawing area. Then, you can configure it and connect it with other components (see the screenshot).</P>
+
+<P>Moreover, we associated this plugin with a second one which allows to create and run a ServiceMix server under Eclipse (based on the source code provided by ServiceMix). Then, our plugin is able to deploy a JBI package on a ServiceMix server by a single mouse click (without competition with the future ServiceMix plugin).</P>
+
+<H2><A name="CIMEROEditor-Features"></A>Features</H2>
+
+
+<H3><A name="CIMEROEditor-Now%2CCIMEROeditorprovides%3A"></A>Now, CIMERO editor provides:</H3>
+
+<P>7 binding components:</P>
+<OL>
+	<LI>a binding component to connect a RSS file</LI>
+	<LI>a binding component to connect a WebService (sm-http)</LI>
+	<LI>a binding component to connect a Mail server</LI>
+	<LI>a binding component to connect a FTP server</LI>
+	<LI>a binding component to connect a JMS server (sm-jms)</LI>
+	<LI>a binding component to send input message (timer)</LI>
+	<LI>a binding component to send a message to the screen</LI>
+</OL>
+
+
+<P>7 service engines:</P>
+<OL>
+	<LI>a service engine to transforme message (content transformer)</LI>
+	<LI>a service engine to enriche message (message enricher)</LI>
+	<LI>a service engine to splitt a message (eip-splitter)</LI>
+	<LI>a service engine to aggregate a message (eip-aggregator)</LI>
+	<LI>a service engine to trace a message (eip-wire-tap)</LI>
+	<LI>a service engine to filter message (eip-filter)</LI>
+	<LI>a service engine to route message (on properties or content)</LI>
+</OL>
+
+
+<H3><A name="CIMEROEditor-Soon%2CCIMEROeditorwillmaybeproposemorecomponents%3A"></A>Soon, CIMERO editor will maybe propose more components:</H3>
+
+<OL>
+	<LI>a service engine to forward an input In-Only or Robust-In-Only exchange to a list of known recipients</LI>
+	<LI>a service to validate message (validation service engine)</LI>
+</OL>
+
+
+<H2><A name="CIMEROEditor-Feedback"></A>Feedback</H2>
+
+<P>If you have any questions or suggestions, please mail us to:</P>
+<UL>
+	<LI>Cedric Mouilleron: cedric.mouilleron@bull.net</LI>
+	<LI>Pierre Notel: pierre.notel@bull.net&nbsp;</LI>
+	<LI>Jerome Camilleri: jerome.camilleri@bull.net&nbsp;</LI>
+</UL>
+
+
+<P><B>Thanks for feedback...</B></P>
+
+<H2><A name="CIMEROEditor-Download%2Cinstallationanduse"></A>Download, installation and use</H2>
+
+
+<H3><A name="CIMEROEditor-Requirements"></A>Requirements</H3>
+
+<P>The Eclipse IDE <B>WebTools Platform; All-in-one</B> from <SPAN class="nobr"><A href="http://download.eclipse.org/webtools/downloads/" title="Visit page outside Confluence" rel="nofollow">http://download.eclipse.org/webtools/downloads/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> or any Eclipse IDE with the following extensions:</P>
+<UL>
+	<LI>Eclipse Web Standard Tools (WST) and J2EE Standard Tools (JST) <SPAN class="nobr"><A href="http://www.eclipse.org/webtools/index.html" title="Visit page outside Confluence" rel="nofollow">http://www.eclipse.org/webtools/index.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI>Eclipse Modeling Framework (EMF) <SPAN class="nobr"><A href="http://www.eclipse.org/emf/" title="Visit page outside Confluence" rel="nofollow">http://www.eclipse.org/emf/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI>Graphical Editing Framework (GEF) <SPAN class="nobr"><A href="http://www.eclipse.org/gef/" title="Visit page outside Confluence" rel="nofollow">http://www.eclipse.org/gef/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+</UL>
+
+
+<P><B>Note:</B> CIMERO is <B>not able to work within FUSE tooling 1.2</B> even though this is &quot;just&quot; an extended version of WTP. Reason: Some wizards (like &quot;New Server&quot;) were tweaked and do not ask for the same information as WTP, but CIMERO relies on the information not collected any more (see screenshots below). Thus, deploying projects to servers is impossible. Furthermore, starting the ServiceMix server in FUSE 1.2 is possible, but FUSE does not detect ServiceMix was successfully started and shuts the process down after 75secs. It may work with the FUSE packaging of ServiceMix (still to confirm). The next release of FUSE tooling shall work fine with CIMERO.</P>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh"> Eclipse WTP 3.2 <BR clear="all">
+ Containing field &quot;ServiceMix Root Path&quot; <BR clear="all"> </TH>
+<TH class="confluenceTh"> FUSE 1.2 <BR clear="all">
+<EM>Not c</EM>ontaining field &quot;ServiceMix Root Path&quot; <BR clear="all"> </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> <IMG src="cimero-editor.data/new%20server%20Eclipse%20WTP,%20step%202.png" align="absmiddle" border="0"> </TD>
+<TD class="confluenceTd"> <IMG src="cimero-editor.data/new%20server%20FUSE1.2,%20step%202.png" align="absmiddle" border="0"> </TD>
+</TR>
+</TBODY></TABLE>
+<P>A Java Runtime Environment which is part of JDK 1.5, as <EM>[jdk1.5_home]\jre\bin\server\jvm.dll</EM> is not contained in a JRE distribution.</P>
+
+<P>Tested on Debian, Windows 2000, Windows XP with Eclipse 3.1.2 and 3.2.0</P>
+
+<H3><A name="CIMEROEditor-Downloadandinstallation"></A>Download and installation</H3>
+
+<P>In the &quot;Attachments&quot; tab of this wiki page, you can find</P>
+<UL>
+	<LI>the <SPAN class="nobr"><A href="cimero-editor.data/com.bull.cimero.pluginEditor_2.7.1.jar" title="com.bull.cimero.pluginEditor_2.7.1.jar attached to CIMERO Editor">ACTIVEMQ:CIMERO plugin<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for visual configuration</LI>
+	<LI>the <SPAN class="nobr"><A href="cimero-editor.data/com.bull.cimero.pluginServiceMix_2.0.2.jar" title="com.bull.cimero.pluginServiceMix_2.0.2.jar attached to CIMERO Editor">ACTIVEMQ:ServiceMix plugin for CIMERO<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which allows to deploy on ServiceMix from within Eclipse.</LI>
+</UL>
+
+
+<P>To install the plugins, just download and copy them to <EM>\&lt;eclipse_dir&gt;\plugins</EM></P>
+
+<P>In Eclipse, go to Menu, Windows, Preferences, Java, Installed JREs, and add a Java Runtime Environment which is part of JDK 1.5, as <EM>[jdk1.5_home]\jre\bin\server\jvm.dll</EM> is not contained in a JRE distribution. Without doing so, you will be prompted a message <EM>Error: no &apos;server&apos; JVM at &apos;[jdk1.5_home]\jre\bin\server\jvm.dll&apos;.</EM> by the <EM>Java Virtual Machine Launcher</EM>.</P>
+
+<P>Since <EM>ServiceMix-3.0-SNAPSHOT.jar</EM> is required, but nowhere available for download, just make a copy of <EM>servicemix-core-3.0-.jar</EM> and name it<EM>ServiceMix-3.0-SNAPSHOT.jar</EM>, that should work.</P>
+
+
+<H3><A name="CIMEROEditor-Use"></A>Use</H3>
+
+<P>To actually create a CIMERO file, right-click the &quot;Package Explorer&quot; pane, click new, click other, select and follow the &quot;Cimero File&quot; wizard.</P>
+
+<P>When custom components are used, right clicking the cimero file, Cimero, &quot;Generate JBI package&quot; and installing/deploying the generated package is required first. Afterwards - or when only standard components are used - right clicking the cimero file, Cimero, &quot;Generate XML configuration file&quot; creates the config file that has to be passed <EM>servicemix.bat</EM> as an argument. In case of erros, see <A href="3-installation.html#3.Installation-Missinglibraries" title="Missing libraries on 3. Installation">User&apos;s Guide: 3. Installation, Troubleshooting</A>.</P>
+
+<P><EM>TIP:</EM> These two plugins are explained in the Eclipse &quot;Help contents&quot;, section &quot;ServiceMix Plug-in&quot;.</P>
+
+<H3><A name="CIMEROEditor-Documentation"></A>Documentation</H3>
+
+<P>In the &quot;Attachments&quot; tab of this wiki page, you can find</P>
+<UL>
+	<LI>a first <SPAN class="nobr"><A href="cimero-editor.data/cimero.swf" title="cimero.swf attached to CIMERO Editor">ACTIVEMQ:flash demonstration<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> (4Mo - 1024*768)&nbsp; (hit next button to make video play)</LI>
+	<LI>a second <SPAN class="nobr"><A href="cimero-editor.data/pres_example.htm" title="pres_example.htm attached to CIMERO Editor">ACTIVEMQ:flash demonstration<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"></SUP></A></SPAN> (10Mo - 1600*1280)</LI>
+</UL>
+
+
+<P>As an example, the next picture is a screenshoot of a CIMERO use. The created graph is composed of :</P>
+<UL>
+	<LI>an input and output mail message</LI>
+	<LI>a router of mail message</LI>
+	<LI>a transformer message (with a xslt file)</LI>
+	<LI>an output mail message</LI>
+	<LI>a tracer component (to send message copie)</LI>
+	<LI>an output screen message</LI>
+	<LI>an output SOAP message</LI>
+</UL>
+
+
+<P>The router is based on the &quot;from&quot; property of the input mail message and it send to the output mail server or to the ouput webservice.</P>
+
+<P>A graph like this can be transformed automaticaly into an XML configuration file for ServiceMix or into a JBI package. Functionnalities to generate are in a popup menu like in this example.&nbsp; The generated package can be deployed automaticaly on a ServiceMix server (you must configure and start it before deploying).</P>
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TD class="confluenceTd"> <IMG src="cimero-editor.data/CimeroExample.png" align="left" border="0"> </TD>
+</TR>
+<TR>
+</TR>
+</TBODY></TABLE>
+
+<H2><A name="CIMEROEditor-Licence"></A>Licence</H2>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">CIMERO Editor est disponible sous licence Apache.
+
+/*
+* Copyright (C) 2006  Bull S. A. S.
+* Bull, Rue Jean Jaures, B.P.68, 78340, Les Clayes-sous-Bois
+*
+* Licensed under the Apache License, Version 2.0 (the <SPAN class="code-quote">&quot;License&quot;</SPAN>);
+* you may not use <SPAN class="code-keyword">this</SPAN> file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http:<SPAN class="code-comment">//www.apache.org/licenses/LICENSE-2.0
+</SPAN>*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an <SPAN class="code-quote">&quot;AS IS&quot;</SPAN> BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License <SPAN class="code-keyword">for</SPAN> the specific language governing permissions and
+* limitations under the License.
+*
+* Initial Contributors 2006
+*
+* Mouilleron Cedric : mouilleron.cedric@gmail.com
+* Notel Pierre : pierre.notel@free.fr
+*
+* Camilleri Jerome : jerome.camilleri@bull.net
+*/</PRE>
+</DIV></DIV></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9328&originalId=14616">view change</A>)
+                      <SPAN id="show" class="inline-control-link"><A href="" onclick="showComment(); return false;">show comment</A></SPAN>
+        <SPAN id="hide" class="inline-control-link" style="display:none;"><A href="" onclick="hideComment(); return false;">hide comment</A></SPAN>
+          <DIV id="versionComment" class="noteMacro" style="display:none; padding: 5px;">
+      <B>Comment:</B>
+      INS info on ServiceMix-3.0-SNAPSHOT.jar<BR>
+      <SPAN class="smalltext"><A href="http://goopen.org/confluence/pages/viewpreviouspageversions.action?pageId=9328">View page history</A></SPAN>
+  </DIV>
+
+    <SCRIPT>
+      var show = document.getElementById('show');
+      var hide = document.getElementById('hide');
+      var versionComment = document.getElementById('versionComment');
+
+      function showComment(){
+        show.style.display = 'none';
+        hide.style.display = 'inline';
+        versionComment.style.display = 'block';
+      }
+
+      function hideComment(){
+        show.style.display = 'inline';
+        hide.style.display = 'none';
+        versionComment.style.display = 'none';
+      }
+
+    </SCRIPT>
+    
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=9328">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

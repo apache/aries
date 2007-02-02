@@ -1,0 +1,407 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+Creating a protocol bridge
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="tutorials.html" title="Tutorials">Tutorials</A>&nbsp;&gt;&nbsp;<A href="" title="Creating a protocol bridge">Creating a protocol bridge</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">Creating a protocol bridge</div>
+-->
+            <DIV class="wiki-content"><P>ServiceMix can be used as a protocol bridge. The following tutorial will explain how to create a JBI Service Assembly (aka a JBI application) to bridge two different protocols. In this example, we will bridge the HTTP/SOAP with the JMS protocol using an InOnly MEP. We will also put between the two protocols an XSLT transformation.<BR>
+We will leverage ServiceMix archetypes and maven plugin (see <A href="maven-jbi-plugin.html" title="Maven JBI plugin">Maven JBI plugin</A>).</P>
+
+<H2><A name="Creatingaprotocolbridge-Identifyingtheserviceunits"></A>Identifying the service units</H2>
+
+<P>Our JBI SA (Service Assembly) will be composed of the following SUs (Service Units):</P>
+<UL>
+	<LI>an HTTP+SOAP consumer</LI>
+	<LI>a <A href="servicemix-eip.html#servicemix-eip-Pipeline" title="Pipeline on servicemix-eip">pipeline</A> to call the XSLT transformer and the JMS provider</LI>
+	<LI>an XSLT transformer</LI>
+	<LI>a JMS provider</LI>
+</UL>
+
+
+<H2><A name="Creatingaprotocolbridge-Directorylayout"></A>Directory layout</H2>
+
+<P>We aim to have the following project structure:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">bridge\
+  pom.xml
+  bridge-http-su\
+    ...
+  bridge-eip-su\
+    ...
+  bridge-xslt-su\
+    ...
+  bridge-jms-su\
+    ...
+  bridge-sa\
+    ...</PRE>
+</DIV></DIV>
+
+<H2><A name="Creatingaprotocolbridge-Creatingthearchetypes"></A>Creating the archetypes</H2>
+
+<P>In the bridge directory, run the following commands (remove tailing backslashes and make each commando one line):</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn archetype:create \
+        -DarchetypeGroupId=org.apache.servicemix.tooling \
+        -DarchetypeArtifactId=servicemix-http-consumer-service-unit \
+        -DarchetypeVersion=3.0-incubating \
+        -DgroupId=org.apache.servicemix.samples.bridge \
+        -DartifactId=bridge-http-su
+
+mvn archetype:create \
+        -DarchetypeGroupId=org.apache.servicemix.tooling \
+        -DarchetypeArtifactId=servicemix-jms-provider-service-unit \
+        -DarchetypeVersion=3.0-incubating \
+        -DgroupId=org.apache.servicemix.samples.bridge \
+        -DartifactId=bridge-jms-su
+
+mvn archetype:create \
+        -DarchetypeGroupId=org.apache.servicemix.tooling \
+        -DarchetypeArtifactId=servicemix-eip-service-unit \
+        -DarchetypeVersion=3.0-incubating \
+        -DgroupId=org.apache.servicemix.samples.bridge \
+        -DartifactId=bridge-eip-su
+
+mvn archetype:create \
+        -DarchetypeGroupId=org.apache.servicemix.tooling \
+        -DarchetypeArtifactId=servicemix-lwcontainer-service-unit \
+        -DarchetypeVersion=3.0-incubating \
+        -DgroupId=org.apache.servicemix.samples.bridge \
+        -DartifactId=bridge-xslt-su
+
+mvn archetype:create \
+        -DarchetypeGroupId=org.apache.servicemix.tooling \
+        -DarchetypeArtifactId=servicemix-service-assembly \
+        -DarchetypeVersion=3.0-incubating \
+        -DgroupId=org.apache.servicemix.samples.bridge \
+        -DartifactId=bridge-sa</PRE>
+</DIV></DIV>
+
+<H2><A name="Creatingaprotocolbridge-Mainpom"></A>Main pom</H2>
+
+<P>Now that we have created the SUs and SA structure, let&apos;s write the main <EM>pom.xml</EM> (in the bridge directory):</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;project&gt;</SPAN>
+  <SPAN class="code-tag">&lt;modelVersion&gt;</SPAN>4.0.0<SPAN class="code-tag">&lt;/modelVersion&gt;</SPAN>
+  <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.apache.servicemix.samples<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
+  <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>bridge<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
+  <SPAN class="code-tag">&lt;version&gt;</SPAN>1.0-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>
+  <SPAN class="code-tag">&lt;packaging&gt;</SPAN>pom<SPAN class="code-tag">&lt;/packaging&gt;</SPAN>
+  <SPAN class="code-tag">&lt;modules&gt;</SPAN>
+    <SPAN class="code-tag">&lt;module&gt;</SPAN>bridge-http-su<SPAN class="code-tag">&lt;/module&gt;</SPAN>
+    <SPAN class="code-tag">&lt;module&gt;</SPAN>bridge-eip-su<SPAN class="code-tag">&lt;/module&gt;</SPAN>
+    <SPAN class="code-tag">&lt;module&gt;</SPAN>bridge-xslt-su<SPAN class="code-tag">&lt;/module&gt;</SPAN>
+    <SPAN class="code-tag">&lt;module&gt;</SPAN>bridge-jms-su<SPAN class="code-tag">&lt;/module&gt;</SPAN>
+    <SPAN class="code-tag">&lt;module&gt;</SPAN>bridge-sa<SPAN class="code-tag">&lt;/module&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/modules&gt;</SPAN>
+<SPAN class="code-tag">&lt;/project&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>The content of &lt;version&gt; describes <EM>not</EM> the version of ServiceMix but the SA we create, thus you may change it to your desired version (e.g. <EM>3.0-final</EM>). Then you have to change it below as well.</P>
+
+
+<H2><A name="Creatingaprotocolbridge-ConfiguretheServiceAssembly"></A>Configure the Service Assembly</H2>
+
+<P>We want the Service Assembly to include the 4 SUs that we just created.<BR>
+So let&apos;s edit the main pom we just created and add the &lt;dependencies&gt; which is a child of &lt;project&gt;:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;dependencies&gt;</SPAN>
+  <SPAN class="code-tag">&lt;dependency&gt;</SPAN>
+    <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.apache.servicemix.samples.bridge<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
+    <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>bridge-http-su<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
+    <SPAN class="code-tag">&lt;version&gt;</SPAN>1.0-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/dependency&gt;</SPAN>
+  <SPAN class="code-tag">&lt;dependency&gt;</SPAN>
+    <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.apache.servicemix.samples.bridge<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
+    <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>bridge-eip-su<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
+    <SPAN class="code-tag">&lt;version&gt;</SPAN>1.0-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/dependency&gt;</SPAN>
+  <SPAN class="code-tag">&lt;dependency&gt;</SPAN>
+    <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.apache.servicemix.samples.bridge<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
+    <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>bridge-xslt-su<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
+    <SPAN class="code-tag">&lt;version&gt;</SPAN>1.0-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/dependency&gt;</SPAN>
+  <SPAN class="code-tag">&lt;dependency&gt;</SPAN>
+    <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.apache.servicemix.samples.bridge<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
+    <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>bridge-jms-su<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
+    <SPAN class="code-tag">&lt;version&gt;</SPAN>1.0-SNAPSHOT<SPAN class="code-tag">&lt;/version&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/dependency&gt;</SPAN>
+<SPAN class="code-tag">&lt;/dependencies&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>Now, we should be able to launch maven and have a the SA generated in the bridge-sa/target/ directory. You can check that by running the following command from the bridge/ directory:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn install</PRE>
+</DIV></DIV>
+<P>Of course, it won&apos;t work if you deploy it and we now need to fill the holes.</P>
+
+<H2><A name="Creatingaprotocolbridge-HTTPSU"></A>HTTP SU</H2>
+
+<P>We need to define a simple HTTP consumer endpoint in the http SU.  As we do not use the request / response pattern, we will use an InOnly mep.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN>?&gt;</SPAN>
+&lt;beans <SPAN class="code-keyword">xmlns:http</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/http/1.0&quot;</SPAN>
+       <SPAN class="code-keyword">xmlns:b</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/samples/bridge&quot;</SPAN>&gt;
+
+  &lt;http:endpoint service=<SPAN class="code-quote">&quot;b:http&quot;</SPAN>
+                 endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>
+                 targetService=<SPAN class="code-quote">&quot;b:pipeline&quot;</SPAN>
+                 role=<SPAN class="code-quote">&quot;consumer&quot;</SPAN>
+                 locationURI=<SPAN class="code-quote">&quot;http://localhost:8192/bridge/&quot;</SPAN>
+                 defaultMep=<SPAN class="code-quote">&quot;http://www.w3.org/2004/08/wsdl/in-only&quot;</SPAN> /&gt;
+
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<H2><A name="Creatingaprotocolbridge-EIPSU"></A>EIP SU</H2>
+
+<P>The EIP SU contains the definition of the pipeline pattern, which can be used as a bridge between two InOnly MEPs and an InOut MEP.  The XSLT transformer primary MEP is an InOut, as it will receive an incoming message, transform it, and send the answer back to the consumer.  But in our case, the HTTP component and JMS component should send and receive an InOnly MEP, hence the need for the Pipeline.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN>?&gt;</SPAN>
+&lt;beans <SPAN class="code-keyword">xmlns:eip</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/eip/1.0&quot;</SPAN>
+       <SPAN class="code-keyword">xmlns:b</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/samples/bridge&quot;</SPAN>&gt;
+
+  <SPAN class="code-tag">&lt;eip:pipeline service=<SPAN class="code-quote">&quot;b:pipeline&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;eip:transformer&gt;</SPAN>
+      <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;b:xslt&quot;</SPAN> /&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/eip:transformer&gt;</SPAN>
+    <SPAN class="code-tag">&lt;eip:target&gt;</SPAN>
+      <SPAN class="code-tag">&lt;eip:exchange-target service=<SPAN class="code-quote">&quot;b:jms&quot;</SPAN> /&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/eip:target&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/eip:pipeline&gt;</SPAN>
+
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<H2><A name="Creatingaprotocolbridge-XSLTSU"></A>XSLT SU</H2>
+
+<P>The XSLT transformation will be deployed on the servicemix-lwcontainer using the following servicemix.xml configuration file.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN>?&gt;</SPAN>
+&lt;beans <SPAN class="code-keyword">xmlns:sm</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/config/1.0&quot;</SPAN>
+       <SPAN class="code-keyword">xmlns:b</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/samples/bridge&quot;</SPAN>&gt;
+
+  <SPAN class="code-tag">&lt;classpath&gt;</SPAN>
+    <SPAN class="code-tag">&lt;location&gt;</SPAN>.<SPAN class="code-tag">&lt;/location&gt;</SPAN>
+    <SPAN class="code-tag">&lt;location&gt;</SPAN>lib/servicemix-components-3.0-incubating-SNAPSHOT.jar<SPAN class="code-tag">&lt;/location&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/classpath&gt;</SPAN>
+
+  <SPAN class="code-tag">&lt;sm:serviceunit id=<SPAN class="code-quote">&quot;jbi&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;sm:activationSpecs&gt;</SPAN>
+      <SPAN class="code-tag">&lt;sm:activationSpec service=<SPAN class="code-quote">&quot;b:xslt&quot;</SPAN> endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>&gt;</SPAN>
+        <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.xslt.XsltComponent&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;xsltResource&quot;</SPAN> value=<SPAN class="code-quote">&quot;classpath:bridge.xslt&quot;</SPAN> /&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/sm:activationSpecs&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/sm:serviceunit&gt;</SPAN>
+
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>Note the &lt;classpath/&gt; tag which defines the SU root directory as a component of the classpath.  This is used by the xslt component to find the stylesheet using the spring &quot;classpath:&quot; URL style.</P>
+
+<P>We need to create the bridge.xslt stylesheet and put in in the src/main/resources directory of this SU, along the servicemix.xml configuration file.<BR>
+Let&apos;s use an identity stylesheet:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN>?&gt;</SPAN>
+<SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:stylesheet</SPAN> version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> <SPAN class="code-keyword">xmlns:xsl</SPAN>=<SPAN class="code-quote">&quot;http://www.w3.org/1999/XSL/Transform&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:output</SPAN> method=<SPAN class="code-quote">&quot;xml&quot;</SPAN> version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN> encoding=<SPAN class="code-quote">&quot;UTF-8&quot;</SPAN> indent=<SPAN class="code-quote">&quot;yes&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:template</SPAN> match=<SPAN class="code-quote">&quot;node() | @*&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:copy</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;<SPAN class="code-keyword">xsl:apply-templates</SPAN> select=<SPAN class="code-quote">&quot;node() | @*&quot;</SPAN>/&gt;</SPAN>
+    <SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:copy</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:template</SPAN>&gt;</SPAN>
+<SPAN class="code-tag">&lt;/<SPAN class="code-keyword">xsl:stylesheet</SPAN>&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<H2><A name="Creatingaprotocolbridge-JMSSU"></A>JMS SU</H2>
+
+<P>For the JMS provider, we will reuse the embedded ActiveMQ broker which is started with ServiceMix, and output the request in the bridge.output JMS queue.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;?xml version=<SPAN class="code-quote">&quot;1.0&quot;</SPAN>?&gt;</SPAN>
+&lt;beans <SPAN class="code-keyword">xmlns:jms</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/jms/1.0&quot;</SPAN>
+       <SPAN class="code-keyword">xmlns:b</SPAN>=<SPAN class="code-quote">&quot;http://servicemix.apache.org/samples/bridge&quot;</SPAN>&gt;
+
+  &lt;jms:endpoint service=<SPAN class="code-quote">&quot;b:jms&quot;</SPAN>
+                endpoint=<SPAN class="code-quote">&quot;endpoint&quot;</SPAN>
+                role=<SPAN class="code-quote">&quot;provider&quot;</SPAN>
+                destinationStyle=<SPAN class="code-quote">&quot;queue&quot;</SPAN>
+                jmsProviderDestinationName=<SPAN class="code-quote">&quot;bridge.output&quot;</SPAN>
+                connectionFactory=<SPAN class="code-quote">&quot;#connectionFactory&quot;</SPAN> /&gt;
+
+  <SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;connectionFactory&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.activemq.ActiveMQConnectionFactory&quot;</SPAN>&gt;</SPAN>
+    <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;brokerURL&quot;</SPAN> value=<SPAN class="code-quote">&quot;vm://localhost&quot;</SPAN> /&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+
+<SPAN class="code-tag">&lt;/beans&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<H2><A name="Creatingaprotocolbridge-Building%2CDeployingandTesting"></A>Building, Deploying and Testing</H2>
+
+<P>To build the SUs and SA, run the following command in the bridge root directory:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn install</PRE>
+</DIV></DIV>
+<P>Then, deploy the SA and needed components to a started ServiceMix container:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd bridge-sa
+mvn jbi:projectDeploy</PRE>
+</DIV></DIV>
+<P>Then you can send an HTML POST request to <SPAN class="nobr"><A href="http://localhost:8192/bridge/" title="Visit page outside Confluence" rel="nofollow">http://localhost:8192/bridge/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and use a jmx console to check that the <B>bridge.output</B> queue contains a jms message.</P>
+
+<H2><A name="Creatingaprotocolbridge-What%27snext"></A>What&apos;s next</H2>
+
+<P>Of course, this example is not very useful as is, especially with an identity XSLT sheet.  However, adding an xpath router as the target of the pipeline, could be useful to normalize different requests to the same format, because the XSD changed between versions of the service, or because different clients use different XSDs which can be services by the same service.</P></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 12, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=9511&originalId=15032">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=9511">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

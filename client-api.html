@@ -1,0 +1,331 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+<META name="keywords" content="business integration, enterprise service bus, enterprise application integration, ESB, EAI, SOA, Service Oriented Architecture, web services, SOAP, JBI, JMS, WSDL, business-to-business, b2b, XML, EDI, Electronic Data Interchange, standards support, integration standards, application integration, java message service, middleware, message broker, software, solutions, services, ActiveMQ, ServiceMix, open source, MQ, message queue, message bus">
+<META name="description" content="">
+    <TITLE>
+Apache ServiceMix, the Agile Open Source ESB -- Client API
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="features.html" title="Features">Features</A>&nbsp;&gt;&nbsp;<A href="" title="Client API">Client API</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">Client API</div>
+-->
+            <DIV class="wiki-content"><P>To make it simpler to use as an end user, we&apos;ve created a JBI <SPAN class="nobr"><A href="http://servicemix.org/maven/servicemix-core/apidocs/org/apache/servicemix/client/ServiceMixClient.html" title="Visit page outside Confluence" rel="nofollow">Client API<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which makes it easy to work with any JBI container and other JBI components.</P>
+
+<P>The JavaDoc is probably self evident for many things, especially if you are aware of the JBI APIs. There is an <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/servicemix-core/xref-test/org/apache/servicemix/client/ServiceMixClientTest.html" title="Visit page outside Confluence" rel="nofollow">example test case<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which shows many of these APIs in action.</P>
+
+<H2><A name="ClientAPI-UsingtheJBIinterfaces"></A>Using the JBI interfaces</H2>
+
+<P>The following helper methods just provide some helper methods for easier use of the JBI APIs</P>
+
+<H3><A name="ClientAPI-Sendingmessages"></A>Sending messages</H3>
+
+<P>This example uses a specific service to invoke</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">InOnly exchange = client.createInOnlyExchange();
+
+NormalizedMessage message = exchange.getInMessage();
+message.setProperty(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="code-quote">&quot;James&quot;</SPAN>);
+message.setContent(<SPAN class="code-keyword">new</SPAN> StreamSource(<SPAN class="code-keyword">new</SPAN> StringReader(<SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>)));
+
+<SPAN class="code-comment">// lets use a specific service to dispatch to
+</SPAN>QName service = <SPAN class="code-keyword">new</SPAN> QName(<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//servicemix.org/cheese/&quot;</SPAN>, <SPAN class="code-quote">&quot;receiver&quot;</SPAN>);
+</SPAN>exchange.setService(service);
+client.send(exchange);</PRE>
+</DIV></DIV>
+<P>In this example, we assume that the JBI container will have setup a default routing connection for our client, so we don&apos;t have to worry about specifying the endpoint.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">InOnly exchange = client.createInOnlyExchange();
+
+NormalizedMessage message = exchange.getInMessage();
+message.setProperty(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="code-quote">&quot;James&quot;</SPAN>);
+message.setContent(<SPAN class="code-keyword">new</SPAN> StreamSource(<SPAN class="code-keyword">new</SPAN> StringReader(<SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>)));
+
+client.send(exchange);</PRE>
+</DIV></DIV>
+
+<H3><A name="ClientAPI-Invokingservices"></A>Invoking services</H3>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">InOut exchange = client.createInOutExchange();
+
+NormalizedMessage inMessage = exchange.getInMessage();
+inMessage.setProperty(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="code-quote">&quot;James&quot;</SPAN>);
+inMessage.setContent(<SPAN class="code-keyword">new</SPAN> StreamSource(<SPAN class="code-keyword">new</SPAN> StringReader(<SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>)));
+
+<SPAN class="code-comment">// optionally specify the endpoint
+</SPAN>exchange.setService(service);
+
+client.sendSync(exchange);
+NormalizedMessage outMessage = exchange.getOutMessage();</PRE>
+</DIV></DIV>
+
+<H2><A name="ClientAPI-WorkingwithURIsandDestinations"></A>Working with URIs and Destinations</H2>
+
+<P>ServiceMix has integrated support for <A href="uris.html" title="URIs">URIs</A> to simplify the accessing of endpoints within the <A href="nmr.html" title="NMR">NMR</A>. The ServiceMixClient (from 3.0-M3 or later) allows you to work with URIs easily via a Destination interface. This interface acts as a factory of MessageExchange objects which are pre-wired to specific endpoints specified via a URI.</P>
+
+<P>The following shows how to work with InOnly for one way messaging</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Destination destination = client.createDestination(<SPAN class="code-quote">&quot;service:http:<SPAN class="code-comment">//servicemix.org/cheese/receiver&quot;</SPAN>);
+</SPAN>InOnly exchange = destination.createInOnlyExchange();
+
+NormalizedMessage message = exchange.getInMessage();
+message.setProperty(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="code-quote">&quot;James&quot;</SPAN>);
+message.setContent(<SPAN class="code-keyword">new</SPAN> StreamSource(<SPAN class="code-keyword">new</SPAN> StringReader(<SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>)));
+
+client.send(exchange);</PRE>
+</DIV></DIV>
+<P>Or using InOut for request-response</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Destination destination = client.createDestination(<SPAN class="code-quote">&quot;service:http:<SPAN class="code-comment">//servicemix.org/cheese/myService&quot;</SPAN>);
+</SPAN>InOut exchange = destination.createInOutExchange();
+
+NormalizedMessage request = exchange.getInMessage();
+request.setProperty(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="code-quote">&quot;James&quot;</SPAN>);
+request.setContent(<SPAN class="code-keyword">new</SPAN> StreamSource(<SPAN class="code-keyword">new</SPAN> StringReader(<SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>)));
+
+client.sendSync(exchange);
+
+NormalizedMessage response = exchange.getOutMessage();</PRE>
+</DIV></DIV>
+
+<H3><A name="ClientAPI-SimpleronewaymessagingwithDestinations"></A>Simpler one-way messaging with Destinations</H3>
+
+<P>For one-way messaging its sometimes simpler to just work with a Message instance (you can always refer to the MessageExchange via the getExchange() method if need be). For example</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Destination destination = client.createDestination(<SPAN class="code-quote">&quot;service:http:<SPAN class="code-comment">//servicemix.org/cheese/receiver&quot;</SPAN>);
+</SPAN>Message message = destination.createInOnlyMessage();
+message.setProperty(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="code-quote">&quot;James&quot;</SPAN>);
+message.setBody(<SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>);
+
+client.send(message);</PRE>
+</DIV></DIV>
+<P>For more detail see the <SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/core/servicemix-core/src/test/java/org/apache/servicemix/client/ClientDestinationTest.java" title="Visit page outside Confluence" rel="nofollow">unit test case<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<H2><A name="ClientAPI-UsingthePOJOmethods"></A>Using the POJO methods</H2>
+
+<P>We provide a few helper POJO based methods to allow you to use JBI using regular POJOs to hide some of the XML marshaling detail. Then you can use a plugable <SPAN class="nobr"><A href="http://servicemix.codehaus.org/maven/apidocs/org/servicemix/client/Marshaler.html" title="Visit page outside Confluence" rel="nofollow">Marshaler<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> to map your POJOs to JAXP Sources.</P>
+
+<H3><A name="ClientAPI-Sendingmessages"></A>Sending messages</H3>
+
+<P>This example uses a specific service to invoke</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Map properties = <SPAN class="code-keyword">new</SPAN> HashMap();
+properties.put(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="code-quote">&quot;James&quot;</SPAN>);
+
+<SPAN class="code-comment">// lets use a specific service to route to
+</SPAN>QName service = <SPAN class="code-keyword">new</SPAN> QName(<SPAN class="code-quote">&quot;http:<SPAN class="code-comment">//servicemix.org/cheese/&quot;</SPAN>, <SPAN class="code-quote">&quot;receiver&quot;</SPAN>);
+</SPAN>EndpointResolver resolver = client.createResolverForService(service);
+client.send(resolver, <SPAN class="code-keyword">null</SPAN>, properties, <SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>);</PRE>
+</DIV></DIV>
+<P>In this example, we assume that the JBI container will have setup a default routing connection for our client, so we don&apos;t have to worry about specifying the endpoint.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">Map properties = <SPAN class="code-keyword">new</SPAN> HashMap();
+properties.put(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="code-quote">&quot;James&quot;</SPAN>);
+
+client.send(<SPAN class="code-keyword">null</SPAN>, <SPAN class="code-keyword">null</SPAN>, properties, <SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>);</PRE>
+</DIV></DIV>
+
+<H3><A name="ClientAPI-Invokingservices"></A>Invoking services</H3>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-comment">// optional endpoint resolution
+</SPAN>EndpointResolver resolver = client.createResolverForService(service);
+
+Map properties = <SPAN class="code-keyword">new</SPAN> HashMap();
+properties.put(<SPAN class="code-quote">&quot;name&quot;</SPAN>, <SPAN class="code-quote">&quot;James&quot;</SPAN>);
+
+<SPAN class="code-object">Object</SPAN> response = client.request(resolver, <SPAN class="code-keyword">null</SPAN>, properties, <SPAN class="code-quote">&quot;&lt;hello&gt;world&lt;/hello&gt;&quot;</SPAN>);</PRE>
+</DIV></DIV>
+
+<H2><A name="ClientAPI-ConfiguringtheServiceMixClient"></A>Configuring the ServiceMixClient</H2>
+
+<P>We use the Spring XML configuration files to configure the client. You can then use dependency injection to inject the client into your POJOs.</P>
+
+<P>Here&apos;s an example of using a basic client...</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;client&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.servicemix.client.DefaultServiceMixClient&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;constructor-arg ref=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> /&gt;</SPAN>
+<SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>Note that the jbi bean reference is the ServiceMix JBI container.</P>
+
+<P>This example creates a client which is hard-wired to default to a specific service when an invocation is performed.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;bean id=<SPAN class="code-quote">&quot;clientWithRouting&quot;</SPAN> class=<SPAN class="code-quote">&quot;org.apache.servicemix.client.DefaultServiceMixClient&quot;</SPAN>&gt;</SPAN>
+  <SPAN class="code-tag">&lt;constructor-arg ref=<SPAN class="code-quote">&quot;jbi&quot;</SPAN> /&gt;</SPAN>
+  <SPAN class="code-tag">&lt;constructor-arg&gt;</SPAN>
+    <SPAN class="code-tag">&lt;sm:activationSpec destinationService=<SPAN class="code-quote">&quot;foo:receiver&quot;</SPAN>/&gt;</SPAN>
+  <SPAN class="code-tag">&lt;/constructor-arg&gt;</SPAN>
+<SPAN class="code-tag">&lt;/bean&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<H3><A name="ClientAPI-IfyouhaveaccesstoaComponentContext"></A>If you have access to a ComponentContext</H3>
+
+<P>If you are inside a JBI component you can create a ServiceMixClient as follows</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">ServiceMixClient client = <SPAN class="code-keyword">new</SPAN> ServiceMixClientFacade(context);</PRE>
+</DIV></DIV>
+
+<H2><A name="ClientAPI-UsingClientFactory"></A>Using ClientFactory</H2>
+
+<P>Starting from 3.0-M3, you can retrieve a ClientFactory from JNDI.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">ClientFactory factory = <SPAN class="code-keyword">new</SPAN> InitialContext().lookup(ClientFactory.DEFAULT_JNDI_NAME);
+ServiceMixClient client = factory.createClient();
+...
+client.close();</PRE>
+</DIV></DIV>
+
+<P>Note that creating client is somewhat expensive, so it&apos;s best to create a client once and reuse it.</P></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jan 25, 2007
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=1957&originalId=15343">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=1957">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

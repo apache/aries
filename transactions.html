@@ -1,0 +1,337 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+Transactions
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="guides.html" title="Guides">Guides</A>&nbsp;&gt;&nbsp;<A href="" title="Transactions">Transactions</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">Transactions</div>
+-->
+            <DIV class="wiki-content"><H2><A name="Transactions-QualityofService"></A>Quality of Service</H2>
+
+<P> ServiceMix can handle four parameters that affect the Quality of Service for a given exchange:</P>
+<UL>
+	<LI>clustered</LI>
+	<LI>synchronous</LI>
+	<LI>transactional</LI>
+	<LI>persistent</LI>
+</UL>
+
+
+<P>These combined parameters defined the QoS for a given exchange, and depending on this QoS, a <A href="nmr-flows.html" title="NMR Flows">flow</A> will be selected fo convey this particular exchange.</P>
+
+<H2><A name="Transactions-Synchronicity%26Transactionality"></A>Synchronicity &amp; Transactionality</H2>
+
+<P>If syncSend is used to send a message exchange, the implied semantic is that the transaction flows with the exchange and that the provider has to answer synchronously and enlist any needed resources inside the transaction. By setting the autoEnlistInTransaction flag to true on the container, each time a JBI exchange is sent,&nbsp; it will be enlisted in the current transaction as shown below:<IMG src="transactions.data/TransactionsSEDA.png" align="absmiddle" border="0"><BR>
+&nbsp;<BR>
+Transactions within a synchronous flow are not created by default. Currently, the only ServiceMix component able to start transactions is the servicemix-jms when used with JCA.</P>
+
+<P>If send is used, the act of sending the message will be enlisted in the current transaction, but the exchange processing will be defered and handled in its own thread. To use transactions with asynchronous message exchanges, the JCA flow must be used. As shown below, the scope of a transaction is bounded by the asynchronous message exchange.<BR>
+<IMG src="transactions.data/TransactionsJCA.png" align="absmiddle" border="0"><BR>
+Responding to a transactional synchronous message may not be always a possible option for a given component acting as a provider.<BR>
+For example, an asynchronous BPEL process may not support this processing behavior.</P>
+
+<P>Note that flows have limited capabilities regarding JBI exchange QoS.<BR>
+The seda flows can not handle asynchonous transactional send (because there is no transactional resource involved) and thus will only be able to process synchronous transactional messages.  On the other hand, the JCA flow can handle asynchonous transactional messages (the underlying JMS session is enlisted in the transaction), but no synchronous transactional exchanges.</P>
+
+<P>Actually, all QoS combinations can be handled by one or the other flow, but exchanges that are clustered, transactional and synchronous or persistent, transactional and synchronous.</P>
+
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh">&nbsp;</TH>
+<TH class="confluenceTh"> QoS attribute </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> A </TD>
+<TD class="confluenceTd"> Asynchronous </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> S </TD>
+<TD class="confluenceTd"> Synchronous </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> C </TD>
+<TD class="confluenceTd"> Clustered (means that the same endpoint is activated on the local container and at least a remote container) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> P </TD>
+<TD class="confluenceTd"> Persistent </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> R </TD>
+<TD class="confluenceTd"> Remote (means that the endpoint is not available locally, but only on a remote container) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> T </TD>
+<TD class="confluenceTd"> Transactional </TD>
+</TR>
+</TBODY></TABLE>
+
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh">   Flow  </TH>
+<TH class="confluenceTh"> Handled QoS               </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> St        </TD>
+<TD class="confluenceTd"> A, S                       </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> Seda      </TD>
+<TD class="confluenceTd"> A, S, ST                   </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> Jms       </TD>
+<TD class="confluenceTd"> A, AC, ACP, S, SC, SCP     </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> Jca       </TD>
+<TD class="confluenceTd"> A, AC, ACP, ACT, ACPT, APT </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> Unhandled </TD>
+<TD class="confluenceTd"> SCT, SPT, SCPT             </TD>
+</TR>
+</TBODY></TABLE>
+
+<P>Currently, there is no distinction between C (clustered) and R (remote), though this should be enhanced to provider support for SCT which would be handled as ST (using the local endpoint).<BR>
+We would then have,</P>
+
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh">   Flow  </TH>
+<TH class="confluenceTh"> Handled QoS                                   </TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> St        </TD>
+<TD class="confluenceTd"> A, AC, S, SC                                   </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> Seda      </TD>
+<TD class="confluenceTd"> A, AC, S, SC, ST, SCT                          </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> Jms       </TD>
+<TD class="confluenceTd"> A, AC, ACP, AR, ARP, S, SC, SCP, SRP           </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> Jca       </TD>
+<TD class="confluenceTd"> A, AC, ACP, ACT, ACPT, APT, AR, ARP, ART, ARPT </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> Unhandled </TD>
+<TD class="confluenceTd"> SPT, SCPT, SRPT                                </TD>
+</TR>
+</TBODY></TABLE>
+
+<H2><A name="Transactions-Sendingsynchronoustransactionalexchanges"></A>Sending synchronous transactional exchanges</H2>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">TransactionManager tm = (TransactionManager) getContext().getTransactionManager();
+tm.begin();
+
+InOnly me = createInOnly();
+getContext().getDeliveryChannel().sendSync(me);
+
+tm.commit();</PRE>
+</DIV></DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">TransactionManager tm = (TransactionManager) getContext().getTransactionManager();
+tm.begin();
+
+InOut me = createInOut();
+getContext().getDeliveryChannel().sendSync(me);
+<SPAN class="code-comment">// retrieve the out message
+</SPAN>me.setStatus(ExchangeStatus.DONE);
+getContext().getDeliveryChannel().send(me);
+
+tm.commit();</PRE>
+</DIV></DIV>
+
+<H2><A name="Transactions-Sendingasynchronoustransactionalexchanges"></A>Sending asynchronous transactional exchanges</H2>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">TransactionManager tm = (TransactionManager) getContext().getTransactionManager();
+tm.begin();
+
+InOnly me = createInOnly();
+getContext().getDeliveryChannel().send(me);
+
+tm.commit();</PRE>
+</DIV></DIV>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">TransactionManager tm = (TransactionManager) getContext().getTransactionManager();
+tm.begin();
+
+InOut me = createInOut();
+getContext().getDeliveryChannel().send(me);
+
+tm.commit();</PRE>
+</DIV></DIV>
+
+<H2><A name="Transactions-Receivingandprocessingtransactionalexchanges"></A>Receiving and processing transactional exchanges</H2>
+
+<P>A great care should be taken to use the same QoS for the answer than the one used for the request.</P>
+
+<P>You can check if a given exchange is transactional by using:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-object">boolean</SPAN> transactional = exchange.getProperty(<SPAN class="code-quote">&quot;javax.jbi.transaction.jta&quot;</SPAN>) != <SPAN class="code-keyword">null</SPAN>;</PRE>
+</DIV></DIV>
+<P>and you can check if the exchange is synchronous by using:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-object">boolean</SPAN> synchronous = exchange.getProperty(<SPAN class="code-quote">&quot;javax.jbi.messaging.sendSync&quot;</SPAN>) != <SPAN class="code-keyword">null</SPAN>;</PRE>
+</DIV></DIV>
+<P>If your component is a MessageExchangeListener, the delivery will automatically be<BR>
+transacted.  You just need to use sendSync if the exchange is synchronous and send<BR>
+if the exchange is not.</P></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 20, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=8533&originalId=13773">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=8533">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

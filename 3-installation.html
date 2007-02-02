@@ -1,0 +1,559 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+3. Installation
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="users-guide.html" title="User's Guide">User&apos;s Guide</A>&nbsp;&gt;&nbsp;<A href="" title="3. Installation">3. Installation</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">3. Installation</div>
+-->
+            <DIV class="wiki-content"><STYLE type="text/css">/*<![CDATA[*/
+table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
+table.ScrollbarTable td.ScrollbarPrevIcon {text-align: center;width: 16px;border: none;}
+table.ScrollbarTable td.ScrollbarPrevName {text-align: left;border: none;}
+table.ScrollbarTable td.ScrollbarParent {text-align: center;border: none;}
+table.ScrollbarTable td.ScrollbarNextName {text-align: right;border: none;}
+table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border: none;}
+
+/*]]>*/</STYLE><DIV class="Scrollbar"><TABLE class="ScrollbarTable"><TR><TD class="ScrollbarPrevIcon"><A href="2-introduction.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/back_16.gif" width="16" height="16"></A></TD><TD width="33%" class="ScrollbarPrevName"><A href="2-introduction.html">2. Introduction</A>&nbsp;</TD><TD width="33%" class="ScrollbarParent"><SUP><A href="users-guide.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/up_16.gif" width="8" height="8"></A></SUP><A href="users-guide.html">User&apos;s Guide</A></TD><TD width="33%" class="ScrollbarNextName">&nbsp;<A href="4-examples.html">4. Examples</A></TD><TD class="ScrollbarNextIcon"><A href="4-examples.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/forwd_16.gif" width="16" height="16"></A></TD></TR></TABLE></DIV>
+<P><A name="3.Installation-top"></A></P>
+
+<H1><A name="3.Installation-3.Installation"></A>3. Installation</H1>
+
+<P>This document describes how to install and configure ServiceMix 3.x for both Unix and Windows&apos; platforms.<BR>
+Here you will find information about what are pre requisite software, where to download Geronimo from and how to customize the installation to use custom ports other than the defaults.</P>
+
+<P>This article contains the following sections:</P>
+<DIV>
+<UL>
+  <LI><A href="#3.Installation-PreInstallationRequirements">Pre-Installation Requirements</A></LI>
+  <LI><A href="#3.Installation-InstallationProcedureforWindows">Installation Procedure for Windows</A>
+<UL>
+  <LI><A href="#3.Installation-WindowsBinaryInstallation">Windows Binary Installation</A></LI>
+  <LI><A href="#3.Installation-WindowsSourceInstallation">Windows Source Installation</A></LI>
+  <LI><A href="#3.Installation-WindowsDevelopers%2527Release">Windows Developers&apos; Release</A></LI>
+</UL></LI>
+  <LI><A href="#3.Installation-InstallationProcedureForUnix">Installation Procedure For Unix</A>
+<UL>
+  <LI><A href="#3.Installation-UnixBinaryInstallation">Unix Binary Installation</A></LI>
+  <LI><A href="#3.Installation-UnixSourceInstallation">Unix Source Installation</A></LI>
+  <LI><A href="#3.Installation-UnixDevelopers%2527Release">Unix Developers&apos; Release</A></LI>
+</UL></LI>
+  <LI><A href="#3.Installation-StartingServiceMix">Starting ServiceMix</A>
+<UL>
+  <LI><A href="#3.Installation-OnWindows">On Windows</A></LI>
+  <LI><A href="#3.Installation-OnUnix">On Unix</A>
+<UL>
+  <LI><A href="#3.Installation-TroubleshootingforUnix">Troubleshooting for Unix</A></LI>
+</UL></LI>
+</UL></LI>
+  <LI><A href="#3.Installation-Troubleshooting">Troubleshooting</A>
+<UL>
+  <LI><A href="#3.Installation-Pathname">Path name</A></LI>
+  <LI><A href="#3.Installation-Missinglibraries">Missing libraries</A></LI>
+</UL></LI>
+  <LI><A href="#3.Installation-TestingtheInstallation">Testing the Installation</A></LI>
+  <LI><A href="#3.Installation-StoppingServiceMix">Stopping ServiceMix</A></LI>
+  <LI><A href="#3.Installation-ConfiguringServiceMix">Configuring ServiceMix</A></LI>
+</UL></DIV>
+
+<H2><A name="3.Installation-PreInstallationRequirements"></A>Pre-Installation Requirements</H2>
+
+<P><B>Hardware:</B></P>
+<UL>
+	<LI>31 MB of free disk space for the ServiceMix 3.0.x binary distribution.</LI>
+	<LI>8 MB of free disk space for the ServiceMix 3.0.x source or developer&apos;s distributions respectively around 25 MB for SVN checkout. The Maven build requires roughly 250 MB disk space and for the dependencies Maven downloads during building further 200 MB are required. As a lot of small files are produced, the exact space demands depend greatly on your cluster utilisation ratio.</LI>
+</UL>
+
+
+<P><B>Operating Systems:</B></P>
+<UL>
+	<LI>Windows: Windows XP SP2, Windows 2000.</LI>
+	<LI>Unix: Ubuntu Linux, Powerdog Linux, MacOS, AIX, HP-UX, Solaris, any Unix platform that supports Java.</LI>
+</UL>
+
+
+<P><B>Environment:</B></P>
+<UL>
+	<LI>Java Developer Kit (JDK) 1.5.x or greater (<SPAN class="nobr"><A href="http://java.sun.com/" title="Visit page outside Confluence" rel="nofollow">http://java.sun.com/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>).</LI>
+	<LI>The JAVA_HOME environment variable must be set to the directory where the JDK is installed, e.g., <TT>c:\Program Files\jdk.1.5.0_06</TT>. To accomplish that, press Windows key and Break key together, switch to &quot;Advanced&quot; tab and click on &quot;Environment Variables&quot;. Here, check for the variable and, if necessary, add it.</LI>
+	<LI>Apache Maven 2.0.4 (<SPAN class="nobr"><A href="http://maven.apache.org/download.html" title="Visit page outside Confluence" rel="nofollow">http://maven.apache.org/download.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>).</LI>
+</UL>
+
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">JDK 1.4</B><BR>
+<P>While the core JBI container can be used with JDK 1.4 without any problems, the build system requires JDK 5 and some components are dependant on JDK 5 features.</P></TD></TR></TABLE>
+
+<H2><A name="3.Installation-InstallationProcedureforWindows"></A>Installation Procedure for Windows</H2>
+
+<P>This section of the Getting Started guide explains how to install binary and source distributions of ServiceMix on a Windows system.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="tipMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/check.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Handy Hint</B><BR>
+<P>In case you have to install ServiceMix into a very deep path or a path containing illegal characters for Java paths, e.g. &#33;, % etc., you may add a bat file to <EM>start &#45;&gt; startup</EM> that executes</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>subst S: &quot;C:\your very % problematic path!\SM&quot;
+</PRE>
+</DIV></DIV>
+<P>so your ServiceMix root directory is S: &mdash; which works for sure and is short to type.</P></TD></TR></TABLE>
+
+<H3><A name="3.Installation-WindowsBinaryInstallation"></A>Windows Binary Installation</H3>
+
+<P>This procedure explains how to download and install the binary distribution on a Windows system.</P>
+<OL>
+	<LI>From a browser, navigate to <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/download.html" title="Visit page outside Confluence" rel="nofollow">http://incubator.apache.org/servicemix/download.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</LI>
+	<LI>Click the &quot;ServiceMix 3.0.x Release&quot; link under the &quot;Latest Releases&quot; section. This brings up a new page.</LI>
+	<LI>Under the &quot;Download Here&quot; section, select the desired distribution (you may have to scroll down to see the &quot;Download Here&quot; section).<BR>
+For a binary distribution, the filename will be similar to: <TT>apache-servicemix-3.0.x.zip</TT>.</LI>
+	<LI>Extract the files from the ZIP file into a directory of your choice. Please remember the restrictions concerning illegal characters in Java paths, e.g. &#33;, % etc.</LI>
+	<LI>Proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.</LI>
+	<LI>Following start-up, go to the <A href="#3.Installation-TestingtheInstallation" title="Testing the Installation on 3. Installation">Testing the Installation</A> section of this document.</LI>
+</OL>
+
+
+<H3><A name="3.Installation-WindowsSourceInstallation"></A>Windows Source Installation</H3>
+
+<P>This procedure explains how to download and install the source distribution on a Windows system. <B>NOTE:</B> ServiceMix can be run on a Java 1.4.x system, however, Java 5 is required to compile/build ServiceMix.</P>
+<OL>
+	<LI>From a browser, navigate to <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/download.html" title="Visit page outside Confluence" rel="nofollow">http://incubator.apache.org/servicemix/download.html<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI>Click the &quot;ServiceMix 3.0.x Release&quot; link under the &quot;Latest Releases&quot; section. This brings up another page.</LI>
+	<LI>Under the &quot;Download Here&quot; section, select the desired distribution (if necessary, scroll down to see the &quot;Download Here&quot; section).<BR>
+For a source distribution, the filename will be similar to: <TT>apache-servicemix-3.0.x-src.zip</TT>.</LI>
+	<LI>Extract ServiceMix from the ZIP file into a directory of your choice. Please remember the restrictions concerning illegal characters in Java paths, e.g. &#33;, % etc.</LI>
+	<LI><A name="3.Installation-WindowsSourceInstallation"></A> Build ServiceMix using Maven 2.0.4 or greater and Java 5.<BR>
+The recommended method of building ServiceMix is the following:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [servicemix_install_dir]</PRE>
+</DIV></DIV>
+<P> where <TT>[servicemix_install_dir]</TT> is the directory in which ServiceMix was installed.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">mvn -Dprofile=step1
+mvn -Dprofile=step2</PRE>
+</DIV></DIV>
+<P>Both steps take around 10 to 15 minutes.</P></LI>
+	<LI>Unzip the distribution using your favorite zip tool. The windows distribution is available at
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">[servicemix_install_dir]\apache-servicemix\target\apache-servicemix-3.0-incubating.zip</PRE>
+</DIV></DIV></LI>
+	<LI>Proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.</LI>
+	<LI>Following start-up, go to the <A href="#3.Installation-TestingtheInstallation" title="Testing the Installation on 3. Installation">Testing the Installation</A> section of this document.</LI>
+</OL>
+
+
+<P><EM>Warning:</EM> If you are building Servicemix 3.x under Windows using Cygwin there is a path name length limitation. If the length is exceeded you may see build errors. To fix this, move the ServiceMix source directory higher in the file system tree, e.g., /cygdrive/c/d/sm.</P>
+
+<H3><A name="3.Installation-WindowsDevelopers%27Release"></A>Windows Developers&apos; Release</H3>
+
+<P>This procedure explains how to download and install the latest developers&apos; snapshot. <B>NOTE:</B> ServiceMix can be run on a Java 1.4.x system, however, Java 5 is required to compile/build ServiceMix.</P>
+<OL>
+	<LI>From a browser, navigate to <SPAN class="nobr"><A href="http://www.servicemix.org/" title="Visit page outside Confluence" rel="nofollow">www.servicemix.org<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</LI>
+	<LI>Click the Download link in the navigation pane (the left pane).</LI>
+	<LI>Click the &quot;Current development SNAPSHOT release&quot; link.</LI>
+	<LI>Select the version of ServiceMix to download (if necessary, scroll down to see the ServiceMix snapshots).</LI>
+	<LI>Extract the files from the ZIP file into a directory of your choice. Please remember the restrictions concerning illegal characters in Java paths, e.g. &#33;, % etc.</LI>
+	<LI>If a binary snapshot was downloaded proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.<BR>
+If a source snapshot was downloaded perform step 5 (building) and step 6 (unzipping) of the <A href="#3.Installation-WindowsSourceInstallation" title="Windows Source Installation on 3. Installation">Windows Source Installation</A> procedure and proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.</LI>
+	<LI>Following start-up, proceed to the <A href="#3.Installation-TestingtheInstallation" title="Testing the Installation on 3. Installation">Testing the Installation</A> section.</LI>
+</OL>
+
+
+<H2><A name="3.Installation-InstallationProcedureForUnix"></A>Installation Procedure For Unix</H2>
+
+
+<H3><A name="3.Installation-UnixBinaryInstallation"></A>Unix Binary Installation</H3>
+
+<P>This procedure explains how to download and install the binary distribution on a Unix system.</P>
+<OL>
+	<LI>Download the ServiceMix gzip file to the Unix machine, either using a browser or using a tool, i.e., wget, scp, ftp, etc.<BR>
+If the Unix machine has a browser:</LI>
+</OL>
+
+
+<P>a. Navigate to <SPAN class="nobr"><A href="http://www.servicemix.org/" title="Visit page outside Confluence" rel="nofollow">www.servicemix.org<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.<BR>
+b. Click the &quot;Download&quot; link in the navigation pane (the left pane).<BR>
+c. Click the &quot;ServiceMix 3.x Release&quot; link under the &quot;Latest Releases&quot; section. This brings up a new page.<BR>
+d. Under the &quot;Download Here&quot; section, select the desired distribution (if necessary,<BR>
+scroll down to see the &quot;Download Here&quot; section). For a binary Unix distribution, the filename<BR>
+will be similar to: apache-servicemix-x.x.x.tar.gz.</P>
+
+<P>OR</P>
+
+<P>If the Unix machine does NOT have a browser, tools such as wget, scp, or ftp can be used to download the ServiceMix distribution.<BR>
+It is beyond the scope of this document to explain the use of those tools. For convenience an example is provided below using<BR>
+a Windows machine (that has a browser) and a Unix machine with &quot;wget&quot; installed on it.<BR>
+<B>NOTE:</B> There are several alternative ways to perform this type of installation.</P>
+
+<P>a. Obtain the link to the ServiceMix distribution file. On the Windows machine with a browser, navigate to <SPAN class="nobr"><A href="http://www.servicemix.org/" title="Visit page outside Confluence" rel="nofollow">www.servicemix.org<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.<BR>
+b. Click the &quot;Download&quot; link in the left navigation pane.<BR>
+c. Click the &quot;ServiceMix 3.x Release&quot; link under the &quot;Latest Releases&quot; section. This brings up a new page.<BR>
+d. Under the &quot;Download Here&quot; section, roll-over the desired distribution (if necessary, scroll<BR>
+down to see the &quot;Download Here&quot; section). For a binary Unix distribution the filename will be<BR>
+similar to: servicemix-x.x.x.tar.gz.<BR>
+e. Right-click on the distribution name and &quot;Copy Shortcut.&quot;<BR>
+f. On the Unix machine, change to the directory in which ServiceMix will be installed, e.g., /usr/local.<BR>
+f. Download the ServiceMix distribution to the Unix machine using the &quot;wget&quot; tool. For example, type &quot;wget&quot; followed by the saved shortcut:</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>wget http://people.apache.org/repo/m2-incubating-repository/org/apache/servicemix/apache-servicemix/3.0-incubating/apache-servicemix-3.0-incubating-src.tar.gz
+</PRE>
+</DIV></DIV>
+<OL>
+	<LI>Extract the files from the gzip file into a directory of your choice. For example:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">gunzip apache-servicemix-x.x.x.tar.gz
+tar xvf apache-servicemix-x.x.x.tar</PRE>
+</DIV></DIV>
+<P>Please remember the restrictions concerning illegal characters in Java paths, e.g. &#33;, % etc.</P></LI>
+	<LI>Proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.</LI>
+	<LI>Following start-up, go to the <A href="#3.Installation-TestingtheInstallation" title="Testing the Installation on 3. Installation">Testing the Installation</A> section.</LI>
+</OL>
+
+
+<H3><A name="3.Installation-UnixSourceInstallation"></A>Unix Source Installation</H3>
+
+<P>This procedure explains how to download and install the source distribution on a Unix system. This procedure assumes the Unix machine has a browser. Please see the previous <A href="#3.Installation-UnixBinaryInstallation" title="Unix Binary Installation on 3. Installation">Unix Binary Installation</A> section for ideas on how to install ServiceMix without a browser. <B>NOTE:</B> ServiceMix can be run on a Java 1.4.x system, however, Java 5 is required to compile/build ServiceMix.</P>
+<OL>
+	<LI>From a browser, navigate to <SPAN class="nobr"><A href="http://www.servicemix.org/" title="Visit page outside Confluence" rel="nofollow">www.servicemix.org<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</LI>
+	<LI>Click the &quot;Download&quot; link in the navigation pane (the left pane).</LI>
+	<LI>Click the &quot;ServiceMix 3.x Release&quot; link under the &quot;Latest Releases&quot; section. This brings up a new page.</LI>
+	<LI>Under the &quot;Download Here&quot; section, select the desired distribution (if necessary, scroll down to see the &quot;Download Here&quot; section).<BR>
+For a source distribution, the filename will be similar to: <TT>servicemix-x.x-src.tar.gz</TT>.</LI>
+	<LI>Extract the files from the ZIP file into a directory of your choice. For example:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">gunzip apache-servicemix.x.x-src.tar.gz
+tar xvf apache-servicemix.x.x-src.tar</PRE>
+</DIV></DIV>
+<P>Please remember the restrictions concerning illegal characters in Java paths, e.g. &#33;, % etc.</P></LI>
+	<LI>Build ServiceMix using Maven 2.0.4 or greater and Java 5:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">The preferred method of building ServiceMix is the following:
+cd [servicemix_install_dir]
+ where [servicemix_install_dir] is the directory in which ServiceMix was installed.
+mvn -Dprofile=step1
+mvn -Dprofile=step2</PRE>
+</DIV></DIV>
+<P>Both steps take around 10 to 15 minutes.</P></LI>
+	<LI>Uncompress the distribution that has just been created
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [servicemix_install_dir]/apache-servicemix/target
+gunzip apache-servicemix-3.0-incubating.tar.gz
+tar xvf apache-servicemix-3.0-incubating.tar</PRE>
+</DIV></DIV></LI>
+	<LI>Proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.</LI>
+	<LI>Following start-up, go to the <A href="#3.Installation-TestingtheInstallation" title="Testing the Installation on 3. Installation">Testing the Installation</A> section.</LI>
+</OL>
+
+
+<H3><A name="3.Installation-UnixDevelopers%27Release"></A>Unix Developers&apos; Release</H3>
+
+<P>This procedure explains how to download and install the latest developers&apos; snapshot. <B>NOTE:</B> ServiceMix can be run on a Java 1.4.x system, however, Java 5 is required to compile/build ServiceMix.</P>
+<OL>
+	<LI>From a browser, navigate to www.servicemix.org.</LI>
+	<LI>Click the Download link in the navigation pane (the left pane).</LI>
+	<LI>Click the &quot;Current development SNAPSHOT release&quot; link.</LI>
+	<LI>Select the version of ServiceMix to download (you may have to scroll down to see the ServiceMix snapshots). The filename will be similar to: <TT>servicemix-x.x.x-tar.gz</TT> or <TT>servicemix-x.x.x-src.tar.gz</TT>.</LI>
+	<LI>Extract the files from the gzip file into a directory of your choice. For example:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">For a binary developer&apos;s snapshot:
+ gunzip apache-servicemix-x.x-x.tar.gz
+ tar xvf apache-servicemix-x.x.x.tar
+
+For a source developer&apos;s snapshot:
+ gunzip apache-servicemix-x.x.x-src.tar.gz
+ tar xvf apache-servicemix-x.x.x-src.tar</PRE>
+</DIV></DIV>
+<P>Please remember the restrictions concerning illegal characters in Java paths, e.g. &#33;, % etc.</P></LI>
+	<LI>For a binary snapshot, proceed to the <A href="#3.Installation-StartingServiceMix" title="Starting ServiceMix on 3. Installation">Starting ServiceMix</A> section of this document.<BR>
+If a source snapshot was downloaded perform steps 6 - 8 (building, uncompressing, starting) of the <A href="#3.Installation-UnixSourceInstallation" title="Unix Source Installation on 3. Installation">Unix Source Installation</A> procedure.</LI>
+	<LI>Proceed to the <A href="#3.Installation-TestingtheInstallation" title="Testing the Installation on 3. Installation">Testing the Installation</A> section.</LI>
+</OL>
+
+
+<H2><A name="3.Installation-StartingServiceMix"></A>Starting ServiceMix</H2>
+
+
+<H3><A name="3.Installation-OnWindows"></A>On Windows</H3>
+
+<P>From a console window, change to the installation directory and run <TT>ServiceMix</TT>. For the binary distribution, go to</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [servicemix_install_dir]</PRE>
+</DIV></DIV>
+<P>and for the source distribution go to the target directory, for example:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [servicemix_install_dir]\apache-servicemix\target\apache-servicemix-3.0-incubating-SNAPSHOT</PRE>
+</DIV></DIV>
+<P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed, e.g., <TT>c:\Program Files\servicemix-3.x</TT>.</P>
+
+<P>Then type:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">bin\servicemix</PRE>
+</DIV></DIV>
+<P><EM>Note:</EM> Working directories get created relative to the current directory. For the working directories to be created in the proper place, ServiceMix must be launched from its home/installation directory.</P>
+
+<H3><A name="3.Installation-OnUnix"></A>On Unix</H3>
+
+<P>From a command shell, change to the installation directory and run <TT>ServiceMix</TT>. For the binary distribution, go to</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [servicemix_install_dir]</PRE>
+</DIV></DIV>
+<P>and for the source distribution go to the target directory, for example:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [servicemix_install_dir]/apache-servicemix/target/apache-servicemix-3.0-incubating</PRE>
+</DIV></DIV>
+<P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was installed, e.g., <TT>/usr/local/servicemix-3.x</TT>.</P>
+
+<P>Then type:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">bin/servicemix
+
+OR
+
+nohup bin/servicemix &gt; /tmp/smlog  2&gt;&amp;1 &amp;</PRE>
+</DIV></DIV>
+<P><EM>Note:</EM> /tmp/smlog may be changed to another file name.</P>
+
+<P><EM>Note:</EM> Working directories get created relative to the current directory. For the working directories to be created in the proper place, ServiceMix must be launched from its home/installation directory.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">Warning</B><BR>
+<P>Do NOT close the console or shell in which ServiceMix was started, as that will terminate ServiceMix (unless ServiceMix was started with nohup).</P></TD></TR></TABLE>
+
+<H4><A name="3.Installation-TroubleshootingforUnix"></A>Troubleshooting for Unix</H4>
+
+<P>If the <TT>servicemix</TT> start-up script is not executable, change its permisssions. The <TT>servicemix</TT> script is located in the <TT>bin</TT> directory. For example:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">chmod 755 bin/servicemix</PRE>
+</DIV></DIV>
+
+<H2><A name="3.Installation-Troubleshooting"></A>Troubleshooting</H2>
+
+
+<H3><A name="3.Installation-Pathname"></A>Path name</H3>
+
+<P>In case you get a</P>
+<DIV class="preformatted"><DIV class="preformattedContent">
+<PRE>Exception in thread &quot;main&quot; java.lang.IllegalArgumentException
+</PRE>
+</DIV></DIV>
+<P>you may have some illegal characters in the path, e.g. &#33;, % etc.</P>
+
+<H3><A name="3.Installation-Missinglibraries"></A>Missing libraries</H3>
+
+<P>Starting ServiceMix with old examples, <A href="cimero-editor.html" title="CIMERO Editor">CIMERO</A>&#45;generated xml configuration files or custom code may cause errors due to missing libraries. Usually, the missing class is displayed at the very end of the output. Here, some examples are shown and explained.</P>
+<DIV class="panel"><DIV class="panelContent">
+<P>Caused by: java.lang.<B>NoClassDefFoundError:</B> org/<B>quartz</B>/JobExecutionException<BR>
+&nbsp;&nbsp;&nbsp; at java.lang.Class.forName0(Native Method)<BR>
+&nbsp;&nbsp;&nbsp;         at java.lang.Class.forName(Class.java:242)<BR>
+&nbsp;&nbsp;&nbsp;         at org.springframework.util.ClassUtils.forName(ClassUtils.java:160)<BR>
+&nbsp;&nbsp;&nbsp;         at org.springframework.beans.factory.support.BeanDefinitionReaderUtils.createBeanDefinition(BeanDefinitionReaderUtils.java:95)<BR>
+&nbsp;&nbsp;&nbsp;         at org.springframework.beans.factory.xml.BeanDefinitionParserDelegate.parseBeanDefinitionElement(BeanDefinitionParserDelegate.java:452)<BR>
+&nbsp;&nbsp;&nbsp;         ... 53 more</P>
+</DIV></DIV>
+<P>Obviously (bold typed text), a class inside the quartz package cannot be found. A quick search for &quot;quartz&quot; in the Maven repository reveals <EM>[user_home]\.m2\repository\quartz\quartz\1.5.2\quartz-1.5.2.jar</EM> (or newer version) which has to be copied to <EM>[ServiceMix_home]\lib\quartz-1.5.2.jar</EM> &#45; the error shall be resolved now. Of course, adding the directory containing the jar to the classpath is another possibility.</P>
+
+<P>Very similar is</P>
+<DIV class="panel"><DIV class="panelContent">
+<P>...<BR>
+Caused by: java.lang.<B>ClassNotFoundException</B>: org.apache.<B>servicemix.components</B>.file.FileWriter<BR>
+...</P>
+</DIV></DIV>
+<P>indicating that the whole servicemix-common package cannot be found. In the Maven repository, <EM>servicemix-components-3.0-incubating.jar</EM> (or newer version) can be found and copied to ServiceMix&apos; lib directory. <B>Note:</B> As this is a ServiceMix&apos; sub-project, the jar is available at <EM>[ServiceMix_home]\components</EM> as well.</P>
+
+<P>Slightly trickier is&nbsp;</P>
+<DIV class="panel"><DIV class="panelContent">
+<P>...<BR>
+Caused by: org.springframework.beans.factory.BeanDefinitionStoreException: <B>Unrecognized xbean namespace mapping:</B> <SPAN class="nobr"><A href="http://servicemix.apache.org/eip/1.0" title="Visit page outside Confluence" rel="nofollow">http://servicemix.apache.org/eip/1.0<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN><BR>
+...</P>
+</DIV></DIV>
+<P>A short www search leads to <A href="unrecognized-xbean-namespace-mapping.html" title="Unrecognized xbean namespace mapping">Unrecognized xbean namespace mapping</A>. With this information, one can infer that <EM>[user_home]\.m2\repository\org\apache\servicemix\servicemix-eip\3.0-incubating\servicemix-eip-3.0-incubating.jar</EM> (or newer version) has to be copied to <EM>[ServiceMix_home]\lib\servicemix-eip-3.0-incubating.jar</EM> so ServiceMix can find the classes.</P>
+
+<H2><A name="3.Installation-TestingtheInstallation"></A>Testing the Installation</H2>
+
+<P>If ServiceMix is up and running without problems, the Window&apos;s console window or the Unix command shell will display something similar to the following log line:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">INFO - JBIContainer.init(421) | ServiceMix JBI Container ([http:<SPAN class="code-comment">//servicemix.org/]) name: defaultJBI running version: 3.0-incubating</SPAN></PRE>
+</DIV></DIV>
+<P>ServiceMix&apos;s default port is 1099. From another window run netstat and search for port 1099.</P>
+
+<P>From a Windows console, type:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">netstat -an | find <SPAN class="code-quote">&quot;1099&quot;</SPAN></PRE>
+</DIV></DIV>
+<P><B>OR</B></P>
+
+<P>From a Unix command shell, type:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">netstat -an | grep 1099</PRE>
+</DIV></DIV>
+
+<H2><A name="3.Installation-StoppingServiceMix"></A>Stopping ServiceMix</H2>
+
+<P>For both Windows and Unix installations, terminate ServiceMix by typing &quot;CTRL-C&quot; in the command shell or console in which it is running.</P>
+
+<P>If ServiceMix was started in the background on Unix, the process can be killed, with the following:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">ps -ef | grep servicemix
+kill [PID]
+ where [PID] is the process id of the servicemix process.</PRE>
+</DIV></DIV>
+
+<H2><A name="3.Installation-ConfiguringServiceMix"></A>Configuring ServiceMix</H2>
+
+<P>After the installation, ServiceMix is running with a basic configuration, but no components. For details on configuring options, please see refer to the <A href="configuration.html" title="Configuration">Configuration</A> section.</P>
+
+<P><A href="#3.Installation-top" title="top on 3. Installation">top</A></P>
+<STYLE type="text/css">/*<![CDATA[*/
+table.ScrollbarTable  {border: none;padding: 3px;width: 100%;padding: 3px;margin: 0px;background-color: #f0f0f0}
+table.ScrollbarTable td.ScrollbarPrevIcon {text-align: center;width: 16px;border: none;}
+table.ScrollbarTable td.ScrollbarPrevName {text-align: left;border: none;}
+table.ScrollbarTable td.ScrollbarParent {text-align: center;border: none;}
+table.ScrollbarTable td.ScrollbarNextName {text-align: right;border: none;}
+table.ScrollbarTable td.ScrollbarNextIcon {text-align: center;width: 16px;border: none;}
+
+/*]]>*/</STYLE><DIV class="Scrollbar"><TABLE class="ScrollbarTable"><TR><TD class="ScrollbarPrevIcon"><A href="2-introduction.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/back_16.gif" width="16" height="16"></A></TD><TD width="33%" class="ScrollbarPrevName"><A href="2-introduction.html">2. Introduction</A>&nbsp;</TD><TD width="33%" class="ScrollbarParent"><SUP><A href="users-guide.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/up_16.gif" width="8" height="8"></A></SUP><A href="users-guide.html">User&apos;s Guide</A></TD><TD width="33%" class="ScrollbarNextName">&nbsp;<A href="4-examples.html">4. Examples</A></TD><TD class="ScrollbarNextIcon"><A href="4-examples.html"><IMG border="0" align="middle" src="http://goopen.org/confluence/images/icons/forwd_16.gif" width="16" height="16"></A></TD></TR></TABLE></DIV></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=13489&originalId=14724">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=13489">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

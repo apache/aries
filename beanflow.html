@@ -1,0 +1,541 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+BeanFlow
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="features.html" title="Features">Features</A>&nbsp;&gt;&nbsp;<A href="" title="BeanFlow">BeanFlow</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">BeanFlow</div>
+-->
+            <DIV class="wiki-content"><P><B>BeanFlow</B> is a lightweight Java library for building workflows using beans to orchestrate events. You can think of BeanFlow as a simple alternative to <A href="bpel.html" title="BPEL">BPEL</A> where the workflows are all specified and implemented using Java code rather than declarative XML.</P>
+
+<H3><A name="BeanFlow-QuickLinks"></A>Quick Links</H3>
+
+<UL>
+	<LI><SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/" title="Visit page outside Confluence" rel="nofollow">BeanFlow JavaDoc<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="beanflow-patterns.html" title="BeanFlow Patterns">BeanFlow Patterns</A></LI>
+	<LI><SPAN class="nobr"><A href="http://svn.apache.org/repos/asf/incubator/servicemix/trunk/common/servicemix-beanflow/" title="Visit page outside Confluence" rel="nofollow">BeanFlow Source Code<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+</UL>
+
+
+<H3><A name="BeanFlow-Motivation"></A>Motivation</H3>
+
+<P>When building highly concurrent or distributed applications it is very common for there to be many events happening; often asynchronously and in different threads and its very common to need to perform kinds of workflow or orchestration across these events.</P>
+
+<P>Now you certainly can use things like <A href="bpel.html" title="BPEL">BPEL</A> to solve these kinds of problems. However often this is a bit heavy weight &amp; complex and you just want to have a bean based workflow using regular Java code to represent the activities involved in the workflow.</P>
+
+<H3><A name="BeanFlow-Transformingthetraditionalworkflowapproach"></A>Transforming the traditional workflow approach</H3>
+
+<P>One of the main goals of BeanFlow is to reuse what the Java platform is good for in the workflow space; then supplement it with missing abstractions rather than inventing the wheel in a sub-optimal way.</P>
+
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh">Traditional approach</TH>
+<TH class="confluenceTh">BeanFlow approach</TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> use a declarative workflow language to specify a workflow </TD>
+<TD class="confluenceTd"> write a Java class </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> use XML markup or pictures to define loops and flows </TD>
+<TD class="confluenceTd"> use regular Java code (if/for/while) </TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> implement a generic state and persistence framework for workflow instances </TD>
+<TD class="confluenceTd"> use regular Java fields in your workflow class, then use JDBC/DAO/JPA to deal with persistence </TD>
+</TR>
+</TBODY></TABLE>
+
+<H3><A name="BeanFlow-Usecases"></A>Use cases</H3>
+
+<P>When working with concurrent or distributed applications there are many use cases for needing to orchestrate among multiple concurrent events. Here are a few examples from our use cases implementing <A href="home.html" title="Home">ServiceMix</A> and <SPAN class="nobr"><A href="http://activemq.org/" title="Visit page outside Confluence" rel="nofollow">ActiveMQ<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></P>
+
+<UL>
+	<LI>starting dependent services; where a parent component is dependent on the child components starting; where the start process may be asynchronous in different threads. e.g. there may be a recovery process on startup which you need to wait for.</LI>
+	<LI>implementing master-slave type protocols where you need to monitor the state of the master and slave to make decisions on what to do; together with dealing with transitions from <EM>Started</EM> to <EM>Recovering</EM> to <EM>Running</EM> then maybe to <EM>FailingOver</EM> etc.</LI>
+	<LI>implementing message orchestration. You may want to implement some simple orchestrations, waiting for either a response to arrive or a timeout to fire etc</LI>
+</UL>
+
+
+<H2><A name="BeanFlow-Codeoverview"></A>Code overview</H2>
+
+<P>First we&apos;ll give an overview of the two main interfaces in BeanFlow then we&apos;ll progress to concepts like timeouts and composing activities.</P>
+
+<H3><A name="BeanFlow-Stateclass"></A>State class</H3>
+
+<P>We have a <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/State.html" title="Visit page outside Confluence" rel="nofollow">State&lt;T&gt;<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> interface which is identical to the <SPAN class="nobr"><A href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/concurrent/atomic/AtomicReference.html" title="Visit page outside Confluence" rel="nofollow">AtomicReference&lt;T&gt;<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> interface included in java.util.concurrent in Java 5 apart from that it allows you to register listeners to the state. This makes it easy to respond to the changes in state.</P>
+
+<P>One added detail is the that State&lt;T&gt; allows you to specify the <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/support/Notifier.html" title="Visit page outside Confluence" rel="nofollow">Notifier<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> implementation used to perform the notifications (which always occur outside of the semaphore to allow things to be re-entrant).</P>
+
+<P>The default notifier used is the <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/support/SynchronousNotifier.html" title="Visit page outside Confluence" rel="nofollow">SynchronousNotifier<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> but its easy to switch to an <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/support/AsynchronousNotifier.html" title="Visit page outside Confluence" rel="nofollow">AsynchronousNotifier<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> by just passing it into the constructor of the State&lt;T&gt; object.</P>
+
+<H3><A name="BeanFlow-Activityclass"></A>Activity class</H3>
+
+<P>An activity is just a POJO which implements the <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/Activity.html" title="Visit page outside Confluence" rel="nofollow">Activity<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> interface; it has a simple lifecycle, you can start them and stop them and ask their status.</P>
+
+<P>Once a flow has been started via the <B>start()</B> method it can take an arbitrarily long time to complete; you can see if the flow has completed via the <B>isStopped()</B> method. You can explicitly complete a flow using the <B>stop()</B> method whenever you like; typically when you are responding to state changes.</P>
+
+<P>An activity could fail for some reason (such as it timed out or some error occurred) so there is a method <B>isFailed()</B> which can be used to easily inspect the activity. Rather like the <B>stop()</B> method, you can call <B>fail(reason)</B> if you wish to terminate an activity with the activity marked as the Failed rather than Stopped state.</P>
+
+<H3><A name="BeanFlow-Usingtimeouts"></A>Using timeouts</H3>
+
+<P>Its very common to add timeouts onto activities so that if the activity is not complete by a certain time then the activity is stopped &amp; failed; often another parent activity may then do something differently if one of its child activities fails.</P>
+
+<P>There is a useful base activity called <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/TimeoutActivity.html" title="Visit page outside Confluence" rel="nofollow">TimeoutActivity<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which you can derive from to make your own activity which can be started/stopped/failed and which can be timed out.</P>
+
+<P>You can explicitly register the activity with a timer and call the <B>onTimedOut()</B> method yourself or just call the <B>startWithTimeout()</B> method to start the activity registering the timeout.</P>
+
+<H3><A name="BeanFlow-Composingactivities"></A>Composing activities</H3>
+
+<P>One of the main reasons for using an object orientated language is to make composition and reuse possible; similarly BeanFlow allows you to compose activities together to make modular and reusable workflow constructs easily. So BeanFlow attempts to create a collection of reusable activities which you can then use to derive from or aggregate to make whatever activities you need.</P>
+
+<TABLE class="confluenceTable"><TBODY>
+<TR>
+<TH class="confluenceTh">Composition Activities</TH>
+<TH class="confluenceTh">Description</TH>
+</TR>
+<TR>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/JoinAll.html" title="Visit page outside Confluence" rel="nofollow">JoinAll<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
+<TD class="confluenceTd">Performs a join on all the given child activities. So the activity waits until all the child activities have completed, then it completes itself. You can add additional constraints to the activity using derivation. The default is to wait for all the child activities to complete; though you can enable fast-fail mode so that the activity fails as soon as a child activity fails</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/JoinQuorum.html" title="Visit page outside Confluence" rel="nofollow">JoinQuorum<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
+<TD class="confluenceTd">This activity is useful for implementing clustering style activities where you want a quorum of activities to complete. e.g. if you have 5 child activities you want to wait for at least 3 activities to complete succesfully before continuing</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/AsynchronousActivity.html" title="Visit page outside Confluence" rel="nofollow">AsynchronousActivity<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
+<TD class="confluenceTd">Executes any Runnable or Callable on an Executor and complete the activity when it has completed so that it can be used in joins</TD>
+</TR>
+<TR>
+<TD class="confluenceTd"> <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/ParallelActivity.html" title="Visit page outside Confluence" rel="nofollow">ParallelActivity<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> </TD>
+<TD class="confluenceTd">Allows a collection of parallel Runnable or Callable objects to be performed on an Executor then performing some kind of join on them completing</TD>
+</TR>
+</TBODY></TABLE>
+
+<P>Here is an example of performing joins using collections of child workflows</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-comment">// lets create a join on a number of child flows completing
+</SPAN>JoinAll flow = <SPAN class="code-keyword">new</SPAN> JoinAll(child1, child2, child3);
+flow.startWithTimeout(timer, timeout);
+
+<SPAN class="code-comment">// now lets test the flow
+</SPAN>child1.stop();
+assertStarted(flow);
+
+child2.stop();
+assertStarted(flow);
+
+child3.stop();
+assertStopped(flow);</PRE>
+</DIV></DIV>
+
+<H3><A name="BeanFlow-Joinconditions"></A>Join conditions</H3>
+
+<P>In workflows you often want to fork parallel steps and then join on certain events. You often have complex logic to decide on what the join condition is. e.g. in pseudo code</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">fork steps A, B, C
+join on A and (B or C)</PRE>
+</DIV></DIV>
+
+<P>In BeanFlow we implement join conditions using regular Java code. The basic idea is that a Activity will listen to changes in a number of different <B>State</B> objects such as fields a, b and c. You can then write an activity bean to perform the join condition you need. When the condition is met you can then perform whatever logic you wish such as</P>
+
+<UL>
+	<LI>stopping the activity</LI>
+	<LI>forking off a new child activity</LI>
+	<LI>changing your state</LI>
+	<LI>changing the state of some other bean</LI>
+	<LI>calling arbitrary Java code</LI>
+</UL>
+
+
+<P>Here is an example activity implemented in Java code for the above code.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-comment">// lets create some child workflows
+</SPAN><SPAN class="code-keyword">final</SPAN> Activity a = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+<SPAN class="code-keyword">final</SPAN> Activity b = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+<SPAN class="code-keyword">final</SPAN> Activity c = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+
+<SPAN class="code-comment">// lets create the activity with a custom join condition
+</SPAN>Activity activity = <SPAN class="code-keyword">new</SPAN> JoinSupport(a, b, c) {
+    @Override
+    <SPAN class="code-keyword">protected</SPAN> void onChildStateChange(<SPAN class="code-object">int</SPAN> childCount, <SPAN class="code-object">int</SPAN> stoppedCount, <SPAN class="code-object">int</SPAN> failedCount) {
+
+        <SPAN class="code-keyword">if</SPAN> (a.isStopped() &amp;&amp; (b.isStopped() || c.isStopped())) {
+            <SPAN class="code-comment">// lets stop the activity we&apos;re done
+</SPAN>            stop();
+        }
+    }
+};
+
+<SPAN class="code-comment">// lets start the activities
+</SPAN>activity.startWithTimeout(timer, timeout);
+
+<SPAN class="code-comment">// now lets test things behave properly
+</SPAN>assertStarted(activity);
+
+a.stop();
+assertStarted(activity);
+
+b.stop();
+assertStopped(activity);</PRE>
+</DIV></DIV>
+
+<H2><A name="BeanFlow-Buildingworkflows"></A>Building workflows</H2>
+
+<P>So we&apos;ve been over the basics of activities and showed how we can perform joins along with compose them. Remember they are just Java bean so you can implement them however you wish.</P>
+
+<P>However often folks think of workflows as a number of discrete steps; using a kind of state machine to move from step to step. One real simple approach to<BR>
+writing workflows in this model is to use a specific method for each workflow step.</P>
+
+<P>So we have a base class called <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/maven/servicemix-beanflow/apidocs/org/apache/servicemix/beanflow/Workflow.html" title="Visit page outside Confluence" rel="nofollow">Workflow<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which adds a new State object for the current step (which allows actvities to listen to the step changing) together with helper methods for moving to different steps, for suspending and so forth.</P>
+
+<H3><A name="BeanFlow-Movingsteps"></A>Moving steps</H3>
+
+<P>Inside a step you can call any Java methods on any objects. However to move from step to step in a declarative fashion you can call the <B>setNextStep()</B> method.<BR>
+Another option is to use a method which returns a String or enum value; a non-null value is then interpreted as being the next step that is navigated to next.</P>
+
+<P>Note that the movement to the next step always takes place outside of the step method to avoid deeply recursive methods.</P>
+
+<H3><A name="BeanFlow-Suspendingworkflows"></A>Suspending workflows</H3>
+
+<P>Often in a workflow you have to wait for some external event such as</P>
+<UL>
+	<LI>a user enters some text</LI>
+	<LI>a message is received</LI>
+</UL>
+
+
+<P>Once that happens you re-awaken the workflow and commence execution at some step. To implement this just call the setNextStep() method to cause the workflow to resume at the given step</P>
+
+<H3><A name="BeanFlow-SimpleExample"></A>Simple Example</H3>
+
+<P>There now follows a simple workflow example...</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class SimpleWorkflow <SPAN class="code-keyword">extends</SPAN> Workflow&lt;SimpleWorkflow.Step&gt; {
+
+    <SPAN class="code-keyword">public</SPAN> <SPAN class="code-keyword">static</SPAN> <SPAN class="code-keyword">enum</SPAN> Step {
+        stepA, stepB, stepC, stop
+    };
+
+    <SPAN class="code-keyword">public</SPAN> SimpleWorkflow() {
+        <SPAN class="code-keyword">super</SPAN>(Step.stepA);
+    }
+
+    <SPAN class="code-comment">// Workflow steps
+</SPAN>    <SPAN class="code-comment">// -------------------------------------------------------------------------
+</SPAN>    <SPAN class="code-keyword">public</SPAN> Step stepA() {
+        <SPAN class="code-keyword">return</SPAN> Step.stepB;
+    }
+    
+    <SPAN class="code-keyword">public</SPAN> Step stepB() {
+        <SPAN class="code-keyword">return</SPAN> Step.stepC;
+    }
+    
+    <SPAN class="code-keyword">public</SPAN> Step stepC() {
+        <SPAN class="code-keyword">return</SPAN> Step.stop;
+    }
+}</PRE>
+</DIV></DIV>
+
+<P>As you can see the step is defined by an enumeration <B>Step</B> and we have a regular Java method to implement each step. The <EM>step method</EM> can then return the step to go to next after the current method terminates. If you return null or use a void method then the workflow suspends. </P>
+
+<H3><A name="BeanFlow-CompleteExample"></A>Complete Example</H3>
+
+<P>The following example is a fairly large one, but it shows a variety of different concepts</P>
+
+<UL>
+	<LI>suspending workflows (such as when they wait for external events such as user input or an asynchronous message to arrive)</LI>
+	<LI>looping &amp; using predicates</LI>
+	<LI>forking and joining child activities</LI>
+	<LI>declaratively moving from one step to another</LI>
+</UL>
+
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class ExampleWorkflow <SPAN class="code-keyword">extends</SPAN> Workflow&lt;ExampleWorkflow.Step&gt; {
+    <SPAN class="code-keyword">private</SPAN> <SPAN class="code-keyword">static</SPAN> <SPAN class="code-keyword">final</SPAN> Log log = LogFactory.getLog(ExampleWorkflow.class);
+
+    <SPAN class="code-keyword">private</SPAN> <SPAN class="code-object">int</SPAN> loopCount;
+    <SPAN class="code-keyword">private</SPAN> <SPAN class="code-object">long</SPAN> timeout = 500;
+    <SPAN class="code-keyword">private</SPAN> <SPAN class="code-object">String</SPAN> userEmailAddress;
+
+    <SPAN class="code-keyword">public</SPAN> <SPAN class="code-keyword">static</SPAN> <SPAN class="code-keyword">enum</SPAN> Step {
+        startStep, afterEnteredEmailStep, loopStep, waitForUserInputStep, forkStep, 
+        aCompletedStep, abcCompletedStep, stop
+    };
+
+    <SPAN class="code-keyword">public</SPAN> ExampleWorkflow() {
+        <SPAN class="code-keyword">super</SPAN>(Step.startStep);
+    }
+
+    <SPAN class="code-comment">// Workflow steps
+</SPAN>    <SPAN class="code-comment">// -------------------------------------------------------------------------
+</SPAN>
+    <SPAN class="code-keyword">public</SPAN> void startStep() {
+        <SPAN class="code-comment">// lets use an explicit goTo() to tell the workflow
+</SPAN>        <SPAN class="code-comment">// which step to go to next; though we can just <SPAN class="code-keyword">return</SPAN> Strings
+</SPAN>        addStep(Step.loopStep);
+    }
+
+    <SPAN class="code-comment">// lets use the <SPAN class="code-keyword">return</SPAN> value to specify the next step
+</SPAN>    <SPAN class="code-keyword">public</SPAN> Step loopStep() {
+        <SPAN class="code-keyword">if</SPAN> (++loopCount &gt; 3) {
+            <SPAN class="code-keyword">return</SPAN> Step.waitForUserInputStep;
+        }
+        <SPAN class="code-comment">// lets keep looping
+</SPAN>        <SPAN class="code-keyword">return</SPAN> Step.loopStep;
+    }
+
+    <SPAN class="code-keyword">public</SPAN> void waitForUserInputStep() {
+        <SPAN class="code-comment">// we are going to park here until a user
+</SPAN>        <SPAN class="code-comment">// enters a valid email address
+</SPAN>        <SPAN class="code-comment">// so lets park the workflow engine
+</SPAN>    }
+
+    <SPAN class="code-keyword">public</SPAN> Step afterEnteredEmailStep() {
+        <SPAN class="code-comment">// we are going to park here until a user
+</SPAN>        <SPAN class="code-comment">// enters a valid email address
+</SPAN>        log.info(<SPAN class="code-quote">&quot;User entered email address: &quot;</SPAN> + userEmailAddress);
+        <SPAN class="code-keyword">return</SPAN> Step.forkStep;
+    }
+
+    <SPAN class="code-keyword">public</SPAN> void forkStep() {
+        <SPAN class="code-comment">// lets fork some child flows
+</SPAN>        TimeoutActivity a = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+        TimeoutActivity b = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+        TimeoutActivity c = <SPAN class="code-keyword">new</SPAN> TimeoutActivity();
+
+        log.info(<SPAN class="code-quote">&quot;Forking off processes a, b, c&quot;</SPAN>);
+        fork(a, b, c);
+
+        <SPAN class="code-comment">// now lets add some joins
+</SPAN>        joinAll(Step.aCompletedStep, timeout, a);
+        joinAll(Step.abcCompletedStep, timeout, a, b, c);
+    }
+
+    <SPAN class="code-keyword">public</SPAN> void aCompletedStep() {
+        log.info(<SPAN class="code-quote">&quot;child flow A completed!&quot;</SPAN>);
+    }
+
+    <SPAN class="code-keyword">public</SPAN> Step abcCompletedStep() {
+        log.info(<SPAN class="code-quote">&quot;child flows A, B and C completed!&quot;</SPAN>);
+
+        <SPAN class="code-comment">// we are completely done now
+</SPAN>        <SPAN class="code-keyword">return</SPAN> Step.stop;
+    }
+
+    <SPAN class="code-comment">// External events
+</SPAN>    <SPAN class="code-comment">// -------------------------------------------------------------------------
+</SPAN>    <SPAN class="code-keyword">public</SPAN> void userEntered(<SPAN class="code-object">String</SPAN> emailAddress) {
+        <SPAN class="code-keyword">if</SPAN> (emailAddress != <SPAN class="code-keyword">null</SPAN> &amp;&amp; emailAddress.indexOf(<SPAN class="code-quote">&quot;@&quot;</SPAN>) &gt; 0) {
+            <SPAN class="code-keyword">this</SPAN>.userEmailAddress = emailAddress;
+
+            log.info(<SPAN class="code-quote">&quot;Lets re-start the suspended workflow&quot;</SPAN>);
+            addStep(Step.afterEnteredEmailStep);
+        }
+    }
+}</PRE>
+</DIV></DIV>
+
+<P>In the above example, each workflow step is implemented as a method. If the method returns a String it is interpreted as the next step which will be executed. Returning null (or using a void return type) will suspend the workflow.</P>
+
+<P>You can also explicitly call suspend() or stop() yourself.</P>
+
+<P>The setNextStep(step) will instruct the workflow engine to move to the given step.</P>
+
+<H3><A name="BeanFlow-ValidatingWorkflows"></A>Validating Workflows</H3>
+
+<P>To avoid typos between the workflow step enum and the methods in the workflow class, on startup we check that there are suitable methods available for the enum. Many thanks to <SPAN class="nobr"><A href="http://www.javarants.com/" title="Visit page outside Confluence" rel="nofollow">Sam<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> for this idea! <IMG class="emoticon" src="http://goopen.org/confluence/images/icons/emoticons/smile.gif" height="20" width="20" align="absmiddle" alt="" border="0"> e.g. the following bad workflow is automatically caught and a useful error is generated.</P>
+
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-keyword">public</SPAN> class BadWorkflow <SPAN class="code-keyword">extends</SPAN> Workflow&lt;BadWorkflow.Step&gt; {
+    
+    <SPAN class="code-keyword">public</SPAN> <SPAN class="code-keyword">static</SPAN> <SPAN class="code-keyword">enum</SPAN> Step {
+        startStep, fooStep, doesNotExistStep
+    };
+
+    <SPAN class="code-keyword">public</SPAN> BadWorkflow() {
+        <SPAN class="code-keyword">super</SPAN>(Step.startStep);
+    }
+
+    <SPAN class="code-comment">// Workflow steps
+</SPAN>    <SPAN class="code-comment">// -------------------------------------------------------------------------
+</SPAN>    <SPAN class="code-keyword">public</SPAN> Step startStep() {
+        <SPAN class="code-keyword">return</SPAN> Step.fooStep;
+    }
+    
+    <SPAN class="code-keyword">public</SPAN> Step fooStep() {
+        <SPAN class="code-keyword">return</SPAN> Step.doesNotExistStep;
+    }
+}</PRE>
+</DIV></DIV></DIV>
+          
+        <!--
+          <div class="tabletitle">
+            Children
+            <span class="smalltext" id="show" style="display: inline;">
+              <a href="javascript:showChildren()">Show Children</a></span>
+            <span class="smalltext" id="hide" style="display: none;">
+              <a href="javascript:hideChildren()">Hide Children</a></span>
+          </div>
+          <div class="greybox" id="children" style="display: none;">
+                                      <a href="http://goopen.org/confluence/display/SM/BeanFlow+Patterns" title="BeanFlow Patterns">BeanFlow Patterns</a>
+              <span class="smalltext">(ServiceMix)</span>
+              <br>
+                      </div>
+-->
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Jan 07, 2007
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=5092&originalId=15253">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=5092">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

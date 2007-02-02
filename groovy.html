@@ -1,0 +1,279 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+Groovy
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="components-list.html" title="Components list">Components list</A>&nbsp;&gt;&nbsp;<A href="lightweight-components.html" title="Lightweight components">Lightweight components</A>&nbsp;&gt;&nbsp;<A href="" title="Groovy">Groovy</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">Groovy</div>
+-->
+            <DIV class="wiki-content"><P>ServiceMix supports <SPAN class="nobr"><A href="http://groovy.codehaus.org/" title="Visit page outside Confluence" rel="nofollow">Groovy<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> which allows Groovy scripts to be used as endpoints, transformers or services. This allows you to combine the power of the Groovy scripting language with the ServiceMix JBI container and any off the shelf JBI components to create a very flexible and agile integration solution.</P>
+
+<P><IMG src="http://groovy.codehaus.org/images/groovy-logo.png" align="absmiddle" border="0"></P>
+
+<P>The <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-components/apidocs/org/apache/servicemix/components/groovy/GroovyComponent.html" title="Visit page outside Confluence" rel="nofollow">GroovyComponent<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> is an extension of the <A href="scripting.html" title="Scripting">Scripting</A> support and supports the same variable bindings.</P>
+
+<H2><A name="Groovy-Example"></A>Example</H2>
+
+<P>Before we go into detail of how you can work with JBI and Groovy in ServiceMix, lets show a simple hello world kinda example.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml">&lt;sm:activationSpec componentName=<SPAN class="code-quote">&quot;myServiceUsingXMLText&quot;</SPAN>
+        service=<SPAN class="code-quote">&quot;foo:myServiceUsingXMLText&quot;</SPAN>&gt;
+        <SPAN class="code-tag">&lt;sm:component&gt;</SPAN>
+          <SPAN class="code-tag">&lt;bean class=<SPAN class="code-quote">&quot;org.apache.servicemix.components.groovy.GroovyComponent&quot;</SPAN>&gt;</SPAN>
+            <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;scriptText&quot;</SPAN>&gt;</SPAN>
+              <SPAN class="code-tag">&lt;value&gt;</SPAN>
+                &lt;![CDATA[
+
+// lets output some message properties
+outMessage.properties = [foo:<SPAN class="code-quote">&quot;hello&quot;</SPAN>, someList:[1, 2, 3]]
+
+// lets output some non-xml body
+outMessage.bodyText = &quot;&quot;&quot;
+<SPAN class="code-tag">&lt;hello&gt;</SPAN>
+  <SPAN class="code-tag">&lt;world person=<SPAN class="code-quote">&quot;$inMessage.properties.name&quot;</SPAN> location=<SPAN class="code-quote">&quot;London&quot;</SPAN>/&gt;</SPAN>
+<SPAN class="code-tag">&lt;/hello&gt;</SPAN>
+&quot;&quot;&quot;
+                ]]&gt;
+              <SPAN class="code-tag">&lt;/value&gt;</SPAN>
+            <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+          <SPAN class="code-tag">&lt;/bean&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/sm:component&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/sm:activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>As you can see the component is configured with a piece of Groovy to execute when the service is invoked. (BTW if you wanna see this script in action try the <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/xref-test/org/apache/servicemix/client/ServiceMixClientTest.html" title="Visit page outside Confluence" rel="nofollow">test case<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> and <SPAN class="nobr"><A href="http://svn.apache.org/viewvc/incubator/servicemix/trunk/core/servicemix-core/src/test/resources/org/apache/servicemix/client/example.xml?revision=HEAD" title="Visit page outside Confluence" rel="nofollow">XML config file<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>.</P>
+
+<P>Now we&apos;ll go through the various options which are available when working with JBI and Groovy in ServiceMix</P>
+
+<H2><A name="Groovy-Maintainingstateacrossrequests"></A>Maintaining state across requests</H2>
+
+<P>Its often handy to keep track of state across requests. There is a variable called &apos;bindings&apos; which you can use to maintain state...</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;activationSpec componentName=<SPAN class="code-quote">&quot;myServiceImpl&quot;</SPAN> service=<SPAN class="code-quote">&quot;foo:myServiceImpl&quot;</SPAN>&gt;</SPAN>
+      <SPAN class="code-tag">&lt;component&gt;</SPAN>
+       <SPAN class="code-tag">&lt;bean xmlns=<SPAN class="code-quote">&quot;&quot; class=&quot;</SPAN>org.apache.servicemix.components.groovy.GroovyComponent&quot;&gt;</SPAN>
+        <SPAN class="code-tag">&lt;property name=<SPAN class="code-quote">&quot;scriptText&quot;</SPAN>&gt;</SPAN>
+          <SPAN class="code-tag">&lt;value&gt;</SPAN>
+            &lt;![CDATA[
+if (bindings.counter == null) {
+    bindings.counter = 1
+}
+else {
+    ++bindings.counter
+}
+
+def date = new Date()
+
+outMessage.bodyText = <SPAN class="code-quote">&quot;<SPAN class="code-tag">&lt;response counter=&apos;$bindings.counter&apos; date=&apos;$date&apos;&gt;</SPAN><SPAN class="code-tag">&lt;/response&gt;</SPAN>&quot;</SPAN>
+            ]]&gt;
+          <SPAN class="code-tag">&lt;/value&gt;</SPAN>
+        <SPAN class="code-tag">&lt;/property&gt;</SPAN>
+      <SPAN class="code-tag">&lt;/bean&gt;</SPAN><SPAN class="code-tag">&lt;/component&gt;</SPAN><SPAN class="code-tag">&lt;/activationSpec&gt;</SPAN></PRE>
+</DIV></DIV>
+
+<H2><A name="Groovy-WorkingwithJBIproperties"></A>Working with JBI properties</H2>
+
+<P>In ServiceMix you can access the JBI message properties as a Map and work natively with it in Groovy using various mechanisms. e.g.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-comment">// lets output some message properties
+</SPAN>outMessage.properties.foo = <SPAN class="code-quote">&quot;hello&quot;</SPAN>
+outMessage.properties.someList = [1, 2, 3]</PRE>
+</DIV></DIV>
+<P>or use an intermediate object if you&apos;ve lots of properties to set</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">def props = outMessage.properties
+props.foo = <SPAN class="code-quote">&quot;hello&quot;</SPAN>
+props.someList = [1, 2, 3]</PRE>
+</DIV></DIV>
+<P>or just use the native property syntax</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">outMessage.properties = [foo:<SPAN class="code-quote">&quot;hello&quot;</SPAN>, someList:[1, 2, 3]]</PRE>
+</DIV></DIV>
+
+<H2><A name="Groovy-Generatingoutput"></A>Generating output</H2>
+
+<P>Groovy provides various mechanism for generating the output (whether it is the result of a service or a transformation). Which mechanism you use depends on your use case and personal preference.</P>
+
+<H3><A name="Groovy-Stringtemplates"></A>String templates</H3>
+
+<P>You can use Groovy string templates to output XML, which is a nice, simple way to generate blocks of XML with dynamic content</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">outMessage.bodyText = &quot;&quot;&quot;
+&lt;hello&gt;
+  &lt;world person=<SPAN class="code-quote">&quot;$inMessage.properties.name&quot;</SPAN>/&gt;
+&lt;/hello&gt;
+&quot;&quot;&quot;</PRE>
+</DIV></DIV>
+<P>Notice the user above of the input messages&apos;s &apos;name&apos; property, which is equivalent to the expression</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">inMessage.getProperty(<SPAN class="code-quote">&quot;name&quot;</SPAN>)</PRE>
+</DIV></DIV>
+
+<H3><A name="Groovy-POJOreturnvalues"></A>POJO return values</H3>
+
+<P>You can return a POJO as the body of a message - which other components can either transform or the default <SPAN class="nobr"><A href="http://incubator.apache.org/servicemix/dist/servicemix-3.0-incubating/site/servicemix-core/apidocs/org/apache/servicemix/jbi/messaging/PojoMarshaler.html" title="Visit page outside Confluence" rel="nofollow">Marshaler<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> will figure out the right thing to do.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-comment">// lets output the body as a POJO
+</SPAN>outMessage.body = [3, 2, 1]</PRE>
+</DIV></DIV>
+
+<H3><A name="Groovy-UsingGroovyMarkup"></A>Using Groovy Markup</H3>
+
+<P>Groovy supports a simple and concise markup mechanism which can be used to programatically generate some XML markup (either DOM, SAX or any other XML model) while retaining the full power of Groovy within the control flow of the markup.</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java"><SPAN class="code-comment">// lets output some XML using GroovyMarkup
+</SPAN>outMessage.body = builder.hello(version:1.2) {
+  world(person:inMessage.properties.name, location:&apos;London&apos;)
+}</PRE>
+</DIV></DIV></DIV>
+          
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=jstrachan">James Strachan</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Nov 08, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2007&originalId=14797">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2007">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>

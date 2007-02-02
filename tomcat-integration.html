@@ -1,0 +1,305 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+  <HEAD>
+<!--
+    Pier's plugin always overwrites the stylesheet so lets explicitly use another one
+    <link type="text/css" rel="stylesheet" href="autoexport:///SM/resources/space.css">
+-->
+    <LINK type="text/css" rel="stylesheet" href="resources/site.css">
+    <SCRIPT src="resources/space.js" type="text/javascript"></SCRIPT>
+    <SCRIPT src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+    </SCRIPT>
+    <SCRIPT type="text/javascript">
+_uacct = "UA-398545-1";
+urchinTracker();
+    </SCRIPT>
+    <TITLE>
+Tomcat Integration
+    </TITLE>
+  <META http-equiv="Content-Type" content="text/html;charset=UTF-8"></HEAD>
+  <BODY onload="init()">
+
+    <!-- Banner -->
+    <DIV id="site-banner">
+
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" class="topbardiv" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/servicemix/images/logo.jpg">
+          </TD>
+          <TD align="right" nowrap="">
+            <IMG border="0" src="http://incubator.apache.org/images/apache-incubator-logo.png">
+          </TD>
+        </TR> 
+      </TABLE>
+
+    </DIV>
+
+    <!-- Bread crumbs and Quick Links -->
+    <DIV id="site-navbar">
+      <TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+        <TR>
+          <TD align="left" valign="middle" nowrap="">
+            <DIV id="site-breadcrumbs">
+<A href="home.html" title="ServiceMix">ServiceMix</A>&nbsp;&gt;&nbsp;<A href="home.html" title="Home">Home</A>&nbsp;&gt;&nbsp;<A href="documentation.html" title="Documentation">Documentation</A>&nbsp;&gt;&nbsp;<A href="integration.html" title="Integration">Integration</A>&nbsp;&gt;&nbsp;<A href="" title="Tomcat Integration">Tomcat Integration</A>
+            </DIV>
+          </TD>
+          <TD align="right" valign="middle" nowrap="">
+            <DIV id="site-quicklinks">
+<P><A href="download.html" title="Download">Download</A> &#124; <A href="documentation.html" title="Documentation">Documentation</A> &#124; <A href="javadocs.html" title="JavaDocs">JavaDocs</A> &#124; <A href="source.html" title="Source">Source</A> &#124; <SPAN class="nobr"><A href="home.html" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> &#124; <A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A> &#124; <A href="support.html" title="Support">Support</A></P>
+            </DIV>
+          </TD>
+        </TR> 
+      </TABLE>
+    </DIV>
+
+<!-- Integrate google search later.
+          <form name="search" action="http://www.google.com/search" method="get">
+            <input type="hidden" name="ie" value="UTF- 8" />
+            <input type="hidden" name="oe" value="UTF- 8" />
+            <input type="hidden" name="domains" value="" />
+            <input type="hidden" name="sitesearch" value="" />
+            <input type="text" name="q" maxlength="255" value="" />        
+            <input type="submit" name="btnG" value="Google Search" />
+          </form>
+-->
+
+      <DIV id="site-content">
+        <TABLE>
+        <TR>
+        <TD valign="top">
+          <DIV id="site-navigation">
+<H3><A name="Navigation-Overview"></A>Overview</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="home.html" title="Home">Home</A></LI>
+	<LI><SPAN class="nobr"><A href="http://www.apache.org/" title="Visit page outside Confluence" rel="nofollow">ASF<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="license.html" title="License">License</A></LI>
+	<LI><A href="faq.html" title="FAQ">FAQ</A></LI>
+	<LI><A href="download.html" title="Download">Download</A></LI>
+	<LI><A href="sitemap.html" title="SiteMap">SiteMap</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Community"></A>Community</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="users-guide.html" title="User's Guide">User&apos;s Guide</A></LI>
+	<LI><A href="documentation.html" title="Documentation">Documentation</A></LI>
+	<LI><A href="support.html" title="Support">Support</A></LI>
+	<LI><A href="discussion-forums.html" title="Discussion Forums">Discussion Forums</A></LI>
+	<LI><A href="mailing-lists.html" title="Mailing Lists">Mailing Lists</A></LI>
+	<LI><SPAN class="nobr"><A href="http://issues.apache.org/activemq/browse/SM" title="Visit page outside Confluence" rel="nofollow">Issues<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="contributing.html" title="Contributing">Contributing</A></LI>
+	<LI><SPAN class="nobr"><A href="http://goopen.org/confluence/pages/listpages-dirview.action?key=SM" title="Visit page outside Confluence" rel="nofollow">Wiki<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN></LI>
+	<LI><A href="team.html" title="Team">Team</A></LI>
+	<LI><A href="users.html" title="Users">Users</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Developers"></A>Developers</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="source.html" title="Source">Source</A></LI>
+	<LI><A href="building.html" title="Building">Building</A></LI>
+	<LI><A href="ideas.html" title="Ideas">Ideas</A></LI>
+	<LI><A href="becoming-a-committer.html" title="Becoming a committer">Becoming a committer</A></LI>
+	<LI><A href="release-guide.html" title="Release Guide">Release Guide</A></LI>
+	<LI><A href="related-projects.html" title="Related Projects">Related Projects</A></LI>
+	<LI><A href="tools.html" title="Tools">Tools</A></LI>
+	<LI><A href="resources.html" title="Resources">Resources</A></LI>
+</UL>
+
+
+<H3><A name="Navigation-Components"></A>Components</H3>
+
+<UL class="alternate" type="square">
+	<LI><A href="servicemix-bean.html" title="servicemix-bean">servicemix&#45;bean</A></LI>
+	<LI><A href="servicemix-bpe.html" title="servicemix-bpe">servicemix&#45;bpe</A></LI>
+	<LI><A href="servicemix-drools.html" title="servicemix-drools">servicemix&#45;drools</A></LI>
+	<LI><A href="servicemix-eip.html" title="servicemix-eip">servicemix&#45;eip</A></LI>
+	<LI><A href="servicemix-file.html" title="servicemix-file">servicemix&#45;file</A></LI>
+	<LI><A href="servicemix-ftp.html" title="servicemix-ftp">servicemix&#45;ftp</A></LI>
+	<LI><A href="servicemix-http.html" title="servicemix-http">servicemix&#45;http</A></LI>
+	<LI><A href="servicemix-jms.html" title="servicemix-jms">servicemix&#45;jms</A></LI>
+	<LI><A href="servicemix-jsr181.html" title="servicemix-jsr181">servicemix&#45;jsr181</A></LI>
+	<LI><A href="servicemix-lwcontainer.html" title="servicemix-lwcontainer">servicemix&#45;lwcontainer</A></LI>
+	<LI><A href="servicemix-saxon.html" title="servicemix-saxon">servicemix&#45;saxon</A></LI>
+	<LI><A href="servicemix-script.html" title="servicemix-script">servicemix&#45;script</A></LI>
+	<LI><A href="servicemix-wsn2005.html" title="servicemix-wsn2005">servicemix&#45;wsn2005</A></LI>
+	<LI><A href="servicemix-xmpp.html" title="servicemix-xmpp">servicemix&#45;xmpp</A></LI>
+</UL>
+
+
+          </DIV>
+        </TD>
+        <TD valign="top">
+          <DIV id="site-page">
+
+<!--          
+            <div class="pagetitle">Tomcat Integration</div>
+-->
+            <DIV class="wiki-content"><H2><A name="TomcatIntegration-TomcatIntegration"></A>Tomcat Integration</H2>
+<P>The following guide explains how to deploy ServiceMix 3.0.x on the <SPAN class="nobr"><A href="http://tomcat.apache.org/" title="Visit page outside Confluence" rel="nofollow">Apache Tomcat<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> application server. This guide provides instructions specifically for ServiceMix 3.0.x release. For ServiceMix ServiceMix 2.0.1 instructions, refer to <A href="tomcat-integration-for-servicemix-201.html" title="Tomcat Integration for ServiceMix 2.0.1">Tomcat Integration for ServiceMix 2.0.1</A>.</P>
+
+<H3><A name="TomcatIntegration-PreInstallationRequirements"></A>Pre-Installation Requirements</H3>
+
+<UL>
+	<LI>Java Developer Kit (JDK) 1.5.x or greater to run ServiceMix</LI>
+	<LI>The JAVA_HOME environment variable must be set to the directory where the JDK is installed, e.g. <TT>c:\Program Files\Java\jdk1.5.xx</TT>.</LI>
+	<LI>Maven 2.0.4 or greater (required when installing source or developer releases).</LI>
+	<LI>Apache Tomcat version 5.5</LI>
+	<LI>ServiceMix 3.0.x</LI>
+</UL>
+
+
+<P>The following platform was used to produce this deployment guide:</P>
+<UL>
+	<LI>Windows XP</LI>
+	<LI>Tomcat 5.5</LI>
+	<LI>Java 5</LI>
+	<LI>ServiceMix 3.0</LI>
+</UL>
+
+
+<H3><A name="TomcatIntegration-DeployingServiceMixonTomcat"></A>Deploying ServiceMix on Tomcat</H3>
+
+<P>Execute the following steps to deploy ServiceMix on Apache Tomcat. <B>NOTE:</B> This procedure will work on Unix platforms, as well as the Windows platform, with the appropriate substitutions, such as using the backslash ( / ) instead of the forward slash ( \ ).</P>
+
+<OL>
+	<LI>Apache Tomcat must be downloaded and installed. For instructions please see the <SPAN class="nobr"><A href="http://tomcat.apache.org/" title="Visit page outside Confluence" rel="nofollow">Tomcat<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN> web site.</LI>
+	<LI>By default, Tomcat uses port 8080. It is important to note if your Tomcat installation is on another port, such as port 80; this information will be used in a later step.</LI>
+	<LI>Download the ServiceMix distribution. Please see the <A href="getting-started.html" title="Getting Started">Getting Started</A> guide for instructions.</LI>
+	<LI>Create the WAR file:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [servicemix_install_dir]\examples\servicemix-web
+mvn install</PRE>
+</DIV></DIV>
+<P>where <TT>servicemix_install_dir</TT> is the directory in which ServiceMix was downloaded and installed.</P>
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="warningMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/forbidden.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">For ServiceMix 3.0</B><BR>
+<P>If you use ServiceMix 3.0, you need to modify the <TT>pom.xml</TT> file in the \examples\servicemix-web directory.<BR>
+Lines 79-83 should be modified as following:</P>
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-xml"><SPAN class="code-tag">&lt;dependency&gt;</SPAN>
+  <SPAN class="code-tag">&lt;groupId&gt;</SPAN>org.mortbay.jetty<SPAN class="code-tag">&lt;/groupId&gt;</SPAN>
+  <SPAN class="code-tag">&lt;artifactId&gt;</SPAN>jetty<SPAN class="code-tag">&lt;/artifactId&gt;</SPAN>
+<SPAN class="code-tag">&lt;/dependency&gt;</SPAN></PRE>
+</DIV></DIV>
+<P>For ServiceMix 3.0.1 or later, this step is not necessary.</P></TD></TR></TABLE></LI>
+	<LI>To deploy the WAR file, <TT>servicemix-web-xxx.war</TT>, copy it to the Tomcat <TT>webapps</TT> directory. For example, on a Windows system:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">cd [servicemix_install_dir]\examples\servicemix-web\target
+copy servicemix-web-*.war [tomcat_install_dir]\webapps</PRE>
+</DIV></DIV>
+<P>where <TT>tomcat_install_dir</TT> is the directory in which Tomcat was installed.
+<BR clear="all"></P></LI>
+	<LI>Start Tomcat if it was not already running
+<BR clear="all">
+The output in the Tomcat console window should show ServiceMix starting. Output will be similar to the following:
+<DIV class="code"><DIV class="codeContent">
+<PRE class="code-java">INFO: Deploying web application archive servicemix-web-3.0-incubating.war
+Sept. 29, 2006 19:49:40 org.apache.catalina.loader.WebappClassLoader validateJarFile
+INFO: validateJarFile(c:\java-bin\apache-tomcat-5.5.20\webapps\servicemix-web-3.0-incubating\WEB-INF\lib\servlet-api-2.5-6.0.0rc4.jar) - jar not loaded. See Servlet Spec 2.3, section 9.7.2. Offending class: javax/servlet/Servlet.class
+INFO  - jetty                          - Logging to org.apache.servicemix.http.jetty.JCLLogger@628704 via org.apache.servicemix.http.jetty.JCLLogger
+INFO  - JBIContainer                   - ServiceMix 3.0-incubating JBI Container (ServiceMix) is starting
+INFO  - JBIContainer                   - For help or more informations please see: http:<SPAN class="code-comment">//incubator.apache.org/servicemix/
+</SPAN>INFO  - ConnectorServerFactoryBean     - JMX connector available at: service:jmx:rmi:<SPAN class="code-comment">///jndi/rmi://localhost:1099/jmxrmi
+</SPAN>INFO  - ComponentMBeanImpl             - Initializing component: #SubscriptionManager#
+INFO  - DeploymentService              - Restoring service assemblies
+INFO  - ComponentMBeanImpl             - Initializing component: servicemix-http
+INFO  - ComponentMBeanImpl             - Initializing component: echo
+INFO  - ComponentMBeanImpl             - Initializing component: timer
+INFO  - SimpleThreadPool               - Job execution threads will use class loader of thread: ContainerBackgroundProcessor[StandardEngine[Catalina]]
+INFO  - QuartzScheduler                - Quartz Scheduler v.1.5.2 created.
+INFO  - RAMJobStore                    - RAMJobStore initialized.
+INFO  - StdSchedulerFactory            - Quartz scheduler &apos;DefaultQuartzScheduler&apos; initialized from <SPAN class="code-keyword">default</SPAN> resource file in Quartz <SPAN class="code-keyword">package</SPAN>: &apos;quartz.properties&apos;
+INFO  - StdSchedulerFactory            - Quartz scheduler version: 1.5.2
+INFO  - ComponentMBeanImpl             - Initializing component: inputSender
+INFO  - ComponentMBeanImpl             - Initializing component: inputReceiver
+INFO  - ComponentMBeanImpl             - Initializing component: outputSender
+INFO  - ComponentMBeanImpl             - Initializing component: jmsTrace
+INFO  - ComponentMBeanImpl             - Initializing component: trace
+ERROR - ClientFactory                  - Cound not start ClientFactory: javax.naming.NamingException: Context is read only.
+INFO  - QuartzScheduler                - Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED started.
+INFO  - JBIContainer                   - ServiceMix JBI Container (ServiceMix) started</PRE>
+</DIV></DIV></LI>
+</OL>
+
+
+<TABLE cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><COLGROUP><COL width="24"><COL></COLGROUP><TR><TD valign="top"><IMG src="http://goopen.org/confluence/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></TD><TD><B class="strong">ERROR - ClientFactory</B><BR>
+<P>The log will display an error.  Do not worry, this error will not affect ServiceMix.<BR>
+This will be fixed in a later release.</P></TD></TR></TABLE>
+
+<H3><A name="TomcatIntegration-TestingtheServiceMixDeploymentonTomcat"></A>Testing the ServiceMix Deployment on Tomcat</H3>
+<P>To ensure that ServiceMix is running on Tomcat, do any of the following:</P>
+
+<OL>
+	<LI>Check the Tomcat console output to confirm that the servicemix-web is starting without errors.</LI>
+	<LI>Run the ServiceMix JMX Console. To do this, enter the following URL in a web browser: <SPAN class="nobr"><A href="http://localhost:8080/servicemix-web-3.0-incubating/" title="Visit page outside Confluence" rel="nofollow">http://localhost:8080/servicemix-web-3.0-incubating/<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. Note: your installation of Tomcat may not be running on port 8080. If that is the case, replace 8080 with the correct port number in the previous URL.<BR>
+Try using the JMX console. For example, perform the following steps. Note: this is optional.
+	<OL>
+		<LI>Click on &quot;Catalina&quot;.</LI>
+		<LI>Click on &quot;Unknown&quot;.</LI>
+		<LI>Click on the &quot;JMXServlet WebModule&quot; to get monitoring information about the JMX Servlet itself:
+<BR clear="all">
+<BR clear="all">
+<IMG src="tomcat-integration.data/jmxconsoletomcat.jpg" align="absmiddle" border="0">
+<BR clear="all">
+<BR clear="all"></LI>
+	</OL>
+	</LI>
+	<LI>An http binding example is supplied. To run the example program perform the following steps:
+	<OL>
+		<LI>From a browser, enter the URL  <SPAN class="nobr"><A href="http://localhost:8080/servicemix-web-3.0-incubating/examples" title="Visit page outside Confluence" rel="nofollow">http://localhost:8080/servicemix-web-3.0-incubating/examples<SUP><IMG class="rendericon" src="http://goopen.org/confluence/images/icons/linkext7.gif" height="0" width="0" align="absmiddle" alt="" border="0"></SUP></A></SPAN>. <B>NOTE:</B> If Tomcat is using a different port, such as port 80, substitute the correct port number for 8080 in the URL.
+<BR clear="all">
+<BR clear="all">
+<IMG src="tomcat-integration.data/httpbindingexample2.0.jpg" align="absmiddle" border="0">
+<BR clear="all">
+<BR clear="all"></LI>
+		<LI>Enter a name or some text in the text box (shown above) and click the Submit button. You will see:
+<BR clear="all">
+<BR clear="all">
+<IMG src="tomcat-integration.data/httpbindingresult2.0.jpg" align="absmiddle" border="0">
+<BR clear="all">
+<BR clear="all">
+<BR clear="all"></LI>
+	</OL>
+	</LI>
+</OL>
+</DIV>
+          
+        <!--
+          <div class="tabletitle">
+            Children
+            <span class="smalltext" id="show" style="display: inline;">
+              <a href="javascript:showChildren()">Show Children</a></span>
+            <span class="smalltext" id="hide" style="display: none;">
+              <a href="javascript:hideChildren()">Hide Children</a></span>
+          </div>
+          <div class="greybox" id="children" style="display: none;">
+                                      <a href="http://goopen.org/confluence/display/SM/Tomcat+Integration+for+ServiceMix+1.1+and+2.0" title="Tomcat Integration for ServiceMix 1.1 and 2.0">Tomcat Integration for ServiceMix 1.1 and 2.0</a>
+              <span class="smalltext">(ServiceMix)</span>
+              <br>
+                          <a href="http://goopen.org/confluence/display/SM/Tomcat+Integration+for+ServiceMix+2.0.1" title="Tomcat Integration for ServiceMix 2.0.1">Tomcat Integration for ServiceMix 2.0.1</a>
+              <span class="smalltext">(ServiceMix)</span>
+              <br>
+                      </div>
+-->
+                  </DIV>
+        </TD>
+      </TR>
+      </TABLE>     
+      </DIV>
+    </DIV>
+    <DIV id="site-footer">
+          Added by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=lmalgeri">Lisa Malgeri</A>,
+    last edited by     <A href="http://goopen.org/confluence/users/viewuserprofile.action?username=gnodet">Guillaume Nodet</A> on Sep 29, 2006
+                  &nbsp;(<A href="http://goopen.org/confluence/pages/diffpages.action?pageId=2050&originalId=13882">view change</A>)
+              
+      (<A href="http://goopen.org/confluence/pages/editpage.action?pageId=2050">edit page</A>)
+    </DIV>
+
+  </BODY>
+
+</HTML>
