@@ -60,7 +60,8 @@ body {
   min-height: 0em;
   text-align: center;
   color: #5b8fbe;
-  font-size: 75%;
+  font-size: 65%;
+  font-family: Verdana, arial, sans-serif;
 }
 #footer a:link, #footer a:visited {
   color: white;
