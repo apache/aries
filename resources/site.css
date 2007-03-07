@@ -496,7 +496,11 @@ HR {
 }
 
 A:link, A:visited, A:active, A:hover {
-	color: #003366;
+  color: #5b8fbe;
+}
+
+A:hover {
+  text-decoration: underline;
 }
 
 h1 A:link, h1 A:visited, h1 A:active {
