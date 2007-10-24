@@ -97,7 +97,14 @@
         <configuration>
           <instructions>
             <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-            <Import-Package></Import-Package>
+            <Import-Package>
+                javax.transaction*,
+                javax.jms*;resolution:=optional,
+                org.tranql.connector*;resolution:=optional,
+                org.apache.commons.pool*;resolution:=optional,
+                org.enhydra.jdbc*;resolution:=optional,
+                *
+            </Import-Package>
             <DynamicImport-Package>*</DynamicImport-Package>
             <Private-Package>
                 org.apache.geronimo.transaction*,
@@ -105,6 +112,7 @@
                 org.objectweb.howl*,
                 org.jencks*,
             </Private-Package>
+            <Spring-Context>*;publish-context:=false</Spring-Context>
           </instructions>
         </configuration>
       </plugin>
