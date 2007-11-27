@@ -103,6 +103,9 @@
                             org.objectweb.howl*,
                             org.jencks*,
                         </Private-Package>
+                        <Export-Package>
+                        	org.apache.geronimo.transaction*
+                        </Export-Package>
                         <Spring-Context>*;publish-context:=false</Spring-Context>
                     </instructions>
                 </configuration>
