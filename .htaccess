@@ -1,6 +1,7 @@
 RewriteEngine On
 RewriteRule   ^runtime/(.*)$ kernel/$1 [R=301,L]
-RewriteRule   ^SMX4KNL/(.*)$ kernel/$1 [L]
 RewriteRule   ^SM/(.*)$ $1 [L]
+RewriteRule   ^SMX4/(.*)$ smx4/$1 [L]
 RewriteRule   ^SMX4NMR/(.*)$ nmr/$1 [L]
+RewriteRule   ^SMX4KNL/(.*)$ kernel/$1 [L]
 
