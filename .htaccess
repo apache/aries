@@ -1,5 +1,4 @@
 RewriteEngine On
-RewriteRule   ^$  home.html [R,L]
 RewriteRule   ^runtime/(.*)$ kernel/$1 [R=301,L]
 RewriteRule   ^SMX4KNL/(.*)$ kernel/$1 [L]
 RewriteRule   ^SM/(.*)$ $1 [L]
