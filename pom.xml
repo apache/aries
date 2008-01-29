@@ -99,72 +99,14 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
-                            javax.transaction*,
-                            javax.jms*;resolution:=optional,
-                            org.tranql.connector*;resolution:=optional,
-                            org.apache.commons.pool*;resolution:=optional,
-                            org.enhydra.jdbc*;resolution:=optional,
-                            *
+                            javax.transaction,
+                            org.jencks.factory
                         </Import-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
-                        <Private-Package>
-                            org.apache.geronimo.transaction*,
-                            org.apache.geronimo.connector*,
-                            org.objectweb.howl*,
-                            org.jencks*,
-                        </Private-Package>
                         <Export-Package>
-                        	org.apache.geronimo.transaction*
                         </Export-Package>
                         <Spring-Context>*;publish-context:=false</Spring-Context>
                     </instructions>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <configuration>
-                    <includeProjectDependencies>false</includeProjectDependencies>
-                    <includePluginDependencies>true</includePluginDependencies>
-                    <executableDependency>
-                        <groupId>org.ops4j.pax.runner</groupId>
-                        <artifactId>pax-runner</artifactId>
-                    </executableDependency>
-                    <mainClass>org.ops4j.pax.runner.Run</mainClass>
-                    <arguments>
-                        <argument>--vmOptions=-Dbundles.configuration.location=${basedir}/src/test/configs</argument>
-                        <argument>--console</argument>
-                        <argument>mvn:org.apache.felix/org.apache.felix.configadmin/0.9.0-SNAPSHOT</argument>
-                        <argument>mvn:org.ops4j.pax.confman/pax-confman-propsloader/0.3.0-SNAPSHOT</argument>
-                        <argument>mvn:org.ops4j.pax.logging/pax-logging-api/0.9.7-SNAPSHOT</argument>
-                        <argument>mvn:org.ops4j.pax.logging/pax-logging-service/0.9.7-SNAPSHOT</argument>
-                        <argument>mvn:org.springframework.osgi/spring-osgi-core/${spring.osgi.version}</argument>
-                        <argument>mvn:org.springframework.osgi/spring-osgi-extender/${spring.osgi.version}</argument>
-                        <argument>mvn:org.springframework.osgi/spring-osgi-io/${spring.osgi.version}</argument>
-                        <argument>mvn:org.springframework/spring-aop/${spring.version}</argument>
-                        <argument>mvn:org.springframework/spring-beans/${spring.version}</argument>
-                        <argument>mvn:org.springframework/spring-context/${spring.version}</argument>
-                        <argument>mvn:org.springframework/spring-core/${spring.version}</argument>
-                        <argument>mvn:org.springframework/spring-tx/${spring.version}</argument>
-                        <argument>
-                            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/1.0-${project.version}
-                        </argument>
-                        <argument>
-                            mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.cglib/2.1_3-${project.version}
-                        </argument>
-                        <argument>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1-SNAPSHOT</argument>
-                        <argument>mvn:org.apache.geronimo.specs/geronimo-j2ee-connector_1.5_spec/2.0-SNAPSHOT</argument>
-                        <argument>mvn:org.apache.servicemix/org.apache.servicemix.transaction/${project.version}
-                        </argument>
-                    </arguments>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.ops4j.pax.runner</groupId>
-                        <artifactId>pax-runner</artifactId>
-                        <version>0.5.1</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
