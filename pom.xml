@@ -25,13 +25,13 @@
     <parent>
         <groupId>org.apache.servicemix.transaction</groupId>
         <artifactId>transaction</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>4.0-m1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.servicemix.transaction</groupId>
     <artifactId>org.apache.servicemix.transaction</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>4.0-m1-SNAPSHOT</version>
     <name>ServiceMix Features :: Transaction</name> 
 
     <dependencies>
