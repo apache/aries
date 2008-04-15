@@ -32,7 +32,7 @@
     <artifactId>org.apache.servicemix.transaction</artifactId>
     <packaging>bundle</packaging>
     <version>4.0-m1-SNAPSHOT</version>
-    <name>ServiceMix Features :: Transaction</name> 
+    <name>Apache ServiceMix Features :: Transaction</name> 
 
     <dependencies>
         <dependency>
