@@ -24,13 +24,13 @@
     <parent>
         <groupId>org.apache.servicemix.transaction</groupId>
         <artifactId>transaction</artifactId>
-        <version>4.0-m1</version>
+        <version>4.0-m2-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.servicemix.transaction</groupId>
     <artifactId>org.apache.servicemix.transaction</artifactId>
     <packaging>bundle</packaging>
-    <version>4.0-m1</version>
+    <version>4.0-m2-SNAPSHOT</version>
     <name>Apache ServiceMix Features :: Transaction</name> 
 
     <dependencies>
