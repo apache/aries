@@ -48,7 +48,7 @@
     <osgix:property-placeholder persistent-id="org.apache.servicemix.transaction">
         <osgix:default-properties>
             <prop key="defaultTransactionTimeoutSeconds">600</prop>
-            <prop key="transactionLogDir">data/txlog/</prop>
+            <prop key="transactionLogDir">${servicemix.base}/data/txlog/</prop>
         </osgix:default-properties>
     </osgix:property-placeholder>
 
