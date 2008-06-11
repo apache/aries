@@ -99,6 +99,7 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
                             javax.transaction,
+                            org.springframework.transaction,
                             org.jencks.factory
                         </Import-Package>
                         <Export-Package>
