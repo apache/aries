@@ -50,13 +50,13 @@
             <version>${geronimo.connector.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jencks</groupId>
-            <artifactId>jencks</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.jencks</artifactId>
             <version>${jencks.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.objectweb.howl</groupId>
-            <artifactId>howl</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.howl</artifactId>
             <version>${howl.version}</version>
         </dependency>
         <dependency>
