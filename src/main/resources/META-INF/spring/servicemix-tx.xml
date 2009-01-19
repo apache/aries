@@ -19,12 +19,15 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:ctx="http://www.springframework.org/schema/context"
        xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="
   http://www.springframework.org/schema/beans
   http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context
+  http://www.springframework.org/schema/context/spring-context.xsd
   http://www.springframework.org/schema/util
   http://www.springframework.org/schema/util/spring-util.xsd
   http://www.springframework.org/schema/osgi
@@ -46,11 +49,11 @@
         </osgi:interfaces>
     </osgi:service>
 
-    <osgix:property-placeholder persistent-id="org.apache.servicemix.transaction">
-        <osgix:default-properties>
-            <prop key="defaultTransactionTimeoutSeconds">600</prop>
-            <prop key="transactionLogDir">${servicemix.base}/data/txlog/</prop>
-        </osgix:default-properties>
-    </osgix:property-placeholder>
+    <osgix:cm-properties id="txProps" persistent-id="org.apache.servicemix.transaction">
+        <prop key="defaultTransactionTimeoutSeconds">600</prop>
+        <prop key="transactionLogDir">${servicemix.base}/data/txlog/</prop>
+    </osgix:cm-properties>
+ 
+    <ctx:property-placeholder properties-ref="txProps" />
 
 </beans>
