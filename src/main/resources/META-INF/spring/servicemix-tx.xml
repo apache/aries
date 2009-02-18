@@ -44,6 +44,8 @@
     <osgi:service ref="transactionManager">
         <osgi:interfaces>
             <value>javax.transaction.TransactionManager</value>
+            <value>javax.transaction.TransactionSynchronizationRegistry</value>
+            <value>javax.transaction.UserTransaction</value>
             <value>org.apache.geronimo.transaction.manager.RecoverableTransactionManager</value>
             <value>org.springframework.transaction.PlatformTransactionManager</value>
         </osgi:interfaces>
