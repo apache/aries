@@ -42,14 +42,6 @@
             <artifactId>geronimo-transaction</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.components</groupId>
-            <artifactId>geronimo-connector</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.jencks</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.howl</artifactId>
         </dependency>
@@ -81,14 +73,15 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <!--
                         <Import-Package>
                             javax.transaction,
                             org.apache.geronimo.transaction.manager,
                             org.springframework.transaction,
-                            org.jencks.factory
+                            *
                         </Import-Package>
-                        <Export-Package>
-                        </Export-Package>
+                        -->
+                        <Export-Package>${pom.artifactId}*</Export-Package>
                         <Spring-Context>*;publish-context:=false</Spring-Context>
                     </instructions>
                 </configuration>

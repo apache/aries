@@ -36,10 +36,18 @@
   http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
 
     <!-- Transaction Manager -->
-    <bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean">
+    <bean id="transactionManager" class="org.apache.servicemix.transaction.TransactionManagerFactoryBean">
         <property name="defaultTransactionTimeoutSeconds" value="${defaultTransactionTimeoutSeconds}" />
-        <property name="transactionLogDir" value="${transactionLogDir}" />
+        <property name="xidFactory" ref="xidFactory" />
+        <property name="transactionLog" ref="transactionLog" />
     </bean>
+
+    <bean id="transactionLog" class="org.apache.servicemix.transaction.HowlLogFactoryBean">
+        <property name="logFileDir" value="${transactionLogDir}" />
+        <property name="xidFactory" ref="xidFactory" />
+    </bean>
+
+    <bean id="xidFactory" class="org.apache.geronimo.transaction.manager.XidFactoryImpl" />
 
     <osgi:service ref="transactionManager">
         <osgi:interfaces>
