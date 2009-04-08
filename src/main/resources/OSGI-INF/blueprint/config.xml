@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<components xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <component id="foo" class="org.apache.geronimo.osgi.example.Foo">
+        <property name="a" value="5" />
+        <property name="b" value="10" />
+        <property name="bar" ref="bar" />
+    </component>
+
+    <component id="bar" class="org.apache.geronimo.osgi.example.Bar">
+        <property name="value"><value>Hello FooBar</value></property>
+    </component>
+
+</components>
+
