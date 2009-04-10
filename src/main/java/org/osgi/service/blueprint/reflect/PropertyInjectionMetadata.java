@@ -16,10 +16,10 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-public interface PropertiesInjectionMetadata {
+public interface PropertyInjectionMetadata {
 
     String getName();
-    
+
     Value getValue();
-             
+
 }

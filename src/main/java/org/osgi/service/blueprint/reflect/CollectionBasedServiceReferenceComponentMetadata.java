@@ -17,21 +17,21 @@
 package org.osgi.service.blueprint.reflect;
 
 public interface CollectionBasedServiceReferenceComponentMetadata extends ServiceReferenceComponentMetadata {
-    
+
     static final int MEMBER_TYPE_SERVICE_REFERENCES = 2;
-    
+
     static final int MEMBER_TYPE_TYPE_SERVICES = 1;
-    
+
     static final int ORDER_BASIC_SERVICE_REFERENCES = 2;
-    
+
     static final int ORDER_BASIC_SERVICES = 1;
-    
+
     Class getCollectionType();
-    
+
     Value getComparator();
-    
+
     int getMemberType();
-    
-    int getOrderingComparatorBasis();
-             
+
+    int getOrderingComparisonBasis();
+
 }

@@ -21,27 +21,27 @@ import java.util.Collection;
 public interface LocalComponentMetadata extends ComponentMetadata {
 
     static final String SCOPE_BUNDLE = "bundle";
-    
+
     static final String SCOPE_PROTOTYPE = "prototype";
-    
+
     static final String SCOPE_SINGLETON = "singleton";
-    
+
     String getClassName();
-    
+
     ConstructorInjectionMetadata getConstructorInjectionMetadata();
-    
+
     String getDestroyMethodName();
-    
+
     Value getFactoryComponent();
-    
+
     MethodInjectionMetadata getFactoryMethodMetadata();
-    
+
     String getInitMethodName();
-    
-    Collection getPropertyInjectionMethadata();
-    
+
+    Collection getPropertyInjectionMetadata();
+
     String getScope();
-    
+
     boolean isLazy();
-                 
+
 }
