@@ -21,6 +21,7 @@ package org.osgi.service.blueprint.reflect;
 import java.util.List;
 
 /**
+ * TODO: javadoc
  */
 public interface ConstructorInjectionMetadata {
 

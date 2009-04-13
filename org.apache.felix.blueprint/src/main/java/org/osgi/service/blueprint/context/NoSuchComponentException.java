@@ -18,6 +18,9 @@
  */
 package org.osgi.service.blueprint.context;
 
+/**
+ * TODO: javadoc
+ */
 public class NoSuchComponentException extends RuntimeException {
 
     private final String componentName;

@@ -21,11 +21,7 @@ package org.osgi.service.blueprint.reflect;
 import java.util.Properties;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Mar 26, 2009
- * Time: 11:42:24 AM
- * To change this template use File | Settings | File Templates.
+ * TODO: javadoc
  */
 public interface PropertiesValue extends Value {
 

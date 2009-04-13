@@ -19,11 +19,7 @@
 package org.osgi.service.blueprint.convert;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Apr 2, 2009
- * Time: 9:34:21 PM
- * To change this template use File | Settings | File Templates.
+ * TODO: javadoc
  */
 public interface Converter {
 

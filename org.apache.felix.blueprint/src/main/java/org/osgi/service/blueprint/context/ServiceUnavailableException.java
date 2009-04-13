@@ -18,6 +18,9 @@
  */
 package org.osgi.service.blueprint.context;
 
+/**
+ * TODO: javadoc
+ */
 public class ServiceUnavailableException extends RuntimeException {
 
     private final Class serviceType;

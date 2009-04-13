@@ -23,11 +23,7 @@ import java.util.Set;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Apr 2, 2009
- * Time: 9:35:12 PM
- * To change this template use File | Settings | File Templates.
+ * TODO: javadoc
  */
 public interface ComponentDefinitionRegistry {
 

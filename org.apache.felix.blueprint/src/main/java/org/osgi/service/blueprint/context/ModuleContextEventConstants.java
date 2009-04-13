@@ -19,11 +19,7 @@
 package org.osgi.service.blueprint.context;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Apr 2, 2009
- * Time: 9:26:16 PM
- * To change this template use File | Settings | File Templates.
+ * TODO: javadoc
  */
 public interface ModuleContextEventConstants {
 

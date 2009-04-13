@@ -19,11 +19,7 @@
 package org.osgi.service.blueprint.reflect;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Apr 2, 2009
- * Time: 9:41:23 PM
- * To change this template use File | Settings | File Templates.
+ * TODO: javadoc
  */
 public interface ArrayValue extends Value {
 
