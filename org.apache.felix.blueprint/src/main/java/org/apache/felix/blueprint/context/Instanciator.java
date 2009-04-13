@@ -33,6 +33,7 @@ import org.apache.xbean.recipe.CollectionRecipe;
 import org.apache.xbean.recipe.MapRecipe;
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ReferenceRecipe;
+import org.apache.xbean.recipe.Recipe;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
@@ -44,6 +45,10 @@ import org.osgi.service.blueprint.reflect.ReferenceValue;
 import org.osgi.service.blueprint.reflect.ListValue;
 import org.osgi.service.blueprint.reflect.SetValue;
 import org.osgi.service.blueprint.reflect.MapValue;
+import org.osgi.service.blueprint.reflect.ComponentValue;
+import org.osgi.service.blueprint.reflect.ArrayValue;
+import org.osgi.service.blueprint.reflect.ReferenceNameValue;
+import org.osgi.service.blueprint.reflect.PropertiesValue;
 
 /**
  * TODO: javadoc
@@ -58,31 +63,36 @@ public class Instanciator {
         // Create recipes
         for (String name : (Set<String>) registry.getComponentDefinitionNames()) {
             ComponentMetadata component = registry.getComponentDefinition(name);
-            if (component instanceof LocalComponentMetadata) {
-                LocalComponentMetadata local = (LocalComponentMetadata) component;
-                ObjectRecipe recipe = new ObjectRecipe(local.getClassName());
-                recipe.setName(name);
-                for (PropertyInjectionMetadata property : (Collection<PropertyInjectionMetadata>) local.getPropertyInjectionMetadata()) {
-                    Object value = getValue(repository, property.getValue());
-                    recipe.setProperty(property.getName(), value);
-                }
-                // TODO: constructor args
-                // TODO: init-method
-                // TODO: destroy-method
-                // TODO: lazy
-                // TODO: scope
-                // TODO: factory-method
-                // TODO: factory-component
-                repository.add(name, recipe);
-            } else {
-                // TODO
-                throw new IllegalStateException("Unsupported component " + component.getClass());
-            }
+            Recipe recipe = createRecipe(component);
+            repository.add(name, recipe);
         }
         return repository;
     }
 
-    private static Object getValue(Repository repository, Value v) {
+    private static Recipe createRecipe(ComponentMetadata component) {
+        if (component instanceof LocalComponentMetadata) {
+            LocalComponentMetadata local = (LocalComponentMetadata) component;
+            ObjectRecipe recipe = new ObjectRecipe(local.getClassName());
+            recipe.setName(component.getName());
+            for (PropertyInjectionMetadata property : (Collection<PropertyInjectionMetadata>) local.getPropertyInjectionMetadata()) {
+                Object value = getValue(property.getValue());
+                recipe.setProperty(property.getName(), value);
+            }
+            // TODO: constructor args
+            // TODO: init-method
+            // TODO: destroy-method
+            // TODO: lazy
+            // TODO: scope
+            // TODO: factory-method
+            // TODO: factory-component
+            return recipe;
+        } else {
+            // TODO
+            throw new IllegalStateException("Unsupported component " + component.getClass());
+        }
+    }
+
+    private static Object getValue(Value v) {
         if (v instanceof NullValue) {
             return null;
         } else if (v instanceof TypedStringValue) {
@@ -94,27 +104,37 @@ public class Instanciator {
         } else if (v instanceof ListValue) {
             CollectionRecipe cr = new CollectionRecipe(ArrayList.class);
             for (Value lv : (List<Value>) ((ListValue) v).getList()) {
-                cr.add(getValue(repository, lv));
+                cr.add(getValue(lv));
             }
             // TODO: ListValue#getValueType()
             return cr;
         } else if (v instanceof SetValue) {
             CollectionRecipe cr = new CollectionRecipe(HashSet.class);
             for (Value lv : (Set<Value>) ((SetValue) v).getSet()) {
-                cr.add(getValue(repository, lv));
+                cr.add(getValue(lv));
             }
             // TODO: SetValue#getValueType()
             return cr;
         } else if (v instanceof MapValue) {
             MapRecipe mr = new MapRecipe(HashMap.class);
             for (Map.Entry<Value,Value> entry : ((Map<Value,Value>) ((MapValue) v).getMap()).entrySet()) {
-                Object key = getValue(repository, entry.getKey());
-                Object val = getValue(repository, entry.getValue());
+                Object key = getValue(entry.getKey());
+                Object val = getValue(entry.getValue());
                 mr.put(key, val);
             }
             // TODO: MapValue#getKeyType()
             // TODO: MapValue#getValueType()
             return mr;
+        } else if (v instanceof ArrayValue) {
+            // TODO
+            throw new IllegalStateException("Unsupported value: " + v.getClass().getName());
+        } else if (v instanceof ComponentValue) {
+            return createRecipe(((ComponentValue) v).getComponentMetadata());
+        } else if (v instanceof PropertiesValue) {
+            // TODO
+            throw new IllegalStateException("Unsupported value: " + v.getClass().getName());
+        } else if (v instanceof ReferenceNameValue) {
+            return ((ReferenceNameValue) v).getReferenceName();
         } else {
             throw new IllegalStateException("Unsupported value: " + v.getClass().getName());
         }
