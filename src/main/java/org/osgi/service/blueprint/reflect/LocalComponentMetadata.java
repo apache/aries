@@ -20,6 +20,9 @@ package org.osgi.service.blueprint.reflect;
 
 import java.util.Collection;
 
+/**
+ * TODO: javadoc
+ */
 public interface LocalComponentMetadata extends ComponentMetadata {
 
     static final String SCOPE_SINGLETON = "singleton";

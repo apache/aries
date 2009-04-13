@@ -21,11 +21,7 @@ package org.osgi.service.blueprint.reflect;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Mar 26, 2009
- * Time: 11:41:21 AM
- * To change this template use File | Settings | File Templates.
+ * TODO: javadoc
  */
 public interface MapValue extends Value {
 

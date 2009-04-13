@@ -26,11 +26,7 @@ import org.w3c.dom.Node;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Apr 2, 2009
- * Time: 9:37:00 PM
- * To change this template use File | Settings | File Templates.
+ * TODO: javadoc
  */
 public interface NamespaceHandler {
 

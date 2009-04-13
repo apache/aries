@@ -24,11 +24,7 @@ import java.util.Set;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Mar 26, 2009
- * Time: 11:43:22 AM
- * To change this template use File | Settings | File Templates.
+ * TODO: javadoc
  */
 public interface ServiceExportComponentMetadata extends ComponentMetadata {
 

@@ -18,6 +18,9 @@
  */
 package org.osgi.service.blueprint.context;
 
+/**
+ * TODO: javadoc
+ */
 public interface ModuleContextListener {
 
     void contextCreated(String bundleSymbolicName);
