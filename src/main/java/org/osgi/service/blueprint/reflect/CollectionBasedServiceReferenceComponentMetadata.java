@@ -20,11 +20,11 @@ public interface CollectionBasedServiceReferenceComponentMetadata extends Servic
 
     static final int MEMBER_TYPE_SERVICE_REFERENCES = 2;
 
-    static final int MEMBER_TYPE_TYPE_SERVICES = 1;
+    static final int MEMBER_TYPE_SERVICES = 1;
 
-    static final int ORDER_BASIC_SERVICE_REFERENCES = 2;
+    static final int ORDER_BASIS_SERVICE_REFERENCES = 2;
 
-    static final int ORDER_BASIC_SERVICES = 1;
+    static final int ORDER_BASIS_SERVICES = 1;
 
     Class getCollectionType();
 
