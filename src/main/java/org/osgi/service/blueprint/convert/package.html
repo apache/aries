@@ -1,0 +1,35 @@
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<html>
+<head>
+</head>
+<body>
+
+Blueprint Service Type Conversion Package Version 1.0.
+
+Bundles wishing to use this package must list the package in the Import-Package
+header of the bundle's manifest. For example:
+
+<code>Import-Package: org.osgi.service.blueprint.convert;version="[1.0,2.0)"</code>
+
+This package defines the <code>Converter</code> interface used to implement type converters,
+and the <code>ConversionService</code> interface that provides access to registered type
+converters. A module context contains an implicitly defined component "conversionService"
+that is an instance of <code>ConversionService</code>.
+
+</body>
+</html>

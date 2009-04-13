@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<components xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 ../../main/resources/org/apache/felix/blueprint/blueprint.xsd"
+            default-availability="mandatory">
+
+    <component id="pojoB" class="org.apache.felix.blueprint.pojos.PojoB">
+        <property name="uri" value="urn:myuri" />
+    </component>
+
+    <component id="pojoA" class="org.apache.felix.blueprint.pojos.PojoA">
+        <property name="pojob" ref="pojoB"/>
+        <property name="map">
+            <map>
+                <entry key="key" value="val"/>
+                <entry key-ref="pojoB" value-ref="pojoB" />
+            </map>
+        </property>
+        <property name="list">
+            <value>val</value>
+            <ref component="pojoB" />
+        </property>
+    </component>
+
+</components>
