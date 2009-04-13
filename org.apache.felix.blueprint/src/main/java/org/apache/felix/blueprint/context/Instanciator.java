@@ -96,7 +96,7 @@ public class Instanciator {
         if (v instanceof NullValue) {
             return null;
         } else if (v instanceof TypedStringValue) {
-            // TODO: type name ?
+            // TODO: TypedStringValue#getTypeName()
             return ((TypedStringValue) v).getStringValue();
         } else if (v instanceof ReferenceValue) {
             String componentName = ((ReferenceValue) v).getComponentName();
@@ -131,8 +131,7 @@ public class Instanciator {
         } else if (v instanceof ComponentValue) {
             return createRecipe(((ComponentValue) v).getComponentMetadata());
         } else if (v instanceof PropertiesValue) {
-            // TODO
-            throw new IllegalStateException("Unsupported value: " + v.getClass().getName());
+            return ((PropertiesValue) v).getPropertiesValue();
         } else if (v instanceof ReferenceNameValue) {
             return ((ReferenceNameValue) v).getReferenceName();
         } else {

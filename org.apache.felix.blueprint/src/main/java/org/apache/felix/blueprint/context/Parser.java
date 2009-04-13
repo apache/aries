@@ -42,7 +42,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Attr;
 
 import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.felix.blueprint.namespace.NamespaceHandlerRegistry;
+import org.apache.felix.blueprint.NamespaceHandlerRegistry;
 import org.apache.felix.blueprint.reflect.ComponentValueImpl;
 import org.apache.felix.blueprint.reflect.ListValueImpl;
 import org.apache.felix.blueprint.reflect.LocalComponentMetadataImpl;
@@ -78,7 +78,6 @@ import org.osgi.service.blueprint.reflect.BindingListenerMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.CollectionBasedServiceReferenceComponentMetadata;
 import org.osgi.service.blueprint.reflect.ArrayValue;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
 /**
@@ -181,7 +180,7 @@ public class Parser {
     private DocumentBuilderFactory documentBuilderFactory;
     private ComponentDefinitionRegistryImpl registry;
     private ConversionService conversionService;
-    private NamespaceHandlerRegistry namespaceHandlerRegistry;  
+    private NamespaceHandlerRegistry namespaceHandlerRegistry;
     private int nameCounter;
     private String defaultTimeout;
     private String defaultAvailability;

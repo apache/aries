@@ -22,8 +22,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.net.URL;
 
 import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.felix.blueprint.ModuleContextEventSender;
+import org.apache.xbean.recipe.Repository;
+import org.apache.xbean.recipe.ObjectGraph;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.context.ModuleContext;
 import org.osgi.service.blueprint.context.NoSuchComponentException;
@@ -40,10 +44,34 @@ import org.osgi.service.blueprint.reflect.ServiceReferenceComponentMetadata;
  */
 public class ModuleContextImpl implements ModuleContext {
 
-    private BundleContext bundleContext;
+    private final BundleContext bundleContext;
+    private final ModuleContextEventSender sender;
+    private final URL[] urls;
     private ComponentDefinitionRegistryImpl componentDefinitionRegistry;
 
-    public ModuleContextImpl() {
+    public ModuleContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, URL[] urls) {
+        this.bundleContext = bundleContext;
+        this.sender = sender;
+        this.urls = urls;
+    }
+
+    public void create() {
+        sender.sendCreating(this);
+        try {
+            Parser parser = new Parser();
+            parser.parse(urls);
+            componentDefinitionRegistry = parser.getRegistry();
+            Repository repository = Instanciator.createRepository(componentDefinitionRegistry);
+            ObjectGraph graph = new ObjectGraph(repository);
+            graph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames()));
+            sender.sendCreated(this);
+        } catch (WaitForDependencyException e) {
+            sender.sendWaiting(this, null, null); // TODO: give correct args
+            // TODO: wait for dependency
+        } catch (Exception e) {
+            // TODO: pass the exception to the event
+            sender.sendFailure(this, e);
+        }
     }
 
     public Set<String> getComponentNames() {
@@ -92,4 +120,12 @@ public class ModuleContextImpl implements ModuleContext {
     public BundleContext getBundleContext() {
         return bundleContext;
     }
+
+    public void destroy() {
+        sender.sendDestroying(this);
+        System.out.println("Module context destroyed: " + this.bundleContext);
+        // TODO: destroy all instances
+        sender.sendDestroyed(this);
+    }
+
 }

@@ -1,122 +1,141 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+/**
+ *  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 package org.apache.felix.blueprint.convert;
 
-import java.util.List;
+import java.io.ByteArrayInputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
-import java.util.concurrent.ConcurrentHashMap;
-import java.lang.reflect.Constructor;
-import java.io.StringReader;
-import java.io.Reader;
-import java.io.ByteArrayInputStream;
 
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.convert.Converter;
 
-/**
- * TODO: javadoc
- *
- * @author <a href="mailto:dev@felix.apache.org">Apache Felix Project</a>
- * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
- */
 public class ConversionServiceImpl implements ConversionService {
 
-    private static final Map<Class, Class> primitives;
-    private List<Converter> converters = new ArrayList<Converter>();
+    private Map<Class, List<Converter>> convertersMap = new HashMap<Class, List<Converter>>();
 
-    static {
-        primitives = new HashMap<Class, Class>();
-        primitives.put(byte.class, Byte.class);
-        primitives.put(int.class, Integer.class);
-        primitives.put(long.class, Long.class);
-        primitives.put(float.class, Float.class);
-        primitives.put(double.class, Double.class);
-        primitives.put(short.class, Short.class);
-        primitives.put(char.class, Character.class);
-        primitives.put(boolean.class, Boolean.class);
-    }
-
-    public ConversionServiceImpl() {
+    public void registerConverter(Converter converter) {
+        Class type = converter.getTargetClass();
+        List<Converter> converters = convertersMap.get(type);
+        if (converters == null) {
+            converters = new ArrayList<Converter>();
+            convertersMap.put(type, converters);
+        }
+        converters.add(converter);
     }
 
     public Object convert(Object fromValue, Class toType) throws Exception {
-        if (fromValue == null) {
-            return null;
+        Converter converter = lookupConverter(toType);
+        if (converter == null) {
+            return convertDefault(fromValue, toType);
+        } else {
+            return converter.convert(fromValue);
         }
-        // Check converters
-        for (Converter converter : converters) {
-            if (converter.getTargetClass().equals(toType)) {
-                return converter.convert(fromValue);
-            }
+    }
+
+    private Converter lookupConverter(Class toType) {
+        // do explicit lookup
+        List<Converter> converters = convertersMap.get(toType);
+        if (converters != null && !converters.isEmpty()) {
+            return converters.get(0);
         }
-        // Default conversion
-        if (fromValue instanceof String) {
-            String fromString = (String) fromValue;
-            if (primitives.containsKey(toType)) {
-                toType = primitives.get(toType);
-            }
-            // Boolean
-            if (toType.equals(Boolean.class)) {
-                fromString = fromString.toLowerCase();
-                if (fromString.equals("true") || fromString.equals("yes") || fromString.equals("on")) {
-                    return Boolean.TRUE;
-                } else if (fromString.equals("false") || fromString.equals("no") || fromString.equals("off")) {
-                    return Boolean.FALSE;
-                } else {
-                    throw new IllegalArgumentException("Illegal boolean value: " + fromString);
-                }
-            }
-            // Character
-            if (toType.equals(Character.class)) {
-                if (fromString.length() == 1) {
-                    return fromString.charAt(0);
-                } else {
-                    throw new IllegalArgumentException("Conversion from String to Character must have a strig argument of length equals to 1");
-                }
-            }
-            // Locale
-            if (toType.equals(Locale.class)) {
-                // TODO
-            }
-            // Properties
-            if (toType.equals(Properties.class)) {
-                Properties props = new Properties();
-                props.load(new ByteArrayInputStream(fromString.getBytes()));
-                return props;
-            }
-            // Pattern
-            if (toType.equals(Pattern.class)) {
-                return Pattern.compile(fromString);
-            }
-            // Public constructor
-            try {
-                Constructor constructor = toType.getConstructor(String.class);
-                return constructor.newInstance(fromString);
-            } catch (NoSuchMethodException e) {
-                // Ignore
+
+        // try to find converter that matches the type
+        for (Map.Entry<Class, List<Converter>> entry : convertersMap.entrySet()) {
+            Class converterClass = entry.getKey();
+            if (toType.isAssignableFrom(converterClass)) {
+                return entry.getValue().get(0);
             }
         }
+
         return null;
     }
+
+    private Object convertDefault(Object fromValue, Class toType) throws Exception {
+        String value = (String)fromValue;
+        if (Locale.class == toType) {
+            String[] tokens = value.split("_");
+            if (tokens.length == 1) {
+                return new Locale(tokens[0]);
+            } else if (tokens.length == 2) {
+                return new Locale(tokens[0], tokens[1]);
+            } else if (tokens.length == 3) {
+                return new Locale(tokens[0], tokens[1], tokens[2]);
+            } else {
+                throw new Exception("Invalid locale string:" + value);
+            }
+        } else if (Pattern.class == toType) {
+            return Pattern.compile(value);
+        } else if (Properties.class == toType) {
+            Properties props = new Properties();
+            ByteArrayInputStream in = new ByteArrayInputStream(value.getBytes("UTF8"));
+            props.load(in);
+            return props;
+        } else if (Boolean.class == toType || boolean.class == toType) {
+            if ("yes".equalsIgnoreCase(value) || "true".equalsIgnoreCase(value) || "on".equalsIgnoreCase(value)) {
+                return Boolean.TRUE;
+            } else if ("no".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value) || "off".equalsIgnoreCase(value)) {
+                return Boolean.FALSE;
+            } else {
+                throw new RuntimeException("Invalid boolean value: " + value);
+            }
+        } else if (Integer.class == toType || int.class == toType) {
+            return Integer.valueOf(value);
+        } else if (Short.class == toType || short.class == toType) {
+            return Short.valueOf(value);
+        } else if (Long.class == toType || long.class == toType) {
+            return Long.valueOf(value);
+        } else if (Float.class == toType || float.class == toType) {
+            return Float.valueOf(value);
+        } else if (Double.class == toType || double.class == toType) {
+            return Double.valueOf(value);
+        } else if (Character.class == toType || char.class == toType) {
+            if (value.length() == 1) {
+                return Character.valueOf(value.charAt(0));
+            } else {
+                throw new Exception("Invalid value for character type: " + value);
+            }
+        } else if (Byte.class == toType || byte.class == toType) {
+            return Byte.valueOf(value);
+        } else {
+            return createObject(value, toType);
+        }
+    }
+
+    private Object createObject(String value, Class type) throws Exception {
+        Constructor constructor = null;
+        try {
+            constructor = type.getConstructor(String.class);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("Unable to convert to " + type);
+        }
+        try {
+            return constructor.newInstance(value);
+        } catch (InvocationTargetException e) {
+            throw new Exception("Unable to convert ", e.getTargetException());
+        } catch (Exception e) {
+            throw new Exception("Unable to convert ", e);
+        }
+    }
+
 }

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.felix.blueprint.namespace;
+package org.apache.felix.blueprint;
 
 import java.net.URI;
 
@@ -30,5 +30,19 @@ import org.osgi.service.blueprint.namespace.NamespaceHandler;
  */
 public interface NamespaceHandlerRegistry {
 
+    /**
+     * Retrieve the <code>NamespaceHandler</code> for the specified URI
+     *
+     * @param uri the namespace identifying the namespace handler
+     * @return the registered <code>NamespaceHandler</code> or <code>null</code> if none has been registered for the given namespace
+     */
     NamespaceHandler getNamespaceHandler(URI uri);
+
+    /**
+     * Add a callback to be run each time the list of namespace handlers changes
+     * @param runnable
+     */
+    void addCallback(Runnable runnable);
+
+    void destroy();
 }
