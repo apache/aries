@@ -32,6 +32,7 @@ import org.apache.xbean.recipe.ObjectRecipe;
 import org.apache.xbean.recipe.CollectionRecipe;
 import org.apache.xbean.recipe.MapRecipe;
 import org.apache.xbean.recipe.ConstructionException;
+import org.apache.xbean.recipe.ReferenceRecipe;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
@@ -61,17 +62,6 @@ public class Instanciator {
                 LocalComponentMetadata local = (LocalComponentMetadata) component;
                 ObjectRecipe recipe = new ObjectRecipe(local.getClassName());
                 recipe.setName(name);
-                repository.add(name, recipe);
-            } else {
-                throw new IllegalStateException("Unsupported component " + component.getClass());
-            }
-        }
-        // Populate recipes
-        for (String name : (Set<String>) registry.getComponentDefinitionNames()) {
-            ComponentMetadata component = registry.getComponentDefinition(name);
-            if (component instanceof LocalComponentMetadata) {
-                LocalComponentMetadata local = (LocalComponentMetadata) component;
-                ObjectRecipe recipe = (ObjectRecipe) repository.get(local.getName());
                 for (PropertyInjectionMetadata property : (Collection<PropertyInjectionMetadata>) local.getPropertyInjectionMetadata()) {
                     Object value = getValue(repository, property.getValue());
                     recipe.setProperty(property.getName(), value);
@@ -83,6 +73,7 @@ public class Instanciator {
                 // TODO: scope
                 // TODO: factory-method
                 // TODO: factory-component
+                repository.add(name, recipe);
             } else {
                 // TODO
                 throw new IllegalStateException("Unsupported component " + component.getClass());
@@ -92,33 +83,28 @@ public class Instanciator {
     }
 
     private static Object getValue(Repository repository, Value v) {
-        Object value;
         if (v instanceof NullValue) {
-            value = null;
+            return null;
         } else if (v instanceof TypedStringValue) {
-            value = ((TypedStringValue) v).getStringValue();
             // TODO: type name ?
+            return ((TypedStringValue) v).getStringValue();
         } else if (v instanceof ReferenceValue) {
             String componentName = ((ReferenceValue) v).getComponentName();
-            if (repository.contains(componentName)) {
-                value = repository.get(componentName);
-            } else {
-                throw new IllegalStateException("Undefined reference: " + componentName);
-            }
+            return new ReferenceRecipe(componentName);
         } else if (v instanceof ListValue) {
             CollectionRecipe cr = new CollectionRecipe(ArrayList.class);
             for (Value lv : (List<Value>) ((ListValue) v).getList()) {
                 cr.add(getValue(repository, lv));
             }
-            value = cr;
             // TODO: ListValue#getValueType()
+            return cr;
         } else if (v instanceof SetValue) {
             CollectionRecipe cr = new CollectionRecipe(HashSet.class);
             for (Value lv : (Set<Value>) ((SetValue) v).getSet()) {
                 cr.add(getValue(repository, lv));
             }
-            value = cr;
             // TODO: SetValue#getValueType()
+            return cr;
         } else if (v instanceof MapValue) {
             MapRecipe mr = new MapRecipe(HashMap.class);
             for (Map.Entry<Value,Value> entry : ((Map<Value,Value>) ((MapValue) v).getMap()).entrySet()) {
@@ -126,13 +112,12 @@ public class Instanciator {
                 Object val = getValue(repository, entry.getValue());
                 mr.put(key, val);
             }
-            value = mr;
             // TODO: MapValue#getKeyType()
             // TODO: MapValue#getValueType()
+            return mr;
         } else {
             throw new IllegalStateException("Unsupported value: " + v.getClass().getName());
         }
-        return value;
     }
 
 }
