@@ -20,9 +20,17 @@ package org.apache.felix.blueprint.namespace;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.net.URI;
 
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
+import org.apache.felix.blueprint.NamespaceHandlerRegistry;
 
 /**
  * TODO: javadoc
@@ -30,14 +38,53 @@ import org.osgi.service.blueprint.namespace.NamespaceHandler;
  * @author <a href="mailto:dev@felix.apache.org">Apache Felix Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry {
+public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, ServiceTrackerCustomizer {
 
     public static final String NAMESPACE = "org.osgi.blueprint.namespace";
 
+    private final BundleContext bundleContext;
     private final Map<URI, NamespaceHandler> handlers;
+    private final List<Runnable> runnables;
+    private final ServiceTracker tracker;
 
-    public NamespaceHandlerRegistryImpl() {
-        handlers = new HashMap<URI, NamespaceHandler>();
+    public NamespaceHandlerRegistryImpl(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+        handlers = new ConcurrentHashMap<URI, NamespaceHandler>();
+        runnables = new CopyOnWriteArrayList<Runnable>();
+        tracker = new ServiceTracker(bundleContext, NamespaceHandler.class.getName(), this);
+    }
+
+    public Object addingService(ServiceReference reference) {
+        NamespaceHandler handler = (NamespaceHandler) bundleContext.getService(reference);
+        Map props = new HashMap();
+        for (String name : reference.getPropertyKeys()) {
+            props.put(name, reference.getProperty(name));
+        }
+        try {
+            registerHandler(handler, props);
+            return handler;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void modifiedService(ServiceReference reference, Object service) {
+        removedService(reference, service);
+        addingService(reference);
+    }
+
+    public void removedService(ServiceReference reference, Object service) {
+        NamespaceHandler handler = (NamespaceHandler) service;
+        Map props = new HashMap();
+        for (String name : reference.getPropertyKeys()) {
+            props.put(name, reference.getProperty(name));
+        }
+        try {
+            unregisterHandler(handler, props);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void registerHandler(NamespaceHandler handler, Map properties) throws Exception {
@@ -51,6 +98,10 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry {
             for (URI uri : (URI[]) ns) {
                 handlers.put(uri, handler);
             }
+            for (Runnable r : runnables) {
+                r.run();
+            }
+
         } else {
             throw new IllegalArgumentException("NamespaceHandler service does not have an associated " + NAMESPACE + " property defined");
         }
@@ -67,6 +118,9 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry {
             for (URI uri : (URI[]) ns) {
                 handlers.remove(uri);
             }
+            for (Runnable r : runnables) {
+                r.run();
+            }
         } else {
             throw new IllegalArgumentException("NamespaceHandler service does not have an associated " + NAMESPACE + " property defined");
         }
@@ -76,4 +130,11 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry {
         return handlers.get(uri);
     }
 
+    public void addCallback(Runnable runnable) {
+        runnables.add(runnable);
+    }
+
+    public void destroy() {
+        tracker.close();
+    }
 }
