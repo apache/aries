@@ -17,38 +17,23 @@
  under the License.
 -->
 <project>
- <parent>
+    <parent>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>felix</artifactId>
+        <version>1.0.4</version>
+        <relativePath>../pom/pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>blueprint</artifactId>
     <groupId>org.apache.felix</groupId>
-    <artifactId>felix</artifactId>
-    <version>1.0.2</version>
-    <relativePath>../pom/pom.xml</relativePath>
-  </parent>
+    <name>Apache Felix Blueprint Parent</name>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.apache.felix.blueprint</artifactId>
-  <groupId>org.apache.felix</groupId>
-  <name>Apache Felix Blueprint</name>
-  <version>1.0.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
-  
-  <dependencies>
-      <dependency>
-      	<groupId>org.apache.felix</groupId>
-      	<artifactId>org.apache.felix.ipojo</artifactId>
-      	<version>1.2.0</version>
-      </dependency>
-  </dependencies>
+    <modules>
+        <module>org.apache.felix.blueprint</module>
+        <module>itests</module>
+    </modules>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-  
 </project>
