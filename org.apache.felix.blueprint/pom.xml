@@ -32,6 +32,11 @@
   
   <dependencies>
       <dependency>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>blueprint-api</artifactId>
+          <version>${version}</version>
+      </dependency>
+      <dependency>
           <groupId>org.apache.xbean</groupId>
           <artifactId>xbean-reflect</artifactId>
           <version>3.6-SNAPSHOT</version>
