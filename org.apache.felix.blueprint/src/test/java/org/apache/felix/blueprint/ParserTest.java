@@ -18,22 +18,23 @@
  */
 package org.apache.felix.blueprint;
 
-import java.net.URL;
-import java.util.Set;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.TestCase;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
-import org.osgi.service.blueprint.reflect.ConstructorInjectionMetadata;
-import org.osgi.service.blueprint.reflect.ParameterSpecification;
-import org.osgi.service.blueprint.reflect.TypedStringValue;
-import org.osgi.service.blueprint.reflect.NullValue;
-import org.osgi.service.blueprint.reflect.ReferenceValue;
-import org.osgi.service.blueprint.reflect.ArrayValue;
-import org.osgi.service.blueprint.reflect.ComponentValue;
-import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
+
 import org.apache.felix.blueprint.context.Parser;
+import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
+import org.osgi.service.blueprint.reflect.ArrayValue;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.ComponentValue;
+import org.osgi.service.blueprint.reflect.ConstructorInjectionMetadata;
+import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
+import org.osgi.service.blueprint.reflect.NullValue;
+import org.osgi.service.blueprint.reflect.ParameterSpecification;
+import org.osgi.service.blueprint.reflect.ReferenceValue;
+import org.osgi.service.blueprint.reflect.TypedStringValue;
 
 /**
  * TODO: constructor injection
@@ -114,7 +115,7 @@ public class ParserTest extends TestCase {
 
     public void testParse() throws Exception {
         Parser parser = new Parser();
-        parser.parse(new URL[] { getClass().getResource("/test.xml") });
+        parser.parse(Arrays.asList( getClass().getResource("/test.xml") ));
         ComponentDefinitionRegistry registry = parser.getRegistry();
         assertNotNull(registry);
 
@@ -123,7 +124,7 @@ public class ParserTest extends TestCase {
 
     protected Parser parse(String name) throws Exception {
         Parser parser = new Parser();
-        parser.parse(new URL[] { getClass().getResource(name) });
+        parser.parse(Arrays.asList( getClass().getResource(name) ));
         return parser;
     }
 }

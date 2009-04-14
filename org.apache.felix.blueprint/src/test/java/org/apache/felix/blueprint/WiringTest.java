@@ -18,9 +18,10 @@
  */
 package org.apache.felix.blueprint;
 
-import java.net.URL;
+import java.util.Arrays;
 
 import junit.framework.TestCase;
+
 import org.apache.felix.blueprint.context.Instanciator;
 import org.apache.felix.blueprint.context.Parser;
 import org.apache.felix.blueprint.pojos.PojoA;
@@ -45,7 +46,7 @@ public class WiringTest extends TestCase {
 
     protected Parser parse(String name) throws Exception {
         Parser parser = new Parser();
-        parser.parse(new URL[] { getClass().getResource(name) });
+        parser.parse(Arrays.asList( getClass().getResource(name) ));
         return parser;
     }
 

@@ -21,6 +21,7 @@ package org.apache.felix.blueprint.context;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.net.URL;
 
@@ -46,10 +47,10 @@ public class ModuleContextImpl implements ModuleContext {
 
     private final BundleContext bundleContext;
     private final ModuleContextEventSender sender;
-    private final URL[] urls;
+    private final List<URL> urls;
     private ComponentDefinitionRegistryImpl componentDefinitionRegistry;
 
-    public ModuleContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, URL[] urls) {
+    public ModuleContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, List<URL> urls) {
         this.bundleContext = bundleContext;
         this.sender = sender;
         this.urls = urls;
@@ -64,7 +65,7 @@ public class ModuleContextImpl implements ModuleContext {
             Instanciator i = new Instanciator(bundleContext.getBundle());
             Repository repository = i.createRepository(componentDefinitionRegistry);
             ObjectGraph graph = new ObjectGraph(repository);
-            graph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames()));
+            System.out.println(graph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames())));                    
             sender.sendCreated(this);
         } catch (WaitForDependencyException e) {
             sender.sendWaiting(this, null, null); // TODO: give correct args

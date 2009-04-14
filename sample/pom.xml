@@ -39,6 +39,9 @@
                         <Bundle-Activator>
                             org.apache.geronimo.osgi.example.Activator
                         </Bundle-Activator>
+<!--
+                        <Bundle-Blueprint>/test.xml</Bundle-Blueprint>
+-->
                     </instructions>
                 </configuration>
             </plugin>

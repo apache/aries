@@ -32,17 +32,12 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.w3c.dom.CharacterData;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.EntityReference;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Attr;
-
-import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.felix.blueprint.NamespaceHandlerRegistry;
+import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.felix.blueprint.reflect.ArrayValueImpl;
+import org.apache.felix.blueprint.reflect.BindingListenerMetadataImpl;
+import org.apache.felix.blueprint.reflect.CollectionBasedServiceReferenceComponentMetadataImpl;
+import org.apache.felix.blueprint.reflect.ComponentMetadataImpl;
 import org.apache.felix.blueprint.reflect.ComponentValueImpl;
 import org.apache.felix.blueprint.reflect.ListValueImpl;
 import org.apache.felix.blueprint.reflect.LocalComponentMetadataImpl;
@@ -57,13 +52,11 @@ import org.apache.felix.blueprint.reflect.ServiceReferenceComponentMetadataImpl;
 import org.apache.felix.blueprint.reflect.SetValueImpl;
 import org.apache.felix.blueprint.reflect.TypedStringValueImpl;
 import org.apache.felix.blueprint.reflect.UnaryServiceReferenceComponentMetadataImpl;
-import org.apache.felix.blueprint.reflect.BindingListenerMetadataImpl;
-import org.apache.felix.blueprint.reflect.ComponentMetadataImpl;
-import org.apache.felix.blueprint.reflect.CollectionBasedServiceReferenceComponentMetadataImpl;
-import org.apache.felix.blueprint.reflect.ArrayValueImpl;
-import org.apache.felix.blueprint.convert.ConversionServiceImpl;
 import org.osgi.service.blueprint.context.ComponentDefinitionException;
-import org.osgi.service.blueprint.convert.ConversionService;
+import org.osgi.service.blueprint.reflect.ArrayValue;
+import org.osgi.service.blueprint.reflect.BindingListenerMetadata;
+import org.osgi.service.blueprint.reflect.CollectionBasedServiceReferenceComponentMetadata;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.ListValue;
 import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
 import org.osgi.service.blueprint.reflect.MapValue;
@@ -74,10 +67,14 @@ import org.osgi.service.blueprint.reflect.ServiceExportComponentMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceComponentMetadata;
 import org.osgi.service.blueprint.reflect.SetValue;
 import org.osgi.service.blueprint.reflect.Value;
-import org.osgi.service.blueprint.reflect.BindingListenerMetadata;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.CollectionBasedServiceReferenceComponentMetadata;
-import org.osgi.service.blueprint.reflect.ArrayValue;
+import org.w3c.dom.Attr;
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.EntityReference;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 /**
@@ -179,7 +176,6 @@ public class Parser {
 
     private DocumentBuilderFactory documentBuilderFactory;
     private ComponentDefinitionRegistryImpl registry;
-    private ConversionService conversionService;
     private NamespaceHandlerRegistry namespaceHandlerRegistry;
     private int nameCounter;
     private String defaultTimeout;
@@ -190,7 +186,6 @@ public class Parser {
 
     public Parser() {
         registry = new ComponentDefinitionRegistryImpl();
-        conversionService = new ConversionServiceImpl();
         // TODO: Register conversionService, bundle, bundleContext, moduleContext in the registry
     }
 
@@ -198,7 +193,7 @@ public class Parser {
         return registry;
     }
 
-    public void parse(URL[] urls) throws Exception {
+    public void parse(List<URL> urls) throws Exception {
         List<Document> documents = new ArrayList<Document>();
         // Load documents
         for (URL url : urls) {
