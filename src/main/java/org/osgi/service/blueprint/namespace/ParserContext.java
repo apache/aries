@@ -25,6 +25,6 @@ public interface ParserContext  {
     
     ComponentMetadata getEnclosingComponent();
     
-    Node getSourceNoe();
+    Node getSourceNode();
              
 }

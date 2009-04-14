@@ -24,7 +24,7 @@ public interface ModuleContextEventConstants  {
     
     static final String EXTENDER_ID = "extender.bundle.id";
     
-    static final String EXTENDER_SYMBLOICNAME = "extender.bundle.symbolicName";
+    static final String EXTENDER_SYMBOLICNAME = "extender.bundle.symbolicName";
     
     static final String TOPIC_BLUEPRINT_EVENTS = "org/osgi/service/blueprint";
     
