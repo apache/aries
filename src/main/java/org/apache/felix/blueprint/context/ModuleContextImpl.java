@@ -69,6 +69,7 @@ public class ModuleContextImpl implements ModuleContext {
             sender.sendWaiting(this, null, null); // TODO: give correct args
             // TODO: wait for dependency
         } catch (Exception e) {
+            e.printStackTrace();
             // TODO: pass the exception to the event
             sender.sendFailure(this, e);
         }
