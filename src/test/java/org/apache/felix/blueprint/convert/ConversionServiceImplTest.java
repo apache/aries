@@ -21,11 +21,13 @@ package org.apache.felix.blueprint.convert;
 import java.net.URI;
 import java.net.URL;
 import java.math.BigInteger;
+import java.util.Locale;
 import java.util.Properties;
 import java.io.ByteArrayOutputStream;
 
 import junit.framework.TestCase;
 import org.osgi.service.blueprint.convert.ConversionService;
+import org.osgi.service.blueprint.convert.Converter;
 
 public class ConversionServiceImplTest extends TestCase {
 
@@ -85,9 +87,8 @@ public class ConversionServiceImplTest extends TestCase {
 
     public void testConvertOther() throws Exception {
         assertEquals(URI.create("urn:test"), service.convert("urn:test", URI.class));
-        assertEquals(new URL("file://test"), service.convert("file://test", URL.class));
+        assertEquals(new URL("file:/test"), service.convert("file:/test", URL.class));
         assertEquals(new BigInteger("12345"), service.convert("12345", BigInteger.class));
-
     }
 
     public void testConvertProperties() throws Exception {
@@ -101,6 +102,82 @@ public class ConversionServiceImplTest extends TestCase {
     }
 
     public void testConvertLocale() throws Exception {
-        // TODO
+        Object result;
+        result = service.convert("en", Locale.class);
+        assertTrue(result instanceof Locale);
+        assertEquals(new Locale("en"), result);
+        
+        result = service.convert("de_DE", Locale.class);
+        assertTrue(result instanceof Locale);
+        assertEquals(new Locale("de", "DE"), result);
+        
+        result = service.convert("_GB", Locale.class);
+        assertTrue(result instanceof Locale);
+        assertEquals(new Locale("", "GB"), result);
+        
+        result = service.convert("en_US_WIN", Locale.class);
+        assertTrue(result instanceof Locale);
+        assertEquals(new Locale("en", "US", "WIN"), result);
+        
+        result = service.convert("de__POSIX", Locale.class);
+        assertTrue(result instanceof Locale);
+        assertEquals(new Locale("de", "", "POSIX"), result);
     }
+    
+    public void testCustom() throws Exception {
+        ConversionServiceImpl s = new ConversionServiceImpl();
+        s.registerConverter(new RegionConverter());
+        s.registerConverter(new EuRegionConverter());
+        
+        // lookup on a specific registered converter type
+        Object result;
+        result = s.convert(null, Region.class);
+        assertTrue(result instanceof Region);
+        assertFalse(result instanceof EuRegion);
+                
+        result = s.convert(null, EuRegion.class);
+        assertTrue(result instanceof EuRegion);
+        
+        // find first converter that matches the type
+        s = new ConversionServiceImpl();
+        s.registerConverter(new AsianRegionConverter());
+        s.registerConverter(new EuRegionConverter());
+        
+        result = s.convert(null, Region.class);
+        assertTrue(result instanceof AsianRegion || result instanceof EuRegion);
+    }
+    
+    private interface Region {} 
+    
+    private interface EuRegion extends Region {}
+    
+    private interface AsianRegion extends Region {}
+    
+    private static class RegionConverter implements Converter {
+        public Object convert(Object source) throws Exception {
+            return new Region() {} ;
+        }
+        public Class getTargetClass() {
+            return Region.class;
+        }       
+    }
+    
+    private static class EuRegionConverter implements Converter {
+        public Object convert(Object source) throws Exception {
+            return new EuRegion() {} ;
+        }
+        public Class getTargetClass() {
+            return EuRegion.class;
+        }       
+    }
+    
+    private static class AsianRegionConverter implements Converter {
+        public Object convert(Object source) throws Exception {
+            return new AsianRegion() {} ;
+        }
+        public Class getTargetClass() {
+            return AsianRegion.class;
+        }       
+    }
+
 }
