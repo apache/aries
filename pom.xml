@@ -54,6 +54,7 @@
     <modules>
         <module>blueprint-api</module>
         <module>org.apache.felix.blueprint</module>
+        <module>sample</module>
         <module>itests</module>
     </modules>
 
