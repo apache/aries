@@ -23,11 +23,15 @@ import java.util.Hashtable;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
+import org.osgi.framework.Version;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.Event;
+import org.osgi.service.event.EventConstants;
 import org.osgi.service.blueprint.context.ModuleContextEventConstants;
 import org.osgi.service.blueprint.context.ModuleContext;
+import org.apache.felix.blueprint.BlueprintConstants;
 import org.apache.felix.blueprint.ModuleContextEventSender;
 
 /**
@@ -35,9 +39,11 @@ import org.apache.felix.blueprint.ModuleContextEventSender;
  */
 public class DefaultModuleContextEventSender implements ModuleContextEventSender {
 
+    private final Bundle extenderBundle;
     private final ServiceTracker eventAdminServiceTracker;
 
     public DefaultModuleContextEventSender(BundleContext bundleContext) {
+        this.extenderBundle = bundleContext.getBundle();
         this.eventAdminServiceTracker = new ServiceTracker(bundleContext, EventAdmin.class.getName(), null);
         this.eventAdminServiceTracker.open();
     }
@@ -79,22 +85,26 @@ public class DefaultModuleContextEventSender implements ModuleContextEventSender
         Bundle bundle = moduleContext.getBundleContext().getBundle();
 
         Dictionary props = new Hashtable();
-        props.put("bundle.symbolicName", bundle.getSymbolicName());
-        props.put("bundle.id", bundle.getBundleId());
-        props.put("bundle", bundle);
-        props.put("bundle.version", "NA");
-        props.put("timestamp", System.currentTimeMillis());
-        props.put(ModuleContextEventConstants.EXTENDER_BUNDLE, "NA");
-        props.put(ModuleContextEventConstants.EXTENDER_ID, "NA");
-        props.put(ModuleContextEventConstants.EXTENDER_SYMBOLICNAME, "NA");
+        props.put(EventConstants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
+        props.put(EventConstants.BUNDLE_ID, bundle.getBundleId());
+        props.put(EventConstants.BUNDLE, bundle);
+        Version version = getBundleVersion(bundle);
+        if (version != null) {
+            props.put(BlueprintConstants.BUNDLE_VERSION, version);
+        }
+        props.put(EventConstants.TIMESTAMP, System.currentTimeMillis());
+        props.put(ModuleContextEventConstants.EXTENDER_BUNDLE, extenderBundle);
+        props.put(ModuleContextEventConstants.EXTENDER_ID, extenderBundle.getBundleId());
+        props.put(ModuleContextEventConstants.EXTENDER_SYMBOLICNAME, extenderBundle.getSymbolicName());
+        
         if (cause != null) {
-            props.put("exception", cause);
+            props.put(EventConstants.EXCEPTION, cause);
         }
         if (serviceObjectClass != null) {
-            props.put("service.objectClass", serviceObjectClass);
+            props.put(EventConstants.SERVICE_OBJECTCLASS, serviceObjectClass);
         }
         if (serviceFilter != null) {
-            props.put("service.filter", serviceFilter);
+            props.put(BlueprintConstants.SERVICE_FILTER, serviceFilter);
         }
 
         Event event = new Event(topic, props);
@@ -102,6 +112,12 @@ public class DefaultModuleContextEventSender implements ModuleContextEventSender
         System.out.println("Event sent: " + topic);
     }
 
+    private static Version getBundleVersion(Bundle bundle) {
+        Dictionary headers = bundle.getHeaders();
+        String version = (String)headers.get(Constants.BUNDLE_VERSION);
+        return (version != null) ? Version.parseVersion(version) : null;
+    }
+    
     private EventAdmin getEventAdmin() {
         return (EventAdmin)this.eventAdminServiceTracker.getService();
     }

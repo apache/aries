@@ -93,7 +93,7 @@ public class Activator implements BundleActivator, BundleListener {
 
         List<URL> urls = new ArrayList<URL>();
         Dictionary headers = bundle.getHeaders();
-        String blueprintHeader = (String)headers.get("Bundle-Blueprint");
+        String blueprintHeader = (String)headers.get(BlueprintConstants.BUNDLE_BLUEPRINT_HEADER);
         if (blueprintHeader != null) {
             List<PathElement> paths = HeaderParser.parseHeader(blueprintHeader);
             for (PathElement path : paths) {

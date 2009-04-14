@@ -21,15 +21,21 @@ package org.apache.felix.blueprint.context;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Set;
 import java.net.URL;
 
+import org.apache.felix.blueprint.HeaderParser.PathElement;
 import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.felix.blueprint.BlueprintConstants;
+import org.apache.felix.blueprint.HeaderParser;
 import org.apache.felix.blueprint.ModuleContextEventSender;
 import org.apache.xbean.recipe.Repository;
 import org.apache.xbean.recipe.ObjectGraph;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.service.blueprint.context.ModuleContext;
 import org.osgi.service.blueprint.context.NoSuchComponentException;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -56,7 +62,26 @@ public class ModuleContextImpl implements ModuleContext {
         this.urls = urls;
     }
 
+    private void checkDirectives() {
+        Bundle bundle = bundleContext.getBundle();
+        Dictionary headers = bundle.getHeaders();
+        String symbolicName = (String)headers.get(Constants.BUNDLE_SYMBOLICNAME);
+        List<PathElement> paths = HeaderParser.parseHeader(symbolicName);
+        String timeout = paths.get(0).getDirective(BlueprintConstants.TIMEOUT_DIRECTIVE);
+        String waitForDependencies = paths.get(0).getDirective(BlueprintConstants.WAIT_FOR_DEPENDENCIES_DIRECTIVE);
+
+        // TODO: hook this up
+        
+        if (timeout != null) {
+            System.out.println("Timeout: " + timeout);
+        }
+        if (waitForDependencies != null) {
+            System.out.println("Wait-for-dependencies: " + waitForDependencies);
+        }
+    }
+    
     public void create() {
+        checkDirectives();
         sender.sendCreating(this);
         try {
             Parser parser = new Parser();
