@@ -40,13 +40,11 @@
           <groupId>org.apache.felix</groupId>
           <artifactId>org.osgi.core</artifactId>
           <version>1.2.0</version>
-          <scope>provided</scope>
       </dependency>
       <dependency>
           <groupId>org.apache.felix</groupId>
           <artifactId>org.osgi.compendium</artifactId>
           <version>1.2.0</version>
-          <scope>provided</scope>
       </dependency>
   </dependencies>
 
@@ -68,9 +66,6 @@
                     <instructions>
                         <Export-Package>org.apache.felix.blueprint*;version="${pom.version}"</Export-Package>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <IPOJO-Extension>
-                            blueprint:org.apache.felix.blueprint.ipojo.BlueprintFactory 
-                        </IPOJO-Extension>
                     </instructions>
                 </configuration>
             </plugin>
