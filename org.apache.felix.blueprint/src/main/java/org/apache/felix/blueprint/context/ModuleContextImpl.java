@@ -61,7 +61,8 @@ public class ModuleContextImpl implements ModuleContext {
             Parser parser = new Parser();
             parser.parse(urls);
             componentDefinitionRegistry = parser.getRegistry();
-            Repository repository = Instanciator.createRepository(componentDefinitionRegistry);
+            Instanciator i = new Instanciator(bundleContext.getBundle());
+            Repository repository = i.createRepository(componentDefinitionRegistry);
             ObjectGraph graph = new ObjectGraph(repository);
             graph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames()));
             sender.sendCreated(this);

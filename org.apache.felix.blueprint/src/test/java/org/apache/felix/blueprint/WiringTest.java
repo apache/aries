@@ -32,7 +32,8 @@ public class WiringTest extends TestCase {
     public void testWiring() throws Exception {
         Parser parser = parse("/test-wiring.xml");
 
-        Repository repository = Instanciator.createRepository(parser.getRegistry());
+        Instanciator i = new Instanciator(null);
+        Repository repository = i.createRepository(parser.getRegistry());
         ObjectGraph graph = new ObjectGraph(repository);
         Object obj = graph.create("pojoA");
         assertNotNull(obj);
