@@ -775,9 +775,9 @@ public class Parser {
         }
         String availability = element.hasAttribute(AVAILABILITY_ATTRIBUTE) ? element.getAttribute(AVAILABILITY_ATTRIBUTE) : defaultAvailability;
         if (AVAILABILITY_MANDATORY.equals(availability)) {
-            reference.setServiceAvailabilitySpecification(ServiceReferenceComponentMetadata.AVAILABILITY_MANDATORY);
+            reference.setServiceAvailabilitySpecification(ServiceReferenceComponentMetadata.MANDATORY_AVAILABILITY);
         } else if (AVAILABILITY_OPTIONAL.equals(availability)) {
-            reference.setServiceAvailabilitySpecification(ServiceReferenceComponentMetadata.AVAILABILITY_OPTIONAL);
+            reference.setServiceAvailabilitySpecification(ServiceReferenceComponentMetadata.OPTIONAL_AVAILABILITY);
         } else {
             throw new ComponentDefinitionException("Illegal value for " + AVAILABILITY_ATTRIBUTE + " attribute: " + availability);
         }
