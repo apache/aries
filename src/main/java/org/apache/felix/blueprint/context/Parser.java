@@ -361,7 +361,7 @@ public class Parser {
             throw new ComponentDefinitionException("Attribute " + LAZY_INIT_ATTRIBUTE + " must be equals to " + BOOLEAN_DEFAULT + ", " + BOOLEAN_TRUE + " or " + BOOLEAN_FALSE);
         }
         if (element.hasAttribute(DEPENDS_ON_ATTRIBUTE)) {
-            metadata.setDependsOn(element.getAttribute(DEPENDS_ON_ATTRIBUTE));
+            metadata.setExplicitDependencies(parseListAsSet(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
         }
         if (element.hasAttribute(INIT_METHOD_ATTRIBUTE)) {
             metadata.setInitMethodName(element.getAttribute(INIT_METHOD_ATTRIBUTE));
@@ -419,7 +419,7 @@ public class Parser {
             service.setExportedComponent(new ReferenceValueImpl(element.getAttribute(REF_ATTRIBUTE)));
         }
         if (element.hasAttribute(DEPENDS_ON_ATTRIBUTE)) {
-            service.setDependsOn(element.getAttribute(DEPENDS_ON_ATTRIBUTE));
+            service.setExplicitDependencies(parseListAsSet(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
         }
         String autoExport = element.hasAttribute(AUTO_EXPORT_ATTRIBUTE) ? element.getAttribute(AUTO_EXPORT_ATTRIBUTE) : AUTO_EXPORT_DEFAULT;
         if (AUTO_EXPORT_DISABLED.equals(autoExport)) {
@@ -970,6 +970,18 @@ public class Parser {
 
     private static boolean nodeNameEquals(Node node, String name) {
         return (name.equals(node.getNodeName()) || name.equals(node.getLocalName()));
+    }
+
+    private static Set<String> parseListAsSet(String list) {
+        String[] items = list.split(",");
+        Set<String> set = new HashSet<String>();
+        for (String item : items) {
+            item = item.trim();
+            if (item.length() > 0) {
+                set.add(item);
+            }
+        }
+        return set;                   
     }
 
     private static String getTextValue(Element element) {

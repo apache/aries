@@ -18,18 +18,16 @@
  */
 package org.apache.felix.blueprint.reflect;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
 
 import org.osgi.service.blueprint.reflect.ConstructorInjectionMetadata;
 import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
 import org.osgi.service.blueprint.reflect.MethodInjectionMetadata;
+import org.osgi.service.blueprint.reflect.ParameterSpecification;
 import org.osgi.service.blueprint.reflect.PropertyInjectionMetadata;
 import org.osgi.service.blueprint.reflect.Value;
-import org.osgi.service.blueprint.reflect.ParameterSpecification;
 
 /**
  * TODO: javadoc
@@ -61,17 +59,6 @@ public class LocalComponentMetadataImpl extends ComponentMetadataImpl implements
 
     public void setClassName(String className) {
         this.className = className;
-    }
-
-    public void setDependsOn(String dependsOn) {
-        Set<String> set = new HashSet<String>();
-        for (String dep : dependsOn.split(",")) {
-            dep = dep.trim();
-            if (dep.length() > 0) {
-                set.add(dep);
-            }
-        }
-        setExplicitDependencies(set);
     }
 
     public String getInitMethodName() {
