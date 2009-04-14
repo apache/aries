@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.xbean.recipe.Option;
 import org.apache.xbean.recipe.Repository;
 import org.apache.xbean.recipe.DefaultRepository;
 import org.apache.xbean.recipe.ObjectRecipe;
@@ -34,6 +35,7 @@ import org.apache.xbean.recipe.MapRecipe;
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ReferenceRecipe;
 import org.apache.xbean.recipe.Recipe;
+import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
@@ -58,7 +60,13 @@ import org.osgi.service.blueprint.reflect.PropertiesValue;
  */
 public class Instanciator {
 
-    public static Repository createRepository(ComponentDefinitionRegistry registry) throws Exception {
+    private Bundle bundle;
+    
+    public Instanciator(Bundle bundle) {
+        this.bundle = bundle;
+    }
+    
+    public Repository createRepository(ComponentDefinitionRegistry registry) throws Exception {
         Repository repository = new DefaultRepository();
         // Create recipes
         for (String name : (Set<String>) registry.getComponentDefinitionNames()) {
@@ -69,10 +77,11 @@ public class Instanciator {
         return repository;
     }
 
-    private static Recipe createRecipe(ComponentMetadata component) {
+    private Recipe createRecipe(ComponentMetadata component) {
         if (component instanceof LocalComponentMetadata) {
             LocalComponentMetadata local = (LocalComponentMetadata) component;
-            ObjectRecipe recipe = new ObjectRecipe(local.getClassName());
+            ObjectRecipe recipe = new BundleObjectRecipe(local.getClassName());
+            recipe.allow(Option.PRIVATE_PROPERTIES);
             recipe.setName(component.getName());
             for (PropertyInjectionMetadata property : (Collection<PropertyInjectionMetadata>) local.getPropertyInjectionMetadata()) {
                 Object value = getValue(property.getValue());
@@ -92,7 +101,7 @@ public class Instanciator {
         }
     }
 
-    private static Object getValue(Value v) {
+    private Object getValue(Value v) {
         if (v instanceof NullValue) {
             return null;
         } else if (v instanceof TypedStringValue) {
@@ -136,6 +145,28 @@ public class Instanciator {
             return ((ReferenceNameValue) v).getReferenceName();
         } else {
             throw new IllegalStateException("Unsupported value: " + v.getClass().getName());
+        }
+    }
+    
+    private class BundleObjectRecipe extends ObjectRecipe {
+        
+        String typeName;
+        
+        public BundleObjectRecipe(String typeName) {
+            super(typeName);
+            this.typeName = typeName;
+        }
+        
+        @Override
+        public Class getType() {
+            if (bundle == null) {
+                return super.getType();
+            }
+            try {
+                return bundle.loadClass(typeName);
+            } catch (ClassNotFoundException e) {
+                throw new ConstructionException("Type class could not be found: " + typeName);
+            }
         }
     }
 
