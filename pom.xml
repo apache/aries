@@ -17,13 +17,14 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.geronimo.osgi</groupId>
-        <artifactId>rfc124</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>blueprint</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>rfc124-api</artifactId>
+
+    <artifactId>blueprint-api</artifactId>
     <packaging>jar</packaging>
-    <name>RFC 124 API</name>
+    <name>Blueprint API</name>
     <build>
         <plugins>
             <plugin>
