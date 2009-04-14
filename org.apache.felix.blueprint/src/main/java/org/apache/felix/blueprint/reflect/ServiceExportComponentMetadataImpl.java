@@ -44,7 +44,6 @@ public class ServiceExportComponentMetadataImpl extends ComponentMetadataImpl im
     private MapValue servicePropertiesValue;
     private int ranking;
     private Collection<RegistrationListenerMetadata> registrationListeners;
-    private String dependsOn;
 
     public Value getExportedComponent() {
         return exportedComponent;
@@ -68,14 +67,6 @@ public class ServiceExportComponentMetadataImpl extends ComponentMetadataImpl im
 
     public void setAutoExportMode(int autoExportMode) {
         this.autoExportMode = autoExportMode;
-    }
-
-    public String getDependsOn() {
-        return dependsOn;
-    }
-
-    public void setDependsOn(String dependsOn) {
-        this.dependsOn = dependsOn;
     }
 
     public Map getServiceProperties() {
