@@ -71,6 +71,7 @@
                     <instructions>
                         <Export-Package>org.apache.felix.blueprint*;version="${pom.version}"</Export-Package>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Activator>org.apache.felix.blueprint.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

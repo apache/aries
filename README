@@ -1,0 +1,29 @@
+
+1) Start Felix under Java 5
+ 
+  java -jar bin/felix.jar
+
+2) Install the following bundles:
+
+  a) install http://people.apache.org/repo/m2-snapshot-repository/org/apache/xbean/xbean-reflect/3.6-SNAPSHOT/xbean-reflect-3.6-SNAPSHOT.jar
+  b) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.org.apache.commons.logging&version=1.1.1&type=binary
+  c) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.org.apache.log4j&version=1.2.15&type=binary
+  d) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.org.objectweb.asm&version=3.1.0&type=binary
+  e) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.org.objectweb.asm.tree&version=3.1.0&type=binary
+  f) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.org.objectweb.asm.commons&version=3.1.0&type=binary
+
+3) Install EventAdmin service and dependencies
+
+  a) install http://repo1.maven.org/maven2/org/apache/felix/org.apache.felix.eventadmin/1.0.0/org.apache.felix.eventadmin-1.0.0.jar
+
+4) Build the blueprint project and install the extender and sample bundles:
+
+  a) install file://<m2_repo>/org/apache/felix/blueprint-api/1.0.0-SNAPSHOT/blueprint-api-1.0.0-SNAPSHOT.jar
+  b) install file://<m2_repo>/org/apache/felix/org.apache.felix.blueprint/1.0.0-SNAPSHOT/org.apache.felix.blueprint-1.0.0-SNAPSHOT.jar
+  c) install file://<m2_repo>/org/apache/felix/sample/1.0.0-SNAPSHOT/sample-1.0.0-SNAPSHOT.jar
+
+5) Start the extender and sample bundles:
+
+  a) start <bundle id for extender bundle>
+  b) start <bundle id for sample bundle>
+
