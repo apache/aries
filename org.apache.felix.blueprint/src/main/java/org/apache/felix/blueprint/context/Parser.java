@@ -496,7 +496,7 @@ public class Parser {
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
             if (node instanceof Element) {
-                Value val = parseValueElement((Element) node, enclosingComponent);
+                Value val = parseValueElement((Element) node, enclosingComponent, true);
                 list.add(val);
             }
         }
@@ -595,9 +595,9 @@ public class Parser {
             if (node instanceof Element) {
                 Element e = (Element) node;
                 if (nodeNameEquals(e, KEY_ELEMENT)) {
-                    keyValue = parseValueElement(e, enclosingComponent);
+                    keyValue = parseValueElement(e, enclosingComponent, false);
                 } else {
-                    valValue = parseValueElement(e, enclosingComponent);
+                    valValue = parseValueElement(e, enclosingComponent, true);
                 }
             }
         }
@@ -896,7 +896,7 @@ public class Parser {
                     if (isBlueprintNamespace(node.getNamespaceURI())) {
                         // Ignore description elements
                         if (!nodeNameEquals(node, DESCRIPTION_ELEMENT)) {
-                            return parseValueElement(e, enclosingComponent);
+                            return parseValueElement(e, enclosingComponent, true);
                         }
                     } else {
                         ComponentMetadata innerComponent = parseCustomElement(e, enclosingComponent);
@@ -908,11 +908,11 @@ public class Parser {
         throw new ComponentDefinitionException("One of " + REF_ATTRIBUTE + " attribute, " + VALUE_ATTRIBUTE + " attribute or sub element must be set");
     }
 
-    private Value parseValueElement(Element element, ComponentMetadata enclosingComponent) {
+    private Value parseValueElement(Element element, ComponentMetadata enclosingComponent, boolean allowNull) {
         if (nodeNameEquals(element, COMPONENT_ELEMENT)) {
             LocalComponentMetadata inner = parseComponentMetadata(element);
             return new ComponentValueImpl(inner);
-        } else if (nodeNameEquals(element, NULL_ELEMENT)) {
+        } else if (nodeNameEquals(element, NULL_ELEMENT) && allowNull) {
             return NullValue.NULL;
         } else if (nodeNameEquals(element, VALUE_ELEMENT)) {
             String type = null;
