@@ -116,7 +116,7 @@ public class Activator implements BundleActivator, BundleListener {
                 
         if (!urls.isEmpty()) {
             System.out.println("Found config files:" + urls);
-            ModuleContextImpl moduleContext = new ModuleContextImpl(bundle.getBundleContext(), sender, urls);
+            ModuleContextImpl moduleContext = new ModuleContextImpl(bundle.getBundleContext(), sender, handlers, urls);
             contextMap.put(bundle, moduleContext);
             moduleContext.create();
         }
