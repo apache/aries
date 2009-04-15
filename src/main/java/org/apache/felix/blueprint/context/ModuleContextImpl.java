@@ -28,9 +28,11 @@ import java.net.URL;
 
 import org.apache.felix.blueprint.HeaderParser.PathElement;
 import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.felix.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.felix.blueprint.BlueprintConstants;
 import org.apache.felix.blueprint.HeaderParser;
 import org.apache.felix.blueprint.ModuleContextEventSender;
+import org.apache.felix.blueprint.NamespaceHandlerRegistry;
 import org.apache.xbean.recipe.Repository;
 import org.apache.xbean.recipe.ObjectGraph;
 import org.osgi.framework.Bundle;
@@ -53,12 +55,14 @@ public class ModuleContextImpl implements ModuleContext {
 
     private final BundleContext bundleContext;
     private final ModuleContextEventSender sender;
+    private final NamespaceHandlerRegistry handlers;
     private final List<URL> urls;
     private ComponentDefinitionRegistryImpl componentDefinitionRegistry;
 
-    public ModuleContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, List<URL> urls) {
+    public ModuleContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, List<URL> urls) {
         this.bundleContext = bundleContext;
         this.sender = sender;
+        this.handlers = handlers;
         this.urls = urls;
     }
 
@@ -85,6 +89,7 @@ public class ModuleContextImpl implements ModuleContext {
         sender.sendCreating(this);
         try {
             Parser parser = new Parser();
+            parser.setNamespaceHandlerRegistry(handlers);
             parser.parse(urls);
             componentDefinitionRegistry = parser.getRegistry();
             Instanciator i = new Instanciator(bundleContext.getBundle());

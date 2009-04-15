@@ -38,11 +38,5 @@ public interface NamespaceHandlerRegistry {
      */
     NamespaceHandler getNamespaceHandler(URI uri);
 
-    /**
-     * Add a callback to be run each time the list of namespace handlers changes
-     * @param runnable
-     */
-    void addCallback(Runnable runnable);
-
     void destroy();
 }
