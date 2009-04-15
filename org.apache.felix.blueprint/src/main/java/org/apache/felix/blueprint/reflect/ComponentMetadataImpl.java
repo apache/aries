@@ -40,7 +40,9 @@ public class ComponentMetadataImpl implements ComponentMetadata {
     
     protected ComponentMetadataImpl(ComponentMetadata source) {
         name = source.getName();
-        explicitDependencies = new HashSet<String>(source.getExplicitDependencies());
+        if (source.getExplicitDependencies() != null) {
+            explicitDependencies = new HashSet<String>(source.getExplicitDependencies());
+        }
     }
     
     public String getName() {

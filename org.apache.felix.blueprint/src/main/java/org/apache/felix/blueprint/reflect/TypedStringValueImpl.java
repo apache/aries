@@ -43,6 +43,11 @@ public class TypedStringValueImpl implements TypedStringValue {
         this.typeName = typeName;
     }
 
+    public TypedStringValueImpl(TypedStringValue source) {
+        this.stringValue = source.getStringValue();
+        this.typeName = source.getTypeName();
+    }
+
     public String getStringValue() {
         return stringValue;
     }

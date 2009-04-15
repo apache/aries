@@ -40,6 +40,11 @@ public class PropertyInjectionMetadataImpl implements PropertyInjectionMetadata 
         this.value = value;
     }
 
+    public PropertyInjectionMetadataImpl(PropertyInjectionMetadata source) {
+        name = source.getName();
+        value = MetadataUtil.cloneValue(source.getValue());
+    }
+    
     public String getName() {
         return name;
     }

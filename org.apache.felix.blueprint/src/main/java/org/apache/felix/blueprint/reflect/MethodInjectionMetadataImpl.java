@@ -18,7 +18,9 @@
  */
 package org.apache.felix.blueprint.reflect;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.osgi.service.blueprint.reflect.MethodInjectionMetadata;
@@ -41,6 +43,17 @@ public class MethodInjectionMetadataImpl implements MethodInjectionMetadata {
     public MethodInjectionMetadataImpl(String name, List<ParameterSpecification> parameterSpecifications) {
         this.name = name;
         this.parameterSpecifications = parameterSpecifications;
+    }
+
+    public MethodInjectionMetadataImpl(MethodInjectionMetadata source) {
+        name = source.getName();
+        if (source.getParameterSpecifications() != null) {
+            parameterSpecifications = new ArrayList<ParameterSpecification>();
+            Iterator i = source.getParameterSpecifications().iterator();
+            while (i.hasNext()) {
+                parameterSpecifications.add(new ParameterSpecificationImpl((ParameterSpecification)i.next()));
+            }
+        }
     }
 
     public String getName() {

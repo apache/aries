@@ -18,9 +18,13 @@
  */
 package org.apache.felix.blueprint.reflect;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.osgi.service.blueprint.reflect.MapValue;
+import org.osgi.service.blueprint.reflect.Value;
 
 /**
  * TODO: javadoc
@@ -32,17 +36,31 @@ public class MapValueImpl implements MapValue {
 
     private String keyType;
     private String valueType;
-    private Map<Object, Object> map;
+    private Map<Value, Value> map;
 
     public MapValueImpl() {
     }
 
-    public MapValueImpl(String keyType, String valueType, Map<Object, Object> map) {
+    public MapValueImpl(String keyType, String valueType, Map<Value, Value> map) {
         this.keyType = keyType;
         this.valueType = valueType;
         this.map = map;
     }
 
+    public MapValueImpl(MapValue source) {
+        if (source.getMap() != null) {
+            map = new HashMap<Value, Value>();
+            // both the values and the keys are Value types, so we need to deep copy them
+            Iterator i = source.getMap().entrySet().iterator();
+            while (i.hasNext()) {
+                Entry entry = (Entry)i.next();
+                map.put(MetadataUtil.cloneValue((Value)entry.getKey()), MetadataUtil.cloneValue((Value)entry.getValue()));
+            }
+        }
+        valueType = source.getValueType();
+        keyType = source.getKeyType();
+    }
+    
     public String getKeyType() {
         return keyType;
     }
@@ -59,11 +77,11 @@ public class MapValueImpl implements MapValue {
         this.valueType = valueType;
     }
 
-    public Map<Object, Object> getMap() {
+    public Map<Value, Value> getMap() {
         return map;
     }
 
-    public void setMap(Map<Object, Object> map) {
+    public void setMap(Map<Value, Value> map) {
         this.map = map;
     }
 }

@@ -34,6 +34,17 @@ public class CollectionBasedServiceReferenceComponentMetadataImpl extends Servic
     private int orderingComparisonBasis;
     private int memberType;
 
+    public CollectionBasedServiceReferenceComponentMetadataImpl() {        
+    }
+    
+    public CollectionBasedServiceReferenceComponentMetadataImpl(CollectionBasedServiceReferenceComponentMetadata source) {
+        super(source);
+        comparator = MetadataUtil.cloneValue(source.getComparator());
+        collectionType = source.getCollectionType();
+        orderingComparisonBasis = source.getOrderingComparisonBasis();
+        memberType = source.getMemberType();
+    }
+    
     public Class getCollectionType() {
         return collectionType;
     }

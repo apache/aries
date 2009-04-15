@@ -37,6 +37,10 @@ public class ReferenceNameValueImpl implements ReferenceNameValue {
         this.referenceName = referenceName;
     }
 
+    public ReferenceNameValueImpl(ReferenceNameValue source) {
+        referenceName = source.getReferenceName();
+    }
+    
     public String getReferenceName() {
         return referenceName;
     }

@@ -39,6 +39,12 @@ public class PropertiesValueImpl implements PropertiesValue {
         this.propertiesValue = propertiesValue;
     }
 
+    public PropertiesValueImpl(PropertiesValue source) {
+        if (source.getPropertiesValue() != null) {
+            propertiesValue = new Properties(source.getPropertiesValue());
+        }
+    }
+    
     public Properties getPropertiesValue() {
         return propertiesValue;
     }
