@@ -19,6 +19,7 @@
 package org.apache.felix.blueprint.reflect;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -33,7 +34,15 @@ public class ComponentMetadataImpl implements ComponentMetadata {
 
     private String name;
     private Set<String> explicitDependencies;
-
+    
+    protected ComponentMetadataImpl() {
+    }
+    
+    protected ComponentMetadataImpl(ComponentMetadata source) {
+        name = source.getName();
+        explicitDependencies = new HashSet<String>(source.getExplicitDependencies());
+    }
+    
     public String getName() {
         return name;
     }

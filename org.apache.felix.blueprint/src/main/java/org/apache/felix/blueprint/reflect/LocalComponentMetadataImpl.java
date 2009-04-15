@@ -53,6 +53,15 @@ public class LocalComponentMetadataImpl extends ComponentMetadataImpl implements
         propertyInjectionMetadata = new ArrayList<PropertyInjectionMetadata>();
     }
 
+    public LocalComponentMetadataImpl(LocalComponentMetadata source) {
+        super(source);
+        initMethodName = source.getInitMethodName();
+        destroyMethodName = source.getDestroyMethodName();
+        className = source.getClassName();
+        scope = source.getScope();
+        isLazy = source.isLazy();
+    }
+    
     public String getClassName() {
         return className;
     }
