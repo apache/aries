@@ -42,6 +42,12 @@ public class BindingListenerMetadataImpl implements BindingListenerMetadata {
         this.unbindMethodName = unbindMethodName;
     }
 
+    public BindingListenerMetadataImpl(BindingListenerMetadata source) {
+        listenerComponent = MetadataUtil.cloneValue(source.getListenerComponent());
+        bindMethodName = source.getBindMethodName();
+        unbindMethodName = source.getUnbindMethodName();
+    }
+    
     public Value getListenerComponent() {
         return listenerComponent;
     }

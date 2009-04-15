@@ -20,6 +20,9 @@ package org.apache.felix.blueprint.reflect;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.ArrayList;
@@ -40,11 +43,34 @@ public class ServiceExportComponentMetadataImpl extends ComponentMetadataImpl im
     private Value exportedComponent;
     private Set<String> interfaceNames;
     private int autoExportMode;
-    private Map serviceProperties;
+    private Map serviceProperties;    
     private MapValue servicePropertiesValue;
     private int ranking;
     private Collection<RegistrationListenerMetadata> registrationListeners;
 
+    public ServiceExportComponentMetadataImpl() {        
+    }
+    
+    public ServiceExportComponentMetadataImpl(ServiceExportComponentMetadata source) {
+        super(source);
+        if (source.getServiceProperties() != null) {
+            serviceProperties = new HashMap(source.getServiceProperties());
+        }
+        exportedComponent = MetadataUtil.cloneValue(source.getExportedComponent());
+        ranking = source.getRanking();
+        if (source.getInterfaceNames() != null) {
+            interfaceNames = new HashSet<String>(source.getInterfaceNames());
+        }
+        if (source.getRegistrationListeners() != null) {
+            Iterator i = source.getRegistrationListeners().iterator();
+            registrationListeners = new ArrayList<RegistrationListenerMetadata>();
+            while (i.hasNext()) {
+                registrationListeners.add(new RegistrationListenerMetadataImpl((RegistrationListenerMetadata)i.next()));
+            }
+        }
+        autoExportMode = source.getAutoExportMode();
+    }
+    
     public Value getExportedComponent() {
         return exportedComponent;
     }
@@ -76,11 +102,11 @@ public class ServiceExportComponentMetadataImpl extends ComponentMetadataImpl im
     public void setServiceProperties(Map serviceProperties) {
         this.serviceProperties = serviceProperties;
     }
-
+    
     public MapValue getServicePropertiesValue() {
         return servicePropertiesValue;
     }
-
+    
     public void setServicePropertiesValue(MapValue servicePropertiesValue) {
         this.servicePropertiesValue = servicePropertiesValue;
     }

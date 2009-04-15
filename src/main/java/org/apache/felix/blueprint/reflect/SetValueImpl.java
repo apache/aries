@@ -18,6 +18,8 @@
  */
 package org.apache.felix.blueprint.reflect;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.osgi.service.blueprint.reflect.SetValue;
@@ -42,6 +44,17 @@ public class SetValueImpl implements SetValue {
         this.set = set;
     }
 
+    public SetValueImpl(SetValue source) {
+        if (source.getSet() != null) {
+            set = new HashSet<Value>();
+            Iterator i = source.getSet().iterator();
+            while (i.hasNext()) {
+                set.add(MetadataUtil.cloneValue((Value)i.next()));
+            }
+        }
+        valueType = source.getValueType();
+    }
+    
     public String getValueType() {
         return valueType;
     }

@@ -20,6 +20,8 @@ package org.apache.felix.blueprint.reflect;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.ArrayList;
 
@@ -44,6 +46,23 @@ public class ServiceReferenceComponentMetadataImpl extends ComponentMetadataImpl
         bindingListeners = new ArrayList<BindingListenerMetadata>();
     }
 
+    public ServiceReferenceComponentMetadataImpl(ServiceReferenceComponentMetadata source) {
+        super(source);
+        if (source.getBindingListeners() != null) {
+            bindingListeners = new ArrayList<BindingListenerMetadata>();
+            Iterator i = source.getBindingListeners().iterator();
+            while (i.hasNext()) {
+                bindingListeners.add(new BindingListenerMetadataImpl((BindingListenerMetadata)i.next()));
+            }
+        }
+        if (source.getInterfaceNames() != null) {
+            interfaceNames = new HashSet<String>(source.getInterfaceNames());
+        }
+        serviceAvailabilitySpecification = source.getServiceAvailabilitySpecification();
+        filter = source.getFilter();
+        componentName = source.getComponentName();
+    }
+    
     public int getServiceAvailabilitySpecification() {
         return serviceAvailabilitySpecification;
     }

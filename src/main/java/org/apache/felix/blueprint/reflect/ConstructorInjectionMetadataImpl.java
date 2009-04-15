@@ -19,6 +19,7 @@
 package org.apache.felix.blueprint.reflect;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -43,6 +44,16 @@ public class ConstructorInjectionMetadataImpl implements ConstructorInjectionMet
         this.parameterSpecifications = parameterSpecifications;
     }
 
+    public ConstructorInjectionMetadataImpl(ConstructorInjectionMetadata source) {
+        if (source.getParameterSpecifications() != null) {
+            parameterSpecifications = new ArrayList<ParameterSpecification>();
+            Iterator i = source.getParameterSpecifications().iterator();
+            while (i.hasNext()) {
+                parameterSpecifications.add(new ParameterSpecificationImpl((ParameterSpecification)i.next()));
+            }
+        }
+    }
+    
     public List<ParameterSpecification> getParameterSpecifications() {
         return Collections.unmodifiableList(parameterSpecifications);
     }

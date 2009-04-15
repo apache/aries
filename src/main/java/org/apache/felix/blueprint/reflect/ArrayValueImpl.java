@@ -40,6 +40,17 @@ public class ArrayValueImpl implements ArrayValue {
         this.valueType = valueType;
     }
 
+    public ArrayValueImpl(ArrayValue source) {
+        Value[] valueArray = source.getArray();
+
+        array = new Value[valueArray.length];
+        for (int i = 0; i < valueArray.length; i++) {
+            array[i] = MetadataUtil.cloneValue(valueArray[i]);
+        }
+
+        valueType = source.getValueType();
+    }
+    
     public Value[] getArray() {
         return array;
     }

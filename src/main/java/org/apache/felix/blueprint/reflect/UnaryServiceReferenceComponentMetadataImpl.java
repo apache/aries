@@ -30,6 +30,14 @@ public class UnaryServiceReferenceComponentMetadataImpl extends ServiceReference
 
     private long timeout;
 
+    public UnaryServiceReferenceComponentMetadataImpl() {        
+    }
+    
+    public UnaryServiceReferenceComponentMetadataImpl(UnaryServiceReferenceComponentMetadata source) {
+        super(source);
+        timeout = source.getTimeout();
+    }
+    
     public long getTimeout() {
         return timeout;
     }

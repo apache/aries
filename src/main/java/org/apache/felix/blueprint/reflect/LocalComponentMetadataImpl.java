@@ -21,6 +21,7 @@ package org.apache.felix.blueprint.reflect;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 
 import org.osgi.service.blueprint.reflect.ConstructorInjectionMetadata;
 import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
@@ -44,7 +45,6 @@ public class LocalComponentMetadataImpl extends ComponentMetadataImpl implements
     private String destroyMethodName;
     private ConstructorInjectionMetadataImpl constructorInjectionMetadata;
     private Collection<PropertyInjectionMetadata> propertyInjectionMetadata;
-    private Collection<MethodInjectionMetadata> methodInjectionMetadata;
     private MethodInjectionMetadata factoryMethodMetadata;
     private Value factoryComponent;
 
@@ -60,6 +60,20 @@ public class LocalComponentMetadataImpl extends ComponentMetadataImpl implements
         className = source.getClassName();
         scope = source.getScope();
         isLazy = source.isLazy();
+        if (source.getConstructorInjectionMetadata() != null) {
+            constructorInjectionMetadata = new ConstructorInjectionMetadataImpl(source.getConstructorInjectionMetadata());
+        }
+        if (source.getFactoryMethodMetadata() != null) {
+            factoryMethodMetadata = new MethodInjectionMetadataImpl(source.getFactoryMethodMetadata());
+        }
+        factoryComponent = MetadataUtil.cloneValue(source.getFactoryComponent());    
+        if (source.getPropertyInjectionMetadata() != null) {
+            propertyInjectionMetadata = new ArrayList<PropertyInjectionMetadata>();        
+            Iterator propertySource = source.getPropertyInjectionMetadata().iterator();
+            while (propertySource.hasNext()) {
+                propertyInjectionMetadata.add(new PropertyInjectionMetadataImpl((PropertyInjectionMetadata)propertySource.next()));
+            }
+        }
     }
     
     public String getClassName() {
@@ -92,14 +106,6 @@ public class LocalComponentMetadataImpl extends ComponentMetadataImpl implements
 
     public Collection<PropertyInjectionMetadata> getPropertyInjectionMetadata() {
         return Collections.unmodifiableCollection(propertyInjectionMetadata);
-    }
-
-    public Collection<MethodInjectionMetadata> getMethodInjectionMetadata() {
-        return Collections.unmodifiableCollection(methodInjectionMetadata);
-    }
-
-    public void setMethodInjectionMetadata(Collection<MethodInjectionMetadata> methodInjectionMetadata) {
-        this.methodInjectionMetadata = methodInjectionMetadata;
     }
 
     public boolean isLazy() {

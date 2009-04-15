@@ -18,9 +18,8 @@
  */
 package org.apache.felix.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.ComponentValue;
-import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.ComponentValue;
 
 /**
  * TODO: javadoc
@@ -37,6 +36,10 @@ public class ComponentValueImpl implements ComponentValue {
 
     public ComponentValueImpl(ComponentMetadata metadata) {
         this.metadata = metadata;
+    }
+
+    public ComponentValueImpl(ComponentValue source) {
+        metadata = MetadataUtil.cloneComponentMetadata(source.getComponentMetadata());
     }
 
     public ComponentMetadata getComponentMetadata() {

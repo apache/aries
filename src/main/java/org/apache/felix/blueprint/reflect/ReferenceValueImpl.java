@@ -37,6 +37,10 @@ public class ReferenceValueImpl implements ReferenceValue {
         this.componentName = componentName;
     }
 
+    public ReferenceValueImpl(ReferenceValue source) {
+        componentName = source.getComponentName();
+    }
+    
     public String getComponentName() {
         return componentName;
     }

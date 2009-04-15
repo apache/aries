@@ -42,6 +42,12 @@ public class ParameterSpecificationImpl implements ParameterSpecification {
         this.index = index;
     }
 
+    public ParameterSpecificationImpl(ParameterSpecification source) {
+        value = MetadataUtil.cloneValue(source.getValue());
+        typeName = source.getTypeName();
+        index = source.getIndex();
+    }
+    
     public Value getValue() {
         return value;
     }

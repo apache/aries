@@ -18,6 +18,8 @@
  */
 package org.apache.felix.blueprint.reflect;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.osgi.service.blueprint.reflect.ListValue;
@@ -41,7 +43,18 @@ public class ListValueImpl implements ListValue {
         this.valueType = valueType;
         this.list = list;
     }
-
+    
+    public ListValueImpl(ListValue source) {
+        if (source.getList() != null) {
+            list = new ArrayList<Value>();
+            Iterator i = source.getList().iterator();
+            while (i.hasNext()) {
+                list.add(MetadataUtil.cloneValue((Value)i.next()));
+            }
+        }
+        valueType = source.getValueType();
+    }
+    
     public String getValueType() {
         return valueType;
     }

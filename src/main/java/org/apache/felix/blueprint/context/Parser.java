@@ -566,7 +566,7 @@ public class Parser {
         String keyType = element.hasAttribute(KEY_TYPE_ATTRIBUTE) ? element.getAttribute(KEY_TYPE_ATTRIBUTE) : null;
         String valueType = element.hasAttribute(VALUE_TYPE_ATTRIBUTE) ? element.getAttribute(VALUE_TYPE_ATTRIBUTE) : null;
         // Parse elements
-        Map<Object, Object> map = new HashMap<Object, Object>();
+        Map<Value, Value> map = new HashMap<Value, Value>();
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
@@ -580,7 +580,7 @@ public class Parser {
         return new MapValueImpl(keyType, valueType, map);
     }
 
-    private void parseMapEntry(Map<Object, Object> map, Element element, ComponentMetadata enclosingComponent) {
+    private void parseMapEntry(Map<Value, Value> map, Element element, ComponentMetadata enclosingComponent) {
         // Parse attributes
         String key = element.hasAttribute(KEY_ATTRIBUTE) ? element.getAttribute(KEY_ATTRIBUTE) : null;
         String keyRef = element.hasAttribute(KEY_REF_ATTRIBUTE) ? element.getAttribute(KEY_REF_ATTRIBUTE) : null;

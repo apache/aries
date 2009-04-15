@@ -42,6 +42,12 @@ public class RegistrationListenerMetadataImpl implements RegistrationListenerMet
         this.unregistrationMethodName = unregistrationMethodName;
     }
 
+    public RegistrationListenerMetadataImpl(RegistrationListenerMetadata source) {
+        listenerComponent = MetadataUtil.cloneValue(source.getListenerComponent());
+        registrationMethodName = source.getRegistrationMethodName();
+        unregistrationMethodName = source.getUnregistrationMethodName();
+    }
+    
     public Value getListenerComponent() {
         return listenerComponent;
     }
