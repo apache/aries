@@ -44,6 +44,14 @@ public class ConversionServiceImpl implements ConversionService {
         converters.add(converter);
     }
 
+    public void unregisterConverter(Converter converter) {
+        Class type = converter.getTargetClass();
+        List<Converter> converters = convertersMap.get(type);
+        if (converters != null) {
+            converters.remove(converter);
+        }
+    }
+    
     public Object convert(Object fromValue, Class toType) throws Exception {
         if (Object.class == toType) {
             return fromValue;

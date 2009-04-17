@@ -18,6 +18,7 @@
  */
 package org.apache.felix.blueprint.context;
 
+import java.lang.reflect.Type;
 import java.util.Set;
 import java.util.Collection;
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.xbean.recipe.AbstractRecipe;
 import org.apache.xbean.recipe.ArrayRecipe;
 import org.apache.xbean.recipe.Option;
 import org.apache.xbean.recipe.Repository;
@@ -37,7 +40,6 @@ import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ReferenceRecipe;
 import org.apache.xbean.recipe.Recipe;
 import org.osgi.framework.Bundle;
-import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
 import org.osgi.service.blueprint.reflect.PropertyInjectionMetadata;
@@ -89,10 +91,24 @@ public class Instanciator {
         }
     }
     
-    public Repository createRepository(ComponentDefinitionRegistry registry) throws Exception {
+    public Repository createRepository(ComponentDefinitionRegistryImpl registry) throws Exception {
         Repository repository = new DefaultRepository();
         addBuiltinComponents(repository);
-        // Create recipes
+        
+        // Create type-converter recipes
+        for (Value value : registry.getTypeConverters()) {
+            if (value instanceof ComponentValue) {
+                Recipe recipe = (Recipe) getValue(value, null);
+                repository.add(recipe.getName(), recipe);
+            } else if (value instanceof ReferenceValue) {
+                ReferenceRecipe recipe = (ReferenceRecipe) getValue(value, null);
+                repository.add(recipe.getReferenceName(), recipe);
+            } else {
+                throw new RuntimeException("Unexpected converter type: " + value);
+            }
+        }
+        
+        // Create component recipes
         for (String name : (Set<String>) registry.getComponentDefinitionNames()) {
             ComponentMetadata component = registry.getComponentDefinition(name);
             Recipe recipe = createRecipe(component);
@@ -133,8 +149,7 @@ public class Instanciator {
             TypedStringValue stringValue = (TypedStringValue) v; 
             String value = stringValue.getStringValue();
             Class type = loadType(stringValue.getTypeName());
-            type = determineType(type, hint);
-            return convert(value, type);
+            return new ValueRecipe(value, type, hint);
         } else if (v instanceof ReferenceValue) {
             String componentName = ((ReferenceValue) v).getComponentName();
             return new ReferenceRecipe(componentName);
@@ -185,12 +200,12 @@ public class Instanciator {
         }
     }
     
-    private Class determineType(Class type, Class hint) throws Exception {
+    private static Class determineType(Class type, Class hint) throws RuntimeException {
         if (type != null) {
             if (hint == null || hint.isAssignableFrom(type)) {
                 return type;
             } else {
-                throw new Exception(type.getName() + " cannot be assigned to " + hint.getName());
+                throw new RuntimeException(type.getName() + " cannot be assigned to " + hint.getName());
             }
         } else if (hint != null) {
             return hint;
@@ -239,6 +254,35 @@ public class Instanciator {
                 throw new ConstructionException("Type class could not be found: " + typeName);
             }
         }
+    }
+    
+    private class ValueRecipe extends AbstractRecipe {
+
+        private String value;
+        private Class type;
+        private Class hint;
+
+        private ValueRecipe(String value, Class type, Class hint) {
+            this.value = value;
+            this.type = type;
+            this.hint = hint;
+        }
+        
+        @Override
+        protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
+            Class myType = determineType(type, hint);
+            //System.out.println("create: " + expectedType + " " + type + " " + hint + " " + myType);
+            try {
+                return convert(value, myType);
+            } catch (Exception e) {
+                throw new ConstructionException(e);
+            }
+        }
+
+        public boolean canCreate(Type expectedType) {
+            return true;
+        }
+        
     }
 
 }

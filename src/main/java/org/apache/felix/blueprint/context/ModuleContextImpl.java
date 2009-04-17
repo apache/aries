@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.net.URL;
 
@@ -42,10 +44,14 @@ import org.osgi.framework.Constants;
 import org.osgi.service.blueprint.context.ModuleContext;
 import org.osgi.service.blueprint.context.NoSuchComponentException;
 import org.osgi.service.blueprint.convert.ConversionService;
+import org.osgi.service.blueprint.convert.Converter;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.ComponentValue;
 import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceValue;
 import org.osgi.service.blueprint.reflect.ServiceExportComponentMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceComponentMetadata;
+import org.osgi.service.blueprint.reflect.Value;
 
 /**
  * TODO: javadoc
@@ -60,7 +66,7 @@ public class ModuleContextImpl implements ModuleContext {
     private final NamespaceHandlerRegistry handlers;
     private final List<URL> urls;
     private ComponentDefinitionRegistryImpl componentDefinitionRegistry;
-    private ConversionService conversionService;
+    private ConversionServiceImpl conversionService;
 
     public ModuleContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, List<URL> urls) {
         this.bundleContext = bundleContext;
@@ -99,7 +105,11 @@ public class ModuleContextImpl implements ModuleContext {
             Instanciator i = new Instanciator(this);
             Repository repository = i.createRepository(componentDefinitionRegistry);
             ObjectGraph graph = new ObjectGraph(repository);
-            System.out.println(graph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames())));                    
+
+            registerTypeConverters(graph);
+            
+            System.out.println(graph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames())));
+                        
             sender.sendCreated(this);
         } catch (WaitForDependencyException e) {
             sender.sendWaiting(this, null, null); // TODO: give correct args
@@ -111,10 +121,25 @@ public class ModuleContextImpl implements ModuleContext {
         }
     }
 
+    private void registerTypeConverters(ObjectGraph graph) {
+        List<String> typeConvertersNames = componentDefinitionRegistry.getTypeConverterNames();
+        Map<String, Object> typeConverters = graph.createAll(typeConvertersNames);
+        System.out.println(typeConverters);
+        for (String name : typeConvertersNames) {
+            Object typeConverterInstance = typeConverters.get(name);
+            if (typeConverterInstance instanceof Converter) {
+                Converter converter = (Converter) typeConverterInstance;
+                conversionService.registerConverter(converter);
+            } else {
+                // TODO: throw exception or log
+            }
+        }
+    }
+    
     public Set<String> getComponentNames() {
         return componentDefinitionRegistry.getComponentDefinitionNames();
     }
-
+    
     public Object getComponent(String name) throws NoSuchComponentException {
         ComponentMetadata metadata = getComponentMetadata(name);
         // TODO: get the component instance
