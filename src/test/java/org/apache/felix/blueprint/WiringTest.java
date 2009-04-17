@@ -60,6 +60,12 @@ public class WiringTest extends TestCase {
         assertEquals(new Integer(55), pojoa.getList().get(2));
         assertEquals(URI.create("http://geronimo.apache.org"), pojoa.getList().get(3));
         
+        assertNotNull(pojoa.getArray());
+        assertEquals("list value", pojoa.getArray()[0]);
+        assertEquals(pojob, pojoa.getArray()[1]);
+        assertEquals(new Integer(55), pojoa.getArray()[2]);
+        assertEquals(URI.create("http://geronimo.apache.org"), pojoa.getArray()[3]);
+        
         assertNotNull(pojoa.getSet());
         assertTrue(pojoa.getSet().contains("set value"));
         assertTrue(pojoa.getSet().contains(pojob));
@@ -70,6 +76,18 @@ public class WiringTest extends TestCase {
         
         assertNotNull(pojoa.getNumber());
         assertEquals(new BigInteger("10"), pojoa.getNumber());
+        
+        assertNotNull(pojoa.getIntArray());
+        assertEquals(3, pojoa.getIntArray().length);
+        assertEquals(1, pojoa.getIntArray()[0]);
+        assertEquals(50, pojoa.getIntArray()[1]);
+        assertEquals(100, pojoa.getIntArray()[2]);
+        
+        assertNotNull(pojoa.getNumberArray());
+        assertEquals(3, pojoa.getNumberArray().length);
+        assertEquals(new Integer(1), pojoa.getNumberArray()[0]);
+        assertEquals(new BigInteger("50"), pojoa.getNumberArray()[1]);
+        assertEquals(new Long(100), pojoa.getNumberArray()[2]);
     }
 
     protected Parser parse(String name) throws Exception {

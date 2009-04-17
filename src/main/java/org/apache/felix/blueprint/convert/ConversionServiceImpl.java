@@ -45,6 +45,9 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     public Object convert(Object fromValue, Class toType) throws Exception {
+        if (Object.class == toType) {
+            return fromValue;
+        }
         Converter converter = lookupConverter(toType);
         if (converter == null) {
             return convertDefault(fromValue, toType);

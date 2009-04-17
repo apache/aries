@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.xbean.recipe.ArrayRecipe;
 import org.apache.xbean.recipe.Option;
 import org.apache.xbean.recipe.Repository;
 import org.apache.xbean.recipe.DefaultRepository;
@@ -60,6 +61,19 @@ import org.osgi.service.blueprint.reflect.PropertiesValue;
  */
 public class Instanciator {
 
+    private static Map<String, Class> primitiveClasses = new HashMap<String, Class>();
+    
+    static {
+        primitiveClasses.put("int", int.class);
+        primitiveClasses.put("short", short.class);
+        primitiveClasses.put("long", long.class);
+        primitiveClasses.put("byte", byte.class);
+        primitiveClasses.put("char", char.class);
+        primitiveClasses.put("float", float.class);
+        primitiveClasses.put("double", double.class);
+        primitiveClasses.put("boolean", boolean.class);
+    }
+    
     private ModuleContextImpl moduleContext;
     
     public Instanciator(ModuleContextImpl moduleContext) {
@@ -116,26 +130,17 @@ public class Instanciator {
         if (v instanceof NullValue) {
             return null;
         } else if (v instanceof TypedStringValue) {
-            TypedStringValue stringValue = (TypedStringValue) v;            
-            Class type = getType(stringValue.getTypeName());
+            TypedStringValue stringValue = (TypedStringValue) v; 
             String value = stringValue.getStringValue();
-            if (type != null) {
-                if (hint == null || hint.isAssignableFrom(type)) {
-                    return convert(value, type);
-                } else {
-                    throw new Exception("" + type + " " + hint);
-                }
-            } else if (hint != null) {
-                return convert(value, hint);
-            } else {
-                return value;
-            }
+            Class type = loadType(stringValue.getTypeName());
+            type = determineType(type, hint);
+            return convert(value, type);
         } else if (v instanceof ReferenceValue) {
             String componentName = ((ReferenceValue) v).getComponentName();
             return new ReferenceRecipe(componentName);
         } else if (v instanceof ListValue) {
             ListValue listValue = (ListValue) v;
-            Class type = getType(listValue.getValueType());
+            Class type = loadType(listValue.getValueType());
             CollectionRecipe cr = new CollectionRecipe(ArrayList.class);
             for (Value lv : (List<Value>) listValue.getList()) {
                 cr.add(getValue(lv, type));
@@ -143,7 +148,7 @@ public class Instanciator {
             return cr;
         } else if (v instanceof SetValue) {
             SetValue setValue = (SetValue) v;
-            Class type = getType(setValue.getValueType());
+            Class type = loadType(setValue.getValueType());
             CollectionRecipe cr = new CollectionRecipe(HashSet.class);
             for (Value lv : (Set<Value>) setValue.getSet()) {
                 cr.add(getValue(lv, type));
@@ -151,8 +156,8 @@ public class Instanciator {
             return cr;
         } else if (v instanceof MapValue) {
             MapValue mapValue = (MapValue) v;
-            Class keyType = getType(mapValue.getKeyType());
-            Class valueType = getType(mapValue.getValueType());            
+            Class keyType = loadType(mapValue.getKeyType());
+            Class valueType = loadType(mapValue.getValueType());            
             MapRecipe mr = new MapRecipe(HashMap.class);
             for (Map.Entry<Value,Value> entry : ((Map<Value,Value>) mapValue.getMap()).entrySet()) {
                 Object key = getValue(entry.getKey(), keyType);
@@ -162,10 +167,13 @@ public class Instanciator {
             return mr;
         } else if (v instanceof ArrayValue) {
             ArrayValue arrayValue = (ArrayValue) v;
-            Class type = getType(arrayValue.getValueType());
-            
-            // TODO
-            throw new IllegalStateException("Unsupported value: " + v.getClass().getName());
+            Class type = loadType(arrayValue.getValueType());
+            type = determineType(type, hint);
+            ArrayRecipe ar = new ArrayRecipe(type);
+            for (Value value : arrayValue.getArray()) {
+                ar.add(getValue(value, type));
+            }
+            return ar;
         } else if (v instanceof ComponentValue) {
             return createRecipe(((ComponentValue) v).getComponentMetadata());
         } else if (v instanceof PropertiesValue) {
@@ -177,19 +185,38 @@ public class Instanciator {
         }
     }
     
+    private Class determineType(Class type, Class hint) throws Exception {
+        if (type != null) {
+            if (hint == null || hint.isAssignableFrom(type)) {
+                return type;
+            } else {
+                throw new Exception(type.getName() + " cannot be assigned to " + hint.getName());
+            }
+        } else if (hint != null) {
+            return hint;
+        } else {
+            return Object.class;
+        }
+    }
+    
     protected Object convert(Object source, Class type) throws Exception {
         return moduleContext.getConversionService().convert(source, type);
     }
     
-    private Class getType(String typeName) throws ClassNotFoundException {
+    private Class loadType(String typeName) throws ClassNotFoundException {
         if (typeName == null) {
             return null;
         }
-        if (moduleContext == null) {
-            return Class.forName(typeName);            
-        } else {
-            return moduleContext.getBundleContext().getBundle().loadClass(typeName);
+
+        Class clazz = primitiveClasses.get(typeName);
+        if (clazz == null) {
+            if (moduleContext == null) {
+                clazz = Class.forName(typeName);            
+            } else {
+                clazz = moduleContext.getBundleContext().getBundle().loadClass(typeName);
+            }
         }
+        return clazz;
     }
     
     private class BundleObjectRecipe extends ObjectRecipe {
