@@ -177,7 +177,7 @@ public class Instanciator {
         }
     }
     
-    private Object convert(Object source, Class type) throws Exception {
+    protected Object convert(Object source, Class type) throws Exception {
         return moduleContext.getConversionService().convert(source, type);
     }
     

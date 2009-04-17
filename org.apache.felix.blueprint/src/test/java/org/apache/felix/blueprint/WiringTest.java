@@ -18,12 +18,15 @@
  */
 package org.apache.felix.blueprint;
 
+import java.math.BigInteger;
+import java.net.URI;
 import java.util.Arrays;
 
 import junit.framework.TestCase;
 
 import org.apache.felix.blueprint.context.Instanciator;
 import org.apache.felix.blueprint.context.Parser;
+import org.apache.felix.blueprint.convert.ConversionServiceImpl;
 import org.apache.felix.blueprint.pojos.PojoA;
 import org.apache.felix.blueprint.pojos.PojoB;
 import org.apache.xbean.recipe.ObjectGraph;
@@ -34,7 +37,7 @@ public class WiringTest extends TestCase {
     public void testWiring() throws Exception {
         Parser parser = parse("/test-wiring.xml");
 
-        Instanciator i = new Instanciator(null);
+        Instanciator i = new TestInstanciator();
         Repository repository = i.createRepository(parser.getRegistry());
         ObjectGraph graph = new ObjectGraph(repository);
         
@@ -54,6 +57,8 @@ public class WiringTest extends TestCase {
         assertNotNull(pojoa.getList());
         assertEquals("list value", pojoa.getList().get(0));
         assertEquals(pojob, pojoa.getList().get(1));
+        assertEquals(new Integer(55), pojoa.getList().get(2));
+        assertEquals(URI.create("http://geronimo.apache.org"), pojoa.getList().get(3));
         
         assertNotNull(pojoa.getSet());
         assertTrue(pojoa.getSet().contains("set value"));
@@ -61,7 +66,10 @@ public class WiringTest extends TestCase {
         
         assertNotNull(pojoa.getMap());
         assertEquals("val", pojoa.getMap().get("key"));
-        assertEquals(pojob, pojoa.getMap().get(pojob));        
+        assertEquals(pojob, pojoa.getMap().get(pojob));      
+        
+        assertNotNull(pojoa.getNumber());
+        assertEquals(new BigInteger("10"), pojoa.getNumber());
     }
 
     protected Parser parse(String name) throws Exception {
@@ -70,4 +78,17 @@ public class WiringTest extends TestCase {
         return parser;
     }
 
+    private static class TestInstanciator extends Instanciator {
+        ConversionServiceImpl conversionService = new ConversionServiceImpl();
+        
+        public TestInstanciator() {
+            super(null);
+        }
+        
+        @Override
+        public Object convert(Object source, Class type) throws Exception {
+            return conversionService.convert(source, type);
+        }
+        
+    }
 }

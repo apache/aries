@@ -28,6 +28,7 @@ public class PojoA implements InterfaceA {
     private List list;
     private Set set;
     private Map map;
+    private Number number;
 
     public PojoA() {
     }
@@ -68,6 +69,14 @@ public class PojoA implements InterfaceA {
         this.pojob = pojob;
     }
 
+    public void setNumber(Number number) {
+        this.number = number;
+    }
+    
+    public Number getNumber() {
+        return number;
+    }
+    
     public void start() {
         System.out.println("Starting component " + this);
     }
