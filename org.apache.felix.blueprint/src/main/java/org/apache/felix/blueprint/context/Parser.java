@@ -512,7 +512,7 @@ public class Parser {
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
             if (node instanceof Element) {
-                Value val = parseValue((Element) node, enclosingComponent);
+                Value val = parseValueElement((Element) node, enclosingComponent, true);
                 list.add(val);
             }
         }
@@ -528,7 +528,7 @@ public class Parser {
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
             if (node instanceof Element) {
-                Value val = parseValue((Element) node, enclosingComponent);
+                Value val = parseValueElement((Element) node, enclosingComponent, true);
                 set.add(val);
             }
         }
@@ -893,14 +893,10 @@ public class Parser {
                 Node node = nl.item(i);
                 if (node instanceof Element) {
                     Element e = (Element) node;
-                    if (isBlueprintNamespace(node.getNamespaceURI())) {
+                    if (isBlueprintNamespace(node.getNamespaceURI()) && nodeNameEquals(node, DESCRIPTION_ELEMENT)) {
                         // Ignore description elements
-                        if (!nodeNameEquals(node, DESCRIPTION_ELEMENT)) {
-                            return parseValueElement(e, enclosingComponent, true);
-                        }
                     } else {
-                        ComponentMetadata innerComponent = parseCustomElement(e, enclosingComponent);
-                        return new ComponentValueImpl(innerComponent);
+                        return parseValueElement(e, enclosingComponent, true);
                     }
                 }
             }
@@ -909,41 +905,46 @@ public class Parser {
     }
 
     private Value parseValueElement(Element element, ComponentMetadata enclosingComponent, boolean allowNull) {
-        if (nodeNameEquals(element, COMPONENT_ELEMENT)) {
-            LocalComponentMetadata inner = parseComponentMetadata(element);
-            return new ComponentValueImpl(inner);
-        } else if (nodeNameEquals(element, NULL_ELEMENT) && allowNull) {
-            return NullValue.NULL;
-        } else if (nodeNameEquals(element, VALUE_ELEMENT)) {
-            String type = null;
-            if (element.hasAttribute(TYPE_ATTRIBUTE)) {
-                type = element.getAttribute(TYPE_ATTRIBUTE);
+        if (isBlueprintNamespace(element.getNamespaceURI())) {
+            if (nodeNameEquals(element, COMPONENT_ELEMENT)) {
+                LocalComponentMetadata inner = parseComponentMetadata(element);
+                return new ComponentValueImpl(inner);
+            } else if (nodeNameEquals(element, NULL_ELEMENT) && allowNull) {
+                return NullValue.NULL;
+            } else if (nodeNameEquals(element, VALUE_ELEMENT)) {
+                String type = null;
+                if (element.hasAttribute(TYPE_ATTRIBUTE)) {
+                    type = element.getAttribute(TYPE_ATTRIBUTE);
+                }
+                return new TypedStringValueImpl(getTextValue(element), type);
+            } else if (nodeNameEquals(element, REF_ELEMENT)) {
+                String component = element.getAttribute(COMPONENT_ATTRIBUTE);
+                if (component == null || component.length() == 0) {
+                    throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ATTRIBUTE + " attribute");
+                }
+                return new ReferenceValueImpl(component);
+            } else if (nodeNameEquals(element, IDREF_ELEMENT)) {
+                String component = element.getAttribute(COMPONENT_ATTRIBUTE);
+                if (component == null || component.length() == 0) {
+                    throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ATTRIBUTE + " attribute");
+                }
+                return new ReferenceValueImpl(component);
+            } else if (nodeNameEquals(element, LIST_ELEMENT)) {
+                return parseList(element, enclosingComponent);
+            } else if (nodeNameEquals(element, SET_ELEMENT)) {
+                return parseSet(element, enclosingComponent);
+            } else if (nodeNameEquals(element, MAP_ELEMENT)) {
+                return parseMap(element, enclosingComponent);
+            } else if (nodeNameEquals(element, PROPS_ELEMENT)) {
+                return parseProps(element);
+            } else if (nodeNameEquals(element, ARRAY_ELEMENT)) {
+                return parseArray(element, enclosingComponent);
+            } else {
+                throw new ComponentDefinitionException("Unknown blueprint element " + element.getNodeName());
             }
-            return new TypedStringValueImpl(getTextValue(element), type);
-        } else if (nodeNameEquals(element, REF_ELEMENT)) {
-            String component = element.getAttribute(COMPONENT_ATTRIBUTE);
-            if (component == null || component.length() == 0) {
-                throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ATTRIBUTE + " attribute");
-            }
-            return new ReferenceValueImpl(component);
-        } else if (nodeNameEquals(element, IDREF_ELEMENT)) {
-            String component = element.getAttribute(COMPONENT_ATTRIBUTE);
-            if (component == null || component.length() == 0) {
-                throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ATTRIBUTE + " attribute");
-            }
-            return new ReferenceValueImpl(component);
-        } else if (nodeNameEquals(element, LIST_ELEMENT)) {
-            return parseList(element, enclosingComponent);
-        } else if (nodeNameEquals(element, SET_ELEMENT)) {
-            return parseSet(element, enclosingComponent);
-        } else if (nodeNameEquals(element, MAP_ELEMENT)) {
-            return parseMap(element, enclosingComponent);
-        } else if (nodeNameEquals(element, PROPS_ELEMENT)) {
-            return parseProps(element);
-        } else if (nodeNameEquals(element, ARRAY_ELEMENT)) {
-            return parseArray(element, enclosingComponent);
         } else {
-            throw new ComponentDefinitionException("Unknown element " + element.getNodeName());
+            ComponentMetadata innerComponent = parseCustomElement(element, enclosingComponent);
+            return new ComponentValueImpl(innerComponent);
         }
     }
 

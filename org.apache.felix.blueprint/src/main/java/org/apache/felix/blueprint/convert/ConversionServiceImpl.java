@@ -72,6 +72,9 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     private Object convertDefault(Object fromValue, Class toType) throws Exception {
+        if (!(fromValue instanceof String)) {
+            throw new RuntimeException("Unable to convert non-String value: " + fromValue.getClass());
+        }
         String value = (String)fromValue;
         if (Locale.class == toType) {
             String[] tokens = value.split("_");

@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 import org.apache.felix.blueprint.context.Instanciator;
 import org.apache.felix.blueprint.context.Parser;
 import org.apache.felix.blueprint.pojos.PojoA;
+import org.apache.felix.blueprint.pojos.PojoB;
 import org.apache.xbean.recipe.ObjectGraph;
 import org.apache.xbean.recipe.Repository;
 
@@ -36,12 +37,31 @@ public class WiringTest extends TestCase {
         Instanciator i = new Instanciator(null);
         Repository repository = i.createRepository(parser.getRegistry());
         ObjectGraph graph = new ObjectGraph(repository);
-        Object obj = graph.create("pojoA");
-        assertNotNull(obj);
-        assertTrue(obj instanceof PojoA);
-        PojoA pojoa = (PojoA) obj;
+        
+        Object obj1 = graph.create("pojoA");
+        assertNotNull(obj1);
+        assertTrue(obj1 instanceof PojoA);
+        PojoA pojoa = (PojoA) obj1;
+        
+        Object obj2 = graph.create("pojoB");
+        assertNotNull(obj2);
+        assertTrue(obj2 instanceof PojoB);
+        PojoB pojob = (PojoB) obj2;
+        
         assertNotNull(pojoa.getPojob());
         assertNotNull(pojoa.getPojob().getUri());
+        
+        assertNotNull(pojoa.getList());
+        assertEquals("list value", pojoa.getList().get(0));
+        assertEquals(pojob, pojoa.getList().get(1));
+        
+        assertNotNull(pojoa.getSet());
+        assertTrue(pojoa.getSet().contains("set value"));
+        assertTrue(pojoa.getSet().contains(pojob));
+        
+        assertNotNull(pojoa.getMap());
+        assertEquals("val", pojoa.getMap().get("key"));
+        assertEquals(pojob, pojoa.getMap().get(pojob));        
     }
 
     protected Parser parse(String name) throws Exception {
