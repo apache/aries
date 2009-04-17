@@ -4,6 +4,12 @@
             xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 ../../main/resources/org/apache/felix/blueprint/blueprint.xsd"
             default-availability="mandatory">
 
+    <type-converters>
+            <component id="converter1" class="org.apache.felix.blueprint.convert.TestConverter">
+                <property name="bundle" ref="bundle" />
+            </component>
+    </type-converters>
+    
     <component id="pojoB" class="org.apache.felix.blueprint.pojos.PojoB">
         <property name="uri" value="urn:myuri" />
     </component>

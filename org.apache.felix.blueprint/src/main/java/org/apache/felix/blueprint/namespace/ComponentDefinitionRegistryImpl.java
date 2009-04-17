@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.namespace.ComponentNameAlreadyInUseException;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.ComponentValue;
+import org.osgi.service.blueprint.reflect.ReferenceValue;
 import org.osgi.service.blueprint.reflect.Value;
 
 /**
@@ -72,6 +74,26 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
 
     public void registerTypeConverter(Value typeConverter) {
         typeConverters.add(typeConverter);
+    }
+    
+    public List<Value> getTypeConverters() {
+        return Collections.unmodifiableList(typeConverters);
+    }
+    
+    public List<String> getTypeConverterNames() {
+        List<String> names = new ArrayList<String>();
+        for (Value value : typeConverters) {
+            if (value instanceof ComponentValue) {
+                ComponentValue componentValue = (ComponentValue) value;
+                names.add(componentValue.getComponentMetadata().getName());
+            } else if (value instanceof ReferenceValue) {
+                ReferenceValue referenceValue = (ReferenceValue) value;
+                names.add(referenceValue.getComponentName());
+            } else {
+                throw new RuntimeException("Unexpected converter type: " + value);
+            }
+        }
+        return names;
     }
 
 }
