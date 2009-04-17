@@ -27,6 +27,7 @@ import java.util.Set;
 import java.net.URL;
 
 import org.apache.felix.blueprint.HeaderParser.PathElement;
+import org.apache.felix.blueprint.convert.ConversionServiceImpl;
 import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.felix.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.felix.blueprint.BlueprintConstants;
@@ -40,6 +41,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.blueprint.context.ModuleContext;
 import org.osgi.service.blueprint.context.NoSuchComponentException;
+import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
 import org.osgi.service.blueprint.reflect.ServiceExportComponentMetadata;
@@ -58,12 +60,14 @@ public class ModuleContextImpl implements ModuleContext {
     private final NamespaceHandlerRegistry handlers;
     private final List<URL> urls;
     private ComponentDefinitionRegistryImpl componentDefinitionRegistry;
+    private ConversionService conversionService;
 
     public ModuleContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, List<URL> urls) {
         this.bundleContext = bundleContext;
         this.sender = sender;
         this.handlers = handlers;
         this.urls = urls;
+        this.conversionService = new ConversionServiceImpl();
     }
 
     private void checkDirectives() {
@@ -92,7 +96,7 @@ public class ModuleContextImpl implements ModuleContext {
             parser.setNamespaceHandlerRegistry(handlers);
             parser.parse(urls);
             componentDefinitionRegistry = parser.getRegistry();
-            Instanciator i = new Instanciator(bundleContext.getBundle());
+            Instanciator i = new Instanciator(this);
             Repository repository = i.createRepository(componentDefinitionRegistry);
             ObjectGraph graph = new ObjectGraph(repository);
             System.out.println(graph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames())));                    
@@ -150,6 +154,10 @@ public class ModuleContextImpl implements ModuleContext {
 
     }
 
+    public ConversionService getConversionService() {
+        return conversionService;
+    }
+    
     public BundleContext getBundleContext() {
         return bundleContext;
     }

@@ -16,9 +16,17 @@
                 <entry key-ref="pojoB" value-ref="pojoB" />
             </map>
         </property>
+        <property name="set">
+            <set>
+                <value>set value</value>
+                <ref component="pojoB" />
+            </set>
+        </property>
         <property name="list">
-            <value>val</value>
-            <ref component="pojoB" />
+            <list>
+                <value>list value</value>
+                <ref component="pojoB" />
+            </list>
         </property>
     </component>
 

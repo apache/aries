@@ -72,4 +72,7 @@ public class ParameterSpecificationImpl implements ParameterSpecification {
         this.index = index;
     }
 
+    public String toString() {
+        return index + " " + value + " " + typeName;
+    }
 }

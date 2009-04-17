@@ -55,7 +55,11 @@ public class ConstructorInjectionMetadataImpl implements ConstructorInjectionMet
     }
     
     public List<ParameterSpecification> getParameterSpecifications() {
-        return Collections.unmodifiableList(parameterSpecifications);
+        if (parameterSpecifications == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(parameterSpecifications);
+        }
     }
 
     public void addParameterSpecification(ParameterSpecification parameterSpecification) {
