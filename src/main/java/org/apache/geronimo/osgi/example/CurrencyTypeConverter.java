@@ -17,19 +17,17 @@
 package org.apache.geronimo.osgi.example;
 
 import java.util.Currency;
-import java.util.Date;
 
-public class Foo {
-    
-    private int a;
-    private int b;
-    private Bar bar;
-    private Currency currency;
-    private Date date;
+import org.osgi.service.blueprint.convert.Converter;
 
-    public String toString() {
-        return a + " " + b + " " + bar + " " + currency + " " + date;
+public class CurrencyTypeConverter implements Converter {
+
+    public Object convert(Object source) throws Exception {
+        return Currency.getInstance(source.toString());
     }
 
+    public Class getTargetClass() {
+        return Currency.class;
+    }
+    
 }
-

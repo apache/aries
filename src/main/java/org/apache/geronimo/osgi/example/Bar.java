@@ -16,13 +16,18 @@
  */
 package org.apache.geronimo.osgi.example;
 
+import java.util.List;
+
+import org.osgi.framework.BundleContext;
+
 public class Bar {
     
+    private BundleContext context;
     private String value;
+    private List list;
     
     public String toString() {
-        return hashCode() + ": " + value;
+        return hashCode() + ": " + value + " " + context + " " + list;
     }
 
 }
-
