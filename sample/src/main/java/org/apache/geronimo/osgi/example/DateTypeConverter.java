@@ -16,20 +16,26 @@
  */
 package org.apache.geronimo.osgi.example;
 
-import java.util.Currency;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Foo {
-    
-    private int a;
-    private int b;
-    private Bar bar;
-    private Currency currency;
-    private Date date;
+import org.osgi.service.blueprint.convert.Converter;
 
-    public String toString() {
-        return a + " " + b + " " + bar + " " + currency + " " + date;
+public class DateTypeConverter implements Converter {
+
+    DateFormat dateFormat;
+    
+    public void setFormat(String format) {
+        dateFormat = new SimpleDateFormat(format);
+    }
+    
+    public Object convert(Object source) throws Exception {
+        return dateFormat.parse(source.toString());
     }
 
+    public Class getTargetClass() {
+        return Date.class;
+    }
+    
 }
-

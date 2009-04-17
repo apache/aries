@@ -2,15 +2,37 @@
 
 <components xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
+    <type-converters>
+            <component id="converter1" class="org.apache.geronimo.osgi.example.DateTypeConverter">
+                <property name="format" value="yyyy.MM.dd"/>
+            </component>
+            <ref component="converter2"/>
+    </type-converters>
+
     <component id="foo" class="org.apache.geronimo.osgi.example.Foo">
         <property name="a" value="5" />
         <property name="b" value="10" />
         <property name="bar" ref="bar" />
+        <property name="currency">
+              <value type="java.util.Currency">PLN</value>
+        </property>
+        <property name="date">
+              <value type="java.util.Date">2009.04.17</value>
+        </property>
     </component>
 
     <component id="bar" class="org.apache.geronimo.osgi.example.Bar">
         <property name="value"><value>Hello FooBar</value></property>
+        <property name="context" ref="bundleContext"/>
+        <property name="list">
+            <list>
+                <value>a list element followed by a reference</value>
+                <value type = "java.lang.Integer">5</value>
+            </list>        
+        </property>
     </component>
 
+    <component id="converter2" class="org.apache.geronimo.osgi.example.CurrencyTypeConverter"/>
+    
 </components>
 
