@@ -26,7 +26,12 @@
             <list>
                 <value>list value</value>
                 <ref component="pojoB" />
+                <value type="java.lang.Integer">55</value>
+                <value type="java.net.URI">http://geronimo.apache.org</value>
             </list>
+        </property>
+        <property name="number">
+            <value type="java.math.BigInteger">10</value>
         </property>
     </component>
 
