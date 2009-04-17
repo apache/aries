@@ -29,6 +29,10 @@ public class PojoA implements InterfaceA {
     private Set set;
     private Map map;
     private Number number;
+    
+    private Object[] array;
+    private int[] intArray;
+    private Number[] numberArray;
 
     public PojoA() {
     }
@@ -75,6 +79,30 @@ public class PojoA implements InterfaceA {
     
     public Number getNumber() {
         return number;
+    }
+    
+    public void setArray(Object[] array) {
+        this.array = array;
+    }
+    
+    public Object[] getArray() {
+        return array;
+    }
+    
+    public int[] getIntArray() {
+        return intArray;
+    }
+    
+    public void setIntArray(int[] array) {
+        intArray = array;
+    }
+    
+    public Number[] getNumberArray() {
+        return numberArray;
+    }
+    
+    public void setNumberArray(Number[] numberArray) {
+        this.numberArray = numberArray;
     }
     
     public void start() {
