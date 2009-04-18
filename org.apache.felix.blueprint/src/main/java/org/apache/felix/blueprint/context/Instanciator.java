@@ -18,42 +18,40 @@
  */
 package org.apache.felix.blueprint.context;
 
-import java.lang.reflect.Type;
-import java.util.Set;
-import java.util.Collection;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.xbean.recipe.AbstractRecipe;
 import org.apache.xbean.recipe.ArrayRecipe;
-import org.apache.xbean.recipe.Option;
-import org.apache.xbean.recipe.Repository;
-import org.apache.xbean.recipe.DefaultRepository;
-import org.apache.xbean.recipe.ObjectRecipe;
 import org.apache.xbean.recipe.CollectionRecipe;
-import org.apache.xbean.recipe.MapRecipe;
 import org.apache.xbean.recipe.ConstructionException;
-import org.apache.xbean.recipe.ReferenceRecipe;
+import org.apache.xbean.recipe.DefaultRepository;
+import org.apache.xbean.recipe.MapRecipe;
+import org.apache.xbean.recipe.ObjectRecipe;
+import org.apache.xbean.recipe.Option;
 import org.apache.xbean.recipe.Recipe;
-import org.osgi.framework.Bundle;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
-import org.osgi.service.blueprint.reflect.PropertyInjectionMetadata;
-import org.osgi.service.blueprint.reflect.Value;
-import org.osgi.service.blueprint.reflect.NullValue;
-import org.osgi.service.blueprint.reflect.TypedStringValue;
-import org.osgi.service.blueprint.reflect.ReferenceValue;
-import org.osgi.service.blueprint.reflect.ListValue;
-import org.osgi.service.blueprint.reflect.SetValue;
-import org.osgi.service.blueprint.reflect.MapValue;
-import org.osgi.service.blueprint.reflect.ComponentValue;
+import org.apache.xbean.recipe.ReferenceRecipe;
+import org.apache.xbean.recipe.Repository;
+import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.reflect.ArrayValue;
-import org.osgi.service.blueprint.reflect.ReferenceNameValue;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.ComponentValue;
+import org.osgi.service.blueprint.reflect.ListValue;
+import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
+import org.osgi.service.blueprint.reflect.MapValue;
+import org.osgi.service.blueprint.reflect.NullValue;
 import org.osgi.service.blueprint.reflect.PropertiesValue;
+import org.osgi.service.blueprint.reflect.PropertyInjectionMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceNameValue;
+import org.osgi.service.blueprint.reflect.ReferenceValue;
+import org.osgi.service.blueprint.reflect.SetValue;
+import org.osgi.service.blueprint.reflect.TypedStringValue;
+import org.osgi.service.blueprint.reflect.Value;
 
 /**
  * TODO: javadoc
@@ -124,7 +122,6 @@ public class Instanciator {
             recipe.allow(Option.PRIVATE_PROPERTIES);
             recipe.setName(component.getName());
             for (PropertyInjectionMetadata property : (Collection<PropertyInjectionMetadata>) local.getPropertyInjectionMetadata()) {
-                // TODO: must pass the expected property type
                 Object value = getValue(property.getValue(), null);
                 recipe.setProperty(property.getName(), value);
             }
@@ -142,14 +139,14 @@ public class Instanciator {
         }
     }
 
-    private Object getValue(Value v, Class hint) throws Exception {
+    private Object getValue(Value v, Class groupingType) throws Exception {
         if (v instanceof NullValue) {
             return null;
         } else if (v instanceof TypedStringValue) {
             TypedStringValue stringValue = (TypedStringValue) v; 
             String value = stringValue.getStringValue();
             Class type = loadType(stringValue.getTypeName());
-            return new ValueRecipe(value, type, hint);
+            return new ValueRecipe(getConversionService(), value, type, groupingType);
         } else if (v instanceof ReferenceValue) {
             String componentName = ((ReferenceValue) v).getComponentName();
             return new ReferenceRecipe(componentName);
@@ -183,8 +180,7 @@ public class Instanciator {
         } else if (v instanceof ArrayValue) {
             ArrayValue arrayValue = (ArrayValue) v;
             Class type = loadType(arrayValue.getValueType());
-            type = determineType(type, hint);
-            ArrayRecipe ar = new ArrayRecipe(type);
+            ArrayRecipe ar = (type == null) ? new ArrayRecipe() : new ArrayRecipe(type);
             for (Value value : arrayValue.getArray()) {
                 ar.add(getValue(value, type));
             }
@@ -200,22 +196,8 @@ public class Instanciator {
         }
     }
     
-    private static Class determineType(Class type, Class hint) throws RuntimeException {
-        if (type != null) {
-            if (hint == null || hint.isAssignableFrom(type)) {
-                return type;
-            } else {
-                throw new RuntimeException(type.getName() + " cannot be assigned to " + hint.getName());
-            }
-        } else if (hint != null) {
-            return hint;
-        } else {
-            return Object.class;
-        }
-    }
-    
-    protected Object convert(Object source, Class type) throws Exception {
-        return moduleContext.getConversionService().convert(source, type);
+    protected ConversionService getConversionService() {
+        return moduleContext.getConversionService();
     }
     
     private Class loadType(String typeName) throws ClassNotFoundException {
@@ -255,34 +237,5 @@ public class Instanciator {
             }
         }
     }
-    
-    private class ValueRecipe extends AbstractRecipe {
-
-        private String value;
-        private Class type;
-        private Class hint;
-
-        private ValueRecipe(String value, Class type, Class hint) {
-            this.value = value;
-            this.type = type;
-            this.hint = hint;
-        }
-        
-        @Override
-        protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
-            Class myType = determineType(type, hint);
-            //System.out.println("create: " + expectedType + " " + type + " " + hint + " " + myType);
-            try {
-                return convert(value, myType);
-            } catch (Exception e) {
-                throw new ConstructionException(e);
-            }
-        }
-
-        public boolean canCreate(Type expectedType) {
-            return true;
-        }
-        
-    }
-
+            
 }
