@@ -36,7 +36,13 @@
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.blueprint</artifactId>
+            <artifactId>blueprint-bundle</artifactId>
+            <version>${pom.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>sample</artifactId>
             <version>${pom.version}</version>
             <scope>test</scope>
         </dependency>

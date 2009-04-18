@@ -18,11 +18,20 @@
  */
 package org.apache.felix.blueprint.itests;
 
+import java.net.URLDecoder;
+
 import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
+import org.osgi.framework.Bundle;
+import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 
 public class Test extends AbstractIntegrationTest {
 
     public void test() throws Exception {
+        Resource res = locateBundle(getBundle("org.apache.felix", "sample"));
+        Bundle bundle = installBundle(res);
+        assertNotNull(bundle);
+        bundle.start();
     }
 
     /**
@@ -53,10 +62,27 @@ public class Test extends AbstractIntegrationTest {
 	 */
 	protected String[] getTestBundlesNames() {
         return new String[] {
-                getBundle("org.apache.xbean", "xbean-reflect"),
-                getBundle("org.apache.felix", "blueprint-api"),
-                getBundle("org.apache.felix", "org.apache.felix.blueprint"),
+                getBundle("org.apache.felix", "blueprint-bundle"),
 		};
 	}
+
+    private Bundle installBundle(Resource location) throws Exception {
+        Assert.notNull(bundleContext);
+        Assert.notNull(location);
+        if (logger.isDebugEnabled())
+            logger.debug("Installing bundle from location " + location.getDescription());
+
+        String bundleLocation;
+
+        try {
+            bundleLocation = URLDecoder.decode(location.getURL().toExternalForm(), "UTF-8");
+        }
+        catch (Exception ex) {
+            // the URL cannot be created, fall back to the description
+            bundleLocation = location.getDescription();
+        }
+
+        return bundleContext.installBundle(bundleLocation, location.getInputStream());
+    }
 
 }
