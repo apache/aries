@@ -25,8 +25,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.lang.reflect.Type;
 
 import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.felix.blueprint.reflect.ServiceExportComponentMetadataImpl;
 import org.apache.xbean.recipe.ArrayRecipe;
 import org.apache.xbean.recipe.CollectionRecipe;
 import org.apache.xbean.recipe.ConstructionException;
@@ -37,6 +41,8 @@ import org.apache.xbean.recipe.Option;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.ReferenceRecipe;
 import org.apache.xbean.recipe.Repository;
+import org.apache.xbean.recipe.AbstractRecipe;
+import org.apache.xbean.recipe.RecipeHelper;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.reflect.ArrayValue;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -52,7 +58,11 @@ import org.osgi.service.blueprint.reflect.ReferenceValue;
 import org.osgi.service.blueprint.reflect.SetValue;
 import org.osgi.service.blueprint.reflect.TypedStringValue;
 import org.osgi.service.blueprint.reflect.Value;
+import org.osgi.service.blueprint.reflect.ServiceExportComponentMetadata;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 
 /**
  * TODO: javadoc
@@ -133,6 +143,10 @@ public class Instanciator {
             // TODO: scope
             // TODO: factory-method
             // TODO: factory-component
+            return recipe;
+        } else if (component instanceof ServiceExportComponentMetadata) {
+            ExportedServiceRecipe recipe = new ExportedServiceRecipe((ServiceExportComponentMetadata) component);
+            recipe.setName(component.getName());
             return recipe;
         } else {
             // TODO
@@ -237,6 +251,81 @@ public class Instanciator {
                 throw new ConstructionException("Type class could not be found: " + typeName);
             }
         }
+    }
+
+    /**
+     * TODO: section 5.4.1.5 : expose a proxy to the ServiceRegistration
+     */
+    private class ExportedServiceRecipe extends AbstractRecipe {
+
+        private final ServiceExportComponentMetadata metadata;
+        private ServiceRegistration serviceRegistration;
+
+        public ExportedServiceRecipe(ServiceExportComponentMetadata metadata) {
+            this.metadata = metadata;
+        }
+
+        public boolean canCreate(Type type) {
+            return true;
+        }
+
+        protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
+            // TODO: metadata.getRegistrationListeners()
+            try {
+                Object service = getValue(metadata.getExportedComponent(),  null);
+                service = RecipeHelper.convert(Object.class, service, false);
+                Set<String> classes;
+                switch (metadata.getAutoExportMode()) {
+                    case ServiceExportComponentMetadata.EXPORT_MODE_INTERFACES:
+                        classes = getImplementedInterfaces(new HashSet<String>(), service.getClass());
+                        break;
+                    case ServiceExportComponentMetadata.EXPORT_MODE_CLASS_HIERARCHY:
+                        classes = getSuperClasses(new HashSet<String>(), service.getClass());
+                        break;
+                    case ServiceExportComponentMetadata.EXPORT_MODE_ALL:
+                        classes = getSuperClasses(new HashSet<String>(), service.getClass());
+                        classes = getImplementedInterfaces(classes, service.getClass());
+                        break;
+                    default:
+                        classes = metadata.getInterfaceNames();
+                        break;
+                }
+                Map map = metadata.getServiceProperties();
+                if (map == null && metadata instanceof ServiceExportComponentMetadataImpl) {
+                    Object val = getValue(((ServiceExportComponentMetadataImpl) metadata).getServicePropertiesValue(), null);
+                    map = (Map) RecipeHelper.convert(Map.class, val, false); 
+                }
+                if (map == null) {
+                    map = new HashMap();
+                }
+                map.put(Constants.SERVICE_RANKING, metadata.getRanking());
+                String[] classesArray = classes.toArray(new String[classes.size()]);
+                serviceRegistration = moduleContext.getBundleContext().registerService(classesArray, service, new Hashtable(map));
+                return serviceRegistration;
+            } catch (Exception e) {
+                throw new ConstructionException(e);
+            }
+        }
+
+        private Set<String> getImplementedInterfaces(Set<String> classes, Class clazz) {
+            if (clazz != null && clazz != Object.class) {
+                for (Class itf : clazz.getInterfaces()) {
+                    classes.add(itf.getName());
+                    getImplementedInterfaces(classes, itf);
+                }
+                getImplementedInterfaces(classes, clazz.getSuperclass());
+            }
+            return classes;
+        }
+
+        private Set<String> getSuperClasses(Set<String> classes, Class clazz) {
+            if (clazz != null && clazz != Object.class) {
+                classes.add(clazz.getName());
+                getSuperClasses(classes, clazz.getSuperclass());
+            }
+            return classes;
+        }
+
     }
             
 }
