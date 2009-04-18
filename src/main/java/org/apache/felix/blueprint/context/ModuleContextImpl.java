@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Properties;
 
 import org.apache.felix.blueprint.BlueprintConstants;
 import org.apache.felix.blueprint.HeaderParser;
@@ -40,6 +41,7 @@ import org.apache.xbean.recipe.Repository;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.context.ModuleContext;
 import org.osgi.service.blueprint.context.NoSuchComponentException;
 import org.osgi.service.blueprint.convert.ConversionService;
@@ -66,6 +68,7 @@ public class ModuleContextImpl implements ModuleContext {
     private final List<URL> urls;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
     private final ConversionServiceImpl conversionService;
+    private ServiceRegistration registration;
 
     public ModuleContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, List<URL> urls) {
         this.bundleContext = bundleContext;
@@ -107,7 +110,13 @@ public class ModuleContextImpl implements ModuleContext {
             registerTypeConverters(graph);
             
             System.out.println(graph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames())));
-                        
+
+            // Register the ModuleContext in the OSGi registry
+            Properties props = new Properties();
+            props.put("osgi.blueprint.context.symbolicname", bundleContext.getBundle().getSymbolicName());
+            props.put("osgi.blueprint.context.version", bundleContext.getBundle().getHeaders().get(Constants.BUNDLE_VERSION));
+            registration = bundleContext.registerService(ModuleContext.class.getName(), this, props);
+
             sender.sendCreated(this);
         } catch (WaitForDependencyException e) {
             sender.sendWaiting(this, e.getServiceObjectClass(), e.getServiceFilter());
@@ -186,6 +195,9 @@ public class ModuleContextImpl implements ModuleContext {
     }
 
     public void destroy() {
+        if (registration != null) {
+            registration.unregister();
+        }
         sender.sendDestroying(this);
         System.out.println("Module context destroyed: " + this.bundleContext);
         // TODO: destroy all instances
