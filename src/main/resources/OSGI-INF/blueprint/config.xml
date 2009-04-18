@@ -14,10 +14,10 @@
         <property name="b" value="10" />
         <property name="bar" ref="bar" />
         <property name="currency">
-              <value type="java.util.Currency">PLN</value>
+              <value>PLN</value>
         </property>
         <property name="date">
-              <value type="java.util.Date">2009.04.17</value>
+              <value>2009.04.17</value>
         </property>
     </component>
 
@@ -26,7 +26,7 @@
         <property name="context" ref="bundleContext"/>
         <property name="list">
             <list>
-                <value>a list element followed by a reference</value>
+                <value>a list element</value>
                 <value type = "java.lang.Integer">5</value>
             </list>        
         </property>
