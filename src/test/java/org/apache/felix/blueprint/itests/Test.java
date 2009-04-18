@@ -54,6 +54,7 @@ public class Test extends AbstractIntegrationTest {
 	protected String[] getTestBundlesNames() {
         return new String[] {
                 getBundle("org.apache.xbean", "xbean-reflect"),
+                getBundle("org.apache.felix", "blueprint-api"),
                 getBundle("org.apache.felix", "org.apache.felix.blueprint"),
 		};
 	}
