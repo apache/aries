@@ -59,6 +59,8 @@ import org.osgi.service.blueprint.reflect.SetValue;
 import org.osgi.service.blueprint.reflect.TypedStringValue;
 import org.osgi.service.blueprint.reflect.Value;
 import org.osgi.service.blueprint.reflect.ServiceExportComponentMetadata;
+import org.osgi.service.blueprint.reflect.UnaryServiceReferenceComponentMetadata;
+import org.osgi.service.blueprint.reflect.CollectionBasedServiceReferenceComponentMetadata;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.BundleContext;
@@ -66,6 +68,8 @@ import org.osgi.framework.Constants;
 
 /**
  * TODO: javadoc
+ *
+ * TODO: compound property names
  *
  * @author <a href="mailto:dev@felix.apache.org">Apache Felix Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
@@ -148,9 +152,14 @@ public class Instanciator {
             ExportedServiceRecipe recipe = new ExportedServiceRecipe((ServiceExportComponentMetadata) component);
             recipe.setName(component.getName());
             return recipe;
-        } else {
+        } else if (component instanceof UnaryServiceReferenceComponentMetadata) {
             // TODO
-            throw new IllegalStateException("Unsupported component " + component.getClass());
+            throw new IllegalStateException("Unsupported component type " + component.getClass());
+        } else if (component instanceof CollectionBasedServiceReferenceComponentMetadata) {
+            // TODO
+            throw new IllegalStateException("Unsupported component type " + component.getClass());
+        } else {
+            throw new IllegalStateException("Unsupported component type " + component.getClass());
         }
     }
 
@@ -232,9 +241,9 @@ public class Instanciator {
     }
     
     private class BundleObjectRecipe extends ObjectRecipe {
-        
+
         String typeName;
-        
+
         public BundleObjectRecipe(String typeName) {
             super(typeName);
             this.typeName = typeName;
@@ -255,6 +264,7 @@ public class Instanciator {
 
     /**
      * TODO: section 5.4.1.5 : expose a proxy to the ServiceRegistration
+     * TODO: destruction should unregister the service
      */
     private class ExportedServiceRecipe extends AbstractRecipe {
 
@@ -272,6 +282,7 @@ public class Instanciator {
         protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
             // TODO: metadata.getRegistrationListeners()
             try {
+                // TODO: if the exported component as a scope='bundle' we should create a ServiceFactory to honor that
                 Object service = getValue(metadata.getExportedComponent(),  null);
                 service = RecipeHelper.convert(Object.class, service, false);
                 Set<String> classes;
