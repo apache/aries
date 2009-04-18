@@ -31,6 +31,7 @@ import org.apache.felix.blueprint.pojos.PojoA;
 import org.apache.felix.blueprint.pojos.PojoB;
 import org.apache.xbean.recipe.ObjectGraph;
 import org.apache.xbean.recipe.Repository;
+import org.osgi.service.blueprint.convert.ConversionService;
 
 public class WiringTest extends TestCase {
 
@@ -104,8 +105,8 @@ public class WiringTest extends TestCase {
         }
         
         @Override
-        public Object convert(Object source, Class type) throws Exception {
-            return conversionService.convert(source, type);
+        public ConversionService getConversionService() {
+            return conversionService;
         }
         
     }

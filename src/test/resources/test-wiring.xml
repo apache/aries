@@ -45,14 +45,14 @@
             </array>
         </property>
         <property name="intArray">
-            <array value-type="int">
+            <array>
                 <value>1</value>
                 <value>50</value>
                 <value>100</value>
             </array>
         </property>
         <property name="numberArray">
-            <array value-type="java.lang.Number">
+            <array>
                 <value type="java.lang.Integer">1</value>
                 <value type="java.math.BigInteger">50</value>
                 <value type="java.lang.Long">100</value>
