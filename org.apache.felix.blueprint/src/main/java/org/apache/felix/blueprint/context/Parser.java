@@ -166,8 +166,8 @@ public class Parser {
 
     public static final String AUTO_EXPORT_DISABLED = "disabled";
     public static final String AUTO_EXPORT_INTERFACES = "interfaces";
-    public static final String AUTO_EXPORT_CLASS_HIERARCHY = "class-hierachy";
-    public static final String AUTO_EXPORT_ALL = "all";
+    public static final String AUTO_EXPORT_CLASS_HIERARCHY = "class-hierarchy";
+    public static final String AUTO_EXPORT_ALL = "all-classes";
     public static final String AUTO_EXPORT_DEFAULT = AUTO_EXPORT_DISABLED;
     public static final String RANKING_DEFAULT = "0";
     public static final String AVAILABILITY_MANDATORY = "mandatory";
@@ -445,7 +445,7 @@ public class Parser {
         } else if (AUTO_EXPORT_ALL.equals(autoExport)) {
             service.setAutoExportMode(ServiceExportComponentMetadata.EXPORT_MODE_ALL);
         } else {
-            throw new ComponentDefinitionException("Illegal value for " + AUTO_EXPORT_ATTRIBUTE + " attribute");
+            throw new ComponentDefinitionException("Illegal value (" + autoExport + ") for " + AUTO_EXPORT_ATTRIBUTE + " attribute");
         }
         String ranking = element.hasAttribute(RANKING_ATTRIBUTE) ? element.getAttribute(RANKING_ATTRIBUTE) : RANKING_DEFAULT;
         try {

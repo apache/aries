@@ -39,14 +39,18 @@ public class Test extends AbstractIntegrationTest {
         ModuleContext moduleContext = getOsgiService(ModuleContext.class, 5000);
         assertNotNull(moduleContext);
 
-        Object obj = moduleContext.getComponent("foo");
-        assertNotNull(obj);
-        assertEquals(Foo.class, obj.getClass());
-        obj = moduleContext.getComponent("bar");
+        Object obj = moduleContext.getComponent("bar");
         assertNotNull(obj);
         assertEquals(Bar.class, obj.getClass());
+        obj = moduleContext.getComponent("foo");
+        assertNotNull(obj);
+        assertEquals(Foo.class, obj.getClass());
 
         // TODO: components properties
+
+        Foo foo = getOsgiService(Foo.class, 5000);
+        assertNotNull(foo);
+        assertSame(foo, obj);
 
         bundle.stop();
         try {

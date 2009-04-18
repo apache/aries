@@ -33,6 +33,12 @@
     </component>
 
     <component id="converter2" class="org.apache.geronimo.osgi.example.CurrencyTypeConverter"/>
+
+    <service ref="foo" auto-export="all-classes">
+        <service-properties>
+            <entry key="key" value="value"/>
+        </service-properties>
+    </service>
     
 </components>
 
