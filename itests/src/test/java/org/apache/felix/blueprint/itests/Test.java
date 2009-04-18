@@ -22,6 +22,7 @@ import java.net.URLDecoder;
 
 import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
 import org.osgi.framework.Bundle;
+import org.osgi.service.blueprint.context.ModuleContext;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -32,6 +33,11 @@ public class Test extends AbstractIntegrationTest {
         Bundle bundle = installBundle(res);
         assertNotNull(bundle);
         bundle.start();
+
+        ModuleContext moduleContext = getOsgiService(ModuleContext.class, 5000);
+        assertNotNull(moduleContext);
+
+        // TODO: Check that the moduleContext has been correctly instanciated, that it contains the right beans, etc...
     }
 
     /**
