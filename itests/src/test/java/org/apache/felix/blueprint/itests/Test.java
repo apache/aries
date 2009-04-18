@@ -21,6 +21,8 @@ package org.apache.felix.blueprint.itests;
 import java.net.URLDecoder;
 
 import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
+import org.apache.geronimo.osgi.example.Foo;
+import org.apache.geronimo.osgi.example.Bar;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.context.ModuleContext;
 import org.springframework.core.io.Resource;
@@ -37,7 +39,22 @@ public class Test extends AbstractIntegrationTest {
         ModuleContext moduleContext = getOsgiService(ModuleContext.class, 5000);
         assertNotNull(moduleContext);
 
-        // TODO: Check that the moduleContext has been correctly instanciated, that it contains the right beans, etc...
+        Object obj = moduleContext.getComponent("foo");
+        assertNotNull(obj);
+        assertEquals(Foo.class, obj.getClass());
+        obj = moduleContext.getComponent("bar");
+        assertNotNull(obj);
+        assertEquals(Bar.class, obj.getClass());
+
+        // TODO: components properties
+
+        bundle.stop();
+        try {
+            moduleContext = getOsgiService(ModuleContext.class, 1);
+            fail("ModuleContext should have been unregistered");
+        } catch (Exception e) {
+            // Expected, as the module context should have been unregistered
+        }
     }
 
     /**

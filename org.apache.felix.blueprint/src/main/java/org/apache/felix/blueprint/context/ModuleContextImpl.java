@@ -68,6 +68,7 @@ public class ModuleContextImpl implements ModuleContext {
     private final List<URL> urls;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
     private final ConversionServiceImpl conversionService;
+    private Map<String, Object> instances;
     private ServiceRegistration registration;
 
     public ModuleContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, List<URL> urls) {
@@ -108,8 +109,10 @@ public class ModuleContextImpl implements ModuleContext {
             ObjectGraph graph = new ObjectGraph(repository);
 
             registerTypeConverters(graph);
-            
-            System.out.println(graph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames())));
+
+            // TODO: handle scopes and such
+            instances = graph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames()));
+            System.out.println(instances);
 
             // Register the ModuleContext in the OSGi registry
             Properties props = new Properties();
@@ -149,8 +152,11 @@ public class ModuleContextImpl implements ModuleContext {
     
     public Object getComponent(String name) throws NoSuchComponentException {
         ComponentMetadata metadata = getComponentMetadata(name);
-        // TODO: get the component instance
-        return null;
+        if (metadata == null) {
+            throw new NoSuchComponentException(name);
+        }
+        // TODO: handle scopes and such
+        return instances.get(name);
     }
 
     public ComponentMetadata getComponentMetadata(String name) {
