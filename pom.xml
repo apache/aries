@@ -34,6 +34,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>org.osgi.service.blueprint*;version="1.0"</Export-Package>
                     </instructions>
                 </configuration>
                 <executions>
