@@ -20,26 +20,22 @@ package org.apache.felix.blueprint;
 
 import java.math.BigInteger;
 import java.net.URI;
-import java.util.Arrays;
-
-import junit.framework.TestCase;
 
 import org.apache.felix.blueprint.context.Instanciator;
-import org.apache.felix.blueprint.context.Parser;
 import org.apache.felix.blueprint.convert.ConversionServiceImpl;
+import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.felix.blueprint.pojos.PojoA;
 import org.apache.felix.blueprint.pojos.PojoB;
 import org.apache.xbean.recipe.ObjectGraph;
 import org.apache.xbean.recipe.Repository;
 import org.osgi.service.blueprint.convert.ConversionService;
 
-public class WiringTest extends TestCase {
+public class WiringTest extends AbstractBlueprintTest {
 
     public void testWiring() throws Exception {
-        Parser parser = parse("/test-wiring.xml");
-
+        ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
         Instanciator i = new TestInstanciator();
-        Repository repository = i.createRepository(parser.getRegistry());
+        Repository repository = i.createRepository(registry);
         ObjectGraph graph = new ObjectGraph(repository);
         
         Object obj1 = graph.create("pojoA");
@@ -89,12 +85,6 @@ public class WiringTest extends TestCase {
         assertEquals(new Integer(1), pojoa.getNumberArray()[0]);
         assertEquals(new BigInteger("50"), pojoa.getNumberArray()[1]);
         assertEquals(new Long(100), pojoa.getNumberArray()[2]);
-    }
-
-    protected Parser parse(String name) throws Exception {
-        Parser parser = new Parser();
-        parser.parse(Arrays.asList( getClass().getResource(name) ));
-        return parser;
     }
 
     private static class TestInstanciator extends Instanciator {

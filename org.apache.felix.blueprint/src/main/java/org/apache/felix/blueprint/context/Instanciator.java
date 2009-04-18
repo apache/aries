@@ -52,6 +52,7 @@ import org.osgi.service.blueprint.reflect.ReferenceValue;
 import org.osgi.service.blueprint.reflect.SetValue;
 import org.osgi.service.blueprint.reflect.TypedStringValue;
 import org.osgi.service.blueprint.reflect.Value;
+import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 
 /**
  * TODO: javadoc

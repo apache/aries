@@ -20,13 +20,17 @@ package org.apache.felix.blueprint;
 
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
+import junit.framework.TestCase;
 import org.apache.felix.blueprint.context.Parser;
+import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.felix.blueprint.reflect.LocalComponentMetadataImpl;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
@@ -42,19 +46,15 @@ import org.osgi.service.blueprint.reflect.PropertyInjectionMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceValue;
 import org.osgi.service.blueprint.reflect.TypedStringValue;
 import org.osgi.service.blueprint.reflect.Value;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 /**
  * TODO: constructor injection
  * TODO: Dependency#setMethod 
  */
-public class ParserTest extends TestCase {
+public class ParserTest extends AbstractBlueprintTest {
 
     public void testParseComponent() throws Exception {
-        Parser parser = parse("/test-simple-component.xml");
-        ComponentDefinitionRegistry registry = parser.getRegistry();
+        ComponentDefinitionRegistry registry = parse("/test-simple-component.xml");
         assertNotNull(registry);
         ComponentMetadata component = registry.getComponentDefinition("pojoA");
         assertNotNull(component);
@@ -124,17 +124,12 @@ public class ParserTest extends TestCase {
     }
 
     public void testParse() throws Exception {
-        Parser parser = new Parser();
-        parser.parse(Arrays.asList( getClass().getResource("/test.xml") ));
-        ComponentDefinitionRegistry registry = parser.getRegistry();
-        assertNotNull(registry);
+        parse("/test.xml");
     }
 
+
     public void testCustomNodes() throws Exception {
-        Parser parser = new Parser();
-        parser.setNamespaceHandlerRegistry(new TestNamespaceHandlerRegistry());
-        parser.parse(Arrays.asList( getClass().getResource("/test-custom-nodes.xml") ));
-        ComponentDefinitionRegistry registry = parser.getRegistry();
+        ComponentDefinitionRegistry registry = parse("/test-custom-nodes.xml", new TestNamespaceHandlerRegistry());
         
         ComponentMetadata metadata;
         
@@ -166,12 +161,6 @@ public class ParserTest extends TestCase {
         assertEquals("org.apache.geronimo.Cache", comp3.getClassName());         
     }
 
-    protected Parser parse(String name) throws Exception {
-        Parser parser = new Parser();
-        parser.parse(Arrays.asList( getClass().getResource(name) ));
-        return parser;
-    }
-    
     private static class TestNamespaceHandlerRegistry implements NamespaceHandlerRegistry {
         
         public void destroy() {

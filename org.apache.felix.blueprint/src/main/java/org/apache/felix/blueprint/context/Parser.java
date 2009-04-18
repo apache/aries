@@ -33,6 +33,16 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.EntityReference;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import org.apache.felix.blueprint.NamespaceHandlerRegistry;
 import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.felix.blueprint.namespace.ParserContextImpl;
@@ -60,7 +70,6 @@ import org.osgi.service.blueprint.reflect.BindingListenerMetadata;
 import org.osgi.service.blueprint.reflect.CollectionBasedServiceReferenceComponentMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.ListValue;
-import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
 import org.osgi.service.blueprint.reflect.MapValue;
 import org.osgi.service.blueprint.reflect.NullValue;
 import org.osgi.service.blueprint.reflect.PropertiesValue;
@@ -69,15 +78,6 @@ import org.osgi.service.blueprint.reflect.ServiceExportComponentMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceComponentMetadata;
 import org.osgi.service.blueprint.reflect.SetValue;
 import org.osgi.service.blueprint.reflect.Value;
-import org.w3c.dom.Attr;
-import org.w3c.dom.CharacterData;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.EntityReference;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 /**
@@ -178,6 +178,7 @@ public class Parser {
     public static final String LAZY_INIT_DEFAULT = BOOLEAN_FALSE;
 
     private DocumentBuilderFactory documentBuilderFactory;
+    private List<URL> urls;
     private ComponentDefinitionRegistryImpl registry;
     private NamespaceHandlerRegistry namespaceHandlerRegistry;
     private int nameCounter;
@@ -187,20 +188,15 @@ public class Parser {
     private String defaultInitMethod;
     private String defaultDestroyMethod;
 
-    public Parser() {
-        registry = new ComponentDefinitionRegistryImpl();
-        // TODO: Register conversionService, bundle, bundleContext, moduleContext in the registry
+    public Parser(NamespaceHandlerRegistry handlers,
+                  ComponentDefinitionRegistryImpl registry,
+                  List<URL> urls) {
+        this.urls = urls;
+        this.registry = registry;
+        this.namespaceHandlerRegistry = handlers;
     }
 
-    public void setNamespaceHandlerRegistry(NamespaceHandlerRegistry namespaceHandlerRegistry) {
-        this.namespaceHandlerRegistry = namespaceHandlerRegistry;
-    }
-    
-    public ComponentDefinitionRegistryImpl getRegistry() {
-        return registry;
-    }
-
-    public void parse(List<URL> urls) throws Exception {
+    public void parse() throws Exception {
         List<Document> documents = new ArrayList<Document>();
         // Load documents
         for (URL url : urls) {
@@ -219,7 +215,12 @@ public class Parser {
         for (Document doc : documents) {
             findNamespaces(namespaces, doc);
         }
-        // TODO: check namespaces and wait for dependencies
+        for (String namespace : namespaces) {
+            NamespaceHandler handler = namespaceHandlerRegistry.getNamespaceHandler(URI.create(namespace));
+            if (handler == null) {
+                throw new WaitForDependencyException(NamespaceHandler.class.getName(), null);
+            }
+        }
         // Parse components
         for (Document doc : documents) {
             loadComponents(doc);
@@ -229,7 +230,7 @@ public class Parser {
     private void findNamespaces(Set<String> namespaces, Node node) {
         if (node instanceof Element || node instanceof Attr) {
             String ns = node.getNamespaceURI();
-            if (ns != null) {
+            if (ns != null && !isBlueprintNamespace(ns) && !isBlueprintCompendiumNamespace(ns)) {
                 namespaces.add(ns);
             }
         }
@@ -307,19 +308,19 @@ public class Parser {
         } else if (nodeNameEquals(element, TYPE_CONVERTERS_ELEMENT)) {
             parseTypeConverters(element);
         } else if (nodeNameEquals(element, COMPONENT_ELEMENT)) {
-            LocalComponentMetadata component = parseComponentMetadata(element);
+            ComponentMetadata component = parseComponentMetadata(element);
             registry.registerComponentDefinition(component);
         } else if (nodeNameEquals(element, SERVICE_ELEMENT)) {
-            ServiceExportComponentMetadata service = parseService(element);
+            ComponentMetadata service = parseService(element);
             registry.registerComponentDefinition(service);
         } else if (nodeNameEquals(element, REFERENCE_ELEMENT)) {
-            ServiceReferenceComponentMetadata reference = parseUnaryReference(element);
+            ComponentMetadata reference = parseUnaryReference(element);
             registry.registerComponentDefinition(reference);
         } else if (nodeNameEquals(element, REFLIST_ELEMENT) ) {
-            CollectionBasedServiceReferenceComponentMetadata references = parseReferenceCollection(element, List.class);
+            ComponentMetadata references = parseReferenceCollection(element, List.class);
             registry.registerComponentDefinition(references);
         } else if (nodeNameEquals(element, REFSET_ELEMENT)) {
-            CollectionBasedServiceReferenceComponentMetadata references = parseReferenceCollection(element, Set.class);
+            ComponentMetadata references = parseReferenceCollection(element, Set.class);
             registry.registerComponentDefinition(references);
         } else {
             throw new ComponentDefinitionException("Unknown element " + element.getNodeName() + " in namespace " + BLUEPRINT_NAMESPACE);
@@ -338,7 +339,7 @@ public class Parser {
             if (node instanceof Element) {
                 Element e = (Element) node;
                 if (nodeNameEquals(e, COMPONENT_ELEMENT)) {
-                    LocalComponentMetadata metadata = parseComponentMetadata(e);
+                    ComponentMetadata metadata = parseComponentMetadata(e);
                     registry.registerTypeConverter(new ComponentValueImpl(metadata));
                 } else if (nodeNameEquals(e, REF_ELEMENT)) {
                     String componentName = e.getAttribute(COMPONENT_ATTRIBUTE);
@@ -348,7 +349,7 @@ public class Parser {
         }
     }
 
-    private LocalComponentMetadata parseComponentMetadata(Element element) {
+    private ComponentMetadata parseComponentMetadata(Element element) {
         LocalComponentMetadataImpl metadata = new LocalComponentMetadataImpl();
         metadata.setName(getName(element));
         if (element.hasAttribute(CLASS_ATTRIBUTE)) {
@@ -407,19 +408,19 @@ public class Parser {
                 }
             }
         }
-        
+
         ComponentMetadata m = metadata;
-        
+
         // Parse custom attributes
         m = handleCustomAttributes(element.getAttributes(), m);
         
         // Parse custom elements;
         m = handleCustomElements(element, m);
         
-        return (LocalComponentMetadata)m;
+        return m;
     }
 
-    private ServiceExportComponentMetadata parseService(Element element) {
+    private ComponentMetadata parseService(Element element) {
         ServiceExportComponentMetadataImpl service = new ServiceExportComponentMetadataImpl();
         service.setName(getName(element));
         if (element.hasAttribute(INTERFACE_ATTRIBUTE)) {
@@ -484,7 +485,7 @@ public class Parser {
         // Parse custom elements;
         s = handleCustomElements(element, s);
         
-        return (ServiceExportComponentMetadata)s;
+        return s;
     }
 
     private ArrayValue parseArray(Element element, ComponentMetadata enclosingComponent) {
@@ -639,13 +640,13 @@ public class Parser {
                     }
                     listenerComponent = new ReferenceValueImpl(component);
                 } else if (nodeNameEquals(e, COMPONENT_ELEMENT)) {
-                    LocalComponentMetadata component = parseComponentMetadata(e);
+                    ComponentMetadata component = parseComponentMetadata(e);
                     listenerComponent = new ComponentValueImpl(component);
                 } else if (nodeNameEquals(e, REFERENCE_ELEMENT)) {
-                    ServiceReferenceComponentMetadata reference = parseUnaryReference(e);
+                    ComponentMetadata reference = parseUnaryReference(e);
                     listenerComponent = new ComponentValueImpl(reference);
                 } else if (nodeNameEquals(e, SERVICE_ELEMENT)) {
-                    ServiceExportComponentMetadata service = parseService(e);
+                    ComponentMetadata service = parseService(e);
                     listenerComponent = new ComponentValueImpl(service);
                 }
             }
@@ -668,7 +669,7 @@ public class Parser {
         return listener;
     }
 
-    private ServiceReferenceComponentMetadata parseUnaryReference(Element element) {
+    private ComponentMetadata parseUnaryReference(Element element) {
         UnaryServiceReferenceComponentMetadataImpl reference = new UnaryServiceReferenceComponentMetadataImpl();
         reference.setName(getName(element));
         parseReference(element, reference);
@@ -684,10 +685,10 @@ public class Parser {
         // Parse custom elements;
         r = handleCustomElements(element, r);
         
-        return (ServiceReferenceComponentMetadata)r;
+        return r;
     }
 
-    private CollectionBasedServiceReferenceComponentMetadata parseReferenceCollection(Element element, Class collectionType) {
+    private ComponentMetadata parseReferenceCollection(Element element, Class collectionType) {
         CollectionBasedServiceReferenceComponentMetadataImpl references = new CollectionBasedServiceReferenceComponentMetadataImpl();
         references.setName(getName(element));
         references.setCollectionType(collectionType);
@@ -731,7 +732,7 @@ public class Parser {
         // Parse custom elements;
         r = handleCustomElements(element, r);
         
-        return (CollectionBasedServiceReferenceComponentMetadata)r;
+        return r;
     }
 
     private void parseComparator(Element element, CollectionBasedServiceReferenceComponentMetadataImpl references) {
@@ -749,13 +750,13 @@ public class Parser {
                         }
                         comparator = new ReferenceValueImpl(component);
                     } else if (nodeNameEquals(e, COMPONENT_ELEMENT)) {
-                        LocalComponentMetadata component = parseComponentMetadata(e);
+                        ComponentMetadata component = parseComponentMetadata(e);
                         comparator = new ComponentValueImpl(component);
                     } else if (nodeNameEquals(e, REFERENCE_ELEMENT)) {
-                        ServiceReferenceComponentMetadata reference = parseUnaryReference(e);
+                        ComponentMetadata reference = parseUnaryReference(e);
                         comparator = new ComponentValueImpl(reference);
                     } else if (nodeNameEquals(e, SERVICE_ELEMENT)) {
-                        ServiceExportComponentMetadata service = parseService(e);
+                        ComponentMetadata service = parseService(e);
                         comparator = new ComponentValueImpl(service);
                     }
                 } else {
@@ -837,19 +838,19 @@ public class Parser {
                         if (listener.getListenerComponent() != null) {
                             throw new ComponentDefinitionException("Attribute " + REF_ATTRIBUTE + " can not be set in addition to a child element");
                         }
-                        LocalComponentMetadata component = parseComponentMetadata(e);
+                        ComponentMetadata component = parseComponentMetadata(e);
                         listener.setListenerComponent(new ComponentValueImpl(component));
                     } else if (nodeNameEquals(e, REFERENCE_ELEMENT)) {
                         if (listener.getListenerComponent() != null) {
                             throw new ComponentDefinitionException("Attribute " + REF_ATTRIBUTE + " can not be set in addition to a child element");
                         }
-                        ServiceReferenceComponentMetadata reference = parseUnaryReference(e);
+                        ComponentMetadata reference = parseUnaryReference(e);
                         listener.setListenerComponent(new ComponentValueImpl(reference));
                     } else if (nodeNameEquals(e, SERVICE_ELEMENT)) {
                         if (listener.getListenerComponent() != null) {
                             throw new ComponentDefinitionException("Attribute " + REF_ATTRIBUTE + " can not be set in addition to a child element");
                         }
-                        ServiceExportComponentMetadata service = parseService(e);
+                        ComponentMetadata service = parseService(e);
                         listener.setListenerComponent(new ComponentValueImpl(service));
                     }
                 } else {
@@ -907,7 +908,7 @@ public class Parser {
     private Value parseValueElement(Element element, ComponentMetadata enclosingComponent, boolean allowNull) {
         if (isBlueprintNamespace(element.getNamespaceURI())) {
             if (nodeNameEquals(element, COMPONENT_ELEMENT)) {
-                LocalComponentMetadata inner = parseComponentMetadata(element);
+                ComponentMetadata inner = parseComponentMetadata(element);
                 return new ComponentValueImpl(inner);
             } else if (nodeNameEquals(element, NULL_ELEMENT) && allowNull) {
                 return NullValue.NULL;
@@ -967,7 +968,6 @@ public class Parser {
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
             if (node instanceof Element) {
-                Element e = (Element) node;
                 if (!isBlueprintNamespace(node.getNamespaceURI())) {
                     enclosingComponent = decorateCustomNode(node, enclosingComponent);
                 }
@@ -1015,7 +1015,7 @@ public class Parser {
         }
         return documentBuilderFactory;
     }
-    
+
     private String getName(Element element) {
         if (element.hasAttribute(ID_ATTRIBUTE)) {
             return element.getAttribute(ID_ATTRIBUTE);

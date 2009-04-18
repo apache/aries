@@ -18,6 +18,7 @@
  */
 package org.apache.felix.blueprint.context;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,18 +27,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.net.URL;
 
-import org.apache.felix.blueprint.HeaderParser.PathElement;
-import org.apache.felix.blueprint.convert.ConversionServiceImpl;
-import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.felix.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.felix.blueprint.BlueprintConstants;
 import org.apache.felix.blueprint.HeaderParser;
+import org.apache.felix.blueprint.HeaderParser.PathElement;
 import org.apache.felix.blueprint.ModuleContextEventSender;
 import org.apache.felix.blueprint.NamespaceHandlerRegistry;
-import org.apache.xbean.recipe.Repository;
+import org.apache.felix.blueprint.convert.ConversionServiceImpl;
+import org.apache.felix.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.xbean.recipe.ObjectGraph;
+import org.apache.xbean.recipe.Repository;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -65,8 +64,8 @@ public class ModuleContextImpl implements ModuleContext {
     private final ModuleContextEventSender sender;
     private final NamespaceHandlerRegistry handlers;
     private final List<URL> urls;
-    private ComponentDefinitionRegistryImpl componentDefinitionRegistry;
-    private ConversionServiceImpl conversionService;
+    private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
+    private final ConversionServiceImpl conversionService;
 
     public ModuleContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, List<URL> urls) {
         this.bundleContext = bundleContext;
@@ -74,6 +73,7 @@ public class ModuleContextImpl implements ModuleContext {
         this.handlers = handlers;
         this.urls = urls;
         this.conversionService = new ConversionServiceImpl();
+        this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
     }
 
     private void checkDirectives() {
@@ -98,10 +98,8 @@ public class ModuleContextImpl implements ModuleContext {
         checkDirectives();
         sender.sendCreating(this);
         try {
-            Parser parser = new Parser();
-            parser.setNamespaceHandlerRegistry(handlers);
-            parser.parse(urls);
-            componentDefinitionRegistry = parser.getRegistry();
+            Parser parser = new Parser(handlers, componentDefinitionRegistry, urls);
+            parser.parse();
             Instanciator i = new Instanciator(this);
             Repository repository = i.createRepository(componentDefinitionRegistry);
             ObjectGraph graph = new ObjectGraph(repository);
@@ -112,7 +110,7 @@ public class ModuleContextImpl implements ModuleContext {
                         
             sender.sendCreated(this);
         } catch (WaitForDependencyException e) {
-            sender.sendWaiting(this, null, null); // TODO: give correct args
+            sender.sendWaiting(this, e.getServiceObjectClass(), e.getServiceFilter());
             // TODO: wait for dependency
         } catch (Exception e) {
             e.printStackTrace();
