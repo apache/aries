@@ -25,6 +25,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.felix.blueprint.HeaderParser.PathElement;
 import org.apache.felix.blueprint.context.DefaultModuleContextEventSender;
@@ -42,16 +44,15 @@ import org.osgi.framework.SynchronousBundleListener;
  *
  * TODO: handle ModuleContextListener
  */
-public class Activator implements BundleActivator, BundleListener {
+public class Activator implements BundleActivator, SynchronousBundleListener {
 
-    private StopBundleListener stopBundleListener = new StopBundleListener();
-    private Map<Bundle, ModuleContextImpl> contextMap = new HashMap<Bundle, ModuleContextImpl>();
+    private final ExecutorService executors = Executors.newSingleThreadExecutor();
+    private final Map<Bundle, ModuleContextImpl> contextMap = new HashMap<Bundle, ModuleContextImpl>();
     private ModuleContextEventSender sender;
     private NamespaceHandlerRegistry handlers;
 
     public void start(BundleContext context) {
         System.out.println("Starting to listen for bundle events.");
-        context.addBundleListener(stopBundleListener);
         context.addBundleListener(this);
 
         sender = new DefaultModuleContextEventSender(context);
@@ -67,7 +68,7 @@ public class Activator implements BundleActivator, BundleListener {
 
 
     public void stop(BundleContext context) {
-        context.removeBundleListener(stopBundleListener);
+        // TODO: destroy all contexts
         context.removeBundleListener(this);
         this.sender.destroy();
         this.handlers.destroy();
@@ -78,6 +79,8 @@ public class Activator implements BundleActivator, BundleListener {
         System.out.println("bundle changed:" + event.getBundle().getSymbolicName() + "  "+ event.getType());
         if (event.getType() == BundleEvent.STARTED) {
             checkBundle(event.getBundle());
+        } else if (event.getType() == BundleEvent.STOPPING) {
+            destroyContext(event.getBundle());
         }
     }
 
@@ -103,7 +106,6 @@ public class Activator implements BundleActivator, BundleListener {
                 }
             }
         }
-        
         if (urls.isEmpty()) {
             Enumeration e = bundle.findEntries("OSGI-INF/blueprint", "*.xml", true);
             if (e != null) {
@@ -113,22 +115,16 @@ public class Activator implements BundleActivator, BundleListener {
                 }
             }
         }
-                
         if (!urls.isEmpty()) {
-            System.out.println("Found config files:" + urls);
-            ModuleContextImpl moduleContext = new ModuleContextImpl(bundle.getBundleContext(), sender, handlers, urls);
+            final ModuleContextImpl moduleContext = new ModuleContextImpl(bundle.getBundleContext(), sender, handlers, urls);
             contextMap.put(bundle, moduleContext);
-            moduleContext.create();
+            executors.submit(new Runnable() {
+                public void run() {
+                    moduleContext.create();
+                }
+            });
         }
     }
 
-
-    private class StopBundleListener implements SynchronousBundleListener {
-        public void bundleChanged(BundleEvent event) {
-            if (event.getType() == BundleEvent.STOPPING) {
-                destroyContext(event.getBundle());
-            }
-        }
-    }
 
 }

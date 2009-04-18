@@ -27,10 +27,23 @@ package org.apache.felix.blueprint.context;
  */
 public class WaitForDependencyException extends Exception {
 
-    public WaitForDependencyException() {
+    private final String[] serviceObjectClass;
+    private final String serviceFilter;
+
+    public WaitForDependencyException(String[] serviceObjectClass, String serviceFilter) {
+        this.serviceObjectClass = serviceObjectClass;
+        this.serviceFilter = serviceFilter;
     }
 
-    public WaitForDependencyException(String message) {
-        super(message);
+    public WaitForDependencyException(String serviceObjectClass, String serviceFilter) {
+        this(new String[] { serviceObjectClass }, serviceFilter);
+    }
+
+    public String[] getServiceObjectClass() {
+        return serviceObjectClass;
+    }
+
+    public String getServiceFilter() {
+        return serviceFilter;
     }
 }
