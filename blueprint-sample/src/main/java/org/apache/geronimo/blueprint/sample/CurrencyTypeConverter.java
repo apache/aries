@@ -14,19 +14,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.geronimo.osgi.example;
+package org.apache.geronimo.blueprint.sample;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import java.util.Currency;
 
-public class Activator implements BundleActivator {
+import org.osgi.service.blueprint.convert.Converter;
 
-    public void start(BundleContext context) {
-        System.out.println("Bundle start");
+public class CurrencyTypeConverter implements Converter {
+
+    public Object convert(Object source) throws Exception {
+        return Currency.getInstance(source.toString());
     }
 
-    public void stop(BundleContext context) {
-        System.out.println("Bundle stop");
+    public Class getTargetClass() {
+        return Currency.class;
     }
-   
+    
 }

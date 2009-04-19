@@ -14,23 +14,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.geronimo.osgi.example;
+package org.apache.geronimo.blueprint.sample;
 
-import java.io.Serializable;
-import java.util.Currency;
-import java.util.Date;
+import java.util.List;
 
-public class Foo implements Serializable {
+import org.osgi.framework.BundleContext;
+
+public class Bar {
     
-    private int a;
-    private int b;
-    private Bar bar;
-    private Currency currency;
-    private Date date;
-
+    private BundleContext context;
+    private String value;
+    private List list;
+    
     public String toString() {
-        return a + " " + b + " " + bar + " " + currency + " " + date;
+        return hashCode() + ": " + value + " " + context + " " + list;
     }
 
 }
-
