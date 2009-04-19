@@ -17,14 +17,14 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.felix</groupId>
+        <groupId>org.apache.geronimo</groupId>
         <artifactId>blueprint</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueprint-bundle</artifactId>
     <packaging>bundle</packaging>
-    <name>Blueprint Bundle</name>
+    <name>Apache Geronimo Blueprint Bundle</name>
     <build>
         <plugins>
             <plugin>
@@ -34,10 +34,14 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.felix.blueprint.Activator</Bundle-Activator>
+                        <Bundle-Activator>org.apache.geronimo.blueprint.Activator</Bundle-Activator>
+                        <Import-Package>
+                            org.apache.tools.ant*;resolution:=optional,
+                            *
+                        </Import-Package>
                         <Export-Package>
                             org.osgi.service.blueprint*;version="1.0",
-                            org.apache.felix.blueprint*;version="${pom.version}"
+                            org.apache.geronimo.blueprint*;version="${pom.version}"
                         </Export-Package>
                         <Private-Package>
                             org.apache.xbean*,
@@ -51,8 +55,8 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.blueprint</artifactId>
+            <groupId>org.apache.geronimo</groupId>
+            <artifactId>blueprint-core</artifactId>
             <version>${version}</version>
             <scope>provided</scope>
         </dependency>
