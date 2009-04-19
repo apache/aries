@@ -17,20 +17,16 @@
 package org.apache.geronimo.osgi.example;
 
 import java.io.Serializable;
-import java.util.Currency;
-import java.util.Date;
+import java.util.Map;
 
-public class Foo implements Serializable {
+public class FooListener {
+        
+    public void serviceRegistered(Serializable foo, Map props) {
+        System.out.println("Service registration notification: " + foo + " " + props);
+    }
     
-    private int a;
-    private int b;
-    private Bar bar;
-    private Currency currency;
-    private Date date;
-
-    public String toString() {
-        return a + " " + b + " " + bar + " " + currency + " " + date;
+    public void serviceUnregistered(Foo foo, Map props) {
+        System.out.println("Service unregistration notification: " + foo + " " + props);
     }
 
 }
-

@@ -28,6 +28,7 @@ import org.apache.felix.blueprint.pojos.PojoA;
 import org.apache.felix.blueprint.pojos.PojoB;
 import org.apache.xbean.recipe.ObjectGraph;
 import org.apache.xbean.recipe.Repository;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.convert.ConversionService;
 
 public class WiringTest extends AbstractBlueprintTest {
@@ -85,6 +86,10 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals(new Integer(1), pojoa.getNumberArray()[0]);
         assertEquals(new BigInteger("50"), pojoa.getNumberArray()[1]);
         assertEquals(new Long(100), pojoa.getNumberArray()[2]);
+        
+        Object obj3 = graph.create("service1");
+        assertNotNull(obj3);
+        assertTrue(obj3 instanceof ServiceRegistration);
     }
 
     private static class TestInstanciator extends Instanciator {
