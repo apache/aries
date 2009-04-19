@@ -10,6 +10,13 @@
             </component>
     </type-converters>
     
+    <service id="service1" ref="pojoB" interface="foo">
+        <service-properties>
+            <entry key="key1" value="value1"/>
+            <entry key="key2" value="value2"/>
+        </service-properties>    
+    </service>
+    
     <component id="pojoB" class="org.apache.felix.blueprint.pojos.PojoB">
         <property name="uri" value="urn:myuri" />
     </component>

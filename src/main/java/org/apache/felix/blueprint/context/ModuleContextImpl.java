@@ -114,6 +114,8 @@ public class ModuleContextImpl implements ModuleContext {
             instances = graph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames()));
             System.out.println(instances);
 
+            registerAllServices();
+            
             // Register the ModuleContext in the OSGi registry
             Properties props = new Properties();
             props.put("osgi.blueprint.context.symbolicname", bundleContext.getBundle().getSymbolicName());
@@ -143,6 +145,20 @@ public class ModuleContextImpl implements ModuleContext {
             } else {
                 // TODO: throw exception or log
             }
+        }
+    }
+    
+    private void registerAllServices() {
+        for (ServiceExportComponentMetadata service : getExportedServicesMetadata()) {
+            ServiceRegistrationProxy proxy = (ServiceRegistrationProxy) getComponent(service.getName());
+            proxy.register();
+        }
+    }
+    
+    private void unregisterAllServices() {
+        for (ServiceExportComponentMetadata service : getExportedServicesMetadata()) {
+            ServiceRegistrationProxy proxy = (ServiceRegistrationProxy) getComponent(service.getName());
+            proxy.unregister();
         }
     }
     
@@ -205,6 +221,7 @@ public class ModuleContextImpl implements ModuleContext {
             registration.unregister();
         }
         sender.sendDestroying(this);
+        unregisterAllServices();
         System.out.println("Module context destroyed: " + this.bundleContext);
         // TODO: destroy all instances
         sender.sendDestroyed(this);

@@ -30,4 +30,6 @@ public class BlueprintConstants  {
     
     public static final String SERVICE_FILTER = "service.Filter";
     
+    public static final String COMPONENT_NAME_PROPERTY = "osgi.service.blueprint.compname";
+    
 }

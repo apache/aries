@@ -80,7 +80,11 @@ public class ServiceExportComponentMetadataImpl extends ComponentMetadataImpl im
     }
 
     public Set<String> getInterfaceNames() {
-        return Collections.unmodifiableSet(interfaceNames);
+        if (interfaceNames == null) {
+            return Collections.emptySet();
+        } else {
+            return Collections.unmodifiableSet(interfaceNames);
+        }
     }
 
     public void setInterfaceNames(Set<String> interfaceNames) {
@@ -120,7 +124,11 @@ public class ServiceExportComponentMetadataImpl extends ComponentMetadataImpl im
     }
 
     public Collection<RegistrationListenerMetadata> getRegistrationListeners() {
-        return Collections.unmodifiableCollection(registrationListeners);
+        if (registrationListeners == null) {
+            return Collections.emptySet();
+        } else {
+            return Collections.unmodifiableCollection(registrationListeners);
+        }
     }
 
     public void setRegistrationListeners(Collection<RegistrationListenerMetadata> registrationListeners) {
