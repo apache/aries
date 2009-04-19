@@ -3,13 +3,13 @@
 <components xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
     <type-converters>
-            <component id="converter1" class="org.apache.geronimo.osgi.example.DateTypeConverter">
+            <component id="converter1" class="org.apache.geronimo.blueprint.sample.DateTypeConverter">
                 <property name="format" value="yyyy.MM.dd"/>
             </component>
             <ref component="converter2"/>
     </type-converters>
 
-    <component id="foo" class="org.apache.geronimo.osgi.example.Foo">
+    <component id="foo" class="org.apache.geronimo.blueprint.sample.Foo">
         <property name="a" value="5" />
         <property name="b" value="10" />
         <property name="bar" ref="bar" />
@@ -21,7 +21,7 @@
         </property>
     </component>
 
-    <component id="bar" class="org.apache.geronimo.osgi.example.Bar">
+    <component id="bar" class="org.apache.geronimo.blueprint.sample.Bar">
         <property name="value"><value>Hello FooBar</value></property>
         <property name="context" ref="bundleContext"/>
         <property name="list">
@@ -32,7 +32,7 @@
         </property>
     </component>
 
-    <component id="converter2" class="org.apache.geronimo.osgi.example.CurrencyTypeConverter"/>
+    <component id="converter2" class="org.apache.geronimo.blueprint.sample.CurrencyTypeConverter"/>
 
     <service ref="foo" auto-export="all-classes">
         <registration-listener ref="fooListener"         
@@ -44,7 +44,7 @@
         </service-properties>
     </service>
     
-    <component id="fooListener" class="org.apache.geronimo.osgi.example.FooListener"/>
+    <component id="fooListener" class="org.apache.geronimo.blueprint.sample.FooListener"/>
     
 </components>
 

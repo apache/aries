@@ -37,7 +37,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Activator>
-                            org.apache.geronimo.osgi.example.Activator
+                            org.apache.geronimo.blueprint.sample.Activator
                         </Bundle-Activator>
 <!--
                         <Bundle-Blueprint>/test.xml</Bundle-Blueprint>

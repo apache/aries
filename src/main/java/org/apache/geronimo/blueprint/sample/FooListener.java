@@ -14,20 +14,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.geronimo.osgi.example;
+package org.apache.geronimo.blueprint.sample;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.Map;
 
-import org.osgi.framework.BundleContext;
-
-public class Bar {
+public class FooListener {
+        
+    public void serviceRegistered(Serializable foo, Map props) {
+        System.out.println("Service registration notification: " + foo + " " + props);
+    }
     
-    private BundleContext context;
-    private String value;
-    private List list;
-    
-    public String toString() {
-        return hashCode() + ": " + value + " " + context + " " + list;
+    public void serviceUnregistered(Foo foo, Map props) {
+        System.out.println("Service unregistration notification: " + foo + " " + props);
     }
 
 }

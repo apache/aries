@@ -14,20 +14,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.geronimo.osgi.example;
+package org.apache.geronimo.blueprint.sample;
 
-import java.util.Currency;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.osgi.service.blueprint.convert.Converter;
 
-public class CurrencyTypeConverter implements Converter {
+public class DateTypeConverter implements Converter {
 
+    DateFormat dateFormat;
+    
+    public void setFormat(String format) {
+        dateFormat = new SimpleDateFormat(format);
+    }
+    
     public Object convert(Object source) throws Exception {
-        return Currency.getInstance(source.toString());
+        return dateFormat.parse(source.toString());
     }
 
     public Class getTargetClass() {
-        return Currency.class;
+        return Date.class;
     }
     
 }
