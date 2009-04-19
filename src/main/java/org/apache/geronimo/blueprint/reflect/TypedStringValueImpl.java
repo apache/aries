@@ -23,7 +23,7 @@ import org.osgi.service.blueprint.reflect.TypedStringValue;
 /**
  * TODO: javadoc
  *
- * @author <a href="mailto:dev@felix.apache.org">Apache Felix Project</a>
+ * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
 public class TypedStringValueImpl implements TypedStringValue {
