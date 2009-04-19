@@ -19,7 +19,7 @@
 4) Build the blueprint project and install the extender and sample bundles:
 
   a) install file://<m2_repo>/org/apache/felix/blueprint-api/1.0.0-SNAPSHOT/blueprint-api-1.0.0-SNAPSHOT.jar
-  b) install file://<m2_repo>/org/apache/felix/org.apache.felix.blueprint/1.0.0-SNAPSHOT/org.apache.felix.blueprint-1.0.0-SNAPSHOT.jar
+  b) install file://<m2_repo>/org/apache/felix/org.apache.geronimo.blueprint/1.0.0-SNAPSHOT/org.apache.geronimo.blueprint-1.0.0-SNAPSHOT.jar
   c) install file://<m2_repo>/org/apache/felix/sample/1.0.0-SNAPSHOT/sample-1.0.0-SNAPSHOT.jar
 
 5) Start the extender and sample bundles:

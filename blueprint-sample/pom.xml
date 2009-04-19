@@ -5,9 +5,9 @@
     The ASF licenses this file to You under the Apache License, Version 2.0
     (the "License"); you may not use this file except in compliance with
     the License.  You may obtain a copy of the License at
-
+    
        http://www.apache.org/licenses/LICENSE-2.0
-
+    
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,32 +22,26 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>blueprint-bundle</artifactId>
+    <artifactId>blueprint-sample</artifactId>
+    <name>Apache Geronimo Blueprint Sample</name>
     <packaging>bundle</packaging>
-    <name>Apache Geronimo Blueprint Bundle</name>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
+                <artifactId>maven-bundle-plugin
+                </artifactId>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.geronimo.blueprint.Activator</Bundle-Activator>
-                        <Import-Package>
-                            org.apache.tools.ant*;resolution:=optional,
-                            *
-                        </Import-Package>
-                        <Export-Package>
-                            org.osgi.service.blueprint*;version="1.0",
-                            org.apache.geronimo.blueprint*;version="${pom.version}"
-                        </Export-Package>
-                        <Private-Package>
-                            org.apache.xbean*,
-                            org.objectweb.asm*,
-                            net.sf.cglib*
-                        </Private-Package>
+                        <Bundle-Activator>
+                            org.apache.geronimo.osgi.example.Activator
+                        </Bundle-Activator>
+<!--
+                        <Bundle-Blueprint>/test.xml</Bundle-Blueprint>
+-->
                     </instructions>
                 </configuration>
             </plugin>
@@ -55,10 +49,14 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.apache.geronimo</groupId>
-            <artifactId>blueprint-core</artifactId>
-            <version>${version}</version>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
+       <dependency>
+           <groupId>org.apache.felix</groupId>
+           <artifactId>blueprint-api</artifactId>
+           <version>${version}</version>
+       </dependency>
     </dependencies>
 </project>

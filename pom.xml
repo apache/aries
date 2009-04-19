@@ -25,9 +25,9 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.geronimo</groupId>
     <artifactId>blueprint</artifactId>
-    <groupId>org.apache.felix</groupId>
-    <name>Apache Felix Blueprint Parent</name>
+    <name>Apache Geronimo Blueprint</name>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -65,10 +65,10 @@
 
     <modules>
         <module>blueprint-api</module>
-        <module>org.apache.felix.blueprint</module>
+        <module>blueprint-core</module>
         <module>blueprint-bundle</module>
-        <module>sample</module>
-        <module>itests</module>
+        <module>blueprint-sample</module>
+        <module>blueprint-itests</module>
     </modules>
 
 </project>
