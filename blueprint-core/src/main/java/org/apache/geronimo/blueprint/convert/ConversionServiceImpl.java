@@ -30,6 +30,12 @@ import java.util.regex.Pattern;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.convert.Converter;
 
+/**
+ * TODO: javadoc
+ *
+ * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
+ * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
+ */
 public class ConversionServiceImpl implements ConversionService {
 
     private Map<Class, List<Converter>> convertersMap = new HashMap<Class, List<Converter>>();

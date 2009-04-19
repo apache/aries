@@ -21,6 +21,12 @@ package org.apache.geronimo.blueprint.context;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+/**
+ * TODO: javadoc
+ *
+ * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
+ * @version $Rev$, $Date$
+ */
 public class ReflectionUtils {
            
     public static Set<String> getImplementedInterfaces(Set<String> classes, Class clazz) {

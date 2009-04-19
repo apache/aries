@@ -23,6 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * TODO: javadoc
+ *
+ * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
+ * @version $Rev$, $Date$
+ */
 public class HeaderParser  {
    
     public static List<PathElement> parseHeader(String header) {
