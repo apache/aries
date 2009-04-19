@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.felix.blueprint.itests;
+package org.apache.geronimo.blueprint.itests;
 
 import java.net.URLDecoder;
 
@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
 public class Test extends AbstractIntegrationTest {
 
     public void test() throws Exception {
-        Resource res = locateBundle(getBundle("org.apache.felix", "sample"));
+        Resource res = locateBundle(getBundle("org.apache.geronimo", "blueprint-sample"));
         Bundle bundle = installBundle(res);
         assertNotNull(bundle);
         bundle.start();
@@ -71,7 +71,7 @@ public class Test extends AbstractIntegrationTest {
 	 * of the entire manifest...
 	 */
 	protected String getManifestLocation() {
-		return "classpath:org/apache/felix/blueprint/MANIFEST.MF";
+		return "classpath:org/apache/geronimo/blueprint/MANIFEST.MF";
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class Test extends AbstractIntegrationTest {
 	 */
 	protected String[] getTestBundlesNames() {
         return new String[] {
-                getBundle("org.apache.felix", "blueprint-bundle"),
+                getBundle("org.apache.geronimo", "blueprint-bundle"),
 		};
 	}
 

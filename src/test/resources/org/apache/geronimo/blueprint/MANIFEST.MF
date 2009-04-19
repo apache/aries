@@ -3,4 +3,4 @@ Bundle-Name: org.apache.servicemix.test
 Bundle-SymbolicName: org.apache.servicemix.test
 Bundle-Activator: org.springframework.osgi.test.JUnitTestActivator
 DynamicImport-Package: *
-Export-Package: org.apache.felix.blueprint.itests
+Export-Package: org.apache.geronimo.blueprint.itests
