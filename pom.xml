@@ -40,7 +40,9 @@
                             org.apache.felix.blueprint*;version="${pom.version}"
                         </Export-Package>
                         <Private-Package>
-                            org.apache.xbean*
+                            org.apache.xbean*,
+                            org.objectweb.asm*,
+                            net.sf.cglib*
                         </Private-Package>
                     </instructions>
                 </configuration>
