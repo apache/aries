@@ -18,6 +18,12 @@
  */
 package org.apache.geronimo.blueprint;
 
+/**
+ * Interface implemented by objects to be notified of the lifecycle of a given component.
+ *
+ * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
+ * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
+ */
 public interface LifeCycle {
 
     void init() throws Exception;

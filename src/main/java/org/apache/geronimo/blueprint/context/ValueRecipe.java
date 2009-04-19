@@ -25,6 +25,12 @@ import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.RecipeHelper;
 import org.osgi.service.blueprint.convert.ConversionService;
 
+/**
+ * TODO: javadoc
+ *
+ * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
+ * @version $Rev$, $Date$
+ */
 public class ValueRecipe extends AbstractRecipe {
 
     private ConversionService conversionService;
