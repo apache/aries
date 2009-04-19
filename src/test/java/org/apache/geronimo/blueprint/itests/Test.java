@@ -21,8 +21,8 @@ package org.apache.geronimo.blueprint.itests;
 import java.net.URLDecoder;
 
 import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
-import org.apache.geronimo.osgi.example.Foo;
-import org.apache.geronimo.osgi.example.Bar;
+import org.apache.geronimo.blueprint.sample.Foo;
+import org.apache.geronimo.blueprint.sample.Bar;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.context.ModuleContext;
 import org.springframework.core.io.Resource;
