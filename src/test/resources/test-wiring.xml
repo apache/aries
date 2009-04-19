@@ -5,7 +5,7 @@
             default-availability="mandatory">
 
     <type-converters>
-            <component id="converter1" class="org.apache.felix.blueprint.convert.TestConverter">
+            <component id="converter1" class="org.apache.geronimo.blueprint.convert.TestConverter">
                 <property name="bundle" ref="bundle" />
             </component>
     </type-converters>
@@ -17,11 +17,11 @@
         </service-properties>    
     </service>
     
-    <component id="pojoB" class="org.apache.felix.blueprint.pojos.PojoB">
+    <component id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB">
         <property name="uri" value="urn:myuri" />
     </component>
 
-    <component id="pojoA" class="org.apache.felix.blueprint.pojos.PojoA">
+    <component id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA">
         <property name="pojob" ref="pojoB"/>
         <property name="map">
             <map>

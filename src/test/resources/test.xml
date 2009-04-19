@@ -9,40 +9,40 @@
     </description>
 
     <type-converters>
-        <component class="org.apache.felix.blueprint.pojos.ConverterA"/>
+        <component class="org.apache.geronimo.blueprint.pojos.ConverterA"/>
         <ref component="converterB"/>
     </type-converters>
 
-    <component id="pojoA" class="org.apache.felix.blueprint.pojos.PojoA">
+    <component id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA">
         <property name="pojob" ref="pojoB"/>
     </component>
 
-    <component id="pojoAcns" class="org.apache.felix.blueprint.pojos.PojoA">
+    <component id="pojoAcns" class="org.apache.geronimo.blueprint.pojos.PojoA">
         <constructor-arg ref="pojoB"/>
     </component>
 
-    <component id="pojoB" class="org.apache.felix.blueprint.pojos.PojoB">
+    <component id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB">
         <property name="uri" value="urn:myuri"/>
     </component>
 
-    <component id="pojoBcns" class="org.apache.felix.blueprint.pojos.PojoB">
+    <component id="pojoBcns" class="org.apache.geronimo.blueprint.pojos.PojoB">
         <constructor-arg value="urn:myuri"/>
     </component>
 
-    <component id="converterB" class="org.apache.felix.blueprint.pojos.ConverterB"/>
+    <component id="converterB" class="org.apache.geronimo.blueprint.pojos.ConverterB"/>
 
-    <reference id="refA" filter="(key=prop)" interface="org.apache.felix.blueprint.pojos.InterfaceA"/>
+    <reference id="refA" filter="(key=prop)" interface="org.apache.geronimo.blueprint.pojos.InterfaceA"/>
 
     <reference id="refB" availability="optional">
         <interfaces>
-            <value>org.apache.felix.blueprint.pojos.InterfaceA</value>
+            <value>org.apache.geronimo.blueprint.pojos.InterfaceA</value>
         </interfaces>
         <listener ref="listenerA" bind-method="bind" unbind-method="unbind"/>
     </reference>
 
-    <service interface="org.apache.felix.blueprint.pojos.InterfaceA" ref="pojoA"/>
+    <service interface="org.apache.geronimo.blueprint.pojos.InterfaceA" ref="pojoA"/>
 
-    <component id="listenerA" class="org.apache.felix.blueprint.pojos.ListenerA"/>
+    <component id="listenerA" class="org.apache.geronimo.blueprint.pojos.ListenerA"/>
 
     <ref-list availability="optional" member-type="service-instance"/>
 
