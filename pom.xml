@@ -17,14 +17,14 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.felix</groupId>
+        <groupId>org.apache.geronimo</groupId>
         <artifactId>blueprint</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueprint-api</artifactId>
     <packaging>jar</packaging>
-    <name>Blueprint API</name>
+    <name>Apache Geronimo Blueprint API</name>
     <build>
         <plugins>
             <plugin>
