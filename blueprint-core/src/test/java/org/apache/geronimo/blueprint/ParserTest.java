@@ -121,6 +121,18 @@ public class ParserTest extends AbstractBlueprintTest {
         assertNotNull(param.getValue());
         assertTrue(param.getValue() instanceof ReferenceValue);
         assertEquals("pojoB", ((ReferenceValue) param.getValue()).getComponentName());
+        
+        assertEquals("init", local.getInitMethodName());
+        assertEquals("destroy", local.getDestroyMethodName());
+                
+        // test pojoB
+        ComponentMetadata pojoB = registry.getComponentDefinition("pojoB");
+        assertNotNull(pojoB);
+        assertEquals("pojoB", pojoB.getName());
+        assertTrue(pojoB instanceof LocalComponentMetadata);
+        LocalComponentMetadata pojoBLocal = (LocalComponentMetadata) pojoB;
+        assertEquals("initPojo", pojoBLocal.getInitMethodName());
+        assertNull(pojoBLocal.getDestroyMethodName());
     }
 
     public void testParse() throws Exception {
