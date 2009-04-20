@@ -114,6 +114,9 @@ public class ModuleContextImpl implements ModuleContext {
             // TODO: handle scopes and such
             Map instances = objectGraph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames()));
             //System.out.println(instances);
+            // TODO: access to any OSGi reference proxy is currently a problem at this point, because calling toString() will
+            // TODO:      wait for a service to be available.  We may need to catch toString(), equals() and hashCode() and make them
+            // TODO:      work even if there's no service available.
 
             registerAllServices();
             
