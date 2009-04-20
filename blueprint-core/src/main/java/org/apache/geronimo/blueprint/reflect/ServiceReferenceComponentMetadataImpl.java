@@ -96,7 +96,11 @@ public class ServiceReferenceComponentMetadataImpl extends ComponentMetadataImpl
     }
 
     public Collection<BindingListenerMetadata> getBindingListeners() {
-        return Collections.unmodifiableCollection(bindingListeners);
+        if (bindingListeners == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableCollection(bindingListeners);
+        }
     }
 
     public void addBindingListener(BindingListenerMetadata bindingListenerMetadata) {

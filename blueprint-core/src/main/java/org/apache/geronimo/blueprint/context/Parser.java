@@ -53,6 +53,7 @@ import org.apache.geronimo.blueprint.reflect.ComponentValueImpl;
 import org.apache.geronimo.blueprint.reflect.ListValueImpl;
 import org.apache.geronimo.blueprint.reflect.LocalComponentMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.MapValueImpl;
+import org.apache.geronimo.blueprint.reflect.MethodInjectionMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ParameterSpecificationImpl;
 import org.apache.geronimo.blueprint.reflect.PropertiesValueImpl;
 import org.apache.geronimo.blueprint.reflect.PropertyInjectionMetadataImpl;
@@ -156,6 +157,8 @@ public class Parser {
     public static final String INIT_METHOD_ATTRIBUTE = "init-method";
     public static final String DESTROY_METHOD_ATTRIBUTE = "destroy-method";
     public static final String LAZY_INIT_ATTRIBUTE = "lazy-init";
+    public static final String FACTORY_COMPONENT_ATTRIBUTE = "factory-component";
+    public static final String FACTORY_METHOD_ATTRIBUTE = "factory-method";
 
     public static final String BOOLEAN_DEFAULT = "default";
     public static final String BOOLEAN_TRUE = "true";
@@ -383,6 +386,13 @@ public class Parser {
         }
         if (element.hasAttribute(DESTROY_METHOD_ATTRIBUTE)) {
             metadata.setDestroyMethodName(element.getAttribute(DESTROY_METHOD_ATTRIBUTE));
+        }
+        if (element.hasAttribute(FACTORY_COMPONENT_ATTRIBUTE)) {
+            metadata.setFactoryComponent(new ReferenceValueImpl(element.getAttribute(FACTORY_COMPONENT_ATTRIBUTE)));
+        }
+        if (element.hasAttribute(FACTORY_METHOD_ATTRIBUTE)) {
+            String factoryMethod = element.getAttribute(FACTORY_METHOD_ATTRIBUTE);
+            metadata.setFactoryMethodMetadata(new MethodInjectionMetadataImpl(factoryMethod, null));
         }
 
         // Parse elements

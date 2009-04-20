@@ -105,7 +105,11 @@ public class LocalComponentMetadataImpl extends ComponentMetadataImpl implements
     }
 
     public Collection<PropertyInjectionMetadata> getPropertyInjectionMetadata() {
-        return Collections.unmodifiableCollection(propertyInjectionMetadata);
+        if (propertyInjectionMetadata == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableCollection(propertyInjectionMetadata);
+        }
     }
 
     public boolean isLazy() {
