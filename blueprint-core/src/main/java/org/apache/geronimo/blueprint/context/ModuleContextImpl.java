@@ -18,6 +18,7 @@
  */
 package org.apache.geronimo.blueprint.context;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import org.apache.geronimo.blueprint.ModuleContextEventSender;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
 import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ObjectGraph;
 import org.apache.xbean.recipe.Repository;
 import org.osgi.framework.Bundle;
@@ -227,7 +229,7 @@ public class ModuleContextImpl implements ModuleContext {
     public BundleContext getBundleContext() {
         return bundleContext;
     }
-
+    
     public void destroy() {
         if (registration != null) {
             registration.unregister();

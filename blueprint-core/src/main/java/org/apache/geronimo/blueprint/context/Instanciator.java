@@ -128,73 +128,9 @@ public class Instanciator {
 
     private Recipe createRecipe(ComponentMetadata component) throws Exception {
         if (component instanceof LocalComponentMetadata) {
-            LocalComponentMetadata local = (LocalComponentMetadata) component;
-            BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(loadClass(local.getClassName()));
-            recipe.allow(Option.PRIVATE_PROPERTIES);
-            recipe.setName(component.getName());
-            for (PropertyInjectionMetadata property : (Collection<PropertyInjectionMetadata>) local.getPropertyInjectionMetadata()) {
-                Object value = getValue(property.getValue(), null);
-                recipe.setProperty(property.getName(), value);
-            }
-            if (LocalComponentMetadata.SCOPE_PROTOTYPE.equals(local.getScope())) {
-                recipe.setKeepRecipe(true);
-            }
-            // check for init-method and set it on Recipe
-            String initMethod = local.getInitMethodName();
-            if (initMethod == null) {
-                ComponentDefinitionRegistryImpl registry = 
-                    (ComponentDefinitionRegistryImpl)getComponentDefinitionRegistry();
-                Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), registry.getDefaultInitMethod());
-                recipe.setInitMethod(method);
-            } else if (initMethod.length() > 0) {
-                Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), initMethod);
-                if (method == null) {
-                    throw new ConstructionException("Component '" + component.getName() + "' does not have init-method: " + initMethod);
-                }
-                recipe.setInitMethod(method);
-            }
-            // check for destroy-method
-            String destroyMethod = local.getDestroyMethodName();
-            if (destroyMethod != null && destroyMethod.length() > 0) {
-                Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), destroyMethod);
-                if (method == null) {
-                    throw new ConstructionException("Component '" + component.getName() + "' does not have destroy-method: " + destroyMethod);
-                }
-            }
-            // TODO: constructor args
-            // TODO: destroy-method
-            // TODO: lazy
-            // TODO: factory-method
-            // TODO: factory-component
-            return recipe;
+            return createComponentRecipe( (LocalComponentMetadata) component);
         } else if (component instanceof ServiceExportComponentMetadata) {
-            ServiceExportComponentMetadata serviceExport = (ServiceExportComponentMetadata) component;
-            ObjectRecipe recipe = new ObjectRecipe(ServiceRegistrationProxy.class);
-            recipe.allow(Option.PRIVATE_PROPERTIES);
-            recipe.setName(component.getName());
-            recipe.setProperty("moduleContext", moduleContext);
-            LocalComponentMetadata exportedComponent = getLocalServiceComponent(serviceExport.getExportedComponent());
-            if (exportedComponent != null && LocalComponentMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
-                Recipe exportedComponentRecipe = createRecipe(exportedComponent);
-                recipe.setProperty("service", new BundleScopeServiceFactory(moduleContext, exportedComponentRecipe));
-            } else {
-                recipe.setProperty("service", getValue(serviceExport.getExportedComponent(), null));
-            }
-            recipe.setProperty("metadata", component);
-            if (component instanceof ServiceExportComponentMetadataImpl) {
-                ServiceExportComponentMetadataImpl impl = (ServiceExportComponentMetadataImpl) component;
-                if (impl.getServicePropertiesValue() != null) {
-                    recipe.setProperty("serviceProperties", getValue(impl.getServicePropertiesValue(), null));
-                }
-            }
-            if (serviceExport.getRegistrationListeners() != null) {
-                CollectionRecipe cr = new CollectionRecipe(ArrayList.class);;
-                for (RegistrationListenerMetadata listener : (Collection<RegistrationListenerMetadata>)serviceExport.getRegistrationListeners()) {
-                    cr.add(createRecipe(listener));
-                }
-                recipe.setProperty("listeners", cr);
-            }
-            return recipe;
+            return createServiceRecipe( (ServiceExportComponentMetadata) component);
         } else if (component instanceof UnaryServiceReferenceComponentMetadata) {
             UnaryServiceReferenceComponentMetadata metadata = (UnaryServiceReferenceComponentMetadata) component;
             CollectionRecipe cr = null;
@@ -216,6 +152,78 @@ public class Instanciator {
         } else {
             throw new IllegalStateException("Unsupported component type " + component.getClass());
         }
+    }
+
+    private ObjectRecipe createServiceRecipe(ServiceExportComponentMetadata serviceExport) throws Exception {
+        ObjectRecipe recipe = new ObjectRecipe(ServiceRegistrationProxy.class);
+        recipe.allow(Option.PRIVATE_PROPERTIES);
+        recipe.setName(serviceExport.getName());
+        recipe.setProperty("moduleContext", moduleContext);
+        LocalComponentMetadata exportedComponent = getLocalServiceComponent(serviceExport.getExportedComponent());
+        if (exportedComponent != null && LocalComponentMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
+            BlueprintObjectRecipe exportedComponentRecipe = createComponentRecipe(exportedComponent);
+            recipe.setProperty("service", new BundleScopeServiceFactory(moduleContext, exportedComponentRecipe));
+        } else {
+            recipe.setProperty("service", getValue(serviceExport.getExportedComponent(), null));
+        }
+        recipe.setProperty("metadata", serviceExport);
+        if (serviceExport instanceof ServiceExportComponentMetadataImpl) {
+            ServiceExportComponentMetadataImpl impl = (ServiceExportComponentMetadataImpl) serviceExport;
+            if (impl.getServicePropertiesValue() != null) {
+                recipe.setProperty("serviceProperties", getValue(impl.getServicePropertiesValue(), null));
+            }
+        }
+        if (serviceExport.getRegistrationListeners() != null) {
+            CollectionRecipe cr = new CollectionRecipe(ArrayList.class);;
+            for (RegistrationListenerMetadata listener : (Collection<RegistrationListenerMetadata>)serviceExport.getRegistrationListeners()) {
+                cr.add(createRecipe(listener));
+            }
+            recipe.setProperty("listeners", cr);
+        }
+        return recipe;
+    }
+
+    private BlueprintObjectRecipe createComponentRecipe(LocalComponentMetadata local) throws Exception {
+        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(loadClass(local.getClassName()));
+        recipe.allow(Option.PRIVATE_PROPERTIES);
+        recipe.setName(local.getName());
+        for (PropertyInjectionMetadata property : (Collection<PropertyInjectionMetadata>) local.getPropertyInjectionMetadata()) {
+            Object value = getValue(property.getValue(), null);
+            recipe.setProperty(property.getName(), value);
+        }
+        if (LocalComponentMetadata.SCOPE_PROTOTYPE.equals(local.getScope())) {
+            recipe.setKeepRecipe(true);
+        }
+        ComponentDefinitionRegistryImpl registry = (ComponentDefinitionRegistryImpl)getComponentDefinitionRegistry();
+        // check for init-method and set it on Recipe
+        String initMethod = local.getInitMethodName();
+        if (initMethod == null) {
+            Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), registry.getDefaultInitMethod());
+            recipe.setInitMethod(method);
+        } else if (initMethod.length() > 0) {
+            Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), initMethod);
+            if (method == null) {
+                throw new ConstructionException("Component '" + local.getName() + "' does not have init-method: " + initMethod);
+            }
+            recipe.setInitMethod(method);
+        }
+        // check for destroy-method and set it on Recipe
+        String destroyMethod = local.getDestroyMethodName();
+        if (destroyMethod == null) {
+            Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), registry.getDefaultDestroyMethod());
+            recipe.setDestroyMethod(method);
+        } else if (destroyMethod.length() > 0) {
+            Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), destroyMethod);
+            if (method == null) {
+                throw new ConstructionException("Component '" + local.getName() + "' does not have destroy-method: " + destroyMethod);
+            }
+            recipe.setDestroyMethod(method);
+        }
+        // TODO: constructor args
+        // TODO: lazy
+        // TODO: factory-method
+        // TODO: factory-component
+        return recipe;
     }
 
     private Recipe createRecipe(RegistrationListenerMetadata listener) throws Exception {

@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.xbean.recipe.ObjectGraph;
-import org.apache.xbean.recipe.ObjectRecipe;
-import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.Repository;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
@@ -38,10 +36,10 @@ import org.osgi.framework.ServiceRegistration;
 public class BundleScopeServiceFactory implements ServiceFactory {
 
     private ModuleContextImpl moduleContext;
-    private Recipe serviceRecipe;
+    private BlueprintObjectRecipe serviceRecipe;
     private Map<Bundle, Entry> instanceMap = Collections.synchronizedMap(new HashMap<Bundle, Entry>()); 
     
-    public BundleScopeServiceFactory(ModuleContextImpl moduleContext, Recipe serviceRecipe) {
+    public BundleScopeServiceFactory(ModuleContextImpl moduleContext, BlueprintObjectRecipe serviceRecipe) {
         this.moduleContext = moduleContext;
         this.serviceRecipe = serviceRecipe;
     }
@@ -83,11 +81,11 @@ public class BundleScopeServiceFactory implements ServiceFactory {
     }
     
     private void destroyInstance(Object instance) {
-        // TODO: call destroy method if any
+        serviceRecipe.destroyInstance(instance);
     }
     
     protected Class getServiceClass() {
-        return ((ObjectRecipe) serviceRecipe).getType();
+        return serviceRecipe.getType();
     }
     
     private static class Entry {

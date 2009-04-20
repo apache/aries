@@ -34,6 +34,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
     
     private boolean keepRecipe = false;
     private Method initMethod;
+    private Method destroyMethod;
     
     public BlueprintObjectRecipe(Class typeName) {
         super(typeName);
@@ -54,6 +55,14 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
     public Method getInitMethod() {
         return initMethod;
     }
+    
+    public void setDestroyMethod(Method destroyMethod) {
+        this.destroyMethod = destroyMethod;
+    }
+    
+    public Method getDestroyMethod() {
+        return destroyMethod;
+    }
         
     @Override
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
@@ -71,4 +80,16 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         return obj;
     }
     
+    public void destroyInstance(Object obj) {
+        if (!getType().equals(obj.getClass())) {
+            throw new RuntimeException("");
+        }
+        if (destroyMethod != null) {
+            try {
+                destroyMethod.invoke(obj, new Object[] {});
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
