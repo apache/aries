@@ -19,45 +19,73 @@
 package org.apache.geronimo.blueprint.itests;
 
 import java.net.URLDecoder;
+import java.util.Properties;
+import java.util.Hashtable;
 
 import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
 import org.apache.geronimo.blueprint.sample.Foo;
 import org.apache.geronimo.blueprint.sample.Bar;
+import org.apache.geronimo.blueprint.sample.InterfaceA;
+import org.apache.geronimo.blueprint.sample.BindingListener;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.Constants;
 import org.osgi.service.blueprint.context.ModuleContext;
+import org.osgi.service.blueprint.context.ServiceUnavailableException;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
-public class Test extends AbstractIntegrationTest {
+public class TestReferences extends AbstractIntegrationTest {
 
-    public void test() throws Exception {
-        Resource res = locateBundle(getBundle("org.apache.geronimo", "blueprint-sample"));
-        Bundle bundle = installBundle(res);
-        assertNotNull(bundle);
-        bundle.start();
-
+    public void testUnaryReference() throws Exception {
         ModuleContext moduleContext = getOsgiService(ModuleContext.class, 5000);
         assertNotNull(moduleContext);
 
-        Object obj = moduleContext.getComponent("bar");
-        assertNotNull(obj);
-        assertEquals(Bar.class, obj.getClass());
-        obj = moduleContext.getComponent("foo");
-        assertNotNull(obj);
-        assertEquals(Foo.class, obj.getClass());
+        BindingListener listener = (BindingListener) moduleContext.getComponent("bindingListener");
+        assertNull(listener.getA());
+        assertNull(listener.getReference());
 
-        // TODO: components properties
-
-        Foo foo = getOsgiService(Foo.class, 5000);
-        assertNotNull(foo);
-        assertSame(foo, obj);
-
-        bundle.stop();
+        InterfaceA a = (InterfaceA) moduleContext.getComponent("ref2");
         try {
-            moduleContext = getOsgiService(ModuleContext.class, 1);
-            fail("ModuleContext should have been unregistered");
-        } catch (Exception e) {
-            // Expected, as the module context should have been unregistered
+            a.hello("world");
+            fail("A ServiceUnavailableException should have been thrown");
+        } catch (ServiceUnavailableException e) {
+            // Ignore, expected
+        }
+
+        ServiceRegistration reg1 = bundleContext.registerService(InterfaceA.class.getName(), new InterfaceA() {
+            public String hello(String msg) {
+                return "Hello " + msg + "!";
+            }
+        }, null);
+        assertNotNull(listener.getA());
+        assertNotNull(listener.getReference());
+        assertEquals("Hello world!", a.hello("world"));
+
+        Hashtable props = new Hashtable();
+        props.put(Constants.SERVICE_RANKING, Integer.valueOf(1));
+        ServiceRegistration reg2 = bundleContext.registerService(InterfaceA.class.getName(), new InterfaceA() {
+            public String hello(String msg) {
+                return "Good morning " + msg + "!";
+            }
+        }, props);
+        assertNotNull(listener.getA());
+        assertNotNull(listener.getReference());
+        assertEquals("Good morning world!", a.hello("world"));
+
+        reg2.unregister();
+        assertNotNull(listener.getA());
+        assertNotNull(listener.getReference());
+        assertEquals("Hello world!", a.hello("world"));
+
+        reg1.unregister();
+        assertNull(listener.getA());
+        assertNull(listener.getReference());
+        try {
+            a.hello("world");
+            fail("A ServiceUnavailableException should have been thrown");
+        } catch (ServiceUnavailableException e) {
+            // Ignore, expected
         }
     }
 
@@ -90,6 +118,7 @@ public class Test extends AbstractIntegrationTest {
 	protected String[] getTestBundlesNames() {
         return new String[] {
                 getBundle("org.apache.geronimo", "blueprint-bundle"),
+                getBundle("org.apache.geronimo", "blueprint-sample"),
 		};
 	}
 
