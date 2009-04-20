@@ -58,6 +58,7 @@ import org.osgi.service.blueprint.reflect.TypedStringValue;
 import org.osgi.service.blueprint.reflect.Value;
 import org.osgi.service.blueprint.reflect.UnaryServiceReferenceComponentMetadata;
 import org.osgi.service.blueprint.reflect.CollectionBasedServiceReferenceComponentMetadata;
+import org.osgi.service.blueprint.reflect.BindingListenerMetadata;
 
 /**
  * TODO: javadoc
@@ -148,8 +149,8 @@ public class Instanciator {
             recipe.allow(Option.PRIVATE_PROPERTIES);
             recipe.setName(component.getName());
             recipe.setProperty("moduleContext", moduleContext);
-            LocalComponentMetadata exportedComponent = getServiceComponent(serviceExport.getExportedComponent());
-            if (LocalComponentMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
+            LocalComponentMetadata exportedComponent = getLocalServiceComponent(serviceExport.getExportedComponent());
+            if (exportedComponent != null && LocalComponentMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
                 Recipe exportedComponentRecipe = createRecipe(exportedComponent);
                 recipe.setProperty("service", new BundleScopeServiceFactory(moduleContext, exportedComponentRecipe));
             } else {
@@ -171,8 +172,20 @@ public class Instanciator {
             }
             return recipe;
         } else if (component instanceof UnaryServiceReferenceComponentMetadata) {
-            // TODO
-            throw new IllegalStateException("Unsupported component type " + component.getClass());
+            UnaryServiceReferenceComponentMetadata metadata = (UnaryServiceReferenceComponentMetadata) component;
+            CollectionRecipe cr = null;
+            if (metadata.getBindingListeners() != null) {
+                cr = new CollectionRecipe(ArrayList.class);;
+                for (BindingListenerMetadata listener : (Collection<BindingListenerMetadata>) metadata.getBindingListeners()) {
+                    cr.add(createRecipe(listener));
+                }
+            }
+            ReferenceServiceRecipe recipe = new ReferenceServiceRecipe(moduleContext,
+                                                                       moduleContext.getSender(),
+                                                                       metadata,
+                                                                       cr);
+            recipe.setName(component.getName());
+            return recipe;
         } else if (component instanceof CollectionBasedServiceReferenceComponentMetadata) {
             // TODO
             throw new IllegalStateException("Unsupported component type " + component.getClass());
@@ -188,17 +201,29 @@ public class Instanciator {
         recipe.setProperty("metadata", listener);
         return recipe;
     }
-    
-    private LocalComponentMetadata getServiceComponent(Value value) throws Exception {
+
+    private Recipe createRecipe(BindingListenerMetadata listener) throws Exception {
+        ObjectRecipe recipe = new ObjectRecipe(ReferenceServiceRecipe.Listener.class);
+        recipe.allow(Option.PRIVATE_PROPERTIES);
+        recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
+        recipe.setProperty("metadata", listener);
+        return recipe;
+    }
+
+    private LocalComponentMetadata getLocalServiceComponent(Value value) throws Exception {
+        ComponentMetadata metadata = null;
         if (value instanceof ReferenceValue) {
             ReferenceValue ref = (ReferenceValue) value;
             ComponentDefinitionRegistry registry = getComponentDefinitionRegistry();
-            return (LocalComponentMetadata) registry.getComponentDefinition(ref.getComponentName());
+            metadata = registry.getComponentDefinition(ref.getComponentName());
         } else if (value instanceof ComponentValue) {
             ComponentValue comp = (ComponentValue) value;
-            return (LocalComponentMetadata) comp.getComponentMetadata();
+            metadata = comp.getComponentMetadata();
+        }
+        if (metadata instanceof LocalComponentMetadata) {
+            return (LocalComponentMetadata) metadata;
         } else {
-            throw new RuntimeException("Unexpected component value: " + value);
+            return null;
         }
     }
     
