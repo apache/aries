@@ -24,6 +24,12 @@ import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.Repository;
 
+/**
+ * By default in object repository Recipes are replaced with objects that were creating using the given Recipe.
+ * That essentially implements the 'singleton' scope. For 'prototype' scope we do not allow certain Recipes to
+ * be replaced with resulting objects in the repository. That ensures that a new instance of a object is created
+ * for such Recipes during graph instantiation.
+ */
 public class ScopedRepository implements Repository {
 
     private SortedMap<String, Object> instances;
@@ -49,9 +55,17 @@ public class ScopedRepository implements Repository {
     }
 
     public void add(String name, Object instance) {
-        if (instances.containsKey(name) && !(instances.get(name) instanceof Recipe)) {
-            throw new ConstructionException("Name " + name + " is already registered to instance " + instance);
+        Object existingObj = instances.get(name);
+        if (existingObj != null) {
+            if (existingObj instanceof BlueprintObjectRecipe) {                
+                if ( ((BlueprintObjectRecipe) existingObj ).getKeepRecipe()) {
+                    return;
+                }
+            } else if (!(existingObj instanceof Recipe)) {
+                throw new ConstructionException("Name " + name + " is already registered to instance " + instance);
+            }
         }
+
         instances.put(name, instance);
     }
 }

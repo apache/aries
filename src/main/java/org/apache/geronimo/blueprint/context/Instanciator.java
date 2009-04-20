@@ -128,18 +128,20 @@ public class Instanciator {
     private Recipe createRecipe(ComponentMetadata component) throws Exception {
         if (component instanceof LocalComponentMetadata) {
             LocalComponentMetadata local = (LocalComponentMetadata) component;
-            ObjectRecipe recipe = new BundleObjectRecipe(local.getClassName());
+            BundleObjectRecipe recipe = new BundleObjectRecipe(local.getClassName());
             recipe.allow(Option.PRIVATE_PROPERTIES);
             recipe.setName(component.getName());
             for (PropertyInjectionMetadata property : (Collection<PropertyInjectionMetadata>) local.getPropertyInjectionMetadata()) {
                 Object value = getValue(property.getValue(), null);
                 recipe.setProperty(property.getName(), value);
             }
+            if (LocalComponentMetadata.SCOPE_PROTOTYPE.equals(local.getScope())) {
+                recipe.setKeepRecipe(true);
+            }
             // TODO: constructor args
             // TODO: init-method
             // TODO: destroy-method
             // TODO: lazy
-            // TODO: scope
             // TODO: factory-method
             // TODO: factory-component
             return recipe;
@@ -308,7 +310,7 @@ public class Instanciator {
         return clazz;
     }
     
-    private class BundleObjectRecipe extends ObjectRecipe {
+    private class BundleObjectRecipe extends BlueprintObjectRecipe {
 
         String typeName;
 

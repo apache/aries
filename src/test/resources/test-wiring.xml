@@ -17,6 +17,10 @@
         </service-properties>    
     </service>
     
+    <component id="pojoC" class="org.apache.geronimo.blueprint.pojos.PojoB" scope = "prototype">
+        <property name="uri" value="urn:myuri" />
+    </component>
+    
     <component id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB">
         <property name="uri" value="urn:myuri" />
     </component>
