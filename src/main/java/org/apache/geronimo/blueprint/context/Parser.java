@@ -267,6 +267,10 @@ public class Parser {
         if (root.hasAttribute(DEFAULT_AVAILABILITY_ATTRIBUTE)) {
             defaultAvailability = root.getAttribute(DEFAULT_AVAILABILITY_ATTRIBUTE);
         }
+        
+        registry.setDefaultInitMethod(defaultInitMethod);
+        registry.setDefaultDestroyMethod(defaultDestroyMethod);
+        
         /*
         // Parse custom attributes
         NamedNodeMap attributes = root.getAttributes();
@@ -375,20 +379,10 @@ public class Parser {
             metadata.setExplicitDependencies(parseListAsSet(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
         }
         if (element.hasAttribute(INIT_METHOD_ATTRIBUTE)) {
-            String method = element.getAttribute(INIT_METHOD_ATTRIBUTE);
-            if (method.trim().length() != 0) { 
-                metadata.setInitMethodName(method);
-            }
-        } else {
-            metadata.setInitMethodName(defaultInitMethod);
+            metadata.setInitMethodName(element.getAttribute(INIT_METHOD_ATTRIBUTE));
         }
         if (element.hasAttribute(DESTROY_METHOD_ATTRIBUTE)) {
-            String method = element.getAttribute(DESTROY_METHOD_ATTRIBUTE);
-            if (method.trim().length() != 0) {
-                metadata.setDestroyMethodName(method);
-            }
-        } else {
-            metadata.setDestroyMethodName(defaultDestroyMethod);
+            metadata.setDestroyMethodName(element.getAttribute(DESTROY_METHOD_ATTRIBUTE));
         }
 
         // Parse elements

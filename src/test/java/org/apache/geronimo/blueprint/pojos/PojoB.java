@@ -23,6 +23,7 @@ import java.net.URI;
 public class PojoB {
 
     private URI uri;
+    private boolean initCalled;
 
     public PojoB() {
     }
@@ -37,5 +38,13 @@ public class PojoB {
 
     public void setUri(URI uri) {
         this.uri = uri;
+    }
+    
+    public void init() {
+        initCalled = true;
+    }
+    
+    public boolean getInitCalled() {
+        return initCalled;
     }
 }

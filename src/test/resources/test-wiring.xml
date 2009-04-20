@@ -2,10 +2,12 @@
 <components xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 ../../main/resources/org/apache/felix/blueprint/blueprint.xsd"
-            default-availability="mandatory">
+            default-availability="mandatory"
+            default-init-method = "init"
+            default-destroy-method = "destroy" >
 
     <type-converters>
-            <component id="converter1" class="org.apache.geronimo.blueprint.convert.TestConverter">
+            <component id="converter1" class="org.apache.geronimo.blueprint.pojos.ConverterA">
                 <property name="bundle" ref="bundle" />
             </component>
     </type-converters>
@@ -21,7 +23,7 @@
         <property name="uri" value="urn:myuri" />
     </component>
     
-    <component id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB">
+    <component id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB" init-method = "init">
         <property name="uri" value="urn:myuri" />
     </component>
 
