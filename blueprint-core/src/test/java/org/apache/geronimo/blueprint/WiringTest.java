@@ -90,10 +90,15 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals(new BigInteger("50"), pojoa.getNumberArray()[1]);
         assertEquals(new Long(100), pojoa.getNumberArray()[2]);
         
+        // test init-method
+        assertEquals(true, pojob.getInitCalled());
+        
+        // test service
         Object obj3 = graph.create("service1");
         assertNotNull(obj3);
         assertTrue(obj3 instanceof ServiceRegistration);    
         
+        // tests 'prototype' scope
         Object obj4 = graph.create("pojoC");
         assertNotNull(obj4);
         assertTrue(obj4 != graph.create("pojoC"));

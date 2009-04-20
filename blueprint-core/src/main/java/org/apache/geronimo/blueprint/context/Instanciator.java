@@ -18,6 +18,7 @@
  */
 package org.apache.geronimo.blueprint.context;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -128,7 +129,7 @@ public class Instanciator {
     private Recipe createRecipe(ComponentMetadata component) throws Exception {
         if (component instanceof LocalComponentMetadata) {
             LocalComponentMetadata local = (LocalComponentMetadata) component;
-            BundleObjectRecipe recipe = new BundleObjectRecipe(local.getClassName());
+            BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(loadClass(local.getClassName()));
             recipe.allow(Option.PRIVATE_PROPERTIES);
             recipe.setName(component.getName());
             for (PropertyInjectionMetadata property : (Collection<PropertyInjectionMetadata>) local.getPropertyInjectionMetadata()) {
@@ -138,8 +139,29 @@ public class Instanciator {
             if (LocalComponentMetadata.SCOPE_PROTOTYPE.equals(local.getScope())) {
                 recipe.setKeepRecipe(true);
             }
+            // check for init-method and set it on Recipe
+            String initMethod = local.getInitMethodName();
+            if (initMethod == null) {
+                ComponentDefinitionRegistryImpl registry = 
+                    (ComponentDefinitionRegistryImpl)getComponentDefinitionRegistry();
+                Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), registry.getDefaultInitMethod());
+                recipe.setInitMethod(method);
+            } else if (initMethod.length() > 0) {
+                Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), initMethod);
+                if (method == null) {
+                    throw new ConstructionException("Component '" + component.getName() + "' does not have init-method: " + initMethod);
+                }
+                recipe.setInitMethod(method);
+            }
+            // check for destroy-method
+            String destroyMethod = local.getDestroyMethodName();
+            if (destroyMethod != null && destroyMethod.length() > 0) {
+                Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), destroyMethod);
+                if (method == null) {
+                    throw new ConstructionException("Component '" + component.getName() + "' does not have destroy-method: " + destroyMethod);
+                }
+            }
             // TODO: constructor args
-            // TODO: init-method
             // TODO: destroy-method
             // TODO: lazy
             // TODO: factory-method
@@ -235,14 +257,14 @@ public class Instanciator {
         } else if (v instanceof TypedStringValue) {
             TypedStringValue stringValue = (TypedStringValue) v; 
             String value = stringValue.getStringValue();
-            Class type = loadType(stringValue.getTypeName());
+            Class type = loadClass(stringValue.getTypeName());
             return new ValueRecipe(getConversionService(), value, type, groupingType);
         } else if (v instanceof ReferenceValue) {
             String componentName = ((ReferenceValue) v).getComponentName();
             return new ReferenceRecipe(componentName);
         } else if (v instanceof ListValue) {
             ListValue listValue = (ListValue) v;
-            Class type = loadType(listValue.getValueType());
+            Class type = loadClass(listValue.getValueType());
             CollectionRecipe cr = new CollectionRecipe(ArrayList.class);
             for (Value lv : (List<Value>) listValue.getList()) {
                 cr.add(getValue(lv, type));
@@ -250,7 +272,7 @@ public class Instanciator {
             return cr;
         } else if (v instanceof SetValue) {
             SetValue setValue = (SetValue) v;
-            Class type = loadType(setValue.getValueType());
+            Class type = loadClass(setValue.getValueType());
             CollectionRecipe cr = new CollectionRecipe(HashSet.class);
             for (Value lv : (Set<Value>) setValue.getSet()) {
                 cr.add(getValue(lv, type));
@@ -258,8 +280,8 @@ public class Instanciator {
             return cr;
         } else if (v instanceof MapValue) {
             MapValue mapValue = (MapValue) v;
-            Class keyType = loadType(mapValue.getKeyType());
-            Class valueType = loadType(mapValue.getValueType());            
+            Class keyType = loadClass(mapValue.getKeyType());
+            Class valueType = loadClass(mapValue.getValueType());            
             MapRecipe mr = new MapRecipe(HashMap.class);
             for (Map.Entry<Value,Value> entry : ((Map<Value,Value>) mapValue.getMap()).entrySet()) {
                 Object key = getValue(entry.getKey(), keyType);
@@ -269,7 +291,7 @@ public class Instanciator {
             return mr;
         } else if (v instanceof ArrayValue) {
             ArrayValue arrayValue = (ArrayValue) v;
-            Class type = loadType(arrayValue.getValueType());
+            Class type = loadClass(arrayValue.getValueType());
             ArrayRecipe ar = (type == null) ? new ArrayRecipe() : new ArrayRecipe(type);
             for (Value value : arrayValue.getArray()) {
                 ar.add(getValue(value, type));
@@ -294,7 +316,7 @@ public class Instanciator {
         return moduleContext.getConversionService();
     }
     
-    private Class loadType(String typeName) throws ClassNotFoundException {
+    private Class loadClass(String typeName) throws ClassNotFoundException {
         if (typeName == null) {
             return null;
         }
@@ -302,34 +324,13 @@ public class Instanciator {
         Class clazz = primitiveClasses.get(typeName);
         if (clazz == null) {
             if (moduleContext == null) {
-                clazz = Class.forName(typeName);            
+                ClassLoader loader = Thread.currentThread().getContextClassLoader();
+                clazz = loader.loadClass(typeName);
             } else {
                 clazz = moduleContext.getBundleContext().getBundle().loadClass(typeName);
             }
         }
         return clazz;
     }
-    
-    private class BundleObjectRecipe extends BlueprintObjectRecipe {
-
-        String typeName;
-
-        public BundleObjectRecipe(String typeName) {
-            super(typeName);
-            this.typeName = typeName;
-        }
-        
-        @Override
-        public Class getType() {
-            if (moduleContext == null) {
-                return super.getType();
-            }
-            try {
-                return moduleContext.getBundleContext().getBundle().loadClass(typeName);
-            } catch (ClassNotFoundException e) {
-                throw new ConstructionException("Type class could not be found: " + typeName);
-            }
-        }
-    }
-            
+                
 }

@@ -18,6 +18,11 @@
  */
 package org.apache.geronimo.blueprint.context;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+
+import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ObjectRecipe;
 
 /**
@@ -28,8 +33,9 @@ import org.apache.xbean.recipe.ObjectRecipe;
 public class BlueprintObjectRecipe extends ObjectRecipe {
     
     private boolean keepRecipe = false;
+    private Method initMethod;
     
-    public BlueprintObjectRecipe(String typeName) {
+    public BlueprintObjectRecipe(Class typeName) {
         super(typeName);
     }
     
@@ -39,6 +45,30 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
     
     public boolean getKeepRecipe() {
         return keepRecipe;
+    }
+    
+    public void setInitMethod(Method initMethod) {
+        this.initMethod = initMethod;
+    }
+    
+    public Method getInitMethod() {
+        return initMethod;
+    }
+        
+    @Override
+    protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
+        Object obj = super.internalCreate(expectedType, lazyRefAllowed);
+        if (initMethod != null) {
+            try {
+                initMethod.invoke(obj, new Object[] {});
+            } catch (InvocationTargetException e) {
+                Throwable root = e.getTargetException();
+                throw new ConstructionException("init-method generated exception", root);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return obj;
     }
     
 }
