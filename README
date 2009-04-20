@@ -11,6 +11,7 @@
   d) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.org.objectweb.asm&version=3.1.0&type=binary
   e) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.org.objectweb.asm.tree&version=3.1.0&type=binary
   f) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.org.objectweb.asm.commons&version=3.1.0&type=binary
+  g) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.net.sf.cglib&version=2.1.3&type=binary
 
 3) Install EventAdmin service and dependencies
 
@@ -18,12 +19,12 @@
 
 4) Build the blueprint project and install the extender and sample bundles:
 
-  a) install file://<m2_repo>/org/apache/felix/blueprint-api/1.0.0-SNAPSHOT/blueprint-api-1.0.0-SNAPSHOT.jar
-  b) install file://<m2_repo>/org/apache/felix/org.apache.geronimo.blueprint/1.0.0-SNAPSHOT/org.apache.geronimo.blueprint-1.0.0-SNAPSHOT.jar
-  c) install file://<m2_repo>/org/apache/felix/sample/1.0.0-SNAPSHOT/sample-1.0.0-SNAPSHOT.jar
+  a) install file://<m2_repo>/org/apache/geronimo/blueprint-api/1.0.0-SNAPSHOT/blueprint-api-1.0.0-SNAPSHOT.jar
+  b) install file://<m2_repo>/org/apache/geronimo/blueprint-core/1.0.0-SNAPSHOT/blueprint-core-1.0.0-SNAPSHOT.jar
+  c) install file://<m2_repo>/org/apache/geronimo/blueprint-sample/1.0.0-SNAPSHOT/blueprint-sample-1.0.0-SNAPSHOT.jar
 
 5) Start the extender and sample bundles:
 
-  a) start <bundle id for extender bundle>
+  a) start <bundle id for core bundle>
   b) start <bundle id for sample bundle>
 

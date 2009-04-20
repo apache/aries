@@ -36,8 +36,6 @@ import org.osgi.service.blueprint.reflect.RegistrationListenerMetadata;
 import org.osgi.service.blueprint.reflect.ServiceExportComponentMetadata;
 
 /** 
- * TODO: if the exported component as a scope='bundle' we should create a ServiceFactory to honor that
- * 
  * TODO: javadoc
  */
 public class ServiceRegistrationProxy implements ServiceRegistration {
@@ -63,24 +61,28 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
         if (registration != null) {
             return;
         }
-        
+                
+        Class serviceClass = service.getClass();
+        if (service instanceof BundleScopeServiceFactory) {
+            serviceClass = ((BundleScopeServiceFactory) service).getServiceClass();
+        }
         Set<String> classes;
         switch (metadata.getAutoExportMode()) {
             case ServiceExportComponentMetadata.EXPORT_MODE_INTERFACES:
-                classes = ReflectionUtils.getImplementedInterfaces(new HashSet<String>(), service.getClass());
+                classes = ReflectionUtils.getImplementedInterfaces(new HashSet<String>(), serviceClass);
                 break;
             case ServiceExportComponentMetadata.EXPORT_MODE_CLASS_HIERARCHY:
-                classes = ReflectionUtils.getSuperClasses(new HashSet<String>(), service.getClass());
+                classes = ReflectionUtils.getSuperClasses(new HashSet<String>(), serviceClass);
                 break;
             case ServiceExportComponentMetadata.EXPORT_MODE_ALL:
-                classes = ReflectionUtils.getSuperClasses(new HashSet<String>(), service.getClass());
-                classes = ReflectionUtils.getImplementedInterfaces(classes, service.getClass());
+                classes = ReflectionUtils.getSuperClasses(new HashSet<String>(), serviceClass);
+                classes = ReflectionUtils.getImplementedInterfaces(classes, serviceClass);
                 break;
             default:
                 classes = metadata.getInterfaceNames();
                 break;
         }
-        
+                
         Hashtable props = new Hashtable();
         if (serviceProperties != null) {
             props.putAll(serviceProperties);
@@ -94,7 +96,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
         registration = moduleContext.getBundleContext().registerService(classesArray, service, props);
         registrationProperties = props;
         
-        System.out.println("service registered: " + service);
+        System.out.println("service registered: " + service + " " + classes);
         
         if (listeners != null) {
             for (Listener listener : listeners) {
