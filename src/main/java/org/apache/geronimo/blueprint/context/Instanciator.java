@@ -39,6 +39,7 @@ import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.ReferenceRecipe;
 import org.apache.xbean.recipe.Repository;
 import org.osgi.service.blueprint.convert.ConversionService;
+import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.ArrayValue;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.ComponentValue;
@@ -96,8 +97,9 @@ public class Instanciator {
         }
     }
     
-    public Repository createRepository(ComponentDefinitionRegistryImpl registry) throws Exception {
-        Repository repository = new DefaultRepository();
+    public Repository createRepository() throws Exception {
+        ComponentDefinitionRegistryImpl registry = (ComponentDefinitionRegistryImpl)getComponentDefinitionRegistry();
+        Repository repository = new ScopedRepository();
         addBuiltinComponents(repository);
         
         // Create type-converter recipes
@@ -146,7 +148,13 @@ public class Instanciator {
             recipe.allow(Option.PRIVATE_PROPERTIES);
             recipe.setName(component.getName());
             recipe.setProperty("moduleContext", moduleContext);
-            recipe.setProperty("service", getValue(serviceExport.getExportedComponent(), null));   
+            LocalComponentMetadata exportedComponent = getServiceComponent(serviceExport.getExportedComponent());
+            if (LocalComponentMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
+                Recipe exportedComponentRecipe = createRecipe(exportedComponent);
+                recipe.setProperty("service", new BundleScopeServiceFactory(moduleContext, exportedComponentRecipe));
+            } else {
+                recipe.setProperty("service", getValue(serviceExport.getExportedComponent(), null));
+            }
             recipe.setProperty("metadata", component);
             if (component instanceof ServiceExportComponentMetadataImpl) {
                 ServiceExportComponentMetadataImpl impl = (ServiceExportComponentMetadataImpl) component;
@@ -179,6 +187,19 @@ public class Instanciator {
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         recipe.setProperty("metadata", listener);
         return recipe;
+    }
+    
+    private LocalComponentMetadata getServiceComponent(Value value) throws Exception {
+        if (value instanceof ReferenceValue) {
+            ReferenceValue ref = (ReferenceValue) value;
+            ComponentDefinitionRegistry registry = getComponentDefinitionRegistry();
+            return (LocalComponentMetadata) registry.getComponentDefinition(ref.getComponentName());
+        } else if (value instanceof ComponentValue) {
+            ComponentValue comp = (ComponentValue) value;
+            return (LocalComponentMetadata) comp.getComponentMetadata();
+        } else {
+            throw new RuntimeException("Unexpected component value: " + value);
+        }
     }
     
     private Object getValue(Value v, Class groupingType) throws Exception {
@@ -236,6 +257,10 @@ public class Instanciator {
         } else {
             throw new IllegalStateException("Unsupported value: " + v.getClass().getName());
         }
+    }
+    
+    protected ComponentDefinitionRegistry getComponentDefinitionRegistry() {
+        return moduleContext.getComponentDefinitionRegistry();
     }
     
     protected ConversionService getConversionService() {

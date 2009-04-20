@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,13 +45,11 @@ import org.osgi.service.blueprint.context.ModuleContext;
 import org.osgi.service.blueprint.context.NoSuchComponentException;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.convert.Converter;
+import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.ComponentValue;
 import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceValue;
 import org.osgi.service.blueprint.reflect.ServiceExportComponentMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceComponentMetadata;
-import org.osgi.service.blueprint.reflect.Value;
 
 /**
  * TODO: javadoc
@@ -68,7 +65,7 @@ public class ModuleContextImpl implements ModuleContext {
     private final List<URL> urls;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
     private final ConversionServiceImpl conversionService;
-    private Map<String, Object> instances;
+    private ObjectGraph objectGraph;
     private ServiceRegistration registration;
 
     public ModuleContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, List<URL> urls) {
@@ -105,21 +102,23 @@ public class ModuleContextImpl implements ModuleContext {
             Parser parser = new Parser(handlers, componentDefinitionRegistry, urls);
             parser.parse();
             Instanciator i = new Instanciator(this);
-            Repository repository = i.createRepository(componentDefinitionRegistry);
-            ObjectGraph graph = new ObjectGraph(repository);
+            Repository repository = i.createRepository();
+            objectGraph = new ObjectGraph(repository);
 
-            registerTypeConverters(graph);
+            registerTypeConverters();
 
             // TODO: handle scopes and such
-            instances = graph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames()));
+            Map instances = objectGraph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames()));
             System.out.println(instances);
 
             registerAllServices();
             
             // Register the ModuleContext in the OSGi registry
             Properties props = new Properties();
-            props.put("osgi.blueprint.context.symbolicname", bundleContext.getBundle().getSymbolicName());
-            props.put("osgi.blueprint.context.version", bundleContext.getBundle().getHeaders().get(Constants.BUNDLE_VERSION));
+            props.put(BlueprintConstants.CONTEXT_SYMBOLIC_NAME_PROPERTY, 
+                      bundleContext.getBundle().getSymbolicName());
+            props.put(BlueprintConstants.CONTEXT_VERSION_PROPERTY, 
+                      bundleContext.getBundle().getHeaders().get(Constants.BUNDLE_VERSION));
             registration = bundleContext.registerService(ModuleContext.class.getName(), this, props);
 
             sender.sendCreated(this);
@@ -133,9 +132,9 @@ public class ModuleContextImpl implements ModuleContext {
         }
     }
 
-    private void registerTypeConverters(ObjectGraph graph) {
+    private void registerTypeConverters() {
         List<String> typeConvertersNames = componentDefinitionRegistry.getTypeConverterNames();
-        Map<String, Object> typeConverters = graph.createAll(typeConvertersNames);
+        Map<String, Object> typeConverters = objectGraph.createAll(typeConvertersNames);
         System.out.println(typeConverters);
         for (String name : typeConvertersNames) {
             Object typeConverterInstance = typeConverters.get(name);
@@ -171,8 +170,7 @@ public class ModuleContextImpl implements ModuleContext {
         if (metadata == null) {
             throw new NoSuchComponentException(name);
         }
-        // TODO: handle scopes and such
-        return instances.get(name);
+        return objectGraph.create(name);
     }
 
     public ComponentMetadata getComponentMetadata(String name) {
@@ -208,7 +206,15 @@ public class ModuleContextImpl implements ModuleContext {
 
     }
 
-    public ConversionService getConversionService() {
+    protected ObjectGraph getObjectGraph() {
+        return objectGraph;
+    }
+    
+    protected ComponentDefinitionRegistry getComponentDefinitionRegistry() {
+        return componentDefinitionRegistry;
+    }
+    
+    protected ConversionService getConversionService() {
         return conversionService;
     }
     
