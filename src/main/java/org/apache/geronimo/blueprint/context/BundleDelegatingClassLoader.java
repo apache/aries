@@ -33,9 +33,15 @@ import org.osgi.framework.Bundle;
 public class BundleDelegatingClassLoader extends ClassLoader {
 
     private final Bundle bundle;
+    private final ClassLoader classLoader;
 
     public BundleDelegatingClassLoader(Bundle bundle) {
+        this(bundle, null);
+    }
+
+    public BundleDelegatingClassLoader(Bundle bundle, ClassLoader classLoader) {
         this.bundle = bundle;
+        this.classLoader = classLoader;
     }
 
     protected Class findClass(String name) throws ClassNotFoundException {
@@ -43,7 +49,11 @@ public class BundleDelegatingClassLoader extends ClassLoader {
     }
 
     protected URL findResource(String name) {
-        return bundle.getResource(name);
+        URL resource = findResource(name);
+        if (classLoader != null && resource == null) {
+            resource = classLoader.getResource(name);
+        }
+        return resource;
     }
 
     protected Enumeration findResources(String name) throws IOException {
@@ -51,7 +61,16 @@ public class BundleDelegatingClassLoader extends ClassLoader {
     }
 
     protected Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        Class clazz = findClass(name);
+        Class clazz;
+        try {
+            clazz = findClass(name);
+        }
+        catch (ClassNotFoundException cnfe) {
+            if (classLoader != null)
+                clazz = classLoader.loadClass(name);
+            else
+                throw cnfe;
+        }
         if (resolve) {
             resolveClass(clazz);
         }

@@ -20,6 +20,8 @@ package org.apache.geronimo.blueprint.context;
 
 import java.lang.reflect.Method;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * TODO: javadoc
@@ -48,15 +50,15 @@ public class ReflectionUtils {
         return classes;
     }
     
-    public static Method findMethod(Class clazz, String name, Class[] paramTypes) {    
+    public static Method findMethod(Class clazz, String name, Class[] paramTypes) {
         try {
             return clazz.getMethod(name, paramTypes);
         } catch (NoSuchMethodException e) {
-            return findCompatibileMethod(clazz, name, paramTypes);
+            return findCompatibleMethod(clazz, name, paramTypes);
         }
     }
 
-    public static Method findCompatibileMethod(Class clazz, String name, Class[] paramTypes) {
+    public static Method findCompatibleMethod(Class clazz, String name, Class[] paramTypes) {
         Method[] methods = clazz.getMethods();
         for (Method method :  methods) {
             Class[] methodParams = method.getParameterTypes();
@@ -71,5 +73,23 @@ public class ReflectionUtils {
             }
         }
         return null;
-    }        
+    }
+
+    public static List<Method> findCompatibleMethods(Class clazz, String name, Class[] paramTypes) {
+        List<Method> methods = new ArrayList<Method>();
+        for (Method method : clazz.getMethods()) {
+            Class[] methodParams = method.getParameterTypes();
+            if (name.equals(method.getName()) && methodParams.length == paramTypes.length) {
+                boolean assignable = true;
+                for (int i = 0; i < paramTypes.length && assignable; i++) {
+                    assignable = methodParams[i].isAssignableFrom(paramTypes[i]);
+                }
+                if (assignable) {
+                    methods.add(method);
+                }
+            }
+        }
+        return methods;
+    }
+
 }

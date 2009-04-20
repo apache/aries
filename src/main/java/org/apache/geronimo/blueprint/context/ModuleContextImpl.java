@@ -77,6 +77,10 @@ public class ModuleContextImpl implements ModuleContext {
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
     }
 
+    public ModuleContextEventSender getSender() {
+        return sender;
+    }
+
     private void checkDirectives() {
         Bundle bundle = bundleContext.getBundle();
         Dictionary headers = bundle.getHeaders();
@@ -109,7 +113,7 @@ public class ModuleContextImpl implements ModuleContext {
 
             // TODO: handle scopes and such
             Map instances = objectGraph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames()));
-            System.out.println(instances);
+            //System.out.println(instances);
 
             registerAllServices();
             
@@ -126,9 +130,8 @@ public class ModuleContextImpl implements ModuleContext {
             sender.sendWaiting(this, e.getServiceObjectClass(), e.getServiceFilter());
             // TODO: wait for dependency
         } catch (Exception e) {
-            e.printStackTrace();
-            // TODO: pass the exception to the event
             sender.sendFailure(this, e);
+            e.printStackTrace(); // TODO: log failure
         }
     }
 
