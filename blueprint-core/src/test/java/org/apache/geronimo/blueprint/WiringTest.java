@@ -44,6 +44,8 @@ public class WiringTest extends AbstractBlueprintTest {
         assertNotNull(obj1);
         assertTrue(obj1 instanceof PojoA);
         PojoA pojoa = (PojoA) obj1;
+        // test singleton scope
+        assertTrue(obj1 == graph.create("pojoA"));
         
         Object obj2 = graph.create("pojoB");
         assertNotNull(obj2);
@@ -90,7 +92,11 @@ public class WiringTest extends AbstractBlueprintTest {
         
         Object obj3 = graph.create("service1");
         assertNotNull(obj3);
-        assertTrue(obj3 instanceof ServiceRegistration);
+        assertTrue(obj3 instanceof ServiceRegistration);    
+        
+        Object obj4 = graph.create("pojoC");
+        assertNotNull(obj4);
+        assertTrue(obj4 != graph.create("pojoC"));
     }
 
     private static class TestInstanciator extends Instanciator {
