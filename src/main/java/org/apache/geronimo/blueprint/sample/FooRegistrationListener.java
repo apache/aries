@@ -19,7 +19,7 @@ package org.apache.geronimo.blueprint.sample;
 import java.io.Serializable;
 import java.util.Map;
 
-public class FooListener {
+public class FooRegistrationListener {
         
     public void serviceRegistered(Serializable foo, Map props) {
         System.out.println("Service registration notification: " + foo + " " + props);
