@@ -65,7 +65,11 @@ public class MethodInjectionMetadataImpl implements MethodInjectionMetadata {
     }
 
     public List<ParameterSpecification> getParameterSpecifications() {
-        return Collections.unmodifiableList(parameterSpecifications);
+        if (parameterSpecifications == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(parameterSpecifications);
+        }
     }
 
     public void setParameterSpecifications(List<ParameterSpecification> parameterSpecifications) {
