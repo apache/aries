@@ -21,11 +21,14 @@ package org.apache.geronimo.blueprint.itests;
 import java.net.URLDecoder;
 import java.util.Properties;
 import java.util.Hashtable;
+import java.util.Currency;
+import java.text.SimpleDateFormat;
 
 import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
 import org.apache.geronimo.blueprint.sample.Foo;
 import org.apache.geronimo.blueprint.sample.Bar;
 import org.apache.geronimo.blueprint.sample.InterfaceA;
+import org.apache.geronimo.blueprint.sample.CurrencyTypeConverter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Constants;
@@ -48,14 +51,25 @@ public class TestModuleContext extends AbstractIntegrationTest {
         Object obj = moduleContext.getComponent("bar");
         assertNotNull(obj);
         assertEquals(Bar.class, obj.getClass());
+        Bar bar = (Bar) obj;
+        assertNotNull(bar.getContext());
+        assertEquals("Hello FooBar", bar.getValue());
+        assertNotNull(bar.getList());
+        assertEquals(2, bar.getList().size());
+        assertEquals("a list element", bar.getList().get(0));
+        assertEquals(Integer.valueOf(5), bar.getList().get(1));
         obj = moduleContext.getComponent("foo");
         assertNotNull(obj);
         assertEquals(Foo.class, obj.getClass());
+        Foo foo = (Foo) obj;
+        assertEquals(5, foo.getA());
+        assertEquals(10, foo.getB());
+        assertSame(bar, foo.getBar());
+        assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
+        assertEquals(new SimpleDateFormat("yyyy.MM.dd").parse("2009.04.17"), foo.getDate());
 
-        // TODO: components properties
-
-        Foo foo = getOsgiService(Foo.class, 5000);
-        assertNotNull(foo);
+        obj = getOsgiService(Foo.class, 5000);
+        assertNotNull(obj);
         assertSame(foo, obj);
 
         bundle.stop();
