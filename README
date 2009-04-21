@@ -5,26 +5,21 @@
 
 2) Install the following bundles:
 
-  a) install http://people.apache.org/repo/m2-snapshot-repository/org/apache/xbean/xbean-reflect/3.6-SNAPSHOT/xbean-reflect-3.6-SNAPSHOT.jar
-  b) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.org.apache.commons.logging&version=1.1.1&type=binary
-  c) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.org.apache.log4j&version=1.2.15&type=binary
-  d) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.org.objectweb.asm&version=3.1.0&type=binary
-  e) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.org.objectweb.asm.tree&version=3.1.0&type=binary
-  f) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.org.objectweb.asm.commons&version=3.1.0&type=binary
-  g) install http://www.springsource.com/repository/app/bundle/version/download?name=com.springsource.net.sf.cglib&version=2.1.3&type=binary
+  a) install http://repository.ops4j.org/maven2/org/ops4j/pax/logging/pax-logging-api/1.3.0/pax-logging-api-1.3.0.jar
+  b) install http://repository.ops4j.org/maven2/org/ops4j/pax/logging/pax-logging-service/1.3.0/pax-logging-service-1.3.0.jar
 
-3) Install EventAdmin service and dependencies
+3) Install EventAdmin and ConfigurationAdmin
 
   a) install http://repo1.maven.org/maven2/org/apache/felix/org.apache.felix.eventadmin/1.0.0/org.apache.felix.eventadmin-1.0.0.jar
+  a) install http://repo1.maven.org/maven2/org/apache/felix/org.apache.felix.configadmin/1.0.8/org.apache.felix.configadmin-1.0.8.jar
 
 4) Build the blueprint project and install the extender and sample bundles:
 
-  a) install file://<m2_repo>/org/apache/geronimo/blueprint-api/1.0.0-SNAPSHOT/blueprint-api-1.0.0-SNAPSHOT.jar
-  b) install file://<m2_repo>/org/apache/geronimo/blueprint-core/1.0.0-SNAPSHOT/blueprint-core-1.0.0-SNAPSHOT.jar
-  c) install file://<m2_repo>/org/apache/geronimo/blueprint-sample/1.0.0-SNAPSHOT/blueprint-sample-1.0.0-SNAPSHOT.jar
+  a) install file://<m2_repo>/org/apache/geronimo/blueprint-bundle/1.0.0-SNAPSHOT/blueprint-bundle-1.0.0-SNAPSHOT.jar
+  b) install file://<m2_repo>/org/apache/geronimo/blueprint-sample/1.0.0-SNAPSHOT/blueprint-sample-1.0.0-SNAPSHOT.jar
 
 5) Start the extender and sample bundles:
 
-  a) start <bundle id for core bundle>
-  b) start <bundle id for sample bundle>
+  a) start <bundle id for blueprint-bundle>
+  b) start <bundle id for blueprint-sample>
 
