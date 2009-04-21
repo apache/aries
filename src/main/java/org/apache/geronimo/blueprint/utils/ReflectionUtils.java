@@ -49,6 +49,20 @@ public class ReflectionUtils {
         }
         return classes;
     }
+
+    public static Method getLifecycleMethod(Class clazz, String name) {
+        if (name != null) {
+            try {
+                Method method = clazz.getMethod(name);
+                if (Void.TYPE.equals(method.getReturnType())) {
+                    return method;
+                }
+            } catch (NoSuchMethodException e) {
+                // fall thru
+            }
+        }
+        return null;
+    }
     
     public static Method findMethod(Class clazz, String name, Class[] paramTypes) {
         try {

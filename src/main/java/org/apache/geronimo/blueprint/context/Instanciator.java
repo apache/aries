@@ -30,6 +30,7 @@ import java.util.Comparator;
 
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.reflect.ServiceExportComponentMetadataImpl;
+import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.apache.xbean.recipe.ArrayRecipe;
 import org.apache.xbean.recipe.CollectionRecipe;
 import org.apache.xbean.recipe.ConstructionException;
