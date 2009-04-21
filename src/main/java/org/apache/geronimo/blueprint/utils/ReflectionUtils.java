@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.context;
+package org.apache.geronimo.blueprint.utils;
 
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -48,20 +48,6 @@ public class ReflectionUtils {
             getSuperClasses(classes, clazz.getSuperclass());
         }
         return classes;
-    }
-    
-    public static Method getLifecycleMethod(Class clazz, String name) {
-        if (name != null) {
-            try {
-                Method method = clazz.getMethod(name, new Class[] {});
-                if (Void.TYPE.equals(method.getReturnType())) {
-                    return method;
-                }
-            } catch (NoSuchMethodException e) {
-                // fall thru
-            }
-        }
-        return null;
     }
     
     public static Method findMethod(Class clazz, String name, Class[] paramTypes) {

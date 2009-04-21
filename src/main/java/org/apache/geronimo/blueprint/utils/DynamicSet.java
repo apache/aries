@@ -16,18 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint;
+package org.apache.geronimo.blueprint.utils;
+
+import java.util.Set;
+import java.util.Iterator;
+import java.lang.ref.WeakReference;
 
 /**
- * Interface implemented by objects to be notified of the lifecycle of a given component.
+ * Same as DynamicCollection but implementing the Set interface, thus not allowing
+ * duplicates.
+ * Note that the insertion performance of this set is not very good due to the underlying
+ * storage as a list which enforce a full traversal of the storage before adding any element. 
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
- * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
+ * @version $Rev: 766653 $, $Date: 2009-04-20 13:19:48 +0200 (Mon, 20 Apr 2009) $
  */
-public interface LifeCycle {
+public class DynamicSet<E> extends DynamicCollection<E> implements Set<E> {
 
-    void init() throws Exception;
-
-    void destroy() throws Exception;
+    @Override
+    public boolean add(E o) {
+        synchronized (lock) {
+            if (!storage.contains(o)) {
+                storage.add(o);
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
 
 }

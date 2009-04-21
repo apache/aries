@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
+import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;

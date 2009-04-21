@@ -716,6 +716,8 @@ public class Parser {
             } else if (MEMBER_TYPE_SERVICE_REFERENCE.equals(memberType)) {
                 references.setMemberType(CollectionBasedServiceReferenceComponentMetadata.MEMBER_TYPE_SERVICE_REFERENCES);
             }
+        } else {
+            references.setMemberType(CollectionBasedServiceReferenceComponentMetadata.MEMBER_TYPE_SERVICES);
         }
         if (element.hasAttribute(ORDERING_BASIS_ATTRIBUTE)) {
             String ordering = element.getAttribute(ORDERING_BASIS_ATTRIBUTE);
