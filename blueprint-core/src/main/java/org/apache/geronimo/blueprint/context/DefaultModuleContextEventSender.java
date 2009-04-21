@@ -31,6 +31,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.blueprint.context.ModuleContextEventConstants;
 import org.osgi.service.blueprint.context.ModuleContext;
+import org.osgi.service.blueprint.context.ModuleContextListener;
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.ModuleContextEventSender;
 
@@ -44,11 +45,14 @@ public class DefaultModuleContextEventSender implements ModuleContextEventSender
 
     private final Bundle extenderBundle;
     private final ServiceTracker eventAdminServiceTracker;
+    private final ServiceTracker contextListenerTracker;
 
     public DefaultModuleContextEventSender(BundleContext bundleContext) {
         this.extenderBundle = bundleContext.getBundle();
         this.eventAdminServiceTracker = new ServiceTracker(bundleContext, EventAdmin.class.getName(), null);
         this.eventAdminServiceTracker.open();
+        this.contextListenerTracker = new ServiceTracker(bundleContext, ModuleContextListener.class.getName(), null);
+        this.contextListenerTracker.open();
     }
 
     public void sendCreating(ModuleContext moduleContext) {
@@ -80,6 +84,22 @@ public class DefaultModuleContextEventSender implements ModuleContextEventSender
     }
 
     public void sendEvent(ModuleContext moduleContext, String topic, Throwable cause, String[] serviceObjectClass, String serviceFilter) {
+
+        if (topic == TOPIC_CREATED || topic == TOPIC_FAILURE) {
+            Object[] listeners = contextListenerTracker.getServices();
+            for (Object listener : listeners) {
+                try {
+                    if (topic == TOPIC_CREATED) {
+                        ((ModuleContextListener) listener).contextCreated(moduleContext.getBundleContext().getBundle());
+                    } else if (topic == TOPIC_FAILURE) {
+                        ((ModuleContextListener) listener).contextCreationFailed(moduleContext.getBundleContext().getBundle(), cause);
+                    }
+                } catch (Throwable t) {
+                    t.printStackTrace(); // TODO: log
+                }
+            }
+        }
+
         EventAdmin eventAdmin = getEventAdmin();
         if (eventAdmin == null) {
             return;
@@ -127,5 +147,6 @@ public class DefaultModuleContextEventSender implements ModuleContextEventSender
 
     public void destroy() {
         this.eventAdminServiceTracker.close();
+        this.contextListenerTracker.close();
     }
 }

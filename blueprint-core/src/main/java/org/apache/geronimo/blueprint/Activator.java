@@ -36,7 +36,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleListener;
 import org.osgi.framework.SynchronousBundleListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +80,6 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
         for (Bundle bundle : bundles) {
             destroyContext(bundle);
         }
-        // TODO: destroy all contexts
         context.removeBundleListener(this);
         this.sender.destroy();
         this.handlers.destroy();
