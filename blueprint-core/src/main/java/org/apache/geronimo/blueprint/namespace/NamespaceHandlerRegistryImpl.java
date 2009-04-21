@@ -21,6 +21,7 @@ package org.apache.geronimo.blueprint.namespace;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
@@ -85,17 +86,42 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
 
     public void registerHandler(NamespaceHandler handler, Map properties) throws Exception {
         Object ns = properties != null ? properties.get(NAMESPACE) : null;
-        if (ns instanceof URI[]) {
-            for (URI uri : (URI[]) ns) {
-                if (handlers.containsKey(uri)) {
-                    throw new IllegalArgumentException("A NamespaceHandler service is already registered for namespace " + uri);
+        URI[] namespaces;
+        if (ns == null) {
+            throw new IllegalArgumentException("NamespaceHandler service does not have an associated " + NAMESPACE + " property defined");
+        } else if (ns instanceof URI[]) {
+            namespaces = (URI[]) ns;
+        } else if (ns instanceof URI) {
+            namespaces = new URI[] { (URI) ns };
+        } else if (ns instanceof String[]) {
+            String[] strings = (String[]) ns;
+            namespaces = new URI[strings.length];
+            for (int i = 0; i < namespaces.length; i++) {
+                namespaces[i] = URI.create(strings[i]);
+            }
+        } else if (ns instanceof Collection) {
+            Collection col = (Collection) ns;
+            namespaces = new URI[col.size()];
+            int index = 0;
+            for (Object o : col) {
+                if (o instanceof URI) {
+                    namespaces[index++] = (URI) o;
+                } else if (o instanceof String) {
+                    namespaces[index++] = URI.create((String) o);
+                } else {
+                    throw new IllegalArgumentException("NamespaceHandler service has an associated " + NAMESPACE + " property defined which can not be converted to an array of URI");
                 }
             }
-            for (URI uri : (URI[]) ns) {
-                handlers.put(uri, handler);
-            }
         } else {
-            throw new IllegalArgumentException("NamespaceHandler service does not have an associated " + NAMESPACE + " property defined");
+            throw new IllegalArgumentException("NamespaceHandler service has an associated " + NAMESPACE + " property defined which can not be converted to an array of URI");
+        }
+        for (URI uri : namespaces) {
+            if (handlers.containsKey(uri)) {
+                throw new IllegalArgumentException("A NamespaceHandler service is already registered for namespace " + uri);
+            }
+        }
+        for (URI uri : namespaces) {
+            handlers.put(uri, handler);
         }
     }
 
