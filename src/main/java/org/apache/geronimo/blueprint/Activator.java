@@ -38,6 +38,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.SynchronousBundleListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO: javadoc
@@ -49,13 +51,15 @@ import org.osgi.framework.SynchronousBundleListener;
  */
 public class Activator implements BundleActivator, SynchronousBundleListener {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
+
     private final ExecutorService executors = Executors.newSingleThreadExecutor();
     private final Map<Bundle, ModuleContextImpl> contextMap = new HashMap<Bundle, ModuleContextImpl>();
     private ModuleContextEventSender sender;
     private NamespaceHandlerRegistry handlers;
 
     public void start(BundleContext context) {
-        System.out.println("Starting to listen for bundle events.");
+        LOGGER.debug("Starting blueprint extender...");
         context.addBundleListener(this);
 
         sender = new DefaultModuleContextEventSender(context);
@@ -67,19 +71,24 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
                 checkBundle(b);
             }
         }
+        LOGGER.debug("Blueprint extender started");
     }
 
 
     public void stop(BundleContext context) {
+        LOGGER.debug("Stopping blueprint extender...");
+        List<Bundle> bundles = new ArrayList<Bundle>(contextMap.keySet());
+        for (Bundle bundle : bundles) {
+            destroyContext(bundle);
+        }
         // TODO: destroy all contexts
         context.removeBundleListener(this);
         this.sender.destroy();
         this.handlers.destroy();
-        System.out.println("Stopped listening for bundle events.");
+        LOGGER.debug("Blueprint extender stopped");
     }
 
     public void bundleChanged(BundleEvent event) {
-        System.out.println("bundle changed:" + event.getBundle().getSymbolicName() + "  "+ event.getType());
         if (event.getType() == BundleEvent.STARTED) {
             checkBundle(event.getBundle());
         } else if (event.getType() == BundleEvent.STOPPING) {
@@ -90,12 +99,13 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
     private void destroyContext(Bundle bundle) {
         ModuleContextImpl moduleContext = contextMap.remove(bundle);
         if (moduleContext != null) {
+            LOGGER.debug("Destroying ModuleContext for bundle " + bundle.getSymbolicName());
             moduleContext.destroy();
         }
     }
     
     private void checkBundle(Bundle bundle) {
-        System.out.println("Checking: " + bundle.getSymbolicName());
+        LOGGER.debug("Scanning bundle " + bundle.getSymbolicName() + " for blueprint application");
 
         List<URL> urls = new ArrayList<URL>();
         Dictionary headers = bundle.getHeaders();
@@ -119,6 +129,7 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
             }
         }
         if (!urls.isEmpty()) {
+            LOGGER.debug("Found blueprint application in bundle " + bundle.getSymbolicName() + " with urls: " + urls);
             final ModuleContextImpl moduleContext = new ModuleContextImpl(bundle.getBundleContext(), sender, handlers, urls);
             contextMap.put(bundle, moduleContext);
             executors.submit(new Runnable() {
@@ -126,6 +137,8 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
                     moduleContext.create();
                 }
             });
+        } else {
+            LOGGER.debug("No blueprint application found in bundle " + bundle.getSymbolicName());
         }
     }
 
