@@ -134,24 +134,24 @@ public class Instanciator {
             return createServiceRecipe( (ServiceExportComponentMetadata) component);
         } else if (component instanceof UnaryServiceReferenceComponentMetadata) {
             UnaryServiceReferenceComponentMetadata metadata = (UnaryServiceReferenceComponentMetadata) component;
-            CollectionRecipe cr = null;
+            CollectionRecipe listenersRecipe = null;
             if (metadata.getBindingListeners() != null) {
-                cr = new CollectionRecipe(ArrayList.class);;
+                listenersRecipe = new CollectionRecipe(ArrayList.class);
                 for (BindingListenerMetadata listener : (Collection<BindingListenerMetadata>) metadata.getBindingListeners()) {
-                    cr.add(createRecipe(listener));
+                    listenersRecipe.add(createRecipe(listener));
                 }
             }
             UnaryServiceReferenceRecipe recipe = new UnaryServiceReferenceRecipe(moduleContext,
                                                                        moduleContext.getSender(),
                                                                        metadata,
-                                                                       cr);
+                                                                       listenersRecipe);
             recipe.setName(component.getName());
             return recipe;
         } else if (component instanceof CollectionBasedServiceReferenceComponentMetadata) {
             CollectionBasedServiceReferenceComponentMetadata metadata = (CollectionBasedServiceReferenceComponentMetadata) component;
             CollectionRecipe listenersRecipe = null;
             if (metadata.getBindingListeners() != null) {
-                listenersRecipe = new CollectionRecipe(ArrayList.class);;
+                listenersRecipe = new CollectionRecipe(ArrayList.class);
                 for (BindingListenerMetadata listener : (Collection<BindingListenerMetadata>) metadata.getBindingListeners()) {
                     listenersRecipe.add(createRecipe(listener));
                 }
@@ -193,11 +193,11 @@ public class Instanciator {
             }
         }
         if (serviceExport.getRegistrationListeners() != null) {
-            CollectionRecipe cr = new CollectionRecipe(ArrayList.class);;
+            CollectionRecipe listenersRecipe = new CollectionRecipe(ArrayList.class);
             for (RegistrationListenerMetadata listener : (Collection<RegistrationListenerMetadata>)serviceExport.getRegistrationListeners()) {
-                cr.add(createRecipe(listener));
+                listenersRecipe.add(createRecipe(listener));
             }
-            recipe.setProperty("listeners", cr);
+            recipe.setProperty("listeners", listenersRecipe);
         }
         return recipe;
     }
