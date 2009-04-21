@@ -220,7 +220,6 @@ public class Instanciator {
             recipe.setDestroyMethod(method);
         }
         // TODO: constructor args
-        // TODO: lazy
         // TODO: factory-method
         // TODO: factory-component
         return recipe;
