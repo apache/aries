@@ -86,6 +86,18 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
 
     public void registerHandler(NamespaceHandler handler, Map properties) throws Exception {
         Object ns = properties != null ? properties.get(NAMESPACE) : null;
+        URI[] namespaces = getNamespaces(ns);
+        for (URI uri : namespaces) {
+            if (handlers.containsKey(uri)) {
+                throw new IllegalArgumentException("A NamespaceHandler service is already registered for namespace " + uri);
+            }
+        }
+        for (URI uri : namespaces) {
+            handlers.put(uri, handler);
+        }
+    }
+
+    private URI[] getNamespaces(Object ns) {
         URI[] namespaces;
         if (ns == null) {
             throw new IllegalArgumentException("NamespaceHandler service does not have an associated " + NAMESPACE + " property defined");
@@ -115,14 +127,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         } else {
             throw new IllegalArgumentException("NamespaceHandler service has an associated " + NAMESPACE + " property defined which can not be converted to an array of URI");
         }
-        for (URI uri : namespaces) {
-            if (handlers.containsKey(uri)) {
-                throw new IllegalArgumentException("A NamespaceHandler service is already registered for namespace " + uri);
-            }
-        }
-        for (URI uri : namespaces) {
-            handlers.put(uri, handler);
-        }
+        return namespaces;
     }
 
     public void unregisterHandler(NamespaceHandler handler, Map properties) throws Exception {
