@@ -113,9 +113,8 @@ public class ModuleContextImpl implements ModuleContext {
 
             registerTypeConverters();
 
-            // TODO: handle scopes and such
-            Map instances = objectGraph.createAll(new ArrayList<String>(componentDefinitionRegistry.getComponentDefinitionNames()));
-            //System.out.println(instances);
+            instantiateComponents();
+
             // TODO: access to any OSGi reference proxy is currently a problem at this point, because calling toString() will
             // TODO:      wait for a service to be available.  We may need to catch toString(), equals() and hashCode() and make them
             // TODO:      work even if there's no service available.
@@ -143,7 +142,7 @@ public class ModuleContextImpl implements ModuleContext {
     private void registerTypeConverters() {
         List<String> typeConvertersNames = componentDefinitionRegistry.getTypeConverterNames();
         Map<String, Object> typeConverters = objectGraph.createAll(typeConvertersNames);
-        System.out.println(typeConverters);
+        System.out.println("Type converters: " + typeConverters);
         for (String name : typeConvertersNames) {
             Object typeConverterInstance = typeConverters.get(name);
             if (typeConverterInstance instanceof Converter) {
@@ -153,6 +152,24 @@ public class ModuleContextImpl implements ModuleContext {
                 // TODO: throw exception or log
             }
         }
+    }
+    
+    private void instantiateComponents() {
+        List<String> components = new ArrayList<String>();
+        for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
+            ComponentMetadata component = componentDefinitionRegistry.getComponentDefinition(name);
+            if (component instanceof LocalComponentMetadata) {
+                LocalComponentMetadata local = (LocalComponentMetadata) component;
+                String scope = local.getScope();
+                if (!local.isLazy() && 
+                    (LocalComponentMetadata.SCOPE_BUNDLE.equals(scope) || 
+                     LocalComponentMetadata.SCOPE_SINGLETON.equals(scope))) {
+                    components.add(name);
+                }
+            }
+        }
+        Map instances = objectGraph.createAll(components);
+        System.out.println("Component instances: " + instances);
     }
     
     private void registerAllServices() {

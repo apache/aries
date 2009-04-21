@@ -71,6 +71,7 @@ import org.osgi.service.blueprint.reflect.BindingListenerMetadata;
 import org.osgi.service.blueprint.reflect.CollectionBasedServiceReferenceComponentMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.ListValue;
+import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
 import org.osgi.service.blueprint.reflect.MapValue;
 import org.osgi.service.blueprint.reflect.NullValue;
 import org.osgi.service.blueprint.reflect.PropertiesValue;
@@ -364,6 +365,8 @@ public class Parser {
         }
         if (element.hasAttribute(SCOPE_ATTRIBUTE)) {
             metadata.setScope(element.getAttribute(SCOPE_ATTRIBUTE));
+        } else {
+            metadata.setScope(LocalComponentMetadata.SCOPE_SINGLETON);
         }
         String lazy = element.hasAttribute(LAZY_INIT_ATTRIBUTE) ? element.getAttribute(LAZY_INIT_ATTRIBUTE) : defaultLazyInit;
         if (BOOLEAN_DEFAULT.equals(lazy)) {
