@@ -28,6 +28,26 @@ public class Foo implements Serializable {
     private Currency currency;
     private Date date;
 
+    public int getA() {
+        return a;
+    }
+
+    public int getB() {
+        return b;
+    }
+
+    public Bar getBar() {
+        return bar;
+    }
+
+    public Currency getCurrency() {
+        return currency;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
     public String toString() {
         return a + " " + b + " " + bar + " " + currency + " " + date;
     }

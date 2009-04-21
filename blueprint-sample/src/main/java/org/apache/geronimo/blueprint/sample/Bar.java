@@ -25,7 +25,19 @@ public class Bar {
     private BundleContext context;
     private String value;
     private List list;
-    
+
+    public BundleContext getContext() {
+        return context;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public List getList() {
+        return list;
+    }
+
     public String toString() {
         return hashCode() + ": " + value + " " + context + " " + list;
     }
