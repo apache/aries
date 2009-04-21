@@ -45,8 +45,14 @@
                         </Export-Package>
                         <Private-Package>
                             org.apache.xbean*,
-                            org.objectweb.asm*,
-                            net.sf.cglib*
+                            org.objectweb.asm,
+                            org.objectweb.asm.commons,
+                            org.objectweb.asm.signature,
+                            org.objectweb.asm.tree*,
+                            org.objectweb.asm.util,
+                            net.sf.cglib.core,
+                            net.sf.cglib.proxy,
+                            net.sf.cglib.reflect,
                         </Private-Package>
                     </instructions>
                 </configuration>
