@@ -26,13 +26,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Comparator;
 
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.reflect.ServiceExportComponentMetadataImpl;
 import org.apache.xbean.recipe.ArrayRecipe;
 import org.apache.xbean.recipe.CollectionRecipe;
 import org.apache.xbean.recipe.ConstructionException;
-import org.apache.xbean.recipe.DefaultRepository;
 import org.apache.xbean.recipe.MapRecipe;
 import org.apache.xbean.recipe.ObjectRecipe;
 import org.apache.xbean.recipe.Option;
@@ -140,15 +140,33 @@ public class Instanciator {
                     cr.add(createRecipe(listener));
                 }
             }
-            ReferenceServiceRecipe recipe = new ReferenceServiceRecipe(moduleContext,
+            UnaryServiceReferenceRecipe recipe = new UnaryServiceReferenceRecipe(moduleContext,
                                                                        moduleContext.getSender(),
                                                                        metadata,
                                                                        cr);
             recipe.setName(component.getName());
             return recipe;
         } else if (component instanceof CollectionBasedServiceReferenceComponentMetadata) {
-            // TODO
-            throw new IllegalStateException("Unsupported component type " + component.getClass());
+            CollectionBasedServiceReferenceComponentMetadata metadata = (CollectionBasedServiceReferenceComponentMetadata) component;
+            CollectionRecipe listenersRecipe = null;
+            if (metadata.getBindingListeners() != null) {
+                listenersRecipe = new CollectionRecipe(ArrayList.class);;
+                for (BindingListenerMetadata listener : (Collection<BindingListenerMetadata>) metadata.getBindingListeners()) {
+                    listenersRecipe.add(createRecipe(listener));
+                }
+            }
+            Recipe comparatorRecipe = null;
+            if (metadata.getComparator() != null) {
+                comparatorRecipe = (Recipe) getValue(metadata.getComparator(), Comparator.class);
+            }
+            CollectionBasedServiceReferenceRecipe recipe = new CollectionBasedServiceReferenceRecipe(
+                                                                       moduleContext,
+                                                                       moduleContext.getSender(),
+                                                                       metadata,
+                                                                       listenersRecipe,
+                                                                       comparatorRecipe);
+            recipe.setName(component.getName());
+            return recipe;
         } else {
             throw new IllegalStateException("Unsupported component type " + component.getClass());
         }
@@ -234,7 +252,7 @@ public class Instanciator {
     }
 
     private Recipe createRecipe(BindingListenerMetadata listener) throws Exception {
-        ObjectRecipe recipe = new ObjectRecipe(ReferenceServiceRecipe.Listener.class);
+        ObjectRecipe recipe = new ObjectRecipe(AbstractServiceReferenceRecipe.Listener.class);
         recipe.allow(Option.PRIVATE_PROPERTIES);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         recipe.setProperty("metadata", listener);

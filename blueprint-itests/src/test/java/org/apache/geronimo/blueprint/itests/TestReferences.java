@@ -21,6 +21,7 @@ package org.apache.geronimo.blueprint.itests;
 import java.net.URLDecoder;
 import java.util.Properties;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
 import org.apache.geronimo.blueprint.sample.Foo;
@@ -87,6 +88,32 @@ public class TestReferences extends AbstractIntegrationTest {
         } catch (ServiceUnavailableException e) {
             // Ignore, expected
         }
+    }
+
+    public void testListReferences() throws Exception {
+        ModuleContext moduleContext = getOsgiService(ModuleContext.class, 5000);
+        assertNotNull(moduleContext);
+
+        BindingListener listener = (BindingListener) moduleContext.getComponent("listBindingListener");
+        assertNull(listener.getA());
+        assertNull(listener.getReference());
+
+        List refs = (List) moduleContext.getComponent("ref-list");
+        assertNotNull(refs);
+        assertTrue(refs.isEmpty());
+
+        ServiceRegistration reg1 = bundleContext.registerService(InterfaceA.class.getName(), new InterfaceA() {
+            public String hello(String msg) {
+                return "Hello " + msg + "!";
+            }
+        }, null);
+        assertNotNull(listener.getA());
+        assertNotNull(listener.getReference());
+        assertEquals(1, refs.size());
+        InterfaceA a = (InterfaceA) refs.get(0);
+        assertNotNull(a);
+        assertEquals("Hello world!", a.hello("world"));
+
     }
 
     /**
