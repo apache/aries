@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Properties;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
@@ -35,6 +36,7 @@ import org.apache.geronimo.blueprint.HeaderParser;
 import org.apache.geronimo.blueprint.HeaderParser.PathElement;
 import org.apache.geronimo.blueprint.ModuleContextEventSender;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
+import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.namespace.NamespaceHandlerRegistryImpl;
@@ -54,6 +56,8 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO: javadoc
@@ -62,6 +66,8 @@ import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
 public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerRegistry.Listener, Runnable {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContextImpl.class);
 
     private enum State {
         Unknown,
@@ -84,6 +90,7 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
     private ObjectGraph objectGraph;
     private ServiceRegistration registration;
     private boolean waitForNamespaceHandlersEventSent;
+    private Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>();
 
     public BlueprintContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, List<URL> urls) {
         this.bundleContext = bundleContext;
@@ -93,6 +100,10 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
         this.conversionService = new ConversionServiceImpl();
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
+    }
+
+    public void addDestroyable(String name, Destroyable destroyable) {
+        destroyables.put(name, destroyable);
     }
 
     public ModuleContextEventSender getSender() {
@@ -180,8 +191,9 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
             }
         } catch (Exception e) {
             state = State.Failed;
+            // TODO: clean up
+            LOGGER.error("Unable to start blueprint context", e);
             sender.sendFailure(this, e);
-            e.printStackTrace(); // TODO: log failure
         }
     }
 
@@ -216,6 +228,18 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
         }
         Map instances = objectGraph.createAll(components);
         System.out.println("Component instances: " + instances);
+    }
+
+    private void destroyComponents() {
+        Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>(this.destroyables);
+        this.destroyables.clear();
+        for (Map.Entry<String, Destroyable> entry : destroyables.entrySet()) {
+            try {
+                entry.getValue().destroy();
+            } catch (Exception e) {
+                LOGGER.info("Error destroying bean " + entry.getKey(), e);
+            }
+        }
     }
     
     private void registerAllServices() {
@@ -281,7 +305,7 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
         return objectGraph;
     }
     
-    protected ComponentDefinitionRegistry getComponentDefinitionRegistry() {
+    protected ComponentDefinitionRegistryImpl getComponentDefinitionRegistry() {
         return componentDefinitionRegistry;
     }
     
@@ -300,8 +324,9 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
         handlers.removeListener(this);
         sender.sendDestroying(this);
         unregisterAllServices();
+        destroyComponents();
+        // TODO: stop all reference / collections
         System.out.println("Module context destroyed: " + this.bundleContext);
-        // TODO: destroy all instances
         sender.sendDestroyed(this);
     }
 
@@ -313,7 +338,9 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
 
     public synchronized void namespaceHandlerUnregistered(URI uri) {
         if (namespaces != null && namespaces.contains(uri)) {
-            // TODO: destroy all instances
+            unregisterAllServices();
+            destroyComponents();
+            // TODO: stop all reference / collections
             waitForNamespaceHandlersEventSent = false;
             state = State.WaitForNamespaceHandlers;
             executors.submit(this);

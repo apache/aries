@@ -125,7 +125,7 @@ public class WiringTest extends AbstractBlueprintTest {
         }
         
         @Override
-        public ComponentDefinitionRegistry getComponentDefinitionRegistry() {
+        public ComponentDefinitionRegistryImpl getComponentDefinitionRegistry() {
             return registry;
         }
         

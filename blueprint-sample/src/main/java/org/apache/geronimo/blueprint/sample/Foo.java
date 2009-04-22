@@ -28,6 +28,9 @@ public class Foo implements Serializable {
     private Currency currency;
     private Date date;
 
+    public boolean initialized;
+    public boolean destroyed;
+
     public int getA() {
         return a;
     }
@@ -52,5 +55,22 @@ public class Foo implements Serializable {
         return a + " " + b + " " + bar + " " + currency + " " + date;
     }
 
+    public void init() {
+        System.out.println("======== Initializing Foo =========");
+        initialized = true;
+    }
+
+    public void destroy() {
+        System.out.println("======== Destroying Foo =========");
+        destroyed = true;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public boolean isDestroyed() {
+        return destroyed;
+    }
 }
 
