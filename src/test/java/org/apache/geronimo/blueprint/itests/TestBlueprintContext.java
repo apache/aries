@@ -43,6 +43,7 @@ public class TestBlueprintContext extends AbstractIntegrationTest {
         Resource res = locateBundle(getBundle("org.apache.geronimo", "blueprint-sample"));
         Bundle bundle = installBundle(res);
         assertNotNull(bundle);
+
         bundle.start();
 
         BlueprintContext blueprintContext = getOsgiService(BlueprintContext.class, 5000);
@@ -68,6 +69,9 @@ public class TestBlueprintContext extends AbstractIntegrationTest {
         assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
         assertEquals(new SimpleDateFormat("yyyy.MM.dd").parse("2009.04.17"), foo.getDate());
 
+        assertTrue(foo.isInitialized());
+        assertFalse(foo.isDestroyed());
+
         obj = getOsgiService(Foo.class, 5000);
         assertNotNull(obj);
         assertSame(foo, obj);
@@ -79,6 +83,9 @@ public class TestBlueprintContext extends AbstractIntegrationTest {
         } catch (Exception e) {
             // Expected, as the module context should have been unregistered
         }
+
+        assertTrue(foo.isInitialized());
+        assertTrue(foo.isDestroyed());
     }
 
     public void testUnaryReference() throws Exception {
