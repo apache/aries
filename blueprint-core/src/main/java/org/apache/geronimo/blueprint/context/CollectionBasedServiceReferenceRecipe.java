@@ -121,7 +121,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         }
     }
 
-    public void destroy() throws Exception {
+    public void destroy() {
         moduleContext.getBundleContext().removeServiceListener(this);
         List<ServiceDispatcher> dispatchers = new ArrayList<ServiceDispatcher>(collection.getDispatchers());
         for (ServiceDispatcher dispatcher : dispatchers) {

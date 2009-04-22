@@ -33,6 +33,8 @@ import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.BlueprintContextListener;
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.ModuleContextEventSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO: javadoc
@@ -40,7 +42,9 @@ import org.apache.geronimo.blueprint.ModuleContextEventSender;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class DefaultModuleContextEventSender implements ModuleContextEventSender {
+public class DefaultModuleContextEventSender implements ModuleContextEventSender, EventConstants {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultModuleContextEventSender.class);
 
     private final Bundle extenderBundle;
     private final ServiceTracker eventAdminServiceTracker;
@@ -84,31 +88,18 @@ public class DefaultModuleContextEventSender implements ModuleContextEventSender
 
     public void sendEvent(BlueprintContext moduleContext, String topic, Throwable cause, String[] serviceObjectClass, String serviceFilter) {
 
-        if (topic == TOPIC_CREATED || topic == TOPIC_FAILURE) {
-            Object[] listeners = contextListenerTracker.getServices();
-            if (listeners != null) {
-                for (Object listener : listeners) {
-                    try {
-                        if (topic == TOPIC_CREATED) {
-                            ((BlueprintContextListener) listener).contextCreated(moduleContext.getBundleContext().getBundle());
-                        } else if (topic == TOPIC_FAILURE) {
-                            ((BlueprintContextListener) listener).contextCreationFailed(moduleContext.getBundleContext().getBundle(), cause);
-                        }
-                    } catch (Throwable t) {
-                        t.printStackTrace(); // TODO: log
-                    }
-                }
-            }
-        }
+        Bundle bundle = moduleContext.getBundleContext().getBundle();
+
+        LOGGER.debug("Sending blueprint context event {} for bundle {}", topic, bundle.getSymbolicName());
+
+        callListeners(moduleContext, topic, cause);
 
         EventAdmin eventAdmin = getEventAdmin();
         if (eventAdmin == null) {
             return;
         }
 
-        Bundle bundle = moduleContext.getBundleContext().getBundle();
-
-        Dictionary props = new Hashtable();
+        Dictionary<String,Object> props = new Hashtable<String,Object>();
         props.put(org.osgi.service.event.EventConstants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
         props.put(org.osgi.service.event.EventConstants.BUNDLE_ID, bundle.getBundleId());
         props.put(org.osgi.service.event.EventConstants.BUNDLE, bundle);
@@ -133,7 +124,27 @@ public class DefaultModuleContextEventSender implements ModuleContextEventSender
 
         Event event = new Event(topic, props);
         eventAdmin.postEvent(event);
-        System.out.println("Event sent: " + topic);
+    }
+
+    private void callListeners(BlueprintContext moduleContext, String topic, Throwable cause) {
+        boolean created = TOPIC_CREATED.equals(topic);
+        boolean failure = TOPIC_FAILURE.equals(topic);
+        if (created || failure) {
+            Object[] listeners = contextListenerTracker.getServices();
+            if (listeners != null) {
+                for (Object listener : listeners) {
+                    try {
+                        if (created) {
+                            ((BlueprintContextListener) listener).contextCreated(moduleContext.getBundleContext().getBundle());
+                        } else {
+                            ((BlueprintContextListener) listener).contextCreationFailed(moduleContext.getBundleContext().getBundle(), cause);
+                        }
+                    } catch (Throwable t) {
+                        LOGGER.info("Error calling blueprint context listener", t);
+                    }
+                }
+            }
+        }
     }
 
     private static Version getBundleVersion(Bundle bundle) {
