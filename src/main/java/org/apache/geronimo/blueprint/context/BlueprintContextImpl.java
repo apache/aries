@@ -19,6 +19,7 @@
 package org.apache.geronimo.blueprint.context;
 
 import java.net.URL;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.HeaderParser;
@@ -35,6 +37,7 @@ import org.apache.geronimo.blueprint.ModuleContextEventSender;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
 import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.geronimo.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.xbean.recipe.ObjectGraph;
 import org.apache.xbean.recipe.Repository;
 import org.osgi.framework.Bundle;
@@ -46,6 +49,7 @@ import org.osgi.service.blueprint.context.NoSuchComponentException;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.convert.Converter;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
+import org.osgi.service.blueprint.namespace.NamespaceHandler;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
@@ -57,7 +61,15 @@ import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class BlueprintContextImpl implements BlueprintContext {
+public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerRegistry.Listener, Runnable {
+
+    private enum State {
+        Unknown,
+        WaitForNamespaceHandlers,
+        Populated,
+        Created,
+        Failed
+    }
 
     private final BundleContext bundleContext;
     private final ModuleContextEventSender sender;
@@ -65,16 +77,22 @@ public class BlueprintContextImpl implements BlueprintContext {
     private final List<URL> urls;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
     private final ConversionServiceImpl conversionService;
+    private final ExecutorService executors;
+    private Set<URI> namespaces;
+    private State state = State.Unknown;
+    private Parser parser;
     private ObjectGraph objectGraph;
     private ServiceRegistration registration;
+    private boolean waitForNamespaceHandlersEventSent;
 
-    public BlueprintContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, List<URL> urls) {
+    public BlueprintContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, List<URL> urls) {
         this.bundleContext = bundleContext;
         this.sender = sender;
         this.handlers = handlers;
         this.urls = urls;
         this.conversionService = new ConversionServiceImpl();
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
+        this.executors = executors;
     }
 
     public ModuleContextEventSender getSender() {
@@ -99,39 +117,69 @@ public class BlueprintContextImpl implements BlueprintContext {
         }
     }
     
-    public void create() {
-        checkDirectives();
-        sender.sendCreating(this);
+    public synchronized void run() {
         try {
-            Parser parser = new Parser(handlers, componentDefinitionRegistry, urls);
-            parser.parse();
-            Instanciator i = new Instanciator(this);
-            Repository repository = i.createRepository();
-            objectGraph = new ObjectGraph(repository);
+            for (;;) {
+                switch (state) {
+                    case Unknown:
+                        checkDirectives();
+                        sender.sendCreating(this);
+                        parser = new Parser();
+                        parser.parse(urls);
+                        namespaces = parser.getNamespaces();
+                        if (namespaces.size() > 0) {
+                            handlers.addListener(this);
+                        }
+                        state = State.WaitForNamespaceHandlers;
+                        break;
+                    case WaitForNamespaceHandlers:
+                        for (URI ns : namespaces) {
+                            if (handlers.getNamespaceHandler(ns) == null) {
+                                if (!waitForNamespaceHandlersEventSent) {
+                                    sender.sendWaiting(this, new String[] {NamespaceHandler.class.getName() }, null);
+                                    waitForNamespaceHandlersEventSent = true;
+                                }
+                                return;
+                            }
+                        }
+                        parser.populate(handlers, componentDefinitionRegistry);
+                        state = State.Populated;
+                        break;
+                    case Populated:
+                        Instanciator i = new Instanciator(this);
+                        Repository repository = i.createRepository();
+                        objectGraph = new ObjectGraph(repository);
 
-            registerTypeConverters();
+                        registerTypeConverters();
 
-            instantiateComponents();
+                        instantiateComponents();
 
-            // TODO: access to any OSGi reference proxy is currently a problem at this point, because calling toString() will
-            // TODO:      wait for a service to be available.  We may need to catch toString(), equals() and hashCode() and make them
-            // TODO:      work even if there's no service available.
+                        // TODO: access to any OSGi reference proxy is currently a problem at this point, because calling toString() will
+                        // TODO:      wait for a service to be available.  We may need to catch toString(), equals() and hashCode() and make them
+                        // TODO:      work even if there's no service available.
 
-            registerAllServices();
-            
-            // Register the ModuleContext in the OSGi registry
-            Properties props = new Properties();
-            props.put(BlueprintConstants.CONTEXT_SYMBOLIC_NAME_PROPERTY, 
-                      bundleContext.getBundle().getSymbolicName());
-            props.put(BlueprintConstants.CONTEXT_VERSION_PROPERTY, 
-                      bundleContext.getBundle().getHeaders().get(Constants.BUNDLE_VERSION));
-            registration = bundleContext.registerService(BlueprintContext.class.getName(), this, props);
+                        registerAllServices();
 
-            sender.sendCreated(this);
-        } catch (WaitForDependencyException e) {
-            sender.sendWaiting(this, e.getServiceObjectClass(), e.getServiceFilter());
-            // TODO: wait for dependency
+                        // Register the ModuleContext in the OSGi registry
+                        if (registration == null) {
+                            Properties props = new Properties();
+                            props.put(BlueprintConstants.CONTEXT_SYMBOLIC_NAME_PROPERTY,
+                                      bundleContext.getBundle().getSymbolicName());
+                            props.put(BlueprintConstants.CONTEXT_VERSION_PROPERTY,
+                                      bundleContext.getBundle().getHeaders().get(Constants.BUNDLE_VERSION));
+                            registration = bundleContext.registerService(BlueprintContext.class.getName(), this, props);
+
+                            sender.sendCreated(this);
+                            state = State.Created;
+                        }
+                        break;
+                    case Created:
+                    case Failed:
+                        return;
+                }
+            }
         } catch (Exception e) {
+            state = State.Failed;
             sender.sendFailure(this, e);
             e.printStackTrace(); // TODO: log failure
         }
@@ -249,6 +297,7 @@ public class BlueprintContextImpl implements BlueprintContext {
         if (registration != null) {
             registration.unregister();
         }
+        handlers.removeListener(this);
         sender.sendDestroying(this);
         unregisterAllServices();
         System.out.println("Module context destroyed: " + this.bundleContext);
@@ -256,4 +305,18 @@ public class BlueprintContextImpl implements BlueprintContext {
         sender.sendDestroyed(this);
     }
 
+    public synchronized void namespaceHandlerRegistered(URI uri) {
+        if (namespaces != null && namespaces.contains(uri)) {
+            executors.submit(this);
+        }
+    }
+
+    public synchronized void namespaceHandlerUnregistered(URI uri) {
+        if (namespaces != null && namespaces.contains(uri)) {
+            // TODO: destroy all instances
+            waitForNamespaceHandlersEventSent = false;
+            state = State.WaitForNamespaceHandlers;
+            executors.submit(this);
+        }
+    }
 }

@@ -176,8 +176,7 @@ public class Parser {
     public static final String ODERING_BASIS_SERVICE_REFERENCES = "service-reference";
     public static final String LAZY_INIT_DEFAULT = BOOLEAN_FALSE;
 
-    private DocumentBuilderFactory documentBuilderFactory;
-    private List<URL> urls;
+    private List<Document> documents;
     private ComponentDefinitionRegistryImpl registry;
     private NamespaceHandlerRegistry namespaceHandlerRegistry;
     private int nameCounter;
@@ -187,55 +186,63 @@ public class Parser {
     private String defaultInitMethod;
     private String defaultDestroyMethod;
 
-    public Parser(NamespaceHandlerRegistry handlers,
-                  ComponentDefinitionRegistryImpl registry,
-                  List<URL> urls) {
-        this.urls = urls;
-        this.registry = registry;
-        this.namespaceHandlerRegistry = handlers;
+    public Parser() {
     }
 
-    public void parse() throws Exception {
+    public void parse(List<URL> urls) throws Exception {
         List<Document> documents = new ArrayList<Document>();
+        // Create document builder factory
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        documentBuilderFactory.setNamespaceAware(true);
         // Load documents
         for (URL url : urls) {
             InputStream inputStream = url.openStream();
             try {
                 InputSource inputSource = new InputSource(inputStream);
-                DocumentBuilder builder = getDocumentBuilderFactory().newDocumentBuilder();
+                DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
                 Document doc = builder.parse(inputSource);
                 documents.add(doc);
             } finally {
                 inputStream.close();
             }
         }
-        // Look for namespace handler requirements
-        Set<String> namespaces = new HashSet<String>();
+        this.documents = documents;
+    }
+
+    public Set<URI> getNamespaces() {
+        if (documents == null) {
+            throw new IllegalStateException("Documents should be parsed before retrieving required namespaces");
+        }
+        Set<URI> namespaces = new HashSet<URI>();
         for (Document doc : documents) {
             findNamespaces(namespaces, doc);
         }
-        for (String namespace : namespaces) {
-            NamespaceHandler handler = namespaceHandlerRegistry.getNamespaceHandler(URI.create(namespace));
-            if (handler == null) {
-                throw new WaitForDependencyException(NamespaceHandler.class.getName(), null);
-            }
-        }
-        // Parse components
-        for (Document doc : documents) {
-            loadComponents(doc);
-        }
+        return namespaces;
     }
 
-    private void findNamespaces(Set<String> namespaces, Node node) {
+    private void findNamespaces(Set<URI> namespaces, Node node) {
         if (node instanceof Element || node instanceof Attr) {
             String ns = node.getNamespaceURI();
             if (ns != null && !isBlueprintNamespace(ns) && !isBlueprintCompendiumNamespace(ns)) {
-                namespaces.add(ns);
+                namespaces.add(URI.create(ns));
             }
         }
         NodeList nl = node.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             findNamespaces(namespaces, nl.item(i));
+        }
+    }
+
+    public void populate(NamespaceHandlerRegistry handlers,
+                         ComponentDefinitionRegistryImpl registry) {
+        if (this.documents == null) {
+            throw new IllegalStateException("Documents should be parsed before populating the registry");
+        }
+        this.namespaceHandlerRegistry = handlers;
+        this.registry = registry;
+        // Parse components
+        for (Document doc : this.documents) {
+            loadComponents(doc);
         }
     }
 
@@ -331,7 +338,7 @@ public class Parser {
     }
 
     private void parseBlueprintCompendiumElement(Element element) {
-        // TODO
+        // TODO: maybe use a namespace handler instead?
         throw new ComponentDefinitionException("Unknown element " + element.getNodeName() + " in namespace " + BLUEPRINT_COMPENDIUM_NAMESPACE);
     }
 
@@ -834,7 +841,6 @@ public class Parser {
                 if (nodeNameEquals(e, VALUE_ELEMENT)) {
                     interfaceNames.add(getTextValue(e));
                 } else {
-                    // TODO: RFC0124 seems to allow other elements here ... is that a bug ?
                     throw new ComponentDefinitionException("Unsupported element " + e.getNodeName() + " inside an " + INTERFACES_ELEMENT + " element");
                 }
             }
@@ -957,22 +963,6 @@ public class Parser {
         return handler;
     }
     
-    private boolean isBlueprintNamespace(String ns) {
-        return BLUEPRINT_NAMESPACE.equals(ns);
-    }
-
-    private boolean isBlueprintCompendiumNamespace(String ns) {
-        return BLUEPRINT_COMPENDIUM_NAMESPACE.equals(ns);
-    }
-
-    private DocumentBuilderFactory getDocumentBuilderFactory() {
-        if (documentBuilderFactory == null) {
-            documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            documentBuilderFactory.setNamespaceAware(true);
-        }
-        return documentBuilderFactory;
-    }
-
     private String getName(Element element) {
         if (element.hasAttribute(ID_ATTRIBUTE)) {
             return element.getAttribute(ID_ATTRIBUTE);
@@ -980,7 +970,15 @@ public class Parser {
             return "component-" + ++nameCounter;
         }
     }
-    
+
+    private static boolean isBlueprintNamespace(String ns) {
+        return BLUEPRINT_NAMESPACE.equals(ns);
+    }
+
+    private static boolean isBlueprintCompendiumNamespace(String ns) {
+        return BLUEPRINT_COMPENDIUM_NAMESPACE.equals(ns);
+    }
+
     private static boolean nodeNameEquals(Node node, String name) {
         return (name.equals(node.getNodeName()) || name.equals(node.getLocalName()));
     }

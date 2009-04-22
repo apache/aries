@@ -128,13 +128,9 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
         }
         if (!urls.isEmpty()) {
             LOGGER.debug("Found blueprint application in bundle " + bundle.getSymbolicName() + " with urls: " + urls);
-            final BlueprintContextImpl moduleContext = new BlueprintContextImpl(bundle.getBundleContext(), sender, handlers, urls);
+            final BlueprintContextImpl moduleContext = new BlueprintContextImpl(bundle.getBundleContext(), sender, handlers, executors, urls);
             contextMap.put(bundle, moduleContext);
-            executors.submit(new Runnable() {
-                public void run() {
-                    moduleContext.create();
-                }
-            });
+            executors.submit(moduleContext);
         } else {
             LOGGER.debug("No blueprint application found in bundle " + bundle.getSymbolicName());
         }
