@@ -57,10 +57,16 @@ public class WiringTest extends AbstractBlueprintTest {
         
         assertNotNull(pojoa.getList());
         assertEquals("list value", pojoa.getList().get(0));
-        assertEquals(pojob, pojoa.getList().get(1));
         assertEquals(new Integer(55), pojoa.getList().get(2));
         assertEquals(URI.create("http://geronimo.apache.org"), pojoa.getList().get(3));
-        
+        Object c0 = pojoa.getList().get(1);
+        Object c1 = pojoa.getList().get(4);
+        assertNotNull(c0);
+        assertNotNull(c1);
+        assertEquals(PojoB.class, c0.getClass());
+        assertEquals(PojoB.class, c1.getClass());
+        assertNotSame(c0, c1);
+
         assertNotNull(pojoa.getArray());
         assertEquals("list value", pojoa.getArray()[0]);
         assertEquals(pojob, pojoa.getArray()[1]);

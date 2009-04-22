@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <components xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 ../../main/resources/org/apache/felix/blueprint/blueprint.xsd"
+            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 ../../main/resources/org/apache/geronimo/blueprint/blueprint.xsd"
             default-availability="mandatory"
             default-init-method = "init"
             default-destroy-method = "destroy" >
@@ -18,7 +18,7 @@
             <entry key="key2" value="value2"/>
         </service-properties>    
     </service>
-    
+
     <component id="pojoC" class="org.apache.geronimo.blueprint.pojos.PojoB" scope = "prototype">
         <property name="uri" value="urn:myuri" />
     </component>
@@ -44,9 +44,10 @@
         <property name="list">
             <list>
                 <value>list value</value>
-                <ref component="pojoB" />
+                <ref component="pojoC" />
                 <value type="java.lang.Integer">55</value>
                 <value type="java.net.URI">http://geronimo.apache.org</value>
+                <ref component="pojoC" />
             </list>
         </property>
         <property name="array">
