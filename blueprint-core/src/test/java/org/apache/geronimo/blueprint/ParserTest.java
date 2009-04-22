@@ -74,7 +74,7 @@ public class ParserTest extends AbstractBlueprintTest {
         assertEquals(6, params.size());
         ParameterSpecification param = params.get(0);
         assertNotNull(param);
-        assertEquals(0, param.getIndex());
+        assertEquals(-1, param.getIndex());
         assertNull(param.getTypeName());
         assertNotNull(param.getValue());
         assertTrue(param.getValue() instanceof TypedStringValue);
@@ -82,20 +82,20 @@ public class ParserTest extends AbstractBlueprintTest {
         assertNull(((TypedStringValue) param.getValue()).getTypeName());
         param = params.get(1);
         assertNotNull(param);
-        assertEquals(2, param.getIndex());
+        assertEquals(-1, param.getIndex());
         assertNull(param.getTypeName());
         assertNotNull(param.getValue());
         assertTrue(param.getValue() instanceof ReferenceValue);
         assertEquals("val1", ((ReferenceValue) param.getValue()).getComponentName());
         param = params.get(2);
         assertNotNull(param);
-        assertEquals(1, param.getIndex());
+        assertEquals(-1, param.getIndex());
         assertNull(param.getTypeName());
         assertNotNull(param.getValue());
         assertTrue(param.getValue() instanceof NullValue);
         param = params.get(3);
         assertNotNull(param);
-        assertEquals(3, param.getIndex());
+        assertEquals(-1, param.getIndex());
         assertEquals("java.lang.String", param.getTypeName());
         assertNotNull(param.getValue());
         assertTrue(param.getValue() instanceof TypedStringValue);
@@ -103,7 +103,7 @@ public class ParserTest extends AbstractBlueprintTest {
         assertNull(((TypedStringValue) param.getValue()).getTypeName());
         param = params.get(4);
         assertNotNull(param);
-        assertEquals(4, param.getIndex());
+        assertEquals(-1, param.getIndex());
         assertNull(param.getTypeName());
         assertNotNull(param.getValue());
         assertTrue(param.getValue() instanceof ArrayValue);
@@ -116,7 +116,7 @@ public class ParserTest extends AbstractBlueprintTest {
         assertTrue(array.getArray()[2] instanceof NullValue);
         param = params.get(5);
         assertNotNull(param);
-        assertEquals(5, param.getIndex());
+        assertEquals(-1, param.getIndex());
         assertNull(param.getTypeName());
         assertNotNull(param.getValue());
         assertTrue(param.getValue() instanceof ReferenceValue);
@@ -133,6 +133,18 @@ public class ParserTest extends AbstractBlueprintTest {
         LocalComponentMetadata pojoBLocal = (LocalComponentMetadata) pojoB;
         assertEquals("initPojo", pojoBLocal.getInitMethodName());
         assertEquals("", pojoBLocal.getDestroyMethodName());
+        
+        cns = pojoBLocal.getConstructorInjectionMetadata();
+        assertNotNull(cns);
+        params = cns.getParameterSpecifications();
+        assertNotNull(params);
+        assertEquals(2, params.size());
+        param = params.get(0);
+        assertNotNull(param);
+        assertEquals(1, param.getIndex());
+        param = params.get(1);
+        assertNotNull(param);
+        assertEquals(0, param.getIndex());
     }
 
     public void testParse() throws Exception {

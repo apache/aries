@@ -31,7 +31,7 @@ public class ParameterSpecificationImpl implements ParameterSpecification {
 
     private Value value;
     private String typeName;
-    private int index;
+    private int index = -1;
 
     public ParameterSpecificationImpl() {
     }
