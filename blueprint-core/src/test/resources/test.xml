@@ -37,7 +37,7 @@
         <interfaces>
             <value>org.apache.geronimo.blueprint.pojos.InterfaceA</value>
         </interfaces>
-        <listener ref="listenerA" bind-method="bind" unbind-method="unbind"/>
+        <listener   ref="listenerA" bind-method="bind" unbind-method="unbind"/>
     </reference>
 
     <service interface="org.apache.geronimo.blueprint.pojos.InterfaceA" ref="pojoA"/>
