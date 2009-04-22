@@ -82,7 +82,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         }
         if (destroyMethod != null && blueprintContext != null) {
             Destroyable d = new Destroyable() {
-                public void destroy() throws Exception {
+                public void destroy() {
                     destroyInstance(obj);
                 }
             };

@@ -89,7 +89,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
         return true;
     }
 
-    public void destroy() throws Exception {
+    public void destroy() {
         moduleContext.getBundleContext().removeServiceListener(this);
         unbind();
     }

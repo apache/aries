@@ -26,5 +26,5 @@ package org.apache.geronimo.blueprint;
  */
 public interface Destroyable {
 
-    void destroy() throws Exception;
+    void destroy();
 }

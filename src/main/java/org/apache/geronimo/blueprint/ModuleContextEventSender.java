@@ -19,16 +19,14 @@
 package org.apache.geronimo.blueprint;
 
 import org.osgi.service.blueprint.context.BlueprintContext;
-import org.osgi.service.blueprint.context.EventConstants;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Apr 13, 2009
- * Time: 11:18:06 PM
- * To change this template use File | Settings | File Templates.
+ * Interface used to send events related to blueprint context life cycle.
+ *
+ * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
+ * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public interface ModuleContextEventSender extends EventConstants {
+public interface ModuleContextEventSender extends Destroyable {
 
     void sendCreating(BlueprintContext moduleContext);
     void sendCreated(BlueprintContext moduleContext);
@@ -37,7 +35,5 @@ public interface ModuleContextEventSender extends EventConstants {
     void sendWaiting(BlueprintContext moduleContext, String[] serviceObjectClass, String serviceFilter);
     void sendFailure(BlueprintContext moduleContext, Throwable cause);
     void sendFailure(BlueprintContext moduleContext, Throwable cause, String[] serviceObjectClass, String serviceFilter);
-
-    void destroy();
 
 }
