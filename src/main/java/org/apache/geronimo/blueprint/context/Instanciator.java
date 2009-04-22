@@ -133,44 +133,52 @@ public class Instanciator {
         } else if (component instanceof ServiceExportComponentMetadata) {
             return createServiceRecipe( (ServiceExportComponentMetadata) component);
         } else if (component instanceof UnaryServiceReferenceComponentMetadata) {
-            UnaryServiceReferenceComponentMetadata metadata = (UnaryServiceReferenceComponentMetadata) component;
-            CollectionRecipe listenersRecipe = null;
-            if (metadata.getBindingListeners() != null) {
-                listenersRecipe = new CollectionRecipe(ArrayList.class);
-                for (BindingListenerMetadata listener : (Collection<BindingListenerMetadata>) metadata.getBindingListeners()) {
-                    listenersRecipe.add(createRecipe(listener));
-                }
-            }
-            UnaryServiceReferenceRecipe recipe = new UnaryServiceReferenceRecipe(moduleContext,
-                                                                       moduleContext.getSender(),
-                                                                       metadata,
-                                                                       listenersRecipe);
-            recipe.setName(component.getName());
-            return recipe;
+            return createUnaryServiceReferenceRecipe(component);
         } else if (component instanceof CollectionBasedServiceReferenceComponentMetadata) {
-            CollectionBasedServiceReferenceComponentMetadata metadata = (CollectionBasedServiceReferenceComponentMetadata) component;
-            CollectionRecipe listenersRecipe = null;
-            if (metadata.getBindingListeners() != null) {
-                listenersRecipe = new CollectionRecipe(ArrayList.class);
-                for (BindingListenerMetadata listener : (Collection<BindingListenerMetadata>) metadata.getBindingListeners()) {
-                    listenersRecipe.add(createRecipe(listener));
-                }
-            }
-            Recipe comparatorRecipe = null;
-            if (metadata.getComparator() != null) {
-                comparatorRecipe = (Recipe) getValue(metadata.getComparator(), Comparator.class);
-            }
-            CollectionBasedServiceReferenceRecipe recipe = new CollectionBasedServiceReferenceRecipe(
-                                                                       moduleContext,
-                                                                       moduleContext.getSender(),
-                                                                       metadata,
-                                                                       listenersRecipe,
-                                                                       comparatorRecipe);
-            recipe.setName(component.getName());
-            return recipe;
+            return createCollectionBasedServiceReferenceRecipe(component);
         } else {
             throw new IllegalStateException("Unsupported component type " + component.getClass());
         }
+    }
+
+    private Recipe createCollectionBasedServiceReferenceRecipe(ComponentMetadata component) throws Exception {
+        CollectionBasedServiceReferenceComponentMetadata metadata = (CollectionBasedServiceReferenceComponentMetadata) component;
+        CollectionRecipe listenersRecipe = null;
+        if (metadata.getBindingListeners() != null) {
+            listenersRecipe = new CollectionRecipe(ArrayList.class);
+            for (BindingListenerMetadata listener : (Collection<BindingListenerMetadata>) metadata.getBindingListeners()) {
+                listenersRecipe.add(createRecipe(listener));
+            }
+        }
+        Recipe comparatorRecipe = null;
+        if (metadata.getComparator() != null) {
+            comparatorRecipe = (Recipe) getValue(metadata.getComparator(), Comparator.class);
+        }
+        CollectionBasedServiceReferenceRecipe recipe = new CollectionBasedServiceReferenceRecipe(
+                                                                   moduleContext,
+                                                                   moduleContext.getSender(),
+                                                                   metadata,
+                                                                   listenersRecipe,
+                                                                   comparatorRecipe);
+        recipe.setName(component.getName());
+        return recipe;
+    }
+
+    private UnaryServiceReferenceRecipe createUnaryServiceReferenceRecipe(ComponentMetadata component) throws Exception {
+        UnaryServiceReferenceComponentMetadata metadata = (UnaryServiceReferenceComponentMetadata) component;
+        CollectionRecipe listenersRecipe = null;
+        if (metadata.getBindingListeners() != null) {
+            listenersRecipe = new CollectionRecipe(ArrayList.class);
+            for (BindingListenerMetadata listener : (Collection<BindingListenerMetadata>) metadata.getBindingListeners()) {
+                listenersRecipe.add(createRecipe(listener));
+            }
+        }
+        UnaryServiceReferenceRecipe recipe = new UnaryServiceReferenceRecipe(moduleContext,
+                                                                   moduleContext.getSender(),
+                                                                   metadata,
+                                                                   listenersRecipe);
+        recipe.setName(component.getName());
+        return recipe;
     }
 
     private ObjectRecipe createServiceRecipe(ServiceExportComponentMetadata serviceExport) throws Exception {
