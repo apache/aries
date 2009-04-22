@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-
-<components xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
     <type-converters>
-            <component id="converter1" class="org.apache.geronimo.blueprint.sample.DateTypeConverter">
+            <bean id="converter1" class="org.apache.geronimo.blueprint.sample.DateTypeConverter">
                 <property name="format" value="yyyy.MM.dd"/>
-            </component>
+            </bean>
             <ref component="converter2"/>
     </type-converters>
 
-    <component id="foo" class="org.apache.geronimo.blueprint.sample.Foo">
+    <bean id="foo" class="org.apache.geronimo.blueprint.sample.Foo">
         <property name="a" value="5" />
         <property name="b" value="10" />
         <property name="bar" ref="bar" />
@@ -19,9 +18,9 @@
         <property name="date">
               <value>2009.04.17</value>
         </property>
-    </component>
+    </bean>
 
-    <component id="bar" class="org.apache.geronimo.blueprint.sample.Bar">
+    <bean id="bar" class="org.apache.geronimo.blueprint.sample.Bar">
         <property name="value"><value>Hello FooBar</value></property>
         <property name="context" ref="bundleContext"/>
         <property name="list">
@@ -30,9 +29,9 @@
                 <value type = "java.lang.Integer">5</value>
             </list>        
         </property>
-    </component>
+    </bean>
 
-    <component id="converter2" class="org.apache.geronimo.blueprint.sample.CurrencyTypeConverter"/>
+    <bean id="converter2" class="org.apache.geronimo.blueprint.sample.CurrencyTypeConverter"/>
 
     <service ref="foo" auto-export="all-classes">
         <service-properties>
@@ -43,7 +42,7 @@
                                unregistration-method="serviceUnregistered"/>
     </service>
     
-    <component id="fooRegistrationListener" class="org.apache.geronimo.blueprint.sample.FooRegistrationListener"/>
+    <bean id="fooRegistrationListener" class="org.apache.geronimo.blueprint.sample.FooRegistrationListener"/>
 
     <reference id="ref" interface="org.apache.geronimo.blueprint.sample.Foo">
     </reference>
@@ -52,13 +51,13 @@
         <listener bind-method="bind" unbind-method="unbind" ref="bindingListener" />
     </reference>
 
-    <component id="bindingListener" class="org.apache.geronimo.blueprint.sample.BindingListener"/>
+    <bean id="bindingListener" class="org.apache.geronimo.blueprint.sample.BindingListener"/>
 
     <ref-list id="ref-list" interface="org.apache.geronimo.blueprint.sample.InterfaceA">
         <listener bind-method="bind" unbind-method="unbind" ref="listBindingListener" />
     </ref-list>
 
-    <component id="listBindingListener" class="org.apache.geronimo.blueprint.sample.BindingListener"/>
+    <bean id="listBindingListener" class="org.apache.geronimo.blueprint.sample.BindingListener"/>
 
-</components>
+</blueprint>
 
