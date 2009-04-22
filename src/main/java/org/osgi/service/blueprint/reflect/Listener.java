@@ -16,12 +16,12 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-import java.util.Set;
+public interface Listener {
+    
+    Target getListenerComponent();
 
-public interface SetValue extends Value {
+    String getBindMethodName();
     
-    Set getSet();
-    
-    String getValueType();
+    String getUnbindMethodName();
              
 }

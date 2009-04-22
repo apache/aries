@@ -16,12 +16,8 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-import java.util.Set;
+public interface ComponentMetadata extends NonNullMetadata {
 
-public interface ComponentMetadata {
+    String getId();
 
-    Set getExplicitDependencies();
-    
-    String getName();
-             
 }

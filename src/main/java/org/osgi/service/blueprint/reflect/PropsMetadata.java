@@ -16,8 +16,10 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-public interface ComponentValue extends Value {
+import java.util.List;
+
+public interface PropsMetadata extends NonNullMetadata {
     
-    ComponentMetadata getComponentMetadata();
-             
+    List<MapEntry> getEntries();
+
 }

@@ -18,8 +18,8 @@ package org.osgi.service.blueprint.convert;
 
 public interface Converter  {
     
+    Class getTargetClass();
+
     Object convert(Object source) throws Exception;
     
-    Class getTargetClass();
-      
 }

@@ -16,8 +16,5 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-public interface ReferenceNameValue extends Value {
-
-    String getReferenceName();
-             
+public interface Target extends Metadata {
 }

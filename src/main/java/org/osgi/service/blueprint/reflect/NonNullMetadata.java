@@ -16,14 +16,5 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-import java.util.Map;
-
-public interface MapValue extends Value {
-    
-    String getKeyType();
-    
-    Map getMap();
-    
-    String getValueType();
-             
+public interface NonNullMetadata extends Metadata {
 }

@@ -16,10 +16,9 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-public interface PropertyInjectionMetadata {
+public interface MapEntry {
 
-    String getName();
+    NonNullMetadata getKey();
 
-    Value getValue();
-
+    Metadata getValue();
 }

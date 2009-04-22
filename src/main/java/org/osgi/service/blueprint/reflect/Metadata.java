@@ -16,12 +16,6 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-public interface ParameterSpecification {
-    
-    int getIndex();
-    
-    String getTypeName();
-    
-    Value getValue();
-             
+public interface Metadata {
+                 
 }

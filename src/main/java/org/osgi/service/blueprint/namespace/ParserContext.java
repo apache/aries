@@ -21,10 +21,10 @@ import org.w3c.dom.Node;
 
 public interface ParserContext  {
     
+    Node getSourceNode();
+
     ComponentDefinitionRegistry getComponentDefinitionRegistry();
     
     ComponentMetadata getEnclosingComponent();
     
-    Node getSourceNode();
-             
 }

@@ -16,10 +16,8 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-import java.util.Properties;
+public interface IdRefMetadata extends NonNullMetadata {
 
-public interface PropertiesValue extends Value {
-    
-    Properties getPropertiesValue();
-             
+    String getComponentId();
+
 }

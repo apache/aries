@@ -14,33 +14,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.osgi.service.blueprint.context;
+package org.osgi.service.blueprint.reflect;
 
-import java.util.Collection;
-import java.util.Set;
+public interface RegistrationListener {
 
-import org.osgi.framework.BundleContext;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
-
-public interface ModuleContext  {
+    Target getListenerComponent();
     
-   static final int CONFIGURATION_ADMIN_OBJECT_DELTED = 1;
-   
-   static final int BUNDLE_STOPPING = 2;
-
-   BundleContext getBundleContext();
-   
-   Object getComponent(String name) throws NoSuchComponentException;
-   
-   ComponentMetadata getComponentMetadata(String name) throws NoSuchComponentException;
+    String getRegistrationMethodName();
     
-   Set getComponentNames();
-   
-   Collection getExportedServicesMetadata();
-   
-   Collection getLocalComponentsMetadata();
-   
-   Collection getReferencedServicesMetadata();
-   
-   
+    String getUnregistrationMethodName();
+             
 }

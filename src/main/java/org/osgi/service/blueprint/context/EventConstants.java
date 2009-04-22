@@ -16,9 +16,7 @@
  */
 package org.osgi.service.blueprint.context;
 
-public interface ModuleContextEventConstants  {
-    
-    static final String BUNDLE_VERSION = "bundle.version";
+public interface EventConstants {
     
     static final String EXTENDER_BUNDLE = "extender.bundle";
     

@@ -16,8 +16,12 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-public interface UnaryServiceReferenceComponentMetadata extends ServiceReferenceComponentMetadata {
+public interface BeanArgument {
     
-    long getTimeout();
-             
+    Metadata getValue();
+
+    String getValueType();
+
+    int getIndex();
+
 }

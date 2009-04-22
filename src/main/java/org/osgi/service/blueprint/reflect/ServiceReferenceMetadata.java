@@ -16,6 +16,24 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-public interface Value {
-                 
+import java.util.Collection;
+import java.util.Set;
+import java.util.List;
+
+public interface ServiceReferenceMetadata extends ComponentMetadata {
+
+    static final int MANDATORY_AVAILABILITY = 1;
+    
+    static final int OPTIONAL_AVAILABILITY = 2;
+    
+    int getAvailability();
+
+    List<String> getInterfaceNames();
+
+    String getComponentName();
+    
+    String getFilter();
+    
+    Collection<Listener> getServiceListeners();
+
 }

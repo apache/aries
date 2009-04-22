@@ -16,30 +16,14 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
-public interface ServiceExportComponentMetadata extends ComponentMetadata {
+public interface MapMetadata extends NonNullMetadata {
+    
+    String getKeyTypeName();
+    
+    String getValueTypeName();
 
-    static final int EXPORT_MODE_ALL = 4;
-    
-    static final int EXPORT_MODE_CLASS_HIERARCHY = 3;
-    
-    static final int EXPORT_MODE_DISABLED = 1;
-    
-    static final int EXPORT_MODE_INTERFACES = 2;
-    
-    int getAutoExportMode();
-    
-    Value getExportedComponent();
-    
-    Set getInterfaceNames();
-    
-    int getRanking();
-    
-    Collection getRegistrationListeners();
-    
-    Map getServiceProperties();
-    
+    List<MapEntry> getEntries();
+
 }

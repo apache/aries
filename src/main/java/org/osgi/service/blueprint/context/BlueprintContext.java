@@ -14,12 +14,32 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.osgi.service.blueprint.reflect;
+package org.osgi.service.blueprint.context;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Set;
 
-public interface ConstructorInjectionMetadata {
+import org.osgi.framework.BundleContext;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
+
+public interface BlueprintContext {
     
-    List getParameterSpecifications();
-             
+    static final int CONFIGURATION_ADMIN_OBJECT_DELTED = 1;
+   
+    static final int BUNDLE_STOPPING = 2;
+
+    Set getComponentNames();
+
+    Object getComponent(String name) throws NoSuchComponentException;
+
+    ComponentMetadata getComponentMetadata(String name) throws NoSuchComponentException;
+
+    Collection getReferencedServicesMetadata();
+
+    Collection getExportedServicesMetadata();
+
+    Collection getBeanComponentsMetadata();
+
+    BundleContext getBundleContext();
+
 }

@@ -16,12 +16,10 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-public interface RegistrationListenerMetadata {
-
-    Value getListenerComponent();
+public interface ValueMetadata extends NonNullMetadata {
     
-    String getRegistrationMethodName();
+    String getStringValue();
     
-    String getUnregistrationMethodName();
+    String getTypeName();
              
 }

@@ -16,12 +16,37 @@
  */
 package org.osgi.service.blueprint.reflect;
 
+import java.util.Collection;
 import java.util.List;
 
-public interface ListValue extends Value {
+public interface BeanMetadata extends Target, ComponentMetadata {
+
+    static final String SCOPE_SINGLETON = "singleton";
+
+    static final String SCOPE_PROTOTYPE = "prototype";
+
+    static final String SCOPE_BUNDLE = "bundle";
+
+    String getClassName();
+
+    String getInitMethodName();
+
+    String getDestroyMethodName();
+
+    List<BeanArgument> getArguments();
+
+    List<BeanProperty> getProperties();
+
+    boolean isLazyInit();
+
+    String getFactoryMethodName();
     
-    List getList();
-    
-    String getValueType();
-             
+    Target getFactoryComponent();
+
+    String getScope();
+
+    Class getRuntimeClass();
+
+    List<String> getExplicitDependencies();
+
 }

@@ -16,22 +16,13 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-public interface CollectionBasedServiceReferenceComponentMetadata extends ServiceReferenceComponentMetadata {
+import java.util.List;
 
-    static final int MEMBER_TYPE_SERVICE_REFERENCES = 2;
+public interface CollectionMetadata extends NonNullMetadata {
 
-    static final int MEMBER_TYPE_SERVICES = 1;
+    Class getCollectionClass();
 
-    static final int ORDER_BASIS_SERVICE_REFERENCES = 2;
+    String getValueTypeName();
 
-    static final int ORDER_BASIS_SERVICES = 1;
-
-    Class getCollectionType();
-
-    Value getComparator();
-
-    int getMemberType();
-
-    int getOrderingComparisonBasis();
-
+    List<Metadata> getValues();
 }

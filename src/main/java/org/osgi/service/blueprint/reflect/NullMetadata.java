@@ -16,12 +16,8 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-public interface BindingListenerMetadata {
+public interface NullMetadata extends Metadata {
     
-    String getBindMethodName();
-    
-    Value getListenerComponent();
-    
-    String getUnbindMethodName();
-             
+    static final NullMetadata NULL = new NullMetadata() { } ;
+                          
 }

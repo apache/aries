@@ -16,12 +16,8 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-import java.util.List;
-
-public interface MethodInjectionMetadata {
-
-    String getName();
+public interface ReferenceMetadata extends ServiceReferenceMetadata, Target {
     
-    List getParameterSpecifications();
+    long getTimeout();
              
 }

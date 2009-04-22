@@ -16,32 +16,22 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-import java.util.Collection;
+public interface RefCollectionMetadata extends ServiceReferenceMetadata {
 
-public interface LocalComponentMetadata extends ComponentMetadata {
+    static final int ORDER_BASIS_SERVICE = 1;
 
-    static final String SCOPE_BUNDLE = "bundle";
+    static final int ORDER_BASIS_SERVICE_REFERENCE = 2;
 
-    static final String SCOPE_PROTOTYPE = "prototype";
+    static final int MEMBER_TYPE_SERVICE_INSTANCE = 1;
 
-    static final String SCOPE_SINGLETON = "singleton";
+    static final int MEMBER_TYPE_SERVICE_REFERENCE = 2;
 
-    String getClassName();
+    Class getCollectionType();
 
-    ConstructorInjectionMetadata getConstructorInjectionMetadata();
+    Target getComparator();
 
-    String getDestroyMethodName();
+    int getOrderingBasis();
 
-    Value getFactoryComponent();
-
-    MethodInjectionMetadata getFactoryMethodMetadata();
-
-    String getInitMethodName();
-
-    Collection getPropertyInjectionMetadata();
-
-    String getScope();
-
-    boolean isLazy();
+    int getMemberType();
 
 }

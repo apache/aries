@@ -16,10 +16,33 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-public interface ArrayValue extends Value {
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.List;
+
+public interface ServiceMetadata extends ComponentMetadata, Target {
+
+    static final int AUTO_EXPORT_DISABLED = 1;
     
-    Value[] getArray();
+    static final int AUTO_EXPORT_INTERFACES = 2;
+
+    static final int AUTO_EXPORT_CLASS_HIERARCHY = 3;
+
+    static final int AUTO_EXPORT_ALL_CLASSES = 4;
+
+    Target getServiceComponent();
+
+    List<String> getInterfaceNames();
+
+    int getAutoExportMode();
+
+    List<MapEntry> getServiceProperties();
+
+    int getRanking();
     
-    String getValueType();
-             
+    Collection<RegistrationListener> getRegistrationListeners();
+
+    List<String> getExplicitDependencies();
+    
 }

@@ -16,10 +16,10 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-public interface TypedStringValue extends Value {
-    
-    String getStringValue();
-    
-    String getTypeName();
-             
+public interface BeanProperty {
+
+    String getName();
+
+    Metadata getValue();
+
 }
