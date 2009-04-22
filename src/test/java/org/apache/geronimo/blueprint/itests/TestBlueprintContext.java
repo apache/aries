@@ -32,12 +32,12 @@ import org.apache.geronimo.blueprint.sample.CurrencyTypeConverter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Constants;
-import org.osgi.service.blueprint.context.ModuleContext;
+import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.ServiceUnavailableException;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
-public class TestModuleContext extends AbstractIntegrationTest {
+public class TestBlueprintContext extends AbstractIntegrationTest {
 
     public void test() throws Exception {
         Resource res = locateBundle(getBundle("org.apache.geronimo", "blueprint-sample"));
@@ -45,10 +45,10 @@ public class TestModuleContext extends AbstractIntegrationTest {
         assertNotNull(bundle);
         bundle.start();
 
-        ModuleContext moduleContext = getOsgiService(ModuleContext.class, 5000);
-        assertNotNull(moduleContext);
+        BlueprintContext blueprintContext = getOsgiService(BlueprintContext.class, 5000);
+        assertNotNull(blueprintContext);
 
-        Object obj = moduleContext.getComponent("bar");
+        Object obj = blueprintContext.getComponent("bar");
         assertNotNull(obj);
         assertEquals(Bar.class, obj.getClass());
         Bar bar = (Bar) obj;
@@ -58,7 +58,7 @@ public class TestModuleContext extends AbstractIntegrationTest {
         assertEquals(2, bar.getList().size());
         assertEquals("a list element", bar.getList().get(0));
         assertEquals(Integer.valueOf(5), bar.getList().get(1));
-        obj = moduleContext.getComponent("foo");
+        obj = blueprintContext.getComponent("foo");
         assertNotNull(obj);
         assertEquals(Foo.class, obj.getClass());
         Foo foo = (Foo) obj;
@@ -74,7 +74,7 @@ public class TestModuleContext extends AbstractIntegrationTest {
 
         bundle.stop();
         try {
-            moduleContext = getOsgiService(ModuleContext.class, 1);
+            blueprintContext = getOsgiService(BlueprintContext.class, 1);
             fail("ModuleContext should have been unregistered");
         } catch (Exception e) {
             // Expected, as the module context should have been unregistered

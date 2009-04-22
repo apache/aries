@@ -19,19 +19,16 @@
 package org.apache.geronimo.blueprint.itests;
 
 import java.net.URLDecoder;
-import java.util.Properties;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
-import org.apache.geronimo.blueprint.sample.Foo;
-import org.apache.geronimo.blueprint.sample.Bar;
-import org.apache.geronimo.blueprint.sample.InterfaceA;
 import org.apache.geronimo.blueprint.sample.BindingListener;
+import org.apache.geronimo.blueprint.sample.InterfaceA;
+import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Constants;
-import org.osgi.service.blueprint.context.ModuleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.ServiceUnavailableException;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
@@ -39,14 +36,14 @@ import org.springframework.util.Assert;
 public class TestReferences extends AbstractIntegrationTest {
 
     public void testUnaryReference() throws Exception {
-        ModuleContext moduleContext = getOsgiService(ModuleContext.class, 5000);
-        assertNotNull(moduleContext);
+        BlueprintContext blueprintContext = getOsgiService(BlueprintContext.class, 5000);
+        assertNotNull(blueprintContext);
 
-        BindingListener listener = (BindingListener) moduleContext.getComponent("bindingListener");
+        BindingListener listener = (BindingListener) blueprintContext.getComponent("bindingListener");
         assertNull(listener.getA());
         assertNull(listener.getReference());
 
-        InterfaceA a = (InterfaceA) moduleContext.getComponent("ref2");
+        InterfaceA a = (InterfaceA) blueprintContext.getComponent("ref2");
         try {
             a.hello("world");
             fail("A ServiceUnavailableException should have been thrown");
@@ -91,14 +88,14 @@ public class TestReferences extends AbstractIntegrationTest {
     }
 
     public void testListReferences() throws Exception {
-        ModuleContext moduleContext = getOsgiService(ModuleContext.class, 5000);
-        assertNotNull(moduleContext);
+        BlueprintContext blueprintContext = getOsgiService(BlueprintContext.class, 5000);
+        assertNotNull(blueprintContext);
 
-        BindingListener listener = (BindingListener) moduleContext.getComponent("listBindingListener");
+        BindingListener listener = (BindingListener) blueprintContext.getComponent("listBindingListener");
         assertNull(listener.getA());
         assertNull(listener.getReference());
 
-        List refs = (List) moduleContext.getComponent("ref-list");
+        List refs = (List) blueprintContext.getComponent("ref-list");
         assertNotNull(refs);
         assertTrue(refs.isEmpty());
 
