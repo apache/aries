@@ -84,23 +84,23 @@ public class Instanciator {
         primitiveClasses.put("boolean", boolean.class);
     }
     
-    private BlueprintContextImpl moduleContext;
-    
-    public Instanciator(BlueprintContextImpl moduleContext) {
-        this.moduleContext = moduleContext;
+    private BlueprintContextImpl blueprintContext;
+
+    public Instanciator(BlueprintContextImpl blueprintContext) {
+        this.blueprintContext = blueprintContext;
     }
     
     private void addBuiltinComponents(Repository repository) {
-        if (moduleContext != null) {
-            repository.add("moduleContext", moduleContext);
-            repository.add("bundleContext", moduleContext.getBundleContext());                   
-            repository.add("bundle", moduleContext.getBundleContext().getBundle());
-            repository.add("conversionService", moduleContext.getConversionService());
+        if (blueprintContext != null) {
+            repository.add("moduleContext", blueprintContext);
+            repository.add("bundleContext", blueprintContext.getBundleContext());
+            repository.add("bundle", blueprintContext.getBundleContext().getBundle());
+            repository.add("conversionService", blueprintContext.getConversionService());
         }
     }
     
     public Repository createRepository() throws Exception {
-        ComponentDefinitionRegistryImpl registry = (ComponentDefinitionRegistryImpl)getComponentDefinitionRegistry();
+        ComponentDefinitionRegistryImpl registry = getComponentDefinitionRegistry();
         Repository repository = new ScopedRepository();
         addBuiltinComponents(repository);
         
@@ -153,8 +153,8 @@ public class Instanciator {
             comparatorRecipe = (Recipe) getValue(metadata.getComparator(), Comparator.class);
         }
         CollectionBasedServiceReferenceRecipe recipe = new CollectionBasedServiceReferenceRecipe(
-                                                                   moduleContext,
-                                                                   moduleContext.getSender(),
+                blueprintContext,
+                                                                   blueprintContext.getSender(),
                                                                    metadata,
                                                                    listenersRecipe,
                                                                    comparatorRecipe);
@@ -170,8 +170,8 @@ public class Instanciator {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
-        UnaryServiceReferenceRecipe recipe = new UnaryServiceReferenceRecipe(moduleContext,
-                                                                   moduleContext.getSender(),
+        UnaryServiceReferenceRecipe recipe = new UnaryServiceReferenceRecipe(blueprintContext,
+                                                                   blueprintContext.getSender(),
                                                                    metadata,
                                                                    listenersRecipe);
         recipe.setName(metadata.getId());
@@ -182,11 +182,11 @@ public class Instanciator {
         ObjectRecipe recipe = new ObjectRecipe(ServiceRegistrationProxy.class);
         recipe.allow(Option.PRIVATE_PROPERTIES);
         recipe.setName(serviceExport.getId());
-        recipe.setProperty("moduleContext", moduleContext);
+        recipe.setProperty("moduleContext", blueprintContext);
         BeanMetadata exportedComponent = getLocalServiceComponent(serviceExport.getServiceComponent());
         if (exportedComponent != null && BeanMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
             BlueprintObjectRecipe exportedComponentRecipe = createComponentRecipe(exportedComponent);
-            recipe.setProperty("service", new BundleScopeServiceFactory(moduleContext, exportedComponentRecipe));
+            recipe.setProperty("service", new BundleScopeServiceFactory(blueprintContext, exportedComponentRecipe));
         } else {
             recipe.setProperty("service", getValue(serviceExport.getServiceComponent(), null));
         }
@@ -208,7 +208,7 @@ public class Instanciator {
     }
 
     private BlueprintObjectRecipe createComponentRecipe(BeanMetadata local) throws Exception {
-        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(loadClass(local.getClassName()));
+        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, loadClass(local.getClassName()));
         recipe.allow(Option.PRIVATE_PROPERTIES);
         recipe.setName(local.getId());
         for (BeanProperty property : local.getProperties()) {
@@ -218,7 +218,7 @@ public class Instanciator {
         if (BeanMetadata.SCOPE_PROTOTYPE.equals(local.getScope())) {
             recipe.setKeepRecipe(true);
         }
-        ComponentDefinitionRegistryImpl registry = (ComponentDefinitionRegistryImpl)getComponentDefinitionRegistry();
+        ComponentDefinitionRegistryImpl registry = getComponentDefinitionRegistry();
         // check for init-method and set it on Recipe
         String initMethod = local.getInitMethodName();
         if (initMethod == null) {
@@ -342,12 +342,12 @@ public class Instanciator {
         }
     }
     
-    protected ComponentDefinitionRegistry getComponentDefinitionRegistry() {
-        return moduleContext.getComponentDefinitionRegistry();
+    protected ComponentDefinitionRegistryImpl getComponentDefinitionRegistry() {
+        return blueprintContext.getComponentDefinitionRegistry();
     }
     
     protected ConversionService getConversionService() {
-        return moduleContext.getConversionService();
+        return blueprintContext.getConversionService();
     }
     
     private Class loadClass(String typeName) throws ClassNotFoundException {
@@ -357,11 +357,11 @@ public class Instanciator {
 
         Class clazz = primitiveClasses.get(typeName);
         if (clazz == null) {
-            if (moduleContext == null) {
+            if (blueprintContext == null) {
                 ClassLoader loader = Thread.currentThread().getContextClassLoader();
                 clazz = loader.loadClass(typeName);
             } else {
-                clazz = moduleContext.getBundleContext().getBundle().loadClass(typeName);
+                clazz = blueprintContext.getBundleContext().getBundle().loadClass(typeName);
             }
         }
         return clazz;

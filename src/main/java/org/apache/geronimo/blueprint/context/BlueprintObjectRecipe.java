@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ObjectRecipe;
+import org.apache.geronimo.blueprint.Destroyable;
 
 /**
  *
@@ -31,13 +32,15 @@ import org.apache.xbean.recipe.ObjectRecipe;
  * @version $Rev$, $Date$
  */
 public class BlueprintObjectRecipe extends ObjectRecipe {
-    
+
+    private final BlueprintContextImpl blueprintContext;
     private boolean keepRecipe = false;
     private Method initMethod;
     private Method destroyMethod;
     
-    public BlueprintObjectRecipe(Class typeName) {
+    public BlueprintObjectRecipe(BlueprintContextImpl blueprintContext, Class typeName) {
         super(typeName);
+        this.blueprintContext = blueprintContext;
     }
     
     public void setKeepRecipe(boolean keepRecipe) {
@@ -66,7 +69,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         
     @Override
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
-        Object obj = super.internalCreate(expectedType, lazyRefAllowed);
+        final Object obj = super.internalCreate(expectedType, lazyRefAllowed);
         if (initMethod != null) {
             try {
                 initMethod.invoke(obj, new Object[] {});
@@ -76,6 +79,14 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        if (destroyMethod != null && blueprintContext != null) {
+            Destroyable d = new Destroyable() {
+                public void destroy() throws Exception {
+                    destroyInstance(obj);
+                }
+            };
+            blueprintContext.addDestroyable(getName(), d);
         }
         return obj;
     }
