@@ -63,6 +63,14 @@ public class ConstructorInjectionMetadataImpl implements ConstructorInjectionMet
     }
 
     public void addParameterSpecification(ParameterSpecification parameterSpecification) {
+        if (!parameterSpecifications.isEmpty()) {
+            ParameterSpecification p1 = parameterSpecifications.get(0);
+            ParameterSpecification p2 = parameterSpecification;
+            if ( (p1.getIndex() > -1 && p2.getIndex() < 0) ||
+                 (p1.getIndex() < 0 && p2.getIndex() > -1) ) {
+                throw new IllegalArgumentException("Index attribute must be specified either on all or none constructor arguments");
+            }
+        }
         parameterSpecifications.add(parameterSpecification);
     }
 }

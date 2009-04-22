@@ -6,8 +6,8 @@
 
     <component id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA" depends-on=" pojoB , pojoC ,">
         <constructor-arg value="val0"/>
-        <constructor-arg ref="val1" index="2"/>
-        <constructor-arg index="1">
+        <constructor-arg ref="val1" />
+        <constructor-arg>
             <description>null value</description>
             <null/>
         </constructor-arg>
@@ -32,6 +32,9 @@
         </property>
     </component>
     
-    <component id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoA" init-method="initPojo" destroy-method="" />
-
+    <component id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoA" init-method="initPojo" destroy-method="" >
+        <constructor-arg index = "1" value="val0"/>
+        <constructor-arg index = "0" ref="val1" />
+    </component>
+    
 </components>

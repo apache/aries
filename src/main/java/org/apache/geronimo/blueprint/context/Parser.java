@@ -399,7 +399,6 @@ public class Parser {
         }
 
         // Parse elements
-        int indexConstructor = 0;
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
@@ -407,12 +406,10 @@ public class Parser {
                 Element e = (Element) node;
                 if (isBlueprintNamespace(node.getNamespaceURI())) {                
                     if (nodeNameEquals(node, CONSTRUCTOR_ARG_ELEMENT)) {
-                        // TODO: all indexes attributes must be set or none according to the spec
-                        int index = e.hasAttribute(INDEX_ATTRIBUTE) ? Integer.parseInt(e.getAttribute(INDEX_ATTRIBUTE)) : indexConstructor;
+                        int index = e.hasAttribute(INDEX_ATTRIBUTE) ? Integer.parseInt(e.getAttribute(INDEX_ATTRIBUTE)) : -1;
                         String type = e.hasAttribute(TYPE_ATTRIBUTE) ? e.getAttribute(TYPE_ATTRIBUTE) : null;
                         Value value = parseValue(e, metadata);
                         metadata.addConsuctorArg(new ParameterSpecificationImpl(value, type, index));
-                        indexConstructor++;
                     } else if (nodeNameEquals(node, PROPERTY_ELEMENT)) {
                         String name = e.hasAttribute(NAME_ATTRIBUTE) ? e.getAttribute(NAME_ATTRIBUTE) : null;
                         Value value = parseValue(e, metadata);
