@@ -174,7 +174,7 @@
             <xsd:extension base="Tcomponent">
                 <xsd:sequence minOccurs="0" maxOccurs="unbounded">
                     <xsd:element name="interfaces" type="Tinterfaces" minOccurs="0" maxOccurs="1"/>
-                    <xsd:element name="listener" type="Tlistener" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="listener" type="TreferenceListener" minOccurs="0" maxOccurs="unbounded"/>
                 </xsd:sequence>
                 <xsd:attribute name="interface" use="optional" type="xsd:token"/>
                 <xsd:attribute name="filter" use="optional" type="xsd:string"/>

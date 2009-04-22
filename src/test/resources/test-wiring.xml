@@ -7,9 +7,9 @@
             default-destroy-method = "destroy" >
 
     <type-converters>
-            <component id="converter1" class="org.apache.geronimo.blueprint.pojos.ConverterA">
+            <bean id="converter1" class="org.apache.geronimo.blueprint.pojos.ConverterA">
                 <property name="bundle" ref="bundle" />
-            </component>
+            </bean>
     </type-converters>
     
     <service id="service1" ref="pojoB" interface="foo">
