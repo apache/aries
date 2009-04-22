@@ -40,7 +40,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements BeanMetad
     private String destroyMethodName;
     private List<BeanArgument> arguments;
     private List<BeanProperty> properties;
-    private boolean isLazyInit;
+    private boolean lazyInit;
     private String factoryMethodName;
     private Target factoryComponent;
     private String scope;
@@ -61,7 +61,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements BeanMetad
         for (BeanProperty property : source.getProperties()) {
             addProperty(new BeanPropertyImpl(property));
         }
-        this.isLazyInit = source.isLazyInit();
+        this.lazyInit = source.isLazyInit();
         this.factoryMethodName = source.getFactoryMethodName();
         this.factoryComponent = MetadataUtil.cloneTarget(source.getFactoryComponent());
         this.scope = source.getScope();
@@ -132,11 +132,11 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements BeanMetad
     }
 
     public boolean isLazyInit() {
-        return this.isLazyInit;
+        return this.lazyInit;
     }
 
     public void setLazyInit(boolean lazyInit) {
-        this.isLazyInit = lazyInit;
+        this.lazyInit = lazyInit;
     }
 
     public String getFactoryMethodName() {

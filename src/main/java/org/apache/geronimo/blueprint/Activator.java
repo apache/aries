@@ -95,7 +95,7 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
     private void destroyContext(Bundle bundle) {
         BlueprintContextImpl moduleContext = contextMap.remove(bundle);
         if (moduleContext != null) {
-            LOGGER.debug("Destroying ModuleContext for bundle " + bundle.getSymbolicName());
+            LOGGER.debug("Destroying BlueprintContext for bundle " + bundle.getSymbolicName());
             moduleContext.destroy();
         }
     }
