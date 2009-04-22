@@ -44,11 +44,13 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     private final BundleContext bundleContext;
     private final Map<URI, NamespaceHandler> handlers;
     private final ServiceTracker tracker;
+    private final Map<Listener, Boolean> listeners;
 
     public NamespaceHandlerRegistryImpl(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
-        handlers = new ConcurrentHashMap<URI, NamespaceHandler>();
+        handlers = new HashMap<URI, NamespaceHandler>();
         tracker = new ServiceTracker(bundleContext, NamespaceHandler.class.getName(), this);
+        listeners = new HashMap<Listener, Boolean>();
     }
 
     public Object addingService(ServiceReference reference) {
@@ -84,7 +86,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         }
     }
 
-    public void registerHandler(NamespaceHandler handler, Map properties) throws Exception {
+    public synchronized void registerHandler(NamespaceHandler handler, Map properties) throws Exception {
         Object ns = properties != null ? properties.get(NAMESPACE) : null;
         URI[] namespaces = getNamespaces(ns);
         for (URI uri : namespaces) {
@@ -94,10 +96,17 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         }
         for (URI uri : namespaces) {
             handlers.put(uri, handler);
+            for (Listener listener : listeners.keySet()) {
+                try {
+                    listener.namespaceHandlerRegistered(uri);
+                } catch (Throwable t) {
+                    t.printStackTrace(); // TODO: log
+                }
+            }
         }
     }
 
-    private URI[] getNamespaces(Object ns) {
+    private static URI[] getNamespaces(Object ns) {
         URI[] namespaces;
         if (ns == null) {
             throw new IllegalArgumentException("NamespaceHandler service does not have an associated " + NAMESPACE + " property defined");
@@ -130,7 +139,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         return namespaces;
     }
 
-    public void unregisterHandler(NamespaceHandler handler, Map properties) throws Exception {
+    public synchronized void unregisterHandler(NamespaceHandler handler, Map properties) throws Exception {
         Object ns = properties != null ? properties.get(NAMESPACE) : null;
         if (ns instanceof URI[]) {
             for (URI uri : (URI[]) ns) {
@@ -140,17 +149,32 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             }
             for (URI uri : (URI[]) ns) {
                 handlers.remove(uri);
+                for (Listener listener : listeners.keySet()) {
+                    try {
+                        listener.namespaceHandlerUnregistered(uri);
+                    } catch (Throwable t) {
+                        t.printStackTrace(); // TODO: log
+                    }
+                }
             }
         } else {
             throw new IllegalArgumentException("NamespaceHandler service does not have an associated " + NAMESPACE + " property defined");
         }
     }
 
-    public NamespaceHandler getNamespaceHandler(URI uri) {
+    public synchronized NamespaceHandler getNamespaceHandler(URI uri) {
         return handlers.get(uri);
     }
 
     public void destroy() {
         tracker.close();
+    }
+
+    public synchronized void addListener(Listener listener) {
+        listeners.put(listener, Boolean.TRUE);
+    }
+
+    public synchronized void removeListener(Listener listener) {
+        listeners.remove(listener);
     }
 }

@@ -185,7 +185,12 @@ public class ParserTest extends AbstractBlueprintTest {
                 return null;
             }        
         }
-        
+
+        public void addListener(Listener listener) {
+        }
+
+        public void removeListener(Listener listener) {
+        }
     }
     
     private static class TestNamespaceHandler implements NamespaceHandler {

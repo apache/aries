@@ -39,4 +39,12 @@ public interface NamespaceHandlerRegistry {
     NamespaceHandler getNamespaceHandler(URI uri);
 
     void destroy();
+
+    void addListener(Listener listener);
+    void removeListener(Listener listener);
+
+    public interface Listener {
+        void namespaceHandlerRegistered(URI uri);
+        void namespaceHandlerUnregistered(URI uri);
+    }
 }

@@ -38,14 +38,19 @@ public abstract class AbstractBlueprintTest extends TestCase {
             }
             public void destroy() {
             }
+            public void addListener(Listener listener) {
+            }
+            public void removeListener(Listener listener) {
+            }
         };
         return parse(name, handlers);
     }
 
     protected ComponentDefinitionRegistryImpl parse(String name, NamespaceHandlerRegistry handlers) throws Exception {
         ComponentDefinitionRegistryImpl registry = new ComponentDefinitionRegistryImpl();
-        Parser parser = new Parser(handlers, registry, Collections.singletonList(getClass().getResource(name)));
-        parser.parse();
+        Parser parser = new Parser();
+        parser.parse(Collections.singletonList(getClass().getResource(name)));
+        parser.populate(handlers, registry);
         return registry;
     }
 
