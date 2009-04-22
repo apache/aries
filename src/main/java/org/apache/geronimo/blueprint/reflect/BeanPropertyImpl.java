@@ -18,8 +18,9 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.PropertyInjectionMetadata;
-import org.osgi.service.blueprint.reflect.Value;
+import org.osgi.service.blueprint.reflect.BeanArgument;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.BeanProperty;
 
 /**
  * TODO: javadoc
@@ -27,24 +28,24 @@ import org.osgi.service.blueprint.reflect.Value;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class PropertyInjectionMetadataImpl implements PropertyInjectionMetadata {
+public class BeanPropertyImpl implements BeanProperty {
 
     private String name;
-    private Value value;
+    private Metadata value;
 
-    public PropertyInjectionMetadataImpl() {
+    public BeanPropertyImpl() {
     }
 
-    public PropertyInjectionMetadataImpl(String name, Value value) {
+    public BeanPropertyImpl(String name, Metadata value) {
         this.name = name;
         this.value = value;
     }
 
-    public PropertyInjectionMetadataImpl(PropertyInjectionMetadata source) {
-        name = source.getName();
-        value = MetadataUtil.cloneValue(source.getValue());
+    public BeanPropertyImpl(BeanProperty source) {
+        this.name = source.getName();
+        this.value = MetadataUtil.cloneMetadata(source.getValue());
     }
-    
+
     public String getName() {
         return name;
     }
@@ -53,12 +54,15 @@ public class PropertyInjectionMetadataImpl implements PropertyInjectionMetadata 
         this.name = name;
     }
 
-    public Value getValue() {
+    public Metadata getValue() {
         return value;
     }
 
-    public void setValue(Value value) {
+    public void setValue(Metadata value) {
         this.value = value;
     }
 
+    public String toString() {
+        return name + " " + value;
+    }
 }

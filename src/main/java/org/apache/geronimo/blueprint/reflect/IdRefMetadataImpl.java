@@ -18,7 +18,7 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.UnaryServiceReferenceComponentMetadata;
+import org.osgi.service.blueprint.reflect.IdRefMetadata;
 
 /**
  * TODO: javadoc
@@ -26,24 +26,26 @@ import org.osgi.service.blueprint.reflect.UnaryServiceReferenceComponentMetadata
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class UnaryServiceReferenceComponentMetadataImpl extends ServiceReferenceComponentMetadataImpl implements UnaryServiceReferenceComponentMetadata {
+public class IdRefMetadataImpl implements IdRefMetadata {
 
-    private long timeout;
+    private String componentId;
 
-    public UnaryServiceReferenceComponentMetadataImpl() {        
-    }
-    
-    public UnaryServiceReferenceComponentMetadataImpl(UnaryServiceReferenceComponentMetadata source) {
-        super(source);
-        timeout = source.getTimeout();
-    }
-    
-    public long getTimeout() {
-        return timeout;
+    public IdRefMetadataImpl() {
     }
 
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
+    public IdRefMetadataImpl(String componentId) {
+        this.componentId = componentId;
     }
 
+    public IdRefMetadataImpl(IdRefMetadata source) {
+        componentId = source.getComponentId();
+    }
+
+    public String getComponentId() {
+        return componentId;
+    }
+
+    public void setComponentId(String componentId) {
+        this.componentId = componentId;
+    }
 }

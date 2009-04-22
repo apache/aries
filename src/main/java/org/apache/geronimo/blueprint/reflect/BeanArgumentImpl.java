@@ -18,8 +18,8 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.ParameterSpecification;
-import org.osgi.service.blueprint.reflect.Value;
+import org.osgi.service.blueprint.reflect.BeanArgument;
+import org.osgi.service.blueprint.reflect.Metadata;
 
 /**
  * TODO: javadoc
@@ -27,41 +27,41 @@ import org.osgi.service.blueprint.reflect.Value;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ParameterSpecificationImpl implements ParameterSpecification {
+public class BeanArgumentImpl implements BeanArgument {
 
-    private Value value;
-    private String typeName;
+    private Metadata value;
+    private String valueType;
     private int index = -1;
 
-    public ParameterSpecificationImpl() {
+    public BeanArgumentImpl() {
     }
 
-    public ParameterSpecificationImpl(Value value, String typeName, int index) {
+    public BeanArgumentImpl(Metadata value, String valueType, int index) {
         this.value = value;
-        this.typeName = typeName;
+        this.valueType = valueType;
         this.index = index;
     }
 
-    public ParameterSpecificationImpl(ParameterSpecification source) {
-        value = MetadataUtil.cloneValue(source.getValue());
-        typeName = source.getTypeName();
+    public BeanArgumentImpl(BeanArgument source) {
+        value = MetadataUtil.cloneMetadata(source.getValue());
+        valueType = source.getValueType();
         index = source.getIndex();
     }
-    
-    public Value getValue() {
+
+    public Metadata getValue() {
         return value;
     }
 
-    public void setValue(Value value) {
+    public void setValue(Metadata value) {
         this.value = value;
     }
 
-    public String getTypeName() {
-        return typeName;
+    public String getValueType() {
+        return valueType;
     }
 
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
+    public void setValueType(String valueType) {
+        this.valueType = valueType;
     }
 
     public int getIndex() {
@@ -73,6 +73,6 @@ public class ParameterSpecificationImpl implements ParameterSpecification {
     }
 
     public String toString() {
-        return index + " " + value + " " + typeName;
+        return index + " " + value + " " + valueType;
     }
 }

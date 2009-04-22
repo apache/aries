@@ -18,10 +18,6 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
 /**
@@ -32,35 +28,21 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
  */
 public class ComponentMetadataImpl implements ComponentMetadata {
 
-    private String name;
-    private Set<String> explicitDependencies;
-    
+    private String id;
+
     protected ComponentMetadataImpl() {
     }
     
     protected ComponentMetadataImpl(ComponentMetadata source) {
-        name = source.getName();
-        if (source.getExplicitDependencies() != null) {
-            explicitDependencies = new HashSet<String>(source.getExplicitDependencies());
-        }
+        id = source.getId();
     }
     
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public Set<String> getExplicitDependencies() {
-        if (explicitDependencies == null) {
-            return Collections.emptySet();
-        }
-        return Collections.unmodifiableSet(explicitDependencies);
-    }
-
-    public void setExplicitDependencies(Set<String> explicitDependencies) {
-        this.explicitDependencies = explicitDependencies;
-    }
 }

@@ -28,10 +28,9 @@ import org.osgi.framework.Version;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.Event;
-import org.osgi.service.event.EventConstants;
-import org.osgi.service.blueprint.context.ModuleContextEventConstants;
-import org.osgi.service.blueprint.context.ModuleContext;
-import org.osgi.service.blueprint.context.ModuleContextListener;
+import org.osgi.service.blueprint.context.EventConstants;
+import org.osgi.service.blueprint.context.BlueprintContext;
+import org.osgi.service.blueprint.context.BlueprintContextListener;
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.ModuleContextEventSender;
 
@@ -51,51 +50,53 @@ public class DefaultModuleContextEventSender implements ModuleContextEventSender
         this.extenderBundle = bundleContext.getBundle();
         this.eventAdminServiceTracker = new ServiceTracker(bundleContext, EventAdmin.class.getName(), null);
         this.eventAdminServiceTracker.open();
-        this.contextListenerTracker = new ServiceTracker(bundleContext, ModuleContextListener.class.getName(), null);
+        this.contextListenerTracker = new ServiceTracker(bundleContext, BlueprintContextListener.class.getName(), null);
         this.contextListenerTracker.open();
     }
 
-    public void sendCreating(ModuleContext moduleContext) {
+    public void sendCreating(BlueprintContext moduleContext) {
         sendEvent(moduleContext, TOPIC_CREATING, null, null, null);
     }
 
-    public void sendCreated(ModuleContext moduleContext) {
+    public void sendCreated(BlueprintContext moduleContext) {
         sendEvent(moduleContext, TOPIC_CREATED, null, null, null);
     }
 
-    public void sendDestroying(ModuleContext moduleContext) {
+    public void sendDestroying(BlueprintContext moduleContext) {
         sendEvent(moduleContext, TOPIC_DESTROYING, null, null, null);
     }
 
-    public void sendDestroyed(ModuleContext moduleContext) {
+    public void sendDestroyed(BlueprintContext moduleContext) {
         sendEvent(moduleContext, TOPIC_DESTROYED, null, null, null);
     }
 
-    public void sendWaiting(ModuleContext moduleContext, String[] serviceObjectClass, String serviceFilter) {
+    public void sendWaiting(BlueprintContext moduleContext, String[] serviceObjectClass, String serviceFilter) {
         sendEvent(moduleContext, TOPIC_WAITING, null, serviceObjectClass, serviceFilter);
     }
 
-    public void sendFailure(ModuleContext moduleContext, Throwable cause) {
+    public void sendFailure(BlueprintContext moduleContext, Throwable cause) {
         sendEvent(moduleContext, TOPIC_FAILURE, cause, null, null);
     }
 
-    public void sendFailure(ModuleContext moduleContext, Throwable cause, String[] serviceObjectClass, String serviceFilter) {
+    public void sendFailure(BlueprintContext moduleContext, Throwable cause, String[] serviceObjectClass, String serviceFilter) {
         sendEvent(moduleContext, TOPIC_FAILURE, cause, serviceObjectClass, serviceFilter);
     }
 
-    public void sendEvent(ModuleContext moduleContext, String topic, Throwable cause, String[] serviceObjectClass, String serviceFilter) {
+    public void sendEvent(BlueprintContext moduleContext, String topic, Throwable cause, String[] serviceObjectClass, String serviceFilter) {
 
         if (topic == TOPIC_CREATED || topic == TOPIC_FAILURE) {
             Object[] listeners = contextListenerTracker.getServices();
-            for (Object listener : listeners) {
-                try {
-                    if (topic == TOPIC_CREATED) {
-                        ((ModuleContextListener) listener).contextCreated(moduleContext.getBundleContext().getBundle());
-                    } else if (topic == TOPIC_FAILURE) {
-                        ((ModuleContextListener) listener).contextCreationFailed(moduleContext.getBundleContext().getBundle(), cause);
+            if (listeners != null) {
+                for (Object listener : listeners) {
+                    try {
+                        if (topic == TOPIC_CREATED) {
+                            ((BlueprintContextListener) listener).contextCreated(moduleContext.getBundleContext().getBundle());
+                        } else if (topic == TOPIC_FAILURE) {
+                            ((BlueprintContextListener) listener).contextCreationFailed(moduleContext.getBundleContext().getBundle(), cause);
+                        }
+                    } catch (Throwable t) {
+                        t.printStackTrace(); // TODO: log
                     }
-                } catch (Throwable t) {
-                    t.printStackTrace(); // TODO: log
                 }
             }
         }
@@ -108,23 +109,23 @@ public class DefaultModuleContextEventSender implements ModuleContextEventSender
         Bundle bundle = moduleContext.getBundleContext().getBundle();
 
         Dictionary props = new Hashtable();
-        props.put(EventConstants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
-        props.put(EventConstants.BUNDLE_ID, bundle.getBundleId());
-        props.put(EventConstants.BUNDLE, bundle);
+        props.put(org.osgi.service.event.EventConstants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
+        props.put(org.osgi.service.event.EventConstants.BUNDLE_ID, bundle.getBundleId());
+        props.put(org.osgi.service.event.EventConstants.BUNDLE, bundle);
         Version version = getBundleVersion(bundle);
         if (version != null) {
             props.put(BlueprintConstants.BUNDLE_VERSION, version);
         }
-        props.put(EventConstants.TIMESTAMP, System.currentTimeMillis());
-        props.put(ModuleContextEventConstants.EXTENDER_BUNDLE, extenderBundle);
-        props.put(ModuleContextEventConstants.EXTENDER_ID, extenderBundle.getBundleId());
-        props.put(ModuleContextEventConstants.EXTENDER_SYMBOLICNAME, extenderBundle.getSymbolicName());
+        props.put(org.osgi.service.event.EventConstants.TIMESTAMP, System.currentTimeMillis());
+        props.put(EventConstants.EXTENDER_BUNDLE, extenderBundle);
+        props.put(EventConstants.EXTENDER_ID, extenderBundle.getBundleId());
+        props.put(EventConstants.EXTENDER_SYMBOLICNAME, extenderBundle.getSymbolicName());
         
         if (cause != null) {
-            props.put(EventConstants.EXCEPTION, cause);
+            props.put(org.osgi.service.event.EventConstants.EXCEPTION, cause);
         }
         if (serviceObjectClass != null) {
-            props.put(EventConstants.SERVICE_OBJECTCLASS, serviceObjectClass);
+            props.put(org.osgi.service.event.EventConstants.SERVICE_OBJECTCLASS, serviceObjectClass);
         }
         if (serviceFilter != null) {
             props.put(BlueprintConstants.SERVICE_FILTER, serviceFilter);

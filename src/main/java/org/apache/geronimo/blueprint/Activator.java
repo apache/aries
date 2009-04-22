@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.geronimo.blueprint.HeaderParser.PathElement;
 import org.apache.geronimo.blueprint.context.DefaultModuleContextEventSender;
-import org.apache.geronimo.blueprint.context.ModuleContextImpl;
+import org.apache.geronimo.blueprint.context.BlueprintContextImpl;
 import org.apache.geronimo.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -53,7 +53,7 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
 
     private final ExecutorService executors = Executors.newSingleThreadExecutor();
-    private final Map<Bundle, ModuleContextImpl> contextMap = new HashMap<Bundle, ModuleContextImpl>();
+    private final Map<Bundle, BlueprintContextImpl> contextMap = new HashMap<Bundle, BlueprintContextImpl>();
     private ModuleContextEventSender sender;
     private NamespaceHandlerRegistry handlers;
 
@@ -95,7 +95,7 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
     }
 
     private void destroyContext(Bundle bundle) {
-        ModuleContextImpl moduleContext = contextMap.remove(bundle);
+        BlueprintContextImpl moduleContext = contextMap.remove(bundle);
         if (moduleContext != null) {
             LOGGER.debug("Destroying ModuleContext for bundle " + bundle.getSymbolicName());
             moduleContext.destroy();
@@ -128,7 +128,7 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
         }
         if (!urls.isEmpty()) {
             LOGGER.debug("Found blueprint application in bundle " + bundle.getSymbolicName() + " with urls: " + urls);
-            final ModuleContextImpl moduleContext = new ModuleContextImpl(bundle.getBundleContext(), sender, handlers, urls);
+            final BlueprintContextImpl moduleContext = new BlueprintContextImpl(bundle.getBundleContext(), sender, handlers, urls);
             contextMap.put(bundle, moduleContext);
             executors.submit(new Runnable() {
                 public void run() {

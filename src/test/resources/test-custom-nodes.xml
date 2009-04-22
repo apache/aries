@@ -17,22 +17,22 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<components xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:cache="http://cache.org"
-    xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 ../../main/resources/org/apache/felix/blueprint/blueprint.xsd">
+    xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 ../../main/resources/org/apache/geronimo/blueprint/blueprint.xsd">
 
     <cache:lru-cache id="myCache" />
     
-    <component id="fooService" class="FooServiceImpl" cache:cache-return-values="true">
+    <bean id="fooService" class="FooServiceImpl" cache:cache-return-values="true">
         <cache:operation name="getVolatile" />
 
         <property name="myProp" value="12" />
-    </component>
+    </bean>
     
-    <component id="barService" class="BarServiceImpl">
+    <bean id="barService" class="BarServiceImpl">
         <property name="localCache">
             <cache:lru-cache />
         </property>
-    </component>
+    </bean>
 
-</components>
+</blueprint>

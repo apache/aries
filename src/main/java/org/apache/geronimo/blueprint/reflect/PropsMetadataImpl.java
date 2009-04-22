@@ -19,8 +19,13 @@
 package org.apache.geronimo.blueprint.reflect;
 
 import java.util.Properties;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Collections;
 
-import org.osgi.service.blueprint.reflect.PropertiesValue;
+import org.osgi.service.blueprint.reflect.PropsMetadata;
+import org.osgi.service.blueprint.reflect.MapEntry;
 
 /**
  * TODO: javadoc
@@ -28,28 +33,40 @@ import org.osgi.service.blueprint.reflect.PropertiesValue;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class PropertiesValueImpl implements PropertiesValue {
+public class PropsMetadataImpl implements PropsMetadata {
 
-    private Properties propertiesValue;
+    private List<MapEntry> entries;
 
-    public PropertiesValueImpl() {
+    public PropsMetadataImpl() {
     }
 
-    public PropertiesValueImpl(Properties propertiesValue) {
-        this.propertiesValue = propertiesValue;
+    public PropsMetadataImpl(List<MapEntry> entries) {
+        this.entries = entries;
     }
 
-    public PropertiesValueImpl(PropertiesValue source) {
-        if (source.getPropertiesValue() != null) {
-            propertiesValue = new Properties(source.getPropertiesValue());
+    public PropsMetadataImpl(PropsMetadata source) {
+        for (MapEntry entry : source.getEntries()) {
+            addEntry(new MapEntryImpl(entry));
         }
     }
-    
-    public Properties getPropertiesValue() {
-        return propertiesValue;
+
+    public List<MapEntry> getEntries() {
+        if (this.entries == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(this.entries);
+        }
     }
 
-    public void setPropertiesValue(Properties propertiesValue) {
-        this.propertiesValue = propertiesValue;
+    public void setEntries(List<MapEntry> entries) {
+        this.entries = entries;
     }
+
+    public void addEntry(MapEntry entry) {
+        if (this.entries == null) {
+            this.entries = new ArrayList<MapEntry>();
+        }
+        this.entries.add(entry);
+    }
+
 }

@@ -18,8 +18,8 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.BindingListenerMetadata;
-import org.osgi.service.blueprint.reflect.Value;
+import org.osgi.service.blueprint.reflect.Listener;
+import org.osgi.service.blueprint.reflect.Target;
 
 /**
  * TODO: javadoc
@@ -27,37 +27,37 @@ import org.osgi.service.blueprint.reflect.Value;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class BindingListenerMetadataImpl implements BindingListenerMetadata {
+public class ListenerImpl implements Listener {
 
-    private Value listenerComponent;
+    private Target listenerComponent;
     private String bindMethodName;
     private String unbindMethodName;
 
-    public BindingListenerMetadataImpl() {
+    public ListenerImpl() {
     }
 
-    public BindingListenerMetadataImpl(Value listenerComponent, String bindMethodName, String unbindMethodName) {
+    public ListenerImpl(Target listenerComponent, String bindMethodName, String unbindMethodName) {
         this.listenerComponent = listenerComponent;
         this.bindMethodName = bindMethodName;
         this.unbindMethodName = unbindMethodName;
     }
 
-    public BindingListenerMetadataImpl(BindingListenerMetadata source) {
-        listenerComponent = MetadataUtil.cloneValue(source.getListenerComponent());
-        bindMethodName = source.getBindMethodName();
-        unbindMethodName = source.getUnbindMethodName();
-    }
-    
-    public Value getListenerComponent() {
-        return listenerComponent;
+    public ListenerImpl(Listener source) {
+        this.listenerComponent = MetadataUtil.cloneTarget(source.getListenerComponent());
+        this.bindMethodName = source.getBindMethodName();
+        this.unbindMethodName = source.getUnbindMethodName();
     }
 
-    public void setListenerComponent(Value listenerComponent) {
+    public Target getListenerComponent() {
+        return this.listenerComponent;
+    }
+
+    public void setListenerComponent(Target listenerComponent) {
         this.listenerComponent = listenerComponent;
     }
 
     public String getBindMethodName() {
-        return bindMethodName;
+        return this.bindMethodName;
     }
 
     public void setBindMethodName(String bindMethodName) {
@@ -65,7 +65,7 @@ public class BindingListenerMetadataImpl implements BindingListenerMetadata {
     }
 
     public String getUnbindMethodName() {
-        return unbindMethodName;
+        return this.unbindMethodName;
     }
 
     public void setUnbindMethodName(String unbindMethodName) {

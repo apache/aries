@@ -18,8 +18,8 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.CollectionBasedServiceReferenceComponentMetadata;
-import org.osgi.service.blueprint.reflect.Value;
+import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
+import org.osgi.service.blueprint.reflect.Target;
 
 /**
  * TODO: javadoc
@@ -27,24 +27,24 @@ import org.osgi.service.blueprint.reflect.Value;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class CollectionBasedServiceReferenceComponentMetadataImpl extends ServiceReferenceComponentMetadataImpl implements CollectionBasedServiceReferenceComponentMetadata {
+public class RefCollectionMetadataImpl extends ServiceReferenceMetadataImpl implements RefCollectionMetadata {
 
     private Class collectionType;
-    private Value comparator;
-    private int orderingComparisonBasis;
+    private Target comparator;
+    private int orderingBasis;
     private int memberType;
 
-    public CollectionBasedServiceReferenceComponentMetadataImpl() {        
+    public RefCollectionMetadataImpl() {
     }
     
-    public CollectionBasedServiceReferenceComponentMetadataImpl(CollectionBasedServiceReferenceComponentMetadata source) {
+    public RefCollectionMetadataImpl(RefCollectionMetadata source) {
         super(source);
-        comparator = MetadataUtil.cloneValue(source.getComparator());
         collectionType = source.getCollectionType();
-        orderingComparisonBasis = source.getOrderingComparisonBasis();
+        comparator = MetadataUtil.cloneTarget(source.getComparator());
+        orderingBasis = source.getOrderingBasis();
         memberType = source.getMemberType();
     }
-    
+
     public Class getCollectionType() {
         return collectionType;
     }
@@ -53,20 +53,20 @@ public class CollectionBasedServiceReferenceComponentMetadataImpl extends Servic
         this.collectionType = collectionType;
     }
 
-    public Value getComparator() {
+    public Target getComparator() {
         return comparator;
     }
 
-    public void setComparator(Value comparator) {
+    public void setComparator(Target comparator) {
         this.comparator = comparator;
     }
 
-    public int getOrderingComparisonBasis() {
-        return orderingComparisonBasis;
+    public int getOrderingBasis() {
+        return orderingBasis;
     }
 
-    public void setOrderingComparisonBasis(int orderingComparisonBasis) {
-        this.orderingComparisonBasis = orderingComparisonBasis;
+    public void setOrderingBasis(int orderingComparisonBasis) {
+        this.orderingBasis = orderingComparisonBasis;
     }
 
     public int getMemberType() {

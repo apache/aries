@@ -28,9 +28,10 @@ import java.util.ArrayList;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.namespace.ComponentNameAlreadyInUseException;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.ComponentValue;
-import org.osgi.service.blueprint.reflect.ReferenceValue;
-import org.osgi.service.blueprint.reflect.Value;
+import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.Target;
 
 /**
  * TODO: javadoc
@@ -41,13 +42,13 @@ import org.osgi.service.blueprint.reflect.Value;
 public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegistry {
 
     private final Map<String, ComponentMetadata> components;
-    private final List<Value> typeConverters;
+    private final List<Target> typeConverters;
     private String defaultInitMethod;
     private String defaultDestroyMethod;
 
     public ComponentDefinitionRegistryImpl() {
         components = new HashMap<String, ComponentMetadata>();
-        typeConverters = new ArrayList<Value>();
+        typeConverters = new ArrayList<Target>();
     }
 
     public boolean containsComponentDefinition(String name) {
@@ -63,7 +64,7 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
     }
 
     public void registerComponentDefinition(ComponentMetadata component) throws ComponentNameAlreadyInUseException {
-        String name = component.getName();
+        String name = component.getId();
         if (components.containsKey(name)) {
             throw new ComponentNameAlreadyInUseException(name);
         }
@@ -74,28 +75,28 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
         components.remove(name);
     }
 
-    public void registerTypeConverter(Value typeConverter) {
+    public void registerTypeConverter(Target typeConverter) {
         typeConverters.add(typeConverter);
     }
     
-    public List<Value> getTypeConverters() {
+    public List<Target> getTypeConverters() {
         return Collections.unmodifiableList(typeConverters);
     }
     
     public List<String> getTypeConverterNames() {
-        List<String> names = new ArrayList<String>();
-        for (Value value : typeConverters) {
-            if (value instanceof ComponentValue) {
-                ComponentValue componentValue = (ComponentValue) value;
-                names.add(componentValue.getComponentMetadata().getName());
-            } else if (value instanceof ReferenceValue) {
-                ReferenceValue referenceValue = (ReferenceValue) value;
-                names.add(referenceValue.getComponentName());
+        List<String> ids = new ArrayList<String>();
+        for (Target value : typeConverters) {
+            if (value instanceof ComponentMetadata) {
+                ComponentMetadata beanMetadata = (ComponentMetadata) value;
+                ids.add(beanMetadata.getId());
+            } else if (value instanceof RefMetadata) {
+                RefMetadata referenceValue = (RefMetadata) value;
+                ids.add(referenceValue.getComponentId());
             } else {
                 throw new RuntimeException("Unexpected converter type: " + value);
             }
         }
-        return names;
+        return ids;
     }
 
     public void setDefaultInitMethod(String method) {

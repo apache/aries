@@ -18,8 +18,7 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.ComponentValue;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 
 /**
  * TODO: javadoc
@@ -27,26 +26,24 @@ import org.osgi.service.blueprint.reflect.ComponentValue;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ComponentValueImpl implements ComponentValue {
+public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implements ReferenceMetadata {
 
-    private ComponentMetadata metadata;
+    private long timeout;
 
-    public ComponentValueImpl() {
+    public ReferenceMetadataImpl() {
+    }
+    
+    public ReferenceMetadataImpl(ReferenceMetadata source) {
+        super(source);
+        timeout = source.getTimeout();
     }
 
-    public ComponentValueImpl(ComponentMetadata metadata) {
-        this.metadata = metadata;
+    public long getTimeout() {
+        return timeout;
     }
 
-    public ComponentValueImpl(ComponentValue source) {
-        metadata = MetadataUtil.cloneComponentMetadata(source.getComponentMetadata());
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
     }
 
-    public ComponentMetadata getComponentMetadata() {
-        return metadata;
-    }
-
-    public void setComponentMetadata(ComponentMetadata metadata) {
-        this.metadata = metadata;
-    }
 }

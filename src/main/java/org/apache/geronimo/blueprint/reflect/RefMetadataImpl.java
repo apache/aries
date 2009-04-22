@@ -18,7 +18,7 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.ReferenceValue;
+import org.osgi.service.blueprint.reflect.RefMetadata;
 
 /**
  * TODO: javadoc
@@ -26,27 +26,17 @@ import org.osgi.service.blueprint.reflect.ReferenceValue;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ReferenceValueImpl implements ReferenceValue {
+public class RefMetadataImpl extends IdRefMetadataImpl implements RefMetadata {
 
-    private String componentName;
-
-    public ReferenceValueImpl() {
+    public RefMetadataImpl() {
     }
 
-    public ReferenceValueImpl(String componentName) {
-        this.componentName = componentName;
+    public RefMetadataImpl(String componentId) {
+        super(componentId);
     }
 
-    public ReferenceValueImpl(ReferenceValue source) {
-        componentName = source.getComponentName();
-    }
-    
-    public String getComponentName() {
-        return componentName;
-    }
-
-    public void setComponentName(String componentName) {
-        this.componentName = componentName;
+    public RefMetadataImpl(RefMetadata source) {
+        super(source);
     }
 
 }

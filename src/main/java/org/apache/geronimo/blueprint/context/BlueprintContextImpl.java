@@ -18,7 +18,6 @@
  */
 package org.apache.geronimo.blueprint.context;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,22 +35,21 @@ import org.apache.geronimo.blueprint.ModuleContextEventSender;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
 import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ObjectGraph;
 import org.apache.xbean.recipe.Repository;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.blueprint.context.ModuleContext;
+import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.NoSuchComponentException;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.convert.Converter;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
-import org.osgi.service.blueprint.reflect.ServiceExportComponentMetadata;
-import org.osgi.service.blueprint.reflect.ServiceReferenceComponentMetadata;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.ServiceMetadata;
+import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 
 /**
  * TODO: javadoc
@@ -59,7 +57,7 @@ import org.osgi.service.blueprint.reflect.ServiceReferenceComponentMetadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ModuleContextImpl implements ModuleContext {
+public class BlueprintContextImpl implements BlueprintContext {
 
     private final BundleContext bundleContext;
     private final ModuleContextEventSender sender;
@@ -70,7 +68,7 @@ public class ModuleContextImpl implements ModuleContext {
     private ObjectGraph objectGraph;
     private ServiceRegistration registration;
 
-    public ModuleContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, List<URL> urls) {
+    public BlueprintContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, List<URL> urls) {
         this.bundleContext = bundleContext;
         this.sender = sender;
         this.handlers = handlers;
@@ -127,7 +125,7 @@ public class ModuleContextImpl implements ModuleContext {
                       bundleContext.getBundle().getSymbolicName());
             props.put(BlueprintConstants.CONTEXT_VERSION_PROPERTY, 
                       bundleContext.getBundle().getHeaders().get(Constants.BUNDLE_VERSION));
-            registration = bundleContext.registerService(ModuleContext.class.getName(), this, props);
+            registration = bundleContext.registerService(BlueprintContext.class.getName(), this, props);
 
             sender.sendCreated(this);
         } catch (WaitForDependencyException e) {
@@ -158,12 +156,12 @@ public class ModuleContextImpl implements ModuleContext {
         List<String> components = new ArrayList<String>();
         for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
             ComponentMetadata component = componentDefinitionRegistry.getComponentDefinition(name);
-            if (component instanceof LocalComponentMetadata) {
-                LocalComponentMetadata local = (LocalComponentMetadata) component;
+            if (component instanceof BeanMetadata) {
+                BeanMetadata local = (BeanMetadata) component;
                 String scope = local.getScope();
-                if (!local.isLazy() && 
-                    (LocalComponentMetadata.SCOPE_BUNDLE.equals(scope) || 
-                     LocalComponentMetadata.SCOPE_SINGLETON.equals(scope))) {
+                if (!local.isLazyInit() &&
+                    (BeanMetadata.SCOPE_BUNDLE.equals(scope) ||
+                     BeanMetadata.SCOPE_SINGLETON.equals(scope))) {
                     components.add(name);
                 }
             }
@@ -173,15 +171,15 @@ public class ModuleContextImpl implements ModuleContext {
     }
     
     private void registerAllServices() {
-        for (ServiceExportComponentMetadata service : getExportedServicesMetadata()) {
-            ServiceRegistrationProxy proxy = (ServiceRegistrationProxy) getComponent(service.getName());
+        for (ServiceMetadata service : getExportedServicesMetadata()) {
+            ServiceRegistrationProxy proxy = (ServiceRegistrationProxy) getComponent(service.getId());
             proxy.register();
         }
     }
     
     private void unregisterAllServices() {
-        for (ServiceExportComponentMetadata service : getExportedServicesMetadata()) {
-            ServiceRegistrationProxy proxy = (ServiceRegistrationProxy) getComponent(service.getName());
+        for (ServiceMetadata service : getExportedServicesMetadata()) {
+            ServiceRegistrationProxy proxy = (ServiceRegistrationProxy) getComponent(service.getId());
             proxy.unregister();
         }
     }
@@ -206,16 +204,16 @@ public class ModuleContextImpl implements ModuleContext {
         return metadata;
     }
 
-    public Collection<ServiceReferenceComponentMetadata> getReferencedServicesMetadata() {
-        return getMetadata(ServiceReferenceComponentMetadata.class);
+    public Collection<ServiceReferenceMetadata> getReferencedServicesMetadata() {
+        return getMetadata(ServiceReferenceMetadata.class);
     }
 
-    public Collection<ServiceExportComponentMetadata> getExportedServicesMetadata() {
-        return getMetadata(ServiceExportComponentMetadata.class);
+    public Collection<ServiceMetadata> getExportedServicesMetadata() {
+        return getMetadata(ServiceMetadata.class);
     }
 
-    public Collection<LocalComponentMetadata> getLocalComponentsMetadata() {
-        return getMetadata(LocalComponentMetadata.class);
+    public Collection<BeanMetadata> getBeanComponentsMetadata() {
+        return getMetadata(BeanMetadata.class);
     }
 
     private <T> Collection<T> getMetadata(Class<T> clazz) {

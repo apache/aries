@@ -29,7 +29,8 @@ import java.util.Set;
 import java.util.Comparator;
 
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.geronimo.blueprint.reflect.ServiceExportComponentMetadataImpl;
+import org.apache.geronimo.blueprint.reflect.ServiceMetadataImpl;
+import org.apache.geronimo.blueprint.reflect.MapMetadataImpl;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.apache.xbean.recipe.ArrayRecipe;
 import org.apache.xbean.recipe.CollectionRecipe;
@@ -42,25 +43,23 @@ import org.apache.xbean.recipe.ReferenceRecipe;
 import org.apache.xbean.recipe.Repository;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
-import org.osgi.service.blueprint.reflect.ArrayValue;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.ComponentValue;
-import org.osgi.service.blueprint.reflect.ListValue;
-import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
-import org.osgi.service.blueprint.reflect.MapValue;
-import org.osgi.service.blueprint.reflect.NullValue;
-import org.osgi.service.blueprint.reflect.PropertiesValue;
-import org.osgi.service.blueprint.reflect.PropertyInjectionMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceNameValue;
-import org.osgi.service.blueprint.reflect.ReferenceValue;
-import org.osgi.service.blueprint.reflect.RegistrationListenerMetadata;
-import org.osgi.service.blueprint.reflect.ServiceExportComponentMetadata;
-import org.osgi.service.blueprint.reflect.SetValue;
-import org.osgi.service.blueprint.reflect.TypedStringValue;
-import org.osgi.service.blueprint.reflect.Value;
-import org.osgi.service.blueprint.reflect.UnaryServiceReferenceComponentMetadata;
-import org.osgi.service.blueprint.reflect.CollectionBasedServiceReferenceComponentMetadata;
-import org.osgi.service.blueprint.reflect.BindingListenerMetadata;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.MapMetadata;
+import org.osgi.service.blueprint.reflect.NullMetadata;
+import org.osgi.service.blueprint.reflect.PropsMetadata;
+import org.osgi.service.blueprint.reflect.IdRefMetadata;
+import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.RegistrationListener;
+import org.osgi.service.blueprint.reflect.ServiceMetadata;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
+import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
+import org.osgi.service.blueprint.reflect.Listener;
+import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.service.blueprint.reflect.CollectionMetadata;
+import org.osgi.service.blueprint.reflect.MapEntry;
 
 /**
  * TODO: javadoc
@@ -85,9 +84,9 @@ public class Instanciator {
         primitiveClasses.put("boolean", boolean.class);
     }
     
-    private ModuleContextImpl moduleContext;
+    private BlueprintContextImpl moduleContext;
     
-    public Instanciator(ModuleContextImpl moduleContext) {
+    public Instanciator(BlueprintContextImpl moduleContext) {
         this.moduleContext = moduleContext;
     }
     
@@ -106,11 +105,11 @@ public class Instanciator {
         addBuiltinComponents(repository);
         
         // Create type-converter recipes
-        for (Value value : registry.getTypeConverters()) {
-            if (value instanceof ComponentValue) {
+        for (Metadata value : registry.getTypeConverters()) {
+            if (value instanceof ComponentMetadata) {
                 Recipe recipe = (Recipe) getValue(value, null);
                 repository.add(recipe.getName(), recipe);
-            } else if (value instanceof ReferenceValue) {
+            } else if (value instanceof RefMetadata) {
                 ReferenceRecipe recipe = (ReferenceRecipe) getValue(value, null);
                 repository.add(recipe.getReferenceName(), recipe);
             } else {
@@ -128,25 +127,24 @@ public class Instanciator {
     }
 
     private Recipe createRecipe(ComponentMetadata component) throws Exception {
-        if (component instanceof LocalComponentMetadata) {
-            return createComponentRecipe( (LocalComponentMetadata) component);
-        } else if (component instanceof ServiceExportComponentMetadata) {
-            return createServiceRecipe( (ServiceExportComponentMetadata) component);
-        } else if (component instanceof UnaryServiceReferenceComponentMetadata) {
-            return createUnaryServiceReferenceRecipe(component);
-        } else if (component instanceof CollectionBasedServiceReferenceComponentMetadata) {
-            return createCollectionBasedServiceReferenceRecipe(component);
+        if (component instanceof BeanMetadata) {
+            return createComponentRecipe((BeanMetadata) component);
+        } else if (component instanceof ServiceMetadata) {
+            return createServiceRecipe((ServiceMetadata) component);
+        } else if (component instanceof ReferenceMetadata) {
+            return createUnaryServiceReferenceRecipe((ReferenceMetadata) component);
+        } else if (component instanceof RefCollectionMetadata) {
+            return createCollectionBasedServiceReferenceRecipe((RefCollectionMetadata) component);
         } else {
             throw new IllegalStateException("Unsupported component type " + component.getClass());
         }
     }
 
-    private Recipe createCollectionBasedServiceReferenceRecipe(ComponentMetadata component) throws Exception {
-        CollectionBasedServiceReferenceComponentMetadata metadata = (CollectionBasedServiceReferenceComponentMetadata) component;
+    private Recipe createCollectionBasedServiceReferenceRecipe(RefCollectionMetadata metadata) throws Exception {
         CollectionRecipe listenersRecipe = null;
-        if (metadata.getBindingListeners() != null) {
+        if (metadata.getServiceListeners() != null) {
             listenersRecipe = new CollectionRecipe(ArrayList.class);
-            for (BindingListenerMetadata listener : (Collection<BindingListenerMetadata>) metadata.getBindingListeners()) {
+            for (Listener listener : (Collection<Listener>) metadata.getServiceListeners()) {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
@@ -160,16 +158,15 @@ public class Instanciator {
                                                                    metadata,
                                                                    listenersRecipe,
                                                                    comparatorRecipe);
-        recipe.setName(component.getName());
+        recipe.setName(metadata.getId());
         return recipe;
     }
 
-    private UnaryServiceReferenceRecipe createUnaryServiceReferenceRecipe(ComponentMetadata component) throws Exception {
-        UnaryServiceReferenceComponentMetadata metadata = (UnaryServiceReferenceComponentMetadata) component;
+    private UnaryServiceReferenceRecipe createUnaryServiceReferenceRecipe(ReferenceMetadata metadata) throws Exception {
         CollectionRecipe listenersRecipe = null;
-        if (metadata.getBindingListeners() != null) {
+        if (metadata.getServiceListeners() != null) {
             listenersRecipe = new CollectionRecipe(ArrayList.class);
-            for (BindingListenerMetadata listener : (Collection<BindingListenerMetadata>) metadata.getBindingListeners()) {
+            for (Listener listener : (Collection<Listener>) metadata.getServiceListeners()) {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
@@ -177,32 +174,32 @@ public class Instanciator {
                                                                    moduleContext.getSender(),
                                                                    metadata,
                                                                    listenersRecipe);
-        recipe.setName(component.getName());
+        recipe.setName(metadata.getId());
         return recipe;
     }
 
-    private ObjectRecipe createServiceRecipe(ServiceExportComponentMetadata serviceExport) throws Exception {
+    private ObjectRecipe createServiceRecipe(ServiceMetadata serviceExport) throws Exception {
         ObjectRecipe recipe = new ObjectRecipe(ServiceRegistrationProxy.class);
         recipe.allow(Option.PRIVATE_PROPERTIES);
-        recipe.setName(serviceExport.getName());
+        recipe.setName(serviceExport.getId());
         recipe.setProperty("moduleContext", moduleContext);
-        LocalComponentMetadata exportedComponent = getLocalServiceComponent(serviceExport.getExportedComponent());
-        if (exportedComponent != null && LocalComponentMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
+        BeanMetadata exportedComponent = getLocalServiceComponent(serviceExport.getServiceComponent());
+        if (exportedComponent != null && BeanMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
             BlueprintObjectRecipe exportedComponentRecipe = createComponentRecipe(exportedComponent);
             recipe.setProperty("service", new BundleScopeServiceFactory(moduleContext, exportedComponentRecipe));
         } else {
-            recipe.setProperty("service", getValue(serviceExport.getExportedComponent(), null));
+            recipe.setProperty("service", getValue(serviceExport.getServiceComponent(), null));
         }
         recipe.setProperty("metadata", serviceExport);
-        if (serviceExport instanceof ServiceExportComponentMetadataImpl) {
-            ServiceExportComponentMetadataImpl impl = (ServiceExportComponentMetadataImpl) serviceExport;
-            if (impl.getServicePropertiesValue() != null) {
-                recipe.setProperty("serviceProperties", getValue(impl.getServicePropertiesValue(), null));
+        if (serviceExport instanceof ServiceMetadataImpl) {
+            ServiceMetadataImpl impl = (ServiceMetadataImpl) serviceExport;
+            if (impl.getServiceProperties() != null) {
+                recipe.setProperty("serviceProperties", getValue(new MapMetadataImpl(null, null, impl.getServiceProperties()), null));
             }
         }
         if (serviceExport.getRegistrationListeners() != null) {
             CollectionRecipe listenersRecipe = new CollectionRecipe(ArrayList.class);
-            for (RegistrationListenerMetadata listener : (Collection<RegistrationListenerMetadata>)serviceExport.getRegistrationListeners()) {
+            for (RegistrationListener listener : (Collection<RegistrationListener>)serviceExport.getRegistrationListeners()) {
                 listenersRecipe.add(createRecipe(listener));
             }
             recipe.setProperty("listeners", listenersRecipe);
@@ -210,15 +207,15 @@ public class Instanciator {
         return recipe;
     }
 
-    private BlueprintObjectRecipe createComponentRecipe(LocalComponentMetadata local) throws Exception {
+    private BlueprintObjectRecipe createComponentRecipe(BeanMetadata local) throws Exception {
         BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(loadClass(local.getClassName()));
         recipe.allow(Option.PRIVATE_PROPERTIES);
-        recipe.setName(local.getName());
-        for (PropertyInjectionMetadata property : (Collection<PropertyInjectionMetadata>) local.getPropertyInjectionMetadata()) {
+        recipe.setName(local.getId());
+        for (BeanProperty property : local.getProperties()) {
             Object value = getValue(property.getValue(), null);
             recipe.setProperty(property.getName(), value);
         }
-        if (LocalComponentMetadata.SCOPE_PROTOTYPE.equals(local.getScope())) {
+        if (BeanMetadata.SCOPE_PROTOTYPE.equals(local.getScope())) {
             recipe.setKeepRecipe(true);
         }
         ComponentDefinitionRegistryImpl registry = (ComponentDefinitionRegistryImpl)getComponentDefinitionRegistry();
@@ -230,7 +227,7 @@ public class Instanciator {
         } else if (initMethod.length() > 0) {
             Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), initMethod);
             if (method == null) {
-                throw new ConstructionException("Component '" + local.getName() + "' does not have init-method: " + initMethod);
+                throw new ConstructionException("Component '" + local.getId() + "' does not have init-method: " + initMethod);
             }
             recipe.setInitMethod(method);
         }
@@ -242,7 +239,7 @@ public class Instanciator {
         } else if (destroyMethod.length() > 0) {
             Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), destroyMethod);
             if (method == null) {
-                throw new ConstructionException("Component '" + local.getName() + "' does not have destroy-method: " + destroyMethod);
+                throw new ConstructionException("Component '" + local.getId() + "' does not have destroy-method: " + destroyMethod);
             }
             recipe.setDestroyMethod(method);
         }
@@ -252,7 +249,7 @@ public class Instanciator {
         return recipe;
     }
 
-    private Recipe createRecipe(RegistrationListenerMetadata listener) throws Exception {
+    private Recipe createRecipe(RegistrationListener listener) throws Exception {
         ObjectRecipe recipe = new ObjectRecipe(ServiceRegistrationProxy.Listener.class);
         recipe.allow(Option.PRIVATE_PROPERTIES);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
@@ -260,7 +257,7 @@ public class Instanciator {
         return recipe;
     }
 
-    private Recipe createRecipe(BindingListenerMetadata listener) throws Exception {
+    private Recipe createRecipe(Listener listener) throws Exception {
         ObjectRecipe recipe = new ObjectRecipe(AbstractServiceReferenceRecipe.Listener.class);
         recipe.allow(Option.PRIVATE_PROPERTIES);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
@@ -268,75 +265,78 @@ public class Instanciator {
         return recipe;
     }
 
-    private LocalComponentMetadata getLocalServiceComponent(Value value) throws Exception {
+    private BeanMetadata getLocalServiceComponent(Metadata value) throws Exception {
         ComponentMetadata metadata = null;
-        if (value instanceof ReferenceValue) {
-            ReferenceValue ref = (ReferenceValue) value;
+        if (value instanceof RefMetadata) {
+            RefMetadata ref = (RefMetadata) value;
             ComponentDefinitionRegistry registry = getComponentDefinitionRegistry();
-            metadata = registry.getComponentDefinition(ref.getComponentName());
-        } else if (value instanceof ComponentValue) {
-            ComponentValue comp = (ComponentValue) value;
-            metadata = comp.getComponentMetadata();
+            metadata = registry.getComponentDefinition(ref.getComponentId());
+        } else if (value instanceof ComponentMetadata) {
+            metadata = (ComponentMetadata) value;
         }
-        if (metadata instanceof LocalComponentMetadata) {
-            return (LocalComponentMetadata) metadata;
+        if (metadata instanceof BeanMetadata) {
+            return (BeanMetadata) metadata;
         } else {
             return null;
         }
     }
     
-    private Object getValue(Value v, Class groupingType) throws Exception {
-        if (v instanceof NullValue) {
+    private Object getValue(Metadata v, Class groupingType) throws Exception {
+        if (v instanceof NullMetadata) {
             return null;
-        } else if (v instanceof TypedStringValue) {
-            TypedStringValue stringValue = (TypedStringValue) v; 
+        } else if (v instanceof ComponentMetadata) {
+            return createRecipe((ComponentMetadata) v);
+        } else if (v instanceof ValueMetadata) {
+            ValueMetadata stringValue = (ValueMetadata) v;
             String value = stringValue.getStringValue();
             Class type = loadClass(stringValue.getTypeName());
             return new ValueRecipe(getConversionService(), value, type, groupingType);
-        } else if (v instanceof ReferenceValue) {
-            String componentName = ((ReferenceValue) v).getComponentName();
+        } else if (v instanceof RefMetadata) {
+            String componentName = ((RefMetadata) v).getComponentId();
             return new ReferenceRecipe(componentName);
-        } else if (v instanceof ListValue) {
-            ListValue listValue = (ListValue) v;
-            Class type = loadClass(listValue.getValueType());
-            CollectionRecipe cr = new CollectionRecipe(ArrayList.class);
-            for (Value lv : (List<Value>) listValue.getList()) {
-                cr.add(getValue(lv, type));
+        } else if (v instanceof CollectionMetadata) {
+            CollectionMetadata collectionMetadata = (CollectionMetadata) v;
+            Class type = loadClass(collectionMetadata.getValueTypeName());
+            if (collectionMetadata.getCollectionClass() == Object[].class) {
+                ArrayRecipe ar = new ArrayRecipe();
+                for (Metadata lv : collectionMetadata.getValues()) {
+                    ar.add(getValue(lv, type));
+                }
+                return ar;
+            } else {
+                Class cl = collectionMetadata.getCollectionClass() == List.class ? ArrayList.class : HashSet.class;
+                CollectionRecipe cr = new CollectionRecipe(cl);
+                for (Metadata lv : collectionMetadata.getValues()) {
+                    cr.add(getValue(lv, type));
+                }
+                return cr;
             }
-            return cr;
-        } else if (v instanceof SetValue) {
-            SetValue setValue = (SetValue) v;
-            Class type = loadClass(setValue.getValueType());
-            CollectionRecipe cr = new CollectionRecipe(HashSet.class);
-            for (Value lv : (Set<Value>) setValue.getSet()) {
-                cr.add(getValue(lv, type));
-            }
-            return cr;
-        } else if (v instanceof MapValue) {
-            MapValue mapValue = (MapValue) v;
-            Class keyType = loadClass(mapValue.getKeyType());
-            Class valueType = loadClass(mapValue.getValueType());            
+        } else if (v instanceof MapMetadata) {
+            MapMetadata mapValue = (MapMetadata) v;
+            Class keyType = loadClass(mapValue.getKeyTypeName());
+            Class valueType = loadClass(mapValue.getValueTypeName());
             MapRecipe mr = new MapRecipe(HashMap.class);
-            for (Map.Entry<Value,Value> entry : ((Map<Value,Value>) mapValue.getMap()).entrySet()) {
+            for (MapEntry entry : mapValue.getEntries()) {
                 Object key = getValue(entry.getKey(), keyType);
                 Object val = getValue(entry.getValue(), valueType);
                 mr.put(key, val);
             }
             return mr;
-        } else if (v instanceof ArrayValue) {
-            ArrayValue arrayValue = (ArrayValue) v;
-            Class type = loadClass(arrayValue.getValueType());
-            ArrayRecipe ar = (type == null) ? new ArrayRecipe() : new ArrayRecipe(type);
-            for (Value value : arrayValue.getArray()) {
-                ar.add(getValue(value, type));
+        } else if (v instanceof PropsMetadata) {
+            // TODO
+            /*
+            PropsMetadata mapValue = (PropsMetadata) v;
+            MapRecipe mr = new MapRecipe(HashMap.class);
+            for (MapEntry entry : mapValue.getEntries()) {
+                Object key = getValue(entry.getKey(), keyType);
+                Object val = getValue(entry.getValue(), valueType);
+                mr.put(key, val);
             }
-            return ar;
-        } else if (v instanceof ComponentValue) {
-            return createRecipe(((ComponentValue) v).getComponentMetadata());
-        } else if (v instanceof PropertiesValue) {
-            return ((PropertiesValue) v).getPropertiesValue();
-        } else if (v instanceof ReferenceNameValue) {
-            return ((ReferenceNameValue) v).getReferenceName();
+            return mr;
+            */
+            return null;
+        } else if (v instanceof IdRefMetadata) {
+            return ((IdRefMetadata) v).getComponentId();
         } else {
             throw new IllegalStateException("Unsupported value: " + v.getClass().getName());
         }

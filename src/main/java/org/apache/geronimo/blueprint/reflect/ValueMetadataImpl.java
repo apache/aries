@@ -18,12 +18,7 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.osgi.service.blueprint.reflect.ListValue;
-import org.osgi.service.blueprint.reflect.Value;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 /**
  * TODO: javadoc
@@ -31,44 +26,41 @@ import org.osgi.service.blueprint.reflect.Value;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ListValueImpl implements ListValue {
+public class ValueMetadataImpl implements ValueMetadata {
 
-    private String valueType;
-    private List<Value> list;
+    private String stringValue;
+    private String typeName;
 
-    public ListValueImpl() {
+    public ValueMetadataImpl() {
     }
 
-    public ListValueImpl(String valueType, List<Value> list) {
-        this.valueType = valueType;
-        this.list = list;
-    }
-    
-    public ListValueImpl(ListValue source) {
-        if (source.getList() != null) {
-            list = new ArrayList<Value>();
-            Iterator i = source.getList().iterator();
-            while (i.hasNext()) {
-                list.add(MetadataUtil.cloneValue((Value)i.next()));
-            }
-        }
-        valueType = source.getValueType();
-    }
-    
-    public String getValueType() {
-        return valueType;
+    public ValueMetadataImpl(String stringValue) {
+        this.stringValue = stringValue;
     }
 
-    public void setValueType(String valueType) {
-        this.valueType = valueType;
+    public ValueMetadataImpl(String stringValue, String typeName) {
+        this.stringValue = stringValue;
+        this.typeName = typeName;
     }
 
-    public List<Value> getList() {
-        return list;
+    public ValueMetadataImpl(ValueMetadata source) {
+        this.stringValue = source.getStringValue();
+        this.typeName = source.getTypeName();
     }
 
-    public void setList(List<Value> list) {
-        this.list = list;
+    public String getStringValue() {
+        return stringValue;
     }
 
+    public void setStringValue(String stringValue) {
+        this.stringValue = stringValue;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
 }
