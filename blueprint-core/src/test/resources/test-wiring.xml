@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<components xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 ../../main/resources/org/apache/geronimo/blueprint/blueprint.xsd"
             default-availability="mandatory"
@@ -19,15 +19,15 @@
         </service-properties>    
     </service>
 
-    <component id="pojoC" class="org.apache.geronimo.blueprint.pojos.PojoB" scope = "prototype">
+    <bean id="pojoC" class="org.apache.geronimo.blueprint.pojos.PojoB" scope = "prototype">
         <property name="uri" value="urn:myuri" />
-    </component>
+    </bean>
     
-    <component id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB" init-method = "init">
+    <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB" init-method = "init">
         <property name="uri" value="urn:myuri" />
-    </component>
+    </bean>
 
-    <component id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA">
+    <bean id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA">
         <property name="pojob" ref="pojoB"/>
         <property name="map">
             <map>
@@ -75,6 +75,6 @@
         <property name="number">
             <value type="java.math.BigInteger">10</value>
         </property>
-    </component>
+    </bean>
 
-</components>
+</blueprint>

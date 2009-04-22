@@ -31,21 +31,21 @@ import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.blueprint.context.ModuleContext;
-import org.osgi.service.blueprint.reflect.ReferenceValue;
-import org.osgi.service.blueprint.reflect.RegistrationListenerMetadata;
-import org.osgi.service.blueprint.reflect.ServiceExportComponentMetadata;
+import org.osgi.service.blueprint.context.BlueprintContext;
+import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.RegistrationListener;
+import org.osgi.service.blueprint.reflect.ServiceMetadata;
 
 /** 
  * TODO: javadoc
  */
 public class ServiceRegistrationProxy implements ServiceRegistration {
   
-    private ModuleContext moduleContext;
+    private BlueprintContext moduleContext;
     private Object service;
     private Map serviceProperties;
     private List<Listener> listeners;
-    private ServiceExportComponentMetadata metadata;
+    private ServiceMetadata metadata;
 
     private ServiceRegistration registration = null;
     private Map registrationProperties = null;
@@ -69,18 +69,18 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
         }
         Set<String> classes;
         switch (metadata.getAutoExportMode()) {
-            case ServiceExportComponentMetadata.EXPORT_MODE_INTERFACES:
+            case ServiceMetadata.AUTO_EXPORT_INTERFACES:
                 classes = ReflectionUtils.getImplementedInterfaces(new HashSet<String>(), serviceClass);
                 break;
-            case ServiceExportComponentMetadata.EXPORT_MODE_CLASS_HIERARCHY:
+            case ServiceMetadata.AUTO_EXPORT_CLASS_HIERARCHY:
                 classes = ReflectionUtils.getSuperClasses(new HashSet<String>(), serviceClass);
                 break;
-            case ServiceExportComponentMetadata.EXPORT_MODE_ALL:
+            case ServiceMetadata.AUTO_EXPORT_ALL_CLASSES:
                 classes = ReflectionUtils.getSuperClasses(new HashSet<String>(), serviceClass);
                 classes = ReflectionUtils.getImplementedInterfaces(classes, serviceClass);
                 break;
             default:
-                classes = metadata.getInterfaceNames();
+                classes = new HashSet<String>(metadata.getInterfaceNames());
                 break;
         }
                 
@@ -107,9 +107,9 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
     }
                        
     private String getComponentName() {
-        if (metadata.getExportedComponent() instanceof ReferenceValue) {
-            ReferenceValue ref = (ReferenceValue) metadata.getExportedComponent();
-            return ref.getComponentName();
+        if (metadata.getServiceComponent() instanceof RefMetadata) {
+            RefMetadata ref = (RefMetadata) metadata.getServiceComponent();
+            return ref.getComponentId();
         } else {
             return null;
         }
@@ -158,7 +158,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
     public static class Listener {
         
         private Object listener;
-        private RegistrationListenerMetadata metadata;
+        private RegistrationListener metadata;
         
         private Method registerMethod;
         private Method unregisterMethod;

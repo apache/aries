@@ -20,32 +20,25 @@ package org.apache.geronimo.blueprint;
 
 import java.net.URI;
 import java.net.URL;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import junit.framework.TestCase;
-import org.apache.geronimo.blueprint.context.Parser;
-import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.geronimo.blueprint.reflect.LocalComponentMetadataImpl;
+import org.apache.geronimo.blueprint.reflect.BeanMetadataImpl;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
 import org.osgi.service.blueprint.namespace.ParserContext;
-import org.osgi.service.blueprint.reflect.ArrayValue;
+import org.osgi.service.blueprint.reflect.BeanArgument;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.ComponentValue;
-import org.osgi.service.blueprint.reflect.ConstructorInjectionMetadata;
-import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
-import org.osgi.service.blueprint.reflect.NullValue;
-import org.osgi.service.blueprint.reflect.ParameterSpecification;
-import org.osgi.service.blueprint.reflect.PropertyInjectionMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceValue;
-import org.osgi.service.blueprint.reflect.TypedStringValue;
-import org.osgi.service.blueprint.reflect.Value;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.NullMetadata;
+import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 /**
  * TODO: constructor injection
@@ -58,69 +51,67 @@ public class ParserTest extends AbstractBlueprintTest {
         assertNotNull(registry);
         ComponentMetadata component = registry.getComponentDefinition("pojoA");
         assertNotNull(component);
-        assertEquals("pojoA", component.getName());
-        Set<String> deps = component.getExplicitDependencies();
+        assertEquals("pojoA", component.getId());
+        assertTrue(component instanceof BeanMetadata);
+        BeanMetadata local = (BeanMetadata) component;
+        List<String> deps = local.getExplicitDependencies();
         assertNotNull(deps);
         assertEquals(2, deps.size());
         assertTrue(deps.contains("pojoB"));
         assertTrue(deps.contains("pojoC"));
-        assertTrue(component instanceof LocalComponentMetadata);
-        LocalComponentMetadata local = (LocalComponentMetadata) component;
         assertEquals("org.apache.geronimo.blueprint.pojos.PojoA", local.getClassName());
-        ConstructorInjectionMetadata cns = local.getConstructorInjectionMetadata();
-        assertNotNull(cns);
-        List<ParameterSpecification> params = cns.getParameterSpecifications();
+        List<BeanArgument> params = local.getArguments();
         assertNotNull(params);
         assertEquals(6, params.size());
-        ParameterSpecification param = params.get(0);
+        BeanArgument param = params.get(0);
         assertNotNull(param);
         assertEquals(-1, param.getIndex());
-        assertNull(param.getTypeName());
+        assertNull(param.getValueType());
         assertNotNull(param.getValue());
-        assertTrue(param.getValue() instanceof TypedStringValue);
-        assertEquals("val0", ((TypedStringValue) param.getValue()).getStringValue());
-        assertNull(((TypedStringValue) param.getValue()).getTypeName());
+        assertTrue(param.getValue() instanceof ValueMetadata);
+        assertEquals("val0", ((ValueMetadata) param.getValue()).getStringValue());
+        assertNull(((ValueMetadata) param.getValue()).getTypeName());
         param = params.get(1);
         assertNotNull(param);
         assertEquals(-1, param.getIndex());
-        assertNull(param.getTypeName());
+        assertNull(param.getValueType());
         assertNotNull(param.getValue());
-        assertTrue(param.getValue() instanceof ReferenceValue);
-        assertEquals("val1", ((ReferenceValue) param.getValue()).getComponentName());
+        assertTrue(param.getValue() instanceof RefMetadata);
+        assertEquals("val1", ((RefMetadata) param.getValue()).getComponentId());
         param = params.get(2);
         assertNotNull(param);
         assertEquals(-1, param.getIndex());
-        assertNull(param.getTypeName());
+        assertNull(param.getValueType());
         assertNotNull(param.getValue());
-        assertTrue(param.getValue() instanceof NullValue);
+        assertTrue(param.getValue() instanceof NullMetadata);
         param = params.get(3);
         assertNotNull(param);
         assertEquals(-1, param.getIndex());
-        assertEquals("java.lang.String", param.getTypeName());
+        assertEquals("java.lang.String", param.getValueType());
         assertNotNull(param.getValue());
-        assertTrue(param.getValue() instanceof TypedStringValue);
-        assertEquals("val3", ((TypedStringValue) param.getValue()).getStringValue());
-        assertNull(((TypedStringValue) param.getValue()).getTypeName());
+        assertTrue(param.getValue() instanceof ValueMetadata);
+        assertEquals("val3", ((ValueMetadata) param.getValue()).getStringValue());
+        assertNull(((ValueMetadata) param.getValue()).getTypeName());
         param = params.get(4);
         assertNotNull(param);
         assertEquals(-1, param.getIndex());
-        assertNull(param.getTypeName());
+        assertNull(param.getValueType());
         assertNotNull(param.getValue());
-        assertTrue(param.getValue() instanceof ArrayValue);
-        ArrayValue array = (ArrayValue) param.getValue();
-        assertNull(array.getValueType());
-        assertNotNull(array.getArray());
-        assertEquals(3, array.getArray().length);
-        assertTrue(array.getArray()[0] instanceof TypedStringValue);
-        assertTrue(array.getArray()[1] instanceof ComponentValue);
-        assertTrue(array.getArray()[2] instanceof NullValue);
+        assertTrue(param.getValue() instanceof CollectionMetadata);
+        CollectionMetadata array = (CollectionMetadata) param.getValue();
+        assertNull(array.getValueTypeName());
+        assertNotNull(array.getValues());
+        assertEquals(3, array.getValues().size());
+        assertTrue(array.getValues().get(0) instanceof ValueMetadata);
+        assertTrue(array.getValues().get(1) instanceof ComponentMetadata);
+        assertTrue(array.getValues().get(2) instanceof NullMetadata);
         param = params.get(5);
         assertNotNull(param);
         assertEquals(-1, param.getIndex());
-        assertNull(param.getTypeName());
+        assertNull(param.getValueType());
         assertNotNull(param.getValue());
-        assertTrue(param.getValue() instanceof ReferenceValue);
-        assertEquals("pojoB", ((ReferenceValue) param.getValue()).getComponentName());
+        assertTrue(param.getValue() instanceof RefMetadata);
+        assertEquals("pojoB", ((RefMetadata) param.getValue()).getComponentId());
         
         assertEquals(null, local.getInitMethodName());
         assertEquals(null, local.getDestroyMethodName());
@@ -128,15 +119,13 @@ public class ParserTest extends AbstractBlueprintTest {
         // test pojoB
         ComponentMetadata pojoB = registry.getComponentDefinition("pojoB");
         assertNotNull(pojoB);
-        assertEquals("pojoB", pojoB.getName());
-        assertTrue(pojoB instanceof LocalComponentMetadata);
-        LocalComponentMetadata pojoBLocal = (LocalComponentMetadata) pojoB;
+        assertEquals("pojoB", pojoB.getId());
+        assertTrue(pojoB instanceof BeanMetadata);
+        BeanMetadata pojoBLocal = (BeanMetadata) pojoB;
         assertEquals("initPojo", pojoBLocal.getInitMethodName());
         assertEquals("", pojoBLocal.getDestroyMethodName());
         
-        cns = pojoBLocal.getConstructorInjectionMetadata();
-        assertNotNull(cns);
-        params = cns.getParameterSpecifications();
+        params = pojoBLocal.getArguments();
         assertNotNull(params);
         assertEquals(2, params.size());
         param = params.get(0);
@@ -166,22 +155,20 @@ public class ParserTest extends AbstractBlueprintTest {
         
         metadata = registry.getComponentDefinition("barService");
         assertNotNull(metadata);
-        assertTrue(metadata instanceof LocalComponentMetadata);
-        LocalComponentMetadata comp2 = (LocalComponentMetadata) metadata;
-        assertEquals(1, comp2.getPropertyInjectionMetadata().size());
-        PropertyInjectionMetadata propertyMetadata = (PropertyInjectionMetadata)comp2.getPropertyInjectionMetadata().iterator().next();
+        assertTrue(metadata instanceof BeanMetadata);
+        BeanMetadata comp2 = (BeanMetadata) metadata;
+        assertEquals(1, comp2.getProperties().size());
+        BeanProperty propertyMetadata = comp2.getProperties().get(0);
         assertEquals("localCache", propertyMetadata.getName());
-        Value propertyValue = propertyMetadata.getValue();
-        assertTrue(propertyValue instanceof ComponentValue);
-        ComponentValue componentValue = (ComponentValue) propertyValue;
-        assertTrue(componentValue.getComponentMetadata() instanceof LocalComponentMetadata);
-        LocalComponentMetadata innerComp = (LocalComponentMetadata) componentValue.getComponentMetadata();
+        Metadata propertyValue = propertyMetadata.getValue();
+        assertTrue(propertyValue instanceof BeanMetadata);
+        BeanMetadata innerComp = (BeanMetadata) propertyValue;
         assertEquals("org.apache.geronimo.CacheProperty", innerComp.getClassName()); 
         
         metadata = registry.getComponentDefinition("myCache");
         assertNotNull(metadata);
-        assertTrue(metadata instanceof LocalComponentMetadata);
-        LocalComponentMetadata comp3 = (LocalComponentMetadata) metadata;
+        assertTrue(metadata instanceof BeanMetadata);
+        BeanMetadata comp3 = (BeanMetadata) metadata;
         assertEquals("org.apache.geronimo.Cache", comp3.getClassName());         
     }
 
@@ -206,11 +193,11 @@ public class ParserTest extends AbstractBlueprintTest {
         public ComponentMetadata decorate(Node node,
                                           ComponentMetadata component,
                                           ParserContext context) {
-            //System.out.println("decorate: " + node + " " + component + " " + context.getEnclosingComponent().getName());
+            //System.out.println("decorate: " + node + " " + component + " " + context.getEnclosingComponent().getId());
             
             if (node instanceof Attr) {
                 Attr attr = (Attr) node;
-                MyLocalComponentMetadata decoratedComp = new MyLocalComponentMetadata((LocalComponentMetadata)component);                
+                MyLocalComponentMetadata decoratedComp = new MyLocalComponentMetadata((BeanMetadata)component);
                 decoratedComp.setCacheReturnValues(Boolean.parseBoolean(attr.getValue()));
                 return decoratedComp;
             } else if (node instanceof Element) {
@@ -228,7 +215,7 @@ public class ParserTest extends AbstractBlueprintTest {
         }
 
         public ComponentMetadata parse(Element element, ParserContext context) {
-            String comp = (context.getEnclosingComponent() == null) ? null : context.getEnclosingComponent().getName();
+            String comp = (context.getEnclosingComponent() == null) ? null : context.getEnclosingComponent().getId();
             //System.out.println("parse: " + element.getLocalName() + " " + comp);
             
             String className;
@@ -238,8 +225,8 @@ public class ParserTest extends AbstractBlueprintTest {
                 className = "org.apache.geronimo.CacheProperty";
             }
                         
-            LocalComponentMetadataImpl p = new LocalComponentMetadataImpl();
-            p.setName(element.getAttribute("id"));
+            BeanMetadataImpl p = new BeanMetadataImpl();
+            p.setId(element.getAttribute("id"));
             p.setClassName(className);
             
             return p;
@@ -247,12 +234,12 @@ public class ParserTest extends AbstractBlueprintTest {
         
     }
     
-    private static class MyLocalComponentMetadata extends LocalComponentMetadataImpl {
+    private static class MyLocalComponentMetadata extends BeanMetadataImpl {
         
         private boolean cacheReturnValues;
         private String operation;
         
-        public MyLocalComponentMetadata(LocalComponentMetadata impl) {
+        public MyLocalComponentMetadata(BeanMetadata impl) {
             super(impl);
         }
         

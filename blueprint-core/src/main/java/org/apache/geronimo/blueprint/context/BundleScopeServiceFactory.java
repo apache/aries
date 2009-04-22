@@ -35,11 +35,11 @@ import org.osgi.framework.ServiceRegistration;
  */
 public class BundleScopeServiceFactory implements ServiceFactory {
 
-    private ModuleContextImpl moduleContext;
+    private BlueprintContextImpl moduleContext;
     private BlueprintObjectRecipe serviceRecipe;
     private Map<Bundle, Entry> instanceMap = Collections.synchronizedMap(new HashMap<Bundle, Entry>()); 
     
-    public BundleScopeServiceFactory(ModuleContextImpl moduleContext, BlueprintObjectRecipe serviceRecipe) {
+    public BundleScopeServiceFactory(BlueprintContextImpl moduleContext, BlueprintObjectRecipe serviceRecipe) {
         this.moduleContext = moduleContext;
         this.serviceRecipe = serviceRecipe;
     }

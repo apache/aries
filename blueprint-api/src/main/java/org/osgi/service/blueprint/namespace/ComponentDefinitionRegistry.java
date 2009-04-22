@@ -28,7 +28,7 @@ public interface ComponentDefinitionRegistry  {
     
     Set getComponentDefinitionNames();
     
-    void registerComponentDefinition(ComponentMetadata component) throws ComponentNameAlreadyInUseException;
+    void registerComponentDefinition(ComponentMetadata component);
     
     void removeComponentDefinition(String name);
              

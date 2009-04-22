@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<components xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 ../../main/resources/org/apache/felix/blueprint/blueprint.xsd"
+            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 ../../main/resources/org/apache/geronimo/blueprint/blueprint.xsd"
             default-init-method="init" default-destroy-method="destroy">
 
-    <component id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA" depends-on=" pojoB , pojoC ,">
-        <constructor-arg value="val0"/>
-        <constructor-arg ref="val1" />
-        <constructor-arg>
+    <bean id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA" depends-on=" pojoB , pojoC ,">
+        <argument value="val0"/>
+        <argument ref="val1" />
+        <argument>
             <description>null value</description>
             <null/>
-        </constructor-arg>
-        <constructor-arg type="java.lang.String">
+        </argument>
+        <argument type="java.lang.String">
             <value>val3</value>
-        </constructor-arg>
-        <constructor-arg>
+        </argument>
+        <argument>
             <array>
                 <value>val0</value>
-                <component class="java.lang.String"/>
+                <bean class="java.lang.String"/>
                 <null/>
             </array>
-        </constructor-arg>
-        <constructor-arg>
+        </argument>
+        <argument>
             <ref component="pojoB"/>
-        </constructor-arg>
+        </argument>
         <property name="prop1" ref="pojoB"/>
         <property name="prop2" value="value" />
         <property name="prop3">
             <description>property</description>
             <value>val</value>
         </property>
-    </component>
+    </bean>
     
-    <component id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoA" init-method="initPojo" destroy-method="" >
-        <constructor-arg index = "1" value="val0"/>
-        <constructor-arg index = "0" ref="val1" />
-    </component>
+    <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoA" init-method="initPojo" destroy-method="" >
+        <argument index = "1" value="val0"/>
+        <argument index = "0" ref="val1" />
+    </bean>
     
-</components>
+</blueprint>

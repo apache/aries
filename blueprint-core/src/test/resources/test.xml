@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<components xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 ../../main/resources/org/apache/felix/blueprint/blueprint.xsd"
+            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 ../../main/resources/org/apache/geronimo/blueprint/blueprint.xsd"
             default-availability="mandatory">
 
     <description>
@@ -9,27 +9,27 @@
     </description>
 
     <type-converters>
-        <component class="org.apache.geronimo.blueprint.pojos.ConverterA"/>
+        <bean class="org.apache.geronimo.blueprint.pojos.ConverterA"/>
         <ref component="converterB"/>
     </type-converters>
 
-    <component id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA">
+    <bean id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA">
         <property name="pojob" ref="pojoB"/>
-    </component>
+    </bean>
 
-    <component id="pojoAcns" class="org.apache.geronimo.blueprint.pojos.PojoA">
-        <constructor-arg ref="pojoB"/>
-    </component>
+    <bean id="pojoAcns" class="org.apache.geronimo.blueprint.pojos.PojoA">
+        <argument ref="pojoB"/>
+    </bean>
 
-    <component id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB">
+    <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB">
         <property name="uri" value="urn:myuri"/>
-    </component>
+    </bean>
 
-    <component id="pojoBcns" class="org.apache.geronimo.blueprint.pojos.PojoB">
-        <constructor-arg value="urn:myuri"/>
-    </component>
+    <bean id="pojoBcns" class="org.apache.geronimo.blueprint.pojos.PojoB">
+        <argument value="urn:myuri"/>
+    </bean>
 
-    <component id="converterB" class="org.apache.geronimo.blueprint.pojos.ConverterB"/>
+    <bean id="converterB" class="org.apache.geronimo.blueprint.pojos.ConverterB"/>
 
     <reference id="refA" filter="(key=prop)" interface="org.apache.geronimo.blueprint.pojos.InterfaceA"/>
 
@@ -42,8 +42,8 @@
 
     <service interface="org.apache.geronimo.blueprint.pojos.InterfaceA" ref="pojoA"/>
 
-    <component id="listenerA" class="org.apache.geronimo.blueprint.pojos.ListenerA"/>
+    <bean id="listenerA" class="org.apache.geronimo.blueprint.pojos.ListenerA"/>
 
     <ref-list availability="optional" member-type="service-instance"/>
 
-</components>
+</blueprint>

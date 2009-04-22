@@ -21,7 +21,6 @@ public class NoSuchComponentException extends RuntimeException {
     private String componentName;
     
     public NoSuchComponentException(String componentName) {
-        super("");
         this.componentName = componentName;
     }
     
@@ -29,4 +28,10 @@ public class NoSuchComponentException extends RuntimeException {
         return this.componentName;
     }
       
+    public String getMessage() {
+        return "No component named '" +
+               (this.componentName == null ? "<null>" : this.componentName) +
+               "' could be found";
+    }
+
 }

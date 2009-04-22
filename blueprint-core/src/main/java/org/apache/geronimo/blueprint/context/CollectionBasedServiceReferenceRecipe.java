@@ -24,15 +24,12 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.AbstractList;
 import java.util.Iterator;
-import java.util.AbstractSet;
 import java.util.RandomAccess;
 import java.util.SortedSet;
 import java.util.Set;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.sf.cglib.proxy.Dispatcher;
 import org.apache.geronimo.blueprint.Destroyable;
@@ -48,8 +45,8 @@ import org.apache.xbean.recipe.Recipe;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.service.blueprint.context.ModuleContext;
-import org.osgi.service.blueprint.reflect.CollectionBasedServiceReferenceComponentMetadata;
+import org.osgi.service.blueprint.context.BlueprintContext;
+import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
 
 /**
  * A recipe to create a managed collection of service references
@@ -59,15 +56,15 @@ import org.osgi.service.blueprint.reflect.CollectionBasedServiceReferenceCompone
  */
 public class CollectionBasedServiceReferenceRecipe extends AbstractServiceReferenceRecipe {
 
-    private final CollectionBasedServiceReferenceComponentMetadata metadata;
+    private final RefCollectionMetadata metadata;
     private final Recipe comparatorRecipe;
     private Comparator comparator;
 
     private ManagedCollection collection;
 
-    public CollectionBasedServiceReferenceRecipe(ModuleContext moduleContext,
+    public CollectionBasedServiceReferenceRecipe(BlueprintContext moduleContext,
                                                  ModuleContextEventSender sender,
-                                                 CollectionBasedServiceReferenceComponentMetadata metadata,
+                                                 RefCollectionMetadata metadata,
                                                  Recipe listenersRecipe,
                                                  Recipe comparatorRecipe) {
         super(moduleContext, sender, metadata, listenersRecipe);
@@ -84,11 +81,11 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
 
             if (comparatorRecipe != null) {
                 comparator = (Comparator) comparatorRecipe.create(proxyClassLoader);
-            } else if (metadata.getOrderingComparisonBasis() != 0) {
+            } else if (metadata.getOrderingBasis() != 0) {
                 comparator = new NaturalOrderComparator();
             }
-            boolean orderReferences = metadata.getOrderingComparisonBasis() == CollectionBasedServiceReferenceComponentMetadata.ORDER_BASIS_SERVICE_REFERENCES;
-            boolean memberReferences = metadata.getMemberType() == CollectionBasedServiceReferenceComponentMetadata.MEMBER_TYPE_SERVICE_REFERENCES;
+            boolean orderReferences = metadata.getOrderingBasis() == RefCollectionMetadata.ORDER_BASIS_SERVICE_REFERENCE;
+            boolean memberReferences = metadata.getMemberType() == RefCollectionMetadata.MEMBER_TYPE_SERVICE_REFERENCE;
             if (metadata.getCollectionType() == List.class) {
                 if (comparator != null) {
                     collection = new ManagedSortedList(memberReferences, orderReferences, comparator);

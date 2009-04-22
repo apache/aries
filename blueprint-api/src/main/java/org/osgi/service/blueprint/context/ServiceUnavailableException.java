@@ -19,20 +19,20 @@ package org.osgi.service.blueprint.context;
 public class ServiceUnavailableException extends RuntimeException {
     
     private Class serviceType;
-    private String filterExpression;
-    
-    public ServiceUnavailableException(String message, Class serviceType, String filterExpression) {
+    private String filter;
+
+    public ServiceUnavailableException(String message, Class serviceType, String filter) {
         super(message);
         this.serviceType = serviceType;
-        this.filterExpression = filterExpression;
+        this.filter = filter;
     }
     
     public Class getServiceType() {
         return this.serviceType;
     }
     
-    public String getFilterExpression() {
-        return this.filterExpression;
+    public String getFilter() {
+        return this.filter;
     }
-      
+
 }

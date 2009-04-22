@@ -35,9 +35,9 @@ import org.apache.geronimo.blueprint.ModuleContextEventSender;
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
-import org.osgi.service.blueprint.context.ModuleContext;
-import org.osgi.service.blueprint.reflect.ServiceReferenceComponentMetadata;
-import org.osgi.service.blueprint.reflect.BindingListenerMetadata;
+import org.apache.geronimo.blueprint.utils.BundleDelegatingClassLoader;
+import org.osgi.service.blueprint.context.BlueprintContext;
+import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceListener;
@@ -53,17 +53,17 @@ import net.sf.cglib.proxy.Dispatcher;
  */
 public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe implements ServiceListener, Destroyable {
 
-    protected final ModuleContext moduleContext;
+    protected final BlueprintContext moduleContext;
     protected final ModuleContextEventSender sender;
-    protected final ServiceReferenceComponentMetadata metadata;
+    protected final ServiceReferenceMetadata metadata;
     protected final Recipe listenersRecipe;
     protected List<Listener> listeners;
     private String filter;
     protected final ClassLoader proxyClassLoader;
 
-    protected AbstractServiceReferenceRecipe(ModuleContext moduleContext,
+    protected AbstractServiceReferenceRecipe(BlueprintContext moduleContext,
                                              ModuleContextEventSender sender,
-                                             ServiceReferenceComponentMetadata metadata,
+                                             ServiceReferenceMetadata metadata,
                                              Recipe listenersRecipe) {
         this.moduleContext = moduleContext;
         this.sender = sender;
@@ -87,8 +87,8 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 members.add(flt);
             }
             // Handle interfaces
-            Set<String> interfaces = (Set<String>) metadata.getInterfaceNames();
-            if (interfaces != null && !interfaces.isEmpty()) {
+            Set<String> interfaces = new HashSet<String>(metadata.getInterfaceNames());
+            if (!interfaces.isEmpty()) {
                 for (String itf : interfaces) {
                     members.add("(" + Constants.OBJECTCLASS + "=" + itf + ")");
                 }
@@ -204,7 +204,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         /* Inject by ObjectRecipe */
         private Object listener;
         /* Inject by ObjectRecipe */
-        private BindingListenerMetadata metadata;
+        private org.osgi.service.blueprint.reflect.Listener metadata;
 
         private Set<Method> bindMethodsOneArg = new HashSet<Method>();
         private Set<Method> bindMethodsTwoArgs = new HashSet<Method>();

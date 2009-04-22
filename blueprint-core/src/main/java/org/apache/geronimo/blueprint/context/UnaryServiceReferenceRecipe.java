@@ -22,20 +22,18 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
+import java.util.HashSet;
 
 import net.sf.cglib.proxy.Dispatcher;
-import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.ModuleContextEventSender;
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ExecutionContext;
 import org.apache.xbean.recipe.Recipe;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.context.ModuleContext;
+import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.ServiceUnavailableException;
-import org.osgi.service.blueprint.reflect.UnaryServiceReferenceComponentMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 
 /**
  * A recipe to create an unary OSGi service reference.
@@ -47,23 +45,23 @@ import org.osgi.service.blueprint.reflect.UnaryServiceReferenceComponentMetadata
  */
 public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe {
 
-    private final UnaryServiceReferenceComponentMetadata metadata;
+    private final ReferenceMetadata metadata;
     private Class proxyClass;
 
     private volatile ServiceReference trackedServiceReference;
     private volatile Object trackedService;
     private final Object monitor = new Object();
 
-    public UnaryServiceReferenceRecipe(ModuleContext moduleContext,
+    public UnaryServiceReferenceRecipe(BlueprintContext moduleContext,
                                        ModuleContextEventSender sender,
-                                       UnaryServiceReferenceComponentMetadata metadata,
+                                       ReferenceMetadata metadata,
                                        Recipe listenersRecipe) {
         super(moduleContext,  sender, metadata, listenersRecipe);
         this.metadata = metadata;
     }
 
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
-        // TODO: serviceAvailabilitySpecification
+        // TODO: availability
         try {
             // Create the proxy
             Object obj = createProxy(new ServiceDispatcher(), metadata.getInterfaceNames());
@@ -163,7 +161,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
         public Object loadObject() throws Exception {
             Object svc = trackedService;
             if (svc == null && metadata.getTimeout() > 0) {
-                Set<String> interfaces = (Set<String>) metadata.getInterfaceNames();
+                Set<String> interfaces = new HashSet<String>(metadata.getInterfaceNames());
                 sender.sendWaiting(moduleContext, interfaces.toArray(new String[interfaces.size()]), getOsgiFilter());
                 synchronized (monitor) {
                     monitor.wait(metadata.getTimeout());

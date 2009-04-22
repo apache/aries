@@ -18,14 +18,17 @@ package org.osgi.service.blueprint.namespace;
 
 public class ComponentNameAlreadyInUseException extends RuntimeException {
     
-    private String component;
-    
-    public ComponentNameAlreadyInUseException(String component) {
-        super("");
-        this.component = component;
+    private String conflictingName;
+
+    public ComponentNameAlreadyInUseException(String conflictingName) {
+        this.conflictingName = conflictingName;
     }
     
+    public String getMessage() {
+        return "Name '" + this.conflictingName + "' is already in use by a registered component";
+    }
+
     public String getConflictingName() {
-        return this.component;
+        return this.conflictingName;
     }
 }

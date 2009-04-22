@@ -17,22 +17,19 @@
 
 package org.apache.geronimo.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.ArrayValue;
-import org.osgi.service.blueprint.reflect.CollectionBasedServiceReferenceComponentMetadata;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.ComponentValue;
-import org.osgi.service.blueprint.reflect.ListValue;
-import org.osgi.service.blueprint.reflect.LocalComponentMetadata;
-import org.osgi.service.blueprint.reflect.MapValue;
-import org.osgi.service.blueprint.reflect.NullValue;
-import org.osgi.service.blueprint.reflect.PropertiesValue;
-import org.osgi.service.blueprint.reflect.ReferenceNameValue;
-import org.osgi.service.blueprint.reflect.ReferenceValue;
-import org.osgi.service.blueprint.reflect.ServiceExportComponentMetadata;
-import org.osgi.service.blueprint.reflect.SetValue;
-import org.osgi.service.blueprint.reflect.TypedStringValue;
-import org.osgi.service.blueprint.reflect.UnaryServiceReferenceComponentMetadata;
-import org.osgi.service.blueprint.reflect.Value;
+import org.osgi.service.blueprint.reflect.IdRefMetadata;
+import org.osgi.service.blueprint.reflect.MapMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.NullMetadata;
+import org.osgi.service.blueprint.reflect.PropsMetadata;
+import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
+import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
+import org.osgi.service.blueprint.reflect.ServiceMetadata;
+import org.osgi.service.blueprint.reflect.Target;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 
 /**
@@ -40,46 +37,43 @@ import org.osgi.service.blueprint.reflect.Value;
  * bits of metadata into concrete class implementations.
  */
 public class MetadataUtil {
-    
-    static public Value cloneValue(Value source) {
+
+    static public Metadata cloneMetadata(Metadata source) {
         if (source == null) {
             return null;
         } 
-        else if (source instanceof ArrayValue) {
-            return new ArrayValueImpl((ArrayValue)source);
+        else if (source instanceof MapMetadata) {
+            return new MapMetadataImpl((MapMetadata)source);
         }
-        else if (source instanceof ComponentValue) {
-            return new ComponentValueImpl((ComponentValue)source);
+        else if (source instanceof NullMetadata) {
+            return NullMetadata.NULL;
         }
-        else if (source instanceof ListValue) {
-            return new ListValueImpl((ListValue)source);
+        else if (source instanceof PropsMetadata) {
+            return new PropsMetadataImpl((PropsMetadata)source);
         }
-        else if (source instanceof SetValue) {
-            return new SetValueImpl((SetValue)source);
+        else if (source instanceof RefMetadata) {
+            return new RefMetadataImpl((RefMetadata)source);
         }
-        else if (source instanceof MapValue) {
-            return new MapValueImpl((MapValue)source);
+        else if (source instanceof IdRefMetadata) {
+            return new IdRefMetadataImpl((IdRefMetadata)source);
         }
-        else if (source instanceof NullValue) {
-            return NullValue.NULL;
+        else if (source instanceof ValueMetadata) {
+            return new ValueMetadataImpl((ValueMetadata)source);
         }
-        else if (source instanceof PropertiesValue) {
-            return new PropertiesValueImpl((PropertiesValue)source);
+        else if (source instanceof BeanMetadata) {
+            return new BeanMetadataImpl((BeanMetadata)source);
         }
-        else if (source instanceof PropertiesValue) {
-            return new PropertiesValueImpl((PropertiesValue)source);
+        else if (source instanceof RefCollectionMetadata) {
+            return new RefCollectionMetadataImpl((RefCollectionMetadata)source);
         }
-        else if (source instanceof ReferenceNameValue) {
-            return new ReferenceNameValueImpl((ReferenceNameValue)source);
+        else if (source instanceof ServiceMetadata) {
+            return new ServiceMetadataImpl((ServiceMetadata)source);
         }
-        else if (source instanceof ReferenceValue) {
-            return new ReferenceValueImpl((ReferenceValue)source);
-        }
-        else if (source instanceof TypedStringValue) {
-            return new TypedStringValueImpl((TypedStringValue)source);
+        else if (source instanceof ReferenceMetadata) {
+            return new ReferenceMetadataImpl((ReferenceMetadata)source);
         }
 
-        throw new RuntimeException("Unknown Value type received: " + source.getClass().getName());
+        throw new RuntimeException("Unknown Metadata type received: " + source.getClass().getName());
     }
 
 
@@ -92,28 +86,19 @@ public class MetadataUtil {
      * @return A mutable instance of this metadata item.
      */
     static public ComponentMetadata cloneComponentMetadata(ComponentMetadata source) {
-        if (source == null) {
-            return null;
-        } else if (source instanceof LocalComponentMetadata) {
-            return new LocalComponentMetadataImpl((LocalComponentMetadata)source);
-        }
-        else if (source instanceof CollectionBasedServiceReferenceComponentMetadata) {
-            return new CollectionBasedServiceReferenceComponentMetadataImpl((CollectionBasedServiceReferenceComponentMetadata)source);
-        }
-        else if (source instanceof CollectionBasedServiceReferenceComponentMetadata) {
-            return new CollectionBasedServiceReferenceComponentMetadataImpl((CollectionBasedServiceReferenceComponentMetadata)source);
-        }
-        else if (source instanceof ServiceExportComponentMetadata) {
-            return new ServiceExportComponentMetadataImpl((ServiceExportComponentMetadata)source);
-        }
-        else if (source instanceof ServiceExportComponentMetadata) {
-            return new ServiceExportComponentMetadataImpl((ServiceExportComponentMetadata)source);
-        }
-        else if (source instanceof UnaryServiceReferenceComponentMetadata) {
-            return new UnaryServiceReferenceComponentMetadataImpl((UnaryServiceReferenceComponentMetadata)source);
-        }
+        return (ComponentMetadata) cloneMetadata(source);
+    }
 
-        throw new RuntimeException("Unknown ComponentMetadata type received: " + source.getClass().getName());
+    /**
+     * Clone a target item, returning a mutable
+     * instance.
+     *
+     * @param source The source target item.
+     *
+     * @return A mutable instance of this target item.
+     */
+    static public Target cloneTarget(Target source) {
+        return (Target) cloneMetadata(source);
     }
 
 }
