@@ -93,4 +93,13 @@ public class MapMetadataImpl implements MapMetadata {
         }
         this.entries.add(entry);
     }
+
+    @Override
+    public String toString() {
+        return "MapMetadata[" +
+                "keyTypeName='" + keyTypeName + '\'' +
+                ", valueTypeName='" + valueTypeName + '\'' +
+                ", entries=" + entries +
+                ']';
+    }
 }

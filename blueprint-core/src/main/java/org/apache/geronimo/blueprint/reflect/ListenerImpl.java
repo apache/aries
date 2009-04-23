@@ -71,4 +71,13 @@ public class ListenerImpl implements Listener {
     public void setUnbindMethodName(String unbindMethodName) {
         this.unbindMethodName = unbindMethodName;
     }
+
+    @Override
+    public String toString() {
+        return "Listener[" +
+                "listenerComponent=" + listenerComponent +
+                ", bindMethodName='" + bindMethodName + '\'' +
+                ", unbindMethodName='" + unbindMethodName + '\'' +
+                ']';
+    }
 }

@@ -190,4 +190,21 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements BeanMetad
         this.explicitDependencies.add(explicitDependency);
     }
 
+    @Override
+    public String toString() {
+        return "BeanMetadata[" +
+                "id='" + id + '\'' +
+                ", className='" + className + '\'' +
+                ", initMethodName='" + initMethodName + '\'' +
+                ", destroyMethodName='" + destroyMethodName + '\'' +
+                ", arguments=" + arguments +
+                ", properties=" + properties +
+                ", lazyInit=" + lazyInit +
+                ", factoryMethodName='" + factoryMethodName + '\'' +
+                ", factoryComponent=" + factoryComponent +
+                ", scope='" + scope + '\'' +
+                ", runtimeClass=" + runtimeClass +
+                ", explicitDependencies=" + explicitDependencies +
+                ']';
+    }
 }

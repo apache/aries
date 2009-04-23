@@ -161,4 +161,17 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Servic
         this.explicitDependencies.add(explicitDependency);
     }
 
+    @Override
+    public String toString() {
+        return "ServiceMetadata[" +
+                "id='" + id + '\'' +
+                ", exportedComponent=" + exportedComponent +
+                ", interfaceNames=" + interfaceNames +
+                ", autoExportMode=" + autoExportMode +
+                ", serviceProperties=" + serviceProperties +
+                ", ranking=" + ranking +
+                ", registrationListeners=" + registrationListeners +
+                ", explicitDependencies=" + explicitDependencies +
+                ']';
+    }
 }

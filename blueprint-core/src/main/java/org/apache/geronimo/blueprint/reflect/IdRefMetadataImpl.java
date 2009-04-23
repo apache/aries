@@ -28,7 +28,7 @@ import org.osgi.service.blueprint.reflect.IdRefMetadata;
  */
 public class IdRefMetadataImpl implements IdRefMetadata {
 
-    private String componentId;
+    protected String componentId;
 
     public IdRefMetadataImpl() {
     }
@@ -47,5 +47,12 @@ public class IdRefMetadataImpl implements IdRefMetadata {
 
     public void setComponentId(String componentId) {
         this.componentId = componentId;
+    }
+
+    @Override
+    public String toString() {
+        return "IdRefMetadata[" +
+                "componentId='" + componentId + '\'' +
+                ']';
     }
 }

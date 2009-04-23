@@ -62,7 +62,11 @@ public class BeanPropertyImpl implements BeanProperty {
         this.value = value;
     }
 
+    @Override
     public String toString() {
-        return name + " " + value;
+        return "BeanProperty[" +
+                "name='" + name + '\'' +
+                ", value=" + value +
+                ']';
     }
 }
