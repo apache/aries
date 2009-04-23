@@ -22,6 +22,12 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Collection;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
@@ -30,9 +36,14 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
- * TODO: javadoc
+ * Default implementation of the NamespaceHandlerRegistry.
+ * 
+ * This registry will track NamespaceHandler objects in the OSGi registry and make
+ * them available, calling listeners when handlers are registered or unregistered.
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
@@ -40,6 +51,8 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, ServiceTrackerCustomizer {
 
     public static final String NAMESPACE = "org.osgi.blueprint.namespace";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(NamespaceHandlerRegistryImpl.class);
 
     private final BundleContext bundleContext;
     private final Map<URI, NamespaceHandler> handlers;
@@ -55,17 +68,16 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
 
     public Object addingService(ServiceReference reference) {
         NamespaceHandler handler = (NamespaceHandler) bundleContext.getService(reference);
-        Map props = new HashMap();
-        for (String name : reference.getPropertyKeys()) {
-            props.put(name, reference.getProperty(name));
-        }
         try {
+            Map<String, Object> props = new HashMap<String, Object>();
+            for (String name : reference.getPropertyKeys()) {
+                props.put(name, reference.getProperty(name));
+            }
             registerHandler(handler, props);
-            return handler;
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            LOGGER.warn("Error registering NamespaceHandler", e);
         }
+        return handler;
     }
 
     public void modifiedService(ServiceReference reference, Object service) {
@@ -74,91 +86,83 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     }
 
     public void removedService(ServiceReference reference, Object service) {
-        NamespaceHandler handler = (NamespaceHandler) service;
-        Map props = new HashMap();
-        for (String name : reference.getPropertyKeys()) {
-            props.put(name, reference.getProperty(name));
-        }
         try {
+            NamespaceHandler handler = (NamespaceHandler) service;
+            Map<String, Object> props = new HashMap<String, Object>();
+            for (String name : reference.getPropertyKeys()) {
+                props.put(name, reference.getProperty(name));
+            }
             unregisterHandler(handler, props);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.warn("Error unregistering NamespaceHandler", e);
         }
     }
 
-    public synchronized void registerHandler(NamespaceHandler handler, Map properties) throws Exception {
-        Object ns = properties != null ? properties.get(NAMESPACE) : null;
-        URI[] namespaces = getNamespaces(ns);
+    public synchronized void registerHandler(NamespaceHandler handler, Map properties) {
+        List<URI> namespaces = getNamespaces(properties);
         for (URI uri : namespaces) {
             if (handlers.containsKey(uri)) {
-                throw new IllegalArgumentException("A NamespaceHandler service is already registered for namespace " + uri);
+                LOGGER.warn("Ignoring NamespaceHandler for namespace {}, as another handler has already been registered for the same namespace", uri);
+                continue;
             }
-        }
-        for (URI uri : namespaces) {
             handlers.put(uri, handler);
             for (Listener listener : listeners.keySet()) {
                 try {
                     listener.namespaceHandlerRegistered(uri);
                 } catch (Throwable t) {
-                    t.printStackTrace(); // TODO: log
+                    LOGGER.debug("Unexpected exception when notifying a NamespaceHandler listener", t);
                 }
             }
         }
     }
 
-    private static URI[] getNamespaces(Object ns) {
-        URI[] namespaces;
+    public synchronized void unregisterHandler(NamespaceHandler handler, Map properties) {
+        List<URI> namespaces = getNamespaces(properties);
+        for (URI uri : namespaces) {
+            if (handlers.get(uri) != handler) {
+                continue;
+            }
+            handlers.remove(uri);
+            for (Listener listener : listeners.keySet()) {
+                try {
+                    listener.namespaceHandlerUnregistered(uri);
+                } catch (Throwable t) {
+                    LOGGER.debug("Unexpected exception when notifying a NamespaceHandler listener", t);
+                }
+            }
+        }
+    }
+
+    private static List<URI> getNamespaces(Map properties) {
+        Object ns = properties != null ? properties.get(NAMESPACE) : null;
         if (ns == null) {
             throw new IllegalArgumentException("NamespaceHandler service does not have an associated " + NAMESPACE + " property defined");
         } else if (ns instanceof URI[]) {
-            namespaces = (URI[]) ns;
+            return Arrays.asList((URI[]) ns);
         } else if (ns instanceof URI) {
-            namespaces = new URI[] { (URI) ns };
+            return Collections.singletonList((URI) ns);
         } else if (ns instanceof String[]) {
             String[] strings = (String[]) ns;
-            namespaces = new URI[strings.length];
-            for (int i = 0; i < namespaces.length; i++) {
-                namespaces[i] = URI.create(strings[i]);
+            List<URI> namespaces = new ArrayList<URI>(strings.length);
+            for (int i = 0; i < strings.length; i++) {
+                namespaces.add(URI.create(strings[i]));
             }
+            return namespaces;
         } else if (ns instanceof Collection) {
             Collection col = (Collection) ns;
-            namespaces = new URI[col.size()];
-            int index = 0;
+            List<URI> namespaces = new ArrayList<URI>(col.size());
             for (Object o : col) {
                 if (o instanceof URI) {
-                    namespaces[index++] = (URI) o;
+                    namespaces.add((URI) o);
                 } else if (o instanceof String) {
-                    namespaces[index++] = URI.create((String) o);
+                    namespaces.add(URI.create((String) o));
                 } else {
                     throw new IllegalArgumentException("NamespaceHandler service has an associated " + NAMESPACE + " property defined which can not be converted to an array of URI");
                 }
             }
+            return namespaces;
         } else {
             throw new IllegalArgumentException("NamespaceHandler service has an associated " + NAMESPACE + " property defined which can not be converted to an array of URI");
-        }
-        return namespaces;
-    }
-
-    public synchronized void unregisterHandler(NamespaceHandler handler, Map properties) throws Exception {
-        Object ns = properties != null ? properties.get(NAMESPACE) : null;
-        if (ns instanceof URI[]) {
-            for (URI uri : (URI[]) ns) {
-                if (handlers.get(uri) != handler) {
-                    throw new IllegalArgumentException("A NamespaceHandler service is already registered for namespace " + uri);
-                }
-            }
-            for (URI uri : (URI[]) ns) {
-                handlers.remove(uri);
-                for (Listener listener : listeners.keySet()) {
-                    try {
-                        listener.namespaceHandlerUnregistered(uri);
-                    } catch (Throwable t) {
-                        t.printStackTrace(); // TODO: log
-                    }
-                }
-            }
-        } else {
-            throw new IllegalArgumentException("NamespaceHandler service does not have an associated " + NAMESPACE + " property defined");
         }
     }
 
