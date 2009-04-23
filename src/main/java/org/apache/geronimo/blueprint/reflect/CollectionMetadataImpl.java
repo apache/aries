@@ -90,4 +90,12 @@ public class CollectionMetadataImpl implements CollectionMetadata {
         this.values.add(value);
     }
 
+    @Override
+    public String toString() {
+        return "CollectionMetadata[" +
+                "collectionClass=" + collectionClass +
+                ", valueTypeName='" + valueTypeName + '\'' +
+                ", values=" + values +
+                ']';
+    }
 }

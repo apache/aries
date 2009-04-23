@@ -72,7 +72,12 @@ public class BeanArgumentImpl implements BeanArgument {
         this.index = index;
     }
 
+    @Override
     public String toString() {
-        return index + " " + value + " " + valueType;
+        return "BeanArgument[" +
+                "value=" + value +
+                ", valueType='" + valueType + '\'' +
+                ", index=" + index +
+                ']';
     }
 }

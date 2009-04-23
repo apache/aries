@@ -71,4 +71,13 @@ public class RegistrationListenerImpl implements RegistrationListener {
     public void setUnregistrationMethodName(String unregistrationMethodName) {
         this.unregistrationMethodName = unregistrationMethodName;
     }
+
+    @Override
+    public String toString() {
+        return "RegistrationListener[" +
+                "listenerComponent=" + listenerComponent +
+                ", registrationMethodName='" + registrationMethodName + '\'' +
+                ", unregistrationMethodName='" + unregistrationMethodName + '\'' +
+                ']';
+    }
 }

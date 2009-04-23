@@ -39,4 +39,10 @@ public class RefMetadataImpl extends IdRefMetadataImpl implements RefMetadata {
         super(source);
     }
 
+    @Override
+    public String toString() {
+        return "RefMetadata[" +
+                "componentId='" + componentId + '\'' +
+                ']';
+    }
 }

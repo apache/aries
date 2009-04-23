@@ -69,4 +69,10 @@ public class PropsMetadataImpl implements PropsMetadata {
         this.entries.add(entry);
     }
 
+    @Override
+    public String toString() {
+        return "PropsMetadata[" +
+                "entries=" + entries +
+                ']';
+    }
 }

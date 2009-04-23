@@ -46,4 +46,15 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
         this.timeout = timeout;
     }
 
+    @Override
+    public String toString() {
+        return "ReferenceMetadata[" +
+                "availability=" + availability +
+                ", interfaceNames=" + interfaceNames +
+                ", componentName='" + componentName + '\'' +
+                ", filter='" + filter + '\'' +
+                ", serviceListeners=" + serviceListeners +
+                ", timeout=" + timeout +
+                ']';
+    }
 }

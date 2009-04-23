@@ -61,4 +61,12 @@ public class MapEntryImpl implements MapEntry {
     public void setValue(Metadata value) {
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "MapEntry[" +
+                "key=" + key +
+                ", value=" + value +
+                ']';
+    }
 }

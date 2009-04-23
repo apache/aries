@@ -28,7 +28,7 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
  */
 public class ComponentMetadataImpl implements ComponentMetadata {
 
-    private String id;
+    protected String id;
 
     protected ComponentMetadataImpl() {
     }

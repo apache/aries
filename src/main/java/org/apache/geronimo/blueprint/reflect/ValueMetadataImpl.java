@@ -63,4 +63,12 @@ public class ValueMetadataImpl implements ValueMetadata {
     public void setTypeName(String typeName) {
         this.typeName = typeName;
     }
+
+    @Override
+    public String toString() {
+        return "ValueMetadata[" +
+                "stringValue='" + stringValue + '\'' +
+                ", typeName='" + typeName + '\'' +
+                ']';
+    }
 }

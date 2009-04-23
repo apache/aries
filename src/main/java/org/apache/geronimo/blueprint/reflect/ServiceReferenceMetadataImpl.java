@@ -32,13 +32,13 @@ import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ServiceReferenceMetadataImpl extends ComponentMetadataImpl implements ServiceReferenceMetadata {
+public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl implements ServiceReferenceMetadata {
 
-    private int availability;
-    private List<String> interfaceNames;
-    private String componentName;
-    private String filter;
-    private Collection<Listener> serviceListeners;
+    protected int availability;
+    protected List<String> interfaceNames;
+    protected String componentName;
+    protected String filter;
+    protected Collection<Listener> serviceListeners;
 
     public ServiceReferenceMetadataImpl() {
     }
@@ -111,4 +111,5 @@ public class ServiceReferenceMetadataImpl extends ComponentMetadataImpl implemen
         }
         this.serviceListeners.add(bindingListenerMetadata);
     }
+
 }

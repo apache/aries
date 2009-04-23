@@ -76,4 +76,19 @@ public class RefCollectionMetadataImpl extends ServiceReferenceMetadataImpl impl
     public void setMemberType(int memberType) {
         this.memberType = memberType;
     }
+
+    @Override
+    public String toString() {
+        return "RefCollectionMetadata[" +
+                "availability=" + availability +
+                ", interfaceNames=" + interfaceNames +
+                ", componentName='" + componentName + '\'' +
+                ", filter='" + filter + '\'' +
+                ", serviceListeners=" + serviceListeners +
+                ", collectionType=" + collectionType +
+                ", comparator=" + comparator +
+                ", orderingBasis=" + orderingBasis +
+                ", memberType=" + memberType +
+                ']';
+    }
 }
