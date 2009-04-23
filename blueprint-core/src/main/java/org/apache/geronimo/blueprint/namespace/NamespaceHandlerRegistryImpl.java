@@ -19,16 +19,13 @@
 package org.apache.geronimo.blueprint.namespace;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Collection;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
 import org.osgi.framework.BundleContext;
@@ -36,8 +33,8 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of the NamespaceHandlerRegistry.
@@ -103,15 +100,9 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         for (URI uri : namespaces) {
             if (handlers.containsKey(uri)) {
                 LOGGER.warn("Ignoring NamespaceHandler for namespace {}, as another handler has already been registered for the same namespace", uri);
-                continue;
-            }
-            handlers.put(uri, handler);
-            for (Listener listener : listeners.keySet()) {
-                try {
-                    listener.namespaceHandlerRegistered(uri);
-                } catch (Throwable t) {
-                    LOGGER.debug("Unexpected exception when notifying a NamespaceHandler listener", t);
-                }
+            } else {
+                handlers.put(uri, handler);
+                callListeners(uri, true);
             }
         }
     }
@@ -123,12 +114,20 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 continue;
             }
             handlers.remove(uri);
-            for (Listener listener : listeners.keySet()) {
-                try {
+            callListeners(uri, false);
+        }
+    }
+
+    private void callListeners(URI uri, boolean registered) {
+        for (Listener listener : listeners.keySet()) {
+            try {
+                if (registered) {
+                    listener.namespaceHandlerRegistered(uri);
+                } else {
                     listener.namespaceHandlerUnregistered(uri);
-                } catch (Throwable t) {
-                    LOGGER.debug("Unexpected exception when notifying a NamespaceHandler listener", t);
                 }
+            } catch (Throwable t) {
+                LOGGER.debug("Unexpected exception when notifying a NamespaceHandler listener", t);
             }
         }
     }
@@ -144,8 +143,8 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         } else if (ns instanceof String[]) {
             String[] strings = (String[]) ns;
             List<URI> namespaces = new ArrayList<URI>(strings.length);
-            for (int i = 0; i < strings.length; i++) {
-                namespaces.add(URI.create(strings[i]));
+            for (String string : strings) {
+                namespaces.add(URI.create(string));
             }
             return namespaces;
         } else if (ns instanceof Collection) {
