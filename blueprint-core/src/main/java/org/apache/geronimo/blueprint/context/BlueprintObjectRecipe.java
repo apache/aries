@@ -95,7 +95,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         final Object obj = super.internalCreate(expectedType, lazyRefAllowed);
         if (initMethod != null) {
             try {
-                initMethod.invoke(obj, new Object[] {});
+                initMethod.invoke(obj);
             } catch (InvocationTargetException e) {
                 Throwable root = e.getTargetException();
                 throw new ConstructionException("init-method generated exception", root);
@@ -120,7 +120,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         }
         if (destroyMethod != null) {
             try {
-                destroyMethod.invoke(obj, new Object[] {});
+                destroyMethod.invoke(obj);
             } catch (Exception e) {
                 e.printStackTrace();
             }
