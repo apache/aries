@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.namespace.ComponentNameAlreadyInUseException;
@@ -34,7 +36,10 @@ import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.Target;
 
 /**
- * TODO: javadoc
+ * ComponentDefinitionRegistry implementation.
+ *
+ * This implementation uses concurrent lists and maps to store components and converters metadata
+ * to allow its use by concurrent threads. 
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
@@ -47,8 +52,8 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
     private String defaultDestroyMethod;
 
     public ComponentDefinitionRegistryImpl() {
-        components = new HashMap<String, ComponentMetadata>();
-        typeConverters = new ArrayList<Target>();
+        components = new ConcurrentHashMap<String, ComponentMetadata>();
+        typeConverters = new CopyOnWriteArrayList<Target>();
     }
 
     public boolean containsComponentDefinition(String name) {
@@ -63,7 +68,7 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
         return Collections.unmodifiableSet(components.keySet());
     }
 
-    public void registerComponentDefinition(ComponentMetadata component) throws ComponentNameAlreadyInUseException {
+    public void registerComponentDefinition(ComponentMetadata component) {
         String name = component.getId();
         if (components.containsKey(name)) {
             throw new ComponentNameAlreadyInUseException(name);
