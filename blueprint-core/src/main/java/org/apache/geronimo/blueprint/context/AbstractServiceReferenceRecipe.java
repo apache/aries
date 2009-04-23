@@ -171,6 +171,8 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
 
     protected Object createProxy(Dispatcher dispatcher, Iterable<String> interfaces) throws Exception {
+        // TODO: we only use cglib for this small piece of code, we might want to use asm directly to
+        //       lower the number of dependencies / reduce size of jars
         Enhancer e = new Enhancer();
         e.setClassLoader(proxyClassLoader);
         e.setSuperclass(getTargetClass(interfaces));
