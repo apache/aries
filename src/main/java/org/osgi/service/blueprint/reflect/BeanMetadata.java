@@ -16,7 +16,6 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface BeanMetadata extends Target, ComponentMetadata {
