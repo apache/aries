@@ -179,9 +179,10 @@ public class Instanciator {
     }
 
     private ObjectRecipe createServiceRecipe(ServiceMetadata serviceExport) throws Exception {
-        ObjectRecipe recipe = new ObjectRecipe(ServiceRegistrationProxy.class);
+        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, ServiceRegistrationProxy.class);
         recipe.allow(Option.PRIVATE_PROPERTIES);
         recipe.setName(serviceExport.getId());
+        recipe.setExplicitDependencies(serviceExport.getExplicitDependencies());
         recipe.setProperty("moduleContext", blueprintContext);
         BeanMetadata exportedComponent = getLocalServiceComponent(serviceExport.getServiceComponent());
         if (exportedComponent != null && BeanMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
@@ -211,6 +212,7 @@ public class Instanciator {
         BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, loadClass(local.getClassName()));
         recipe.allow(Option.PRIVATE_PROPERTIES);
         recipe.setName(local.getId());
+        recipe.setExplicitDependencies(local.getExplicitDependencies());
         for (BeanProperty property : local.getProperties()) {
             Object value = getValue(property.getValue(), null);
             recipe.setProperty(property.getName(), value);
