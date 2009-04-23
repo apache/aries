@@ -19,6 +19,7 @@ package org.apache.geronimo.blueprint.convert;
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -143,6 +144,9 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
     private Object createObject(String value, Class type) throws Exception {
+        if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
+            throw new Exception("Unable to convert. Type class is an interface or is an abstract class");
+        }
         Constructor constructor = null;
         try {
             constructor = type.getConstructor(String.class);

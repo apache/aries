@@ -17,8 +17,6 @@
 package org.osgi.service.blueprint.reflect;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 import java.util.List;
 
 public interface ServiceMetadata extends ComponentMetadata, Target {
