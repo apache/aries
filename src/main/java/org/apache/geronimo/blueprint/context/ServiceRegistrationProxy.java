@@ -57,6 +57,10 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
     protected Map getRegistrationProperties() {
         return registrationProperties;
     }
+
+    public boolean isRegistered() {
+        return registration != null;
+    }
     
     public synchronized void register() {
         if (registration != null) {
