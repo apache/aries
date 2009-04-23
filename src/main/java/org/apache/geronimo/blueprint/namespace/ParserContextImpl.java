@@ -25,7 +25,9 @@ import org.osgi.service.blueprint.namespace.ParserContext;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
 /**
- * TODO: javadoc
+ * A simple ParserContext implementation.
+ * 
+ * This class is supposed to be short lived and only used for calling a given namespace handler.
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
@@ -36,7 +38,9 @@ public class ParserContextImpl implements ParserContext {
     private final ComponentMetadata enclosingComponent;
     private final Node sourceNode;
 
-    public ParserContextImpl(ComponentDefinitionRegistry componentDefinitionRegistry, ComponentMetadata enclosingComponent, Node sourceNode) {
+    public ParserContextImpl(ComponentDefinitionRegistry componentDefinitionRegistry,
+                             ComponentMetadata enclosingComponent,
+                             Node sourceNode) {
         this.componentDefinitionRegistry = componentDefinitionRegistry;
         this.enclosingComponent = enclosingComponent;
         this.sourceNode = sourceNode;
