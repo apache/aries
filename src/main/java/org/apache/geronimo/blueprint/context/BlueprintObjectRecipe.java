@@ -21,9 +21,12 @@ package org.apache.geronimo.blueprint.context;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.List;
 
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ObjectRecipe;
+import org.apache.xbean.recipe.Recipe;
+import org.apache.xbean.recipe.ReferenceRecipe;
 import org.apache.geronimo.blueprint.Destroyable;
 
 /**
@@ -37,6 +40,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
     private boolean keepRecipe = false;
     private Method initMethod;
     private Method destroyMethod;
+    private List<String> explicitDependencies;
     
     public BlueprintObjectRecipe(BlueprintContextImpl blueprintContext, Class typeName) {
         super(typeName);
@@ -66,7 +70,26 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
     public Method getDestroyMethod() {
         return destroyMethod;
     }
-        
+
+    public List<String> getExplicitDependencies() {
+        return explicitDependencies;
+    }
+
+    public void setExplicitDependencies(List<String> explicitDependencies) {
+        this.explicitDependencies = explicitDependencies;
+    }
+
+    @Override
+    public List<Recipe> getNestedRecipes() {
+        List<Recipe> recipes = super.getNestedRecipes();
+        if (explicitDependencies != null) {
+            for (String name : explicitDependencies) {
+                recipes.add(new ReferenceRecipe(name));
+            }
+        }
+        return recipes;
+    }
+
     @Override
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         final Object obj = super.internalCreate(expectedType, lazyRefAllowed);

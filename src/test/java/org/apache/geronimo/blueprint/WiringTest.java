@@ -20,12 +20,15 @@ package org.apache.geronimo.blueprint;
 
 import java.math.BigInteger;
 import java.net.URI;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.geronimo.blueprint.context.Instanciator;
 import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.pojos.PojoA;
 import org.apache.geronimo.blueprint.pojos.PojoB;
+import org.apache.geronimo.blueprint.pojos.BeanC;
+import org.apache.geronimo.blueprint.pojos.BeanD;
 import org.apache.xbean.recipe.ObjectGraph;
 import org.apache.xbean.recipe.Repository;
 import org.osgi.framework.ServiceRegistration;
@@ -108,6 +111,29 @@ public class WiringTest extends AbstractBlueprintTest {
         Object obj4 = graph.create("pojoC");
         assertNotNull(obj4);
         assertTrue(obj4 != graph.create("pojoC"));
+    }
+
+    public void testDependsOn() throws Exception {
+        final AtomicBoolean initC = new AtomicBoolean();
+        final AtomicBoolean initD = new AtomicBoolean();
+        BeanC.run = new Runnable() {
+            public void run() {
+                assertTrue(initD.get());
+                initC.set(true);
+            }
+        };
+        BeanD.run = new Runnable() {
+            public void run() {
+                assertFalse(initC.get());
+                initD.set(true);
+            }
+        };
+
+        ComponentDefinitionRegistryImpl registry = parse("/test-depends-on.xml");
+        Instanciator i = new TestInstanciator(registry);
+        Repository repository = i.createRepository();
+        ObjectGraph graph = new ObjectGraph(repository);
+        graph.createAll("c", "d");
     }
 
     private static class TestInstanciator extends Instanciator {
