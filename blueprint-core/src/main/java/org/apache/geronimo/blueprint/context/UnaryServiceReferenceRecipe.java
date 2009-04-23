@@ -40,6 +40,9 @@ import org.osgi.service.blueprint.reflect.ReferenceMetadata;
  *
  * TODO: check synchronization / thread safety
  *
+ * TODO: looks there is a potential problem if the service is unregistered between a call
+ *        to ServiceDispatcher#loadObject() and when the actual invocation finish
+ *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
@@ -51,6 +54,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private volatile ServiceReference trackedServiceReference;
     private volatile Object trackedService;
     private final Object monitor = new Object();
+    private final boolean optional;
 
     public UnaryServiceReferenceRecipe(BlueprintContext moduleContext,
                                        ModuleContextEventSender sender,
@@ -58,10 +62,13 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
                                        Recipe listenersRecipe) {
         super(moduleContext,  sender, metadata, listenersRecipe);
         this.metadata = metadata;
+        this.optional = metadata.getAvailability() == ReferenceMetadata.OPTIONAL_AVAILABILITY;
+        if (this.optional) {
+            setSatisfied(true);
+        }
     }
 
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
-        // TODO: availability
         try {
             // Create the proxy
             Object obj = createProxy(new ServiceDispatcher(), metadata.getInterfaceNames());
@@ -140,6 +147,9 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             for (Listener listener : listeners) {
                 listener.bind(trackedServiceReference, trackedService);
             }
+            if (!optional) {
+                setSatisfied(true);
+            }
         }
     }
 
@@ -152,6 +162,9 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
                 moduleContext.getBundleContext().ungetService(trackedServiceReference);
                 trackedServiceReference = null;
                 trackedService = null;
+                if (!optional) {
+                    setSatisfied(false);
+                }
             }
         }
     }
@@ -159,19 +172,17 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     public class ServiceDispatcher implements Dispatcher {
 
         public Object loadObject() throws Exception {
-            Object svc = trackedService;
-            if (svc == null && metadata.getTimeout() > 0) {
-                Set<String> interfaces = new HashSet<String>(metadata.getInterfaceNames());
-                sender.sendWaiting(moduleContext, interfaces.toArray(new String[interfaces.size()]), getOsgiFilter());
-                synchronized (monitor) {
+            synchronized (monitor) {
+                if (trackedService == null && metadata.getTimeout() > 0) {
+                    Set<String> interfaces = new HashSet<String>(metadata.getInterfaceNames());
+                    sender.sendWaiting(moduleContext, interfaces.toArray(new String[interfaces.size()]), getOsgiFilter());
                     monitor.wait(metadata.getTimeout());
                 }
-                svc = trackedService;
+                if (trackedService == null) {
+                    throw new ServiceUnavailableException("Timeout expired when waiting for OSGi service", proxyClass.getSuperclass(), getOsgiFilter());
+                }
+                return trackedService;
             }
-            if (svc == null) {
-                throw new ServiceUnavailableException("Timeout expired when waiting for OSGi service", proxyClass.getSuperclass(), getOsgiFilter());
-            }
-            return svc;
         }
 
     }

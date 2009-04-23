@@ -47,6 +47,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 
 /**
  * A recipe to create a managed collection of service references
@@ -59,8 +60,8 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
     private final RefCollectionMetadata metadata;
     private final Recipe comparatorRecipe;
     private Comparator comparator;
-
     private ManagedCollection collection;
+    private final boolean optional;
 
     public CollectionBasedServiceReferenceRecipe(BlueprintContext moduleContext,
                                                  ModuleContextEventSender sender,
@@ -70,6 +71,10 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         super(moduleContext, sender, metadata, listenersRecipe);
         this.metadata = metadata;
         this.comparatorRecipe = comparatorRecipe;
+        this.optional = metadata.getAvailability() == RefCollectionMetadata.OPTIONAL_AVAILABILITY;
+        if (this.optional) {
+            setSatisfied(true);
+        }
     }
 
     public boolean canCreate(Type type) {
@@ -78,7 +83,6 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
 
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         try {
-
             if (comparatorRecipe != null) {
                 comparator = (Comparator) comparatorRecipe.create(proxyClassLoader);
             } else if (metadata.getOrderingBasis() != 0) {
@@ -146,7 +150,12 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         try {
             ServiceDispatcher dispatcher = new ServiceDispatcher(reference);
             dispatcher.proxy = createProxy(dispatcher, Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS)));
-            collection.addDispatcher(dispatcher);
+            synchronized (collection) {
+                collection.addDispatcher(dispatcher);
+                if (!optional) {
+                    setSatisfied(!collection.isEmpty());
+                }
+            }
             for (Listener listener : listeners) {
                 listener.bind(dispatcher.reference, dispatcher.proxy);
             }
@@ -161,7 +170,12 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             for (Listener listener : listeners) {
                 listener.unbind(dispatcher.reference, dispatcher.proxy);
             }
-            collection.removeDispatcher(dispatcher);
+            synchronized (collection) {
+                collection.removeDispatcher(dispatcher);
+                if (!optional) {
+                    setSatisfied(!collection.isEmpty());
+                }
+            }
             dispatcher.destroy();
         }
     }

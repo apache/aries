@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Properties;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
@@ -37,14 +38,19 @@ import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
 import org.apache.geronimo.blueprint.ModuleContextEventSender;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
 import org.apache.geronimo.blueprint.Destroyable;
+import org.apache.geronimo.blueprint.SatisfiableRecipe;
 import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.xbean.recipe.ObjectGraph;
 import org.apache.xbean.recipe.Repository;
+import org.apache.xbean.recipe.Recipe;
+import org.apache.xbean.recipe.ExecutionContext;
+import org.apache.xbean.recipe.DefaultExecutionContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.NoSuchComponentException;
 import org.osgi.service.blueprint.convert.ConversionService;
@@ -63,7 +69,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerRegistry.Listener, Runnable {
+public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerRegistry.Listener, Runnable, SatisfiableRecipe.SatisfactionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContextImpl.class);
 
@@ -71,6 +77,8 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
         Unknown,
         WaitForNamespaceHandlers,
         Populated,
+        WaitForInitialReferences,
+        InitialReferencesSatisfied,
         Created,
         Failed
     }
@@ -89,6 +97,7 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
     private ServiceRegistration registration;
     private boolean waitForNamespaceHandlersEventSent;
     private Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>();
+    private Map<String, List<SatisfiableRecipe>> satisfiables;
 
     public BlueprintContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, List<URL> urls) {
         this.bundleContext = bundleContext;
@@ -158,9 +167,24 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
                         Instanciator i = new Instanciator(this);
                         Repository repository = i.createRepository();
                         objectGraph = new ObjectGraph(repository);
-
                         registerTypeConverters();
-
+                        instanciateServiceReferences();
+                        if (checkAllSatisfiables()) {
+                            state = State.InitialReferencesSatisfied;
+                        } else {
+                            // TODO: pass correct parameters
+                            // TODO: do we need to send one event for each missing reference ?
+                            // TODO: create a timer, then fail after it elapsed
+                            sender.sendWaiting(this, null, null);
+                            state = State.WaitForInitialReferences;
+                        }
+                        break;
+                    case WaitForInitialReferences:
+                        if (checkAllSatisfiables()) {
+                            state = State.InitialReferencesSatisfied;
+                        }
+                        break;
+                    case InitialReferencesSatisfied:
                         instantiateComponents();
 
                         // TODO: access to any OSGi reference proxy is currently a problem at this point, because calling toString() will
@@ -209,7 +233,102 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
             }
         }
     }
-    
+
+    private Map<String, List<SatisfiableRecipe>> getSatisfiableDependenciesMap() {
+        if (satisfiables == null) {
+            boolean createNewContext = !ExecutionContext.isContextSet();
+            if (createNewContext) {
+                ExecutionContext.setContext(new DefaultExecutionContext(objectGraph.getRepository()));
+            }
+            try {
+                satisfiables = new HashMap<String, List<SatisfiableRecipe>>();
+                for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
+                    Object val = objectGraph.getRepository().get(name);
+                    if (val instanceof Recipe) {
+                        Recipe r = (Recipe) val;
+                        List<SatisfiableRecipe> recipes = new ArrayList<SatisfiableRecipe>();
+                        if (r instanceof SatisfiableRecipe) {
+                            recipes.add((SatisfiableRecipe) r);
+                        }
+                        getSatisfiableDependencies(r, recipes);
+                        if (!recipes.isEmpty()) {
+                            satisfiables.put(name, recipes);
+                        }
+                    }
+                }
+                return satisfiables;
+            } finally {
+                if (createNewContext) {
+                    ExecutionContext.setContext(null);
+                }
+            }
+        }
+        return satisfiables;
+    }
+
+    private void getSatisfiableDependencies(Recipe r, List<SatisfiableRecipe> recipes) {
+        for (Recipe dep : r.getNestedRecipes()) {
+            if (dep instanceof SatisfiableRecipe) {
+                recipes.add((SatisfiableRecipe) dep);
+            }
+            getSatisfiableDependencies(dep, recipes);
+        }
+    }
+
+    private void instanciateServiceReferences() {
+        Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
+        List<String> satisfiables = new ArrayList<String>();
+        for (String name : dependencies.keySet()) {
+            for (SatisfiableRecipe satisfiable : dependencies.get(name)) {
+                satisfiables.add(satisfiable.getName());
+                satisfiable.registerListener(this);
+            }
+        }
+        LOGGER.debug("Instanciating service references: {}", satisfiables);
+        objectGraph.createAll(satisfiables);
+    }
+
+    private boolean checkAllSatisfiables() {
+        Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
+        for (String name : dependencies.keySet()) {
+            for (SatisfiableRecipe recipe : dependencies.get(name)) {
+                if (!recipe.isSatisfied()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void notifySatisfaction(SatisfiableRecipe satisfiable) {
+        LOGGER.debug("Notified satisfaction for {}: {}", satisfiable.getName(), satisfiable.isSatisfied());
+        if (state == State.WaitForInitialReferences) {
+            executors.submit(this);
+        } else if (state == State.Created) {
+            Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
+            for (String name : dependencies.keySet()) {
+                ComponentMetadata metadata = componentDefinitionRegistry.getComponentDefinition(name);
+                if (metadata instanceof ServiceMetadata) {
+                    boolean satisfied = true;
+                    for (SatisfiableRecipe recipe : dependencies.get(name)) {
+                        if (!recipe.isSatisfied()) {
+                            satisfied = false;
+                            break;
+                        }
+                    }
+                    ServiceRegistrationProxy reg = (ServiceRegistrationProxy) getComponent(name);
+                    if (satisfied && !reg.isRegistered()) {
+                        LOGGER.debug("Registering service {} due to satisfied references", name);
+                        reg.register();
+                    } else if (!satisfied && reg.isRegistered()) {
+                        LOGGER.debug("Unregistering service {} due to unsatisfied references", name);
+                        reg.unregister();
+                    }
+                }
+            }
+        }
+    }
+
     private void instantiateComponents() {
         List<String> components = new ArrayList<String>();
         for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
@@ -339,6 +458,7 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
             unregisterAllServices();
             destroyComponents();
             // TODO: stop all reference / collections
+            // TODO: clear the repository
             waitForNamespaceHandlersEventSent = false;
             state = State.WaitForNamespaceHandlers;
             executors.submit(this);

@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.lang.reflect.Method;
 
 import org.apache.xbean.recipe.AbstractRecipe;
@@ -34,6 +35,7 @@ import org.apache.xbean.recipe.ConstructionException;
 import org.apache.geronimo.blueprint.ModuleContextEventSender;
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.Destroyable;
+import org.apache.geronimo.blueprint.SatisfiableRecipe;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.apache.geronimo.blueprint.utils.BundleDelegatingClassLoader;
 import org.osgi.service.blueprint.context.BlueprintContext;
@@ -51,7 +53,7 @@ import net.sf.cglib.proxy.Dispatcher;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe implements ServiceListener, Destroyable {
+public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe implements ServiceListener, Destroyable, SatisfiableRecipe {
 
     protected final BlueprintContext moduleContext;
     protected final ModuleContextEventSender sender;
@@ -60,6 +62,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected List<Listener> listeners;
     private String filter;
     protected final ClassLoader proxyClassLoader;
+
+    private boolean satisfied;
+    private final List<SatisfactionListener> satisfactionListeners = new CopyOnWriteArrayList<SatisfactionListener>();
 
     protected AbstractServiceReferenceRecipe(BlueprintContext moduleContext,
                                              ModuleContextEventSender sender,
@@ -73,6 +78,23 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         // so that the created proxy can access cglib classes.
         this.proxyClassLoader = new BundleDelegatingClassLoader(moduleContext.getBundleContext().getBundle(),
                                                                 getClass().getClassLoader());
+    }
+
+    public void registerListener(SatisfactionListener listener) {
+        satisfactionListeners.add(listener);
+    }
+
+    public boolean isSatisfied() {
+        return satisfied;
+    }
+
+    protected final void setSatisfied(boolean satisfied) {
+        if (this.satisfied != satisfied) {
+            this.satisfied = satisfied;
+            for (SatisfactionListener listener : satisfactionListeners) {
+                listener.notifySatisfaction(this);
+            }
+        }
     }
 
     protected String getOsgiFilter() {
