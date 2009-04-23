@@ -35,6 +35,9 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
 /**
  * A utility class that handles cloning various polymorphic
  * bits of metadata into concrete class implementations.
+ *
+ * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
+ * @version $Rev$, $Date$
  */
 public class MetadataUtil {
 
