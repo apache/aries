@@ -109,6 +109,14 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements BeanMetad
         if (this.arguments == null) {
             this.arguments = new ArrayList<BeanArgument>();
         }
+        if (!this.arguments.isEmpty()) {
+            BeanArgument p1 = this.arguments.get(0);
+            BeanArgument p2 = argument;
+            if ( (p1.getIndex() > -1 && p2.getIndex() < 0) ||
+                 (p1.getIndex() < 0 && p2.getIndex() > -1) ) {
+                throw new IllegalArgumentException("Index attribute must be specified either on all or none constructor arguments");
+            }
+        }
         this.arguments.add(argument);
     }
 
