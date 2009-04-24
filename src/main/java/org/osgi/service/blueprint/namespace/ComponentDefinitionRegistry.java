@@ -26,7 +26,7 @@ public interface ComponentDefinitionRegistry  {
     
     ComponentMetadata getComponentDefinition(String name);
     
-    Set getComponentDefinitionNames();
+    Set<String> getComponentDefinitionNames();
     
     void registerComponentDefinition(ComponentMetadata component);
     
