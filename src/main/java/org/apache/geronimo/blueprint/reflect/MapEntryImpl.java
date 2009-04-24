@@ -21,6 +21,7 @@ package org.apache.geronimo.blueprint.reflect;
 import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.NonNullMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
+import org.apache.geronimo.blueprint.mutable.MutableMapEntry;
 
 /**
  * Implementation of MapEntry
@@ -28,7 +29,7 @@ import org.osgi.service.blueprint.reflect.Metadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class MapEntryImpl implements MapEntry {
+public class MapEntryImpl implements MutableMapEntry {
 
     private NonNullMetadata key;
     private Metadata value;

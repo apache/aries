@@ -104,5 +104,37 @@ public class MetadataUtil {
         return (Target) cloneMetadata(source);
     }
 
+    /**
+     * Create a new metadata instance of the given type
+     *
+     * @param type the class of the Metadata object to create
+     * @param <T>
+     * @return a new instance
+     */
+    public static <T extends Metadata> T createMetadata(Class<T> type) {
+        if (MapMetadata.class.isAssignableFrom(type)) {
+            return type.cast(new MapMetadataImpl());
+        } else if (NullMetadata.class.isAssignableFrom(type)) {
+            return type.cast(NullMetadata.NULL);
+        } else if (PropsMetadata.class.isAssignableFrom(type)) {
+            return type.cast(new PropsMetadataImpl());
+        } else if (RefMetadata.class.isAssignableFrom(type)) {
+            return type.cast(new RefMetadataImpl());
+        } else if (IdRefMetadata.class.isAssignableFrom(type)) {
+            return type.cast(new IdRefMetadataImpl());
+        } else if (ValueMetadata.class.isAssignableFrom(type)) {
+            return type.cast(new ValueMetadataImpl());
+        } else if (BeanMetadata.class.isAssignableFrom(type)) {
+            return type.cast(new BeanMetadataImpl());
+        } else if (RefCollectionMetadata.class.isAssignableFrom(type)) {
+            return type.cast(new RefCollectionMetadataImpl());
+        } else if (ServiceMetadata.class.isAssignableFrom(type)) {
+            return type.cast(new ServiceMetadataImpl());
+        } else if (ReferenceMetadata.class.isAssignableFrom(type)) {
+            return type.cast(new ReferenceMetadataImpl());
+        } else {
+            throw new IllegalArgumentException("Unsupport metadata type: " + (type != null ? type.getName() : null));
+        }
+    }
 }
 

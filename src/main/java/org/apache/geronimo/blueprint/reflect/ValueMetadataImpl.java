@@ -19,6 +19,7 @@
 package org.apache.geronimo.blueprint.reflect;
 
 import org.osgi.service.blueprint.reflect.ValueMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
 
 /**
  * Implementation of ValueMetadata 
@@ -26,7 +27,7 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ValueMetadataImpl implements ValueMetadata {
+public class ValueMetadataImpl implements MutableValueMetadata {
 
     private String stringValue;
     private String typeName;

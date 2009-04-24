@@ -26,6 +26,8 @@ import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.Target;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
 
 /**
  * Implementation of BeanMetadata
@@ -33,7 +35,7 @@ import org.osgi.service.blueprint.reflect.Target;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class BeanMetadataImpl extends ComponentMetadataImpl implements BeanMetadata {
+public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBeanMetadata {
 
     private String className;
     private String initMethodName;
@@ -120,6 +122,18 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements BeanMetad
         this.arguments.add(argument);
     }
 
+    public BeanArgument addArgument(Metadata value, String valueType, int index) {
+        BeanArgument arg = new BeanArgumentImpl(value, valueType, index);
+        addArgument(arg);
+        return arg;
+    }
+
+    public void removeArgument(BeanArgument argument) {
+        if (this.arguments != null) {
+            this.arguments.remove(argument);
+        }
+    }
+
     public List<BeanProperty> getProperties() {
         if (this.properties == null) {
             return Collections.emptyList();
@@ -137,6 +151,18 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements BeanMetad
             this.properties = new ArrayList<BeanProperty>();
         }
         this.properties.add(property);
+    }
+
+    public BeanProperty addProperty(String name, Metadata value) {
+        BeanProperty prop = new BeanPropertyImpl(name, value);
+        addProperty(prop);
+        return prop;
+    }
+
+    public void removeProperty(BeanProperty property) {
+        if (this.properties != null) {
+            this.properties.remove(property);
+        }
     }
 
     public boolean isLazyInit() {
@@ -196,6 +222,12 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements BeanMetad
             this.explicitDependencies = new ArrayList<String>();
         }
         this.explicitDependencies.add(explicitDependency);
+    }
+
+    public void removeExplicitDependency(String dependency) {
+        if (this.explicitDependencies != null) {
+            this.explicitDependencies.remove(dependency);
+        }
     }
 
     @Override
