@@ -439,7 +439,7 @@ public class Parser {
             service.setInterfaceNames(Collections.singletonList(element.getAttribute(INTERFACE_ATTRIBUTE)));
         }
         if (element.hasAttribute(REF_ATTRIBUTE)) {
-            service.setExportedComponent(new RefMetadataImpl(element.getAttribute(REF_ATTRIBUTE)));
+            service.setServiceComponent(new RefMetadataImpl(element.getAttribute(REF_ATTRIBUTE)));
         }
         if (element.hasAttribute(DEPENDS_ON_ATTRIBUTE)) {
             service.setExplicitDependencies(parseList(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
@@ -482,7 +482,7 @@ public class Parser {
                         if (service.getServiceComponent() != null) {
                             throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element or custom inner element can be set");
                         }
-                        service.setExportedComponent((Target) parseBeanMetadata(e));
+                        service.setServiceComponent((Target) parseBeanMetadata(e));
                     }
                 }
             }
