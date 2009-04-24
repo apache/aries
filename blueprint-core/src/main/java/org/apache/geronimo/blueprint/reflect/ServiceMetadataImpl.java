@@ -39,7 +39,7 @@ import org.apache.geronimo.blueprint.mutable.MutableServiceMetadata;
  */
 public class ServiceMetadataImpl extends ComponentMetadataImpl implements MutableServiceMetadata {
 
-    private Target exportedComponent;
+    private Target serviceComponent;
     private List<String> interfaceNames;
     private int autoExportMode;
     private List<MapEntry> serviceProperties;
@@ -52,7 +52,7 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
     
     public ServiceMetadataImpl(ServiceMetadata source) {
         super(source);
-        this.exportedComponent = MetadataUtil.cloneTarget(source.getServiceComponent());
+        this.serviceComponent = MetadataUtil.cloneTarget(source.getServiceComponent());
         this.interfaceNames = new ArrayList<String>(source.getInterfaceNames());
         this.autoExportMode = source.getAutoExportMode();
         for (MapEntry serviceProperty : source.getServiceProperties()) {
@@ -66,11 +66,11 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
     }
 
     public Target getServiceComponent() {
-        return exportedComponent;
+        return serviceComponent;
     }
 
     public void setServiceComponent(Target exportedComponent) {
-        this.exportedComponent = exportedComponent;
+        this.serviceComponent = exportedComponent;
     }
 
     public List<String> getInterfaceNames() {
@@ -201,7 +201,7 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
     public String toString() {
         return "ServiceMetadata[" +
                 "id='" + id + '\'' +
-                ", exportedComponent=" + exportedComponent +
+                ", exportedComponent=" + serviceComponent +
                 ", interfaceNames=" + interfaceNames +
                 ", autoExportMode=" + autoExportMode +
                 ", serviceProperties=" + serviceProperties +
