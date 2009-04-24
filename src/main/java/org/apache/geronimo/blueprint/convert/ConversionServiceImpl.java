@@ -32,7 +32,14 @@ import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.convert.Converter;
 
 /**
- * TODO: javadoc
+ * Implementation of the ConverterService.
+ *
+ * This object contains all the registered Converters which can be registered
+ * by using {@link #registerConverter(org.osgi.service.blueprint.convert.Converter)}
+ * and unregistered using {@link #unregisterConverter(org.osgi.service.blueprint.convert.Converter)}.
+ *
+ * Each {@link org.osgi.service.blueprint.context.BlueprintContext} has its own ConversionService
+ * used to register converters defined by the related blueprint bundle.
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
