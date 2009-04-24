@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,34 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.reflect;
+package org.apache.geronimo.blueprint.mutable;
 
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableComponentMetadata;
+import org.osgi.service.blueprint.reflect.CollectionMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
 
 /**
- * Implementation of ComponentMetadata
+ * TODO
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
- * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
+ * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
-public class ComponentMetadataImpl implements MutableComponentMetadata {
+public interface MutableCollectionMetadata extends CollectionMetadata {
 
-    protected String id;
+    void setCollectionClass(Class clazz);
 
-    protected ComponentMetadataImpl() {
-    }
-    
-    protected ComponentMetadataImpl(ComponentMetadata source) {
-        id = source.getId();
-    }
-    
-    public String getId() {
-        return id;
-    }
+    void setValueTypeName(String valueTypeName);
 
-    public void setId(String id) {
-        this.id = id;
-    }
+    void addValue(Metadata value);
+
+    void removeValue(Metadata value);
 
 }

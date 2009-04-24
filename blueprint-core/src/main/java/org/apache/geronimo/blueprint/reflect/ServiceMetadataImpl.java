@@ -20,9 +20,6 @@ package org.apache.geronimo.blueprint.reflect;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +27,9 @@ import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.Target;
+import org.osgi.service.blueprint.reflect.NonNullMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.apache.geronimo.blueprint.mutable.MutableServiceMetadata;
 
 /**
  * Implementation of ServiceMetadata
@@ -37,7 +37,7 @@ import org.osgi.service.blueprint.reflect.Target;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ServiceMetadataImpl extends ComponentMetadataImpl implements ServiceMetadata {
+public class ServiceMetadataImpl extends ComponentMetadataImpl implements MutableServiceMetadata {
 
     private Target exportedComponent;
     private List<String> interfaceNames;
@@ -69,7 +69,7 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Servic
         return exportedComponent;
     }
 
-    public void setExportedComponent(Target exportedComponent) {
+    public void setServiceComponent(Target exportedComponent) {
         this.exportedComponent = exportedComponent;
     }
 
@@ -90,6 +90,12 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Servic
             this.interfaceNames = new ArrayList<String>();
         }
         this.interfaceNames.add(interfaceName);
+    }
+
+    public void removeInterfaceName(String interfaceName) {
+        if (this.interfaceNames != null) {
+            this.interfaceNames.remove(interfaceName);
+        }
     }
 
     public int getAutoExportMode() {
@@ -118,7 +124,19 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Servic
         }
         this.serviceProperties.add(serviceProperty);
     }
-    
+
+    public MapEntry addServiceProperty(NonNullMetadata key, Metadata value) {
+        MapEntry serviceProperty = new MapEntryImpl(key, value);
+        addServiceProperty(serviceProperty);
+        return serviceProperty;
+    }
+
+    public void removeServiceProperty(MapEntry serviceProperty) {
+        if (this.serviceProperties != null) {
+            this.serviceProperties.remove(serviceProperty);
+        }
+    }
+
     public int getRanking() {
         return ranking;
     }
@@ -146,6 +164,18 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Servic
         this.registrationListeners.add(registrationListenerMetadata);
     }
 
+    public RegistrationListener addRegistrationListener(Target listenerComponent, String registrationMethodName, String unregistrationMethodName) {
+        RegistrationListener listener = new RegistrationListenerImpl(listenerComponent, registrationMethodName,  unregistrationMethodName);
+        addRegistrationListener(listener);
+        return listener;
+    }
+
+    public void removeRegistrationListener(RegistrationListener listener) {
+        if (this.registrationListeners != null) {
+            this.registrationListeners.remove(listener);
+        }
+    }
+
     public List<String> getExplicitDependencies() {
         return this.explicitDependencies;
     }
@@ -159,6 +189,12 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Servic
             this.explicitDependencies = new ArrayList<String>();
         }
         this.explicitDependencies.add(explicitDependency);
+    }
+
+    public void removeExplicitDependency(String dependency) {
+        if (this.explicitDependencies != null) {
+            this.explicitDependencies.remove(dependency);
+        }
     }
 
     @Override

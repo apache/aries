@@ -25,6 +25,8 @@ import java.util.ArrayList;
 
 import org.osgi.service.blueprint.reflect.Listener;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
+import org.osgi.service.blueprint.reflect.Target;
+import org.apache.geronimo.blueprint.mutable.MutableServiceReferenceMetadata;
 
 /**
  * Implementation of ServiceReferenceMetadata 
@@ -32,7 +34,7 @@ import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl implements ServiceReferenceMetadata {
+public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl implements MutableServiceReferenceMetadata {
 
     protected int availability;
     protected List<String> interfaceNames;
@@ -77,6 +79,12 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
         this.interfaceNames.add(interfaceName);
     }
 
+    public void removeInterfaceName(String interfaceName) {
+        if (this.interfaceNames != null) {
+            this.interfaceNames.remove(interfaceName);
+        }
+    }
+
     public String getComponentName() {
         return componentName;
     }
@@ -112,4 +120,15 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
         this.serviceListeners.add(bindingListenerMetadata);
     }
 
+    public Listener addServiceListener(Target listenerComponent, String bindMethodName, String unbindMethodName) {
+        Listener listener = new ListenerImpl(listenerComponent, bindMethodName, unbindMethodName);
+        addServiceListener(listener);
+        return listener;
+    }
+
+    public void removeServiceListener(Listener listener) {
+        if (this.serviceListeners != null) {
+            this.serviceListeners.remove(listener);
+        }
+    }
 }

@@ -18,17 +18,15 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map.Entry;
 
 import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.MapEntry;
+import org.osgi.service.blueprint.reflect.NonNullMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 
 /**
  * Implementation of MapMetadata
@@ -36,7 +34,7 @@ import org.osgi.service.blueprint.reflect.MapEntry;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class MapMetadataImpl implements MapMetadata {
+public class MapMetadataImpl implements MutableMapMetadata {
 
     private String keyTypeName;
     private String valueTypeName;
@@ -92,6 +90,18 @@ public class MapMetadataImpl implements MapMetadata {
             this.entries = new ArrayList<MapEntry>();
         }
         this.entries.add(entry);
+    }
+
+    public MapEntry addEntry(NonNullMetadata key, Metadata value) {
+        MapEntry entry = new MapEntryImpl(key, value);
+        addEntry(entry);
+        return entry;
+    }
+
+    public void removeEntry(MapEntry entry) {
+        if (this.entries != null) {
+            this.entries.remove(entry);
+        }
     }
 
     @Override

@@ -18,14 +18,15 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import java.util.Properties;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Collections;
 
 import org.osgi.service.blueprint.reflect.PropsMetadata;
 import org.osgi.service.blueprint.reflect.MapEntry;
+import org.osgi.service.blueprint.reflect.NonNullMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.apache.geronimo.blueprint.mutable.MutablePropsMetadata;
 
 /**
  * Implementation of PropsMetadata
@@ -33,7 +34,7 @@ import org.osgi.service.blueprint.reflect.MapEntry;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class PropsMetadataImpl implements PropsMetadata {
+public class PropsMetadataImpl implements MutablePropsMetadata {
 
     private List<MapEntry> entries;
 
@@ -67,6 +68,18 @@ public class PropsMetadataImpl implements PropsMetadata {
             this.entries = new ArrayList<MapEntry>();
         }
         this.entries.add(entry);
+    }
+
+    public MapEntry addEntry(NonNullMetadata key, Metadata value) {
+        MapEntry entry = new MapEntryImpl(key, value);
+        addEntry(entry);
+        return entry;
+    }
+
+    public void removeEntry(MapEntry entry) {
+        if (this.entries != null) {
+            this.entries.remove(entry);
+        }
     }
 
     @Override

@@ -20,6 +20,7 @@ package org.apache.geronimo.blueprint.reflect;
 
 import org.osgi.service.blueprint.reflect.Listener;
 import org.osgi.service.blueprint.reflect.Target;
+import org.apache.geronimo.blueprint.mutable.MutableListener;
 
 /**
  * Implementation of Listener
@@ -27,7 +28,7 @@ import org.osgi.service.blueprint.reflect.Target;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ListenerImpl implements Listener {
+public class ListenerImpl implements MutableListener {
 
     private Target listenerComponent;
     private String bindMethodName;

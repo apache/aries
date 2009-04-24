@@ -19,12 +19,12 @@
 package org.apache.geronimo.blueprint.reflect;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Collections;
 
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableCollectionMetadata;
 
 /**
  * Implementation of CollectionMetadata
@@ -32,7 +32,7 @@ import org.osgi.service.blueprint.reflect.CollectionMetadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class CollectionMetadataImpl implements CollectionMetadata {
+public class CollectionMetadataImpl implements MutableCollectionMetadata {
 
     private Class collectionClass;
     private String valueTypeName;
@@ -88,6 +88,12 @@ public class CollectionMetadataImpl implements CollectionMetadata {
             this.values = new ArrayList<Metadata>();
         }
         this.values.add(value);
+    }
+
+    public void removeValue(Metadata value) {
+        if (this.values != null) {
+            this.values.remove(value);
+        }
     }
 
     @Override
