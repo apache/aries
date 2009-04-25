@@ -24,12 +24,14 @@ public class PojoB {
 
     private URI uri;
     private boolean initCalled;
-
+    private int number;
+    
     public PojoB() {
     }
-
-    public PojoB(URI uri) {
+    
+    public PojoB(URI uri, int number) {
         this.uri = uri;
+        this.number = number;
     }
 
     public URI getUri() {
@@ -46,5 +48,17 @@ public class PojoB {
     
     public boolean getInitCalled() {
         return initCalled;
+    }
+    
+    public int getNumber() {
+        return number;
+    }
+    
+    public static PojoB createStatic(URI uri, int number) {
+        return new PojoB(URI.create(uri + "-static"), number);
+    }
+    
+    public PojoB createDynamic(URI uri, int number) {
+        return new PojoB(URI.create(uri + "-dynamic"), number);
     }
 }

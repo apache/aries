@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 ../../main/resources/org/apache/geronimo/blueprint/blueprint.xsd"
+            default-availability="mandatory"
+            default-init-method = "init"
+            default-destroy-method = "destroy" >
+
+    <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB">
+        <argument value="urn:myuri" />
+        <argument value="10" />
+    </bean>
+    
+    <bean id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA">
+        <argument ref="pojoB" />
+        <property name="number">
+            <value type="java.math.BigInteger">10</value>
+        </property>
+    </bean>
+
+    <bean id="pojoC" class="org.apache.geronimo.blueprint.pojos.PojoB" factory-method = "createStatic" >
+        <argument><value type="int">15</value></argument>
+        <argument value="urn:myuri" />
+    </bean>
+    
+    <bean id="pojoD" class="org.apache.geronimo.blueprint.pojos.PojoB" factory-method = "createStatic" >
+        <argument value="15" index = "1" />
+        <argument value="urn:myuri" index = "0" />
+    </bean>
+    
+    <!--  TODO: class is not needed when factory-component is specified -->
+    <bean id="pojoE" class="org.apache.geronimo.blueprint.pojos.PojoB" 
+          factory-method = "createDynamic" factory-component = "pojoB" >
+        <argument><value type="int">20</value></argument>
+        <argument value="urn:myuri" />
+    </bean>
+    
+</blueprint>
