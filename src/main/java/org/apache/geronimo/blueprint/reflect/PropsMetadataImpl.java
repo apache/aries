@@ -60,7 +60,7 @@ public class PropsMetadataImpl implements MutablePropsMetadata {
     }
 
     public void setEntries(List<MapEntry> entries) {
-        this.entries = entries;
+        this.entries = entries != null ? new ArrayList<MapEntry>(entries) : null;
     }
 
     public void addEntry(MapEntry entry) {

@@ -82,7 +82,7 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
     }
 
     public void setInterfaceNames(List<String> interfaceNames) {
-        this.interfaceNames = interfaceNames;
+        this.interfaceNames = interfaceNames != null ? new ArrayList<String>(interfaceNames) : null;
     }
 
     public void addInterfaceName(String interfaceName) {
@@ -115,7 +115,7 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
     }
 
     public void setServiceProperties(List<MapEntry> serviceProperties) {
-        this.serviceProperties = serviceProperties;
+        this.serviceProperties = serviceProperties != null ? new ArrayList<MapEntry>(serviceProperties) : null;
     }
 
     public void addServiceProperty(MapEntry serviceProperty) {
