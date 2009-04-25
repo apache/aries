@@ -21,6 +21,7 @@ package org.apache.geronimo.blueprint.context;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,8 +42,10 @@ import org.apache.xbean.recipe.Option;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.ReferenceRecipe;
 import org.apache.xbean.recipe.Repository;
+import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
+import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.MapMetadata;
@@ -245,9 +248,27 @@ public class Instanciator {
             }
             recipe.setDestroyMethod(method);
         }
-        // TODO: constructor args
-        // TODO: factory-method
-        // TODO: factory-component
+        List<BeanArgument> beanArguments = local.getArguments(); 
+        if (beanArguments != null && !beanArguments.isEmpty()) {
+            boolean hasIndex = (beanArguments.get(0).getIndex() >= 0);
+            if (hasIndex) {
+                List<BeanArgument> beanArgumentsCopy = new ArrayList<BeanArgument>(beanArguments);
+                Collections.sort(beanArgumentsCopy, new BeanArgumentComparator());
+                beanArguments = beanArgumentsCopy;
+            }
+            List<Object> arguments = new ArrayList<Object>();
+            for (BeanArgument argument : beanArguments) {
+                Object value = getValue(argument.getValue(), null);
+                arguments.add(value);
+            }
+            recipe.setArguments(arguments);
+            recipe.setBeanArguments(beanArguments);
+            recipe.setReorderArguments(!hasIndex);
+        }
+        recipe.setFactoryMethod(local.getFactoryMethodName());
+        if (local.getFactoryComponent() != null) {
+            recipe.setFactoryComponent(getValue(local.getFactoryComponent(), null));
+        }
         return recipe;
     }
 
@@ -353,20 +374,30 @@ public class Instanciator {
     }
     
     private Class loadClass(String typeName) throws ClassNotFoundException {
+        return loadClass(blueprintContext, typeName);
+    }
+    
+    public static Class loadClass(BlueprintContext context, String typeName) throws ClassNotFoundException {
         if (typeName == null) {
             return null;
         }
 
         Class clazz = primitiveClasses.get(typeName);
         if (clazz == null) {
-            if (blueprintContext == null) {
+            if (context == null) {
                 ClassLoader loader = Thread.currentThread().getContextClassLoader();
                 clazz = loader.loadClass(typeName);
             } else {
-                clazz = blueprintContext.getBundleContext().getBundle().loadClass(typeName);
+                clazz = context.getBundleContext().getBundle().loadClass(typeName);
             }
         }
         return clazz;
+    }
+    
+    private static class BeanArgumentComparator implements Comparator<BeanArgument> {
+        public int compare(BeanArgument object1, BeanArgument object2) {
+            return object1.getIndex() - object2.getIndex();
+        }        
     }
                 
 }

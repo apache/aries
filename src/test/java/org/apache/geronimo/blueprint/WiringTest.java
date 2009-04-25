@@ -136,6 +136,54 @@ public class WiringTest extends AbstractBlueprintTest {
         graph.createAll("c", "d");
     }
 
+    public void testConstructor() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-constructor.xml");
+        Instanciator i = new TestInstanciator(registry);
+        Repository repository = i.createRepository();
+        ObjectGraph graph = new ObjectGraph(repository);
+        
+        Object obj1 = graph.create("pojoA");
+        assertNotNull(obj1);
+        assertTrue(obj1 instanceof PojoA);
+        PojoA pojoa = (PojoA) obj1;
+        
+        Object obj2 = graph.create("pojoB");
+        assertNotNull(obj2);
+        assertTrue(obj2 instanceof PojoB);
+        PojoB pojob = (PojoB) obj2;
+        
+        assertEquals(URI.create("urn:myuri"), pojob.getUri());
+        assertEquals(10, pojob.getNumber());
+        
+        assertEquals(pojob, pojoa.getPojob());
+        assertEquals(new BigInteger("10"), pojoa.getNumber());
+        
+        Object obj3 = graph.create("pojoC");
+        assertNotNull(obj3);
+        assertTrue(obj3 instanceof PojoB);
+        pojob = (PojoB) obj3;
+        
+        assertEquals(URI.create("urn:myuri-static"), pojob.getUri());
+        assertEquals(15, pojob.getNumber());
+        
+        Object obj4 = graph.create("pojoD");
+        assertNotNull(obj4);
+        assertTrue(obj4 instanceof PojoB);
+        pojob = (PojoB) obj4;
+        
+        assertEquals(URI.create("urn:myuri-static"), pojob.getUri());
+        assertEquals(15, pojob.getNumber());
+        
+        Object obj5 = graph.create("pojoE");
+        assertNotNull(obj5);
+        assertTrue(obj5 instanceof PojoB);
+        pojob = (PojoB) obj5;
+        
+        assertEquals(URI.create("urn:myuri-dynamic"), pojob.getUri());
+        assertEquals(20, pojob.getNumber());
+
+    }
+    
     private static class TestInstanciator extends Instanciator {
         ConversionServiceImpl conversionService = new ConversionServiceImpl();
         ComponentDefinitionRegistryImpl registry;
