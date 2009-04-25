@@ -104,7 +104,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     }
 
     public void setArguments(List<BeanArgument> arguments) {
-        this.arguments = arguments;
+        this.arguments = arguments != null ? new ArrayList<BeanArgument>(arguments) : null;
     }
 
     public void addArgument(BeanArgument argument) {
@@ -143,7 +143,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     }
 
     public void setProperties(List<BeanProperty> properties) {
-        this.properties = properties;
+        this.properties = properties != null ? new ArrayList<BeanProperty>(properties) : null;
     }
 
     public void addProperty(BeanProperty property) {
@@ -214,7 +214,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     }
 
     public void setExplicitDependencies(List<String> explicitDependencies) {
-        this.explicitDependencies = explicitDependencies;
+        this.explicitDependencies = explicitDependencies != null ? new ArrayList<String>(explicitDependencies) : null;
     }
 
     public void addExplicitDependency(String explicitDependency) {

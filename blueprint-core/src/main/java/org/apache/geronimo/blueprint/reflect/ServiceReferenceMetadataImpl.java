@@ -69,7 +69,7 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
     }
 
     public void setInterfaceNames(List<String> interfaceNames) {
-        this.interfaceNames = interfaceNames;
+        this.interfaceNames = interfaceNames != null ? new ArrayList<String>(interfaceNames) : null;
     }
 
     public void addInterfaceName(String interfaceName) {
@@ -110,7 +110,7 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
     }
 
     public void setServiceListeners(Collection<Listener> listeners) {
-        this.serviceListeners = listeners;
+        this.serviceListeners = listeners != null ? new ArrayList<Listener>(listeners) : null;
     }
 
     public void addServiceListener(Listener bindingListenerMetadata) {

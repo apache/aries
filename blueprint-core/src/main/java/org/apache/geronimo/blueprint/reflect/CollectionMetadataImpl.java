@@ -80,7 +80,7 @@ public class CollectionMetadataImpl implements MutableCollectionMetadata {
     }
 
     public void setValues(List<Metadata> values) {
-        this.values = values;
+        this.values = values != null ? new ArrayList<Metadata>(values) : null;
     }
 
     public void addValue(Metadata value) {
