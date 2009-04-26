@@ -23,6 +23,9 @@ import org.w3c.dom.Node;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.namespace.ParserContext;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.apache.geronimo.blueprint.ExtendedParserContext;
+import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 
 /**
  * A simple ParserContext implementation.
@@ -32,7 +35,7 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ParserContextImpl implements ParserContext {
+public class ParserContextImpl implements ExtendedParserContext {
 
     private final ComponentDefinitionRegistry componentDefinitionRegistry;
     private final ComponentMetadata enclosingComponent;
@@ -56,5 +59,9 @@ public class ParserContextImpl implements ParserContext {
 
     public Node getSourceNode() {
         return sourceNode;
+    }
+
+    public <T extends Metadata> T createMetadata(Class<T> type) {
+        return MetadataUtil.createMetadata(type);
     }
 }

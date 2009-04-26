@@ -34,6 +34,8 @@ import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.Target;
+import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
+import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 
 /**
  * ComponentDefinitionRegistry implementation.
@@ -44,16 +46,14 @@ import org.osgi.service.blueprint.reflect.Target;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegistry {
+public class ComponentDefinitionRegistryImpl implements ExtendedComponentDefinitionRegistry {
 
     private final Map<String, ComponentMetadata> components;
-    private final List<Target> typeConverters;
     private String defaultInitMethod;
     private String defaultDestroyMethod;
 
     public ComponentDefinitionRegistryImpl() {
         components = new ConcurrentHashMap<String, ComponentMetadata>();
-        typeConverters = new CopyOnWriteArrayList<Target>();
     }
 
     public boolean containsComponentDefinition(String name) {
@@ -78,30 +78,6 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
 
     public void removeComponentDefinition(String name) {
         components.remove(name);
-    }
-
-    public void registerTypeConverter(Target typeConverter) {
-        typeConverters.add(typeConverter);
-    }
-    
-    public List<Target> getTypeConverters() {
-        return Collections.unmodifiableList(typeConverters);
-    }
-    
-    public List<String> getTypeConverterNames() {
-        List<String> ids = new ArrayList<String>();
-        for (Target value : typeConverters) {
-            if (value instanceof ComponentMetadata) {
-                ComponentMetadata beanMetadata = (ComponentMetadata) value;
-                ids.add(beanMetadata.getId());
-            } else if (value instanceof RefMetadata) {
-                RefMetadata referenceValue = (RefMetadata) value;
-                ids.add(referenceValue.getComponentId());
-            } else {
-                throw new RuntimeException("Unexpected converter type: " + value);
-            }
-        }
-        return ids;
     }
 
     public void setDefaultInitMethod(String method) {

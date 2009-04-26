@@ -39,8 +39,8 @@ public class WiringTest extends AbstractBlueprintTest {
 
     public void testWiring() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
-        Instanciator i = new TestInstanciator(registry);
-        Repository repository = i.createRepository();
+        Instanciator i = new TestInstanciator();
+        Repository repository = i.createRepository(registry);
         ObjectGraph graph = new ObjectGraph(repository);
         
         Object obj1 = graph.create("pojoA");
@@ -134,16 +134,16 @@ public class WiringTest extends AbstractBlueprintTest {
         };
 
         ComponentDefinitionRegistryImpl registry = parse("/test-depends-on.xml");
-        Instanciator i = new TestInstanciator(registry);
-        Repository repository = i.createRepository();
+        Instanciator i = new TestInstanciator();
+        Repository repository = i.createRepository(registry);
         ObjectGraph graph = new ObjectGraph(repository);
         graph.createAll("c", "d");
     }
 
     public void testConstructor() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-constructor.xml");
-        Instanciator i = new TestInstanciator(registry);
-        Repository repository = i.createRepository();
+        Instanciator i = new TestInstanciator();
+        Repository repository = i.createRepository(registry);
         ObjectGraph graph = new ObjectGraph(repository);
         
         Object obj1 = graph.create("pojoA");
@@ -190,21 +190,14 @@ public class WiringTest extends AbstractBlueprintTest {
     
     private static class TestInstanciator extends Instanciator {
         ConversionServiceImpl conversionService = new ConversionServiceImpl();
-        ComponentDefinitionRegistryImpl registry;
-        
-        public TestInstanciator(ComponentDefinitionRegistryImpl registry) {
+
+        public TestInstanciator() {
             super(null);
-            this.registry = registry;
         }
         
         @Override
         public ConversionService getConversionService() {
             return conversionService;
-        }
-        
-        @Override
-        public ComponentDefinitionRegistryImpl getComponentDefinitionRegistry() {
-            return registry;
         }
         
     }

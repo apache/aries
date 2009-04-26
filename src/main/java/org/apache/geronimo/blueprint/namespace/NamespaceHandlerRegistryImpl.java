@@ -60,6 +60,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         this.bundleContext = bundleContext;
         handlers = new HashMap<URI, NamespaceHandler>();
         tracker = new ServiceTracker(bundleContext, NamespaceHandler.class.getName(), this);
+        tracker.open();
         listeners = new HashMap<Listener, Boolean>();
     }
 
@@ -140,6 +141,8 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             return Arrays.asList((URI[]) ns);
         } else if (ns instanceof URI) {
             return Collections.singletonList((URI) ns);
+        } else if (ns instanceof String) {
+            return Collections.singletonList(URI.create((String) ns));
         } else if (ns instanceof String[]) {
             String[] strings = (String[]) ns;
             List<URI> namespaces = new ArrayList<URI>(strings.length);

@@ -38,6 +38,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.service.blueprint.context.BlueprintContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,9 +48,9 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class Activator implements BundleActivator, SynchronousBundleListener {
+public class BlueprintExtender implements BundleActivator, SynchronousBundleListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintExtender.class);
 
     private final ExecutorService executors = Executors.newSingleThreadExecutor();
     private final Map<Bundle, BlueprintContextImpl> contextMap = new HashMap<Bundle, BlueprintContextImpl>();
@@ -96,13 +97,13 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
     private void destroyContext(Bundle bundle) {
         BlueprintContextImpl moduleContext = contextMap.remove(bundle);
         if (moduleContext != null) {
-            LOGGER.debug("Destroying BlueprintContext for bundle " + bundle.getSymbolicName());
+            LOGGER.debug("Destroying BlueprintContext for bundle {}", bundle.getSymbolicName());
             moduleContext.destroy();
         }
     }
     
     private void checkBundle(Bundle bundle) {
-        LOGGER.debug("Scanning bundle " + bundle.getSymbolicName() + " for blueprint application");
+        LOGGER.debug("Scanning bundle {} for blueprint application", bundle.getSymbolicName());
 
         List<URL> urls = new ArrayList<URL>();
         Dictionary headers = bundle.getHeaders();
@@ -126,12 +127,26 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
             }
         }
         if (!urls.isEmpty()) {
-            LOGGER.debug("Found blueprint application in bundle " + bundle.getSymbolicName() + " with urls: " + urls);
-            final BlueprintContextImpl moduleContext = new BlueprintContextImpl(bundle.getBundleContext(), sender, handlers, executors, urls);
-            contextMap.put(bundle, moduleContext);
-            executors.submit(moduleContext);
+            LOGGER.debug("Found blueprint application in bundle {} with urls: {}", bundle.getSymbolicName(), urls);
+
+            // Check compatibility
+            boolean compatible;
+            try {
+                Class clazz = bundle.getBundleContext().getBundle().loadClass(BlueprintContext.class.getName());
+                compatible = (clazz == BlueprintContext.class);
+            } catch (ClassNotFoundException e) {
+                compatible = true;
+            }
+            if (compatible) {
+                final BlueprintContextImpl moduleContext = new BlueprintContextImpl(bundle.getBundleContext(), sender, handlers, executors, urls);
+                contextMap.put(bundle, moduleContext);
+                executors.submit(moduleContext);
+            } else {
+                LOGGER.info("Bundle {} is not compatible with this blueprint extender", bundle.getSymbolicName());
+            }
+
         } else {
-            LOGGER.debug("No blueprint application found in bundle " + bundle.getSymbolicName());
+            LOGGER.debug("No blueprint application found in bundle {}", bundle.getSymbolicName());
         }
     }
 

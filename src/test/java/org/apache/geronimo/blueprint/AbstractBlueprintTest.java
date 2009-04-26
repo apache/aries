@@ -50,7 +50,7 @@ public abstract class AbstractBlueprintTest extends TestCase {
         ComponentDefinitionRegistryImpl registry = new ComponentDefinitionRegistryImpl();
         Parser parser = new Parser();
         parser.parse(Collections.singletonList(getClass().getResource(name)));
-        parser.populate(handlers, registry);
+        parser.populateMainSection(handlers, registry);
         return registry;
     }
 
