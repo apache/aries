@@ -20,6 +20,7 @@ package org.apache.geronimo.blueprint.pojos;
 
 import java.util.Map;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 public class PojoA implements InterfaceA {
@@ -29,6 +30,7 @@ public class PojoA implements InterfaceA {
     private Set set;
     private Map map;
     private Number number;
+    private Properties props;
     
     private Object[] array;
     private int[] intArray;
@@ -69,6 +71,14 @@ public class PojoA implements InterfaceA {
         this.map = map;
     }
 
+    public Properties getProps() {
+        return props;
+    }
+    
+    public void setProps(Properties props) {
+        this.props = props;
+    }
+    
     public void setPojob(PojoB pojob) {
         this.pojob = pojob;
     }

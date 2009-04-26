@@ -530,7 +530,30 @@ public class Parser {
 
     private PropsMetadata parseProps(Element element) {
         // Parse elements
-        return new PropsMetadataImpl(parseMap(element, null).getEntries());
+        List<MapEntry> entries = new ArrayList<MapEntry>();
+        NodeList nl = element.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node node = nl.item(i);
+            if (node instanceof Element) {
+                Element e = (Element) node;
+                if (isBlueprintNamespace(e.getNamespaceURI()) && nodeNameEquals(e, PROP_ELEMENT)) {
+                    NonNullMetadata keyValue = null;
+                    if (e.hasAttribute(KEY_ATTRIBUTE)) {
+                        keyValue = new ValueMetadataImpl(e.getAttribute(KEY_ATTRIBUTE));
+                    } else {
+                        throw new RuntimeException("key attribute is required");
+                    }
+                    Metadata valValue = null;
+                    if (e.hasAttribute(VALUE_ATTRIBUTE)) {
+                        valValue = new ValueMetadataImpl(e.getAttribute(VALUE_ATTRIBUTE));
+                    } else {
+                        throw new RuntimeException("value attribute is required");
+                    }
+                    entries.add(new MapEntryImpl(keyValue, valValue));
+                }
+            }
+        }
+        return new PropsMetadataImpl(entries);
     }
 
     private MapMetadata parseMap(Element element, ComponentMetadata enclosingComponent) {
