@@ -21,6 +21,9 @@ import java.util.Set;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
+import org.osgi.service.blueprint.reflect.ServiceMetadata;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
 
 public interface BlueprintContext {
     
@@ -28,17 +31,17 @@ public interface BlueprintContext {
    
     static final int BUNDLE_STOPPING = 2;
 
-    Set getComponentNames();
+    Set<String> getComponentNames();
 
     Object getComponent(String name) throws NoSuchComponentException;
 
     ComponentMetadata getComponentMetadata(String name) throws NoSuchComponentException;
 
-    Collection getReferencedServicesMetadata();
+    Collection<ServiceReferenceMetadata> getReferencedServicesMetadata();
 
-    Collection getExportedServicesMetadata();
+    Collection<ServiceMetadata> getExportedServicesMetadata();
 
-    Collection getBeanComponentsMetadata();
+    Collection<BeanMetadata> getBeanComponentsMetadata();
 
     BundleContext getBundleContext();
 
