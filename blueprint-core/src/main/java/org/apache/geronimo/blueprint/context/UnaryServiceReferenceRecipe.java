@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 import net.sf.cglib.proxy.Dispatcher;
-import org.apache.geronimo.blueprint.ModuleContextEventSender;
+import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ExecutionContext;
 import org.apache.xbean.recipe.Recipe;
@@ -56,11 +56,11 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private final Object monitor = new Object();
     private final boolean optional;
 
-    public UnaryServiceReferenceRecipe(BlueprintContext moduleContext,
-                                       ModuleContextEventSender sender,
+    public UnaryServiceReferenceRecipe(BlueprintContext blueprintContext,
+                                       BlueprintContextEventSender sender,
                                        ReferenceMetadata metadata,
                                        Recipe listenersRecipe) {
-        super(moduleContext,  sender, metadata, listenersRecipe);
+        super(blueprintContext,  sender, metadata, listenersRecipe);
         this.metadata = metadata;
         this.optional = metadata.getAvailability() == ReferenceMetadata.OPTIONAL_AVAILABILITY;
         if (this.optional) {
@@ -81,7 +81,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             }
 
             // Start tracking the service
-            moduleContext.getBundleContext().addServiceListener(this, getOsgiFilter());
+            blueprintContext.getBundleContext().addServiceListener(this, getOsgiFilter());
             retrack();
 
             // Return the object
@@ -97,7 +97,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     }
 
     public void destroy() {
-        moduleContext.getBundleContext().removeServiceListener(this);
+        blueprintContext.getBundleContext().removeServiceListener(this);
         unbind();
     }
 
@@ -110,7 +110,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
 
     private void retrack() {
         try {
-            ServiceReference[] refs = moduleContext.getBundleContext().getServiceReferences(null, getOsgiFilter());
+            ServiceReference[] refs = blueprintContext.getBundleContext().getServiceReferences(null, getOsgiFilter());
             ServiceReference ref = getBestServiceReference(refs);
             if (ref != null) {
                 bind(ref);
@@ -140,10 +140,10 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private void bind(ServiceReference ref) {
         synchronized (monitor) {
             if (trackedServiceReference != null) {
-                moduleContext.getBundleContext().ungetService(trackedServiceReference);
+                blueprintContext.getBundleContext().ungetService(trackedServiceReference);
             }
             trackedServiceReference = ref;
-            trackedService = moduleContext.getBundleContext().getService(trackedServiceReference);
+            trackedService = blueprintContext.getBundleContext().getService(trackedServiceReference);
             for (Listener listener : listeners) {
                 listener.bind(trackedServiceReference, trackedService);
             }
@@ -159,7 +159,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
                 for (Listener listener : listeners) {
                     listener.unbind(trackedServiceReference, trackedService);
                 }
-                moduleContext.getBundleContext().ungetService(trackedServiceReference);
+                blueprintContext.getBundleContext().ungetService(trackedServiceReference);
                 trackedServiceReference = null;
                 trackedService = null;
                 if (!optional) {
@@ -175,7 +175,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             synchronized (monitor) {
                 if (trackedService == null && metadata.getTimeout() > 0) {
                     Set<String> interfaces = new HashSet<String>(metadata.getInterfaceNames());
-                    sender.sendWaiting(moduleContext, interfaces.toArray(new String[interfaces.size()]), getOsgiFilter());
+                    sender.sendWaiting(blueprintContext, interfaces.toArray(new String[interfaces.size()]), getOsgiFilter());
                     monitor.wait(metadata.getTimeout());
                 }
                 if (trackedService == null) {

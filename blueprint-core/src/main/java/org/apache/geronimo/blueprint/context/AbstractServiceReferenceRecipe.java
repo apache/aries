@@ -32,7 +32,7 @@ import java.lang.reflect.Method;
 import org.apache.xbean.recipe.AbstractRecipe;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.ConstructionException;
-import org.apache.geronimo.blueprint.ModuleContextEventSender;
+import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.SatisfiableRecipe;
@@ -55,8 +55,8 @@ import net.sf.cglib.proxy.Dispatcher;
  */
 public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe implements ServiceListener, Destroyable, SatisfiableRecipe {
 
-    protected final BlueprintContext moduleContext;
-    protected final ModuleContextEventSender sender;
+    protected final BlueprintContext blueprintContext;
+    protected final BlueprintContextEventSender sender;
     protected final ServiceReferenceMetadata metadata;
     protected final Recipe listenersRecipe;
     protected List<Listener> listeners;
@@ -66,17 +66,17 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     private boolean satisfied;
     private final List<SatisfactionListener> satisfactionListeners = new CopyOnWriteArrayList<SatisfactionListener>();
 
-    protected AbstractServiceReferenceRecipe(BlueprintContext moduleContext,
-                                             ModuleContextEventSender sender,
+    protected AbstractServiceReferenceRecipe(BlueprintContext blueprintContext,
+                                             BlueprintContextEventSender sender,
                                              ServiceReferenceMetadata metadata,
                                              Recipe listenersRecipe) {
-        this.moduleContext = moduleContext;
+        this.blueprintContext = blueprintContext;
         this.sender = sender;
         this.metadata = metadata;
         this.listenersRecipe = listenersRecipe;
         // Create a ClassLoader delegating to the bundle, but also being able to see our bundle classes
         // so that the created proxy can access cglib classes.
-        this.proxyClassLoader = new BundleDelegatingClassLoader(moduleContext.getBundleContext().getBundle(),
+        this.proxyClassLoader = new BundleDelegatingClassLoader(blueprintContext.getBundleContext().getBundle(),
                                                                 getClass().getClassLoader());
     }
 

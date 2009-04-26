@@ -99,7 +99,7 @@ public class TestBlueprintContext extends AbstractIntegrationTest {
 
         try {
             blueprintContext = getBlueprintContextForBundle("blueprint-sample", 1);
-            fail("ModuleContext should have been unregistered");
+            fail("BlueprintContext should have been unregistered");
         } catch (Exception e) {
             // Expected, as the module context should have been unregistered
         }

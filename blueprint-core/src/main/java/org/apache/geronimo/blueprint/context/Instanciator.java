@@ -172,7 +172,7 @@ public class Instanciator {
         recipe.allow(Option.PRIVATE_PROPERTIES);
         recipe.setName(serviceExport.getId());
         recipe.setExplicitDependencies(serviceExport.getExplicitDependencies());
-        recipe.setProperty("moduleContext", blueprintContext);
+        recipe.setProperty("blueprintContext", blueprintContext);
         BeanMetadata exportedComponent = getLocalServiceComponent(serviceExport.getServiceComponent());
         if (exportedComponent != null && BeanMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
             BlueprintObjectRecipe exportedComponentRecipe = createBeanRecipe(exportedComponent);

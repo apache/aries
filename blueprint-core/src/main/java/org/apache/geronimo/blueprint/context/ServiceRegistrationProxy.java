@@ -41,7 +41,7 @@ import org.osgi.service.blueprint.reflect.ServiceMetadata;
  */
 public class ServiceRegistrationProxy implements ServiceRegistration {
   
-    private BlueprintContext moduleContext;
+    private BlueprintContext blueprintContext;
     private Object service;
     private Map serviceProperties;
     private List<Listener> listeners;
@@ -49,7 +49,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
 
     private ServiceRegistration registration = null;
     private Map registrationProperties = null;
-    
+
     protected Object getService() {
         return service;
     }
@@ -98,7 +98,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
             props.put(BlueprintConstants.COMPONENT_NAME_PROPERTY, componentName);
         }
         String[] classesArray = classes.toArray(new String[classes.size()]);
-        registration = moduleContext.getBundleContext().registerService(classesArray, service, props);
+        registration = blueprintContext.getBundleContext().registerService(classesArray, service, props);
         registrationProperties = props;
         
         System.out.println("service registered: " + service + " " + classes);
