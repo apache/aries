@@ -22,9 +22,12 @@ import java.net.URLDecoder;
 import java.util.Properties;
 import java.util.Hashtable;
 import java.util.Currency;
+import java.util.List;
+import java.util.ArrayList;
 import java.text.SimpleDateFormat;
 
 import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
+import org.apache.servicemix.kernel.testing.support.Counter;
 import org.apache.geronimo.blueprint.sample.Foo;
 import org.apache.geronimo.blueprint.sample.Bar;
 import org.apache.geronimo.blueprint.sample.InterfaceA;
@@ -32,21 +35,35 @@ import org.apache.geronimo.blueprint.sample.CurrencyTypeConverter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceEvent;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.ServiceUnavailableException;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.cm.Configuration;
+import org.osgi.util.tracker.ServiceTracker;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
+import org.springframework.osgi.util.OsgiFilterUtils;
+import org.springframework.osgi.util.OsgiListenerUtils;
 
 public class TestBlueprintContext extends AbstractIntegrationTest {
 
     public void test() throws Exception {
+        // Create a config to check the property placeholder
+        ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
+        Configuration cf = ca.getConfiguration("blueprint-sample");
+        Hashtable props = new Hashtable();
+        props.put("key.b", "10");
+        cf.update(props);
+
         Resource res = locateBundle(getBundle("org.apache.geronimo", "blueprint-sample"));
         Bundle bundle = installBundle(res);
         assertNotNull(bundle);
 
         bundle.start();
 
-        BlueprintContext blueprintContext = getOsgiService(BlueprintContext.class, 5000);
+        BlueprintContext blueprintContext = getBlueprintContextForBundle("blueprint-sample", 5000);
         assertNotNull(blueprintContext);
 
         Object obj = blueprintContext.getComponent("bar");
@@ -77,8 +94,11 @@ public class TestBlueprintContext extends AbstractIntegrationTest {
         assertSame(foo, obj);
 
         bundle.stop();
+
+        Thread.sleep(1000);
+
         try {
-            blueprintContext = getOsgiService(BlueprintContext.class, 1);
+            blueprintContext = getBlueprintContextForBundle("blueprint-sample", 1);
             fail("ModuleContext should have been unregistered");
         } catch (Exception e) {
             // Expected, as the module context should have been unregistered
@@ -88,8 +108,50 @@ public class TestBlueprintContext extends AbstractIntegrationTest {
         assertTrue(foo.isDestroyed());
     }
 
-    public void testUnaryReference() throws Exception {
+    protected BlueprintContext getBlueprintContextForBundle(String symbolicName, long timeout) throws Exception {
+        return getOsgiService(BlueprintContext.class, "(osgi.blueprint.context.symbolicname=" + symbolicName + ")", timeout);
+    }
 
+    public <T> T getOsgiService(Class<T> type, String filter, long timeout) {
+        // translate from seconds to miliseconds
+        long time = timeout * 1000;
+
+        // use the counter to make sure the threads block
+        final Counter counter = new Counter("waitForOsgiService on bnd=" + type.getName());
+
+        counter.increment();
+
+        final List<T> services = new ArrayList<T>();
+
+        ServiceListener listener = new ServiceListener() {
+            public void serviceChanged(ServiceEvent event) {
+                if (event.getType() == ServiceEvent.REGISTERED) {
+                    services.add((T) bundleContext.getService(event.getServiceReference()));
+                    counter.decrement();
+                }
+            }
+        };
+
+        String flt = OsgiFilterUtils.unifyFilter(type.getName(), filter);
+        OsgiListenerUtils.addServiceListener(bundleContext, listener, flt);
+
+        if (logger.isDebugEnabled())
+            logger.debug("start waiting for OSGi service=" + type.getName());
+
+        try {
+            if (counter.waitForZero(time)) {
+                logger.warn("waiting for OSGi service=" + type.getName() + " timed out");
+                throw new RuntimeException("Gave up waiting for OSGi service '" + type.getName() + "' to be created");
+            }
+            else if (logger.isDebugEnabled()) {
+                logger.debug("found OSGi service=" + type.getName());
+            }
+            return services.get(0);
+        }
+        finally {
+            // inform waiting thread
+            bundleContext.removeServiceListener(listener);
+        }
     }
 
     /**

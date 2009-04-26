@@ -30,13 +30,14 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.ServiceUnavailableException;
+import org.osgi.util.tracker.ServiceTracker;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 public class TestReferences extends AbstractIntegrationTest {
 
     public void testUnaryReference() throws Exception {
-        BlueprintContext blueprintContext = getOsgiService(BlueprintContext.class, 5000);
+        BlueprintContext blueprintContext = getBlueprintContextForBundle("blueprint-sample");
         assertNotNull(blueprintContext);
 
         BindingListener listener = (BindingListener) blueprintContext.getComponent("bindingListener");
@@ -88,7 +89,7 @@ public class TestReferences extends AbstractIntegrationTest {
     }
 
     public void testListReferences() throws Exception {
-        BlueprintContext blueprintContext = getOsgiService(BlueprintContext.class, 5000);
+        BlueprintContext blueprintContext = getBlueprintContextForBundle("blueprint-sample");
         assertNotNull(blueprintContext);
 
         BindingListener listener = (BindingListener) blueprintContext.getComponent("listBindingListener");
@@ -111,6 +112,13 @@ public class TestReferences extends AbstractIntegrationTest {
         assertNotNull(a);
         assertEquals("Hello world!", a.hello("world"));
 
+    }
+
+    protected BlueprintContext getBlueprintContextForBundle(String symbolicName) throws Exception {
+        String filter = "(&(" + Constants.OBJECTCLASS + "=" + BlueprintContext.class.getName() + ")(osgi.blueprint.context.symbolicname=" + symbolicName + "))";
+        ServiceTracker tracker = new ServiceTracker(bundleContext, org.osgi.framework.FrameworkUtil.createFilter(filter), null);
+        tracker.open();
+        return (BlueprintContext) tracker.waitForService(5000);
     }
 
     /**

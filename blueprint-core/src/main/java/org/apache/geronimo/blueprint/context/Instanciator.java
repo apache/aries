@@ -20,19 +20,17 @@ package org.apache.geronimo.blueprint.context;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.Comparator;
 
-import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.geronimo.blueprint.reflect.ServiceMetadataImpl;
+import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.reflect.MapMetadataImpl;
+import org.apache.geronimo.blueprint.reflect.ServiceMetadataImpl;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.apache.xbean.recipe.ArrayRecipe;
 import org.apache.xbean.recipe.CollectionRecipe;
@@ -43,27 +41,25 @@ import org.apache.xbean.recipe.Option;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.ReferenceRecipe;
 import org.apache.xbean.recipe.Repository;
-import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.convert.ConversionService;
-import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.BeanArgument;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.service.blueprint.reflect.CollectionMetadata;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.IdRefMetadata;
+import org.osgi.service.blueprint.reflect.Listener;
+import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.MapMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.NullMetadata;
 import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.IdRefMetadata;
+import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
-import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
-import org.osgi.service.blueprint.reflect.Listener;
-import org.osgi.service.blueprint.reflect.BeanProperty;
-import org.osgi.service.blueprint.reflect.CollectionMetadata;
-import org.osgi.service.blueprint.reflect.MapEntry;
 
 /**
  * TODO: javadoc
@@ -89,6 +85,7 @@ public class Instanciator {
     }
     
     private BlueprintContextImpl blueprintContext;
+    private ExtendedComponentDefinitionRegistry registry;
 
     public Instanciator(BlueprintContextImpl blueprintContext) {
         this.blueprintContext = blueprintContext;
@@ -96,33 +93,21 @@ public class Instanciator {
     
     private void addBuiltinComponents(Repository repository) {
         if (blueprintContext != null) {
-            repository.add("moduleContext", blueprintContext);
+            repository.add("blueprintContext", blueprintContext);
             repository.add("bundleContext", blueprintContext.getBundleContext());
             repository.add("bundle", blueprintContext.getBundleContext().getBundle());
             repository.add("conversionService", blueprintContext.getConversionService());
         }
     }
     
-    public Repository createRepository() throws Exception {
-        ComponentDefinitionRegistryImpl registry = getComponentDefinitionRegistry();
+    public Repository createRepository(ExtendedComponentDefinitionRegistry registry) throws Exception {
+        this.registry = registry;
+
         Repository repository = new ScopedRepository();
         addBuiltinComponents(repository);
         
-        // Create type-converter recipes
-        for (Metadata value : registry.getTypeConverters()) {
-            if (value instanceof ComponentMetadata) {
-                Recipe recipe = (Recipe) getValue(value, null);
-                repository.add(recipe.getName(), recipe);
-            } else if (value instanceof RefMetadata) {
-                ReferenceRecipe recipe = (ReferenceRecipe) getValue(value, null);
-                repository.add(recipe.getReferenceName(), recipe);
-            } else {
-                throw new RuntimeException("Unexpected converter type: " + value);
-            }
-        }
-        
         // Create component recipes
-        for (String name : (Set<String>) registry.getComponentDefinitionNames()) {
+        for (String name : registry.getComponentDefinitionNames()) {
             ComponentMetadata component = registry.getComponentDefinition(name);
             Recipe recipe = createRecipe(component);
             repository.add(name, recipe);
@@ -132,7 +117,7 @@ public class Instanciator {
 
     private Recipe createRecipe(ComponentMetadata component) throws Exception {
         if (component instanceof BeanMetadata) {
-            return createComponentRecipe((BeanMetadata) component);
+            return createBeanRecipe((BeanMetadata) component);
         } else if (component instanceof ServiceMetadata) {
             return createServiceRecipe((ServiceMetadata) component);
         } else if (component instanceof ReferenceMetadata) {
@@ -148,7 +133,7 @@ public class Instanciator {
         CollectionRecipe listenersRecipe = null;
         if (metadata.getServiceListeners() != null) {
             listenersRecipe = new CollectionRecipe(ArrayList.class);
-            for (Listener listener : (Collection<Listener>) metadata.getServiceListeners()) {
+            for (Listener listener : metadata.getServiceListeners()) {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
@@ -170,7 +155,7 @@ public class Instanciator {
         CollectionRecipe listenersRecipe = null;
         if (metadata.getServiceListeners() != null) {
             listenersRecipe = new CollectionRecipe(ArrayList.class);
-            for (Listener listener : (Collection<Listener>) metadata.getServiceListeners()) {
+            for (Listener listener : metadata.getServiceListeners()) {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
@@ -190,7 +175,7 @@ public class Instanciator {
         recipe.setProperty("moduleContext", blueprintContext);
         BeanMetadata exportedComponent = getLocalServiceComponent(serviceExport.getServiceComponent());
         if (exportedComponent != null && BeanMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
-            BlueprintObjectRecipe exportedComponentRecipe = createComponentRecipe(exportedComponent);
+            BlueprintObjectRecipe exportedComponentRecipe = createBeanRecipe(exportedComponent);
             recipe.setProperty("service", new BundleScopeServiceFactory(blueprintContext, exportedComponentRecipe));
         } else {
             recipe.setProperty("service", getValue(serviceExport.getServiceComponent(), null));
@@ -204,7 +189,7 @@ public class Instanciator {
         }
         if (serviceExport.getRegistrationListeners() != null) {
             CollectionRecipe listenersRecipe = new CollectionRecipe(ArrayList.class);
-            for (RegistrationListener listener : (Collection<RegistrationListener>)serviceExport.getRegistrationListeners()) {
+            for (RegistrationListener listener : serviceExport.getRegistrationListeners()) {
                 listenersRecipe.add(createRecipe(listener));
             }
             recipe.setProperty("listeners", listenersRecipe);
@@ -212,7 +197,7 @@ public class Instanciator {
         return recipe;
     }
 
-    private BlueprintObjectRecipe createComponentRecipe(BeanMetadata local) throws Exception {
+    private BlueprintObjectRecipe createBeanRecipe(BeanMetadata local) throws Exception {
         BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, loadClass(local.getClassName()));
         recipe.allow(Option.PRIVATE_PROPERTIES);
         recipe.setName(local.getId());
@@ -224,7 +209,6 @@ public class Instanciator {
         if (BeanMetadata.SCOPE_PROTOTYPE.equals(local.getScope())) {
             recipe.setKeepRecipe(true);
         }
-        ComponentDefinitionRegistryImpl registry = getComponentDefinitionRegistry();
         // check for init-method and set it on Recipe
         String initMethod = local.getInitMethodName();
         if (initMethod == null) {
@@ -293,7 +277,6 @@ public class Instanciator {
         ComponentMetadata metadata = null;
         if (value instanceof RefMetadata) {
             RefMetadata ref = (RefMetadata) value;
-            ComponentDefinitionRegistry registry = getComponentDefinitionRegistry();
             metadata = registry.getComponentDefinition(ref.getComponentId());
         } else if (value instanceof ComponentMetadata) {
             metadata = (ComponentMetadata) value;
@@ -312,9 +295,8 @@ public class Instanciator {
             return createRecipe((ComponentMetadata) v);
         } else if (v instanceof ValueMetadata) {
             ValueMetadata stringValue = (ValueMetadata) v;
-            String value = stringValue.getStringValue();
             Class type = loadClass(stringValue.getTypeName());
-            return new ValueRecipe(getConversionService(), value, type, groupingType);
+            return new ValueRecipe(getConversionService(), stringValue, type, groupingType);
         } else if (v instanceof RefMetadata) {
             String componentName = ((RefMetadata) v).getComponentId();
             return new ReferenceRecipe(componentName);
@@ -362,10 +344,6 @@ public class Instanciator {
         }
     }
     
-    protected ComponentDefinitionRegistryImpl getComponentDefinitionRegistry() {
-        return blueprintContext.getComponentDefinitionRegistry();
-    }
-    
     protected ConversionService getConversionService() {
         return blueprintContext.getConversionService();
     }
@@ -374,7 +352,7 @@ public class Instanciator {
         return loadClass(blueprintContext, typeName);
     }
     
-    public static Class loadClass(BlueprintContext context, String typeName) throws ClassNotFoundException {
+    public static Class loadClass(BlueprintContextImpl context, String typeName) throws ClassNotFoundException {
         if (typeName == null) {
             return null;
         }
@@ -385,12 +363,13 @@ public class Instanciator {
                 ClassLoader loader = Thread.currentThread().getContextClassLoader();
                 clazz = loader.loadClass(typeName);
             } else {
-                clazz = context.getBundleContext().getBundle().loadClass(typeName);
+                // TODO: use a mixed classloader while the classloading + namespace handler problem is solved
+                clazz = context.getClassLoader().loadClass(typeName);
             }
         }
         return clazz;
     }
-    
+
     private static class BeanArgumentComparator implements Comparator<BeanArgument> {
         public int compare(BeanArgument object1, BeanArgument object2) {
             return object1.getIndex() - object2.getIndex();

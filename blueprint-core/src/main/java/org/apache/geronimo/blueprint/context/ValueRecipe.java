@@ -24,6 +24,7 @@ import org.apache.xbean.recipe.AbstractRecipe;
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.RecipeHelper;
 import org.osgi.service.blueprint.convert.ConversionService;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 /**
  * TODO: javadoc
@@ -34,11 +35,11 @@ import org.osgi.service.blueprint.convert.ConversionService;
 public class ValueRecipe extends AbstractRecipe {
 
     private ConversionService conversionService;
-    private String value;
+    private ValueMetadata value;
     private Class type;
     private Class groupingType;
 
-    public ValueRecipe(ConversionService conversionService, String value, Class type, Class groupingType) {
+    public ValueRecipe(ConversionService conversionService, ValueMetadata value, Class type, Class groupingType) {
         this.conversionService = conversionService;
         this.value = value;
         this.type = type;
@@ -64,7 +65,7 @@ public class ValueRecipe extends AbstractRecipe {
         Class myType = determineType(type, groupingType, RecipeHelper.toClass(expectedType));
 
         try {
-            return conversionService.convert(value, myType);
+            return conversionService.convert(value.getStringValue(), myType);
         } catch (Exception e) {
             throw new ConstructionException(e);
         }

@@ -29,16 +29,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Properties;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.utils.HeaderParser;
+import org.apache.geronimo.blueprint.utils.BundleDelegatingClassLoader;
 import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
 import org.apache.geronimo.blueprint.ModuleContextEventSender;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
 import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.SatisfiableRecipe;
+import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
 import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.xbean.recipe.ObjectGraph;
@@ -50,7 +52,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.NoSuchComponentException;
 import org.osgi.service.blueprint.convert.ConversionService;
@@ -69,7 +70,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerRegistry.Listener, Runnable, SatisfiableRecipe.SatisfactionListener {
+public class BlueprintContextImpl implements ExtendedBlueprintContext, NamespaceHandlerRegistry.Listener, Runnable, SatisfiableRecipe.SatisfactionListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContextImpl.class);
 
@@ -87,6 +88,7 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
     private final ModuleContextEventSender sender;
     private final NamespaceHandlerRegistry handlers;
     private final List<URL> urls;
+    private final ComponentDefinitionRegistryImpl helperComponentDefinitionRegistry;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
     private final ConversionServiceImpl conversionService;
     private final ExecutorService executors;
@@ -98,6 +100,7 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
     private boolean waitForNamespaceHandlersEventSent;
     private Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>();
     private Map<String, List<SatisfiableRecipe>> satisfiables;
+    private ClassLoader classLoader;
 
     public BlueprintContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, List<URL> urls) {
         this.bundleContext = bundleContext;
@@ -105,8 +108,14 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
         this.handlers = handlers;
         this.urls = urls;
         this.conversionService = new ConversionServiceImpl();
+        this.helperComponentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
+        this.classLoader = new BundleDelegatingClassLoader(bundleContext.getBundle(), getClass().getClassLoader());
+    }
+
+    public ClassLoader getClassLoader() {
+        return classLoader;
     }
 
     public void addDestroyable(String name, Destroyable destroyable) {
@@ -160,14 +169,16 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
                                 return;
                             }
                         }
-                        parser.populate(handlers, componentDefinitionRegistry);
+                        parser.populateHelperSection(handlers, helperComponentDefinitionRegistry);
+                        parser.populateMainSection(handlers, componentDefinitionRegistry);
+                        // TODO: need to wait for references from the helper section, such as ConfigAdmin or Converter from the OSGi registry
+                        processHelperSection();
                         state = State.Populated;
                         break;
                     case Populated:
                         Instanciator i = new Instanciator(this);
-                        Repository repository = i.createRepository();
+                        Repository repository = i.createRepository(componentDefinitionRegistry);
                         objectGraph = new ObjectGraph(repository);
-                        registerTypeConverters();
                         instanciateServiceReferences();
                         if (checkAllSatisfiables()) {
                             state = State.InitialReferencesSatisfied;
@@ -186,11 +197,6 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
                         break;
                     case InitialReferencesSatisfied:
                         instantiateComponents();
-
-                        // TODO: access to any OSGi reference proxy is currently a problem at this point, because calling toString() will
-                        // TODO:      wait for a service to be available.  We may need to catch toString(), equals() and hashCode() and make them
-                        // TODO:      work even if there's no service available.
-
                         registerAllServices();
 
                         // Register the ModuleContext in the OSGi registry
@@ -219,19 +225,22 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
         }
     }
 
-    private void registerTypeConverters() {
-        List<String> typeConvertersNames = componentDefinitionRegistry.getTypeConverterNames();
-        Map<String, Object> typeConverters = objectGraph.createAll(typeConvertersNames);
-        System.out.println("Type converters: " + typeConverters);
-        for (String name : typeConvertersNames) {
-            Object typeConverterInstance = typeConverters.get(name);
-            if (typeConverterInstance instanceof Converter) {
-                Converter converter = (Converter) typeConverterInstance;
-                conversionService.registerConverter(converter);
-            } else {
-                // TODO: throw exception or log
+    private void processHelperSection() throws Exception {
+        Instanciator i = new Instanciator(this);
+        Repository repository = i.createRepository(helperComponentDefinitionRegistry);
+        ObjectGraph graph = new ObjectGraph(repository);
+        Map<String, Object> objects = graph.createAll(new ArrayList<String>(helperComponentDefinitionRegistry.getComponentDefinitionNames()));
+        for (Object obj : objects.values()) {
+            if (obj instanceof Converter) {
+                conversionService.registerConverter((Converter) obj);
             }
         }
+        for (Object obj : objects.values()) {
+            if (obj instanceof ComponentDefinitionRegistryProcessor) {
+                ((ComponentDefinitionRegistryProcessor) obj).process(componentDefinitionRegistry);
+            }
+        }
+        // TODO: need to destroy those objects at the end
     }
 
     private Map<String, List<SatisfiableRecipe>> getSatisfiableDependenciesMap() {
@@ -394,36 +403,32 @@ public class BlueprintContextImpl implements BlueprintContext, NamespaceHandlerR
     }
 
     public Collection<ServiceReferenceMetadata> getReferencedServicesMetadata() {
-        return getMetadata(ServiceReferenceMetadata.class);
+        return getComponentsMetadata(ServiceReferenceMetadata.class);
     }
 
     public Collection<ServiceMetadata> getExportedServicesMetadata() {
-        return getMetadata(ServiceMetadata.class);
+        return getComponentsMetadata(ServiceMetadata.class);
     }
 
     public Collection<BeanMetadata> getBeanComponentsMetadata() {
-        return getMetadata(BeanMetadata.class);
+        return getComponentsMetadata(BeanMetadata.class);
     }
 
-    private <T> Collection<T> getMetadata(Class<T> clazz) {
-        Collection<T> metadatas = new ArrayList<T>();
+    public <T extends ComponentMetadata> List<T> getComponentsMetadata(Class<T> clazz) {
+        List<T> metadatas = new ArrayList<T>();
         for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
             ComponentMetadata component = componentDefinitionRegistry.getComponentDefinition(name);
             if (clazz.isInstance(component)) {
                 metadatas.add(clazz.cast(component));
             }
         }
-        metadatas = Collections.unmodifiableCollection(metadatas);
+        metadatas = Collections.unmodifiableList(metadatas);
         return metadatas;
 
     }
 
     protected ObjectGraph getObjectGraph() {
         return objectGraph;
-    }
-    
-    protected ComponentDefinitionRegistryImpl getComponentDefinitionRegistry() {
-        return componentDefinitionRegistry;
     }
     
     protected ConversionService getConversionService() {

@@ -41,7 +41,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
-import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.namespace.ParserContextImpl;
 import org.apache.geronimo.blueprint.reflect.ListenerImpl;
 import org.apache.geronimo.blueprint.reflect.RefCollectionMetadataImpl;
@@ -86,7 +86,6 @@ import org.xml.sax.InputSource;
 public class Parser {
 
     public static final String BLUEPRINT_NAMESPACE = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
-    public static final String BLUEPRINT_COMPENDIUM_NAMESPACE = "http://www.osgi.org/xmlns/blueprint-compendium/v1.0.0";
 
     public static final String BLUEPRINT_ELEMENT = "blueprint";
     public static final String DESCRIPTION_ELEMENT = "description";
@@ -169,7 +168,7 @@ public class Parser {
     public static final String AVAILABILITY_MANDATORY = "mandatory";
     public static final String AVAILABILITY_OPTIONAL = "optional";
     public static final String AVAILABILITY_DEFAULT = AVAILABILITY_MANDATORY;
-    public static final String TIMEOUT_DEFAULT = "30000";
+    public static final String TIMEOUT_DEFAULT = "300000";
     public static final String MEMBER_TYPE_SERVICES = "service-instance";
     public static final String MEMBER_TYPE_SERVICE_REFERENCE = "service-reference";
     public static final String ORDERING_BASIS_SERVICES = "services";
@@ -177,16 +176,22 @@ public class Parser {
     public static final String LAZY_INIT_DEFAULT = BOOLEAN_FALSE;
 
     private List<Document> documents;
-    private ComponentDefinitionRegistryImpl registry;
+    private ExtendedComponentDefinitionRegistry registry;
     private NamespaceHandlerRegistry namespaceHandlerRegistry;
+    private String namePrefix = "component-";
     private int nameCounter;
     private String defaultTimeout;
     private String defaultAvailability;
     private String defaultLazyInit;
     private String defaultInitMethod;
     private String defaultDestroyMethod;
+    private boolean mainSection;
 
     public Parser() {
+    }
+
+    public Parser(String namePrefix) {
+        this.namePrefix = namePrefix;
     }
 
     public void parse(List<URL> urls) throws Exception {
@@ -223,7 +228,7 @@ public class Parser {
     private void findNamespaces(Set<URI> namespaces, Node node) {
         if (node instanceof Element || node instanceof Attr) {
             String ns = node.getNamespaceURI();
-            if (ns != null && !isBlueprintNamespace(ns) && !isBlueprintCompendiumNamespace(ns)) {
+            if (ns != null && !isBlueprintNamespace(ns)) {
                 namespaces.add(URI.create(ns));
             }
         }
@@ -233,13 +238,25 @@ public class Parser {
         }
     }
 
-    public void populate(NamespaceHandlerRegistry handlers,
-                         ComponentDefinitionRegistryImpl registry) {
+    public void populateHelperSection(NamespaceHandlerRegistry handlers,
+                                      ExtendedComponentDefinitionRegistry registry) {
+        doPopulate(handlers, registry, false);
+    }
+
+    public void populateMainSection(NamespaceHandlerRegistry handlers,
+                                    ExtendedComponentDefinitionRegistry registry) {
+        doPopulate(handlers, registry, true);
+    }
+
+    private void doPopulate(NamespaceHandlerRegistry handlers,
+                            ExtendedComponentDefinitionRegistry registry,
+                            boolean mainSection) {
         if (this.documents == null) {
             throw new IllegalStateException("Documents should be parsed before populating the registry");
         }
         this.namespaceHandlerRegistry = handlers;
         this.registry = registry;
+        this.mainSection = mainSection;
         // Parse components
         for (Document doc : this.documents) {
             loadComponents(doc);
@@ -291,6 +308,7 @@ public class Parser {
             }
         }
         */
+
         // Parse elements
         NodeList nl = root.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
@@ -298,14 +316,15 @@ public class Parser {
             if (node instanceof Element) {
                 Element element = (Element) node;
                 String namespaceUri = element.getNamespaceURI();
-                if (isBlueprintNamespace(namespaceUri)) {
-                    parseBlueprintElement(element);
-                } else if (isBlueprintCompendiumNamespace(namespaceUri)) {
-                    parseBlueprintCompendiumElement(element);
-                } else {
-                    ComponentMetadata component = parseCustomElement(element, null);
-                    if (component != null) {
-                        registry.registerComponentDefinition(component);
+                boolean parse = mainSection ^ (isBlueprintNamespace(namespaceUri) && nodeNameEquals(element, TYPE_CONVERTERS_ELEMENT));
+                if (parse) {
+                    if (isBlueprintNamespace(namespaceUri)) {
+                        parseBlueprintElement(element);
+                    } else {
+                        ComponentMetadata component = parseCustomElement(element, null);
+                        if (component != null) {
+                            registry.registerComponentDefinition(component);
+                        }
                     }
                 }
             }
@@ -320,6 +339,8 @@ public class Parser {
         } else if (nodeNameEquals(element, BEAN_ELEMENT)) {
             ComponentMetadata component = parseBeanMetadata(element);
             registry.registerComponentDefinition(component);
+        } else if (nodeNameEquals(element, REF_ELEMENT)) {
+            // TODO: what about those top-level refs elements
         } else if (nodeNameEquals(element, SERVICE_ELEMENT)) {
             ComponentMetadata service = parseService(element);
             registry.registerComponentDefinition(service);
@@ -337,23 +358,19 @@ public class Parser {
         }
     }
 
-    private void parseBlueprintCompendiumElement(Element element) {
-        // TODO: maybe use a namespace handler instead?
-        throw new ComponentDefinitionException("Unknown element " + element.getNodeName() + " in namespace " + BLUEPRINT_COMPENDIUM_NAMESPACE);
-    }
-
     private void parseTypeConverters(Element element) {
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
-                if (nodeNameEquals(e, BEAN_ELEMENT)) {
-                    ComponentMetadata metadata = parseBeanMetadata(e);
-                    registry.registerTypeConverter((Target) metadata);
-                } else if (nodeNameEquals(e, REF_ELEMENT)) {
-                    String componentName = e.getAttribute(COMPONENT_ATTRIBUTE);
-                    registry.registerTypeConverter(new RefMetadataImpl(componentName));
+                if (isBlueprintNamespace(e.getNamespaceURI())) {
+                    parseBlueprintElement(e);
+                } else {
+                    ComponentMetadata component = parseCustomElement(e, null);
+                    if (component != null) {
+                        registry.registerComponentDefinition(component);
+                    }
                 }
             }
         }
@@ -556,7 +573,7 @@ public class Parser {
         return new PropsMetadataImpl(entries);
     }
 
-    private MapMetadata parseMap(Element element, ComponentMetadata enclosingComponent) {
+    public MapMetadata parseMap(Element element, ComponentMetadata enclosingComponent) {
         // Parse attributes
         String keyType = element.hasAttribute(KEY_TYPE_ATTRIBUTE) ? element.getAttribute(KEY_TYPE_ATTRIBUTE) : null;
         String valueType = element.hasAttribute(VALUE_TYPE_ATTRIBUTE) ? element.getAttribute(VALUE_TYPE_ATTRIBUTE) : null;
@@ -986,20 +1003,16 @@ public class Parser {
         return handler;
     }
     
-    private String getName(Element element) {
+    public String getName(Element element) {
         if (element.hasAttribute(ID_ATTRIBUTE)) {
             return element.getAttribute(ID_ATTRIBUTE);
         } else {
-            return "component-" + ++nameCounter;
+            return namePrefix + ++nameCounter;
         }
     }
 
-    private static boolean isBlueprintNamespace(String ns) {
+    public static boolean isBlueprintNamespace(String ns) {
         return BLUEPRINT_NAMESPACE.equals(ns);
-    }
-
-    private static boolean isBlueprintCompendiumNamespace(String ns) {
-        return BLUEPRINT_COMPENDIUM_NAMESPACE.equals(ns);
     }
 
     private static boolean nodeNameEquals(Node node, String name) {

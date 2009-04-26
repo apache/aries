@@ -24,38 +24,14 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>blueprint-core</artifactId>
-  <name>Apache Geronimo Blueprint Core</name>
+  <artifactId>blueprint-compendium</artifactId>
+  <name>Apache Geronimo Blueprint Compendium</name>
   <packaging>bundle</packaging>
   
   <dependencies>
       <dependency>
           <groupId>org.apache.geronimo</groupId>
-          <artifactId>blueprint-api</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.xbean</groupId>
-          <artifactId>xbean-reflect</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>org.osgi.core</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>org.osgi.compendium</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>asm</groupId>
-          <artifactId>asm-all</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
+          <artifactId>blueprint-core</artifactId>
       </dependency>
   </dependencies>
 
@@ -70,7 +46,6 @@
                     <instructions>
                         <Export-Package>org.apache.geronimo.blueprint*;version="${pom.version}"</Export-Package>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.geronimo.blueprint.BlueprintExtender</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

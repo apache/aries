@@ -32,6 +32,10 @@
             <artifactId>blueprint-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.geronimo</groupId>
+            <artifactId>blueprint-compendium</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.xbean</groupId>
             <artifactId>xbean-reflect</artifactId>
         </dependency>
@@ -46,7 +50,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.geronimo.blueprint.Activator</Bundle-Activator>
+                        <Bundle-Activator>org.apache.geronimo.blueprint.BlueprintExtender</Bundle-Activator>
                         <Import-Package>
                             org.apache.tools.ant*;resolution:=optional,
                             *
@@ -85,8 +89,9 @@
                                     <include>org.apache.xbean:xbean-reflect</include>
                                     <include>asm:asm-all</include>
                                     <include>cglib:cglib</include>
-                                    <include>org.apache.geronimo:blueprint-core</include>
                                     <include>org.apache.geronimo:blueprint-api</include>
+                                    <include>org.apache.geronimo:blueprint-core</include>
+                                    <include>org.apache.geronimo:blueprint-compendium</include>
                                 </includes>
                             </artifactSet>
                             <filters>
@@ -109,13 +114,19 @@
                                     </excludes>
                                 </filter>
                                 <filter>
+                                    <artifact>org.apache.geronimo:blueprint-api</artifact>
+                                    <excludes>
+                                        <exclude>org/**</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
                                     <artifact>org.apache.geronimo:blueprint-core</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
                                 </filter>
                                 <filter>
-                                    <artifact>org.apache.geronimo:blueprint-api</artifact>
+                                    <artifact>org.apache.geronimo:blueprint-compendium</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
@@ -174,6 +185,11 @@
                                         <artifactItem>
                                             <groupId>org.apache.geronimo</groupId>
                                             <artifactId>blueprint-core</artifactId>
+                                            <classifier>sources</classifier>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.apache.geronimo</groupId>
+                                            <artifactId>blueprint-compendium</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                     </artifactItems>
