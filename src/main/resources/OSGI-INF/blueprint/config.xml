@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-        default-availability="optional">
+           xmlns:osgix="http://www.osgi.org/xmlns/blueprint-compendium/v1.0.0"
+           default-availability="optional">
 
     <type-converters>
-            <bean id="converter1" class="org.apache.geronimo.blueprint.sample.DateTypeConverter">
-                <property name="format" value="yyyy.MM.dd"/>
-            </bean>
-            <ref component="converter2"/>
+        <bean id="converter1" class="org.apache.geronimo.blueprint.sample.DateTypeConverter">
+            <property name="format" value="yyyy.MM.dd"/>
+        </bean>
+        <bean id="converter2" class="org.apache.geronimo.blueprint.sample.CurrencyTypeConverter"/>
+
+        <osgix:property-placeholder id="property-placeholder" persistent-id="blueprint-sample">
+            <osgix:default-properties>
+                <entry key="key.b" value="-1"/>
+            </osgix:default-properties>
+        </osgix:property-placeholder>
     </type-converters>
 
     <bean id="foo" class="org.apache.geronimo.blueprint.sample.Foo" init-method="init" destroy-method="destroy">
         <property name="a" value="5" />
-        <property name="b" value="10" />
+        <property name="b" value="${key.b}" />
         <property name="bar" ref="bar" />
         <property name="currency">
               <value>PLN</value>
@@ -31,8 +38,6 @@
             </list>        
         </property>
     </bean>
-
-    <bean id="converter2" class="org.apache.geronimo.blueprint.sample.CurrencyTypeConverter"/>
 
     <service ref="foo" auto-export="all-classes">
         <service-properties>
