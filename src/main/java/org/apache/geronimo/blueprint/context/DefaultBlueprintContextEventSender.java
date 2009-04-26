@@ -32,7 +32,7 @@ import org.osgi.service.blueprint.context.EventConstants;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.BlueprintContextListener;
 import org.apache.geronimo.blueprint.BlueprintConstants;
-import org.apache.geronimo.blueprint.ModuleContextEventSender;
+import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,15 +42,15 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class DefaultModuleContextEventSender implements ModuleContextEventSender, EventConstants {
+public class DefaultBlueprintContextEventSender implements BlueprintContextEventSender, EventConstants {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultModuleContextEventSender.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultBlueprintContextEventSender.class);
 
     private final Bundle extenderBundle;
     private final ServiceTracker eventAdminServiceTracker;
     private final ServiceTracker contextListenerTracker;
 
-    public DefaultModuleContextEventSender(BundleContext bundleContext) {
+    public DefaultBlueprintContextEventSender(BundleContext bundleContext) {
         this.extenderBundle = bundleContext.getBundle();
         this.eventAdminServiceTracker = new ServiceTracker(bundleContext, EventAdmin.class.getName(), null);
         this.eventAdminServiceTracker.open();
@@ -58,41 +58,41 @@ public class DefaultModuleContextEventSender implements ModuleContextEventSender
         this.contextListenerTracker.open();
     }
 
-    public void sendCreating(BlueprintContext moduleContext) {
-        sendEvent(moduleContext, TOPIC_CREATING, null, null, null);
+    public void sendCreating(BlueprintContext blueprintContext) {
+        sendEvent(blueprintContext, TOPIC_CREATING, null, null, null);
     }
 
-    public void sendCreated(BlueprintContext moduleContext) {
-        sendEvent(moduleContext, TOPIC_CREATED, null, null, null);
+    public void sendCreated(BlueprintContext blueprintContext) {
+        sendEvent(blueprintContext, TOPIC_CREATED, null, null, null);
     }
 
-    public void sendDestroying(BlueprintContext moduleContext) {
-        sendEvent(moduleContext, TOPIC_DESTROYING, null, null, null);
+    public void sendDestroying(BlueprintContext blueprintContext) {
+        sendEvent(blueprintContext, TOPIC_DESTROYING, null, null, null);
     }
 
-    public void sendDestroyed(BlueprintContext moduleContext) {
-        sendEvent(moduleContext, TOPIC_DESTROYED, null, null, null);
+    public void sendDestroyed(BlueprintContext blueprintContext) {
+        sendEvent(blueprintContext, TOPIC_DESTROYED, null, null, null);
     }
 
-    public void sendWaiting(BlueprintContext moduleContext, String[] serviceObjectClass, String serviceFilter) {
-        sendEvent(moduleContext, TOPIC_WAITING, null, serviceObjectClass, serviceFilter);
+    public void sendWaiting(BlueprintContext blueprintContext, String[] serviceObjectClass, String serviceFilter) {
+        sendEvent(blueprintContext, TOPIC_WAITING, null, serviceObjectClass, serviceFilter);
     }
 
-    public void sendFailure(BlueprintContext moduleContext, Throwable cause) {
-        sendEvent(moduleContext, TOPIC_FAILURE, cause, null, null);
+    public void sendFailure(BlueprintContext blueprintContext, Throwable cause) {
+        sendEvent(blueprintContext, TOPIC_FAILURE, cause, null, null);
     }
 
-    public void sendFailure(BlueprintContext moduleContext, Throwable cause, String[] serviceObjectClass, String serviceFilter) {
-        sendEvent(moduleContext, TOPIC_FAILURE, cause, serviceObjectClass, serviceFilter);
+    public void sendFailure(BlueprintContext blueprintContext, Throwable cause, String[] serviceObjectClass, String serviceFilter) {
+        sendEvent(blueprintContext, TOPIC_FAILURE, cause, serviceObjectClass, serviceFilter);
     }
 
-    public void sendEvent(BlueprintContext moduleContext, String topic, Throwable cause, String[] serviceObjectClass, String serviceFilter) {
+    public void sendEvent(BlueprintContext blueprintContext, String topic, Throwable cause, String[] serviceObjectClass, String serviceFilter) {
 
-        Bundle bundle = moduleContext.getBundleContext().getBundle();
+        Bundle bundle = blueprintContext.getBundleContext().getBundle();
 
         LOGGER.debug("Sending blueprint context event {} for bundle {}", topic, bundle.getSymbolicName());
 
-        callListeners(moduleContext, topic, cause);
+        callListeners(blueprintContext, topic, cause);
 
         EventAdmin eventAdmin = getEventAdmin();
         if (eventAdmin == null) {
@@ -126,7 +126,7 @@ public class DefaultModuleContextEventSender implements ModuleContextEventSender
         eventAdmin.postEvent(event);
     }
 
-    private void callListeners(BlueprintContext moduleContext, String topic, Throwable cause) {
+    private void callListeners(BlueprintContext blueprintContext, String topic, Throwable cause) {
         boolean created = TOPIC_CREATED.equals(topic);
         boolean failure = TOPIC_FAILURE.equals(topic);
         if (created || failure) {
@@ -135,9 +135,9 @@ public class DefaultModuleContextEventSender implements ModuleContextEventSender
                 for (Object listener : listeners) {
                     try {
                         if (created) {
-                            ((BlueprintContextListener) listener).contextCreated(moduleContext.getBundleContext().getBundle());
+                            ((BlueprintContextListener) listener).contextCreated(blueprintContext.getBundleContext().getBundle());
                         } else {
-                            ((BlueprintContextListener) listener).contextCreationFailed(moduleContext.getBundleContext().getBundle(), cause);
+                            ((BlueprintContextListener) listener).contextCreationFailed(blueprintContext.getBundleContext().getBundle(), cause);
                         }
                     } catch (Throwable t) {
                         LOGGER.info("Error calling blueprint context listener", t);

@@ -26,14 +26,14 @@ import org.osgi.service.blueprint.context.BlueprintContext;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public interface ModuleContextEventSender extends Destroyable {
+public interface BlueprintContextEventSender extends Destroyable {
 
-    void sendCreating(BlueprintContext moduleContext);
-    void sendCreated(BlueprintContext moduleContext);
-    void sendDestroying(BlueprintContext moduleContext);
-    void sendDestroyed(BlueprintContext moduleContext);
-    void sendWaiting(BlueprintContext moduleContext, String[] serviceObjectClass, String serviceFilter);
-    void sendFailure(BlueprintContext moduleContext, Throwable cause);
-    void sendFailure(BlueprintContext moduleContext, Throwable cause, String[] serviceObjectClass, String serviceFilter);
+    void sendCreating(BlueprintContext blueprintContext);
+    void sendCreated(BlueprintContext blueprintContext);
+    void sendDestroying(BlueprintContext blueprintContext);
+    void sendDestroyed(BlueprintContext blueprintContext);
+    void sendWaiting(BlueprintContext blueprintContext, String[] serviceObjectClass, String serviceFilter);
+    void sendFailure(BlueprintContext blueprintContext, Throwable cause);
+    void sendFailure(BlueprintContext blueprintContext, Throwable cause, String[] serviceObjectClass, String serviceFilter);
 
 }

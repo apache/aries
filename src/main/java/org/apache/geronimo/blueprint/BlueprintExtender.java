@@ -29,7 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
-import org.apache.geronimo.blueprint.context.DefaultModuleContextEventSender;
+import org.apache.geronimo.blueprint.context.DefaultBlueprintContextEventSender;
 import org.apache.geronimo.blueprint.context.BlueprintContextImpl;
 import org.apache.geronimo.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.geronimo.blueprint.utils.HeaderParser;
@@ -54,14 +54,14 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
 
     private final ExecutorService executors = Executors.newSingleThreadExecutor();
     private final Map<Bundle, BlueprintContextImpl> contextMap = new HashMap<Bundle, BlueprintContextImpl>();
-    private ModuleContextEventSender sender;
+    private BlueprintContextEventSender sender;
     private NamespaceHandlerRegistry handlers;
 
     public void start(BundleContext context) {
         LOGGER.debug("Starting blueprint extender...");
         context.addBundleListener(this);
 
-        sender = new DefaultModuleContextEventSender(context);
+        sender = new DefaultBlueprintContextEventSender(context);
         handlers = new NamespaceHandlerRegistryImpl(context);
 
         Bundle[] bundles = context.getBundles();
@@ -95,10 +95,10 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     }
 
     private void destroyContext(Bundle bundle) {
-        BlueprintContextImpl moduleContext = contextMap.remove(bundle);
-        if (moduleContext != null) {
+        BlueprintContextImpl blueprintContext = contextMap.remove(bundle);
+        if (blueprintContext != null) {
             LOGGER.debug("Destroying BlueprintContext for bundle {}", bundle.getSymbolicName());
-            moduleContext.destroy();
+            blueprintContext.destroy();
         }
     }
     
@@ -138,9 +138,9 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 compatible = true;
             }
             if (compatible) {
-                final BlueprintContextImpl moduleContext = new BlueprintContextImpl(bundle.getBundleContext(), sender, handlers, executors, urls);
-                contextMap.put(bundle, moduleContext);
-                executors.submit(moduleContext);
+                final BlueprintContextImpl blueprintContext = new BlueprintContextImpl(bundle.getBundleContext(), sender, handlers, executors, urls);
+                contextMap.put(bundle, blueprintContext);
+                executors.submit(blueprintContext);
             } else {
                 LOGGER.info("Bundle {} is not compatible with this blueprint extender", bundle.getSymbolicName());
             }

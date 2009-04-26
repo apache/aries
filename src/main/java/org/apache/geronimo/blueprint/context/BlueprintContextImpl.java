@@ -35,7 +35,7 @@ import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.utils.HeaderParser;
 import org.apache.geronimo.blueprint.utils.BundleDelegatingClassLoader;
 import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
-import org.apache.geronimo.blueprint.ModuleContextEventSender;
+import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
 import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.SatisfiableRecipe;
@@ -85,7 +85,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     }
 
     private final BundleContext bundleContext;
-    private final ModuleContextEventSender sender;
+    private final BlueprintContextEventSender sender;
     private final NamespaceHandlerRegistry handlers;
     private final List<URL> urls;
     private final ComponentDefinitionRegistryImpl helperComponentDefinitionRegistry;
@@ -102,7 +102,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     private Map<String, List<SatisfiableRecipe>> satisfiables;
     private ClassLoader classLoader;
 
-    public BlueprintContextImpl(BundleContext bundleContext, ModuleContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, List<URL> urls) {
+    public BlueprintContextImpl(BundleContext bundleContext, BlueprintContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, List<URL> urls) {
         this.bundleContext = bundleContext;
         this.sender = sender;
         this.handlers = handlers;
@@ -122,7 +122,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         destroyables.put(name, destroyable);
     }
 
-    public ModuleContextEventSender getSender() {
+    public BlueprintContextEventSender getSender() {
         return sender;
     }
 
@@ -199,7 +199,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         instantiateComponents();
                         registerAllServices();
 
-                        // Register the ModuleContext in the OSGi registry
+                        // Register the BlueprintContext in the OSGi registry
                         if (registration == null) {
                             Properties props = new Properties();
                             props.put(BlueprintConstants.CONTEXT_SYMBOLIC_NAME_PROPERTY,

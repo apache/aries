@@ -33,7 +33,7 @@ import java.util.ArrayList;
 
 import net.sf.cglib.proxy.Dispatcher;
 import org.apache.geronimo.blueprint.Destroyable;
-import org.apache.geronimo.blueprint.ModuleContextEventSender;
+import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.geronimo.blueprint.utils.DynamicSortedList;
 import org.apache.geronimo.blueprint.utils.DynamicList;
 import org.apache.geronimo.blueprint.utils.DynamicSet;
@@ -47,7 +47,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 
 /**
  * A recipe to create a managed collection of service references
@@ -63,12 +62,12 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
     private ManagedCollection collection;
     private final boolean optional;
 
-    public CollectionBasedServiceReferenceRecipe(BlueprintContext moduleContext,
-                                                 ModuleContextEventSender sender,
+    public CollectionBasedServiceReferenceRecipe(BlueprintContext blueprintContext,
+                                                 BlueprintContextEventSender sender,
                                                  RefCollectionMetadata metadata,
                                                  Recipe listenersRecipe,
                                                  Recipe comparatorRecipe) {
-        super(moduleContext, sender, metadata, listenersRecipe);
+        super(blueprintContext, sender, metadata, listenersRecipe);
         this.metadata = metadata;
         this.comparatorRecipe = comparatorRecipe;
         this.optional = metadata.getAvailability() == RefCollectionMetadata.OPTIONAL_AVAILABILITY;
@@ -115,7 +114,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             }
 
             // Start tracking the service
-            moduleContext.getBundleContext().addServiceListener(this, getOsgiFilter());
+            blueprintContext.getBundleContext().addServiceListener(this, getOsgiFilter());
             retrack();
 
             return collection;
@@ -126,7 +125,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
     }
 
     public void destroy() {
-        moduleContext.getBundleContext().removeServiceListener(this);
+        blueprintContext.getBundleContext().removeServiceListener(this);
         List<ServiceDispatcher> dispatchers = new ArrayList<ServiceDispatcher>(collection.getDispatchers());
         for (ServiceDispatcher dispatcher : dispatchers) {
             untrack(dispatcher.reference);
@@ -135,7 +134,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
 
     private void retrack() {
         try {
-            ServiceReference[] refs = moduleContext.getBundleContext().getServiceReferences(null, getOsgiFilter());
+            ServiceReference[] refs = blueprintContext.getBundleContext().getServiceReferences(null, getOsgiFilter());
             if (refs != null) {
                 for (ServiceReference ref : refs) {
                     track(ref);
