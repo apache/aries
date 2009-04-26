@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Comparator;
 
@@ -346,18 +347,14 @@ public class Instanciator {
             }
             return mr;
         } else if (v instanceof PropsMetadata) {
-            // TODO
-            /*
             PropsMetadata mapValue = (PropsMetadata) v;
-            MapRecipe mr = new MapRecipe(HashMap.class);
+            MapRecipe mr = new MapRecipe(Properties.class);
             for (MapEntry entry : mapValue.getEntries()) {
-                Object key = getValue(entry.getKey(), keyType);
-                Object val = getValue(entry.getValue(), valueType);
+                Object key = getValue(entry.getKey(), String.class);
+                Object val = getValue(entry.getValue(), String.class);
                 mr.put(key, val);
             }
             return mr;
-            */
-            return null;
         } else if (v instanceof IdRefMetadata) {
             return ((IdRefMetadata) v).getComponentId();
         } else {
