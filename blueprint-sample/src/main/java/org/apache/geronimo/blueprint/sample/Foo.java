@@ -35,20 +35,40 @@ public class Foo implements Serializable {
         return a;
     }
 
+    public void setA(int i) {
+        a = i;
+    }
+
     public int getB() {
         return b;
+    }
+
+    public void setB(int i) {
+        b = i;
     }
 
     public Bar getBar() {
         return bar;
     }
 
+    public void setBar(Bar b) {
+        bar = b;
+    }
+
     public Currency getCurrency() {
         return currency;
     }
 
+    public void getCurrency(Currency c) {
+        currency = c;
+    }
+
     public Date getDate() {
         return date;
+    }
+
+    public void getDate(Date d) {
+        date = d;
     }
 
     public String toString() {
