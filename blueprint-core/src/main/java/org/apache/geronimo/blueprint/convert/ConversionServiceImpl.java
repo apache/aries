@@ -70,37 +70,60 @@ public class ConversionServiceImpl implements ConversionService {
         if (Object.class == toType) {
             return fromValue;
         }
-        Converter converter = lookupConverter(toType);
-        if (converter == null) {
-            return convertDefault(fromValue, toType);
+        Object value = doConvert(fromValue, toType);        
+        if (value == null) {
+            if (fromValue instanceof String) {
+                return convertString( (String)fromValue, toType);
+            } else {
+                throw new Exception("Unable to convert value " + fromValue + " to type: " + toType.getName());
+            }
         } else {
-            return converter.convert(fromValue);
+            return value;
         }
     }
 
-    private Converter lookupConverter(Class toType) {
+    private Object doConvert(Object source, Class type) {
+        Object value = null;
+        
         // do explicit lookup
-        List<Converter> converters = convertersMap.get(toType);
-        if (converters != null && !converters.isEmpty()) {
-            return converters.get(0);
+        List<Converter> converters = convertersMap.get(type);
+        if (converters != null) {
+            value = convert(converters, source);
+            if (value != null) {
+                return value;
+            }
         }
-
+                
         // try to find converter that matches the type
         for (Map.Entry<Class, List<Converter>> entry : convertersMap.entrySet()) {
             Class converterClass = entry.getKey();
-            if (toType.isAssignableFrom(converterClass)) {
-                return entry.getValue().get(0);
+            if (type.isAssignableFrom(converterClass)) {
+                value = convert(entry.getValue(), source);
+                if (value != null) {
+                    return value;
+                }
             }
-        }
+        }        
 
         return null;
     }
 
-    private Object convertDefault(Object fromValue, Class toType) throws Exception {
-        if (!(fromValue instanceof String)) {
-            throw new RuntimeException("Unable to convert non-String value: " + fromValue.getClass());
+    private Object convert(List<Converter> converters, Object source) {
+        Object value = null;
+        for (Converter converter : converters) {
+            try {
+                value = converter.convert(source);
+                if (value != null) {
+                    return value;
+                }
+            } catch (Exception e) {
+                // ignore
+            }
         }
-        String value = (String)fromValue;
+        return null;
+    }
+    
+    private Object convertString(String value, Class toType) throws Exception {
         if (Locale.class == toType) {
             String[] tokens = value.split("_");
             if (tokens.length == 1) {
