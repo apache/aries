@@ -75,6 +75,8 @@ import org.osgi.service.blueprint.reflect.Target;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.NonNullMetadata;
+import org.osgi.service.blueprint.reflect.BeanArgument;
+import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.xml.sax.InputSource;
 
 /**
@@ -331,6 +333,20 @@ public class Parser {
         }
     }
 
+    public <T> T parseElement(Class<T> type, ComponentMetadata enclosingComponent, Element element) {
+        if (BeanArgument.class.isAssignableFrom(type)) {
+            return type.cast(parseBeanArgument(enclosingComponent, element));
+        } else if (BeanProperty.class.isAssignableFrom(type)) {
+            return type.cast(parseBeanProperty(enclosingComponent, element));
+        } else if (MapEntry.class.isAssignableFrom(type)) {
+            return type.cast(parseMapEntry(element, enclosingComponent));
+        } else if (Metadata.class.isAssignableFrom(type)) {
+            return type.cast(parseValueElement(element, enclosingComponent, true));
+        } else {
+            throw new ComponentDefinitionException("Unknown type to parse element: " + type.getName());
+        }
+    }
+
     private void parseBlueprintElement(Element element) {
         if (nodeNameEquals(element, DESCRIPTION_ELEMENT)) {
             // Ignore description
@@ -425,14 +441,9 @@ public class Parser {
                 Element e = (Element) node;
                 if (isBlueprintNamespace(node.getNamespaceURI())) {                
                     if (nodeNameEquals(node, ARGUMENT_ELEMENT)) {
-                        int index = e.hasAttribute(INDEX_ATTRIBUTE) ? Integer.parseInt(e.getAttribute(INDEX_ATTRIBUTE)) : -1;
-                        String type = e.hasAttribute(TYPE_ATTRIBUTE) ? e.getAttribute(TYPE_ATTRIBUTE) : null;
-                        Metadata value = parseValue(e, metadata);
-                        metadata.addArgument(new BeanArgumentImpl(value, type, index));
+                        metadata.addArgument(parseBeanArgument(metadata, e));
                     } else if (nodeNameEquals(node, PROPERTY_ELEMENT)) {
-                        String name = e.hasAttribute(NAME_ATTRIBUTE) ? e.getAttribute(NAME_ATTRIBUTE) : null;
-                        Metadata value = parseValue(e, metadata);
-                        metadata.addProperty(new BeanPropertyImpl(name, value));
+                        metadata.addProperty(parseBeanProperty(metadata, e));
                     }
                 }
             }
@@ -447,6 +458,19 @@ public class Parser {
         m = handleCustomElements(element, m);
         
         return m;
+    }
+
+    public BeanProperty parseBeanProperty(ComponentMetadata enclosingComponent, Element element) {
+        String name = element.hasAttribute(NAME_ATTRIBUTE) ? element.getAttribute(NAME_ATTRIBUTE) : null;
+        Metadata value = parseValue(element, enclosingComponent);
+        return new BeanPropertyImpl(name, value);
+    }
+
+    private BeanArgument parseBeanArgument(ComponentMetadata enclosingComponent, Element element) {
+        int index = element.hasAttribute(INDEX_ATTRIBUTE) ? Integer.parseInt(element.getAttribute(INDEX_ATTRIBUTE)) : -1;
+        String type = element.hasAttribute(TYPE_ATTRIBUTE) ? element.getAttribute(TYPE_ATTRIBUTE) : null;
+        Metadata value = parseValue(element, enclosingComponent);
+        return new BeanArgumentImpl(value, type, index);
     }
 
     private ComponentMetadata parseService(Element element) {
@@ -545,7 +569,7 @@ public class Parser {
         return new CollectionMetadataImpl(collectionType, valueType, list);
     }
 
-    private PropsMetadata parseProps(Element element) {
+    public PropsMetadata parseProps(Element element) {
         // Parse elements
         List<MapEntry> entries = new ArrayList<MapEntry>();
         NodeList nl = element.getChildNodes();
@@ -554,23 +578,18 @@ public class Parser {
             if (node instanceof Element) {
                 Element e = (Element) node;
                 if (isBlueprintNamespace(e.getNamespaceURI()) && nodeNameEquals(e, PROP_ELEMENT)) {
-                    NonNullMetadata keyValue = null;
-                    if (e.hasAttribute(KEY_ATTRIBUTE)) {
-                        keyValue = new ValueMetadataImpl(e.getAttribute(KEY_ATTRIBUTE));
-                    } else {
-                        throw new RuntimeException("key attribute is required");
-                    }
-                    Metadata valValue = null;
-                    if (e.hasAttribute(VALUE_ATTRIBUTE)) {
-                        valValue = new ValueMetadataImpl(e.getAttribute(VALUE_ATTRIBUTE));
-                    } else {
-                        throw new RuntimeException("value attribute is required");
-                    }
-                    entries.add(new MapEntryImpl(keyValue, valValue));
+                    entries.add(parseProperty(e));
                 }
             }
         }
         return new PropsMetadataImpl(entries);
+    }
+
+    private MapEntry parseProperty(Element element) {
+        // Parse attributes
+        String key = element.getAttribute(KEY_ATTRIBUTE);
+        String value = element.hasAttribute(VALUE_ATTRIBUTE) ? element.getAttribute(VALUE_ATTRIBUTE) : null;
+        return new MapEntryImpl(new ValueMetadataImpl(key), value != null ? new ValueMetadataImpl(value) : NullMetadata.NULL);
     }
 
     public MapMetadata parseMap(Element element, ComponentMetadata enclosingComponent) {
@@ -981,13 +1000,13 @@ public class Parser {
     
     private ComponentMetadata decorateCustomNode(Node node, ComponentMetadata enclosingComponent) {
         NamespaceHandler handler = getNamespaceHandler(node);
-        ParserContextImpl context = new ParserContextImpl(registry, enclosingComponent, node);
+        ParserContextImpl context = new ParserContextImpl(this, registry, enclosingComponent, node);
         return handler.decorate(node, enclosingComponent, context);
     }
 
     private ComponentMetadata parseCustomElement(Element element, ComponentMetadata enclosingComponent) {
         NamespaceHandler handler = getNamespaceHandler(element);
-        ParserContextImpl context = new ParserContextImpl(registry, enclosingComponent, element);
+        ParserContextImpl context = new ParserContextImpl(this, registry, enclosingComponent, element);
         return handler.parse(element, context);
     }
 
