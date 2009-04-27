@@ -18,10 +18,7 @@
  */
 package org.apache.geronimo.blueprint;
 
-import java.util.List;
-
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
-import org.osgi.service.blueprint.reflect.Target;
 
 /**
  * An extended ComponentDefinitionRegistry that allows converters and processors to be registered.

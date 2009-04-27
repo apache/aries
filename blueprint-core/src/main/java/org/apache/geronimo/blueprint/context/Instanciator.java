@@ -100,10 +100,10 @@ public class Instanciator {
         }
     }
     
-    public Repository createRepository(ExtendedComponentDefinitionRegistry registry) throws Exception {
+    public ScopedRepository createRepository(ExtendedComponentDefinitionRegistry registry) throws Exception {
         this.registry = registry;
 
-        Repository repository = new ScopedRepository();
+        ScopedRepository repository = new ScopedRepository();
         addBuiltinComponents(repository);
         
         // Create component recipes
