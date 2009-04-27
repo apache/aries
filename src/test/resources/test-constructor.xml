@@ -51,4 +51,28 @@
         <argument value="hello"/>
     </bean>
     
+    <bean id="multipleFactory1" class="org.apache.geronimo.blueprint.pojos.Multiple"
+          factory-method = "create" >
+        <argument value="hello"/>
+        <argument value="1234"/>
+    </bean>
+        
+    <bean id="multipleFactory2" class="org.apache.geronimo.blueprint.pojos.Multiple"
+          factory-method = "create" >
+        <argument value="helloCreate"/>
+        <argument value="yes"/>
+    </bean>
+
+    <bean id="multipleFactoryNull" class="org.apache.geronimo.blueprint.pojos.Multiple"
+          factory-method = "create" >
+        <argument value="helloNull"/>
+        <argument><null/></argument>
+    </bean>
+    
+     <bean id="multipleFactoryTypedNull" class="org.apache.geronimo.blueprint.pojos.Multiple"
+          factory-method = "create" >
+        <argument value="hello"/>
+        <argument type = "java.lang.Boolean"><null/></argument>
+    </bean>
+    
 </blueprint>

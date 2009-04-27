@@ -57,7 +57,7 @@ public class ArgumentsMatcher {
         }
         
         boolean allowReorder = options.contains(Option.ARGUMENT_REORDER); 
-        if (matches.size() == 0 && allowReorder) {
+        if (matches.size() == 0 && arguments.size() > 1 && allowReorder) {
             // we did not find any matching method, let's try re-ordering the arguments        
             for (Method method : methods) {
                 if (method.getName().equals(name) && isAcceptable(method, options)) {
@@ -96,7 +96,7 @@ public class ArgumentsMatcher {
         }
             
         boolean allowReorder = options.contains(Option.ARGUMENT_REORDER);
-        if (matches.size() == 0 && allowReorder) {
+        if (matches.size() == 0 && arguments.size() > 1 && allowReorder) {
             // we did not find any matching constructor, let's try re-ordering the arguments            
             for (Constructor constructor : constructors) {
                 Class[] parameterTypes = constructor.getParameterTypes();                  

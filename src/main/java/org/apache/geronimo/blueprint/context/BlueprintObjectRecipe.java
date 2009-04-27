@@ -139,7 +139,9 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             BeanArgument argument = beanArguments.get(i);
             Class type = loadClass(argument.getValueType());
             Object obj = arguments.get(i);
-            if (obj instanceof Recipe) {                
+            if (obj == null) {
+                obj = new NullRecipe(type);
+            } else if (obj instanceof Recipe) {                
                 if (type != null || shouldPreinstantiate(argument.getValue())) {
                     obj = RecipeHelper.convert(Object.class, obj, refAllowed);
                     obj = convert(obj, type);
