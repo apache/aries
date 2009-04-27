@@ -274,6 +274,7 @@ public class Parser {
         }
         if (!this.validated) {
             validate();
+            this.validated = true;
         }
         // Parse components
         for (Document doc : this.documents) {
