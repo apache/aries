@@ -24,8 +24,8 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>blueprint-compendium</artifactId>
-  <name>Apache Geronimo Blueprint Compendium</name>
+  <artifactId>blueprint-cm</artifactId>
+  <name>Apache Geronimo Blueprint CM</name>
   <packaging>bundle</packaging>
   
   <dependencies>

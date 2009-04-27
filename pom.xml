@@ -45,7 +45,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo</groupId>
-                <artifactId>blueprint-compendium</artifactId>
+                <artifactId>blueprint-cm</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
@@ -168,7 +168,7 @@
     <modules>
         <module>blueprint-api</module>
         <module>blueprint-core</module>
-        <module>blueprint-compendium</module>
+        <module>blueprint-cm</module>
         <module>blueprint-bundle</module>
         <module>blueprint-sample</module>
         <module>blueprint-itests</module>

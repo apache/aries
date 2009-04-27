@@ -17,9 +17,8 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:cache="http://cache.org"
-    xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 ../../main/resources/org/apache/geronimo/blueprint/blueprint.xsd">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cache="http://cache.org">
 
     <cache:lru-cache id="myCache" />
     

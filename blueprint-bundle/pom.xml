@@ -33,7 +33,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo</groupId>
-            <artifactId>blueprint-compendium</artifactId>
+            <artifactId>blueprint-cm</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.xbean</groupId>
@@ -91,7 +91,7 @@
                                     <include>cglib:cglib</include>
                                     <include>org.apache.geronimo:blueprint-api</include>
                                     <include>org.apache.geronimo:blueprint-core</include>
-                                    <include>org.apache.geronimo:blueprint-compendium</include>
+                                    <include>org.apache.geronimo:blueprint-cm</include>
                                 </includes>
                             </artifactSet>
                             <filters>
@@ -126,7 +126,7 @@
                                     </excludes>
                                 </filter>
                                 <filter>
-                                    <artifact>org.apache.geronimo:blueprint-compendium</artifact>
+                                    <artifact>org.apache.geronimo:blueprint-cm</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>

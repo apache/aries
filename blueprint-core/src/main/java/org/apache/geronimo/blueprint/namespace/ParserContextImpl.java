@@ -19,12 +19,13 @@
 package org.apache.geronimo.blueprint.namespace;
 
 import org.w3c.dom.Node;
+import org.w3c.dom.Element;
 
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
-import org.osgi.service.blueprint.namespace.ParserContext;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.apache.geronimo.blueprint.ExtendedParserContext;
+import org.apache.geronimo.blueprint.context.Parser;
 import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 
 /**
@@ -37,13 +38,16 @@ import org.apache.geronimo.blueprint.reflect.MetadataUtil;
  */
 public class ParserContextImpl implements ExtendedParserContext {
 
+    private final Parser parser;
     private final ComponentDefinitionRegistry componentDefinitionRegistry;
     private final ComponentMetadata enclosingComponent;
     private final Node sourceNode;
 
-    public ParserContextImpl(ComponentDefinitionRegistry componentDefinitionRegistry,
+    public ParserContextImpl(Parser parser,
+                             ComponentDefinitionRegistry componentDefinitionRegistry,
                              ComponentMetadata enclosingComponent,
                              Node sourceNode) {
+        this.parser = parser;
         this.componentDefinitionRegistry = componentDefinitionRegistry;
         this.enclosingComponent = enclosingComponent;
         this.sourceNode = sourceNode;
@@ -63,5 +67,9 @@ public class ParserContextImpl implements ExtendedParserContext {
 
     public <T extends Metadata> T createMetadata(Class<T> type) {
         return MetadataUtil.createMetadata(type);
+    }
+
+    public <T> T parseElement(Class<T> type, ComponentMetadata enclosingComponent, Element element) {
+        return parser.parseElement(type, enclosingComponent, element);
     }
 }

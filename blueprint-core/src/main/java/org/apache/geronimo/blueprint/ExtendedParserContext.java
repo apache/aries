@@ -1,7 +1,10 @@
 package org.apache.geronimo.blueprint;
 
+import org.w3c.dom.Element;
+
 import org.osgi.service.blueprint.namespace.ParserContext;
 import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
 /**
  * An extended ParserContext that also acts as a factory of Metadata objects.
@@ -12,5 +15,7 @@ import org.osgi.service.blueprint.reflect.Metadata;
 public interface ExtendedParserContext extends ParserContext {
 
     <T extends Metadata> T createMetadata(Class<T> type);
+
+    <T> T parseElement(Class<T> type, ComponentMetadata enclosingComponent, Element element);
 
 }

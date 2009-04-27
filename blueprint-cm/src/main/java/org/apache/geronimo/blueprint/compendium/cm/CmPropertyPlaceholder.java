@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.compendium;
+package org.apache.geronimo.blueprint.compendium.cm;
 
 import java.util.Map;
 import java.util.List;
@@ -53,7 +53,7 @@ import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
-public class CompendiumPropertyPlaceholder extends AbstractPropertyPlaceholder {
+public class CmPropertyPlaceholder extends AbstractPropertyPlaceholder {
 
     private BlueprintContext blueprintContext;
     private ConfigurationAdmin configAdmin; 
@@ -101,15 +101,17 @@ public class CompendiumPropertyPlaceholder extends AbstractPropertyPlaceholder {
         Object v = null;
         try {
             Configuration config = configAdmin.getConfiguration(persistentId);
-            Dictionary props = config.getProperties();
-            if (props != null) {
-                v = props.get(val);
+            if (config != null) {
+                Dictionary props = config.getProperties();
+                if (props != null) {
+                    v = props.get(val);
+                }
             }
         } catch (Throwable t) {
             t.printStackTrace();
             // TODO: log ?
         }
-        if (v == null && defaultProperties.containsKey(val)) {
+        if (v == null && defaultProperties != null && defaultProperties.containsKey(val)) {
             v = defaultProperties.get(val);
         }
         return v instanceof String ? (String) v : null;
@@ -119,6 +121,8 @@ public class CompendiumPropertyPlaceholder extends AbstractPropertyPlaceholder {
 
         private String stringValue;
         private String typeName;
+        private boolean retrieved;
+        private String retrievedValue;
 
         public LateBindingValueMetadata(String stringValue, String typeName) {
             this.stringValue = stringValue;
@@ -126,7 +130,11 @@ public class CompendiumPropertyPlaceholder extends AbstractPropertyPlaceholder {
         }
 
         public String getStringValue() {
-            return processString(stringValue);
+            if (!retrieved) {
+                retrieved = true;
+                retrievedValue = processString(stringValue);
+            }
+            return retrievedValue;
         }
 
         public void setStringValue(String stringValue) {
