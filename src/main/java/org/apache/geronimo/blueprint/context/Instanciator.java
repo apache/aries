@@ -208,30 +208,8 @@ public class Instanciator {
         if (BeanMetadata.SCOPE_PROTOTYPE.equals(local.getScope())) {
             recipe.setKeepRecipe(true);
         }
-        // check for init-method and set it on Recipe
-        String initMethod = local.getInitMethodName();
-        if (initMethod == null) {
-            Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), registry.getDefaultInitMethod());
-            recipe.setInitMethod(method);
-        } else if (initMethod.length() > 0) {
-            Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), initMethod);
-            if (method == null) {
-                throw new ConstructionException("Component '" + local.getId() + "' does not have init-method: " + initMethod);
-            }
-            recipe.setInitMethod(method);
-        }
-        // check for destroy-method and set it on Recipe
-        String destroyMethod = local.getDestroyMethodName();
-        if (destroyMethod == null) {
-            Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), registry.getDefaultDestroyMethod());
-            recipe.setDestroyMethod(method);
-        } else if (destroyMethod.length() > 0) {
-            Method method = ReflectionUtils.getLifecycleMethod(recipe.getType(), destroyMethod);
-            if (method == null) {
-                throw new ConstructionException("Component '" + local.getId() + "' does not have destroy-method: " + destroyMethod);
-            }
-            recipe.setDestroyMethod(method);
-        }
+        recipe.setInitMethod(local.getInitMethodName());
+        recipe.setDestroyMethod(local.getDestroyMethodName());
         List<BeanArgument> beanArguments = local.getArguments(); 
         if (beanArguments != null && !beanArguments.isEmpty()) {
             boolean hasIndex = (beanArguments.get(0).getIndex() >= 0);

@@ -435,6 +435,10 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         return conversionService;
     }
     
+    protected ComponentDefinitionRegistryImpl getComponentDefinitionRegistry() {
+        return componentDefinitionRegistry;
+    }
+    
     public BundleContext getBundleContext() {
         return bundleContext;
     }

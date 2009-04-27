@@ -28,9 +28,7 @@
         <argument value="urn:myuri" index = "0" />
     </bean>
     
-    <!--  TODO: class is not needed when factory-component is specified -->
-    <bean id="pojoE" class="org.apache.geronimo.blueprint.pojos.PojoB" 
-          factory-method = "createDynamic" factory-component = "pojoB" >
+    <bean id="pojoE" factory-method = "createDynamic" factory-component = "pojoB" >
         <argument><value type="int">20</value></argument>
         <argument value="urn:myuri" />
     </bean>
