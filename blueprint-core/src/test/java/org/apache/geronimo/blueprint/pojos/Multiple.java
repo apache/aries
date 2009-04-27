@@ -38,4 +38,13 @@ public class Multiple {
     public String getString() {
         return stringValue;
     }
+    
+    public static Multiple create(String arg1, Integer arg2) {
+        return new Multiple(arg2.intValue());
+    }
+    
+    public static Multiple create(String arg1, Boolean arg2) {
+        return new Multiple(arg1 + "-boolean");
+    }
+    
 }

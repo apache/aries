@@ -150,64 +150,68 @@ public class WiringTest extends AbstractBlueprintTest {
         PojoA pojoa = (PojoA) obj1;
         
         Object obj2 = graph.create("pojoB");
-        assertNotNull(obj2);
-        assertTrue(obj2 instanceof PojoB);
-        PojoB pojob = (PojoB) obj2;
+        testPojoB(obj2, URI.create("urn:myuri"), 10);
         
-        assertEquals(URI.create("urn:myuri"), pojob.getUri());
-        assertEquals(10, pojob.getNumber());
-        
-        assertEquals(pojob, pojoa.getPojob());
+        assertEquals(obj2, pojoa.getPojob());
         assertEquals(new BigInteger("10"), pojoa.getNumber());
         
         Object obj3 = graph.create("pojoC");
-        assertNotNull(obj3);
-        assertTrue(obj3 instanceof PojoB);
-        pojob = (PojoB) obj3;
-        
-        assertEquals(URI.create("urn:myuri-static"), pojob.getUri());
-        assertEquals(15, pojob.getNumber());
+        testPojoB(obj3, URI.create("urn:myuri-static"), 15);
         
         Object obj4 = graph.create("pojoD");
-        assertNotNull(obj4);
-        assertTrue(obj4 instanceof PojoB);
-        pojob = (PojoB) obj4;
-        
-        assertEquals(URI.create("urn:myuri-static"), pojob.getUri());
-        assertEquals(15, pojob.getNumber());
+        testPojoB(obj4, URI.create("urn:myuri-static"), 15);
         
         Object obj5 = graph.create("pojoE");
-        assertNotNull(obj5);
-        assertTrue(obj5 instanceof PojoB);
-        pojob = (PojoB) obj5;
-        
-        assertEquals(URI.create("urn:myuri-dynamic"), pojob.getUri());
-        assertEquals(20, pojob.getNumber());
+        testPojoB(obj5, URI.create("urn:myuri-dynamic"), 20);
         
         try {
             graph.create("multipleFail");
             fail("Did not throw exception");
         } catch (RuntimeException e) {
             // we expect exception 
+            // TODO: check the exception string?
         }
         
         Object obj6 = graph.create("multipleInt");
-        assertNotNull(obj6);
-        assertTrue(obj6 instanceof Multiple);
-        assertEquals(123, ((Multiple)obj6).getInt());
-        assertNull(((Multiple)obj6).getString());
+        testMultiple(obj6, null, 123);
         
         Object obj7 = graph.create("multipleString");
-        assertNotNull(obj7);
-        assertTrue(obj7 instanceof Multiple);
-        assertEquals(-1, ((Multiple)obj7).getInt());
-        assertEquals("123", ((Multiple)obj7).getString());
+        testMultiple(obj7, "123", -1);
         
         Object obj8 = graph.create("multipleStringConvertable");
-        assertNotNull(obj8);
-        assertTrue(obj8 instanceof Multiple);
-        assertEquals(-1, ((Multiple)obj8).getInt());
-        assertEquals("hello", ((Multiple)obj8).getString());
+        testMultiple(obj8, "hello", -1);
+        
+        Object obj9 = graph.create("multipleFactory1");
+        testMultiple(obj9, null, 1234);
+
+        Object obj10 = graph.create("multipleFactory2");
+        testMultiple(obj10, "helloCreate-boolean", -1);        
+        
+        try {
+            graph.create("multipleFactoryNull");
+            fail("Did not throw exception");
+        } catch (RuntimeException e) {
+            // we expect exception 
+            // TODO: check the exception string?
+        }
+        
+        Object obj11 = graph.create("multipleFactoryTypedNull");
+        testMultiple(obj11, "hello-boolean", -1);          
+    }
+    
+    private void testPojoB(Object obj, URI uri, int intValue) {
+        assertNotNull(obj);
+        assertTrue(obj instanceof PojoB);
+        PojoB pojob = (PojoB) obj;
+        assertEquals(uri, pojob.getUri());
+        assertEquals(intValue, pojob.getNumber());
+    }
+    
+    private void testMultiple(Object obj, String stringValue, int intValue) {
+        assertNotNull(obj);
+        assertTrue(obj instanceof Multiple);
+        assertEquals(intValue, ((Multiple)obj).getInt());
+        assertEquals(stringValue, ((Multiple)obj).getString());
     }
      
 }
