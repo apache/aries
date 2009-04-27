@@ -28,13 +28,11 @@ import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.ExtendedParserContext;
 import org.apache.geronimo.blueprint.context.Parser;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
-import org.apache.geronimo.blueprint.mutable.MutablePropsMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.reflect.BeanPropertyImpl;
 import org.apache.geronimo.blueprint.reflect.RefMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ReferenceMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ValueMetadataImpl;
-import org.apache.geronimo.blueprint.reflect.PropsMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.MapEntryImpl;
 import org.apache.geronimo.blueprint.reflect.MapMetadataImpl;
 import org.osgi.service.blueprint.context.ComponentDefinitionException;
@@ -42,7 +40,6 @@ import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
 import org.osgi.service.blueprint.namespace.ParserContext;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.PropsMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.Metadata;
@@ -56,7 +53,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
  */
 public class CmNamespaceHandler implements NamespaceHandler {
 
-    public static final String BLUEPRINT_COMPENDIUM_NAMESPACE = "http://www.osgi.org/xmlns/blueprint-cm/v1.0.0";
+    public static final String BLUEPRINT_CM_NAMESPACE = "http://www.osgi.org/xmlns/blueprint-cm/v1.0.0";
 
     public static final String PROPERTY_PLACEHOLDER_ELEMENT = "property-placeholder";
     public static final String MANAGED_PROPERTIES_ELEMENT = "managed-properties";
@@ -110,7 +107,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
                 Node node = nl.item(i);
                 if (node instanceof Element) {
                     Element e = (Element) node;
-                    if (BLUEPRINT_COMPENDIUM_NAMESPACE.equals(e.getNamespaceURI())) {
+                    if (BLUEPRINT_CM_NAMESPACE.equals(e.getNamespaceURI())) {
                         if (nodeNameEquals(e, DEFAULT_PROPERTIES_ELEMENT)) {
                             if (defaultsRef != null) {
                                 throw new ComponentDefinitionException("Only one of " + DEFAULTS_REF_ATTRIBUTE + " attribute or " + DEFAULT_PROPERTIES_ELEMENT + " element is allowed");
@@ -135,7 +132,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
-                if (BLUEPRINT_COMPENDIUM_NAMESPACE.equals(e.getNamespaceURI())) {
+                if (BLUEPRINT_CM_NAMESPACE.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, PROPERTY_ELEMENT)) {
                         BeanProperty prop = parser.parseBeanProperty(enclosingComponent, e);
                         props.addEntry(new MapEntryImpl(new ValueMetadataImpl(prop.getName(), String.class.getName()), prop.getValue()));
@@ -164,7 +161,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     public ComponentMetadata decorate(Node node, ComponentMetadata component, ParserContext context) {
-        throw new ComponentDefinitionException("Illegal use of blueprint compendium namespace");
+        throw new ComponentDefinitionException("Illegal use of blueprint cm namespace");
     }
 
     private static boolean nodeNameEquals(Node node, String name) {
