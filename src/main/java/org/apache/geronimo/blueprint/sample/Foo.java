@@ -59,7 +59,7 @@ public class Foo implements Serializable {
         return currency;
     }
 
-    public void getCurrency(Currency c) {
+    public void setCurrency(Currency c) {
         currency = c;
     }
 
@@ -67,7 +67,7 @@ public class Foo implements Serializable {
         return date;
     }
 
-    public void getDate(Date d) {
+    public void setDate(Date d) {
         date = d;
     }
 
