@@ -23,23 +23,21 @@ import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.geronimo.blueprint.context.Instanciator;
-import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.geronimo.blueprint.pojos.PojoA;
-import org.apache.geronimo.blueprint.pojos.PojoB;
 import org.apache.geronimo.blueprint.pojos.BeanC;
 import org.apache.geronimo.blueprint.pojos.BeanD;
+import org.apache.geronimo.blueprint.pojos.Multiple;
+import org.apache.geronimo.blueprint.pojos.PojoA;
+import org.apache.geronimo.blueprint.pojos.PojoB;
 import org.apache.xbean.recipe.ObjectGraph;
 import org.apache.xbean.recipe.Repository;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.blueprint.convert.ConversionService;
-import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 
 public class WiringTest extends AbstractBlueprintTest {
 
     public void testWiring() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
-        Instanciator i = new TestInstanciator();
+        Instanciator i = new Instanciator(new TestBlueprintContext());
         Repository repository = i.createRepository(registry);
         ObjectGraph graph = new ObjectGraph(repository);
         
@@ -134,7 +132,7 @@ public class WiringTest extends AbstractBlueprintTest {
         };
 
         ComponentDefinitionRegistryImpl registry = parse("/test-depends-on.xml");
-        Instanciator i = new TestInstanciator();
+        Instanciator i = new Instanciator(new TestBlueprintContext());
         Repository repository = i.createRepository(registry);
         ObjectGraph graph = new ObjectGraph(repository);
         graph.createAll("c", "d");
@@ -142,7 +140,7 @@ public class WiringTest extends AbstractBlueprintTest {
 
     public void testConstructor() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-constructor.xml");
-        Instanciator i = new TestInstanciator();
+        Instanciator i = new Instanciator(new TestBlueprintContext());
         Repository repository = i.createRepository(registry);
         ObjectGraph graph = new ObjectGraph(repository);
         
@@ -185,20 +183,31 @@ public class WiringTest extends AbstractBlueprintTest {
         
         assertEquals(URI.create("urn:myuri-dynamic"), pojob.getUri());
         assertEquals(20, pojob.getNumber());
-
-    }
-    
-    private static class TestInstanciator extends Instanciator {
-        ConversionServiceImpl conversionService = new ConversionServiceImpl();
-
-        public TestInstanciator() {
-            super(null);
+        
+        try {
+            graph.create("multipleFail");
+            fail("Did not throw exception");
+        } catch (RuntimeException e) {
+            // we expect exception 
         }
         
-        @Override
-        public ConversionService getConversionService() {
-            return conversionService;
-        }
+        Object obj6 = graph.create("multipleInt");
+        assertNotNull(obj6);
+        assertTrue(obj6 instanceof Multiple);
+        assertEquals(123, ((Multiple)obj6).getInt());
+        assertNull(((Multiple)obj6).getString());
         
+        Object obj7 = graph.create("multipleString");
+        assertNotNull(obj7);
+        assertTrue(obj7 instanceof Multiple);
+        assertEquals(-1, ((Multiple)obj7).getInt());
+        assertEquals("123", ((Multiple)obj7).getString());
+        
+        Object obj8 = graph.create("multipleStringConvertable");
+        assertNotNull(obj8);
+        assertTrue(obj8 instanceof Multiple);
+        assertEquals(-1, ((Multiple)obj8).getInt());
+        assertEquals("hello", ((Multiple)obj8).getString());
     }
+     
 }

@@ -18,11 +18,24 @@
  */
 package org.apache.geronimo.blueprint.pojos;
 
-public class BeanC {
+public class Multiple {
 
-    public static Runnable run;
+    private int intValue = -1;
+    private String stringValue = null;
 
-    public void init() {
-        run.run();
+    public Multiple(String arg) {   
+        stringValue = arg;
+    }
+
+    public Multiple(int arg) {   
+        intValue = arg;
+    }
+
+    public int getInt() {
+        return intValue;
+    }
+
+    public String getString() {
+        return stringValue;
     }
 }

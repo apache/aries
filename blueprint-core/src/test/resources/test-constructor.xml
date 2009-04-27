@@ -35,4 +35,20 @@
         <argument value="urn:myuri" />
     </bean>
     
+    <bean id="multipleFail" class="org.apache.geronimo.blueprint.pojos.Multiple">
+        <argument value="123"/>
+    </bean>
+    
+    <bean id="multipleInt" class="org.apache.geronimo.blueprint.pojos.Multiple">
+        <argument type="int" value="123"/>
+    </bean>
+    
+    <bean id="multipleString" class="org.apache.geronimo.blueprint.pojos.Multiple">
+        <argument type="java.lang.String" value="123"/>
+    </bean>
+    
+    <bean id="multipleStringConvertable" class="org.apache.geronimo.blueprint.pojos.Multiple">
+        <argument value="hello"/>
+    </bean>
+    
 </blueprint>
