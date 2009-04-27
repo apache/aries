@@ -39,7 +39,8 @@ Installing and running the Web Console and Jetty:
 
 2) Start the web console:
 
-   a) start <bundle id for org.apache.felix.webconsole>
+   a) start <bundle id for org.apache.felix.http.jetty>
+   b) start <bundle id for org.apache.felix.webconsole>
 
 3) Access the web console in a browser:
 
