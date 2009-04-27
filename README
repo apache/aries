@@ -1,17 +1,20 @@
+0) Download Felix (v1.6.0 used at the time of this writing):
 
-1) Start Felix under Java 5
+   http://www.apache.org/dist/felix/felix-1.6.0.tar.gz
+
+1) Start Felix under Java SE 5:
  
   java -jar bin/felix.jar
 
-2) Install the following bundles:
+2) Install the following PAX Log service:
 
   a) install http://repository.ops4j.org/maven2/org/ops4j/pax/logging/pax-logging-api/1.3.0/pax-logging-api-1.3.0.jar
   b) install http://repository.ops4j.org/maven2/org/ops4j/pax/logging/pax-logging-service/1.3.0/pax-logging-service-1.3.0.jar
 
-3) Install EventAdmin and ConfigurationAdmin
+3) Install Felix EventAdmin and ConfigurationAdmin:
 
   a) install http://repo1.maven.org/maven2/org/apache/felix/org.apache.felix.eventadmin/1.0.0/org.apache.felix.eventadmin-1.0.0.jar
-  a) install http://repo1.maven.org/maven2/org/apache/felix/org.apache.felix.configadmin/1.0.8/org.apache.felix.configadmin-1.0.8.jar
+  b) install http://repo1.maven.org/maven2/org/apache/felix/org.apache.felix.configadmin/1.0.10/org.apache.felix.configadmin-1.0.10.jar
 
 4) Build the blueprint project and install the extender and sample bundles:
 
