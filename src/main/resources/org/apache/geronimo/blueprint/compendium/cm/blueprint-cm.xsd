@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
     /*
-    * $Revision: 6775 $
+    * $Revision: 6871 $
     *
     * Copyright (c) OSGi Alliance (2008, 2009). All Rights Reserved.
     *
@@ -18,15 +18,15 @@
     * limitations under the License.
     */
     -->
-<xsd:schema xmlns="http://www.osgi.org/xmlns/blueprint-compendium/v1.0.0"
+<xsd:schema xmlns="http://www.osgi.org/xmlns/blueprint-cm/v1.0.0"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:osgi="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-            targetNamespace="http://www.osgi.org/xmlns/blueprint-compendium/v1.0.0"
+            targetNamespace="http://www.osgi.org/xmlns/blueprint-cm/v1.0.0"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             version="1.0.0">
 
-    <xsd:import namespace="http://www.osgi.org/xmlns/blueprint/v1.0.0" schemaLocation="../../../../../../../../../blueprint-core/src/main/resources/org/apache/geronimo/blueprint/blueprint.xsd"/>
+    <xsd:import namespace="http://www.osgi.org/xmlns/blueprint/v1.0.0"/>
 
     <!-- property placeholder -->
 
@@ -55,7 +55,7 @@
          all of the elements you can inject into a bean property? -->
     <xsd:complexType name="TdefaultProperties">
         <xsd:sequence minOccurs="0" maxOccurs="unbounded">
-            <xsd:element ref="osgi:property"/>
+            <xsd:element name="property" type="osgi:Tproperty"/>
         </xsd:sequence>
     </xsd:complexType>
 

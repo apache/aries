@@ -3,9 +3,9 @@
 
     <service interface="org.osgi.service.blueprint.namespace.NamespaceHandler">
         <service-properties>
-            <entry key="org.osgi.blueprint.namespace" value="http://www.osgi.org/xmlns/blueprint-compendium/v1.0.0"/>
+            <entry key="org.osgi.blueprint.namespace" value="http://www.osgi.org/xmlns/blueprint-cm/v1.0.0"/>
         </service-properties>
-        <bean class="org.apache.geronimo.blueprint.compendium.CompendiumNamespaceHandler"/>
-
+        <bean class="org.apache.geronimo.blueprint.compendium.cm.CmNamespaceHandler"/>
     </service>
+
 </blueprint>

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.compendium;
+package org.apache.geronimo.blueprint.compendium.cm;
 
 import java.net.URL;
 
@@ -27,19 +27,25 @@ import org.w3c.dom.NodeList;
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.ExtendedParserContext;
 import org.apache.geronimo.blueprint.context.Parser;
+import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
+import org.apache.geronimo.blueprint.mutable.MutablePropsMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.reflect.BeanPropertyImpl;
-import org.apache.geronimo.blueprint.reflect.PropsMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.RefMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ReferenceMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ValueMetadataImpl;
-import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
+import org.apache.geronimo.blueprint.reflect.PropsMetadataImpl;
+import org.apache.geronimo.blueprint.reflect.MapEntryImpl;
+import org.apache.geronimo.blueprint.reflect.MapMetadataImpl;
 import org.osgi.service.blueprint.context.ComponentDefinitionException;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
 import org.osgi.service.blueprint.namespace.ParserContext;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.MapMetadata;
+import org.osgi.service.blueprint.reflect.PropsMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
+import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
@@ -48,15 +54,16 @@ import org.osgi.service.cm.ConfigurationAdmin;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
-public class CompendiumNamespaceHandler implements NamespaceHandler {
+public class CmNamespaceHandler implements NamespaceHandler {
 
-    public static final String BLUEPRINT_COMPENDIUM_NAMESPACE = "http://www.osgi.org/xmlns/blueprint-compendium/v1.0.0";
+    public static final String BLUEPRINT_COMPENDIUM_NAMESPACE = "http://www.osgi.org/xmlns/blueprint-cm/v1.0.0";
 
     public static final String PROPERTY_PLACEHOLDER_ELEMENT = "property-placeholder";
     public static final String MANAGED_PROPERTIES_ELEMENT = "managed-properties";
     public static final String MANAGED_SERVICE_FACTORY_ELEMENT = "managed-service-factory";
     public static final String CM_PROPERTIES_ELEMENT = "cm-properties";
     public static final String DEFAULT_PROPERTIES_ELEMENT = "default-properties";
+    public static final String PROPERTY_ELEMENT = "property";
 
     public static final String ID_ATTRIBUTE = "id";
     public static final String PERSISTENT_ID_ATTRIBUTE = "persistent-id";
@@ -69,7 +76,7 @@ public class CompendiumNamespaceHandler implements NamespaceHandler {
     public static final String CONFIG_ADMIN_REFERENCE_NAME = "blueprint.configadmin";
 
     public URL getSchemaLocation(String namespace) {
-        return getClass().getResource("/org/apache/geronimo/blueprint/compendium/blueprint-compendium.xsd");
+        return getClass().getResource("/org/apache/geronimo/blueprint/compendium/cm/blueprint-cm.xsd");
     }
 
     public ComponentMetadata parse(Element element, ParserContext ctx) {
@@ -80,7 +87,7 @@ public class CompendiumNamespaceHandler implements NamespaceHandler {
         if (nodeNameEquals(element, PROPERTY_PLACEHOLDER_ELEMENT)) {
             MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
             metadata.setId(parser.getName(element));
-            metadata.setClassName(CompendiumPropertyPlaceholder.class.getName());
+            metadata.setClassName(CmPropertyPlaceholder.class.getName());
             metadata.addProperty(new BeanPropertyImpl("blueprintContext", new RefMetadataImpl("blueprintContext")));
             metadata.addProperty(new BeanPropertyImpl("configAdmin", new RefMetadataImpl(CONFIG_ADMIN_REFERENCE_NAME)));
             metadata.addProperty(new BeanPropertyImpl("persistentId",
@@ -108,8 +115,8 @@ public class CompendiumNamespaceHandler implements NamespaceHandler {
                             if (defaultsRef != null) {
                                 throw new ComponentDefinitionException("Only one of " + DEFAULTS_REF_ATTRIBUTE + " attribute or " + DEFAULT_PROPERTIES_ELEMENT + " element is allowed");
                             }
-                            MapMetadata map = parser.parseMap(e, metadata);
-                            metadata.addProperty(new BeanPropertyImpl("defaultProperties", new PropsMetadataImpl(map.getEntries())));
+                            Metadata props = parseDefaultProperties(parser, metadata, e);
+                            metadata.addProperty(new BeanPropertyImpl("defaultProperties", props));
                         }
                     }
                 }
@@ -119,6 +126,24 @@ public class CompendiumNamespaceHandler implements NamespaceHandler {
             // TODO: parse other compendium elements.
             throw new ComponentDefinitionException("Unsupported element: " + element.getNodeName());
         }
+    }
+
+    private Metadata parseDefaultProperties(Parser parser, MutableBeanMetadata enclosingComponent, Element element) {
+        MutableMapMetadata props = new MapMetadataImpl();
+        NodeList nl = element.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node node = nl.item(i);
+            if (node instanceof Element) {
+                Element e = (Element) node;
+                if (BLUEPRINT_COMPENDIUM_NAMESPACE.equals(e.getNamespaceURI())) {
+                    if (nodeNameEquals(e, PROPERTY_ELEMENT)) {
+                        BeanProperty prop = parser.parseBeanProperty(enclosingComponent, e);
+                        props.addEntry(new MapEntryImpl(new ValueMetadataImpl(prop.getName(), String.class.getName()), prop.getValue()));
+                    }
+                }
+            }
+        }
+        return props;
     }
 
     /**
