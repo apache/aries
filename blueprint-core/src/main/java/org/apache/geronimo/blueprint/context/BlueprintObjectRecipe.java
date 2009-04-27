@@ -33,8 +33,10 @@ import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.RecipeHelper;
 import org.apache.xbean.recipe.ReferenceRecipe;
 import org.apache.geronimo.blueprint.Destroyable;
+import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.utils.ArgumentsMatch;
 import org.apache.geronimo.blueprint.utils.ArgumentsMatcher;
+import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
@@ -48,8 +50,8 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
 
     private final BlueprintContextImpl blueprintContext;
     private boolean keepRecipe = false;
-    private Method initMethod;
-    private Method destroyMethod;
+    private String initMethod;
+    private String destroyMethod;
     private List<String> explicitDependencies;
     
     private Object factory; // could be Recipe or actual object
@@ -91,19 +93,19 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         return keepRecipe;
     }
     
-    public void setInitMethod(Method initMethod) {
+    public void setInitMethod(String initMethod) {
         this.initMethod = initMethod;
     }
     
-    public Method getInitMethod() {
+    public String getInitMethod() {
         return initMethod;
     }
     
-    public void setDestroyMethod(Method destroyMethod) {
+    public void setDestroyMethod(String destroyMethod) {
         this.destroyMethod = destroyMethod;
     }
     
-    public Method getDestroyMethod() {
+    public String getDestroyMethod() {
         return destroyMethod;
     }
 
@@ -261,6 +263,42 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         
         return instance;
     }
+        
+    /**
+     * Returns init method (if any). Throws exception if the init-method was set explicitly on the bean
+     * and the method is not found on the instance.
+     */
+    private Method getInitMethod(Object instance) throws ConstructionException {
+        Method method = null;        
+        if (initMethod == null) {
+            ComponentDefinitionRegistryImpl registry = blueprintContext.getComponentDefinitionRegistry();
+            method = ReflectionUtils.getLifecycleMethod(instance.getClass(), registry.getDefaultInitMethod());
+        } else if (initMethod.length() > 0) {
+            method = ReflectionUtils.getLifecycleMethod(instance.getClass(), initMethod);
+            if (method == null) {
+                throw new ConstructionException("Component '" + getName() + "' does not have init-method: " + initMethod);
+            }
+        }
+        return method;
+    }
+
+    /**
+     * Returns destroy method (if any). Throws exception if the destroy-method was set explicitly on the bean
+     * and the method is not found on the instance.
+     */
+    private Method getDestroyMethod(Object instance) throws ConstructionException {
+        Method method = null;        
+        if (destroyMethod == null) {
+            ComponentDefinitionRegistryImpl registry = blueprintContext.getComponentDefinitionRegistry();
+            method = ReflectionUtils.getLifecycleMethod(instance.getClass(), registry.getDefaultDestroyMethod());
+        } else if (destroyMethod.length() > 0) {
+            method = ReflectionUtils.getLifecycleMethod(instance.getClass(), destroyMethod);
+            if (method == null) {
+                throw new ConstructionException("Component '" + getName() + "' does not have destroy-method: " + destroyMethod);
+            }
+        }
+        return method;
+    }
     
     @Override
     public List<Recipe> getConstructorRecipes() {
@@ -272,13 +310,16 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         
         final Object obj = getInstance(lazyRefAllowed);
         
+        // check for init lifecycle method (if any)
+        Method initMethod = getInitMethod(obj);
+        
+        // check for destroy lifecycle method (if any)
+        getDestroyMethod(obj);
+        
         // inject properties
         setProperties(obj);
         
-        if (getName() != null) {
-            ExecutionContext.getContext().addObject(getName(), obj);
-        }
-        
+        // call init method
         if (initMethod != null) {
             try {
                 initMethod.invoke(obj);
@@ -289,6 +330,11 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
                 e.printStackTrace();
             }
         }
+        
+        if (getName() != null) {
+            ExecutionContext.getContext().addObject(getName(), obj);
+        }
+        
         if (destroyMethod != null && blueprintContext != null) {
             Destroyable d = new Destroyable() {
                 public void destroy() {
@@ -297,6 +343,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             };
             blueprintContext.addDestroyable(getName(), d);
         }
+        
         return obj;
     }
     
@@ -304,12 +351,13 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         if (!getType().equals(obj.getClass())) {
             throw new RuntimeException("");
         }
-        if (destroyMethod != null) {
-            try {
-                destroyMethod.invoke(obj);
-            } catch (Exception e) {
-                e.printStackTrace();
+        try {
+            Method method = getDestroyMethod(obj);
+            if (method != null) {
+                method.invoke(obj);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

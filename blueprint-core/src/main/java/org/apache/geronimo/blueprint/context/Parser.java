@@ -433,6 +433,14 @@ public class Parser {
             metadata.setFactoryMethodName(factoryMethod);
         }
 
+        // Do some validation
+        if (metadata.getClassName() == null && metadata.getFactoryComponent() == null) {
+            throw new ComponentDefinitionException("Bean class or factory-component must be specified");
+        }
+        if (metadata.getFactoryComponent() != null && metadata.getFactoryMethodName() == null) {
+            throw new ComponentDefinitionException("factory-method is required when factory-component is set");
+        }
+
         // Parse elements
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
