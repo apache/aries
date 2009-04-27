@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://cache.org"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://cache.org"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            version="1.0.0">
+
+    <xsd:element name="lru-cache">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="operation">
+        <xsd:complexType>
+            <xsd:attribute name="name" type="xsd:string"/>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>

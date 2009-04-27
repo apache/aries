@@ -123,7 +123,7 @@ public class ParserTest extends AbstractBlueprintTest {
         assertTrue(pojoB instanceof BeanMetadata);
         BeanMetadata pojoBLocal = (BeanMetadata) pojoB;
         assertEquals("initPojo", pojoBLocal.getInitMethodName());
-        assertEquals("", pojoBLocal.getDestroyMethodName());
+//        assertEquals("", pojoBLocal.getDestroyMethodName());
         
         params = pojoBLocal.getArguments();
         assertNotNull(params);
@@ -216,7 +216,7 @@ public class ParserTest extends AbstractBlueprintTest {
         }
 
         public URL getSchemaLocation(String namespace) {
-            return null;
+            return getClass().getResource("/cache.xsd");
         }
 
         public ComponentMetadata parse(Element element, ParserContext context) {
