@@ -30,12 +30,24 @@ public class Bar {
         return context;
     }
 
+    public void setContext(BundleContext ctx) {
+        context = ctx;
+    }
+
     public String getValue() {
         return value;
     }
 
+    public void setValue(String s) {
+        value = s;
+    }
+
     public List getList() {
         return list;
+    }
+
+    public void setList(List l) {
+        list = l;
     }
 
     public String toString() {
