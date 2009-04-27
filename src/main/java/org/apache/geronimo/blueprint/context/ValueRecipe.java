@@ -72,7 +72,15 @@ public class ValueRecipe extends AbstractRecipe {
     }
 
     public boolean canCreate(Type expectedType) {
-        return true;
+        // XXX: this is expensive but that's what spec wants
+        Class myType = determineType(type, groupingType, RecipeHelper.toClass(expectedType));
+        
+        try {
+            conversionService.convert(value.getStringValue(), myType);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }

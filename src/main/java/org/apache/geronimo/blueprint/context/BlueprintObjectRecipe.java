@@ -137,14 +137,15 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         List<Object> args = new ArrayList<Object>();
         for (int i = 0; beanArguments != null && i < beanArguments.size(); i++) {
             BeanArgument argument = beanArguments.get(i);
+            Class type = loadClass(argument.getValueType());
             Object obj = arguments.get(i);
-            if (obj instanceof Recipe) {
-                if (shouldPreinstantiate(argument.getValue())) {
+            if (obj instanceof Recipe) {                
+                if (type != null || shouldPreinstantiate(argument.getValue())) {
                     obj = RecipeHelper.convert(Object.class, obj, refAllowed);
-                    obj = convert(obj, argument.getValueType());
+                    obj = convert(obj, type);
                 }
             } else {
-                obj = convert(obj, argument.getValueType());
+                obj = convert(obj, type);
             }
             args.add(obj);
         }
@@ -160,13 +161,18 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         return true;
     }
     
-    private Object convert(Object source, String typeName) throws ConstructionException {
-        Class type = null;
+    private Class loadClass(String typeName) throws ConstructionException {
+        if (typeName == null) {
+            return null;
+        }
         try {
-            type = Instanciator.loadClass(blueprintContext, typeName);
+            return Instanciator.loadClass(blueprintContext, typeName);
         } catch (ClassNotFoundException e) {
             throw new ConstructionException("Unable to load type class " + typeName);
         }
+    }
+    
+    private Object convert(Object source, Class type) throws ConstructionException {
         if (type != null && blueprintContext != null) {
             try {
                 source = blueprintContext.getConversionService().convert(source, type);
@@ -206,7 +212,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         
         Set<ArgumentsMatcher.Option> options = getArgumentsMatcherOptions();
         List<Object> arguments = getInitialArguments(refAllowed);
-                
+        
         if (factory != null) {
             // look for instance method on factory object
             Object factoryObj = RecipeHelper.convert(Object.class, factory, refAllowed);
@@ -252,6 +258,11 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         }
         
         return instance;
+    }
+    
+    @Override
+    public List<Recipe> getConstructorRecipes() {
+        return getNestedRecipes();
     }
     
     @Override

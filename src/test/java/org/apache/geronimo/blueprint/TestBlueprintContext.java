@@ -16,13 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.pojos;
+package org.apache.geronimo.blueprint;
 
-public class BeanC {
+import org.apache.geronimo.blueprint.context.BlueprintContextImpl;
 
-    public static Runnable run;
+public class TestBlueprintContext extends BlueprintContextImpl {
 
-    public void init() {
-        run.run();
+    public TestBlueprintContext() {
+        super(new TestBundleContext(), null, null, null, null);
     }
+    
+    @Override
+    public ClassLoader getClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
+    }
+    
 }
