@@ -19,6 +19,7 @@
 package org.apache.geronimo.blueprint.context;
 
 import java.io.InputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,6 +30,12 @@ import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Schema;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.CharacterData;
@@ -188,6 +195,8 @@ public class Parser {
     private String defaultInitMethod;
     private String defaultDestroyMethod;
     private boolean mainSection;
+    private Set<URI> namespaces;
+    private boolean validated;
 
     public Parser() {
     }
@@ -217,14 +226,17 @@ public class Parser {
     }
 
     public Set<URI> getNamespaces() {
-        if (documents == null) {
-            throw new IllegalStateException("Documents should be parsed before retrieving required namespaces");
+        if (this.namespaces == null) {
+            if (documents == null) {
+                throw new IllegalStateException("Documents should be parsed before retrieving required namespaces");
+            }
+            Set<URI> namespaces = new HashSet<URI>();
+            for (Document doc : documents) {
+                findNamespaces(namespaces, doc);
+            }
+            this.namespaces = namespaces;
         }
-        Set<URI> namespaces = new HashSet<URI>();
-        for (Document doc : documents) {
-            findNamespaces(namespaces, doc);
-        }
-        return namespaces;
+        return this.namespaces;
     }
 
     private void findNamespaces(Set<URI> namespaces, Node node) {
@@ -253,15 +265,51 @@ public class Parser {
     private void doPopulate(NamespaceHandlerRegistry handlers,
                             ExtendedComponentDefinitionRegistry registry,
                             boolean mainSection) {
-        if (this.documents == null) {
-            throw new IllegalStateException("Documents should be parsed before populating the registry");
-        }
         this.namespaceHandlerRegistry = handlers;
         this.registry = registry;
         this.mainSection = mainSection;
+        // Validate xmls
+        if (this.documents == null) {
+            throw new IllegalStateException("Documents should be parsed before populating the registry");
+        }
+        if (!this.validated) {
+            validate();
+        }
         // Parse components
         for (Document doc : this.documents) {
             loadComponents(doc);
+        }
+    }
+
+    private void validate() {
+        List<StreamSource> schemaSources = new ArrayList<StreamSource>();
+        try {
+            schemaSources.add(new StreamSource(getClass().getResourceAsStream("/org/apache/geronimo/blueprint/blueprint.xsd")));
+            for (URI uri : getNamespaces()) {
+                NamespaceHandler handler = this.namespaceHandlerRegistry.getNamespaceHandler(uri);
+                if (handler == null) {
+                    throw new ComponentDefinitionException("Unsupported node namespace: " + uri);
+                }
+                URL url = handler.getSchemaLocation(uri.toString());
+                if (url != null) {
+                    schemaSources.add(new StreamSource(url.openStream()));
+                }
+            }
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = factory.newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
+            for (Document doc : this.documents) {
+                schema.newValidator().validate(new DOMSource(doc));
+            }
+        } catch (Exception e) {
+            throw (RuntimeException) new ComponentDefinitionException("Unable to validate xml").initCause(e);
+        } finally {
+            for (StreamSource s : schemaSources) {
+                try {
+                    s.getInputStream().close();
+                } catch (IOException e) {
+                    // Ignore
+                }
+            }
         }
     }
 
