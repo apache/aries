@@ -26,23 +26,21 @@ import org.w3c.dom.NodeList;
 
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.ExtendedParserContext;
-import org.apache.geronimo.blueprint.context.Parser;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
-import org.apache.geronimo.blueprint.reflect.BeanPropertyImpl;
-import org.apache.geronimo.blueprint.reflect.RefMetadataImpl;
-import org.apache.geronimo.blueprint.reflect.ReferenceMetadataImpl;
-import org.apache.geronimo.blueprint.reflect.ValueMetadataImpl;
-import org.apache.geronimo.blueprint.reflect.MapEntryImpl;
-import org.apache.geronimo.blueprint.reflect.MapMetadataImpl;
+import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableRefMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableReferenceMetadata;
 import org.osgi.service.blueprint.context.ComponentDefinitionException;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
 import org.osgi.service.blueprint.namespace.ParserContext;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
+import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
@@ -72,6 +70,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
 
     public static final String CONFIG_ADMIN_REFERENCE_NAME = "blueprint.configadmin";
 
+    private int nameCounter;
+
     public URL getSchemaLocation(String namespace) {
         return getClass().getResource("/org/apache/geronimo/blueprint/compendium/cm/blueprint-cm.xsd");
     }
@@ -79,27 +79,25 @@ public class CmNamespaceHandler implements NamespaceHandler {
     public ComponentMetadata parse(Element element, ParserContext ctx) {
         ExtendedParserContext context = (ExtendedParserContext) ctx;
         ExtendedComponentDefinitionRegistry registry = (ExtendedComponentDefinitionRegistry) context.getComponentDefinitionRegistry();
-        Parser parser = new Parser("compendium-");
-        createConfigAdminProxy(registry);
+        createConfigAdminProxy(context, registry);
         if (nodeNameEquals(element, PROPERTY_PLACEHOLDER_ELEMENT)) {
             MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
-            metadata.setId(parser.getName(element));
+            metadata.setId(getName(element));
             metadata.setClassName(CmPropertyPlaceholder.class.getName());
-            metadata.addProperty(new BeanPropertyImpl("blueprintContext", new RefMetadataImpl("blueprintContext")));
-            metadata.addProperty(new BeanPropertyImpl("configAdmin", new RefMetadataImpl(CONFIG_ADMIN_REFERENCE_NAME)));
-            metadata.addProperty(new BeanPropertyImpl("persistentId",
-                                                      new ValueMetadataImpl(element.getAttribute(PERSISTENT_ID_ATTRIBUTE))));
+            metadata.addProperty("blueprintContext", createRef(context, "blueprintContext"));
+            metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
+            metadata.addProperty("persistentId", createValue(context, element.getAttribute(PERSISTENT_ID_ATTRIBUTE)));
             String prefix = element.hasAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
                                         ? element.getAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
                                         : "${";
-            metadata.addProperty(new BeanPropertyImpl("placeholderPrefix", new ValueMetadataImpl(prefix)));
+            metadata.addProperty("placeholderPrefix", createValue(context, prefix));
             String suffix = element.hasAttribute(PLACEHOLDER_SUFFIX_ATTRIBUTE)
                                         ? element.getAttribute(PLACEHOLDER_SUFFIX_ATTRIBUTE)
                                         : "}";
-            metadata.addProperty(new BeanPropertyImpl("placeholderSuffix", new ValueMetadataImpl(suffix)));
+            metadata.addProperty("placeholderSuffix", createValue(context, suffix));
             String defaultsRef = element.hasAttribute(DEFAULTS_REF_ATTRIBUTE) ? element.getAttribute(DEFAULTS_REF_ATTRIBUTE) : null;
             if (defaultsRef != null) {
-                metadata.addProperty(new BeanPropertyImpl("defaultProperties", new RefMetadataImpl("defaultsRef")));
+                metadata.addProperty("defaultProperties", createRef(context, defaultsRef));
             }
             // Parse elements
             NodeList nl = element.getChildNodes();
@@ -112,8 +110,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
                             if (defaultsRef != null) {
                                 throw new ComponentDefinitionException("Only one of " + DEFAULTS_REF_ATTRIBUTE + " attribute or " + DEFAULT_PROPERTIES_ELEMENT + " element is allowed");
                             }
-                            Metadata props = parseDefaultProperties(parser, metadata, e);
-                            metadata.addProperty(new BeanPropertyImpl("defaultProperties", props));
+                            Metadata props = parseDefaultProperties(context, metadata, e);
+                            metadata.addProperty("defaultProperties", props);
                         }
                     }
                 }
@@ -125,8 +123,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
         }
     }
 
-    private Metadata parseDefaultProperties(Parser parser, MutableBeanMetadata enclosingComponent, Element element) {
-        MutableMapMetadata props = new MapMetadataImpl();
+    private Metadata parseDefaultProperties(ExtendedParserContext context, MutableBeanMetadata enclosingComponent, Element element) {
+        MutableMapMetadata props = context.createMetadata(MutableMapMetadata.class);
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
@@ -134,8 +132,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
                 Element e = (Element) node;
                 if (BLUEPRINT_CM_NAMESPACE.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, PROPERTY_ELEMENT)) {
-                        BeanProperty prop = parser.parseBeanProperty(enclosingComponent, e);
-                        props.addEntry(new MapEntryImpl(new ValueMetadataImpl(prop.getName(), String.class.getName()), prop.getValue()));
+                        BeanProperty prop = context.parseElement(BeanProperty.class, enclosingComponent, e);
+                        props.addEntry(createValue(context, prop.getName(), String.class.getName()), prop.getValue());
                     }
                 }
             }
@@ -149,9 +147,9 @@ public class CmNamespaceHandler implements NamespaceHandler {
      *
      * @param registry the registry to add the config admin reference to
      */
-    private void createConfigAdminProxy(ComponentDefinitionRegistry registry) {
+    private void createConfigAdminProxy(ExtendedParserContext context, ComponentDefinitionRegistry registry) {
         if (registry.getComponentDefinition(CONFIG_ADMIN_REFERENCE_NAME) == null) {
-            ReferenceMetadataImpl reference = new ReferenceMetadataImpl();
+            MutableReferenceMetadata reference = context.createMetadata(MutableReferenceMetadata.class);
             reference.setId(CONFIG_ADMIN_REFERENCE_NAME);
             reference.addInterfaceName(ConfigurationAdmin.class.getName());
             reference.setAvailability(ReferenceMetadata.MANDATORY_AVAILABILITY);
@@ -164,8 +162,33 @@ public class CmNamespaceHandler implements NamespaceHandler {
         throw new ComponentDefinitionException("Illegal use of blueprint cm namespace");
     }
 
+    private static ValueMetadata createValue(ExtendedParserContext context, String value) {
+        return createValue(context, value, null);
+    }
+
+    private static ValueMetadata createValue(ExtendedParserContext context, String value, String type) {
+        MutableValueMetadata m = context.createMetadata(MutableValueMetadata.class);
+        m.setStringValue(value);
+        m.setTypeName(type);
+        return m;
+    }
+
+    private static RefMetadata createRef(ExtendedParserContext context, String value) {
+        MutableRefMetadata m = context.createMetadata(MutableRefMetadata.class);
+        m.setComponentId(value);
+        return m;
+    }
+
     private static boolean nodeNameEquals(Node node, String name) {
         return (name.equals(node.getNodeName()) || name.equals(node.getLocalName()));
+    }
+
+    public String getName(Element element) {
+        if (element.hasAttribute(ID_ATTRIBUTE)) {
+            return element.getAttribute(ID_ATTRIBUTE);
+        } else {
+            return "cm-" + ++nameCounter;
+        }
     }
 
 }
