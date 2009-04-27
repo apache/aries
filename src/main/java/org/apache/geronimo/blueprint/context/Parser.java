@@ -587,9 +587,16 @@ public class Parser {
 
     private MapEntry parseProperty(Element element) {
         // Parse attributes
+        if (!element.hasAttribute(KEY_ATTRIBUTE)) {
+            throw new ComponentDefinitionException(KEY_ATTRIBUTE + " attribute is required");
+        }
+        if (!element.hasAttribute(VALUE_ATTRIBUTE)) {
+            throw new ComponentDefinitionException(VALUE_ATTRIBUTE + " attribute is required");
+        }
         String key = element.getAttribute(KEY_ATTRIBUTE);
-        String value = element.hasAttribute(VALUE_ATTRIBUTE) ? element.getAttribute(VALUE_ATTRIBUTE) : null;
-        return new MapEntryImpl(new ValueMetadataImpl(key), value != null ? new ValueMetadataImpl(value) : NullMetadata.NULL);
+        String value = element.getAttribute(VALUE_ATTRIBUTE);
+        return new MapEntryImpl(new ValueMetadataImpl(key, String.class.getName()),
+                                new ValueMetadataImpl(value, String.class.getName()));
     }
 
     public MapMetadata parseMap(Element element, ComponentMetadata enclosingComponent) {
