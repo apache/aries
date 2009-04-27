@@ -19,16 +19,25 @@
 package org.apache.geronimo.blueprint;
 
 import org.apache.geronimo.blueprint.context.BlueprintContextImpl;
+import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 
 public class TestBlueprintContext extends BlueprintContextImpl {
 
-    public TestBlueprintContext() {
+    private ComponentDefinitionRegistryImpl registry;
+    
+    public TestBlueprintContext(ComponentDefinitionRegistryImpl registry) {
         super(new TestBundleContext(), null, null, null, null);
+        this.registry = registry;
     }
     
     @Override
     public ClassLoader getClassLoader() {
         return Thread.currentThread().getContextClassLoader();
+    }
+    
+    @Override
+    public ComponentDefinitionRegistryImpl getComponentDefinitionRegistry() {
+        return registry;
     }
     
 }

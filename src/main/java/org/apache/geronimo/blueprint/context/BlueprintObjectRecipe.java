@@ -32,7 +32,6 @@ import org.apache.xbean.recipe.ObjectRecipe;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.RecipeHelper;
 import org.apache.xbean.recipe.ReferenceRecipe;
-import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.utils.ArgumentsMatch;
 import org.apache.geronimo.blueprint.utils.ArgumentsMatcher;
@@ -268,7 +267,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
      * Returns init method (if any). Throws exception if the init-method was set explicitly on the bean
      * and the method is not found on the instance.
      */
-    private Method getInitMethod(Object instance) throws ConstructionException {
+    protected Method getInitMethod(Object instance) throws ConstructionException {
         Method method = null;        
         if (initMethod == null) {
             ComponentDefinitionRegistryImpl registry = blueprintContext.getComponentDefinitionRegistry();
@@ -286,7 +285,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
      * Returns destroy method (if any). Throws exception if the destroy-method was set explicitly on the bean
      * and the method is not found on the instance.
      */
-    private Method getDestroyMethod(Object instance) throws ConstructionException {
+    protected Method getDestroyMethod(Object instance) throws ConstructionException {
         Method method = null;        
         if (destroyMethod == null) {
             ComponentDefinitionRegistryImpl registry = blueprintContext.getComponentDefinitionRegistry();
@@ -335,22 +334,10 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             ExecutionContext.getContext().addObject(getName(), obj);
         }
         
-        if (destroyMethod != null && blueprintContext != null) {
-            Destroyable d = new Destroyable() {
-                public void destroy() {
-                    destroyInstance(obj);
-                }
-            };
-            blueprintContext.addDestroyable(getName(), d);
-        }
-        
         return obj;
     }
     
     public void destroyInstance(Object obj) {
-        if (!getType().equals(obj.getClass())) {
-            throw new RuntimeException("");
-        }
         try {
             Method method = getDestroyMethod(obj);
             if (method != null) {

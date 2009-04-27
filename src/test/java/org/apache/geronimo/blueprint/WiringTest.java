@@ -23,6 +23,7 @@ import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.geronimo.blueprint.context.Instanciator;
+import org.apache.geronimo.blueprint.context.ScopedRepository;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.pojos.BeanC;
 import org.apache.geronimo.blueprint.pojos.BeanD;
@@ -37,8 +38,8 @@ public class WiringTest extends AbstractBlueprintTest {
 
     public void testWiring() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
-        Instanciator i = new Instanciator(new TestBlueprintContext());
-        Repository repository = i.createRepository(registry);
+        Instanciator i = new Instanciator(new TestBlueprintContext(registry));
+        ScopedRepository repository = i.createRepository(registry);
         ObjectGraph graph = new ObjectGraph(repository);
         
         Object obj1 = graph.create("pojoA");
@@ -113,6 +114,11 @@ public class WiringTest extends AbstractBlueprintTest {
         Object obj4 = graph.create("pojoC");
         assertNotNull(obj4);
         assertTrue(obj4 != graph.create("pojoC"));
+        
+        repository.destroy();       
+        
+        // test destroy-method
+        assertEquals(true, pojob.getDestroyCalled());
     }
 
     public void testDependsOn() throws Exception {
@@ -132,7 +138,7 @@ public class WiringTest extends AbstractBlueprintTest {
         };
 
         ComponentDefinitionRegistryImpl registry = parse("/test-depends-on.xml");
-        Instanciator i = new Instanciator(new TestBlueprintContext());
+        Instanciator i = new Instanciator(new TestBlueprintContext(registry));
         Repository repository = i.createRepository(registry);
         ObjectGraph graph = new ObjectGraph(repository);
         graph.createAll("c", "d");
@@ -140,7 +146,7 @@ public class WiringTest extends AbstractBlueprintTest {
 
     public void testConstructor() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-constructor.xml");
-        Instanciator i = new Instanciator(new TestBlueprintContext());
+        Instanciator i = new Instanciator(new TestBlueprintContext(registry));
         Repository repository = i.createRepository(registry);
         ObjectGraph graph = new ObjectGraph(repository);
         

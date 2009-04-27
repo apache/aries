@@ -357,6 +357,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     }
 
     private void destroyComponents() {
+        ((ScopedRepository)objectGraph.getRepository()).destroy();
+        
         Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>(this.destroyables);
         this.destroyables.clear();
         for (Map.Entry<String, Destroyable> entry : destroyables.entrySet()) {
@@ -449,7 +451,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         }
         handlers.removeListener(this);
         sender.sendDestroying(this);
-        unregisterAllServices();
+        unregisterAllServices();        
         destroyComponents();
         // TODO: stop all reference / collections
         System.out.println("Module context destroyed: " + this.bundleContext);

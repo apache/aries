@@ -17,9 +17,14 @@
  */
 package org.apache.geronimo.blueprint.context;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.Repository;
@@ -33,13 +38,16 @@ import org.apache.xbean.recipe.Repository;
 public class ScopedRepository implements Repository {
 
     private SortedMap<String, Object> instances;
+    private List<DestroyCallback> destroyList;
 
     public ScopedRepository() {
         instances = new TreeMap<String, Object>();
+        destroyList = new ArrayList<DestroyCallback>();
     }
     
     public ScopedRepository(ScopedRepository source) {
-        instances = new TreeMap<String, Object>(source.instances);
+        instances = new TreeMap<String, Object>(source.instances);       
+        destroyList = new ArrayList<DestroyCallback>();
     }
     
     public void set(String name, Object instance) {
@@ -57,9 +65,14 @@ public class ScopedRepository implements Repository {
     public void add(String name, Object instance) {
         Object existingObj = instances.get(name);
         if (existingObj != null) {
-            if (existingObj instanceof BlueprintObjectRecipe) {                
-                if ( ((BlueprintObjectRecipe) existingObj ).getKeepRecipe()) {
+            if (existingObj instanceof BlueprintObjectRecipe) {    
+                BlueprintObjectRecipe recipe = (BlueprintObjectRecipe) existingObj;
+                if (recipe.getKeepRecipe()) {
                     return;
+                }
+                Method method = recipe.getDestroyMethod(instance);
+                if (method != null) {
+                    destroyList.add(new DestroyCallback(method, instance));
                 }
             } else if (!(existingObj instanceof Recipe)) {
                 throw new ConstructionException("Name " + name + " is already registered to instance " + instance);
@@ -67,5 +80,33 @@ public class ScopedRepository implements Repository {
         }
 
         instances.put(name, instance);
+    }
+        
+    public void destroy() {
+        for (Destroyable destroyable : destroyList) {
+            destroyable.destroy();
+        }
+        destroyList.clear();
+        instances.clear();
+    }
+    
+    private static class DestroyCallback implements Destroyable {
+
+        private Method method;
+        private Object instance;
+        
+        public DestroyCallback(Method method, Object instance) {
+            this.method = method;
+            this.instance = instance;
+        }
+        
+        public void destroy() {
+            try {
+                method.invoke(instance);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
     }
 }

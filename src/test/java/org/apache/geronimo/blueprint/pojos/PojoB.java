@@ -23,8 +23,10 @@ import java.net.URI;
 public class PojoB {
 
     private URI uri;
-    private boolean initCalled;
     private int number;
+    
+    private boolean initCalled;
+    private boolean destroyCalled;
     
     public PojoB() {
     }
@@ -48,6 +50,14 @@ public class PojoB {
     
     public boolean getInitCalled() {
         return initCalled;
+    }
+    
+    public void destroy() {
+        destroyCalled = true;
+    }
+    
+    public boolean getDestroyCalled() {
+        return destroyCalled;
     }
     
     public int getNumber() {
