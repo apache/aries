@@ -532,9 +532,11 @@ public class Parser {
 
     private ComponentMetadata parseService(Element element) {
         ServiceMetadataImpl service = new ServiceMetadataImpl();
+        boolean hasInterfaceNameAttribute = false;
         service.setId(getName(element));
         if (element.hasAttribute(INTERFACE_ATTRIBUTE)) {
             service.setInterfaceNames(Collections.singletonList(element.getAttribute(INTERFACE_ATTRIBUTE)));
+            hasInterfaceNameAttribute = true;
         }
         if (element.hasAttribute(REF_ATTRIBUTE)) {
             service.setServiceComponent(new RefMetadataImpl(element.getAttribute(REF_ATTRIBUTE)));
@@ -568,7 +570,7 @@ public class Parser {
                 Element e = (Element) node;
                 if (isBlueprintNamespace(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, INTERFACES_ELEMENT)) {
-                        if (service.getInterfaceNames() != null) {
+                        if (hasInterfaceNameAttribute) {
                             throw new ComponentDefinitionException("Only one of " + INTERFACE_ATTRIBUTE + " attribute or " + INTERFACES_ELEMENT + " element must be used");
                         }
                         service.setInterfaceNames(parseInterfaceNames(e));
@@ -581,6 +583,8 @@ public class Parser {
                             throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element or custom inner element can be set");
                         }
                         service.setServiceComponent((Target) parseBeanMetadata(e));
+                    } else {
+                        // TODO: can be ref, reference or a custom element
                     }
                 }
             }

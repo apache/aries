@@ -199,7 +199,9 @@ public class Instanciator {
 
     private BlueprintObjectRecipe createBeanRecipe(BeanMetadata local) throws Exception {
         BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, loadClass(local.getClassName()));
-        recipe.setName(local.getId());
+        if (local.getId() != null) {
+            recipe.setName(local.getId());
+        }
         recipe.setExplicitDependencies(local.getExplicitDependencies());
         for (BeanProperty property : local.getProperties()) {
             Object value = getValue(property.getValue(), null);
