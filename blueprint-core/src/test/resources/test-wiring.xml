@@ -31,6 +31,10 @@
             <map>
                 <entry key="key" value="val"/>
                 <entry key-ref="pojoB" value-ref="pojoB" />
+                <entry>
+                     <key><value type="java.lang.Integer">5</value></key>
+                     <value type="java.net.URI">http://geronimo.apache.org</value>
+                </entry>
             </map>
         </property>
         <property name="set">

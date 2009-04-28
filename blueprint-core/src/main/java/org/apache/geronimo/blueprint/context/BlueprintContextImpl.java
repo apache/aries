@@ -195,7 +195,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         if (checkAllSatisfiables()) {
                             state = State.InitialReferencesSatisfied;
                         }
-                        break;
+                        return;
                     case InitialReferencesSatisfied:
                         instantiateComponents();
                         registerAllServices();
