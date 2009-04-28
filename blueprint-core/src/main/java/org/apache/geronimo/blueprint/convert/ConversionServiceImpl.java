@@ -67,7 +67,7 @@ public class ConversionServiceImpl implements ConversionService {
     }
     
     public Object convert(Object fromValue, Class toType) throws Exception {
-        if (Object.class == toType) {
+        if (toType.isInstance(fromValue)) {
             return fromValue;
         }
         Object value = doConvert(fromValue, toType);        

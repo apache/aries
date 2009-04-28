@@ -18,7 +18,6 @@
  */
 package org.apache.geronimo.blueprint.context;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,12 +28,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
-import org.apache.geronimo.blueprint.reflect.MapMetadataImpl;
-import org.apache.geronimo.blueprint.reflect.ServiceMetadataImpl;
-import org.apache.geronimo.blueprint.utils.ReflectionUtils;
+import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
+import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 import org.apache.xbean.recipe.ArrayRecipe;
 import org.apache.xbean.recipe.CollectionRecipe;
-import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.MapRecipe;
 import org.apache.xbean.recipe.ObjectRecipe;
 import org.apache.xbean.recipe.Option;
@@ -181,11 +178,12 @@ public class Instanciator {
             recipe.setProperty("service", getValue(serviceExport.getServiceComponent(), null));
         }
         recipe.setProperty("metadata", serviceExport);
-        if (serviceExport instanceof ServiceMetadataImpl) {
-            ServiceMetadataImpl impl = (ServiceMetadataImpl) serviceExport;
-            if (impl.getServiceProperties() != null) {
-                recipe.setProperty("serviceProperties", getValue(new MapMetadataImpl(null, null, impl.getServiceProperties()), null));
+        if (serviceExport.getServiceProperties() != null) {
+            MutableMapMetadata map = MetadataUtil.createMetadata(MutableMapMetadata.class);
+            for (MapEntry e : serviceExport.getServiceProperties()) {
+                map.addEntry(e);
             }
+            recipe.setProperty("serviceProperties", getValue(map, null));
         }
         if (serviceExport.getRegistrationListeners() != null) {
             CollectionRecipe listenersRecipe = new CollectionRecipe(ArrayList.class);
