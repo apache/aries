@@ -17,6 +17,7 @@
 package org.apache.geronimo.blueprint.convert;
 
 import java.io.ByteArrayInputStream;
+import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -161,7 +162,10 @@ public class ConversionServiceImpl implements ConversionService {
         } else if (Double.class == toType || double.class == toType) {
             return Double.valueOf(value);
         } else if (Character.class == toType || char.class == toType) {
-            if (value.length() == 1) {
+            if (value.length() == 6 && value.startsWith("\\u")) {
+                int code = Integer.parseInt(value.substring(2), 16);
+                return (char)code;
+            } else if (value.length() == 1) {
                 return Character.valueOf(value.charAt(0));
             } else {
                 throw new Exception("Invalid value for character type: " + value);
