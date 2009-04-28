@@ -694,7 +694,7 @@ public class Parser {
             if (node instanceof Element) {
                 Element e = (Element) node;
                 if (nodeNameEquals(e, KEY_ELEMENT)) {
-                    keyValue = (NonNullMetadata) parseValueElement(e, enclosingComponent, false);
+                    keyValue = parseMapKeyEntry(e, enclosingComponent);
                 } else {
                     valValue = parseValueElement(e, enclosingComponent, true);
                 }
@@ -719,6 +719,20 @@ public class Parser {
         return new MapEntryImpl(keyValue, valValue);
     }
 
+    private NonNullMetadata parseMapKeyEntry(Element element, ComponentMetadata enclosingComponent) {
+        NonNullMetadata keyValue = null;
+        NodeList nl = element.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node node = nl.item(i);
+            if (node instanceof Element) {
+                Element e = (Element) node;
+                keyValue = (NonNullMetadata) parseValueElement(e, enclosingComponent, false);
+                break;
+            }
+        }
+        return keyValue;
+    }
+    
     private RegistrationListener parseRegistrationListener(Element element) {
         // Parse attributes
         String ref = element.hasAttribute(REF_ATTRIBUTE) ? element.getAttribute(REF_ATTRIBUTE) : null;
