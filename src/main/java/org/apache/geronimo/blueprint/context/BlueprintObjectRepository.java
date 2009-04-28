@@ -17,10 +17,10 @@
  */
 package org.apache.geronimo.blueprint.context;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -83,9 +83,12 @@ public class BlueprintObjectRepository implements Repository {
     }
         
     public void destroy() {
-        for (Destroyable destroyable : destroyList) {
-            destroyable.destroy();
+        // destroy objects in reverse creation order
+        ListIterator<DestroyCallback> reverse = destroyList.listIterator(destroyList.size());
+        while(reverse.hasPrevious()) {
+            reverse.previous().destroy();
         }
+
         destroyList.clear();
         instances.clear();
     }

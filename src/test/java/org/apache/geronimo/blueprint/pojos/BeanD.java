@@ -18,12 +18,17 @@
  */
 package org.apache.geronimo.blueprint.pojos;
 
+import org.apache.geronimo.blueprint.CallbackTracker;
+import org.apache.geronimo.blueprint.CallbackTracker.Callback;
+
 public class BeanD {
 
-    public static Runnable run;
-
     public void init() {
-        run.run();
+        CallbackTracker.add(new Callback(Callback.INIT, this));
+    }
+    
+    public void destroy() {
+        CallbackTracker.add(new Callback(Callback.DESTROY, this));
     }
 
 }
