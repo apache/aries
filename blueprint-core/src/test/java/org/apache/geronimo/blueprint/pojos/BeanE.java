@@ -21,8 +21,11 @@ package org.apache.geronimo.blueprint.pojos;
 import org.apache.geronimo.blueprint.CallbackTracker;
 import org.apache.geronimo.blueprint.CallbackTracker.Callback;
 
-public class BeanC {
+public class BeanE {
 
+    public BeanE(BeanC c) {        
+    }
+    
     public void init() {
         CallbackTracker.add(new Callback(Callback.INIT, this));
     }
@@ -30,5 +33,5 @@ public class BeanC {
     public void destroy() {
         CallbackTracker.add(new Callback(Callback.DESTROY, this));
     }
-    
+
 }

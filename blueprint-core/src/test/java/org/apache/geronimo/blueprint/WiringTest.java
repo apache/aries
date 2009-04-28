@@ -20,8 +20,11 @@ package org.apache.geronimo.blueprint;
 
 import java.math.BigInteger;
 import java.net.URI;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.geronimo.blueprint.CallbackTracker.Callback;
 import org.apache.geronimo.blueprint.context.BlueprintObjectRepository;
 import org.apache.geronimo.blueprint.context.Instanciator;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
@@ -121,29 +124,39 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals(true, pojob.getDestroyCalled());
     }
 
-    public void testDependsOn() throws Exception {
-        final AtomicBoolean initC = new AtomicBoolean();
-        final AtomicBoolean initD = new AtomicBoolean();
-        BeanC.run = new Runnable() {
-            public void run() {
-                assertTrue(initD.get());
-                initC.set(true);
-            }
-        };
-        BeanD.run = new Runnable() {
-            public void run() {
-                assertFalse(initC.get());
-                initD.set(true);
-            }
-        };
+    public void testDependencies() throws Exception {
+        CallbackTracker.clear();
 
         ComponentDefinitionRegistryImpl registry = parse("/test-depends-on.xml");
         Instanciator i = new Instanciator(new TestBlueprintContext(registry));
-        Repository repository = i.createRepository(registry);
+        BlueprintObjectRepository repository = i.createRepository(registry);
         ObjectGraph graph = new ObjectGraph(repository);
-        graph.createAll("c", "d");
+        Map instances = graph.createAll("c", "d", "e");
+        
+        List<Callback> callback = CallbackTracker.getCallbacks();
+        assertEquals(3, callback.size());
+        checkInitCallback(instances.get("d"), callback.get(0));
+        checkInitCallback(instances.get("c"), callback.get(1));
+        checkInitCallback(instances.get("e"), callback.get(2));
+                
+        repository.destroy();
+        
+        assertEquals(6, callback.size());
+        checkDestroyCallback(instances.get("e"), callback.get(3));
+        checkDestroyCallback(instances.get("c"), callback.get(4));
+        checkDestroyCallback(instances.get("d"), callback.get(5));
     }
 
+    private void checkInitCallback(Object obj, Callback callback) { 
+        assertEquals(Callback.INIT, callback.getType());
+        assertEquals(obj, callback.getObject());
+    }
+    
+    private void checkDestroyCallback(Object obj, Callback callback) { 
+        assertEquals(Callback.DESTROY, callback.getType());
+        assertEquals(obj, callback.getObject());
+    }
+    
     public void testConstructor() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-constructor.xml");
         Instanciator i = new Instanciator(new TestBlueprintContext(registry));

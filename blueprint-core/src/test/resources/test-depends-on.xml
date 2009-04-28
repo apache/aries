@@ -6,5 +6,9 @@
     <bean id="c" class="org.apache.geronimo.blueprint.pojos.BeanC" depends-on="d" init-method="init"/>
 
     <bean id="d" class="org.apache.geronimo.blueprint.pojos.BeanD" init-method="init"/>
+    
+    <bean id="e" class="org.apache.geronimo.blueprint.pojos.BeanE" init-method="init">
+        <argument ref="c"/>
+    </bean>
 
 </blueprint>
