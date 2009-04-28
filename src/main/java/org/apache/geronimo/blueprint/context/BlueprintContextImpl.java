@@ -147,6 +147,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     public synchronized void run() {
         try {
             for (;;) {
+                LOGGER.debug("Running blueprint context for bundle {} in state {}", bundleContext.getBundle().getSymbolicName(), state);
                 switch (state) {
                     case Unknown:
                         checkDirectives();
@@ -217,11 +218,11 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         return;
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable t) {
             state = State.Failed;
             // TODO: clean up
-            LOGGER.error("Unable to start blueprint context for bundle " + bundleContext.getBundle().getSymbolicName(), e);
-            sender.sendFailure(this, e);
+            LOGGER.error("Unable to start blueprint context for bundle " + bundleContext.getBundle().getSymbolicName(), t);
+            sender.sendFailure(this, t);
         }
     }
 
@@ -310,7 +311,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     }
 
     public void notifySatisfaction(SatisfiableRecipe satisfiable) {
-        LOGGER.debug("Notified satisfaction for {}: {}", satisfiable.getName(), satisfiable.isSatisfied());
+        LOGGER.debug("Notified satisfaction {} in bundle {}: {}",
+                new Object[] { satisfiable.getName(), bundleContext.getBundle().getSymbolicName(), satisfiable.isSatisfied() });
         if (state == State.WaitForInitialReferences) {
             executors.submit(this);
         } else if (state == State.Created) {

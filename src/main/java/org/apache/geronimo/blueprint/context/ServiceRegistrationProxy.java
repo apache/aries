@@ -35,12 +35,16 @@ import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /** 
  * TODO: javadoc
  */
 public class ServiceRegistrationProxy implements ServiceRegistration {
-  
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistrationProxy.class);
+
     private BlueprintContext blueprintContext;
     private Object service;
     private Map serviceProperties;
@@ -101,7 +105,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
         registration = blueprintContext.getBundleContext().registerService(classesArray, service, props);
         registrationProperties = props;
         
-        System.out.println("service registered: " + service + " " + classes);
+        LOGGER.debug("Service {} registered with interfaces {}", service, classes);
         
         if (listeners != null) {
             for (Listener listener : listeners) {
@@ -129,8 +133,8 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
         if (registration != null) {
             registration.unregister();
             
-            System.out.println("service unregistered: " + service);
-            
+            LOGGER.debug("Service {} unregistered", service);
+
             if (listeners != null) {
                 for (Listener listener : listeners) {
                     listener.unregister(this);
@@ -206,7 +210,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
             try {
                 method.invoke(listener, args);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.info("Error calling listener", e);
             }
         }
                            
