@@ -100,10 +100,10 @@ public class Instanciator {
         }
     }
     
-    public ScopedRepository createRepository(ExtendedComponentDefinitionRegistry registry) throws Exception {
+    public BlueprintObjectRepository createRepository(ExtendedComponentDefinitionRegistry registry) throws Exception {
         this.registry = registry;
 
-        ScopedRepository repository = new ScopedRepository();
+        BlueprintObjectRepository repository = new BlueprintObjectRepository();
         addBuiltinComponents(repository);
         
         // Create component recipes

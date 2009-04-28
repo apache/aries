@@ -357,7 +357,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     }
 
     private void destroyComponents() {
-        ((ScopedRepository)objectGraph.getRepository()).destroy();
+        ((BlueprintObjectRepository)objectGraph.getRepository()).destroy();
         
         Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>(this.destroyables);
         this.destroyables.clear();

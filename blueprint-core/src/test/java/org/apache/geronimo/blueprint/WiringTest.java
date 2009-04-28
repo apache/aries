@@ -22,8 +22,8 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.geronimo.blueprint.context.BlueprintObjectRepository;
 import org.apache.geronimo.blueprint.context.Instanciator;
-import org.apache.geronimo.blueprint.context.ScopedRepository;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.pojos.BeanC;
 import org.apache.geronimo.blueprint.pojos.BeanD;
@@ -39,7 +39,7 @@ public class WiringTest extends AbstractBlueprintTest {
     public void testWiring() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
         Instanciator i = new Instanciator(new TestBlueprintContext(registry));
-        ScopedRepository repository = i.createRepository(registry);
+        BlueprintObjectRepository repository = i.createRepository(registry);
         ObjectGraph graph = new ObjectGraph(repository);
         
         Object obj1 = graph.create("pojoA");

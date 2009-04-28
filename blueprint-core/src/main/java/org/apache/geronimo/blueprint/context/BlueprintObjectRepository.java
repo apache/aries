@@ -35,17 +35,17 @@ import org.apache.xbean.recipe.Repository;
  * be replaced with resulting objects in the repository. That ensures that a new instance of a object is created
  * for such Recipes during graph instantiation.
  */
-public class ScopedRepository implements Repository {
+public class BlueprintObjectRepository implements Repository {
 
     private SortedMap<String, Object> instances;
     private List<DestroyCallback> destroyList;
 
-    public ScopedRepository() {
+    public BlueprintObjectRepository() {
         instances = new TreeMap<String, Object>();
         destroyList = new ArrayList<DestroyCallback>();
     }
     
-    public ScopedRepository(ScopedRepository source) {
+    public BlueprintObjectRepository(BlueprintObjectRepository source) {
         instances = new TreeMap<String, Object>(source.instances);       
         destroyList = new ArrayList<DestroyCallback>();
     }
