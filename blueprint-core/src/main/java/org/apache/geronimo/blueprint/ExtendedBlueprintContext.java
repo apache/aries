@@ -29,6 +29,8 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
  */
 public interface ExtendedBlueprintContext extends BlueprintContext {
 
+    ClassLoader getClassLoader();
+
     <T  extends ComponentMetadata> List<T> getComponentsMetadata(Class<T> type);
 
 }
