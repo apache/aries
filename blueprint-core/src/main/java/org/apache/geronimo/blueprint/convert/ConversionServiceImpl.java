@@ -168,6 +168,8 @@ public class ConversionServiceImpl implements ConversionService {
             }
         } else if (Byte.class == toType || byte.class == toType) {
             return Byte.valueOf(value);
+        } else if (Enum.class.isAssignableFrom(toType)) {
+            return Enum.valueOf((Class<Enum>) toType, value);
         } else {
             return createObject(value, toType);
         }
