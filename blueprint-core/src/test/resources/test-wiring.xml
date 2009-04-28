@@ -56,6 +56,7 @@
             <props>
                 <prop key="key1" value="value1" />
                 <prop key="2" value="value2" />
+                <prop key="foo">bar</prop>
             </props>
         </property>
         <property name="array">
