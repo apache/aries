@@ -53,9 +53,8 @@ public class ConversionServiceImplTest extends TestCase {
     public void testConvertCharacter() throws Exception {
         assertEquals('c', service.convert("c", char.class));
         assertEquals('c', service.convert("c", Character.class));
-        // TODO: check the following tests
-//        assertEquals('\n', service.convert("\\n", char.class));
-//        assertEquals('\n', service.convert("\\n", Character.class));
+        assertEquals('\u00F6', service.convert("\\u00F6", char.class));
+        assertEquals('\u00F6', service.convert("\\u00F6", Character.class));
     }
 
     public void testConvertBoolean() throws Exception {

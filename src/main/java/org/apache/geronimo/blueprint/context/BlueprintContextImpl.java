@@ -355,7 +355,6 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
             }
         }
         Map instances = objectGraph.createAll(components);
-        System.out.println("Component instances: " + instances);
     }
 
     private void destroyComponents() {
