@@ -81,46 +81,50 @@ public class CmNamespaceHandler implements NamespaceHandler {
         ExtendedComponentDefinitionRegistry registry = (ExtendedComponentDefinitionRegistry) context.getComponentDefinitionRegistry();
         createConfigAdminProxy(context, registry);
         if (nodeNameEquals(element, PROPERTY_PLACEHOLDER_ELEMENT)) {
-            MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
-            metadata.setId(getName(element));
-            metadata.setClassName(CmPropertyPlaceholder.class.getName());
-            metadata.addProperty("blueprintContext", createRef(context, "blueprintContext"));
-            metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
-            metadata.addProperty("persistentId", createValue(context, element.getAttribute(PERSISTENT_ID_ATTRIBUTE)));
-            String prefix = element.hasAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
-                                        ? element.getAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
-                                        : "${";
-            metadata.addProperty("placeholderPrefix", createValue(context, prefix));
-            String suffix = element.hasAttribute(PLACEHOLDER_SUFFIX_ATTRIBUTE)
-                                        ? element.getAttribute(PLACEHOLDER_SUFFIX_ATTRIBUTE)
-                                        : "}";
-            metadata.addProperty("placeholderSuffix", createValue(context, suffix));
-            String defaultsRef = element.hasAttribute(DEFAULTS_REF_ATTRIBUTE) ? element.getAttribute(DEFAULTS_REF_ATTRIBUTE) : null;
-            if (defaultsRef != null) {
-                metadata.addProperty("defaultProperties", createRef(context, defaultsRef));
-            }
-            // Parse elements
-            NodeList nl = element.getChildNodes();
-            for (int i = 0; i < nl.getLength(); i++) {
-                Node node = nl.item(i);
-                if (node instanceof Element) {
-                    Element e = (Element) node;
-                    if (BLUEPRINT_CM_NAMESPACE.equals(e.getNamespaceURI())) {
-                        if (nodeNameEquals(e, DEFAULT_PROPERTIES_ELEMENT)) {
-                            if (defaultsRef != null) {
-                                throw new ComponentDefinitionException("Only one of " + DEFAULTS_REF_ATTRIBUTE + " attribute or " + DEFAULT_PROPERTIES_ELEMENT + " element is allowed");
-                            }
-                            Metadata props = parseDefaultProperties(context, metadata, e);
-                            metadata.addProperty("defaultProperties", props);
-                        }
-                    }
-                }
-            }
-            return metadata;
+            return parsePropertyPlaceholder(context, element);
         } else {
             // TODO: parse other compendium elements.
             throw new ComponentDefinitionException("Unsupported element: " + element.getNodeName());
         }
+    }
+
+    private ComponentMetadata parsePropertyPlaceholder(ExtendedParserContext context, Element element) {
+        MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
+        metadata.setId(getName(element));
+        metadata.setClassName(CmPropertyPlaceholder.class.getName());
+        metadata.addProperty("blueprintContext", createRef(context, "blueprintContext"));
+        metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
+        metadata.addProperty("persistentId", createValue(context, element.getAttribute(PERSISTENT_ID_ATTRIBUTE)));
+        String prefix = element.hasAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
+                                    ? element.getAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
+                                    : "${";
+        metadata.addProperty("placeholderPrefix", createValue(context, prefix));
+        String suffix = element.hasAttribute(PLACEHOLDER_SUFFIX_ATTRIBUTE)
+                                    ? element.getAttribute(PLACEHOLDER_SUFFIX_ATTRIBUTE)
+                                    : "}";
+        metadata.addProperty("placeholderSuffix", createValue(context, suffix));
+        String defaultsRef = element.hasAttribute(DEFAULTS_REF_ATTRIBUTE) ? element.getAttribute(DEFAULTS_REF_ATTRIBUTE) : null;
+        if (defaultsRef != null) {
+            metadata.addProperty("defaultProperties", createRef(context, defaultsRef));
+        }
+        // Parse elements
+        NodeList nl = element.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node node = nl.item(i);
+            if (node instanceof Element) {
+                Element e = (Element) node;
+                if (BLUEPRINT_CM_NAMESPACE.equals(e.getNamespaceURI())) {
+                    if (nodeNameEquals(e, DEFAULT_PROPERTIES_ELEMENT)) {
+                        if (defaultsRef != null) {
+                            throw new ComponentDefinitionException("Only one of " + DEFAULTS_REF_ATTRIBUTE + " attribute or " + DEFAULT_PROPERTIES_ELEMENT + " element is allowed");
+                        }
+                        Metadata props = parseDefaultProperties(context, metadata, e);
+                        metadata.addProperty("defaultProperties", props);
+                    }
+                }
+            }
+        }
+        return metadata;
     }
 
     private Metadata parseDefaultProperties(ExtendedParserContext context, MutableBeanMetadata enclosingComponent, Element element) {
