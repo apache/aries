@@ -68,8 +68,8 @@ import org.osgi.service.blueprint.reflect.NonNullMetadata;
  */
 public abstract class AbstractPropertyPlaceholder implements ComponentDefinitionRegistryProcessor {
 
-    private String placeholderPrefix;
-    private String placeholderSuffix;
+    private String placeholderPrefix = "${";
+    private String placeholderSuffix = "}";
     private Pattern pattern;
 
     public String getPlaceholderPrefix() {
