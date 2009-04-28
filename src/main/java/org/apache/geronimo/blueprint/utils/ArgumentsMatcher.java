@@ -112,7 +112,7 @@ public class ArgumentsMatcher {
         
         int size = matches.size();
         if (size == 0) {
-            throw new RuntimeException("Did not find any matching constrcutor");
+            throw new RuntimeException("Did not find any matching constructor");
         } else if (size == 1) {
             return matches.get(0);
         } else {
