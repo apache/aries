@@ -651,11 +651,13 @@ public class Parser {
         if (!element.hasAttribute(KEY_ATTRIBUTE)) {
             throw new ComponentDefinitionException(KEY_ATTRIBUTE + " attribute is required");
         }
-        if (!element.hasAttribute(VALUE_ATTRIBUTE)) {
-            throw new ComponentDefinitionException(VALUE_ATTRIBUTE + " attribute is required");
+        String value = null;
+        if (element.hasAttribute(VALUE_ATTRIBUTE)) {
+            value = element.getAttribute(VALUE_ATTRIBUTE);
+        } else {
+            value = getTextValue(element);
         }
         String key = element.getAttribute(KEY_ATTRIBUTE);
-        String value = element.getAttribute(VALUE_ATTRIBUTE);
         return new MapEntryImpl(new ValueMetadataImpl(key, String.class.getName()),
                                 new ValueMetadataImpl(value, String.class.getName()));
     }
