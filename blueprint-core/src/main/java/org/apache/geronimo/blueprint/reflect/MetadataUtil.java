@@ -30,6 +30,7 @@ import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
+import org.osgi.service.blueprint.reflect.CollectionMetadata;
 
 
 /**
@@ -74,6 +75,9 @@ public class MetadataUtil {
         }
         else if (source instanceof ReferenceMetadata) {
             return new ReferenceMetadataImpl((ReferenceMetadata)source);
+        }
+        else if (source instanceof CollectionMetadata) {
+            return new CollectionMetadataImpl((CollectionMetadata)source);
         }
 
         throw new RuntimeException("Unknown Metadata type received: " + source.getClass().getName());
@@ -132,6 +136,8 @@ public class MetadataUtil {
             return type.cast(new ServiceMetadataImpl());
         } else if (ReferenceMetadata.class.isAssignableFrom(type)) {
             return type.cast(new ReferenceMetadataImpl());
+        } else if (CollectionMetadata.class.isAssignableFrom(type)) {
+            return type.cast(new CollectionMetadataImpl());
         } else {
             throw new IllegalArgumentException("Unsupport metadata type: " + (type != null ? type.getName() : null));
         }

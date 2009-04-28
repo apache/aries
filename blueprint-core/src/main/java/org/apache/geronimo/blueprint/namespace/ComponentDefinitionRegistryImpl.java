@@ -69,11 +69,15 @@ public class ComponentDefinitionRegistryImpl implements ExtendedComponentDefinit
     }
 
     public void registerComponentDefinition(ComponentMetadata component) {
-        String name = component.getId();
-        if (components.containsKey(name)) {
-            throw new ComponentNameAlreadyInUseException(name);
+        String id = component.getId();
+        if (id == null) {
+            // TODO: should we generate a unique name?
+            throw new IllegalArgumentException("Component must have a valid id");
         }
-        components.put(name, component);
+        if (components.containsKey(id)) {
+            throw new ComponentNameAlreadyInUseException(id);
+        }
+        components.put(id, component);
     }
 
     public void removeComponentDefinition(String name) {

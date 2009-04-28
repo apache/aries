@@ -220,7 +220,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         } catch (Exception e) {
             state = State.Failed;
             // TODO: clean up
-            LOGGER.error("Unable to start blueprint context", e);
+            LOGGER.error("Unable to start blueprint context for bundle " + bundleContext.getBundle().getSymbolicName(), e);
             sender.sendFailure(this, e);
         }
     }
