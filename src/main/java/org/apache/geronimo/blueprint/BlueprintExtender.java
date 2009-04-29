@@ -83,6 +83,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         context.removeBundleListener(this);
         this.sender.destroy();
         this.handlers.destroy();
+        executors.shutdown();
         LOGGER.debug("Blueprint extender stopped");
     }
 
