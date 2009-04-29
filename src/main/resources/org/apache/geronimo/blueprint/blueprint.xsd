@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
     /*
-    * $Revision: 6871 $
+    * $Revision: 6890 $
     *
     * Copyright (c) OSGi Alliance (2008, 2009). All Rights Reserved.
     *
@@ -101,8 +101,8 @@
                 <xsd:group ref="beanElements"/>
 				<xsd:attribute name="class" type="Tclass"/>
 				<xsd:attribute name="depends-on" type="xsd:normalizedString"/>
-				<xsd:attribute name="init-method" type="Tmethod"/>
-				<xsd:attribute name="destroy-method" type="Tmethod"/>
+				<xsd:attribute name="init-method" type="TnullableMethod"/>
+				<xsd:attribute name="destroy-method" type="TnullableMethod"/>
 				<xsd:attribute name="factory-method" type="Tmethod"/>
 				<xsd:attribute name="factory-component" type="Tidref"/>
 
@@ -208,6 +208,7 @@
 					use="optional"/>
 				<xsd:attribute name="availability" type="Tavailability"
 					use="optional" default="mandatory"/>
+                <xsd:anyAttribute namespace="##other" processContents="lax"/>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
@@ -256,6 +257,7 @@
                 <xsd:attribute name="depends-on" type="xsd:normalizedString" use="optional"/>
                 <xsd:attribute name="auto-export" type="TautoExportModes" default="disabled"/>
                 <xsd:attribute name="ranking" type="xsd:int" default="0"/>
+                <xsd:anyAttribute namespace="##other" processContents="lax"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
@@ -344,11 +346,9 @@
    		</xsd:sequence>
 	</xsd:complexType>
 
-    <xsd:complexType name="Tprop" mixed="true">
-        <xsd:attribute name="key" type="TstringValue"
-            use="required"/>
-        <xsd:attribute name="value" type="TstringValue"
-            use="optional"/>
+    <xsd:complexType name="Tprop">
+        <xsd:attribute name="key" type="TstringValue" use="required"/>
+        <xsd:attribute name="value" type="TstringValue" use="required"/>
     </xsd:complexType>
 
     <!-- 'map' element type -->
@@ -399,6 +399,14 @@
 	<!-- Should be used for all attributes and elements that refer to method names -->
 	<xsd:simpleType name="Tmethod">
 		<xsd:restriction base="xsd:NCName"/>
+	</xsd:simpleType>
+
+	<!-- Should be used for all attributes and elements that refer to method names -->
+	<xsd:simpleType name="TnullableMethod">
+		<xsd:restriction base="xsd:token">
+            <xsd:pattern value="[\i-[:]][\c-[:]]*"/>
+            <xsd:pattern value=""/>                        
+        </xsd:restriction>
 	</xsd:simpleType>
 
 	<!-- Should be used for all attributes and elements that refer to method names -->
