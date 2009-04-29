@@ -18,24 +18,39 @@
  */
 package org.apache.geronimo.blueprint.itests;
 
-import java.net.URLDecoder;
 import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.geronimo.blueprint.sample.BindingListener;
 import org.apache.geronimo.blueprint.sample.InterfaceA;
-import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
-import org.osgi.framework.Bundle;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.felix;
+import static org.ops4j.pax.exam.CoreOptions.knopflerfish;
+import static org.ops4j.pax.exam.CoreOptions.mavenConfiguration;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.OptionUtils;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.configProfile;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.profile;
+import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.ServiceUnavailableException;
-import org.osgi.util.tracker.ServiceTracker;
-import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
 
+@RunWith(JUnit4TestRunner.class)
 public class TestReferences extends AbstractIntegrationTest {
 
+    @Test
     public void testUnaryReference() throws Exception {
         BlueprintContext blueprintContext = getBlueprintContextForBundle("blueprint-sample");
         assertNotNull(blueprintContext);
@@ -88,6 +103,7 @@ public class TestReferences extends AbstractIntegrationTest {
         }
     }
 
+    @Test
     public void testListReferences() throws Exception {
         BlueprintContext blueprintContext = getBlueprintContextForBundle("blueprint-sample");
         assertNotNull(blueprintContext);
@@ -114,63 +130,30 @@ public class TestReferences extends AbstractIntegrationTest {
 
     }
 
-    protected BlueprintContext getBlueprintContextForBundle(String symbolicName) throws Exception {
-        String filter = "(&(" + Constants.OBJECTCLASS + "=" + BlueprintContext.class.getName() + ")(osgi.blueprint.context.symbolicname=" + symbolicName + "))";
-        ServiceTracker tracker = new ServiceTracker(bundleContext, org.osgi.framework.FrameworkUtil.createFilter(filter), null);
-        tracker.open();
-        return (BlueprintContext) tracker.waitForService(5000);
-    }
+    @org.ops4j.pax.exam.junit.Configuration
+    public static Option[] configuration() {
+        Option[] options = options(
+            // install log service using pax runners profile abstraction (there are more profiles, like DS)
+            logProfile(),
+            configProfile(),
+            profile("url"),
 
-    /**
-	 * The manifest to use for the "virtual bundle" created
-	 * out of the test classes and resources in this project
-	 *
-	 * This is actually the boilerplate manifest with one additional
-	 * import-package added. We should provide a simpler customization
-	 * point for such use cases that doesn't require duplication
-	 * of the entire manifest...
-	 */
-	protected String getManifestLocation() {
-		return "classpath:org/apache/geronimo/blueprint/MANIFEST.MF";
-	}
+            // this is how you set the default log level when using pax logging (logProfile)
+            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 
-	/**
-	 * The location of the packaged OSGi bundles to be installed
-	 * for this test. Values are Spring resource paths. The bundles
-	 * we want to use are part of the same multi-project maven
-	 * build as this project is. Hence we use the localMavenArtifact
-	 * helper method to find the bundles produced by the package
-	 * phase of the maven build (these tests will run after the
-	 * packaging phase, in the integration-test phase).
-	 *
-	 * JUnit, commons-logging, spring-core and the spring OSGi
-	 * test bundle are automatically included so do not need
-	 * to be specified here.
-	 */
-	protected String[] getTestBundlesNames() {
-        return new String[] {
-                getBundle("org.apache.geronimo", "blueprint-bundle"),
-                getBundle("org.apache.geronimo", "blueprint-sample"),
-		};
-	}
+            // Bundles
+            mavenBundle("org.apache.geronimo", "blueprint-bundle"),
+            mavenBundle("org.apache.geronimo", "blueprint-sample"),
 
-    private Bundle installBundle(Resource location) throws Exception {
-        Assert.notNull(bundleContext);
-        Assert.notNull(location);
-        if (logger.isDebugEnabled())
-            logger.debug("Installing bundle from location " + location.getDescription());
+            felix(), equinox() //, knopflerfish()
+        );
 
-        String bundleLocation;
-
-        try {
-            bundleLocation = URLDecoder.decode(location.getURL().toExternalForm(), "UTF-8");
-        }
-        catch (Exception ex) {
-            // the URL cannot be created, fall back to the description
-            bundleLocation = location.getDescription();
+        // use config generated by the Maven plugin (until PAXEXAM-62/64 get resolved)
+        if (TestBlueprintContext.class.getClassLoader().getResource("META-INF/maven/paxexam-config.args") != null) {
+            options = OptionUtils.combine(options, mavenConfiguration());
         }
 
-        return bundleContext.installBundle(bundleLocation, location.getInputStream());
+        return options;
     }
 
 }
