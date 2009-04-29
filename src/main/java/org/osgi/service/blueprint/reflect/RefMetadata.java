@@ -16,6 +16,8 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-public interface RefMetadata extends Target, IdRefMetadata {
+public interface RefMetadata extends Target, NonNullMetadata {
+
+    String getComponentId();
 
 }
