@@ -18,47 +18,49 @@
  */
 package org.apache.geronimo.blueprint.itests;
 
-import java.net.URLDecoder;
-import java.util.Properties;
-import java.util.Hashtable;
-import java.util.Currency;
-import java.util.List;
-import java.util.ArrayList;
 import java.text.SimpleDateFormat;
+import java.util.Currency;
+import java.util.Hashtable;
 
-import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
-import org.apache.servicemix.kernel.testing.support.Counter;
-import org.apache.geronimo.blueprint.sample.Foo;
 import org.apache.geronimo.blueprint.sample.Bar;
-import org.apache.geronimo.blueprint.sample.InterfaceA;
-import org.apache.geronimo.blueprint.sample.CurrencyTypeConverter;
+import org.apache.geronimo.blueprint.sample.Foo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.felix;
+import static org.ops4j.pax.exam.CoreOptions.mavenConfiguration;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.OptionUtils;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.configProfile;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.profile;
+import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceListener;
-import org.osgi.framework.ServiceEvent;
 import org.osgi.service.blueprint.context.BlueprintContext;
-import org.osgi.service.blueprint.context.ServiceUnavailableException;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.Configuration;
-import org.osgi.util.tracker.ServiceTracker;
-import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
-import org.springframework.osgi.util.OsgiFilterUtils;
-import org.springframework.osgi.util.OsgiListenerUtils;
+import org.osgi.service.cm.ConfigurationAdmin;
 
+@RunWith(JUnit4TestRunner.class)
 public class TestBlueprintContext extends AbstractIntegrationTest {
 
+    @Test
     public void test() throws Exception {
         // Create a config to check the property placeholder
         ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
-        Configuration cf = ca.getConfiguration("blueprint-sample");
+        Configuration cf = ca.getConfiguration("blueprint-sample", null);
         Hashtable props = new Hashtable();
         props.put("key.b", "10");
         cf.update(props);
 
-        Resource res = locateBundle(getBundle("org.apache.geronimo", "blueprint-sample"));
-        Bundle bundle = installBundle(res);
+        Bundle bundle = getInstalledBundle("blueprint-sample");
         assertNotNull(bundle);
 
         bundle.start();
@@ -108,101 +110,31 @@ public class TestBlueprintContext extends AbstractIntegrationTest {
         assertTrue(foo.isDestroyed());
     }
 
-    protected BlueprintContext getBlueprintContextForBundle(String symbolicName, long timeout) throws Exception {
-        return getOsgiService(BlueprintContext.class, "(osgi.blueprint.context.symbolicname=" + symbolicName + ")", timeout);
-    }
+    @org.ops4j.pax.exam.junit.Configuration
+    public static Option[] configuration() {
+        Option[] options = options(
+            // install log service using pax runners profile abstraction (there are more profiles, like DS)
+            logProfile(),
+            configProfile(),
+            profile("url"),
 
-    public <T> T getOsgiService(Class<T> type, String filter, long timeout) {
-        // translate from seconds to miliseconds
-        long time = timeout * 1000;
 
-        // use the counter to make sure the threads block
-        final Counter counter = new Counter("waitForOsgiService on bnd=" + type.getName());
+            // this is how you set the default log level when using pax logging (logProfile)
+            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 
-        counter.increment();
+            // Bundles
+            mavenBundle("org.apache.geronimo", "blueprint-bundle"),
+            mavenBundle("org.apache.geronimo", "blueprint-sample").noStart(),
 
-        final List<T> services = new ArrayList<T>();
+            felix(), equinox() //, knopflerfish()
+        );
 
-        ServiceListener listener = new ServiceListener() {
-            public void serviceChanged(ServiceEvent event) {
-                if (event.getType() == ServiceEvent.REGISTERED) {
-                    services.add((T) bundleContext.getService(event.getServiceReference()));
-                    counter.decrement();
-                }
-            }
-        };
-
-        String flt = OsgiFilterUtils.unifyFilter(type.getName(), filter);
-        OsgiListenerUtils.addServiceListener(bundleContext, listener, flt);
-
-        if (logger.isDebugEnabled())
-            logger.debug("start waiting for OSGi service=" + type.getName());
-
-        try {
-            if (counter.waitForZero(time)) {
-                logger.warn("waiting for OSGi service=" + type.getName() + " timed out");
-                throw new RuntimeException("Gave up waiting for OSGi service '" + type.getName() + "' to be created");
-            }
-            else if (logger.isDebugEnabled()) {
-                logger.debug("found OSGi service=" + type.getName());
-            }
-            return services.get(0);
-        }
-        finally {
-            // inform waiting thread
-            bundleContext.removeServiceListener(listener);
-        }
-    }
-
-    /**
-	 * The manifest to use for the "virtual bundle" created
-	 * out of the test classes and resources in this project
-	 *
-	 * This is actually the boilerplate manifest with one additional
-	 * import-package added. We should provide a simpler customization
-	 * point for such use cases that doesn't require duplication
-	 * of the entire manifest...
-	 */
-	protected String getManifestLocation() {
-		return "classpath:org/apache/geronimo/blueprint/MANIFEST.MF";
-	}
-
-	/**
-	 * The location of the packaged OSGi bundles to be installed
-	 * for this test. Values are Spring resource paths. The bundles
-	 * we want to use are part of the same multi-project maven
-	 * build as this project is. Hence we use the localMavenArtifact
-	 * helper method to find the bundles produced by the package
-	 * phase of the maven build (these tests will run after the
-	 * packaging phase, in the integration-test phase).
-	 *
-	 * JUnit, commons-logging, spring-core and the spring OSGi
-	 * test bundle are automatically included so do not need
-	 * to be specified here.
-	 */
-	protected String[] getTestBundlesNames() {
-        return new String[] {
-                getBundle("org.apache.geronimo", "blueprint-bundle"),
-		};
-	}
-
-    private Bundle installBundle(Resource location) throws Exception {
-        Assert.notNull(bundleContext);
-        Assert.notNull(location);
-        if (logger.isDebugEnabled())
-            logger.debug("Installing bundle from location " + location.getDescription());
-
-        String bundleLocation;
-
-        try {
-            bundleLocation = URLDecoder.decode(location.getURL().toExternalForm(), "UTF-8");
-        }
-        catch (Exception ex) {
-            // the URL cannot be created, fall back to the description
-            bundleLocation = location.getDescription();
+        // use config generated by the Maven plugin (until PAXEXAM-62/64 get resolved)
+        if (TestBlueprintContext.class.getClassLoader().getResource("META-INF/maven/paxexam-config.args") != null) {
+            options = OptionUtils.combine(options, mavenConfiguration());
         }
 
-        return bundleContext.installBundle(bundleLocation, location.getInputStream());
+        return options;
     }
 
 }
