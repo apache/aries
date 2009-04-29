@@ -44,7 +44,7 @@ public class TypedRecipe extends AbstractRecipe {
     
     public TypedRecipe(ConversionService conversionService, Class type, Object value) {
         this.conversionService = conversionService;
-        this.type = (type == null) ? Object.class : type;
+        this.type = type;
         this.value = value;
     }
 
@@ -70,7 +70,20 @@ public class TypedRecipe extends AbstractRecipe {
 
     public boolean canCreate(Type expectedType) {
         Class expectedClass = RecipeHelper.toClass(expectedType);
-        return expectedClass == type;
+        if (type == null) {
+            if (value == null) {
+                return true;
+            } else if (value instanceof Recipe) {
+                return ((Recipe) value).canCreate(expectedType);
+            } else {
+                return value.getClass().isAssignableFrom(expectedClass);
+            }
+        } else {
+            return expectedClass == type;
+        }
     }
 
+    public String toString() {
+        return "TypedRecipe: " + type + " " + value;
+    }
 }

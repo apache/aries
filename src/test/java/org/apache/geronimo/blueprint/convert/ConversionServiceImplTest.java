@@ -84,6 +84,11 @@ public class ConversionServiceImplTest extends TestCase {
         assertEquals(Boolean.FALSE, service.convert("FALSE", boolean.class));
         assertEquals(Boolean.FALSE, service.convert("NO", boolean.class));
         assertEquals(Boolean.FALSE, service.convert("OFF", boolean.class));
+        
+        assertEquals(Boolean.FALSE, service.convert(false, boolean.class));
+        assertEquals(Boolean.TRUE, service.convert(true, boolean.class));        
+        assertEquals(Boolean.FALSE, service.convert(false, Boolean.class));
+        assertEquals(Boolean.TRUE, service.convert(true, Boolean.class));
     }
 
     public void testConvertOther() throws Exception {
@@ -137,11 +142,11 @@ public class ConversionServiceImplTest extends TestCase {
         
         // lookup on a specific registered converter type
         Object result;
-        result = s.convert(null, Region.class);
+        result = s.convert(new Object(), Region.class);
         assertTrue(result instanceof Region);
         assertFalse(result instanceof EuRegion);
                 
-        result = s.convert(null, EuRegion.class);
+        result = s.convert(new Object(), EuRegion.class);
         assertTrue(result instanceof EuRegion);
         
         // find first converter that matches the type
@@ -149,7 +154,7 @@ public class ConversionServiceImplTest extends TestCase {
         s.registerConverter(new AsianRegionConverter());
         s.registerConverter(new EuRegionConverter());
         
-        result = s.convert(null, Region.class);
+        result = s.convert(new Object(), Region.class);
         assertTrue(result instanceof AsianRegion || result instanceof EuRegion);
     }
     

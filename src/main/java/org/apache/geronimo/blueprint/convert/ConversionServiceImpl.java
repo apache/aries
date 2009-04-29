@@ -30,6 +30,7 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 
 import org.apache.geronimo.blueprint.context.BlueprintContextImpl;
+import org.apache.xbean.recipe.RecipeHelper;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.convert.Converter;
 
@@ -74,7 +75,7 @@ public class ConversionServiceImpl implements ConversionService {
     }
     
     public Object convert(Object fromValue, Class toType) throws Exception {
-        if (toType.isInstance(fromValue)) {
+        if (RecipeHelper.isInstance(toType, fromValue)) {
             return fromValue;
         }
         Object value = doConvert(fromValue, toType);        
