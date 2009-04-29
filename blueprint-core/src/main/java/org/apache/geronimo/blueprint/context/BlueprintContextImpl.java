@@ -376,14 +376,18 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     private void registerAllServices() {
         for (ServiceMetadata service : getExportedServicesMetadata()) {
             ServiceRegistrationProxy proxy = (ServiceRegistrationProxy) getComponent(service.getId());
-            proxy.register();
+            if (proxy != null) {
+                proxy.register();
+            }
         }
     }
     
     private void unregisterAllServices() {
         for (ServiceMetadata service : getExportedServicesMetadata()) {
             ServiceRegistrationProxy proxy = (ServiceRegistrationProxy) getComponent(service.getId());
-            proxy.unregister();
+            if (proxy != null) {
+                proxy.unregister();
+            }
         }
     }
     
@@ -395,6 +399,9 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         ComponentMetadata metadata = getComponentMetadata(name);
         if (metadata == null) {
             throw new NoSuchComponentException(name);
+        }
+        if (objectGraph == null) {
+            return null;
         }
         return objectGraph.create(name);
     }
