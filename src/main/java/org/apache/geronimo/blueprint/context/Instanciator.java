@@ -280,15 +280,15 @@ public class Instanciator {
             return new ReferenceRecipe(componentName);
         } else if (v instanceof CollectionMetadata) {
             CollectionMetadata collectionMetadata = (CollectionMetadata) v;
+            Class cl = collectionMetadata.getCollectionClass();
             Class type = loadClass(collectionMetadata.getValueTypeName());
-            if (collectionMetadata.getCollectionClass() == Object[].class) {
+            if (cl == Object[].class) {
                 ArrayRecipe ar = new ArrayRecipe();
                 for (Metadata lv : collectionMetadata.getValues()) {
                     ar.add(getValue(lv, type));
                 }
                 return ar;
             } else {
-                Class cl = collectionMetadata.getCollectionClass() == List.class ? ArrayList.class : HashSet.class;
                 CollectionRecipe cr = new CollectionRecipe(cl);
                 for (Metadata lv : collectionMetadata.getValues()) {
                     cr.add(getValue(lv, type));
