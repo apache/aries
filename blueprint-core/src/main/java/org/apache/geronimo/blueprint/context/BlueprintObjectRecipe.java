@@ -140,7 +140,12 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         List<Object> args = new ArrayList<Object>();
         for (int i = 0; beanArguments != null && i < beanArguments.size(); i++) {
             BeanArgument argument = beanArguments.get(i);
-            Class type = loadClass(argument.getValueType());
+            String valueType = argument.getValueType();
+            if (valueType == null) {
+                // check if valueType is set on the <value/> element
+                valueType = getValueType(argument.getValue());
+            }            
+            Class type = loadClass(valueType);
             Object obj = arguments.get(i);
             if (type != null) {
                 obj = new TypedRecipe(blueprintContext.getConversionService(), type, obj);
@@ -169,6 +174,14 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             return false;
         }
         return true;
+    }
+    
+    private String getValueType(Metadata metadata) {
+        if (metadata instanceof ValueMetadata) {
+            ValueMetadata stringValue = (ValueMetadata) metadata;
+            return stringValue.getTypeName();
+        }
+        return null;
     }
     
     private Class loadClass(String typeName) throws ConstructionException {

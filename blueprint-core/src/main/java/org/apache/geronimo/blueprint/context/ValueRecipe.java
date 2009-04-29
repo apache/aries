@@ -71,5 +71,9 @@ public class ValueRecipe extends AbstractRecipe {
             return false;
         }
     }
+    
+    public String toString() {
+        return "ValueRecipe: " + type + " " + value.getStringValue();
+    }
 
 }
