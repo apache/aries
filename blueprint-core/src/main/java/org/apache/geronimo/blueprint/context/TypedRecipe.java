@@ -22,7 +22,9 @@ import java.lang.reflect.Type;
 
 import org.apache.xbean.recipe.AbstractRecipe;
 import org.apache.xbean.recipe.ConstructionException;
+import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.RecipeHelper;
+import org.osgi.service.blueprint.convert.ConversionService;
 
 /**
  * Recipe that always returns null but only for a specified type.
@@ -30,27 +32,45 @@ import org.apache.xbean.recipe.RecipeHelper;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev$, $Date$
  */
-public class NullRecipe extends AbstractRecipe {
+public class TypedRecipe extends AbstractRecipe {
 
     private Class type;
+    private Object value;
+    private ConversionService conversionService;
 
-    public NullRecipe(Class type) {
+    public TypedRecipe() {
+        this(null, null, null);
+    }
+    
+    public TypedRecipe(ConversionService conversionService, Class type, Object value) {
+        this.conversionService = conversionService;
         this.type = (type == null) ? Object.class : type;
+        this.value = value;
     }
 
     @Override
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
-        Class expectedClass = RecipeHelper.toClass(expectedType);
-        if (expectedClass.isAssignableFrom(type)) {
+        if (!canCreate(expectedType)) {
+            throw new ConstructionException("Invalid expectedType: "  + expectedType + " " + type);
+        }
+        
+        Object obj = value;
+        if (value == null) {
             return null;
-        } else {
-            throw new ConstructionException("");
+        } else if (value instanceof Recipe) {
+            obj = RecipeHelper.convert(Object.class, value, lazyRefAllowed);
+        }
+        
+        try {
+            return conversionService.convert(obj, type);
+        } catch (Exception e) {
+            throw new ConstructionException("Failed to convert", e);
         }
     }
 
     public boolean canCreate(Type expectedType) {
         Class expectedClass = RecipeHelper.toClass(expectedType);
-        return expectedClass.isAssignableFrom(type);
+        return expectedClass == type;
     }
 
 }

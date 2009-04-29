@@ -21,6 +21,7 @@ package org.apache.geronimo.blueprint.pojos;
 public class Multiple {
 
     private int intValue = -1;
+    private Integer integerValue = null;
     private String stringValue = null;
 
     public Multiple(String arg) {   
@@ -30,9 +31,17 @@ public class Multiple {
     public Multiple(int arg) {   
         intValue = arg;
     }
+    
+    public Multiple(Integer arg) {   
+        integerValue = arg;
+    }
 
     public int getInt() {
         return intValue;
+    }
+    
+    public Integer getInteger() {
+        return integerValue;
     }
 
     public String getString() {

@@ -26,6 +26,8 @@ import java.util.Properties;
 import java.io.ByteArrayOutputStream;
 
 import junit.framework.TestCase;
+
+import org.apache.geronimo.blueprint.TestBlueprintContext;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.convert.Converter;
 
@@ -34,7 +36,7 @@ public class ConversionServiceImplTest extends TestCase {
     private ConversionService service;
 
     protected void setUp() {
-        service = new ConversionServiceImpl();
+        service = new ConversionServiceImpl(new TestBlueprintContext(null));
     }
 
     public void testConvertSimpleTypes() throws Exception {
@@ -123,13 +125,13 @@ public class ConversionServiceImplTest extends TestCase {
         assertEquals(new Locale("de", "", "POSIX"), result);
     }
     
-    public void testConvertWeird() throws Exception {
+    public void testConvertClass() throws Exception {
         assertEquals(this, service.convert(this, ConversionServiceImplTest.class));
-        assertEquals(ConversionServiceImplTest.class, service.convert(this, Class.class));
+        assertEquals(ConversionServiceImplTest.class, service.convert(this.getClass().getName(), Class.class));
     }
     
     public void testCustom() throws Exception {
-        ConversionServiceImpl s = new ConversionServiceImpl();
+        ConversionServiceImpl s = new ConversionServiceImpl(new TestBlueprintContext(null));
         s.registerConverter(new RegionConverter());
         s.registerConverter(new EuRegionConverter());
         
@@ -143,7 +145,7 @@ public class ConversionServiceImplTest extends TestCase {
         assertTrue(result instanceof EuRegion);
         
         // find first converter that matches the type
-        s = new ConversionServiceImpl();
+        s = new ConversionServiceImpl(new TestBlueprintContext(null));
         s.registerConverter(new AsianRegionConverter());
         s.registerConverter(new EuRegionConverter());
         
