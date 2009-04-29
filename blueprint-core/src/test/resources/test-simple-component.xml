@@ -31,14 +31,7 @@
         </property>
     </bean>
 
-    <!-- TODO: destroy-method="" does not pass schema validation for now
     <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoA" init-method="initPojo" destroy-method="" >
-        <argument index = "1" value="val0"/>
-        <argument index = "0" ref="val1" />
-    </bean>
-    -->
-
-    <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoA" init-method="initPojo" >
         <argument index = "1" value="val0"/>
         <argument index = "0" ref="val1" />
     </bean>
