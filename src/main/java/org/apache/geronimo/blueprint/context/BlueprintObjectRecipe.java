@@ -37,6 +37,8 @@ import org.apache.geronimo.blueprint.utils.ArgumentsMatch;
 import org.apache.geronimo.blueprint.utils.ArgumentsMatcher;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.service.blueprint.reflect.BeanArgument;
+import org.osgi.service.blueprint.reflect.CollectionMetadata;
+import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 
@@ -140,15 +142,16 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             BeanArgument argument = beanArguments.get(i);
             Class type = loadClass(argument.getValueType());
             Object obj = arguments.get(i);
-            if (obj == null) {
-                obj = new NullRecipe(type);
-            } else if (obj instanceof Recipe) {                
-                if (type != null || shouldPreinstantiate(argument.getValue())) {
-                    obj = RecipeHelper.convert(Object.class, obj, refAllowed);
-                    obj = convert(obj, type);
-                }
+            if (type != null) {
+                obj = new TypedRecipe(blueprintContext.getConversionService(), type, obj);
             } else {
-                obj = convert(obj, type);
+                if (obj == null) {
+                    obj = new TypedRecipe();
+                } else if (obj instanceof Recipe) {                
+                    if (shouldPreinstantiate(argument.getValue())) {
+                        obj = RecipeHelper.convert(Object.class, obj, refAllowed);
+                    }
+                }
             }
             args.add(obj);
         }
@@ -160,6 +163,10 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         if (metadata instanceof ValueMetadata) {
             ValueMetadata stringValue = (ValueMetadata) metadata;
             return (stringValue.getTypeName() != null);
+        } else if (metadata instanceof MapMetadata) {
+            return false;
+        } else if (metadata instanceof CollectionMetadata) {
+            return false;
         }
         return true;
     }

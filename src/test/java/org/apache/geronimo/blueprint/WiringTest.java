@@ -195,19 +195,22 @@ public class WiringTest extends AbstractBlueprintTest {
         }
         
         Object obj6 = graph.create("multipleInt");
-        testMultiple(obj6, null, 123);
+        testMultiple(obj6, null, 123, null);
         
-        Object obj7 = graph.create("multipleString");
-        testMultiple(obj7, "123", -1);
+        Object obj7 = graph.create("multipleInteger");
+        testMultiple(obj7, null, -1, new Integer(123));
         
-        Object obj8 = graph.create("multipleStringConvertable");
-        testMultiple(obj8, "hello", -1);
+        Object obj8 = graph.create("multipleString");
+        testMultiple(obj8, "123", -1, null);
         
-        Object obj9 = graph.create("multipleFactory1");
-        testMultiple(obj9, null, 1234);
+        Object obj9 = graph.create("multipleStringConvertable");
+        testMultiple(obj9, "hello", -1, null);
+        
+        Object obj10 = graph.create("multipleFactory1");
+        testMultiple(obj10, null, 1234, null);
 
-        Object obj10 = graph.create("multipleFactory2");
-        testMultiple(obj10, "helloCreate-boolean", -1);        
+        Object obj11 = graph.create("multipleFactory2");
+        testMultiple(obj11, "helloCreate-boolean", -1, null);        
         
         try {
             graph.create("multipleFactoryNull");
@@ -217,8 +220,8 @@ public class WiringTest extends AbstractBlueprintTest {
             // TODO: check the exception string?
         }
         
-        Object obj11 = graph.create("multipleFactoryTypedNull");
-        testMultiple(obj11, "hello-boolean", -1);          
+        Object obj12 = graph.create("multipleFactoryTypedNull");
+        testMultiple(obj12, "hello-boolean", -1, null);          
     }
     
     private void testPojoB(Object obj, URI uri, int intValue) {
@@ -229,11 +232,12 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals(intValue, pojob.getNumber());
     }
     
-    private void testMultiple(Object obj, String stringValue, int intValue) {
+    private void testMultiple(Object obj, String stringValue, int intValue, Integer integerValue) {
         assertNotNull(obj);
         assertTrue(obj instanceof Multiple);
         assertEquals(intValue, ((Multiple)obj).getInt());
         assertEquals(stringValue, ((Multiple)obj).getString());
-    }
+        assertEquals(integerValue, ((Multiple)obj).getInteger());        
+    }    
      
 }

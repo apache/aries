@@ -107,7 +107,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         this.sender = sender;
         this.handlers = handlers;
         this.urls = urls;
-        this.conversionService = new ConversionServiceImpl();
+        this.conversionService = new ConversionServiceImpl(this);
         this.helperComponentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;

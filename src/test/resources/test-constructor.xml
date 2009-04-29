@@ -41,6 +41,10 @@
         <argument type="int" value="123"/>
     </bean>
     
+    <bean id="multipleInteger" class="org.apache.geronimo.blueprint.pojos.Multiple">
+        <argument type="java.lang.Integer" value="123"/>
+    </bean>
+    
     <bean id="multipleString" class="org.apache.geronimo.blueprint.pojos.Multiple">
         <argument type="java.lang.String" value="123"/>
     </bean>

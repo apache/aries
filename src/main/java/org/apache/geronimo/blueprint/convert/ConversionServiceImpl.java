@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
+import org.apache.geronimo.blueprint.context.BlueprintContextImpl;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.convert.Converter;
 
@@ -47,8 +48,13 @@ import org.osgi.service.blueprint.convert.Converter;
  */
 public class ConversionServiceImpl implements ConversionService {
 
+    private BlueprintContextImpl blueprintContext;
     private Map<Class, List<Converter>> convertersMap = new HashMap<Class, List<Converter>>();
 
+    public ConversionServiceImpl(BlueprintContextImpl blueprintContext) {
+        this.blueprintContext = blueprintContext;
+    }
+    
     public void registerConverter(Converter converter) {
         Class type = converter.getTargetClass();
         List<Converter> converters = convertersMap.get(type);
@@ -70,8 +76,6 @@ public class ConversionServiceImpl implements ConversionService {
     public Object convert(Object fromValue, Class toType) throws Exception {
         if (toType.isInstance(fromValue)) {
             return fromValue;
-        } else if (Class.class == toType) {
-            return fromValue.getClass();
         }
         Object value = doConvert(fromValue, toType);        
         if (value == null) {
@@ -127,7 +131,13 @@ public class ConversionServiceImpl implements ConversionService {
     }
     
     private Object convertString(String value, Class toType) throws Exception {
-        if (Locale.class == toType) {
+        if (Class.class == toType) {
+            try {
+                return blueprintContext.getClassLoader().loadClass(value);
+            } catch (ClassNotFoundException e) {
+                throw new Exception("Unable to convert", e);
+            }
+        } else if (Locale.class == toType) {
             String[] tokens = value.split("_");
             if (tokens.length == 1) {
                 return new Locale(tokens[0]);
