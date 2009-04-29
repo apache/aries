@@ -81,6 +81,7 @@ public class WiringTest extends AbstractBlueprintTest {
         assertNotNull(pojoa.getSet());
         assertTrue(pojoa.getSet().contains("set value"));
         assertTrue(pojoa.getSet().contains(pojob));
+        assertTrue(pojoa.getSet().contains(URI.create("http://geronimo.apache.org")));
         
         assertNotNull(pojoa.getMap());
         assertEquals("val", pojoa.getMap().get("key"));
@@ -102,10 +103,11 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals(100, pojoa.getIntArray()[2]);
         
         assertNotNull(pojoa.getNumberArray());
-        assertEquals(3, pojoa.getNumberArray().length);
+        assertEquals(4, pojoa.getNumberArray().length);
         assertEquals(new Integer(1), pojoa.getNumberArray()[0]);
         assertEquals(new BigInteger("50"), pojoa.getNumberArray()[1]);
         assertEquals(new Long(100), pojoa.getNumberArray()[2]);
+        assertEquals(new Integer(200), pojoa.getNumberArray()[3]);
         
         // test init-method
         assertEquals(true, pojob.getInitCalled());

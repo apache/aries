@@ -273,7 +273,8 @@ public class Instanciator {
         } else if (v instanceof ValueMetadata) {
             ValueMetadata stringValue = (ValueMetadata) v;
             Class type = loadClass(stringValue.getTypeName());
-            return new ValueRecipe(getConversionService(), stringValue, type, groupingType);
+            type = (type == null) ? groupingType : type;
+            return new ValueRecipe(getConversionService(), stringValue, type);
         } else if (v instanceof RefMetadata) {
             String componentName = ((RefMetadata) v).getComponentId();
             return new ReferenceRecipe(componentName);

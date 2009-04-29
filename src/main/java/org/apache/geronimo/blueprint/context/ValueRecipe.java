@@ -37,43 +37,32 @@ public class ValueRecipe extends AbstractRecipe {
     private ConversionService conversionService;
     private ValueMetadata value;
     private Class type;
-    private Class groupingType;
 
-    public ValueRecipe(ConversionService conversionService, ValueMetadata value, Class type, Class groupingType) {
+    public ValueRecipe(ConversionService conversionService, ValueMetadata value, Class type) {
         this.conversionService = conversionService;
         this.value = value;
         this.type = type;
-        this.groupingType = groupingType;
     }
 
-    private static Class determineType(Class type, Class groupingType, Class defaultType) throws RuntimeException {
-        if (type != null) {
-            if (groupingType == null || groupingType.isAssignableFrom(type)) {
-                return type;
-            } else {
-                throw new RuntimeException(type.getName() + " cannot be assigned to " + groupingType.getName());
-            }
-        } else if (groupingType != null) {
-            return groupingType;
-        } else {
-            return defaultType;
-        }
+    private static Class determineType(Class type, Type defaultType) {
+        // TODO: check if type is assignable from defaultType?
+        return (type != null) ? type : RecipeHelper.toClass(defaultType);
     }
 
     @Override
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
-        Class myType = determineType(type, groupingType, RecipeHelper.toClass(expectedType));
+        Class myType = determineType(type, expectedType);
 
         try {
             return conversionService.convert(value.getStringValue(), myType);
-        } catch (Exception e) {
+        } catch (Exception e) {            
             throw new ConstructionException(e);
         }
     }
 
     public boolean canCreate(Type expectedType) {
         // XXX: this is expensive but that's what spec wants
-        Class myType = determineType(type, groupingType, RecipeHelper.toClass(expectedType));
+        Class myType = determineType(type, expectedType);
         
         try {
             conversionService.convert(value.getStringValue(), myType);

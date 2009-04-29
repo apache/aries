@@ -123,6 +123,11 @@ public class ConversionServiceImplTest extends TestCase {
         assertEquals(new Locale("de", "", "POSIX"), result);
     }
     
+    public void testConvertWeird() throws Exception {
+        assertEquals(this, service.convert(this, ConversionServiceImplTest.class));
+        assertEquals(ConversionServiceImplTest.class, service.convert(this, Class.class));
+    }
+    
     public void testCustom() throws Exception {
         ConversionServiceImpl s = new ConversionServiceImpl();
         s.registerConverter(new RegionConverter());
