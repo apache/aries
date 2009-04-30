@@ -196,7 +196,8 @@ public class Instanciator {
     }
 
     private BlueprintObjectRecipe createBeanRecipe(BeanMetadata local) throws Exception {
-        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, loadClass(local.getClassName()));
+        Class clazz = local.getRuntimeClass() != null ? local.getRuntimeClass() : loadClass(local.getClassName());
+        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, clazz);
         if (local.getId() != null) {
             recipe.setName(local.getId());
         }
@@ -341,8 +342,7 @@ public class Instanciator {
                 ClassLoader loader = Thread.currentThread().getContextClassLoader();
                 clazz = loader.loadClass(typeName);
             } else {
-                // TODO: use a mixed classloader while the classloading + namespace handler problem is solved
-                clazz = context.getClassLoader().loadClass(typeName);
+                clazz = context.loadClass(typeName);
             }
         }
         return clazz;

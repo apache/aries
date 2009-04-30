@@ -29,7 +29,7 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
  */
 public interface ExtendedBlueprintContext extends BlueprintContext {
 
-    ClassLoader getClassLoader();
+    Class loadClass(String name) throws ClassNotFoundException;
 
     <T  extends ComponentMetadata> List<T> getComponentsMetadata(Class<T> type);
 

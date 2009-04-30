@@ -101,7 +101,6 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     private boolean waitForNamespaceHandlersEventSent;
     private Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>();
     private Map<String, List<SatisfiableRecipe>> satisfiables;
-    private ClassLoader classLoader;
 
     public BlueprintContextImpl(BundleContext bundleContext, BlueprintContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, List<URL> urls) {
         this.bundleContext = bundleContext;
@@ -112,11 +111,10 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         this.helperComponentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
-        this.classLoader = new BundleDelegatingClassLoader(bundleContext.getBundle(), getClass().getClassLoader());
     }
 
-    public ClassLoader getClassLoader() {
-        return classLoader;
+    public Class loadClass(String name) throws ClassNotFoundException {
+        return bundleContext.getBundle().loadClass(name);
     }
 
     public void addDestroyable(String name, Destroyable destroyable) {
