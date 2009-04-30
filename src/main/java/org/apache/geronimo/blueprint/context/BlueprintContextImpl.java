@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -260,7 +261,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         if (r instanceof SatisfiableRecipe) {
                             recipes.add((SatisfiableRecipe) r);
                         }
-                        getSatisfiableDependencies(r, recipes);
+                        getSatisfiableDependencies(r, recipes, new HashSet<Recipe>());
                         if (!recipes.isEmpty()) {
                             satisfiables.put(name, recipes);
                         }
@@ -276,12 +277,15 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         return satisfiables;
     }
 
-    private void getSatisfiableDependencies(Recipe r, List<SatisfiableRecipe> recipes) {
-        for (Recipe dep : r.getNestedRecipes()) {
-            if (dep instanceof SatisfiableRecipe) {
-                recipes.add((SatisfiableRecipe) dep);
+    private void getSatisfiableDependencies(Recipe r, List<SatisfiableRecipe> recipes, Set<Recipe> visited) {
+        if (!visited.contains(r)) {
+            visited.add(r);
+            for (Recipe dep : r.getNestedRecipes()) {
+                if (dep instanceof SatisfiableRecipe) {
+                    recipes.add((SatisfiableRecipe) dep);
+                }
+                getSatisfiableDependencies(dep, recipes, visited);
             }
-            getSatisfiableDependencies(dep, recipes);
         }
     }
 
