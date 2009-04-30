@@ -91,6 +91,7 @@ public class WiringTest extends AbstractBlueprintTest {
         assertNotNull(pojoa.getProps());
         assertEquals("value1", pojoa.getProps().get("key1"));
         assertEquals("value2", pojoa.getProps().get("2"));
+        assertEquals("bar", pojoa.getProps().get("foo"));
         
         assertNotNull(pojoa.getNumber());
         assertEquals(new BigInteger("10"), pojoa.getNumber());
