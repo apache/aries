@@ -91,7 +91,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     private ComponentMetadata parsePropertyPlaceholder(ExtendedParserContext context, Element element) {
         MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
         metadata.setId(getName(element));
-        metadata.setClassName(CmPropertyPlaceholder.class.getName());
+        metadata.setRuntimeClass(CmPropertyPlaceholder.class);
         metadata.addProperty("blueprintContext", createRef(context, "blueprintContext"));
         metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
         metadata.addProperty("persistentId", createValue(context, element.getAttribute(PERSISTENT_ID_ATTRIBUTE)));
