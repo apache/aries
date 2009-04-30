@@ -64,4 +64,6 @@ public interface MutableBeanMetadata extends BeanMetadata, MutableComponentMetad
 
     void removeExplicitDependency(String dependency);
 
+    void setRuntimeClass(Class runtimeClass);
+
 }

@@ -29,12 +29,12 @@ public class TestBlueprintContext extends BlueprintContextImpl {
         super(new TestBundleContext(), null, null, null, null);
         this.registry = registry;
     }
-    
+
     @Override
-    public ClassLoader getClassLoader() {
-        return Thread.currentThread().getContextClassLoader();
+    public Class loadClass(String name) throws ClassNotFoundException {
+        return Thread.currentThread().getContextClassLoader().loadClass(name);
     }
-    
+
     @Override
     public ComponentDefinitionRegistryImpl getComponentDefinitionRegistry() {
         return registry;

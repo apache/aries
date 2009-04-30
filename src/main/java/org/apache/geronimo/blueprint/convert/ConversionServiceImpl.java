@@ -134,7 +134,7 @@ public class ConversionServiceImpl implements ConversionService {
     private Object convertString(String value, Class toType) throws Exception {
         if (Class.class == toType) {
             try {
-                return blueprintContext.getClassLoader().loadClass(value);
+                return blueprintContext.loadClass(value);
             } catch (ClassNotFoundException e) {
                 throw new Exception("Unable to convert", e);
             }
