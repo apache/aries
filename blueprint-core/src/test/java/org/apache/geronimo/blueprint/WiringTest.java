@@ -126,6 +126,20 @@ public class WiringTest extends AbstractBlueprintTest {
         // test destroy-method
         assertEquals(true, pojob.getDestroyCalled());
     }
+    
+    public void testCompoundProperties() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
+        Instanciator i = new Instanciator(new TestBlueprintContext(registry));
+        BlueprintObjectRepository repository = i.createRepository(registry);
+        ObjectGraph graph = new ObjectGraph(repository);
+        
+        Object obj5 = graph.create("compound");
+        assertNotNull(obj5);
+        assertTrue(obj5 instanceof PojoB);
+        PojoB pojob = (PojoB) obj5;
+    
+        assertEquals("hello bean property", pojob.getBean().getName());
+    }
 
     public void testDependencies() throws Exception {
         CallbackTracker.clear();

@@ -87,4 +87,8 @@
         </property>
     </bean>
 
+    <bean id="compound" class="org.apache.geronimo.blueprint.pojos.PojoB">
+        <property name="bean.name" value="hello bean property" />
+    </bean>
+    
 </blueprint>
