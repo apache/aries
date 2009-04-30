@@ -24,6 +24,7 @@ public class PojoB {
 
     private URI uri;
     private int number;
+    private BeanD bean;
     
     private boolean initCalled;
     private boolean destroyCalled;
@@ -62,6 +63,13 @@ public class PojoB {
     
     public int getNumber() {
         return number;
+    }
+    
+    public BeanD getBean() {
+        if (bean == null) {
+            bean = new BeanD();
+        }
+        return bean;
     }
     
     public static PojoB createStatic(URI uri, int number) {

@@ -204,7 +204,7 @@ public class Instanciator {
         recipe.setExplicitDependencies(local.getExplicitDependencies());
         for (BeanProperty property : local.getProperties()) {
             Object value = getValue(property.getValue(), null);
-            recipe.setProperty(property.getName(), value);
+            recipe.setCompoundProperty(property.getName(), value);
         }
         if (BeanMetadata.SCOPE_PROTOTYPE.equals(local.getScope())) {
             recipe.setKeepRecipe(true);

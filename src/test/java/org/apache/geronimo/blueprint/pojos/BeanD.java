@@ -23,6 +23,16 @@ import org.apache.geronimo.blueprint.CallbackTracker.Callback;
 
 public class BeanD {
 
+    private String name;
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
     public void init() {
         CallbackTracker.add(new Callback(Callback.INIT, this));
     }
