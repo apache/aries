@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -216,7 +215,7 @@ public class Instanciator {
             boolean hasIndex = (beanArguments.get(0).getIndex() >= 0);
             if (hasIndex) {
                 List<BeanArgument> beanArgumentsCopy = new ArrayList<BeanArgument>(beanArguments);
-                Collections.sort(beanArgumentsCopy, new BeanArgumentComparator());
+                Collections.sort(beanArgumentsCopy, MetadataUtil.BEAN_COMPARATOR);
                 beanArguments = beanArgumentsCopy;
             }
             List<Object> arguments = new ArrayList<Object>();
@@ -347,11 +346,5 @@ public class Instanciator {
         }
         return clazz;
     }
-
-    private static class BeanArgumentComparator implements Comparator<BeanArgument> {
-        public int compare(BeanArgument object1, BeanArgument object2) {
-            return object1.getIndex() - object2.getIndex();
-        }        
-    }
-                
+                  
 }

@@ -51,6 +51,7 @@ import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.namespace.ParserContextImpl;
 import org.apache.geronimo.blueprint.reflect.ListenerImpl;
+import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 import org.apache.geronimo.blueprint.reflect.RefCollectionMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.CollectionMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.BeanMetadataImpl;
@@ -509,6 +510,8 @@ public class Parser {
             }
         }
 
+        MetadataUtil.validateBeanArguments(metadata.getArguments());
+        
         ComponentMetadata m = metadata;
 
         // Parse custom attributes
