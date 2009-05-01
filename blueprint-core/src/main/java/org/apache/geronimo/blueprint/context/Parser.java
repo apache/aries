@@ -664,8 +664,7 @@ public class Parser {
             value = getTextValue(element);
         }
         String key = element.getAttribute(KEY_ATTRIBUTE);
-        return new MapEntryImpl(new ValueMetadataImpl(key, String.class.getName()),
-                                new ValueMetadataImpl(value, String.class.getName()));
+        return new MapEntryImpl(new ValueMetadataImpl(key), new ValueMetadataImpl(value));
     }
 
     public MapMetadata parseMap(Element element, ComponentMetadata enclosingComponent) {
@@ -1023,6 +1022,14 @@ public class Parser {
         if (isBlueprintNamespace(element.getNamespaceURI())) {
             if (nodeNameEquals(element, BEAN_ELEMENT)) {
                 return parseBeanMetadata(element);
+            } else if (nodeNameEquals(element, REFERENCE_ELEMENT)) {
+                return parseReference(element);
+            } else if (nodeNameEquals(element, SERVICE_ELEMENT)) {
+                return parseService(element);
+            } else if (nodeNameEquals(element, REFLIST_ELEMENT) ) {
+                return parseRefCollection(element, List.class);
+            } else if (nodeNameEquals(element, REFSET_ELEMENT)) {
+                return parseRefCollection(element, Set.class);
             } else if (nodeNameEquals(element, NULL_ELEMENT) && allowNull) {
                 return NullMetadata.NULL;
             } else if (nodeNameEquals(element, VALUE_ELEMENT)) {

@@ -40,6 +40,7 @@ import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.PropsMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 /**
@@ -171,6 +172,8 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         } else if (metadata instanceof MapMetadata) {
             return false;
         } else if (metadata instanceof CollectionMetadata) {
+            return false;
+        } else if (metadata instanceof PropsMetadata) {
             return false;
         }
         return true;
