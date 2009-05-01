@@ -398,14 +398,15 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     }
     
     public Object getComponent(String name) throws NoSuchComponentException {
-        ComponentMetadata metadata = getComponentMetadata(name);
-        if (metadata == null) {
+        if (objectGraph == null) {
             throw new NoSuchComponentException(name);
         }
-        if (objectGraph == null) {
-            return null;
+        Object instance = objectGraph.create(name);
+        if (instance == null) {
+            throw new NoSuchComponentException(name);
+        } else {
+            return instance;
         }
-        return objectGraph.create(name);
     }
 
     public ComponentMetadata getComponentMetadata(String name) {
