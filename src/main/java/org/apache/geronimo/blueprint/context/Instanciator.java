@@ -80,6 +80,7 @@ public class Instanciator {
         primitiveClasses.put("boolean", boolean.class);
     }
     
+    private int nameCounter;
     private BlueprintContextImpl blueprintContext;
     private ExtendedComponentDefinitionRegistry registry;
 
@@ -143,7 +144,7 @@ public class Instanciator {
                                                                    metadata,
                                                                    listenersRecipe,
                                                                    comparatorRecipe);
-        recipe.setName(metadata.getId());
+        recipe.setName(getName(metadata.getId()));
         return recipe;
     }
 
@@ -159,14 +160,14 @@ public class Instanciator {
                                                                    blueprintContext.getSender(),
                                                                    metadata,
                                                                    listenersRecipe);
-        recipe.setName(metadata.getId());
+        recipe.setName(getName(metadata.getId()));
         return recipe;
     }
 
     private ObjectRecipe createServiceRecipe(ServiceMetadata serviceExport) throws Exception {
         BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, ServiceRegistrationProxy.class);
         recipe.allow(Option.PRIVATE_PROPERTIES);
-        recipe.setName(serviceExport.getId());
+        recipe.setName(getName(serviceExport.getId()));
         recipe.setExplicitDependencies(serviceExport.getExplicitDependencies());
         recipe.setProperty("blueprintContext", blueprintContext);
         BeanMetadata exportedComponent = getLocalServiceComponent(serviceExport.getServiceComponent());
@@ -197,9 +198,7 @@ public class Instanciator {
     private BlueprintObjectRecipe createBeanRecipe(BeanMetadata local) throws Exception {
         Class clazz = local.getRuntimeClass() != null ? local.getRuntimeClass() : loadClass(local.getClassName());
         BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, clazz);
-        if (local.getId() != null) {
-            recipe.setName(local.getId());
-        }
+        recipe.setName(getName(local.getId()));
         recipe.setExplicitDependencies(local.getExplicitDependencies());
         for (BeanProperty property : local.getProperties()) {
             Object value = getValue(property.getValue(), null);
@@ -330,6 +329,14 @@ public class Instanciator {
         return loadClass(blueprintContext, typeName);
     }
     
+    private String getName(String name) {
+        if (name == null) {
+            return "recipe-" + ++nameCounter;
+        } else {
+            return name;
+        }
+    }
+        
     public static Class loadClass(BlueprintContextImpl context, String typeName) throws ClassNotFoundException {
         if (typeName == null) {
             return null;
@@ -346,5 +353,5 @@ public class Instanciator {
         }
         return clazz;
     }
-                  
+            
 }
