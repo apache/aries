@@ -406,21 +406,21 @@ public class Parser {
         } else if (nodeNameEquals(element, TYPE_CONVERTERS_ELEMENT)) {
             parseTypeConverters(element);
         } else if (nodeNameEquals(element, BEAN_ELEMENT)) {
-            ComponentMetadata component = parseBeanMetadata(element);
+            ComponentMetadata component = parseBeanMetadata(element, true);
             registry.registerComponentDefinition(component);
         } else if (nodeNameEquals(element, REF_ELEMENT)) {
             // TODO: what about those top-level refs elements
         } else if (nodeNameEquals(element, SERVICE_ELEMENT)) {
-            ComponentMetadata service = parseService(element);
+            ComponentMetadata service = parseService(element, true);
             registry.registerComponentDefinition(service);
         } else if (nodeNameEquals(element, REFERENCE_ELEMENT)) {
-            ComponentMetadata reference = parseReference(element);
+            ComponentMetadata reference = parseReference(element, true);
             registry.registerComponentDefinition(reference);
         } else if (nodeNameEquals(element, REFLIST_ELEMENT) ) {
-            ComponentMetadata references = parseRefCollection(element, List.class);
+            ComponentMetadata references = parseRefCollection(element, List.class, true);
             registry.registerComponentDefinition(references);
         } else if (nodeNameEquals(element, REFSET_ELEMENT)) {
-            ComponentMetadata references = parseRefCollection(element, Set.class);
+            ComponentMetadata references = parseRefCollection(element, Set.class, true);
             registry.registerComponentDefinition(references);
         } else {
             throw new ComponentDefinitionException("Unknown element " + element.getNodeName() + " in namespace " + BLUEPRINT_NAMESPACE);
@@ -445,9 +445,11 @@ public class Parser {
         }
     }
 
-    private ComponentMetadata parseBeanMetadata(Element element) {
+    private ComponentMetadata parseBeanMetadata(Element element, boolean topElement) {
         BeanMetadataImpl metadata = new BeanMetadataImpl();
-        metadata.setId(getName(element));
+        if (topElement) {
+            metadata.setId(getName(element));
+        }
         if (element.hasAttribute(CLASS_ATTRIBUTE)) {
             metadata.setClassName(element.getAttribute(CLASS_ATTRIBUTE));
         }
@@ -536,10 +538,12 @@ public class Parser {
         return new BeanArgumentImpl(value, type, index);
     }
 
-    private ComponentMetadata parseService(Element element) {
+    private ComponentMetadata parseService(Element element, boolean topElement) {
         ServiceMetadataImpl service = new ServiceMetadataImpl();
         boolean hasInterfaceNameAttribute = false;
-        service.setId(getName(element));
+        if (topElement) {
+            service.setId(getName(element));
+        }
         if (element.hasAttribute(INTERFACE_ATTRIBUTE)) {
             service.setInterfaceNames(Collections.singletonList(element.getAttribute(INTERFACE_ATTRIBUTE)));
             hasInterfaceNameAttribute = true;
@@ -588,7 +592,7 @@ public class Parser {
                         if (service.getServiceComponent() != null) {
                             throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element or custom inner element can be set");
                         }
-                        service.setServiceComponent((Target) parseBeanMetadata(e));
+                        service.setServiceComponent((Target) parseBeanMetadata(e, false));
                     } else {
                         // TODO: can be ref, reference or a custom element
                     }
@@ -759,11 +763,11 @@ public class Parser {
                     }
                     listenerComponent = new RefMetadataImpl(component);
                 } else if (nodeNameEquals(e, BEAN_ELEMENT)) {
-                    listenerComponent = parseBeanMetadata(e);
+                    listenerComponent = parseBeanMetadata(e, false);
                 } else if (nodeNameEquals(e, REFERENCE_ELEMENT)) {
-                    listenerComponent = parseReference(e);
+                    listenerComponent = parseReference(e, false);
                 } else if (nodeNameEquals(e, SERVICE_ELEMENT)) {
-                    listenerComponent = parseService(e);
+                    listenerComponent = parseService(e, false);
                 }
             }
         }
@@ -785,9 +789,11 @@ public class Parser {
         return listener;
     }
 
-    private ComponentMetadata parseReference(Element element) {
+    private ComponentMetadata parseReference(Element element, boolean topElement) {       
         ReferenceMetadataImpl reference = new ReferenceMetadataImpl();
-        reference.setId(getName(element));
+        if (topElement) {
+            reference.setId(getName(element));
+        }
         parseReference(element, reference);
         String timeout = element.hasAttribute(TIMEOUT_ATTRIBUTE) ? element.getAttribute(TIMEOUT_ATTRIBUTE) : this.defaultTimeout;
         try {
@@ -804,9 +810,11 @@ public class Parser {
         return r;
     }
 
-    private ComponentMetadata parseRefCollection(Element element, Class collectionType) {
+    private ComponentMetadata parseRefCollection(Element element, Class collectionType, boolean topElement) {
         RefCollectionMetadataImpl references = new RefCollectionMetadataImpl();
-        references.setId(getName(element));
+        if (topElement) {
+            references.setId(getName(element));
+        }
         references.setCollectionType(collectionType);
 
         if (element.hasAttribute(COMPARATOR_REF_ATTRIBUTE)) {
@@ -868,11 +876,11 @@ public class Parser {
                         }
                         comparator = new RefMetadataImpl(component);
                     } else if (nodeNameEquals(e, BEAN_ELEMENT)) {
-                        comparator = parseBeanMetadata(e);
+                        comparator = parseBeanMetadata(e, false);
                     } else if (nodeNameEquals(e, REFERENCE_ELEMENT)) {
-                        comparator = parseReference(e);
+                        comparator = parseReference(e, false);
                     } else if (nodeNameEquals(e, SERVICE_ELEMENT)) {
-                        comparator = parseService(e);
+                        comparator = parseService(e, false);
                     }
                 } else {
                     comparator = parseCustomElement(e, references);
@@ -952,19 +960,19 @@ public class Parser {
                         if (listener.getListenerComponent() != null) {
                             throw new ComponentDefinitionException("Attribute " + REF_ATTRIBUTE + " can not be set in addition to a child element");
                         }
-                        ComponentMetadata component = parseBeanMetadata(e);
+                        ComponentMetadata component = parseBeanMetadata(e, false);
                         listener.setListenerComponent((Target) component);
                     } else if (nodeNameEquals(e, REFERENCE_ELEMENT)) {
                         if (listener.getListenerComponent() != null) {
                             throw new ComponentDefinitionException("Attribute " + REF_ATTRIBUTE + " can not be set in addition to a child element");
                         }
-                        ComponentMetadata reference = parseReference(e);
+                        ComponentMetadata reference = parseReference(e, false);
                         listener.setListenerComponent((Target) reference);
                     } else if (nodeNameEquals(e, SERVICE_ELEMENT)) {
                         if (listener.getListenerComponent() != null) {
                             throw new ComponentDefinitionException("Attribute " + REF_ATTRIBUTE + " can not be set in addition to a child element");
                         }
-                        ComponentMetadata service = parseService(e);
+                        ComponentMetadata service = parseService(e, false);
                         listener.setListenerComponent((Target) service);
                     }
                 } else {
@@ -1021,15 +1029,15 @@ public class Parser {
     private Metadata parseValueElement(Element element, ComponentMetadata enclosingComponent, boolean allowNull) {
         if (isBlueprintNamespace(element.getNamespaceURI())) {
             if (nodeNameEquals(element, BEAN_ELEMENT)) {
-                return parseBeanMetadata(element);
+                return parseBeanMetadata(element, false);
             } else if (nodeNameEquals(element, REFERENCE_ELEMENT)) {
-                return parseReference(element);
+                return parseReference(element, false);
             } else if (nodeNameEquals(element, SERVICE_ELEMENT)) {
-                return parseService(element);
+                return parseService(element, false);
             } else if (nodeNameEquals(element, REFLIST_ELEMENT) ) {
-                return parseRefCollection(element, List.class);
+                return parseRefCollection(element, List.class, false);
             } else if (nodeNameEquals(element, REFSET_ELEMENT)) {
-                return parseRefCollection(element, Set.class);
+                return parseRefCollection(element, Set.class, false);
             } else if (nodeNameEquals(element, NULL_ELEMENT) && allowNull) {
                 return NullMetadata.NULL;
             } else if (nodeNameEquals(element, VALUE_ELEMENT)) {
