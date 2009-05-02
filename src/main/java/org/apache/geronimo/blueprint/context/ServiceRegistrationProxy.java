@@ -168,8 +168,8 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
         private Object listener;
         private RegistrationListener metadata;
         
-        private Method registerMethod;
-        private Method unregisterMethod;
+        private List<Method> registerMethods;
+        private List<Method> unregisterMethods;
         private boolean initialized = false;
         
         private synchronized void init(ServiceRegistrationProxy registration) {
@@ -182,10 +182,10 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
             Class listenerClass = listener.getClass();
             
             if (metadata.getRegistrationMethodName() != null) { 
-                registerMethod = ReflectionUtils.findMethod(listenerClass, metadata.getRegistrationMethodName(), paramTypes);
+                registerMethods = ReflectionUtils.findCompatibleMethods(listenerClass, metadata.getRegistrationMethodName(), paramTypes);
             }
             if (metadata.getUnregistrationMethodName() != null) {
-                unregisterMethod = ReflectionUtils.findMethod(listenerClass, metadata.getUnregistrationMethodName(), paramTypes);
+                unregisterMethods = ReflectionUtils.findCompatibleMethods(listenerClass, metadata.getUnregistrationMethodName(), paramTypes);
             }
             
             initialized = true;
@@ -193,24 +193,26 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
         
         public void register(ServiceRegistrationProxy registration) {
             init(registration);
-            invokeMethod(registerMethod, registration);
+            invokeMethod(registerMethods, registration);
         }
         
         public void unregister(ServiceRegistrationProxy registration) {
-            invokeMethod(unregisterMethod, registration);
+            invokeMethod(unregisterMethods, registration);
         }
                 
-        private void invokeMethod(Method method, ServiceRegistrationProxy registration) {
-            if (method == null) {
+        private void invokeMethod(List<Method> methods, ServiceRegistrationProxy registration) {
+            if (methods == null || methods.isEmpty()) {
                 return;
             }
             Object service = registration.getService();
             Map properties = registration.getRegistrationProperties();
             Object[] args = new Object[] { service, properties };
-            try {
-                method.invoke(listener, args);
-            } catch (Exception e) {
-                LOGGER.info("Error calling listener", e);
+            for (Method method : methods) {
+                try {
+                    method.invoke(listener, args);
+                } catch (Exception e) {
+                    LOGGER.info("Error calling listener", e);
+                }
             }
         }
                            
