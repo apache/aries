@@ -239,7 +239,8 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             try {
                 instance = match.getMethod().invoke(factoryObj, args.toArray());
             } catch (InvocationTargetException e) {
-                throw new ConstructionException(e);
+                Throwable root = e.getTargetException();
+                throw new ConstructionException(root);
             } catch (Exception e) {
                 throw new ConstructionException(e);
             }
@@ -253,7 +254,8 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             try {
                 instance = match.getMethod().invoke(null, args.toArray());
             } catch (InvocationTargetException e) {
-                throw new ConstructionException(e);
+                Throwable root = e.getTargetException();
+                throw new ConstructionException(root);
             } catch (Exception e) {
                 throw new ConstructionException(e);
             }
@@ -266,7 +268,8 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             try {
                 instance = match.getConstructor().newInstance(args.toArray());
             } catch (InvocationTargetException e) {
-                throw new ConstructionException(e);
+                Throwable root = e.getTargetException();
+                throw new ConstructionException(root);
             } catch (Exception e) {
                 throw new ConstructionException(e);
             }
@@ -309,6 +312,17 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             }
         }
         return method;
+    }
+    
+    @Override
+    public boolean canCreate(Type type) {
+        if (factoryMethod == null) {
+            return super.canCreate(type);
+        } else {
+            // factory-method was specified, so we're not really sure what type of object we create
+            // until we actually create it
+            return true;
+        }
     }
     
     @Override
