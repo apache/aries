@@ -151,6 +151,14 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         }
     }
     
+    public void run(boolean asynch) {
+        if (asynch) {
+            executors.submit(this);
+        } else {
+            run();
+        }
+    }
+    
     public synchronized void run() {
         try {
             for (;;) {
@@ -447,13 +455,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         if (state == State.WaitForTrigger) {
             LOGGER.debug("Activation triggered (service activation: {})", serviceActivation); 
             state = State.Create;
-            if (serviceActivation) {
-                // service triggered activation runs synchronously
-                run();
-            } else {
-                // classloader triggered activation runs asynchronously
-                executors.submit(this);
-            }
+            // service triggered activation runs synchronously but classloader triggered activation runs asynchronously
+            run(serviceActivation ? false : true);
         }
     }
     
