@@ -151,7 +151,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                     executors.submit(blueprintContext);
                 }
             } else {
-                LOGGER.debug("Bundle {} is not compatible with this blueprint extender", bundle.getSymbolicName());
+                LOGGER.info("Bundle {} is not compatible with this blueprint extender", bundle.getSymbolicName());
             }
 
         } else {
