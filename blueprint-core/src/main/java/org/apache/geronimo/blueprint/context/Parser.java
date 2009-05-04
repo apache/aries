@@ -50,6 +50,7 @@ import org.w3c.dom.NodeList;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.namespace.ParserContextImpl;
+import org.apache.geronimo.blueprint.reflect.IdRefMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ListenerImpl;
 import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 import org.apache.geronimo.blueprint.reflect.RefCollectionMetadataImpl;
@@ -1055,9 +1056,9 @@ public class Parser {
             } else if (nodeNameEquals(element, IDREF_ELEMENT)) {
                 String component = element.getAttribute(COMPONENT_ATTRIBUTE);
                 if (component == null || component.length() == 0) {
-                    throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ATTRIBUTE + " attribute");
+                    throw new ComponentDefinitionException("Element " + IDREF_ELEMENT + " must have a valid " + COMPONENT_ATTRIBUTE + " attribute");
                 }
-                return new RefMetadataImpl(component);
+                return new IdRefMetadataImpl(component);
             } else if (nodeNameEquals(element, LIST_ELEMENT)) {
                 return parseList(element, enclosingComponent);
             } else if (nodeNameEquals(element, SET_ELEMENT)) {
