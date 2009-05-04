@@ -145,11 +145,8 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
             if (compatible) {
                 final BlueprintContextImpl blueprintContext = new BlueprintContextImpl(bundle.getBundleContext(), sender, handlers, executors, urls, lazyActivation);
                 contextMap.put(bundle, blueprintContext);
-                if (lazyActivation) {
-                    blueprintContext.run();
-                } else {
-                    executors.submit(blueprintContext);
-                }
+                // run synchronous when bundle is lazy activated 
+                blueprintContext.run(lazyActivation ? false: true);
             } else {
                 LOGGER.info("Bundle {} is not compatible with this blueprint extender", bundle.getSymbolicName());
             }
