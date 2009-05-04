@@ -51,6 +51,7 @@ import org.apache.xbean.recipe.ExecutionContext;
 import org.apache.xbean.recipe.DefaultExecutionContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.context.BlueprintContext;
@@ -81,6 +82,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         Populated,
         WaitForInitialReferences,
         InitialReferencesSatisfied,
+        WaitForTrigger,
+        Create,
         Created,
         Failed
     }
@@ -89,6 +92,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     private final BlueprintContextEventSender sender;
     private final NamespaceHandlerRegistry handlers;
     private final List<URL> urls;
+    private final boolean lazyActivation;
     private final ComponentDefinitionRegistryImpl helperComponentDefinitionRegistry;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
     private final ConversionServiceImpl conversionService;
@@ -101,8 +105,10 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     private boolean waitForNamespaceHandlersEventSent;
     private Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>();
     private Map<String, List<SatisfiableRecipe>> satisfiables;
+    private boolean serviceActivation;
+    private Map<ServiceMetadata, TriggerService> triggerServices;
 
-    public BlueprintContextImpl(BundleContext bundleContext, BlueprintContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, List<URL> urls) {
+    public BlueprintContextImpl(BundleContext bundleContext, BlueprintContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, List<URL> urls, boolean lazyActivation) {
         this.bundleContext = bundleContext;
         this.sender = sender;
         this.handlers = handlers;
@@ -111,6 +117,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         this.helperComponentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
+        this.lazyActivation = lazyActivation;
+        this.triggerServices = new HashMap<ServiceMetadata, TriggerService>();
     }
 
     public Class loadClass(String name) throws ClassNotFoundException {
@@ -198,6 +206,16 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                             return;
                         }
                     case InitialReferencesSatisfied:
+                        if (lazyActivation) {
+                            registerTriggerServices();
+                            state = State.WaitForTrigger;                            
+                        } else {
+                            state = State.Create;
+                        }
+                        break;
+                    case WaitForTrigger:
+                        return;
+                    case Create:
                         instantiateComponents();
                         registerAllServices();
 
@@ -394,6 +412,50 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
             }
         }
     }
+        
+    private void registerTriggerServices() {
+        for (ServiceMetadata service : getExportedServicesMetadata()) {
+            // Trigger services are only created for services without listeners and explicitly defined interface classes
+            if (service.getRegistrationListeners().isEmpty() && !service.getInterfaceNames().isEmpty()) {
+                TriggerService triggerService = new TriggerService(service, this);
+                triggerService.register();
+                triggerServices.put(service, triggerService);
+            }
+        }
+    }
+    
+    private void unregisterTriggerServices() {
+        for (TriggerService service : triggerServices.values()) {
+            service.unregister();
+        }
+        triggerServices.clear();
+    }
+        
+    protected TriggerService removeTriggerService(ServiceMetadata metadata) {
+        return triggerServices.remove(metadata);
+    }
+    
+    protected void forceActivation(boolean serviceActivation) throws BundleException {
+        this.serviceActivation = serviceActivation;
+        getBundleContext().getBundle().start(Bundle.START_TRANSIENT);
+    }
+    
+    public synchronized void triggerActivation() {
+        if (!lazyActivation) {
+            throw new IllegalStateException("triggerActivation can only be called for bundles with lazy activation policy");
+        }
+        if (state == State.WaitForTrigger) {
+            LOGGER.debug("Activation triggered (service activation: {})", serviceActivation); 
+            state = State.Create;
+            if (serviceActivation) {
+                // service triggered activation runs synchronously
+                run();
+            } else {
+                // classloader triggered activation runs asynchronously
+                executors.submit(this);
+            }
+        }
+    }
     
     public Set<String> getComponentNames() {
         return componentDefinitionRegistry.getComponentDefinitionNames();
@@ -455,7 +517,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     protected ComponentDefinitionRegistryImpl getComponentDefinitionRegistry() {
         return componentDefinitionRegistry;
     }
-    
+        
     public BundleContext getBundleContext() {
         return bundleContext;
     }
@@ -466,7 +528,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         }
         handlers.removeListener(this);
         sender.sendDestroying(this);
-        unregisterAllServices();        
+        unregisterAllServices();  
+        unregisterTriggerServices();
         destroyComponents();
         // TODO: stop all reference / collections
         System.out.println("Module context destroyed: " + this.bundleContext);

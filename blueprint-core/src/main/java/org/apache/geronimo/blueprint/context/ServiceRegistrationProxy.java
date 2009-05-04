@@ -31,7 +31,6 @@ import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
@@ -45,7 +44,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistrationProxy.class);
 
-    private BlueprintContext blueprintContext;
+    private BlueprintContextImpl blueprintContext;
     private Object service;
     private Map serviceProperties;
     private List<Listener> listeners;
@@ -71,6 +70,46 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
             return;
         }
                 
+        TriggerService triggerService = blueprintContext.removeTriggerService(metadata);
+        if (triggerService != null) {
+            LOGGER.debug("Trigger service found");
+            triggerService.setService(service);
+            registration = triggerService.getRegistration();   
+            return;
+        }
+                        
+        Hashtable props = new Hashtable();
+        if (serviceProperties != null) {
+            props.putAll(serviceProperties);
+        }
+        props.put(Constants.SERVICE_RANKING, metadata.getRanking());
+        String componentName = getComponentName();
+        if (componentName != null) {
+            props.put(BlueprintConstants.COMPONENT_NAME_PROPERTY, componentName);
+        }
+        String[] classes = getClasses();
+        registration = blueprintContext.getBundleContext().registerService(classes, service, props);
+        registrationProperties = props;
+        
+        LOGGER.debug("Service {} registered with interfaces {}", service, classes);
+        
+        if (listeners != null) {
+            for (Listener listener : listeners) {
+                listener.register(this);
+            }
+        }
+    }
+                       
+    private String getComponentName() {
+        if (metadata.getServiceComponent() instanceof RefMetadata) {
+            RefMetadata ref = (RefMetadata) metadata.getServiceComponent();
+            return ref.getComponentId();
+        } else {
+            return null;
+        }
+    }
+    
+    private String[] getClasses() {
         Class serviceClass = service.getClass();
         if (service instanceof BundleScopeServiceFactory) {
             serviceClass = ((BundleScopeServiceFactory) service).getServiceClass();
@@ -91,36 +130,8 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
                 classes = new HashSet<String>(metadata.getInterfaceNames());
                 break;
         }
-                
-        Hashtable props = new Hashtable();
-        if (serviceProperties != null) {
-            props.putAll(serviceProperties);
-        }
-        props.put(Constants.SERVICE_RANKING, metadata.getRanking());
-        String componentName = getComponentName();
-        if (componentName != null) {
-            props.put(BlueprintConstants.COMPONENT_NAME_PROPERTY, componentName);
-        }
         String[] classesArray = classes.toArray(new String[classes.size()]);
-        registration = blueprintContext.getBundleContext().registerService(classesArray, service, props);
-        registrationProperties = props;
-        
-        LOGGER.debug("Service {} registered with interfaces {}", service, classes);
-        
-        if (listeners != null) {
-            for (Listener listener : listeners) {
-                listener.register(this);
-            }
-        }
-    }
-                       
-    private String getComponentName() {
-        if (metadata.getServiceComponent() instanceof RefMetadata) {
-            RefMetadata ref = (RefMetadata) metadata.getServiceComponent();
-            return ref.getComponentId();
-        } else {
-            return null;
-        }
+        return classesArray;
     }
     
     public String toString() {

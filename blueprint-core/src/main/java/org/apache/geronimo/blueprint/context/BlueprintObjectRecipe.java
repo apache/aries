@@ -197,18 +197,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             throw new ConstructionException("Unable to load type class " + typeName);
         }
     }
-    
-    private Object convert(Object source, Class type) throws ConstructionException {
-        if (type != null && blueprintContext != null) {
-            try {
-                source = blueprintContext.getConversionService().convert(source, type);
-            } catch (Exception e) {
-                throw new ConstructionException("Failed to convert", e);
-            }            
-        }
-        return source;
-    }
-    
+        
     private List<Object> getFinalArguments(ArgumentsMatch match, boolean refAllowed) throws ConstructionException {
         List<Object> arguments = match.getArguments();
         Class[] parameterTypes = match.getParameterTypes();
