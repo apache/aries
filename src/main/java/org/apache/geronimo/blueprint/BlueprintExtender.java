@@ -67,7 +67,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         Bundle[] bundles = context.getBundles();
         for (Bundle b : bundles) {
             if (b.getState() == Bundle.ACTIVE) {
-                checkBundle(b);
+                checkBundle(b, false);
             }
         }
         LOGGER.debug("Blueprint extender started");
@@ -88,10 +88,18 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     }
 
     public void bundleChanged(BundleEvent event) {
-        if (event.getType() == BundleEvent.STARTED) {
-            checkBundle(event.getBundle());
+        Bundle bundle = event.getBundle();
+        if (event.getType() == BundleEvent.LAZY_ACTIVATION) {
+            checkBundle(bundle, true);
+        } else if (event.getType() == BundleEvent.STARTED) {
+            BlueprintContextImpl blueprintContext = contextMap.get(bundle);
+            if (blueprintContext == null) {
+                checkBundle(bundle, false);
+            } else {
+                blueprintContext.triggerActivation();
+            }
         } else if (event.getType() == BundleEvent.STOPPING) {
-            destroyContext(event.getBundle());
+            destroyContext(bundle);
         }
     }
 
@@ -103,8 +111,8 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         }
     }
     
-    private void checkBundle(Bundle bundle) {
-        LOGGER.debug("Scanning bundle {} for blueprint application", bundle.getSymbolicName());
+    private void checkBundle(Bundle bundle, boolean lazyActivation) {
+        LOGGER.debug("Scanning bundle {} for blueprint application (lazy: {})", bundle.getSymbolicName(), lazyActivation);
 
         List<URL> urls = new ArrayList<URL>();
         Dictionary headers = bundle.getHeaders();
@@ -119,7 +127,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
             }
         }
         if (urls.isEmpty()) {
-            Enumeration e = bundle.findEntries("OSGI-INF/blueprint", "*.xml", true);
+            Enumeration e = bundle.findEntries("OSGI-INF/blueprint", "*.xml", false);
             if (e != null) {
                 while (e.hasMoreElements()) {
                     URL u = (URL) e.nextElement();
@@ -130,20 +138,20 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         if (!urls.isEmpty()) {
             LOGGER.debug("Found blueprint application in bundle {} with urls: {}", bundle.getSymbolicName(), urls);
 
-            // Check compatibility
-            boolean compatible;
-            try {
-                Class clazz = bundle.getBundleContext().getBundle().loadClass(BlueprintContext.class.getName());
-                compatible = (clazz == BlueprintContext.class);
-            } catch (ClassNotFoundException e) {
-                compatible = true;
-            }
+            // Check compatibility 
+            // XXX: we can't check compatibility when dealing with lazy activated bundles since that will trigger
+            // the bundle to be fully started
+            boolean compatible = lazyActivation || isCompatible(bundle);
             if (compatible) {
-                final BlueprintContextImpl blueprintContext = new BlueprintContextImpl(bundle.getBundleContext(), sender, handlers, executors, urls);
+                final BlueprintContextImpl blueprintContext = new BlueprintContextImpl(bundle.getBundleContext(), sender, handlers, executors, urls, lazyActivation);
                 contextMap.put(bundle, blueprintContext);
-                executors.submit(blueprintContext);
+                if (lazyActivation) {
+                    blueprintContext.run();
+                } else {
+                    executors.submit(blueprintContext);
+                }
             } else {
-                LOGGER.info("Bundle {} is not compatible with this blueprint extender", bundle.getSymbolicName());
+                LOGGER.debug("Bundle {} is not compatible with this blueprint extender", bundle.getSymbolicName());
             }
 
         } else {
@@ -151,5 +159,15 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         }
     }
 
-
+    private boolean isCompatible(Bundle bundle) {
+        // Check compatibility
+        boolean compatible;
+        try {
+            Class clazz = bundle.getBundleContext().getBundle().loadClass(BlueprintContext.class.getName());
+            compatible = (clazz == BlueprintContext.class);
+        } catch (ClassNotFoundException e) {
+            compatible = true;
+        }
+        return compatible;
+    }
 }

@@ -26,7 +26,7 @@ public class TestBlueprintContext extends BlueprintContextImpl {
     private ComponentDefinitionRegistryImpl registry;
     
     public TestBlueprintContext(ComponentDefinitionRegistryImpl registry) {
-        super(new TestBundleContext(), null, null, null, null);
+        super(new TestBundleContext(), null, null, null, null, false);
         this.registry = registry;
     }
 
