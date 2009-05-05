@@ -34,7 +34,6 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.utils.HeaderParser;
-import org.apache.geronimo.blueprint.utils.BundleDelegatingClassLoader;
 import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
@@ -44,7 +43,6 @@ import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
 import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.xbean.recipe.ObjectGraph;
 import org.apache.xbean.recipe.Repository;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.ExecutionContext;
@@ -100,7 +98,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     private Set<URI> namespaces;
     private State state = State.Unknown;
     private Parser parser;
-    private ObjectGraph objectGraph;
+    private BlueprintObjectInstantiator instantiator;
     private ServiceRegistration registration;
     private boolean waitForNamespaceHandlersEventSent;
     private Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>();
@@ -192,9 +190,9 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         state = State.Populated;
                         break;
                     case Populated:
-                        Instanciator i = new Instanciator(this);
+                        RecipeBuilder i = new RecipeBuilder(this);
                         Repository repository = i.createRepository(componentDefinitionRegistry);
-                        objectGraph = new ObjectGraph(repository);
+                        instantiator = new BlueprintObjectInstantiator(repository);
                         instanciateServiceReferences();
                         if (checkAllSatisfiables()) {
                             state = State.InitialReferencesSatisfied;
@@ -254,10 +252,10 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     }
 
     private void processHelperSection() throws Exception {
-        Instanciator i = new Instanciator(this);
+        RecipeBuilder i = new RecipeBuilder(this);
         Repository repository = i.createRepository(helperComponentDefinitionRegistry);
-        ObjectGraph graph = new ObjectGraph(repository);
-        Map<String, Object> objects = graph.createAll(new ArrayList<String>(helperComponentDefinitionRegistry.getComponentDefinitionNames()));
+        BlueprintObjectInstantiator instantiator = new BlueprintObjectInstantiator(repository);
+        Map<String, Object> objects = instantiator.createAll(helperComponentDefinitionRegistry.getComponentDefinitionNames());
         for (Object obj : objects.values()) {
             if (obj instanceof Converter) {
                 conversionService.registerConverter((Converter) obj);
@@ -275,12 +273,12 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         if (satisfiables == null) {
             boolean createNewContext = !ExecutionContext.isContextSet();
             if (createNewContext) {
-                ExecutionContext.setContext(new DefaultExecutionContext(objectGraph.getRepository()));
+                ExecutionContext.setContext(new DefaultExecutionContext(instantiator.getRepository()));
             }
             try {
                 satisfiables = new HashMap<String, List<SatisfiableRecipe>>();
                 for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
-                    Object val = objectGraph.getRepository().get(name);
+                    Object val = instantiator.getRepository().get(name);
                     if (val instanceof Recipe) {
                         Recipe r = (Recipe) val;
                         List<SatisfiableRecipe> recipes = new ArrayList<SatisfiableRecipe>();
@@ -325,7 +323,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
             }
         }
         LOGGER.debug("Instanciating service references: {}", satisfiables);
-        objectGraph.createAll(satisfiables);
+        instantiator.createAll(satisfiables);
     }
 
     private boolean checkAllSatisfiables() {
@@ -377,19 +375,18 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
             if (component instanceof BeanMetadata) {
                 BeanMetadata local = (BeanMetadata) component;
                 String scope = local.getScope();
-                if (!local.isLazyInit() &&
-                    (BeanMetadata.SCOPE_BUNDLE.equals(scope) ||
-                     BeanMetadata.SCOPE_SINGLETON.equals(scope))) {
+                if (!local.isLazyInit() && BeanMetadata.SCOPE_SINGLETON.equals(scope)) {
                     components.add(name);
                 }
             }
         }
-        Map instances = objectGraph.createAll(components);
+        LOGGER.debug("Instantiating components: {}", components);
+        instantiator.createAll(components);
     }
 
     private void destroyComponents() {
-        if (objectGraph != null) {
-            ((BlueprintObjectRepository)objectGraph.getRepository()).destroy();
+        if (instantiator != null) {
+            ((BlueprintObjectRepository)instantiator.getRepository()).destroy();
         }
         
         Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>(this.destroyables);
@@ -465,14 +462,13 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     }
     
     public Object getComponent(String name) throws NoSuchComponentException {
-        if (objectGraph == null) {
+        if (instantiator == null) {
             throw new NoSuchComponentException(name);
         }
-        Object instance = objectGraph.create(name);
-        if (instance == null) {
+        try {
+            return instantiator.create(name);
+        } catch (org.apache.xbean.recipe.NoSuchObjectException e) {
             throw new NoSuchComponentException(name);
-        } else {
-            return instance;
         }
     }
 
@@ -509,8 +505,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
 
     }
 
-    protected ObjectGraph getObjectGraph() {
-        return objectGraph;
+    protected Repository getRepository() {
+        return instantiator.getRepository();
     }
     
     protected ConversionService getConversionService() {
