@@ -46,8 +46,8 @@ import org.slf4j.LoggerFactory;
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
 public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, ServiceTrackerCustomizer {
-
-    public static final String NAMESPACE = "org.osgi.blueprint.namespace";
+    
+    public static final String NAMESPACE = "osgi.service.blueprint.namespace";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NamespaceHandlerRegistryImpl.class);
 
@@ -154,13 +154,14 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             Collection col = (Collection) ns;
             List<URI> namespaces = new ArrayList<URI>(col.size());
             for (Object o : col) {
-                if (o instanceof URI) {
-                    namespaces.add((URI) o);
-                } else if (o instanceof String) {
-                    namespaces.add(URI.create((String) o));
-                } else {
-                    throw new IllegalArgumentException("NamespaceHandler service has an associated " + NAMESPACE + " property defined which can not be converted to an array of URI");
-                }
+                namespaces.add(toURI(o));
+            }
+            return namespaces;
+        } else if (ns instanceof Object[]) {
+            Object[] array = (Object[]) ns;
+            List<URI> namespaces = new ArrayList<URI>(array.length);
+            for (Object o : array) {
+                namespaces.add(toURI(o));
             }
             return namespaces;
         } else {
@@ -168,6 +169,16 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         }
     }
 
+    private static URI toURI(Object o) {
+        if (o instanceof URI) {
+            return (URI) o;
+        } else if (o instanceof String) {
+            return URI.create((String) o);
+        } else {
+            throw new IllegalArgumentException("NamespaceHandler service has an associated " + NAMESPACE + " property defined which can not be converted to an array of URI");
+        }
+    }
+    
     public synchronized NamespaceHandler getNamespaceHandler(URI uri) {
         return handlers.get(uri);
     }
