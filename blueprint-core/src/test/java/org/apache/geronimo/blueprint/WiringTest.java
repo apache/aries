@@ -22,13 +22,11 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.geronimo.blueprint.CallbackTracker.Callback;
 import org.apache.geronimo.blueprint.context.BlueprintObjectRepository;
 import org.apache.geronimo.blueprint.context.Instanciator;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.geronimo.blueprint.pojos.BeanC;
 import org.apache.geronimo.blueprint.pojos.BeanD;
 import org.apache.geronimo.blueprint.pojos.Multiple;
 import org.apache.geronimo.blueprint.pojos.PojoA;
@@ -120,6 +118,7 @@ public class WiringTest extends AbstractBlueprintTest {
         // tests 'prototype' scope
         Object obj4 = graph.create("pojoC");
         assertNotNull(obj4);
+        
         assertTrue(obj4 != graph.create("pojoC"));
         
         repository.destroy();       
@@ -142,6 +141,28 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals("hello bean property", pojob.getBean().getName());
     }
 
+    public void testIdRefs() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
+        Instanciator i = new Instanciator(new TestBlueprintContext(registry));
+        BlueprintObjectRepository repository = i.createRepository(registry);
+        ObjectGraph graph = new ObjectGraph(repository);
+        
+        try {
+            graph.create("badIdRef");
+            fail("Did not throw exception");
+        } catch (RuntimeException e) {
+            // we expect exception
+            // TODO: check error string?
+        }
+        
+        Object obj = graph.create("goodIdRef");
+        assertNotNull(obj);
+        assertTrue(obj instanceof BeanD);
+        BeanD bean = (BeanD) obj;
+    
+        assertEquals("pojoA", bean.getName());
+    }
+    
     public void testDependencies() throws Exception {
         CallbackTracker.clear();
 
