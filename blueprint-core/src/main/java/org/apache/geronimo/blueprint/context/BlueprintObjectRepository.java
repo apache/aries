@@ -30,10 +30,7 @@ import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.Repository;
 
 /**
- * By default in object repository Recipes are replaced with objects that were creating using the given Recipe.
- * That essentially implements the 'singleton' scope. For 'prototype' scope we do not allow certain Recipes to
- * be replaced with resulting objects in the repository. That ensures that a new instance of a object is created
- * for such Recipes during graph instantiation.
+ * 
  */
 public class BlueprintObjectRepository implements Repository {
 
@@ -67,9 +64,6 @@ public class BlueprintObjectRepository implements Repository {
         if (existingObj != null) {
             if (existingObj instanceof BlueprintObjectRecipe) {    
                 BlueprintObjectRecipe recipe = (BlueprintObjectRecipe) existingObj;
-                if (recipe.getKeepRecipe()) {
-                    return;
-                }
                 Method method = recipe.getDestroyMethod(instance);
                 if (method != null) {
                     destroyList.add(new DestroyCallback(method, instance));

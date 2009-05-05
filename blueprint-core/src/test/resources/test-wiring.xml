@@ -92,4 +92,16 @@
         <property name="bean.name" value="hello bean property" />
     </bean>
     
+    <bean id="badIdRef" class="org.apache.geronimo.blueprint.pojos.BeanD">
+        <property name="name">
+          <idref component="doesnotexist"/>
+        </property>
+    </bean>
+    
+    <bean id="goodIdRef" class="org.apache.geronimo.blueprint.pojos.BeanD">
+        <property name="name">
+          <idref component="pojoA"/>
+        </property>
+    </bean>
+    
 </blueprint>

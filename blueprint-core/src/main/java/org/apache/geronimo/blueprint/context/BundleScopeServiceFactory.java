@@ -73,7 +73,7 @@ public class BundleScopeServiceFactory implements ServiceFactory {
     }
   
     private Object createInstance() {
-        Repository objectRepository = blueprintContext.getObjectGraph().getRepository();
+        Repository objectRepository = blueprintContext.getRepository();
         BlueprintObjectRepository repository = new BlueprintObjectRepository((BlueprintObjectRepository)objectRepository);
         repository.set(serviceRecipe.getName(), serviceRecipe);
         ObjectGraph graph = new ObjectGraph(repository);

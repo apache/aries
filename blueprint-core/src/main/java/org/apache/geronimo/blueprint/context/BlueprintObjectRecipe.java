@@ -137,6 +137,15 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         return recipes; 
     }
 
+    private void instantiateExplicitDependencies() {
+        if (explicitDependencies != null) {
+            for (String name : explicitDependencies) {
+                Recipe recipe = new ReferenceRecipe(name);
+                recipe.create(Object.class, false);
+            }
+        }
+    }
+    
     private List<Object> getInitialArguments(boolean refAllowed) throws ConstructionException {
         List<Object> args = new ArrayList<Object>();
         for (int i = 0; beanArguments != null && i < beanArguments.size(); i++) {
@@ -192,7 +201,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             return null;
         }
         try {
-            return Instanciator.loadClass(blueprintContext, typeName);
+            return RecipeBuilder.loadClass(blueprintContext, typeName);
         } catch (ClassNotFoundException e) {
             throw new ConstructionException("Unable to load type class " + typeName);
         }
@@ -333,6 +342,8 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
     @Override
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         
+        instantiateExplicitDependencies();
+        
         final Object obj = getInstance(lazyRefAllowed);
         
         // check for init lifecycle method (if any)
@@ -356,7 +367,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             }
         }
         
-        if (getName() != null) {
+        if (getName() != null && !keepRecipe) {
             ExecutionContext.getContext().addObject(getName(), obj);
         }
         
