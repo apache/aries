@@ -35,6 +35,7 @@ import org.apache.xbean.recipe.MapRecipe;
 import org.apache.xbean.recipe.ObjectRecipe;
 import org.apache.xbean.recipe.Option;
 import org.apache.xbean.recipe.Recipe;
+import org.apache.xbean.recipe.ReferenceNameRecipe;
 import org.apache.xbean.recipe.ReferenceRecipe;
 import org.apache.xbean.recipe.Repository;
 import org.osgi.service.blueprint.convert.ConversionService;
@@ -59,8 +60,6 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 /**
  * TODO: javadoc
- *
- * TODO: compound property names
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
@@ -275,6 +274,7 @@ public class Instanciator {
             type = (type == null) ? groupingType : type;
             return new ValueRecipe(getConversionService(), stringValue, type);
         } else if (v instanceof RefMetadata) {
+            // TODO: make it work with property-placeholders?
             String componentName = ((RefMetadata) v).getComponentId();
             return new ReferenceRecipe(componentName);
         } else if (v instanceof CollectionMetadata) {
@@ -315,7 +315,9 @@ public class Instanciator {
             }
             return mr;
         } else if (v instanceof IdRefMetadata) {
-            return ((IdRefMetadata) v).getComponentId();
+            // TODO: make it work with property-placeholders?
+            String componentName = ((IdRefMetadata) v).getComponentId();
+            return new ReferenceNameRecipe(componentName);
         } else {
             throw new IllegalStateException("Unsupported value: " + v.getClass().getName());
         }
