@@ -53,6 +53,7 @@
                         <Bundle-Activator>org.apache.geronimo.blueprint.BlueprintExtender</Bundle-Activator>
                         <Import-Package>
                             org.apache.tools.ant*;resolution:=optional,
+                            org.apache.log4j*;resolution:=optional,
                             *
                         </Import-Package>
                         <Export-Package>
