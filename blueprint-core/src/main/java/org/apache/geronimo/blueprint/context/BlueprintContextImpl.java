@@ -107,6 +107,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     private Map<String, List<SatisfiableRecipe>> satisfiables;
     private boolean serviceActivation;
     private Map<ServiceMetadata, TriggerService> triggerServices;
+    private long timeout = 5 * 60 * 1000; 
+    private boolean waitForDependencies = true;
 
     public BlueprintContextImpl(BundleContext bundleContext, BlueprintContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, List<URL> urls, boolean lazyActivation) {
         this.bundleContext = bundleContext;
@@ -143,17 +145,20 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         Dictionary headers = bundle.getHeaders();
         String symbolicName = (String)headers.get(Constants.BUNDLE_SYMBOLICNAME);
         List<PathElement> paths = HeaderParser.parseHeader(symbolicName);
-        String timeout = paths.get(0).getDirective(BlueprintConstants.TIMEOUT_DIRECTIVE);
-        String waitForDependencies = paths.get(0).getDirective(BlueprintConstants.WAIT_FOR_DEPENDENCIES_DIRECTIVE);
-
-        // TODO: hook this up
         
-        if (timeout != null) {
-            System.out.println("Timeout: " + timeout);
+        String timeoutDirective = paths.get(0).getDirective(BlueprintConstants.TIMEOUT_DIRECTIVE);        
+        if (timeoutDirective != null) {
+            LOGGER.debug("Timeout directive: " + timeoutDirective);
+            timeout = Integer.parseInt(timeoutDirective);
         }
-        if (waitForDependencies != null) {
-            System.out.println("Wait-for-dependencies: " + waitForDependencies);
+        
+        String waitForDependenciesDirective = paths.get(0).getDirective(BlueprintConstants.WAIT_FOR_DEPENDENCIES_DIRECTIVE);
+        if (waitForDependenciesDirective != null) {
+            LOGGER.debug("Wait-for-dependencies directive: " + waitForDependenciesDirective);
+            waitForDependencies = Boolean.parseBoolean(waitForDependenciesDirective);
         }
+        
+        // TODO: add support for custom directive to disable schema validation?
     }
     
     public void run(boolean asynch) {
@@ -201,7 +206,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         Repository repository = i.createRepository(componentDefinitionRegistry);
                         instantiator = new BlueprintObjectInstantiator(repository);
                         instanciateServiceReferences();
-                        if (checkAllSatisfiables()) {
+                        if (checkAllSatisfiables() || !waitForDependencies) {
                             state = State.InitialReferencesSatisfied;
                         } else {
                             // TODO: pass correct parameters
@@ -284,8 +289,11 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         instantiator = new BlueprintObjectInstantiator(repository);
         for (BeanMetadata bean : getBeanComponentsMetadata()) {
             Class clazz = bean.getRuntimeClass();
-            if (clazz == null) {
+            if (clazz == null && bean.getClassName() != null) {
                 clazz = loadClass(bean.getClassName());
+            } 
+            if (clazz == null) {
+                continue;
             }
             if (ComponentDefinitionRegistryProcessor.class.isAssignableFrom(clazz)) {
                 Object obj = instantiator.create(bean.getId());
