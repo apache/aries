@@ -87,6 +87,8 @@ import org.osgi.service.blueprint.reflect.NonNullMetadata;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.xml.sax.InputSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO: javadoc
@@ -188,6 +190,8 @@ public class Parser {
     public static final String ORDERING_BASIS_SERVICES = "services";
     public static final String ODERING_BASIS_SERVICE_REFERENCES = "service-reference";
     public static final String LAZY_INIT_DEFAULT = BOOLEAN_FALSE;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
 
     private List<Document> documents;
     private ExtendedComponentDefinitionRegistry registry;
@@ -299,6 +303,8 @@ public class Parser {
                 URL url = handler.getSchemaLocation(uri.toString());
                 if (url != null) {
                     schemaSources.add(new StreamSource(url.openStream()));
+                } else {
+                    LOGGER.warn("No URL is defined for schema " + uri + ". This schema will not be validated");
                 }
             }
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
