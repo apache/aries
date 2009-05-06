@@ -18,19 +18,12 @@
  */
 package org.apache.geronimo.blueprint.itests;
 
-import java.text.SimpleDateFormat;
 import java.util.Currency;
 import java.util.Hashtable;
 
-import org.apache.geronimo.blueprint.sample.Bar;
 import org.apache.geronimo.blueprint.sample.Foo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
@@ -40,9 +33,6 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.OptionUtils;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.configProfile;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.profile;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.context.BlueprintContext;
@@ -50,65 +40,108 @@ import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 @RunWith(JUnit4TestRunner.class)
-public class TestBlueprintContext extends AbstractIntegrationTest {
+public class TestConfigAdmin extends AbstractIntegrationTest {
 
     @Test
-    public void test() throws Exception {
-        // Create a config to check the property placeholder
+    public void testStrategyNone() throws Exception {
         ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
-        Configuration cf = ca.getConfiguration("blueprint-sample-placeholder", null);
-        Hashtable props = new Hashtable();
-        props.put("key.b", "10");
+        Configuration cf = ca.getConfiguration("blueprint-sample-managed.none", null);
+        Hashtable<String,String> props = new Hashtable<String,String>();
+        props.put("a", "5");
+        props.put("currency", "PLN");
         cf.update(props);
 
         Bundle bundle = getInstalledBundle("blueprint-sample");
         assertNotNull(bundle);
-
         bundle.start();
 
         BlueprintContext blueprintContext = getBlueprintContextForBundle("blueprint-sample", 5000);
         assertNotNull(blueprintContext);
 
-        Object obj = blueprintContext.getComponent("bar");
-        assertNotNull(obj);
-        assertEquals(Bar.class, obj.getClass());
-        Bar bar = (Bar) obj;
-        assertNotNull(bar.getContext());
-        assertEquals("Hello FooBar", bar.getValue());
-        assertNotNull(bar.getList());
-        assertEquals(2, bar.getList().size());
-        assertEquals("a list element", bar.getList().get(0));
-        assertEquals(Integer.valueOf(5), bar.getList().get(1));
-        obj = blueprintContext.getComponent("foo");
-        assertNotNull(obj);
-        assertEquals(Foo.class, obj.getClass());
-        Foo foo = (Foo) obj;
+        Foo foo = (Foo) blueprintContext.getComponent("none-managed");
+        assertNotNull(foo);
+
         assertEquals(5, foo.getA());
-        assertEquals(10, foo.getB());
-        assertSame(bar, foo.getBar());
         assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
-        assertEquals(new SimpleDateFormat("yyyy.MM.dd").parse("2009.04.17"), foo.getDate());
 
-        assertTrue(foo.isInitialized());
-        assertFalse(foo.isDestroyed());
+        props = new Hashtable<String,String>();
+        props.put("a", "10");
+        props.put("currency", "USD");
+        cf.update(props);
 
-        obj = getOsgiService(Foo.class, 5000);
-        assertNotNull(obj);
-        assertSame(foo, obj);
+        Thread.sleep(100);
 
-        bundle.stop();
+        assertEquals(5, foo.getA());
+        assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
+    }
 
-        Thread.sleep(1000);
+    @Test
+    public void testStrategyContainer() throws Exception {
+        ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
+        Configuration cf = ca.getConfiguration("blueprint-sample-managed.container", null);
+        Hashtable<String,String> props = new Hashtable<String,String>();
+        props.put("a", "5");
+        props.put("currency", "PLN");
+        cf.update(props);
 
-        try {
-            blueprintContext = getBlueprintContextForBundle("blueprint-sample", 1);
-            fail("BlueprintContext should have been unregistered");
-        } catch (Exception e) {
-            // Expected, as the module context should have been unregistered
-        }
+        Bundle bundle = getInstalledBundle("blueprint-sample");
+        assertNotNull(bundle);
+        bundle.start();
 
-        assertTrue(foo.isInitialized());
-        assertTrue(foo.isDestroyed());
+        BlueprintContext blueprintContext = getBlueprintContextForBundle("blueprint-sample", 5000);
+        assertNotNull(blueprintContext);
+
+        Foo foo = (Foo) blueprintContext.getComponent("container-managed");
+        assertNotNull(foo);
+
+        assertEquals(5, foo.getA());
+        assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
+
+        props = new Hashtable<String,String>();
+        props.put("a", "10");
+        props.put("currency", "USD");
+        cf.update(props);
+
+        Thread.sleep(100);
+
+        assertEquals(10, foo.getA());
+        assertEquals(Currency.getInstance("USD"), foo.getCurrency());
+    }
+
+    @Test
+    public void testStrategyComponent() throws Exception {
+        ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
+        Configuration cf = ca.getConfiguration("blueprint-sample-managed.component", null);
+        Hashtable<String,String> props = new Hashtable<String,String>();
+        props.put("a", "5");
+        props.put("currency", "PLN");
+        cf.update(props);
+
+        Bundle bundle = getInstalledBundle("blueprint-sample");
+        assertNotNull(bundle);
+        bundle.start();
+
+        BlueprintContext blueprintContext = getBlueprintContextForBundle("blueprint-sample", 5000);
+        assertNotNull(blueprintContext);
+
+        Foo foo = (Foo) blueprintContext.getComponent("component-managed");
+        assertNotNull(foo);
+
+        assertEquals(5, foo.getA());
+        assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
+
+        props = new Hashtable<String,String>();
+        props.put("a", "10");
+        props.put("currency", "USD");
+        cf.update(props);
+
+        Thread.sleep(100);
+
+        assertEquals(5, foo.getA());
+        assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
+        assertNotNull(foo.getProps());
+        assertEquals("10", foo.getProps().get("a"));
+        assertEquals("USD", foo.getProps().get("currency"));
     }
 
     @org.ops4j.pax.exam.junit.Configuration
@@ -134,7 +167,7 @@ public class TestBlueprintContext extends AbstractIntegrationTest {
         );
 
         // use config generated by the Maven plugin (until PAXEXAM-62/64 get resolved)
-        if (TestBlueprintContext.class.getClassLoader().getResource("META-INF/maven/paxexam-config.args") != null) {
+        if (TestConfigAdmin.class.getClassLoader().getResource("META-INF/maven/paxexam-config.args") != null) {
             options = OptionUtils.combine(options, mavenConfiguration());
         }
 
