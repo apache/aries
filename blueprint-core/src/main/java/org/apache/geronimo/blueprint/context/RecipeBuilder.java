@@ -177,12 +177,9 @@ public class RecipeBuilder {
             recipe.setProperty("service", getValue(serviceExport.getServiceComponent(), null));
         }
         recipe.setProperty("metadata", serviceExport);
-        if (serviceExport.getServiceProperties() != null) {
-            MutableMapMetadata map = MetadataUtil.createMetadata(MutableMapMetadata.class);
-            for (MapEntry e : serviceExport.getServiceProperties()) {
-                map.addEntry(e);
-            }
-            recipe.setProperty("serviceProperties", getValue(map, null));
+        Recipe propertiesRecipe = getServicePropertiesRecipe(serviceExport);
+        if (propertiesRecipe != null) {
+            recipe.setProperty("serviceProperties", propertiesRecipe);
         }
         if (serviceExport.getRegistrationListeners() != null) {
             CollectionRecipe listenersRecipe = new CollectionRecipe(ArrayList.class);
@@ -194,6 +191,19 @@ public class RecipeBuilder {
         return recipe;
     }
 
+    protected Recipe getServicePropertiesRecipe(ServiceMetadata metadata) throws Exception {
+        List<MapEntry> properties = metadata.getServiceProperties();
+        if (properties != null) {
+            MutableMapMetadata map = MetadataUtil.createMetadata(MutableMapMetadata.class);
+            for (MapEntry e : properties) {
+                map.addEntry(e);
+            }
+            return getValue(map, null);
+        } else {
+            return null;
+        }
+    }
+    
     private BlueprintObjectRecipe createBeanRecipe(BeanMetadata local) throws Exception {
         Class clazz = local.getRuntimeClass() != null ? local.getRuntimeClass() : loadClass(local.getClassName());
         BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, clazz);
@@ -263,7 +273,7 @@ public class RecipeBuilder {
         }
     }
     
-    private Object getValue(Metadata v, Class groupingType) throws Exception {
+    private Recipe getValue(Metadata v, Class groupingType) throws Exception {
         if (v instanceof NullMetadata) {
             return null;
         } else if (v instanceof ComponentMetadata) {

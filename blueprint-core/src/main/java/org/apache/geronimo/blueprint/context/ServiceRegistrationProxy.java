@@ -87,11 +87,13 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
         if (componentName != null) {
             props.put(BlueprintConstants.COMPONENT_NAME_PROPERTY, componentName);
         }
-        String[] classes = getClasses();
-        registration = blueprintContext.getBundleContext().registerService(classes, service, props);
+        Set<String> classes = getClasses();
+        String[] classArray = classes.toArray(new String[classes.size()]);
+        registration = blueprintContext.getBundleContext().registerService(classArray, service, props);
         registrationProperties = props;
         
-        LOGGER.debug("Service {} registered with interfaces {}", service, classes);
+        LOGGER.debug("Service {} registered with interfaces {} and properties {}", 
+                     new Object [] { service, classes, props });
         
         if (listeners != null) {
             for (Listener listener : listeners) {
@@ -109,7 +111,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
         }
     }
     
-    private String[] getClasses() {
+    private Set<String> getClasses() {
         Class serviceClass = service.getClass();
         if (service instanceof BundleScopeServiceFactory) {
             serviceClass = ((BundleScopeServiceFactory) service).getServiceClass();
@@ -130,8 +132,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
                 classes = new HashSet<String>(metadata.getInterfaceNames());
                 break;
         }
-        String[] classesArray = classes.toArray(new String[classes.size()]);
-        return classesArray;
+        return classes;
     }
     
     public String toString() {
