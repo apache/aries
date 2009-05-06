@@ -32,10 +32,12 @@ import org.apache.xbean.recipe.ObjectRecipe;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.RecipeHelper;
 import org.apache.xbean.recipe.ReferenceRecipe;
+import org.apache.xbean.recipe.Option;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.utils.ArgumentsMatch;
 import org.apache.geronimo.blueprint.utils.ArgumentsMatcher;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
+import org.apache.geronimo.blueprint.BeanProcessor;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.MapMetadata;
@@ -65,6 +67,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
     public BlueprintObjectRecipe(BlueprintContextImpl blueprintContext, Class typeName) {
         super(typeName);
         this.blueprintContext = blueprintContext;
+        allow(Option.LAZY_ASSIGNMENT);
     }
     
     public void setFactoryMethod(String method) {
@@ -174,6 +177,22 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         return args;
     }
     
+    private List<Object> getFinalArguments(ArgumentsMatch match, boolean refAllowed) throws ConstructionException {
+        List<Object> arguments = match.getArguments();
+        Class[] parameterTypes = match.getParameterTypes();
+
+        List<Object> args = new ArrayList<Object>();
+        for (int i = 0; i < arguments.size(); i++) {
+            Object argument = arguments.get(i);
+            if (argument instanceof Recipe) {
+                argument = RecipeHelper.convert(parameterTypes[i], argument, refAllowed);
+            }
+            args.add(argument);
+        }
+
+        return args;
+    }
+
     private boolean shouldPreinstantiate(Metadata metadata) {
         if (metadata instanceof ValueMetadata) {
             ValueMetadata stringValue = (ValueMetadata) metadata;
@@ -207,22 +226,6 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         }
     }
         
-    private List<Object> getFinalArguments(ArgumentsMatch match, boolean refAllowed) throws ConstructionException {
-        List<Object> arguments = match.getArguments();
-        Class[] parameterTypes = match.getParameterTypes();
-        
-        List<Object> args = new ArrayList<Object>();
-        for (int i = 0; i < arguments.size(); i++) {
-            Object argument = arguments.get(i);
-            if (argument instanceof Recipe) {
-                argument = RecipeHelper.convert(parameterTypes[i], argument, refAllowed);
-            }
-            args.add(argument);
-        }
-        
-        return args;
-    }
-          
     private Set<ArgumentsMatcher.Option> getArgumentsMatcherOptions() {
         Set<ArgumentsMatcher.Option> options = new HashSet<ArgumentsMatcher.Option>();
         if (reorderArguments) {
@@ -330,10 +333,13 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         } else {
             // factory-method was specified, so we're not really sure what type of object we create
             // until we actually create it
+            // TODO: is it possible to perform eager disambiguation on the factory method to get
+            //   the return type?
+            // TODO: this stuff should be moved to getType() instead
             return true;
         }
     }
-    
+
     @Override
     public List<Recipe> getConstructorRecipes() {
         return getNestedRecipes();
@@ -343,8 +349,8 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         
         instantiateExplicitDependencies();
-        
-        final Object obj = getInstance(lazyRefAllowed);
+
+        Object obj = getInstance(lazyRefAllowed);
         
         // check for init lifecycle method (if any)
         Method initMethod = getInitMethod(obj);
@@ -354,6 +360,10 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         
         // inject properties
         setProperties(obj);
+
+        for (BeanProcessor processor : blueprintContext.getBeanProcessors()) {
+            obj = processor.beforeInit(obj, getName());
+        }
         
         // call init method
         if (initMethod != null) {
@@ -375,6 +385,9 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
     }
     
     public void destroyInstance(Object obj) {
+        for (BeanProcessor processor : blueprintContext.getBeanProcessors()) {
+            processor.beforeDestroy(obj, getName());
+        }
         try {
             Method method = getDestroyMethod(obj);
             if (method != null) {
@@ -382,6 +395,9 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        for (BeanProcessor processor : blueprintContext.getBeanProcessors()) {
+            processor.afterDestroy(obj, getName());
         }
     }
 }

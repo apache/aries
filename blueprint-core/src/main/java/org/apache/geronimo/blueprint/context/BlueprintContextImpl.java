@@ -41,6 +41,7 @@ import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.SatisfiableRecipe;
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
+import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.xbean.recipe.Repository;
@@ -101,6 +102,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     private BlueprintObjectInstantiator instantiator;
     private ServiceRegistration registration;
     private boolean waitForNamespaceHandlersEventSent;
+    private List<BeanProcessor> beanProcessors;
     private Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>();
     private Map<String, List<SatisfiableRecipe>> satisfiables;
     private boolean serviceActivation;
@@ -117,6 +119,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         this.executors = executors;
         this.lazyActivation = lazyActivation;
         this.triggerServices = new HashMap<ServiceMetadata, TriggerService>();
+        this.beanProcessors = new ArrayList<BeanProcessor>();
     }
 
     public Class loadClass(String name) throws ClassNotFoundException {
@@ -125,6 +128,10 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
 
     public void addDestroyable(String name, Destroyable destroyable) {
         destroyables.put(name, destroyable);
+    }
+
+    public List<BeanProcessor> getBeanProcessors() {
+        return beanProcessors;
     }
 
     public BlueprintContextEventSender getSender() {
@@ -266,7 +273,30 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                 ((ComponentDefinitionRegistryProcessor) obj).process(componentDefinitionRegistry);
             }
         }
-        // TODO: need to destroy those objects at the end
+        for (Object obj : objects.values()) {
+            if (obj instanceof BeanProcessor) {
+                this.beanProcessors.add((BeanProcessor) obj);
+            }
+        }
+
+        // Instanciate ComponentDefinitionRegistryProcessor and BeanProcessor
+        repository = i.createRepository(componentDefinitionRegistry);
+        instantiator = new BlueprintObjectInstantiator(repository);
+        for (BeanMetadata bean : getBeanComponentsMetadata()) {
+            Class clazz = bean.getRuntimeClass();
+            if (clazz == null) {
+                clazz = loadClass(bean.getClassName());
+            }
+            if (ComponentDefinitionRegistryProcessor.class.isAssignableFrom(clazz)) {
+                Object obj = instantiator.create(bean.getId());
+                ((ComponentDefinitionRegistryProcessor) obj).process(componentDefinitionRegistry);
+            } else if (BeanProcessor.class.isAssignableFrom(clazz)) {
+                Object obj = instantiator.create(bean.getId());
+                this.beanProcessors.add((BeanProcessor) obj);
+            }
+        }
+
+        // TODO: need to destroy all those objects at the end
     }
 
     private Map<String, List<SatisfiableRecipe>> getSatisfiableDependenciesMap() {
@@ -509,7 +539,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         return instantiator.getRepository();
     }
     
-    protected ConversionService getConversionService() {
+    public ConversionService getConversionService() {
         return conversionService;
     }
     

@@ -20,9 +20,11 @@ package org.apache.geronimo.blueprint.itests;
 
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Currency;
 
 import org.apache.geronimo.blueprint.sample.BindingListener;
 import org.apache.geronimo.blueprint.sample.InterfaceA;
+import org.apache.geronimo.blueprint.sample.Foo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -46,6 +48,8 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.ServiceUnavailableException;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.cm.Configuration;
 
 @RunWith(JUnit4TestRunner.class)
 public class TestReferences extends AbstractIntegrationTest {
@@ -133,10 +137,13 @@ public class TestReferences extends AbstractIntegrationTest {
     @org.ops4j.pax.exam.junit.Configuration
     public static Option[] configuration() {
         Option[] options = options(
-            // install log service using pax runners profile abstraction (there are more profiles, like DS)
-            logProfile(),
-            configProfile(),
-            profile("url"),
+            // Log
+            mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
+            mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
+            // Felix Config Admin
+            mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
+            // Felix mvn url handler
+            mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
 
             // this is how you set the default log level when using pax logging (logProfile)
             systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),

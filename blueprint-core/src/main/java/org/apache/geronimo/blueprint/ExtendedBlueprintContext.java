@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.convert.ConversionService;
 
 /**
  * TODO: javadoc
@@ -28,6 +29,8 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
 public interface ExtendedBlueprintContext extends BlueprintContext {
+
+    ConversionService getConversionService();
 
     Class loadClass(String name) throws ClassNotFoundException;
 

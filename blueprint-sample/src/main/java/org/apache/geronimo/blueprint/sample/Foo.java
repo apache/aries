@@ -19,6 +19,7 @@ package org.apache.geronimo.blueprint.sample;
 import java.io.Serializable;
 import java.util.Currency;
 import java.util.Date;
+import java.util.Map;
 
 public class Foo implements Serializable {
     
@@ -30,6 +31,7 @@ public class Foo implements Serializable {
 
     public boolean initialized;
     public boolean destroyed;
+    private Map<String, Object> props;
 
     public int getA() {
         return a;
@@ -91,6 +93,14 @@ public class Foo implements Serializable {
 
     public boolean isDestroyed() {
         return destroyed;
+    }
+
+    public void update(Map<String,Object> props) {
+        this.props = props;
+    }
+
+    public Map<String, Object> getProps() {
+        return props;
     }
 }
 
