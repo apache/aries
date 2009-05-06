@@ -18,10 +18,13 @@
  */
 package org.apache.geronimo.blueprint.context;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
+import org.apache.xbean.recipe.Recipe;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -41,13 +44,15 @@ public class TriggerService implements ServiceFactory {
     
     private ServiceMetadata metadata;
     private BlueprintContextImpl blueprintContext;  
-    private ServiceRegistration registration;
+    private ServiceRegistration registration;    
+    private Map serviceProperties;
     
     private Object service;
     
     public TriggerService(ServiceMetadata metadata, BlueprintContextImpl blueprintContext) {
         this.metadata = metadata;
         this.blueprintContext = blueprintContext;
+        this.serviceProperties = getServiceProperties();
     }
     
     public synchronized void register() {
@@ -56,16 +61,36 @@ public class TriggerService implements ServiceFactory {
         }
         
         Hashtable props = new Hashtable();
-        // TODO: handle service properties?
+        if (serviceProperties != null) {
+            props.putAll(serviceProperties);
+        }
         props.put(Constants.SERVICE_RANKING, metadata.getRanking());
         String componentName = getComponentName();
         if (componentName != null) {
             props.put(BlueprintConstants.COMPONENT_NAME_PROPERTY, componentName);
         }
-        String[] classes = getClasses();
-        registration = blueprintContext.getBundleContext().registerService(classes, this, props);
+        List<String> classes = getClasses();
+        String[] classArray = classes.toArray(new String[classes.size()]);
+        registration = blueprintContext.getBundleContext().registerService(classArray, this, props);
         
-        LOGGER.debug("Trigger service {} registered with interfaces {}", this, classes);
+        LOGGER.debug("Trigger service {} registered with interfaces {} and properties {}", 
+                     new Object[] { this, classes, props });
+    }
+    
+    private Map getServiceProperties() {
+        RecipeBuilder builder = new RecipeBuilder(blueprintContext);
+        Recipe recipe;
+        try {
+            recipe = builder.getServicePropertiesRecipe(metadata);
+            if (recipe == null) {
+                return null;
+            } else {
+                return (Map) recipe.create(Map.class, false);
+            }
+        } catch (Exception e) {
+            LOGGER.debug("Failed to convert MapMetadata to Map", e);
+            return null;
+        }
     }
     
     private String getComponentName() {
@@ -77,9 +102,8 @@ public class TriggerService implements ServiceFactory {
         }
     }
     
-    private String[] getClasses() {
-        List<String> interfaces = metadata.getInterfaceNames();
-        return interfaces.toArray(new String[interfaces.size()]);
+    private List<String> getClasses() {
+        return metadata.getInterfaceNames();
     }
     
     public synchronized void unregister() {   
