@@ -274,6 +274,20 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals(intValue, ((Multiple)obj).getInt());
         assertEquals(stringValue, ((Multiple)obj).getString());
         assertEquals(integerValue, ((Multiple)obj).getInteger());        
-    }    
+    }
+
+    public void testCircular() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-circular.xml");
+        RecipeBuilder i = new RecipeBuilder(new TestBlueprintContext(registry));
+        Repository repository = i.createRepository(registry);
+        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(repository);
+
+        try {
+            Object obj1 = graph.create("a");
+            fail("Test should have thrown an exception caused by the circular reference");
+        } catch (Exception e) {
+            // ok
+        }
+    }
      
 }
