@@ -591,18 +591,25 @@ public class Parser {
                         service.addRegistrationListener(parseRegistrationListener(e));
                     } else if (nodeNameEquals(e, BEAN_ELEMENT)) {
                         if (service.getServiceComponent() != null) {
-                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element or custom inner element can be set");
+                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element or " + REF_ELEMENT + " element can be set");
                         }
                         service.setServiceComponent((Target) parseBeanMetadata(e, false));
-                    } else {
-                        // TODO: can be ref, reference or a custom element
+                    } else if (nodeNameEquals(e, REF_ELEMENT)) {
+                        if (service.getServiceComponent() != null) {
+                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element or " + REF_ELEMENT + " element can be set");
+                        }
+                        String component = e.getAttribute(COMPONENT_ATTRIBUTE);
+                        if (component == null || component.length() == 0) {
+                            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ATTRIBUTE + " attribute");
+                        }
+                        service.setServiceComponent(new RefMetadataImpl(component));
                     }
                 }
             }
         }
         // Check service
         if (service.getServiceComponent() == null) {
-            throw new ComponentDefinitionException("One of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element or custom inner element must be set");
+            throw new ComponentDefinitionException("One of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element or " + REF_ELEMENT + " element must be set");
         }
         
         ComponentMetadata s = service;
