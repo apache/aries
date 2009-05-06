@@ -31,6 +31,7 @@ import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableRefMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableReferenceMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableIdRefMetadata;
 import org.osgi.service.blueprint.context.ComponentDefinitionException;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
@@ -41,6 +42,9 @@ import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.ServiceMetadata;
+import org.osgi.service.blueprint.reflect.IdRefMetadata;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
@@ -73,7 +77,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     private int nameCounter;
 
     public URL getSchemaLocation(String namespace) {
-        return getClass().getResource("/org/apache/geronimo/blueprint/compendium/cm/blueprint-cm.xsd");
+        return getClass().getResource("blueprint-cm.xsd");
     }
 
     public ComponentMetadata parse(Element element, ParserContext ctx) {
@@ -82,9 +86,27 @@ public class CmNamespaceHandler implements NamespaceHandler {
         createConfigAdminProxy(context, registry);
         if (nodeNameEquals(element, PROPERTY_PLACEHOLDER_ELEMENT)) {
             return parsePropertyPlaceholder(context, element);
+        } else if (nodeNameEquals(element, MANAGED_SERVICE_FACTORY_ELEMENT)) {
+            return parseManagedServiceFactory(context, element);
         } else {
-            // TODO: parse other compendium elements.
             throw new ComponentDefinitionException("Unsupported element: " + element.getNodeName());
+        }
+    }
+
+    public ComponentMetadata decorate(Node node, ComponentMetadata component, ParserContext ctx) {
+        ExtendedParserContext context = (ExtendedParserContext) ctx;
+        ExtendedComponentDefinitionRegistry registry = (ExtendedComponentDefinitionRegistry) context.getComponentDefinitionRegistry();
+        createConfigAdminProxy(context, registry);
+        if (node instanceof Element) {
+            if (nodeNameEquals(node, MANAGED_PROPERTIES_ELEMENT)) {
+                return decorateManagedProperties(context, (Element) node, component);
+            } else if (nodeNameEquals(node, CM_PROPERTIES_ELEMENT)) {
+                return decorateCmProperties(context, (Element) node, component);
+            } else {
+                throw new ComponentDefinitionException("Unsupported element: " + node.getNodeName());
+            }
+        } else {
+            throw new ComponentDefinitionException("Illegal use of blueprint cm namespace");
         }
     }
 
@@ -145,6 +167,45 @@ public class CmNamespaceHandler implements NamespaceHandler {
         return props;
     }
 
+    private ComponentMetadata parseManagedServiceFactory(ExtendedParserContext context, Element element) {
+        // TODO: implement managed-service-factory
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    private ComponentMetadata decorateCmProperties(ExtendedParserContext context, Element element, ComponentMetadata component) {
+        if (!(component instanceof ServiceMetadata)) {
+            throw new ComponentDefinitionException("Element " + CM_PROPERTIES_ELEMENT + " must be used inside a <bp:service> element");
+        }
+        // TODO: implement cm-properties
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    private ComponentMetadata decorateManagedProperties(ExtendedParserContext context, Element element, ComponentMetadata component) {
+        if (!(component instanceof BeanMetadata)) {
+            throw new ComponentDefinitionException("Element " + MANAGED_PROPERTIES_ELEMENT + " must be used inside a <bp:bean> element");
+        }
+        if (component.getId() == null) {
+            throw new IllegalStateException("Component does not have an id: " + component);
+        }
+        MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
+        metadata.setId(getName(element));
+        metadata.setRuntimeClass(CmManagedProperties.class);
+        metadata.setInitMethodName("init");
+        metadata.setDestroyMethodName("destroy");
+        metadata.addProperty("blueprintContext", createRef(context, "blueprintContext"));
+        metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
+        metadata.addProperty("persistentId", createValue(context, element.getAttribute(PERSISTENT_ID_ATTRIBUTE)));
+        if (element.hasAttribute(UPDATE_STRATEGY_ATTRIBUTE)) {
+            metadata.addProperty("updateStrategy", createValue(context, element.getAttribute(UPDATE_STRATEGY_ATTRIBUTE)));
+        }
+        if (element.hasAttribute(UPDATE_METHOD_ATTRIBUTE)) {
+            metadata.addProperty("updateMethod", createValue(context, element.getAttribute(UPDATE_METHOD_ATTRIBUTE)));
+        }
+        metadata.addProperty("beanName", createIdRef(context, component.getId()));
+        context.getComponentDefinitionRegistry().registerComponentDefinition(metadata);
+        return component;
+    }
+
     /**
      * Create a reference to the ConfigurationAdmin service if not already done
      * and add it to the registry.
@@ -162,10 +223,6 @@ public class CmNamespaceHandler implements NamespaceHandler {
         }
     }
 
-    public ComponentMetadata decorate(Node node, ComponentMetadata component, ParserContext context) {
-        throw new ComponentDefinitionException("Illegal use of blueprint cm namespace");
-    }
-
     private static ValueMetadata createValue(ExtendedParserContext context, String value) {
         return createValue(context, value, null);
     }
@@ -179,6 +236,12 @@ public class CmNamespaceHandler implements NamespaceHandler {
 
     private static RefMetadata createRef(ExtendedParserContext context, String value) {
         MutableRefMetadata m = context.createMetadata(MutableRefMetadata.class);
+        m.setComponentId(value);
+        return m;
+    }
+
+    private static IdRefMetadata createIdRef(ExtendedParserContext context, String value) {
+        MutableIdRefMetadata m = context.createMetadata(MutableIdRefMetadata.class);
         m.setComponentId(value);
         return m;
     }
