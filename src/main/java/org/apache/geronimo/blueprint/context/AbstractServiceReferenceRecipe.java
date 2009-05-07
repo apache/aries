@@ -18,34 +18,35 @@
  */
 package org.apache.geronimo.blueprint.context;
 
-import java.util.List;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.Map;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.apache.xbean.recipe.AbstractRecipe;
-import org.apache.xbean.recipe.Recipe;
-import org.apache.xbean.recipe.ConstructionException;
-import org.apache.geronimo.blueprint.BlueprintContextEventSender;
+import net.sf.cglib.proxy.Dispatcher;
+import net.sf.cglib.proxy.Enhancer;
+
 import org.apache.geronimo.blueprint.BlueprintConstants;
+import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.SatisfiableRecipe;
-import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.apache.geronimo.blueprint.utils.BundleDelegatingClassLoader;
-import org.osgi.service.blueprint.context.BlueprintContext;
-import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
+import org.apache.geronimo.blueprint.utils.ReflectionUtils;
+import org.apache.xbean.recipe.AbstractRecipe;
+import org.apache.xbean.recipe.ConstructionException;
+import org.apache.xbean.recipe.Recipe;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceEvent;
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.Dispatcher;
+import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.blueprint.context.BlueprintContext;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
+import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 
 /**
  * Abstract class for service reference recipes.
@@ -62,9 +63,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected List<Listener> listeners;
     private String filter;
     protected final ClassLoader proxyClassLoader;
-
-    private boolean satisfied;
-    private final List<SatisfactionListener> satisfactionListeners = new CopyOnWriteArrayList<SatisfactionListener>();
+    protected ServiceReferenceTracker tracker;
 
     protected AbstractServiceReferenceRecipe(BlueprintContext blueprintContext,
                                              BlueprintContextEventSender sender,
@@ -78,23 +77,29 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         // so that the created proxy can access cglib classes.
         this.proxyClassLoader = new BundleDelegatingClassLoader(blueprintContext.getBundleContext().getBundle(),
                                                                 getClass().getClassLoader());
+        
+        boolean optional = (metadata.getAvailability() == ReferenceMetadata.OPTIONAL_AVAILABILITY);
+        this.tracker = new ServiceReferenceTracker(blueprintContext.getBundleContext(), getOsgiFilter(), optional);
     }
 
+    public void start() {
+        try {
+            tracker.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void destroy() {
+        tracker.close();
+    }
+    
     public void registerListener(SatisfactionListener listener) {
-        satisfactionListeners.add(listener);
+        tracker.registerListener(new SatisfactionListenerWrapper(this, listener));
     }
 
     public boolean isSatisfied() {
-        return satisfied;
-    }
-
-    protected final void setSatisfied(boolean satisfied) {
-        if (this.satisfied != satisfied) {
-            this.satisfied = satisfied;
-            for (SatisfactionListener listener : satisfactionListeners) {
-                listener.notifySatisfaction(this);
-            }
-        }
+        return tracker.isSatisfied();
     }
 
     protected String getOsgiFilter() {
@@ -223,6 +228,22 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     protected abstract void untrack(ServiceReference reference);
 
+    private class SatisfactionListenerWrapper implements ServiceReferenceTracker.SatisfactionListener {
+
+        SatisfiableRecipe recipe;
+        SatisfiableRecipe.SatisfactionListener listener;
+        
+        public SatisfactionListenerWrapper(SatisfiableRecipe recipe, SatisfiableRecipe.SatisfactionListener listener) {
+            this.recipe = recipe;
+            this.listener = listener;
+        }
+        
+        public void notifySatisfaction(ServiceReferenceTracker satisfiable) {
+            this.listener.notifySatisfaction(recipe);
+        }
+        
+    }
+    
     public static class Listener {
 
         /* Inject by ObjectRecipe */
