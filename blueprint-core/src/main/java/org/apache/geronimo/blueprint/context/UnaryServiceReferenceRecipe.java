@@ -19,19 +19,16 @@
 package org.apache.geronimo.blueprint.context;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 import net.sf.cglib.proxy.Dispatcher;
+
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ExecutionContext;
 import org.apache.xbean.recipe.Recipe;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.Constants;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.ServiceUnavailableException;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
@@ -55,7 +52,6 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private volatile ServiceReference trackedServiceReference;
     private volatile Object trackedService;
     private final Object monitor = new Object();
-    private final boolean optional;
 
     public UnaryServiceReferenceRecipe(BlueprintContext blueprintContext,
                                        BlueprintContextEventSender sender,
@@ -63,10 +59,6 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
                                        Recipe listenersRecipe) {
         super(blueprintContext,  sender, metadata, listenersRecipe);
         this.metadata = metadata;
-        this.optional = metadata.getAvailability() == ReferenceMetadata.OPTIONAL_AVAILABILITY;
-        if (this.optional) {
-            setSatisfied(true);
-        }
     }
 
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
@@ -82,13 +74,12 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             }
 
             // Start tracking the service
-            blueprintContext.getBundleContext().addServiceListener(this, getOsgiFilter());
+            tracker.registerListener(this);
             retrack();
-
+            
             // Return the object
             return obj;
         } catch (Throwable t) {
-            t.printStackTrace();
             throw new ConstructionException(t);
         }
     }
@@ -96,64 +87,19 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     public boolean canCreate(Type type) {
         return true;
     }
-
+    
     public void destroy() {
-        blueprintContext.getBundleContext().removeServiceListener(this);
+        super.destroy();
         unbind();
-    }
-
-    private ServiceReference getBestServiceReference(ServiceReference[] references) {
-        int length = (references == null) ? 0 : references.length;
-        if (length == 0) { /* if no service is being tracked */
-            return null;
-        }
-        int index = 0;
-        if (length > 1) { /* if more than one service, select highest ranking */
-            int rankings[] = new int[length];
-            int count = 0;
-            int maxRanking = Integer.MIN_VALUE;
-            for (int i = 0; i < length; i++) {
-                Object property = references[i].getProperty(Constants.SERVICE_RANKING);
-                int ranking = (property instanceof Integer) ? ((Integer) property).intValue() : 0;
-                rankings[i] = ranking;
-                if (ranking > maxRanking) {
-                    index = i;
-                    maxRanking = ranking;
-                    count = 1;
-                } else {
-                    if (ranking == maxRanking) {
-                        count++;
-                    }
-                }
-            }
-            if (count > 1) { /* if still more than one service, select lowest id */
-                long minId = Long.MAX_VALUE;
-                for (int i = 0; i < length; i++) {
-                    if (rankings[i] == maxRanking) {
-                        long id = ((Long) (references[i].getProperty(Constants.SERVICE_ID))).longValue();
-                        if (id < minId) {
-                            index = i;
-                            minId = id;
-                        }
-                    }
-                }
-            }
-        }
-        return references[index];
     }
 
     private void retrack() {
         synchronized (monitor) {
-            try {
-                ServiceReference[] refs = blueprintContext.getBundleContext().getServiceReferences(null, getOsgiFilter());
-                ServiceReference ref = getBestServiceReference(refs);
-                if (ref != null) {
-                    bind(ref);
-                } else {
-                    unbind();
-                }
-            } catch (InvalidSyntaxException e) {
-                // Ignore, should never happen
+            ServiceReference ref = tracker.getBestServiceReference();
+            if (ref != null) {
+                bind(ref);
+            } else {
+                unbind();
             }
         }
     }
@@ -173,11 +119,9 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             }
             trackedServiceReference = ref;
             trackedService = blueprintContext.getBundleContext().getService(trackedServiceReference);
+            monitor.notifyAll();
             for (Listener listener : listeners) {
                 listener.bind(trackedServiceReference, trackedService);
-            }
-            if (!optional) {
-                setSatisfied(true);
             }
         }
     }
@@ -191,9 +135,6 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
                 blueprintContext.getBundleContext().ungetService(trackedServiceReference);
                 trackedServiceReference = null;
                 trackedService = null;
-                if (!optional) {
-                    setSatisfied(false);
-                }
             }
         }
     }

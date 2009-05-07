@@ -43,6 +43,8 @@ public interface SatisfiableRecipe extends Recipe {
 
     }
 
+    void start();
+    
     boolean isSatisfied();
 
     void registerListener(SatisfactionListener listener);

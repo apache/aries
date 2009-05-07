@@ -205,7 +205,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         RecipeBuilder i = new RecipeBuilder(this);
                         Repository repository = i.createRepository(componentDefinitionRegistry);
                         instantiator = new BlueprintObjectInstantiator(repository);
-                        instanciateServiceReferences();
+                        trackServiceReferences();
                         if (checkAllSatisfiables() || !waitForDependencies) {
                             state = State.InitialReferencesSatisfied;
                         } else {
@@ -303,7 +303,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                 this.beanProcessors.add((BeanProcessor) obj);
             }
         }
-
+        
         // TODO: need to destroy all those objects at the end
     }
 
@@ -351,17 +351,17 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         }
     }
 
-    private void instanciateServiceReferences() {
+    private void trackServiceReferences() {
         Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
         List<String> satisfiables = new ArrayList<String>();
         for (String name : dependencies.keySet()) {
             for (SatisfiableRecipe satisfiable : dependencies.get(name)) {
-                satisfiables.add(satisfiable.getName());
                 satisfiable.registerListener(this);
+                satisfiable.start();
+                satisfiables.add(satisfiable.getName());
             }
         }
-        LOGGER.debug("Instanciating service references: {}", satisfiables);
-        instantiator.createAll(satisfiables);
+        LOGGER.debug("Tracking service references: {}", satisfiables);
     }
 
     private boolean checkAllSatisfiables() {
@@ -416,6 +416,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                 if (!local.isLazyInit() && BeanMetadata.SCOPE_SINGLETON.equals(scope)) {
                     components.add(name);
                 }
+            } else if (components instanceof ServiceReferenceMetadata) {
+                components.add(name);
             }
         }
         LOGGER.debug("Instantiating components: {}", components);

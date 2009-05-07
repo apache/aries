@@ -19,32 +19,32 @@
 package org.apache.geronimo.blueprint.context;
 
 import java.lang.reflect.Type;
+import java.util.AbstractCollection;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Iterator;
 import java.util.RandomAccess;
-import java.util.SortedSet;
 import java.util.Set;
-import java.util.AbstractCollection;
-import java.util.ArrayList;
+import java.util.SortedSet;
 
 import net.sf.cglib.proxy.Dispatcher;
-import org.apache.geronimo.blueprint.Destroyable;
+
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
-import org.apache.geronimo.blueprint.utils.DynamicSortedList;
+import org.apache.geronimo.blueprint.Destroyable;
+import org.apache.geronimo.blueprint.utils.DynamicCollection;
 import org.apache.geronimo.blueprint.utils.DynamicList;
 import org.apache.geronimo.blueprint.utils.DynamicSet;
+import org.apache.geronimo.blueprint.utils.DynamicSortedList;
 import org.apache.geronimo.blueprint.utils.DynamicSortedSet;
-import org.apache.geronimo.blueprint.utils.DynamicCollection;
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ExecutionContext;
 import org.apache.xbean.recipe.Recipe;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
 
@@ -58,9 +58,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
 
     private final RefCollectionMetadata metadata;
     private final Recipe comparatorRecipe;
-    private Comparator comparator;
     private ManagedCollection collection;
-    private final boolean optional;
 
     public CollectionBasedServiceReferenceRecipe(BlueprintContext blueprintContext,
                                                  BlueprintContextEventSender sender,
@@ -70,10 +68,6 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         super(blueprintContext, sender, metadata, listenersRecipe);
         this.metadata = metadata;
         this.comparatorRecipe = comparatorRecipe;
-        this.optional = metadata.getAvailability() == RefCollectionMetadata.OPTIONAL_AVAILABILITY;
-        if (this.optional) {
-            setSatisfied(true);
-        }
     }
 
     public boolean canCreate(Type type) {
@@ -81,6 +75,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
     }
 
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
+        Comparator comparator = null;
         try {
             if (comparatorRecipe != null) {
                 comparator = (Comparator) comparatorRecipe.create(proxyClassLoader);
@@ -114,18 +109,17 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             }
 
             // Start tracking the service
-            blueprintContext.getBundleContext().addServiceListener(this, getOsgiFilter());
+            tracker.registerListener(this);
             retrack();
-
+            
             return collection;
         } catch (Throwable t) {
-            t.printStackTrace();
             throw new ConstructionException(t);
         }
     }
-
+    
     public void destroy() {
-        blueprintContext.getBundleContext().removeServiceListener(this);
+        super.destroy();
         List<ServiceDispatcher> dispatchers = new ArrayList<ServiceDispatcher>(collection.getDispatchers());
         for (ServiceDispatcher dispatcher : dispatchers) {
             untrack(dispatcher.reference);
@@ -133,15 +127,11 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
     }
 
     private void retrack() {
-        try {
-            ServiceReference[] refs = blueprintContext.getBundleContext().getServiceReferences(null, getOsgiFilter());
-            if (refs != null) {
-                for (ServiceReference ref : refs) {
-                    track(ref);
-                }
+        List<ServiceReference> refs = tracker.getServiceReferences();
+        if (refs != null) {
+            for (ServiceReference ref : refs) {
+                track(ref);
             }
-        } catch (InvalidSyntaxException e) {
-            // Ignore, should never happen
         }
     }
 
@@ -151,9 +141,6 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             dispatcher.proxy = createProxy(dispatcher, Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS)));
             synchronized (collection) {
                 collection.addDispatcher(dispatcher);
-                if (!optional) {
-                    setSatisfied(!collection.isEmpty());
-                }
             }
             for (Listener listener : listeners) {
                 listener.bind(dispatcher.reference, dispatcher.proxy);
@@ -171,9 +158,6 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             }
             synchronized (collection) {
                 collection.removeDispatcher(dispatcher);
-                if (!optional) {
-                    setSatisfied(!collection.isEmpty());
-                }
             }
             dispatcher.destroy();
         }
