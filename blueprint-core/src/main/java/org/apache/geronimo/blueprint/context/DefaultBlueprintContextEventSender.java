@@ -20,11 +20,14 @@ package org.apache.geronimo.blueprint.context;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.Event;
@@ -33,6 +36,7 @@ import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.BlueprintContextListener;
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
+import org.apache.geronimo.blueprint.BlueprintStateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,13 +46,15 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class DefaultBlueprintContextEventSender implements BlueprintContextEventSender, EventConstants {
+public class DefaultBlueprintContextEventSender implements BlueprintContextEventSender, EventConstants, BlueprintStateManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultBlueprintContextEventSender.class);
 
+    private final ServiceRegistration registration;
     private final Bundle extenderBundle;
     private final ServiceTracker eventAdminServiceTracker;
     private final ServiceTracker contextListenerTracker;
+    private final Map<Bundle, Object> states;
 
     public DefaultBlueprintContextEventSender(BundleContext bundleContext) {
         this.extenderBundle = bundleContext.getBundle();
@@ -56,33 +62,62 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
         this.eventAdminServiceTracker.open();
         this.contextListenerTracker = new ServiceTracker(bundleContext, BlueprintContextListener.class.getName(), null);
         this.contextListenerTracker.open();
+        this.states = new ConcurrentHashMap<Bundle, Object>();
+        this.registration = bundleContext.registerService(BlueprintStateManager.class.getName(), this, null);
+    }
+
+    public int getState(Bundle bundle) {
+        Object obj = states.get(bundle);
+        if (obj instanceof Integer) {
+            return (Integer) obj;
+        } else if (obj instanceof Throwable) {
+            return FAILED;
+        } else {
+            return UNKNOWN;
+        }
+    }
+
+    public Throwable getFailure(Bundle bundle) {
+        Object obj = states.get(bundle);
+        if (obj instanceof Throwable) {
+            return (Throwable) obj;
+        } else {
+            return null;
+        }
     }
 
     public void sendCreating(BlueprintContext blueprintContext) {
+        states.put(blueprintContext.getBundleContext().getBundle(),  CREATING);
         sendEvent(blueprintContext, TOPIC_CREATING, null, null, null);
     }
 
     public void sendCreated(BlueprintContext blueprintContext) {
+        states.put(blueprintContext.getBundleContext().getBundle(),  CREATED);
         sendEvent(blueprintContext, TOPIC_CREATED, null, null, null);
     }
 
     public void sendDestroying(BlueprintContext blueprintContext) {
+        states.put(blueprintContext.getBundleContext().getBundle(),  DESTROYING);
         sendEvent(blueprintContext, TOPIC_DESTROYING, null, null, null);
     }
 
     public void sendDestroyed(BlueprintContext blueprintContext) {
+        states.put(blueprintContext.getBundleContext().getBundle(),  DESTROYED);
         sendEvent(blueprintContext, TOPIC_DESTROYED, null, null, null);
     }
 
     public void sendWaiting(BlueprintContext blueprintContext, String[] serviceObjectClass, String serviceFilter) {
+        states.put(blueprintContext.getBundleContext().getBundle(),  WAITING);
         sendEvent(blueprintContext, TOPIC_WAITING, null, serviceObjectClass, serviceFilter);
     }
 
     public void sendFailure(BlueprintContext blueprintContext, Throwable cause) {
+        states.put(blueprintContext.getBundleContext().getBundle(),  cause != null ? cause : FAILED);
         sendEvent(blueprintContext, TOPIC_FAILURE, cause, null, null);
     }
 
     public void sendFailure(BlueprintContext blueprintContext, Throwable cause, String[] serviceObjectClass, String serviceFilter) {
+        states.put(blueprintContext.getBundleContext().getBundle(),  cause != null ? cause : FAILED);
         sendEvent(blueprintContext, TOPIC_FAILURE, cause, serviceObjectClass, serviceFilter);
     }
 
@@ -158,6 +193,7 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
     }
 
     public void destroy() {
+        this.registration.unregister();
         this.eventAdminServiceTracker.close();
         this.contextListenerTracker.close();
     }
