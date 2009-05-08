@@ -60,7 +60,16 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
     protected Map getRegistrationProperties() {
         return registrationProperties;
     }
-
+    
+    public void init() {
+        register();
+        blueprintContext.registerService(this);
+    }
+    
+    public ServiceMetadata getMetadata() {
+        return metadata;
+    }
+    
     public boolean isRegistered() {
         return registration != null;
     }
