@@ -74,6 +74,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         return true;
     }
 
+    @Override
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         Comparator comparator = null;
         try {
@@ -82,7 +83,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             } else if (metadata.getOrderingBasis() != 0) {
                 comparator = new NaturalOrderComparator();
             }
-            boolean orderReferences = metadata.getOrderingBasis() == RefCollectionMetadata.ORDER_BASIS_SERVICE_REFERENCE;
+            boolean orderReferences = metadata.getOrderingBasis() == RefCollectionMetadata.ORDERING_BASIS_SERVICE_REFERENCE;
             boolean memberReferences = metadata.getMemberType() == RefCollectionMetadata.MEMBER_TYPE_SERVICE_REFERENCE;
             if (metadata.getCollectionType() == List.class) {
                 if (comparator != null) {
@@ -109,7 +110,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             }
 
             // Start tracking the service
-            tracker.registerListener(this);
+            tracker.registerServiceListener(this);
             retrack();
             
             return collection;
@@ -118,8 +119,8 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         }
     }
     
-    public void destroy() {
-        super.destroy();
+    public void stop() {
+        super.stop();
         List<ServiceDispatcher> dispatchers = new ArrayList<ServiceDispatcher>(collection.getDispatchers());
         for (ServiceDispatcher dispatcher : dispatchers) {
             untrack(dispatcher.reference);
