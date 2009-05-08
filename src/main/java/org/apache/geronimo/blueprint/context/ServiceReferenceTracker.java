@@ -45,7 +45,7 @@ public class ServiceReferenceTracker implements ServiceListener {
     private boolean optional;
     private boolean satisfied;
     private List<ServiceReference> referenceSet;
-    
+    private boolean started;   
     private List<ServiceListener> serviceListeners = new CopyOnWriteArrayList<ServiceListener>();
     private List<SatisfactionListener> satisfactionListeners = new CopyOnWriteArrayList<SatisfactionListener>();
     
@@ -54,11 +54,15 @@ public class ServiceReferenceTracker implements ServiceListener {
         this.filter = filter;
         this.optional = optional;
         
+        this.started = false;
         this.satisfied = false;
         this.referenceSet = new ArrayList<ServiceReference>();
     }
     
-    public synchronized void start() throws InvalidSyntaxException {        
+    public synchronized void start() throws InvalidSyntaxException {
+        if (started) {
+            return;
+        }
         context.addServiceListener(this, filter);
         ServiceReference[] references = context.getServiceReferences(null, filter);
         if (references != null) {
@@ -66,13 +70,15 @@ public class ServiceReferenceTracker implements ServiceListener {
                 referenceSet.add(reference);
             }
         }
-        satisfied = (optional) ? true : !referenceSet.isEmpty();       
+        satisfied = (optional) ? true : !referenceSet.isEmpty();   
+        started = true;
     }
     
-    public void close() {
+    public synchronized void close() {
         context.removeServiceListener(this);
         referenceSet.clear();
         satisfactionListeners.clear();
+        started = false;
     }
     
     public boolean isSatisfied() {
@@ -116,7 +122,7 @@ public class ServiceReferenceTracker implements ServiceListener {
         }
     }
     
-    protected void serviceModified(ServiceEvent event) { 
+    protected synchronized void serviceModified(ServiceEvent event) { 
         ServiceReference ref = event.getServiceReference();
         notifyServiceListeners(event);
     }

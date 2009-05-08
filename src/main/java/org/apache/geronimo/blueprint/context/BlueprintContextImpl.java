@@ -105,6 +105,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     private List<BeanProcessor> beanProcessors;
     private Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>();
     private Map<String, List<SatisfiableRecipe>> satisfiables;
+    private Map<ServiceMetadata, ServiceRegistrationProxy> services;
     private boolean serviceActivation;
     private Map<ServiceMetadata, TriggerService> triggerServices;
     private long timeout = 5 * 60 * 1000; 
@@ -122,6 +123,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         this.lazyActivation = lazyActivation;
         this.triggerServices = new HashMap<ServiceMetadata, TriggerService>();
         this.beanProcessors = new ArrayList<BeanProcessor>();
+        this.services = Collections.synchronizedMap(new HashMap<ServiceMetadata, ServiceRegistrationProxy>());
     }
 
     public Class loadClass(String name) throws ClassNotFoundException {
@@ -235,7 +237,6 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         return;
                     case Create:
                         instantiateComponents();
-                        registerAllServices();
 
                         // Register the BlueprintContext in the OSGi registry
                         if (registration == null) {
@@ -416,7 +417,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                 if (!local.isLazyInit() && BeanMetadata.SCOPE_SINGLETON.equals(scope)) {
                     components.add(name);
                 }
-            } else if (components instanceof ServiceReferenceMetadata) {
+            } else {
                 components.add(name);
             }
         }
@@ -440,25 +441,21 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         }
     }
     
-    private void registerAllServices() {
-        for (ServiceMetadata service : getExportedServicesMetadata()) {
-            ServiceRegistrationProxy proxy = (ServiceRegistrationProxy) getComponent(service.getId());
-            if (proxy != null) {
-                proxy.register();
-            }
+    protected void registerService(ServiceRegistrationProxy registration) { 
+        ServiceMetadata metadata = registration.getMetadata();
+        if (services.put(metadata, registration) != null) {
+            LOGGER.warn("Service for this metadata is already registered {}", metadata);
         }
     }
-    
-    private void unregisterAllServices() {
-        for (ServiceMetadata service : getExportedServicesMetadata()) {
-            ServiceRegistrationProxy proxy = (ServiceRegistrationProxy) getComponent(service.getId());
-            if (proxy != null) {
-                proxy.unregister();
-            }
+        
+    private void unregisterServices() {
+        for (ServiceRegistrationProxy proxy : services.values()) {
+            proxy.unregister();
         }
     }
         
     private void registerTriggerServices() {
+        // TODO: right now this only returns top-level services
         for (ServiceMetadata service : getExportedServicesMetadata()) {
             // Trigger services are only created for services without listeners and explicitly defined interface classes
             if (service.getRegistrationListeners().isEmpty() && !service.getInterfaceNames().isEmpty()) {
@@ -567,7 +564,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         }
         handlers.removeListener(this);
         sender.sendDestroying(this);
-        unregisterAllServices();  
+        unregisterServices();  
         unregisterTriggerServices();
         destroyComponents();
         // TODO: stop all reference / collections
@@ -583,7 +580,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
 
     public synchronized void namespaceHandlerUnregistered(URI uri) {
         if (namespaces != null && namespaces.contains(uri)) {
-            unregisterAllServices();
+            unregisterServices();
             destroyComponents();
             // TODO: stop all reference / collections
             // TODO: clear the repository

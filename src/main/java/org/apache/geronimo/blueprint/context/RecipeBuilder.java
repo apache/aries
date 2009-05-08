@@ -168,6 +168,7 @@ public class RecipeBuilder {
         recipe.allow(Option.PRIVATE_PROPERTIES);
         recipe.setName(getName(serviceExport.getId()));
         recipe.setExplicitDependencies(serviceExport.getExplicitDependencies());
+        recipe.setInitMethod("init");
         recipe.setProperty("blueprintContext", blueprintContext);
         BeanMetadata exportedComponent = getLocalServiceComponent(serviceExport.getServiceComponent());
         if (exportedComponent != null && BeanMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
