@@ -217,7 +217,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
             MutableReferenceMetadata reference = context.createMetadata(MutableReferenceMetadata.class);
             reference.setId(CONFIG_ADMIN_REFERENCE_NAME);
             reference.addInterfaceName(ConfigurationAdmin.class.getName());
-            reference.setAvailability(ReferenceMetadata.MANDATORY_AVAILABILITY);
+            reference.setAvailability(ReferenceMetadata.AVAILABILITY_MANDATORY);
             reference.setTimeout(300000);
             registry.registerComponentDefinition(reference);
         }

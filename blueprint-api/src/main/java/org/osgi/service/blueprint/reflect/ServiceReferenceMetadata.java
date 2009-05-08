@@ -21,9 +21,9 @@ import java.util.List;
 
 public interface ServiceReferenceMetadata extends ComponentMetadata {
 
-    static final int MANDATORY_AVAILABILITY = 1;
+    static final int AVAILABILITY_MANDATORY = 1;
     
-    static final int OPTIONAL_AVAILABILITY = 2;
+    static final int AVAILABILITY_OPTIONAL = 2;
     
     int getAvailability();
 

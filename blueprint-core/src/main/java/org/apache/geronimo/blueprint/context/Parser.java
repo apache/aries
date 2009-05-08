@@ -847,9 +847,9 @@ public class Parser {
         if (element.hasAttribute(ORDERING_BASIS_ATTRIBUTE)) {
             String ordering = element.getAttribute(ORDERING_BASIS_ATTRIBUTE);
             if (ORDERING_BASIS_SERVICES.equals(ordering)) {
-                references.setOrderingBasis(RefCollectionMetadata.ORDER_BASIS_SERVICE);
+                references.setOrderingBasis(RefCollectionMetadata.ORDERING_BASIS_SERVICE);
             } else if (ODERING_BASIS_SERVICE_REFERENCES.equals(ordering)) {
-                references.setOrderingBasis(RefCollectionMetadata.ORDER_BASIS_SERVICE_REFERENCE);
+                references.setOrderingBasis(RefCollectionMetadata.ORDERING_BASIS_SERVICE_REFERENCE);
             }
         }
         parseReference(element, references);
@@ -920,9 +920,9 @@ public class Parser {
         }
         String availability = element.hasAttribute(AVAILABILITY_ATTRIBUTE) ? element.getAttribute(AVAILABILITY_ATTRIBUTE) : defaultAvailability;
         if (AVAILABILITY_MANDATORY.equals(availability)) {
-            reference.setAvailability(ServiceReferenceMetadata.MANDATORY_AVAILABILITY);
+            reference.setAvailability(ServiceReferenceMetadata.AVAILABILITY_MANDATORY);
         } else if (AVAILABILITY_OPTIONAL.equals(availability)) {
-            reference.setAvailability(ServiceReferenceMetadata.OPTIONAL_AVAILABILITY);
+            reference.setAvailability(ServiceReferenceMetadata.AVAILABILITY_OPTIONAL);
         } else {
             throw new ComponentDefinitionException("Illegal value for " + AVAILABILITY_ATTRIBUTE + " attribute: " + availability);
         }

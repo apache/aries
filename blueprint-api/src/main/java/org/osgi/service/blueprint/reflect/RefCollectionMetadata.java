@@ -18,9 +18,9 @@ package org.osgi.service.blueprint.reflect;
 
 public interface RefCollectionMetadata extends ServiceReferenceMetadata {
 
-    static final int ORDER_BASIS_SERVICE = 1;
+    static final int ORDERING_BASIS_SERVICE = 1;
 
-    static final int ORDER_BASIS_SERVICE_REFERENCE = 2;
+    static final int ORDERING_BASIS_SERVICE_REFERENCE = 2;
 
     static final int MEMBER_TYPE_SERVICE_INSTANCE = 1;
 
