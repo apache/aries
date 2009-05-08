@@ -61,6 +61,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
         this.metadata = metadata;
     }
 
+    @Override
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         try {
             // Create the proxy
@@ -74,7 +75,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             }
 
             // Start tracking the service
-            tracker.registerListener(this);
+            tracker.registerServiceListener(this);
             retrack();
             
             // Return the object
@@ -88,9 +89,13 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
         return true;
     }
     
-    public void destroy() {
-        super.destroy();
+    @Override
+    public void stop() {
+        super.stop();
         unbind();
+        synchronized(monitor) {
+            monitor.notifyAll();
+        }
     }
 
     private void retrack() {
@@ -143,13 +148,17 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
 
         public Object loadObject() throws Exception {
             synchronized (monitor) {
-                if (trackedService == null && metadata.getTimeout() > 0) {
+                if (tracker.isStarted() && trackedService == null && metadata.getTimeout() > 0) {
                     Set<String> interfaces = new HashSet<String>(metadata.getInterfaceNames());
                     sender.sendWaiting(blueprintContext, interfaces.toArray(new String[interfaces.size()]), getOsgiFilter());
                     monitor.wait(metadata.getTimeout());
                 }
                 if (trackedService == null) {
-                    throw new ServiceUnavailableException("Timeout expired when waiting for OSGi service", proxyClass.getSuperclass(), getOsgiFilter());
+                    if (tracker.isStarted()) {
+                        throw new ServiceUnavailableException("Timeout expired when waiting for OSGi service", proxyClass.getSuperclass(), getOsgiFilter());
+                    } else {
+                        throw new ServiceUnavailableException("Service tracker is stopped", proxyClass.getSuperclass(), getOsgiFilter());
+                    }
                 }
                 return trackedService;
             }

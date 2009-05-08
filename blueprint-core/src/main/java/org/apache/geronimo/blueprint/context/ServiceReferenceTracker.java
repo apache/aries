@@ -74,11 +74,15 @@ public class ServiceReferenceTracker implements ServiceListener {
         started = true;
     }
     
-    public synchronized void close() {
+    public synchronized void stop() {
         context.removeServiceListener(this);
         referenceSet.clear();
         satisfactionListeners.clear();
         started = false;
+    }
+    
+    public synchronized boolean isStarted() {
+        return started;
     }
     
     public boolean isSatisfied() {
@@ -187,11 +191,11 @@ public class ServiceReferenceTracker implements ServiceListener {
         return referenceSet.get(index);
     }
     
-    public void registerListener(ServiceListener listener) {
+    public void registerServiceListener(ServiceListener listener) {
         serviceListeners.add(listener);
     }
     
-    public void unregisterListener(ServiceListener listener) {
+    public void unregisterServiceListener(ServiceListener listener) {
         serviceListeners.remove(listener);
     }
     

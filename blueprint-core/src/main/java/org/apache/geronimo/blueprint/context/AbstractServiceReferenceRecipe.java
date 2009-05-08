@@ -33,7 +33,6 @@ import net.sf.cglib.proxy.Enhancer;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
-import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.SatisfiableRecipe;
 import org.apache.geronimo.blueprint.utils.BundleDelegatingClassLoader;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
@@ -54,7 +53,7 @@ import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe implements ServiceListener, Destroyable, SatisfiableRecipe {
+public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe implements ServiceListener, SatisfiableRecipe {
 
     protected final BlueprintContext blueprintContext;
     protected final BlueprintContextEventSender sender;
@@ -78,7 +77,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         this.proxyClassLoader = new BundleDelegatingClassLoader(blueprintContext.getBundleContext().getBundle(),
                                                                 getClass().getClassLoader());
         
-        boolean optional = (metadata.getAvailability() == ReferenceMetadata.OPTIONAL_AVAILABILITY);
+        boolean optional = (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL);
         this.tracker = new ServiceReferenceTracker(blueprintContext.getBundleContext(), getOsgiFilter(), optional);
     }
 
@@ -90,12 +89,15 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         }
     }
     
-    public void destroy() {
-        tracker.close();
+    public void stop() {
+        tracker.stop();
     }
     
     public void registerListener(SatisfactionListener listener) {
         tracker.registerListener(new SatisfactionListenerWrapper(this, listener));
+    }
+    
+    public void unregisterListener(SatisfactionListener listener) {        
     }
 
     public boolean isSatisfied() {

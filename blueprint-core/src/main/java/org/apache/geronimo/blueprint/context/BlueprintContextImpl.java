@@ -364,6 +364,16 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         }
         LOGGER.debug("Tracking service references: {}", satisfiables);
     }
+    
+    private void untrackServiceReferences() {
+        Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
+        for (String name : dependencies.keySet()) {
+            for (SatisfiableRecipe satisfiable : dependencies.get(name)) {
+                satisfiable.unregisterListener(this);
+                satisfiable.stop();
+            }
+        }
+    }
 
     private boolean checkAllSatisfiables() {
         Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
@@ -559,17 +569,19 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     }
     
     public void destroy() {
+        sender.sendDestroying(this);
+        
         if (registration != null) {
             registration.unregister();
         }
-        handlers.removeListener(this);
-        sender.sendDestroying(this);
+        handlers.removeListener(this);        
+        untrackServiceReferences();
         unregisterServices();  
         unregisterTriggerServices();
         destroyComponents();
-        // TODO: stop all reference / collections
-        System.out.println("Module context destroyed: " + this.bundleContext);
+        
         sender.sendDestroyed(this);
+        LOGGER.debug("Module context destroyed: " + this.bundleContext);
     }
 
     public synchronized void namespaceHandlerRegistered(URI uri) {
