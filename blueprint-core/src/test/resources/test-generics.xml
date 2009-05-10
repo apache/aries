@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+            default-availability="mandatory"
+            default-init-method = "init"
+            default-destroy-method = "destroy" >
+
+    <bean id="method" class="org.apache.geronimo.blueprint.pojos.PojoGenerics">
+        <property name="list">
+            <list>
+                <value>10</value>
+                <value>20</value>
+                <value>50</value>
+            </list>
+        </property>
+        <property name="set">
+            <set>
+                <value>1000</value>
+                <value>2000</value>
+                <value>5000</value>
+            </set>
+        </property>
+        <property name="map">
+            <map>
+                <entry key="1" value="yes"/>
+                <entry key="2" value="no" />
+                <entry>
+                     <key><value>5</value></key>
+                     <value>true</value>
+                </entry>
+            </map>
+        </property>        
+    </bean>
+    
+    <bean id="constructorList" class="org.apache.geronimo.blueprint.pojos.PojoGenerics">
+        <argument>
+            <list>
+                <value>10</value>
+                <value>20</value>
+                <value>50</value>
+            </list>
+        </argument>      
+    </bean>
+    
+    <bean id="constructorSet" class="org.apache.geronimo.blueprint.pojos.PojoGenerics">
+       <argument>
+            <set>
+                <value>1000</value>
+                <value>2000</value>
+                <value>5000</value>
+            </set>
+        </argument>
+    </bean>
+    
+    <bean id="constructorMap" class="org.apache.geronimo.blueprint.pojos.PojoGenerics">
+        <argument>
+            <map>
+                <entry key="1" value="yes"/>
+                <entry key="2" value="no" />
+                <entry>
+                     <key><value>5</value></key>
+                     <value>true</value>
+                </entry>
+            </map>
+        </argument>
+    </bean>
+    
+    
+</blueprint>
