@@ -20,8 +20,12 @@ package org.apache.geronimo.blueprint;
 
 import java.math.BigInteger;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.geronimo.blueprint.CallbackTracker.Callback;
 import org.apache.geronimo.blueprint.context.BlueprintObjectInstantiator;
@@ -32,6 +36,7 @@ import org.apache.geronimo.blueprint.pojos.BeanD;
 import org.apache.geronimo.blueprint.pojos.Multiple;
 import org.apache.geronimo.blueprint.pojos.PojoA;
 import org.apache.geronimo.blueprint.pojos.PojoB;
+import org.apache.geronimo.blueprint.pojos.PojoGenerics;
 import org.apache.xbean.recipe.Repository;
 import org.osgi.framework.ServiceRegistration;
 
@@ -276,6 +281,57 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals(integerValue, ((Multiple)obj).getInteger());        
     }
 
+    public void testGenerics() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-generics.xml");
+        RecipeBuilder i = new RecipeBuilder(new TestBlueprintContext(registry));
+        Repository repository = i.createRepository(registry);
+        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(repository);
+        
+        List<Integer> expectedList = new ArrayList<Integer>();
+        expectedList.add(new Integer(10));
+        expectedList.add(new Integer(20));
+        expectedList.add(new Integer(50));
+        
+        Set<Long> expectedSet = new HashSet<Long>();
+        expectedSet.add(new Long(1000));
+        expectedSet.add(new Long(2000));
+        expectedSet.add(new Long(5000));
+        
+        Map<Short, Boolean> expectedMap = new HashMap<Short, Boolean>();
+        expectedMap.put(new Short((short)1), Boolean.TRUE);
+        expectedMap.put(new Short((short)2), Boolean.FALSE);
+        expectedMap.put(new Short((short)5), Boolean.TRUE);
+        
+        Object obj;
+        PojoGenerics pojo;
+        
+        obj = graph.create("method");
+        assertTrue(obj instanceof PojoGenerics);
+        pojo = (PojoGenerics) obj;
+        
+        assertEquals(expectedList, pojo.getList());
+        assertEquals(expectedSet, pojo.getSet());
+        assertEquals(expectedMap, pojo.getMap());
+        
+        obj = graph.create("constructorList");
+        assertTrue(obj instanceof PojoGenerics);
+        pojo = (PojoGenerics) obj;
+        
+        assertEquals(expectedList, pojo.getList());
+        
+        obj = graph.create("constructorSet");
+        assertTrue(obj instanceof PojoGenerics);
+        pojo = (PojoGenerics) obj;
+        
+        assertEquals(expectedSet, pojo.getSet());
+        
+        obj = graph.create("constructorMap");
+        assertTrue(obj instanceof PojoGenerics);
+        pojo = (PojoGenerics) obj;
+        
+        assertEquals(expectedMap, pojo.getMap());
+    }
+    
     public void testCircular() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-circular.xml");
         RecipeBuilder i = new RecipeBuilder(new TestBlueprintContext(registry));

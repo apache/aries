@@ -175,7 +175,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
     
     private List<Object> getFinalArguments(ArgumentsMatch match, boolean refAllowed) throws ConstructionException {
         List<Object> arguments = match.getArguments();
-        Class[] parameterTypes = match.getParameterTypes();
+        Type[] parameterTypes = match.getGenericParameterTypes();
 
         List<Object> args = new ArrayList<Object>();
         for (int i = 0; i < arguments.size(); i++) {

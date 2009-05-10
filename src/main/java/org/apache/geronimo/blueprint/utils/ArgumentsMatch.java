@@ -20,6 +20,7 @@ package org.apache.geronimo.blueprint.utils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -57,6 +58,16 @@ public class ArgumentsMatch {
             return constructor.getParameterTypes();
         } else if (method != null) {
             return method.getParameterTypes();
+        } else {
+            return null;
+        }
+    }
+    
+    public Type[] getGenericParameterTypes() {
+        if (constructor != null) {
+            return constructor.getGenericParameterTypes();
+        } else if (method != null) {
+            return method.getGenericParameterTypes();
         } else {
             return null;
         }
