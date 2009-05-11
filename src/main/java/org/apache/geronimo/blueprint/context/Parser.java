@@ -163,7 +163,7 @@ public class Parser {
     public static final String VALUE_TYPE_ATTRIBUTE = "value-type";
     public static final String COMPARATOR_REF_ATTRIBUTE = "comparator-ref";
     public static final String MEMBER_TYPE_ATTRIBUTE = "member-type";
-    public static final String ORDERING_BASIS_ATTRIBUTE = "order-basis";
+    public static final String ORDERING_BASIS_ATTRIBUTE = "ordering-basis";
     public static final String SCOPE_ATTRIBUTE = "scope";
     public static final String INIT_METHOD_ATTRIBUTE = "init-method";
     public static final String DESTROY_METHOD_ATTRIBUTE = "destroy-method";
@@ -187,8 +187,8 @@ public class Parser {
     public static final String TIMEOUT_DEFAULT = "300000";
     public static final String MEMBER_TYPE_SERVICES = "service-instance";
     public static final String MEMBER_TYPE_SERVICE_REFERENCE = "service-reference";
-    public static final String ORDERING_BASIS_SERVICES = "services";
-    public static final String ODERING_BASIS_SERVICE_REFERENCES = "service-reference";
+    public static final String ORDERING_BASIS_SERVICES = "service";
+    public static final String ORDERING_BASIS_SERVICE_REFERENCES = "service-reference";
     public static final String LAZY_INIT_DEFAULT = BOOLEAN_FALSE;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
@@ -848,7 +848,7 @@ public class Parser {
             String ordering = element.getAttribute(ORDERING_BASIS_ATTRIBUTE);
             if (ORDERING_BASIS_SERVICES.equals(ordering)) {
                 references.setOrderingBasis(RefCollectionMetadata.ORDERING_BASIS_SERVICE);
-            } else if (ODERING_BASIS_SERVICE_REFERENCES.equals(ordering)) {
+            } else if (ORDERING_BASIS_SERVICE_REFERENCES.equals(ordering)) {
                 references.setOrderingBasis(RefCollectionMetadata.ORDERING_BASIS_SERVICE_REFERENCE);
             }
         }
