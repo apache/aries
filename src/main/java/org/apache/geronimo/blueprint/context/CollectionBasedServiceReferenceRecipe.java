@@ -43,6 +43,7 @@ import org.apache.geronimo.blueprint.utils.DynamicSortedSet;
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ExecutionContext;
 import org.apache.xbean.recipe.Recipe;
+import org.apache.xbean.recipe.RecipeHelper;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.context.BlueprintContext;
@@ -84,7 +85,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
                 comparator = new NaturalOrderComparator();
             }
             boolean orderReferences = metadata.getOrderingBasis() == RefCollectionMetadata.ORDERING_BASIS_SERVICE_REFERENCE;
-            boolean memberReferences = metadata.getMemberType() == RefCollectionMetadata.MEMBER_TYPE_SERVICE_REFERENCE;
+            boolean memberReferences = isReferenceCollection(expectedType) || metadata.getMemberType() == RefCollectionMetadata.MEMBER_TYPE_SERVICE_REFERENCE;
             if (metadata.getCollectionType() == List.class) {
                 if (comparator != null) {
                     collection = new ManagedSortedList(memberReferences, orderReferences, comparator);
@@ -117,6 +118,20 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         } catch (Throwable t) {
             throw new ConstructionException(t);
         }
+    }
+    
+    private boolean isReferenceCollection(Type expectedType) {
+        Class componentType = getComponentType(expectedType);
+        return ServiceReference.class.equals(componentType);
+    }
+    
+    private Class getComponentType(Type expectedType) {
+        Type[] typeParameters = RecipeHelper.getTypeParameters(Collection.class, expectedType);
+        Class componentType = Object.class;
+        if (typeParameters != null && typeParameters.length == 1 && typeParameters[0] instanceof Class) {
+            componentType = (Class) typeParameters[0];
+        }
+        return componentType;
     }
     
     public void stop() {
