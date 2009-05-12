@@ -153,7 +153,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
 
     protected void track(ServiceReference reference) {
         try {
-            ServiceDispatcher dispatcher = new ServiceDispatcher(reference);
+            ServiceDispatcher dispatcher = new ServiceDispatcher(reference, collection.isMemberReferences());
             dispatcher.proxy = createProxy(dispatcher, Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS)));
             synchronized (collection) {
                 collection.addDispatcher(dispatcher);
@@ -193,12 +193,19 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         public ServiceReference reference;
         public Object service;
         public Object proxy;
+        
+        private final boolean memberReference;
 
-        public ServiceDispatcher(ServiceReference reference) throws Exception {
+        public ServiceDispatcher(ServiceReference reference, boolean memberReference) throws Exception {
             this.reference = reference;
+            this.memberReference = memberReference;
             this.service = reference.getBundle().getBundleContext().getService(reference);
         }
 
+        public Object getMember() {
+            return (memberReference) ? reference : service;
+        }
+        
         public void destroy() {
             if (reference != null) {
                 reference.getBundle().getBundleContext().ungetService(reference);
@@ -213,6 +220,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             }
             return service;
         }
+        
     }
 
     public static class DispatcherComparator implements Comparator<ServiceDispatcher> {
@@ -245,6 +253,10 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             this.dispatchers = dispatchers;
         }
 
+        public boolean isMemberReferences() {
+            return references;
+        }
+        
         public boolean addDispatcher(ServiceDispatcher dispatcher) {
             return dispatchers.add(dispatcher);
         }
@@ -272,10 +284,6 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
 
         public int size() {
             return dispatchers.size();
-        }
-
-        protected Object getMember(ServiceDispatcher d) {
-            return references ? d.reference : d.proxy;
         }
 
         @Override
@@ -321,7 +329,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             }
 
             public Object next() {
-                return getMember(iterator.next());
+                return iterator.next().getMember();
             }
 
             public void remove() {
@@ -351,7 +359,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         }
 
         public Object get(int index) {
-            return getMember(dispatchers.get(index));
+            return dispatchers.get(index).getMember();
         }
 
         public int indexOf(Object o) {
@@ -421,7 +429,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             }
 
             public Object next() {
-                return getMember(iterator.next());
+                return iterator.next().getMember();
             }
 
             public boolean hasPrevious() {
@@ -429,7 +437,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             }
 
             public Object previous() {
-                return getMember(iterator.previous());
+                return iterator.previous().getMember();
             }
 
             public int nextIndex() {
@@ -466,15 +474,29 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
     public static class ManagedSet extends ManagedCollection implements Set {
 
         public ManagedSet(boolean references) {
-            this(references, new DynamicSet<ServiceDispatcher>());
+            super(references, new DynamicServiceDispatcherSet());
         }
-
+        
         protected ManagedSet(boolean references, DynamicSet<ServiceDispatcher> dispatchers) {
             super(references, dispatchers);
         }
-
+        
     }
-
+    
+    private static class DynamicServiceDispatcherSet extends DynamicSet<ServiceDispatcher> {
+        public boolean add(ServiceDispatcher newDispatcher) {
+            synchronized (lock) {
+                for (ServiceDispatcher dispatcher : storage) {
+                    if (dispatcher.getMember().equals(newDispatcher.getMember())) {
+                        return false;
+                    }
+                }
+                storage.add(newDispatcher);
+                return true;
+            }
+        }
+    }
+    
     public static class ManagedSortedSet extends ManagedSet implements SortedSet {
 
         protected final DynamicSortedSet<ServiceDispatcher> dispatchers;
@@ -503,11 +525,11 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         }
 
         public Object first() {
-            return getMember(dispatchers.first());
+            return dispatchers.first().getMember();
         }
 
         public Object last() {
-            return getMember(dispatchers.last());
+            return dispatchers.last().getMember();
         }
 
     }

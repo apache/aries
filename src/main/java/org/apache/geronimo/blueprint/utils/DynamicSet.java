@@ -19,8 +19,6 @@
 package org.apache.geronimo.blueprint.utils;
 
 import java.util.Set;
-import java.util.Iterator;
-import java.lang.ref.WeakReference;
 
 /**
  * Same as DynamicCollection but implementing the Set interface, thus not allowing
