@@ -138,7 +138,13 @@ public class ConversionServiceImpl implements ConversionService {
             } catch (ClassNotFoundException e) {
                 throw new Exception("Unable to convert", e);
             }
-        } else if (Locale.class == toType) {
+        } else {
+            return defaultConversion(value, toType);
+        }
+    }
+
+    public static Object defaultConversion(String value, Class toType) throws Exception {
+        if (Locale.class == toType) {
             String[] tokens = value.split("_");
             if (tokens.length == 1) {
                 return new Locale(tokens[0]);
@@ -192,7 +198,7 @@ public class ConversionServiceImpl implements ConversionService {
         }
     }
 
-    private Object createObject(String value, Class type) throws Exception {
+    private static Object createObject(String value, Class type) throws Exception {
         if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
             throw new Exception("Unable to convert. Type class is an interface or is an abstract class");
         }
