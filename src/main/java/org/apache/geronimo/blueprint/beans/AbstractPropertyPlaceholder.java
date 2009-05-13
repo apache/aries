@@ -59,10 +59,6 @@ import org.osgi.service.blueprint.reflect.NonNullMetadata;
 /**
  * Abstract class for property placeholders.
  *
- * TODO: enhance to use MutableXxx to allow replacement of Metadata if needed.
- * In particular, replacing the ValueMetadataImpl may be needed to allow property
- * replacement at instanciation time instead of replacing the properties at parsing time.
- *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
