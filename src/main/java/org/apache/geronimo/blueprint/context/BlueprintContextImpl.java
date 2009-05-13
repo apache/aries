@@ -228,6 +228,12 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                             return;
                         }
                     case InitialReferencesSatisfied:
+                        // TODO: we should always register ServiceFactory in all cases.
+                        //       the reason is that the trigger service creation may actually trigger the activation of
+                        //       the bundle if the service properties reference any other components (thus loading a class
+                        //       from the bundle and activating it)
+                        //       the lazy activation should be a best effot and the lazy creation of services should be
+                        //       done in all cases
                         if (lazyActivation) {
                             registerTriggerServices();
                             state = State.WaitForTrigger;                            
