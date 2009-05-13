@@ -76,6 +76,10 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
 
     public void stop(BundleContext context) {
         LOGGER.debug("Stopping blueprint extender...");
+        // TODO: we should order the blueprint context destruction wrt service exports / dependencies
+        // TODO: also if a blueprint bundle is being stopped at the same time (this could happen if the framework
+        //        is shut down, we should not wait for the blueprint context to be destroyed if it is already being
+        //        destroyed by the extender
         List<Bundle> bundles = new ArrayList<Bundle>(contextMap.keySet());
         for (Bundle bundle : bundles) {
             destroyContext(bundle);
