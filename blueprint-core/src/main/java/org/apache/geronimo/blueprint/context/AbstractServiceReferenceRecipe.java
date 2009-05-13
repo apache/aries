@@ -94,7 +94,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
     
     public void registerListener(SatisfactionListener listener) {
-        tracker.registerListener(new SatisfactionListenerWrapper(this, listener));
+        tracker.registerListener(new SatisfactionListenerWrapper(listener));
     }
     
     public void unregisterListener(SatisfactionListener listener) {        
@@ -232,16 +232,14 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     private class SatisfactionListenerWrapper implements ServiceReferenceTracker.SatisfactionListener {
 
-        SatisfiableRecipe recipe;
         SatisfiableRecipe.SatisfactionListener listener;
         
-        public SatisfactionListenerWrapper(SatisfiableRecipe recipe, SatisfiableRecipe.SatisfactionListener listener) {
-            this.recipe = recipe;
+        public SatisfactionListenerWrapper(SatisfiableRecipe.SatisfactionListener listener) {
             this.listener = listener;
         }
         
         public void notifySatisfaction(ServiceReferenceTracker satisfiable) {
-            this.listener.notifySatisfaction(recipe);
+            this.listener.notifySatisfaction(AbstractServiceReferenceRecipe.this);
         }
         
     }
