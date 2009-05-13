@@ -48,6 +48,7 @@ import org.apache.xbean.recipe.Repository;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.ExecutionContext;
 import org.apache.xbean.recipe.DefaultExecutionContext;
+import org.apache.xbean.recipe.ConstructionException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -55,6 +56,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.NoSuchComponentException;
+import org.osgi.service.blueprint.context.ComponentDefinitionException;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.convert.Converter;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
@@ -309,7 +311,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     }
 
     private Map<String, List<SatisfiableRecipe>> getSatisfiableDependenciesMap() {
-        if (satisfiables == null) {
+        if (satisfiables == null && instantiator != null) {
             boolean createNewContext = !ExecutionContext.isContextSet();
             if (createNewContext) {
                 ExecutionContext.setContext(new DefaultExecutionContext(instantiator.getRepository()));
@@ -367,10 +369,12 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     
     private void untrackServiceReferences() {
         Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
-        for (String name : dependencies.keySet()) {
-            for (SatisfiableRecipe satisfiable : dependencies.get(name)) {
-                satisfiable.unregisterListener(this);
-                satisfiable.stop();
+        if (dependencies != null) {
+            for (String name : dependencies.keySet()) {
+                for (SatisfiableRecipe satisfiable : dependencies.get(name)) {
+                    satisfiable.unregisterListener(this);
+                    satisfiable.stop();
+                }
             }
         }
     }
@@ -432,7 +436,11 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
             }
         }
         LOGGER.debug("Instantiating components: {}", components);
-        instantiator.createAll(components);
+        try {
+            instantiator.createAll(components);
+        } catch (ConstructionException e) {
+            throw (ComponentDefinitionException) new ComponentDefinitionException("Unable to instantiate components").initCause(e);
+        }
     }
 
     private void destroyComponents() {
@@ -516,6 +524,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
             return instantiator.create(name);
         } catch (org.apache.xbean.recipe.NoSuchObjectException e) {
             throw new NoSuchComponentException(name);
+        } catch (ConstructionException e) {
+            throw (ComponentDefinitionException) new ComponentDefinitionException("Cound not create component instance for " + name).initCause(e);
         }
     }
 
