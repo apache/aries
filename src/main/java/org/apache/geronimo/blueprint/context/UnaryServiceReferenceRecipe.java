@@ -48,6 +48,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
 
     private final ReferenceMetadata metadata;
     private Class proxyClass;
+    private Object proxy;
 
     private volatile ServiceReference trackedServiceReference;
     private volatile Object trackedService;
@@ -65,13 +66,13 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         try {
             // Create the proxy
-            Object obj = createProxy(new ServiceDispatcher(), metadata.getInterfaceNames());
-            proxyClass = obj.getClass();
+            proxy = createProxy(new ServiceDispatcher(), metadata.getInterfaceNames());
+            proxyClass = proxy.getClass();
             // Create the listeners and initialize them
             createListeners();
             // Add the created proxy to the context
             if (getName() != null) {
-                ExecutionContext.getContext().addObject(getName(), obj);
+                ExecutionContext.getContext().addObject(getName(), proxy);
             }
 
             // Start tracking the service
@@ -79,7 +80,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             retrack();
             
             // Return the object
-            return obj;
+            return proxy;
         } catch (Throwable t) {
             throw new ConstructionException(t);
         }
@@ -123,10 +124,9 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
                 blueprintContext.getBundleContext().ungetService(trackedServiceReference);
             }
             trackedServiceReference = ref;
-            trackedService = blueprintContext.getBundleContext().getService(trackedServiceReference);
             monitor.notifyAll();
             for (Listener listener : listeners) {
-                listener.bind(trackedServiceReference, trackedService);
+                listener.bind(trackedServiceReference, proxy);
             }
         }
     }
@@ -134,9 +134,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private void unbind() {
         synchronized (monitor) {
             if (trackedServiceReference != null) {
-                for (Listener listener : listeners) {
-                    listener.unbind(trackedServiceReference, trackedService);
-                }
+                // Listeners are not called for a reference
                 blueprintContext.getBundleContext().ungetService(trackedServiceReference);
                 trackedServiceReference = null;
                 trackedService = null;
@@ -148,17 +146,20 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
 
         public Object loadObject() throws Exception {
             synchronized (monitor) {
-                if (tracker.isStarted() && trackedService == null && metadata.getTimeout() > 0) {
+                if (tracker.isStarted() && trackedServiceReference == null && metadata.getTimeout() > 0) {
                     Set<String> interfaces = new HashSet<String>(metadata.getInterfaceNames());
                     sender.sendWaiting(blueprintContext, interfaces.toArray(new String[interfaces.size()]), getOsgiFilter());
                     monitor.wait(metadata.getTimeout());
                 }
-                if (trackedService == null) {
+                if (trackedServiceReference == null) {
                     if (tracker.isStarted()) {
                         throw new ServiceUnavailableException("Timeout expired when waiting for OSGi service", proxyClass.getSuperclass(), getOsgiFilter());
                     } else {
                         throw new ServiceUnavailableException("Service tracker is stopped", proxyClass.getSuperclass(), getOsgiFilter());
                     }
+                }
+                if (trackedService == null) {
+                    trackedService = blueprintContext.getBundleContext().getService(trackedServiceReference);
                 }
                 return trackedService;
             }
