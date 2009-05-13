@@ -199,24 +199,34 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         public ServiceDispatcher(ServiceReference reference, boolean memberReference) throws Exception {
             this.reference = reference;
             this.memberReference = memberReference;
-            this.service = reference.getBundle().getBundleContext().getService(reference);
         }
 
-        public Object getMember() {
-            return (memberReference) ? reference : service;
+        public synchronized Object getMember() {
+            if (memberReference) {
+                return reference;
+            } else {
+                if (service == null && reference != null) {
+                    service = reference.getBundle().getBundleContext().getService(reference);
+                }
+                return service;
+            }
         }
         
-        public void destroy() {
+        public synchronized void destroy() {
             if (reference != null) {
                 reference.getBundle().getBundleContext().ungetService(reference);
+                reference = null;
                 service = null;
                 proxy = null;
             }
         }
 
-        public Object loadObject() throws Exception {
-            if (service == null) {
+        public synchronized Object loadObject() throws Exception {
+            if (reference == null) {
                 throw new ServiceUnregisteredException();
+            }
+            if (service == null) {
+                service = reference.getBundle().getBundleContext().getService(reference);
             }
             return service;
         }
