@@ -234,6 +234,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         //       from the bundle and activating it)
                         //       the lazy activation should be a best effot and the lazy creation of services should be
                         //       done in all cases
+                        //       Not sure about listeners
                         if (lazyActivation) {
                             registerTriggerServices();
                             state = State.WaitForTrigger;                            

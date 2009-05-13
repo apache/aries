@@ -33,10 +33,6 @@
         <argument value="urn:myuri" />
     </bean>
     
-    <bean id="multipleFail" class="org.apache.geronimo.blueprint.pojos.Multiple">
-        <argument value="123"/>
-    </bean>
-    
     <bean id="multipleInt" class="org.apache.geronimo.blueprint.pojos.Multiple">
         <argument type="int" value="123"/>
     </bean>
@@ -77,4 +73,20 @@
         <argument type = "java.lang.Boolean"><null/></argument>
     </bean>
     
+    <bean id="mapConstruction" class="org.apache.geronimo.blueprint.pojos.Multiple">
+        <argument>
+            <map>
+                <entry key="a" value="b"/>
+            </map>
+        </argument>
+    </bean>
+
+    <bean id="propsConstruction" class="org.apache.geronimo.blueprint.pojos.Multiple">
+        <argument>
+            <props>
+                <prop key="a" value="b"/>
+            </props>
+        </argument>
+    </bean>
+
 </blueprint>

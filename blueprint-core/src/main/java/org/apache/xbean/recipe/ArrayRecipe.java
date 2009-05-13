@@ -82,6 +82,21 @@ public class ArrayRecipe extends AbstractRecipe {
         return Collections.emptyList();
     }
 
+    public Type[] getTypes() {
+        if (typeClass != null) {
+            return new Type[] { typeClass };
+        } else if (typeName != null) {
+            try {
+                Type type = RecipeHelper.loadClass(typeName);
+                return new Type[] { type };
+            } catch (ClassNotFoundException e) {
+                throw new ConstructionException("Type class could not be found: " + typeName);
+            }
+        } else {
+            return new Type[] { Object[].class };
+        }
+    }
+
     public boolean canCreate(Type expectedType) {
         Class expectedClass = RecipeHelper.toClass(expectedType);
         Class myType = getType(expectedType);

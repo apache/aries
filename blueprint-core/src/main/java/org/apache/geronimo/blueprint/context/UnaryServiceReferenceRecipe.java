@@ -21,6 +21,7 @@ package org.apache.geronimo.blueprint.context;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 import net.sf.cglib.proxy.Dispatcher;
 
@@ -83,6 +84,19 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             return proxy;
         } catch (Throwable t) {
             throw new ConstructionException(t);
+        }
+    }
+
+    public Type[] getTypes() {
+        try {
+            List<String> interfaceNames = metadata.getInterfaceNames();
+            Type[] types = new Type[interfaceNames.size()];
+            for (int i = 0; i < interfaceNames.size(); i++) {
+                types[i] = proxyClassLoader.loadClass(interfaceNames.get(i));
+            }
+            return types;
+        } catch (ClassNotFoundException e) {
+            throw new ConstructionException(e);
         }
     }
 

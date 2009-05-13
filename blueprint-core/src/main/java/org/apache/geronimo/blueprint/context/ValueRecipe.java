@@ -23,6 +23,8 @@ import java.lang.reflect.Type;
 import org.apache.xbean.recipe.AbstractRecipe;
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.RecipeHelper;
+import org.apache.xbean.recipe.Recipe;
+import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 
@@ -57,6 +59,16 @@ public class ValueRecipe extends AbstractRecipe {
             return conversionService.convert(value.getStringValue(), myType);
         } catch (Exception e) {            
             throw new ConstructionException(e);
+        }
+    }
+
+    public Type[] getTypes() {
+        if (type != null) {
+            return new Type[] { type };
+        //} else if (value.getTypeName() != null) {
+            // TODO
+        } else {
+            return new Type[] { String.class };
         }
     }
 

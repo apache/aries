@@ -68,7 +68,11 @@ public class ReferenceNameRecipe extends AbstractRecipe {
     public List<Recipe> getConstructorRecipes() {
         return getNestedRecipes();
     }
-    
+
+    public Type[] getTypes() {
+        return new Type[] { String.class };
+    }
+
     public boolean canCreate(Type type) {
         Object object = getReference();
         return String.class == RecipeHelper.toClass(type);

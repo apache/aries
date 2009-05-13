@@ -80,6 +80,27 @@ public class ArgumentsMatch {
     public String toString() {
         return method + " " + constructor + " " + arguments;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ArgumentsMatch)) return false;
+
+        ArgumentsMatch that = (ArgumentsMatch) o;
+
+        if (constructor != null ? !constructor.equals(that.constructor) : that.constructor != null) return false;
+        if (method != null ? !method.equals(that.method) : that.method != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = method != null ? method.hashCode() : 0;
+        result = 31 * result + (constructor != null ? constructor.hashCode() : 0);
+        result = 31 * result + (arguments != null ? arguments.hashCode() : 0);
+        return result;
+    }
 }
 
 

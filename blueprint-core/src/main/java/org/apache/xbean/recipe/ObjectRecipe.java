@@ -250,6 +250,15 @@ public class ObjectRecipe extends AbstractRecipe {
         }
     }
 
+    public Type[] getTypes() {
+        Class type = getType();
+        if (type != null) {
+            return new Type[] { getType() };
+        } else{
+            return new Type[] { Object.class };
+        }
+    }
+
     public boolean canCreate(Type type) {
         Class myType = getType();
         return RecipeHelper.isAssignable(type, myType) || RecipeHelper.isAssignable(type, myType);

@@ -103,5 +103,5 @@
           <idref component="pojoA"/>
         </property>
     </bean>
-    
+
 </blueprint>

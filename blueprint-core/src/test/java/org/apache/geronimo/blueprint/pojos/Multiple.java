@@ -18,11 +18,27 @@
  */
 package org.apache.geronimo.blueprint.pojos;
 
+import java.util.Map;
+import java.util.Properties;
+
 public class Multiple {
 
     private int intValue = -1;
     private Integer integerValue = null;
     private String stringValue = null;
+    private Map map;
+    private Properties properties;
+
+    public Multiple() {
+    }
+
+    public Multiple(Map map) {
+        this.map = map;
+    }
+
+    public Multiple(Properties props) {
+        this.properties = props;
+    }
 
     public Multiple(String arg) {   
         stringValue = arg;
@@ -36,6 +52,14 @@ public class Multiple {
         integerValue = arg;
     }
 
+    public Map getMap() {
+        return map;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
     public int getInt() {
         return intValue;
     }
@@ -47,7 +71,13 @@ public class Multiple {
     public String getString() {
         return stringValue;
     }
-    
+
+    public void setAmbiguous(int v) {
+    }
+
+    public void setAmbiguous(Object v) {
+    }
+
     public static Multiple create(String arg1, Integer arg2) {
         return new Multiple(arg2.intValue());
     }
