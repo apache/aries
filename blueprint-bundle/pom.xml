@@ -35,10 +35,6 @@
             <groupId>org.apache.geronimo</groupId>
             <artifactId>blueprint-cm</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-reflect</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
@@ -87,7 +83,6 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.apache.xbean:xbean-reflect</include>
                                     <include>asm:asm-all</include>
                                     <include>cglib:cglib</include>
                                     <include>org.apache.geronimo:blueprint-api</include>
@@ -96,12 +91,6 @@
                                 </includes>
                             </artifactSet>
                             <filters>
-                                <filter>
-                                    <artifact>org.apache.xbean:xbean-reflect</artifact>
-                                    <excludes>
-                                        <exclude>org/**</exclude>
-                                    </excludes>
-                                </filter>
                                 <filter>
                                     <artifact>asm:asm-all</artifact>
                                     <excludes>
