@@ -1009,6 +1009,10 @@ public class Parser {
             if (node instanceof Element) {
                 Element e = (Element) node;
                 if (nodeNameEquals(e, VALUE_ELEMENT)) {
+                    String v = getTextValue(e).trim();
+                    if (interfaceNames.contains(v)) {
+                        throw new ComponentDefinitionException("The element " + INTERFACES_ELEMENT + " should not contain the same interface twice");
+                    }
                     interfaceNames.add(getTextValue(e));
                 } else {
                     throw new ComponentDefinitionException("Unsupported element " + e.getNodeName() + " inside an " + INTERFACES_ELEMENT + " element");

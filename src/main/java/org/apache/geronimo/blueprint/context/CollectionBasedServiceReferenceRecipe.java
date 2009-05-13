@@ -71,6 +71,10 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         this.comparatorRecipe = comparatorRecipe;
     }
 
+    public Type[] getTypes() {
+        return new Type[] { metadata.getCollectionType() };
+    }
+
     public boolean canCreate(Type type) {
         return true;
     }

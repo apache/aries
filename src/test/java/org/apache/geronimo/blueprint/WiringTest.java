@@ -42,6 +42,17 @@ import org.osgi.framework.ServiceRegistration;
 
 public class WiringTest extends AbstractBlueprintTest {
 
+    // TODO: fix this test
+//    public void testAmbiguous() throws Exception {
+//        ComponentDefinitionRegistryImpl registry = parse("/test-ambiguous.xml");
+//        RecipeBuilder i = new RecipeBuilder(new TestBlueprintContext(registry));
+//        BlueprintObjectRepository repository = i.createRepository(registry);
+//        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(repository);
+//
+//        Object obj1 = graph.create("ambiguous");
+//        fail("Should have failed");
+//    }
+
     public void testWiring() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
         RecipeBuilder i = new RecipeBuilder(new TestBlueprintContext(registry));
@@ -227,14 +238,6 @@ public class WiringTest extends AbstractBlueprintTest {
         Object obj5 = graph.create("pojoE");
         testPojoB(obj5, URI.create("urn:myuri-dynamic"), 20);
         
-        try {
-            graph.create("multipleFail");
-            fail("Did not throw exception");
-        } catch (RuntimeException e) {
-            // we expect exception 
-            // TODO: check the exception string?
-        }
-        
         Object obj6 = graph.create("multipleInt");
         testMultiple(obj6, null, 123, null);
         
@@ -262,7 +265,10 @@ public class WiringTest extends AbstractBlueprintTest {
         }
         
         Object obj12 = graph.create("multipleFactoryTypedNull");
-        testMultiple(obj12, "hello-boolean", -1, null);          
+        testMultiple(obj12, "hello-boolean", -1, null);
+
+        Object obj13 = graph.create("mapConstruction");
+        Object obj14 = graph.create("propsConstruction");
     }
     
     private void testPojoB(Object obj, URI uri, int intValue) {

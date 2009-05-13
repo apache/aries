@@ -114,6 +114,10 @@ public class MapRecipe extends AbstractRecipe {
         return Collections.emptyList();
     }
 
+    public Type[] getTypes() {
+        return new Type[] { typeClass };
+    }
+
     public boolean canCreate(Type type) {
         Class myType = getType(type);
         return RecipeHelper.isAssignable(type, myType);

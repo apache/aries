@@ -21,12 +21,15 @@ package org.apache.geronimo.blueprint.utils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
 
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.RecipeHelper;
+import org.apache.xbean.recipe.ReflectionUtil;
 
 /**
  * TODO: javadoc
@@ -46,24 +49,47 @@ public class ArgumentsMatcher {
         List<ArgumentsMatch> matches = new ArrayList<ArgumentsMatch>();
         Method[] methods = type.getMethods();
         
-        // look for matching method using the order of arguments specified    
+        boolean allowReorder = options.contains(Option.ARGUMENT_REORDER);
+
+        // look for matching method using the order of arguments specified
         for (Method method : methods) {
             if (method.getName().equals(name) && isAcceptable(method, options)) {
                 Class[] parameterTypes = method.getParameterTypes();
-                if (isAssignable(parameterTypes, arguments)) {
+                if (isAssignable(parameterTypes, arguments, false, true)) {
                     matches.add(new ArgumentsMatch(method, arguments));
                 }
             }
         }
-        
-        boolean allowReorder = options.contains(Option.ARGUMENT_REORDER); 
-        if (matches.size() == 0 && arguments.size() > 1 && allowReorder) {
-            // we did not find any matching method, let's try re-ordering the arguments        
+
+        if (matches.size() == 0) {
             for (Method method : methods) {
                 if (method.getName().equals(name) && isAcceptable(method, options)) {
-                    Class[] parameterTypes = method.getParameterTypes();                
-                    if (parameterTypes.length == arguments.size()) {   
-                        ArgumentMatcher matcher = new ArgumentMatcher(method);
+                    Class[] parameterTypes = method.getParameterTypes();
+                    if (isAssignable(parameterTypes, arguments, false, false)) {
+                        matches.add(new ArgumentsMatch(method, arguments));
+                    }
+                }
+            }
+        }
+
+        if (matches.size() == 0) {
+            for (Method method : methods) {
+                if (method.getName().equals(name) && isAcceptable(method, options)) {
+                    Class[] parameterTypes = method.getParameterTypes();
+                    if (isAssignable(parameterTypes, arguments, true, false)) {
+                        matches.add(new ArgumentsMatch(method, arguments));
+                    }
+                }
+            }
+        }
+
+        if (matches.size() == 0 && arguments.size() > 1 && allowReorder) {
+            // we did not find any matching method, let's try re-ordering the arguments
+            for (Method method : methods) {
+                if (method.getName().equals(name) && isAcceptable(method, options)) {
+                    Class[] parameterTypes = method.getParameterTypes();
+                    if (parameterTypes.length == arguments.size()) {
+                        ArgumentMatcher matcher = new ArgumentMatcher(method, false, true);
                         ArgumentsMatch match = matcher.match(arguments);
                         if (match != null) {
                             matches.add(match);
@@ -72,7 +98,39 @@ public class ArgumentsMatcher {
                 }
             }
         }
-        
+
+        if (matches.size() == 0 && arguments.size() > 1 && allowReorder) {
+            // we did not find any matching method, let's try re-ordering the arguments
+            for (Method method : methods) {
+                if (method.getName().equals(name) && isAcceptable(method, options)) {
+                    Class[] parameterTypes = method.getParameterTypes();
+                    if (parameterTypes.length == arguments.size()) {
+                        ArgumentMatcher matcher = new ArgumentMatcher(method, false, false);
+                        ArgumentsMatch match = matcher.match(arguments);
+                        if (match != null) {
+                            matches.add(match);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (matches.size() == 0 && arguments.size() > 1 && allowReorder) {
+            // we did not find any matching method, let's try re-ordering the arguments
+            for (Method method : methods) {
+                if (method.getName().equals(name) && isAcceptable(method, options)) {
+                    Class[] parameterTypes = method.getParameterTypes();
+                    if (parameterTypes.length == arguments.size()) {
+                        ArgumentMatcher matcher = new ArgumentMatcher(method, true, false);
+                        ArgumentsMatch match = matcher.match(arguments);
+                        if (match != null) {
+                            matches.add(match);
+                        }
+                    }
+                }
+            }
+        }
+
         int size = matches.size();
         if (size == 0) {
             throw new RuntimeException("Did not find any matching method");
@@ -84,59 +142,117 @@ public class ArgumentsMatcher {
     }
        
     public static ArgumentsMatch findConstructor(Class type, List<Object> arguments, Set<Option> options) { 
-        List<ArgumentsMatch> matches = new ArrayList<ArgumentsMatch>();
+        Set<ArgumentsMatch> matches = new HashSet<ArgumentsMatch>();
         Constructor[] constructors = type.getConstructors();
         
-        // look for matching constructor using the order of arguments specified in config file                        
+        boolean allowReorder = options.contains(Option.ARGUMENT_REORDER);
+
+        // look for matching constructor using the exact match
         for (Constructor constructor : constructors) {
             Class[] parameterTypes = constructor.getParameterTypes();
-            if (isAssignable(parameterTypes, arguments)) {
+            if (isAssignable(parameterTypes, arguments, false, true)) {
                 matches.add(new ArgumentsMatch(constructor, arguments));
             }
         }
-            
-        boolean allowReorder = options.contains(Option.ARGUMENT_REORDER);
-        if (matches.size() == 0 && arguments.size() > 1 && allowReorder) {
-            // we did not find any matching constructor, let's try re-ordering the arguments            
+
+        if (matches.size() == 0) {
             for (Constructor constructor : constructors) {
-                Class[] parameterTypes = constructor.getParameterTypes();                  
-                if (parameterTypes.length == arguments.size()) {   
-                    ArgumentMatcher matcher = new ArgumentMatcher(constructor);
-                    ArgumentsMatch match = matcher.match(arguments);
-                    if (match != null) {
-                        matches.add(match);
-                    }                   
+                Class[] parameterTypes = constructor.getParameterTypes();
+                if (isAssignable(parameterTypes, arguments, false, false)) {
+                    matches.add(new ArgumentsMatch(constructor, arguments));
                 }
             }
         }
-        
+
+        // look for matching constructor using the order of arguments specified in config file
+        if (matches.size() == 0) {
+            for (Constructor constructor : constructors) {
+                Class[] parameterTypes = constructor.getParameterTypes();
+                if (isAssignable(parameterTypes, arguments, true, false)) {
+                    matches.add(new ArgumentsMatch(constructor, arguments));
+                }
+            }
+        }
+
+        if (matches.size() == 0 && arguments.size() > 1 && allowReorder) {
+            // we did not find any matching constructor, let's try re-ordering the arguments
+            for (Constructor constructor : constructors) {
+                Class[] parameterTypes = constructor.getParameterTypes();
+                if (parameterTypes.length == arguments.size()) {
+                    ArgumentMatcher matcher = new ArgumentMatcher(constructor, false, true);
+                    ArgumentsMatch match = matcher.match(arguments);
+                    if (match != null) {
+                        matches.add(match);
+                    }
+                }
+            }
+        }
+
+        if (matches.size() == 0 && arguments.size() > 1 && allowReorder) {
+            // we did not find any matching constructor, let's try re-ordering the arguments
+            for (Constructor constructor : constructors) {
+                Class[] parameterTypes = constructor.getParameterTypes();
+                if (parameterTypes.length == arguments.size()) {
+                    ArgumentMatcher matcher = new ArgumentMatcher(constructor, false, false);
+                    ArgumentsMatch match = matcher.match(arguments);
+                    if (match != null) {
+                        matches.add(match);
+                    }
+                }
+            }
+        }
+
+        if (matches.size() == 0 && arguments.size() > 1 && allowReorder) {
+            // we did not find any matching constructor, let's try re-ordering the
+            for (Constructor constructor : constructors) {
+                Class[] parameterTypes = constructor.getParameterTypes();
+                if (parameterTypes.length == arguments.size()) {
+                    ArgumentMatcher matcher = new ArgumentMatcher(constructor, true, false);
+                    ArgumentsMatch match = matcher.match(arguments);
+                    if (match != null) {
+                        matches.add(match);
+                    }
+                }
+            }
+        }
+
         int size = matches.size();
         if (size == 0) {
             throw new RuntimeException("Did not find any matching constructor");
         } else if (size == 1) {
-            return matches.get(0);
+            return matches.iterator().next();
         } else {
             throw new RuntimeException("Found multiple matching constructors");
         }
     }
     
-    public static boolean isAssignable(Class[] parameterTypes, List<Object> arguments) {
+    public static boolean isAssignable(Class[] parameterTypes, List<Object> arguments, boolean allowConversion, boolean strict) {
         if (parameterTypes.length == arguments.size()) {
             boolean assignable = true;
             for (int i = 0; i < parameterTypes.length && assignable; i++) {
-                assignable = isAssignable(parameterTypes[i], arguments.get(i));
+                assignable = isAssignable(parameterTypes[i], arguments.get(i), allowConversion, strict);
             }
             return assignable;
         }
         return false;
     }
     
-    public static boolean isAssignable(Class type, Object argument) {
+    public static boolean isAssignable(Class type, Object argument, boolean allowConversion, boolean strict) {
         if (argument == null) {
             return true;
         } else if (argument instanceof Recipe) {
             Recipe recipe = (Recipe) argument;
-            return recipe.canCreate(type);
+            if (allowConversion) {
+                // TODO: use conversion service
+                return recipe.canCreate(type);
+            } else {
+                for (Type t : recipe.getTypes()) {
+                    if (type.equals(RecipeHelper.toClass(t))) {
+                        return true;
+                    }
+                }
+                return false;
+            }
         } else {
             return RecipeHelper.isAssignableFrom(type, argument.getClass());
         }
@@ -157,15 +273,21 @@ public class ArgumentsMatcher {
         private List<TypeEntry> entries;
         private Method method;
         private Constructor constructor;
+        private boolean allowConversion;
+        private boolean strict;
         
-        public ArgumentMatcher(Constructor constructor) {
+        public ArgumentMatcher(Constructor constructor, boolean allowConversion, boolean strict) {
             this.constructor = constructor;
             buildTypes(constructor.getParameterTypes());
+            this.allowConversion = allowConversion;
+            this.strict = strict;
         }
         
-        public ArgumentMatcher(Method method) {
+        public ArgumentMatcher(Method method, boolean allowConversion, boolean strict) {
             this.method = method;
             buildTypes(method.getParameterTypes());
+            this.allowConversion = allowConversion;
+            this.strict = strict;
         }
         
         private void buildTypes(Class[] types) {
@@ -222,7 +344,7 @@ public class ArgumentsMatcher {
         private boolean find(Object arg) {
             for (TypeEntry entry : entries) {
                 if (entry.getArgument() == null &&
-                    ArgumentsMatcher.isAssignable(entry.getType(), arg)) {
+                    ArgumentsMatcher.isAssignable(entry.getType(), arg, allowConversion, strict)) {
                     entry.setArgument(arg);
                     return true;
                 }

@@ -26,6 +26,8 @@ import java.lang.reflect.Type;
 public interface Recipe extends Serializable {
     String getName();
 
+    Type[] getTypes();
+
     boolean canCreate(Type type);
 
     Object create() throws ConstructionException;

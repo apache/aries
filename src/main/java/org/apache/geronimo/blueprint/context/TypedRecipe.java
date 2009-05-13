@@ -68,6 +68,16 @@ public class TypedRecipe extends AbstractRecipe {
         }
     }
 
+    public Type[] getTypes() {
+        if (type != null) {
+            return new Type[] { type };
+        }
+        if (value instanceof Recipe) {
+            return ((Recipe) value).getTypes();
+        }
+        return new Type[] { value != null ? value.getClass() : Object.class };
+    }
+
     public boolean canCreate(Type expectedType) {
         Class expectedClass = RecipeHelper.toClass(expectedType);
         if (type == null) {
