@@ -28,24 +28,24 @@ import java.util.List;
  * @version $Rev$ $Date$
  */
 public class ArrayRecipe extends AbstractRecipe {
-    private final List<Object> list;
+    private final List<Recipe> list;
     private String typeName;
     private Class typeClass;
     private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
 
     public ArrayRecipe() {
-        list = new ArrayList<Object>();
+        list = new ArrayList<Recipe>();
     }
 
     public ArrayRecipe(String type) {
-        list = new ArrayList<Object>();
+        list = new ArrayList<Recipe>();
         this.typeName = type;
     }
 
     public ArrayRecipe(Class type) {
         if (type == null) throw new NullPointerException("type is null");
 
-        this.list = new ArrayList<Object>();
+        this.list = new ArrayList<Recipe>();
         this.typeClass = type;
     }
 
@@ -53,7 +53,7 @@ public class ArrayRecipe extends AbstractRecipe {
         if (collectionRecipe == null) throw new NullPointerException("setRecipe is null");
         this.typeName = collectionRecipe.typeName;
         this.typeClass = collectionRecipe.typeClass;
-        list = new ArrayList<Object>(collectionRecipe.list);
+        list = new ArrayList<Recipe>(collectionRecipe.list);
     }
 
     public void allow(Option option) {
@@ -122,8 +122,8 @@ public class ArrayRecipe extends AbstractRecipe {
         boolean refAllowed = options.contains(Option.LAZY_ASSIGNMENT);
 
         int index = 0;
-        for (Object value : list) {
-            value = RecipeHelper.convert(type, value, refAllowed);
+        for (Recipe recipe : list) {
+            Object value = recipe.create(type, refAllowed);
             
             if (value instanceof Reference) {
                 Reference reference = (Reference) value;
@@ -163,11 +163,11 @@ public class ArrayRecipe extends AbstractRecipe {
         return type;
     }
 
-    public void add(Object value) {
+    public void add(Recipe value) {
         list.add(value);
     }
 
-    public void addAll(Collection<?> value) {
+    public void addAll(Collection<Recipe> value) {
         list.addAll(value);
     }
 
@@ -179,7 +179,7 @@ public class ArrayRecipe extends AbstractRecipe {
         list.remove(value);
     }
 
-    public List<Object> getAll() {
+    public List<Recipe> getAll() {
         return Collections.unmodifiableList(list);
     }
 

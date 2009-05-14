@@ -23,13 +23,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
 
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.RecipeHelper;
-import org.apache.xbean.recipe.ReflectionUtil;
 
 /**
  * TODO: javadoc

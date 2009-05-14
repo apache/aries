@@ -42,16 +42,18 @@ import org.osgi.framework.ServiceRegistration;
 
 public class WiringTest extends AbstractBlueprintTest {
 
-    // TODO: fix this test
-//    public void testAmbiguous() throws Exception {
-//        ComponentDefinitionRegistryImpl registry = parse("/test-ambiguous.xml");
-//        RecipeBuilder i = new RecipeBuilder(new TestBlueprintContext(registry));
-//        BlueprintObjectRepository repository = i.createRepository(registry);
-//        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(repository);
-//
-//        Object obj1 = graph.create("ambiguous");
-//        fail("Should have failed");
-//    }
+    public void testAmbiguous() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-ambiguous.xml");
+        RecipeBuilder i = new RecipeBuilder(new TestBlueprintContext(registry));
+        BlueprintObjectRepository repository = i.createRepository(registry);
+        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(repository);
+        try {
+            graph.create("ambiguous");
+            fail("Should have failed");
+        } catch (Exception e) {
+            // Expected
+        }
+    }
 
     public void testWiring() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");

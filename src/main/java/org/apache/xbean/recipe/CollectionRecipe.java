@@ -33,30 +33,30 @@ import java.util.TreeSet;
  * @version $Rev: 6685 $ $Date: 2005-12-28T00:29:37.967210Z $
  */
 public class CollectionRecipe extends AbstractRecipe {
-    private final List<Object> list;
+    private final List<Recipe> list;
     private String typeName;
     private Class typeClass;
     private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
 
     public CollectionRecipe() {
-        list = new ArrayList<Object>();
+        list = new ArrayList<Recipe>();
     }
 
     public CollectionRecipe(String type) {
-        list = new ArrayList<Object>();
+        list = new ArrayList<Recipe>();
         this.typeName = type;
     }
 
     public CollectionRecipe(Class type) {
         if (type == null) throw new NullPointerException("type is null");
-        this.list = new ArrayList<Object>();
+        this.list = new ArrayList<Recipe>();
         this.typeClass = type;
     }
 
-    public CollectionRecipe(Collection<?> collection) {
+    public CollectionRecipe(Collection<Recipe> collection) {
         if (collection == null) throw new NullPointerException("collection is null");
 
-        this.list = new ArrayList<Object>(collection);
+        this.list = new ArrayList<Recipe>(collection);
 
         // If the specified collection has a default constructor we will recreate the collection, otherwise we use a the default
         if (RecipeHelper.hasDefaultConstructor(collection.getClass())) {
@@ -76,7 +76,7 @@ public class CollectionRecipe extends AbstractRecipe {
         if (collectionRecipe == null) throw new NullPointerException("setRecipe is null");
         this.typeName = collectionRecipe.typeName;
         this.typeClass = collectionRecipe.typeClass;
-        list = new ArrayList<Object>(collectionRecipe.list);
+        list = new ArrayList<Recipe>(collectionRecipe.list);
     }
 
     public void allow(Option option) {
@@ -159,8 +159,8 @@ public class CollectionRecipe extends AbstractRecipe {
         boolean refAllowed = options.contains(Option.LAZY_ASSIGNMENT);
 
         int index = 0;
-        for (Object value : list) {
-            value = RecipeHelper.convert(componentType, value, refAllowed);
+        for (Recipe recipe : list) {
+            Object value = recipe.create(componentType, refAllowed);
 
             if (value instanceof Reference) {
                 Reference reference = (Reference) value;
@@ -220,23 +220,23 @@ public class CollectionRecipe extends AbstractRecipe {
         }
     }
     
-    public void add(Object value) {
+    public void add(Recipe value) {
         list.add(value);
     }
 
-    public void addAll(Collection<?> value) {
+    public void addAll(Collection<Recipe> value) {
         list.addAll(value);
     }
 
-    public void remove(Object value) {
+    public void remove(Recipe value) {
         list.remove(value);
     }
 
-    public void removeAll(Object value) {
+    public void removeAll(Recipe value) {
         list.remove(value);
     }
 
-    public List<Object> getAll() {
+    public List<Recipe> getAll() {
         return Collections.unmodifiableList(list);
     }
 
