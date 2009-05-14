@@ -39,14 +39,6 @@ public final class RecipeHelper {
     private RecipeHelper() {
     }
 
-    public static Recipe getCaller() {
-        LinkedList<Recipe> stack = ExecutionContext.getContext().getStack();
-        if (stack.size() < 2) {
-            return null;
-        }
-        return stack.get(stack.size() - 2);
-    }
-
     public static Class loadClass(String name) throws ClassNotFoundException {
         ClassLoader classLoader = ExecutionContext.getContext().getClassLoader();
         Class<?> type = Class.forName(name, true, classLoader);
@@ -154,33 +146,6 @@ public final class RecipeHelper {
         }
 
         return expected.isAssignableFrom(actual);
-    }
-
-    public static Object convert(Type expectedType, Object value, boolean lazyRefAllowed) {
-        if (value instanceof Recipe) {
-            Recipe recipe = (Recipe) value;
-            value = recipe.create(expectedType, lazyRefAllowed);
-        }
-
-        //if (value instanceof String && (expectedType != Object.class)) {
-        //    String stringValue = (String) value;
-        //    value = PropertyEditors.getValue(expectedType, stringValue);
-        //}
-        return value;
-    }
-
-    public static boolean isAssignableFrom(List<? extends Class<?>> expectedTypes, List<? extends Class<?>> actualTypes) {
-        if (expectedTypes.size() != actualTypes.size()) {
-            return false;
-        }
-        for (int i = 0; i < expectedTypes.size(); i++) {
-            Class expectedType = expectedTypes.get(i);
-            Class actualType = actualTypes.get(i);
-            if (expectedType != actualType && !isAssignableFrom(expectedType, actualType)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public static boolean isAssignable(Type expectedType, Type actualType) {

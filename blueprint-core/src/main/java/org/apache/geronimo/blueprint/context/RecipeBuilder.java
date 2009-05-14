@@ -32,8 +32,6 @@ import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 import org.apache.xbean.recipe.ArrayRecipe;
 import org.apache.xbean.recipe.CollectionRecipe;
 import org.apache.xbean.recipe.MapRecipe;
-import org.apache.xbean.recipe.ObjectRecipe;
-import org.apache.xbean.recipe.Option;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.ReferenceNameRecipe;
 import org.apache.xbean.recipe.Repository;
@@ -162,9 +160,8 @@ public class RecipeBuilder {
         return recipe;
     }
 
-    private ObjectRecipe createServiceRecipe(ServiceMetadata serviceExport) throws Exception {
+    private BlueprintObjectRecipe createServiceRecipe(ServiceMetadata serviceExport) throws Exception {
         BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, ServiceRegistrationProxy.class);
-        recipe.allow(Option.PRIVATE_PROPERTIES);
         recipe.setName(getName(serviceExport.getId()));
         recipe.setExplicitDependencies(serviceExport.getExplicitDependencies());
         recipe.setInitMethod("init");
@@ -211,7 +208,7 @@ public class RecipeBuilder {
         recipe.setExplicitDependencies(local.getExplicitDependencies());
         for (BeanProperty property : local.getProperties()) {
             Object value = getValue(property.getValue(), null);
-            recipe.setCompoundProperty(property.getName(), value);
+            recipe.setProperty(property.getName(), value);
         }
         if (BeanMetadata.SCOPE_PROTOTYPE.equals(local.getScope())) {
             recipe.setKeepRecipe(true);
@@ -243,16 +240,14 @@ public class RecipeBuilder {
     }
 
     private Recipe createRecipe(RegistrationListener listener) throws Exception {
-        ObjectRecipe recipe = new ObjectRecipe(ServiceRegistrationProxy.Listener.class);
-        recipe.allow(Option.PRIVATE_PROPERTIES);
+        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, ServiceRegistrationProxy.Listener.class);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         recipe.setProperty("metadata", listener);
         return recipe;
     }
 
     private Recipe createRecipe(Listener listener) throws Exception {
-        ObjectRecipe recipe = new ObjectRecipe(AbstractServiceReferenceRecipe.Listener.class);
-        recipe.allow(Option.PRIVATE_PROPERTIES);
+        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, AbstractServiceReferenceRecipe.Listener.class);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         recipe.setProperty("metadata", listener);
         return recipe;
@@ -310,8 +305,8 @@ public class RecipeBuilder {
             Class valueType = loadClass(mapValue.getValueTypeName());
             MapRecipe mr = new MapRecipe(HashMap.class);
             for (MapEntry entry : mapValue.getEntries()) {
-                Object key = getValue(entry.getKey(), keyType);
-                Object val = getValue(entry.getValue(), valueType);
+                Recipe key = getValue(entry.getKey(), keyType);
+                Recipe val = getValue(entry.getValue(), valueType);
                 mr.put(key, val);
             }
             return mr;
@@ -319,8 +314,8 @@ public class RecipeBuilder {
             PropsMetadata mapValue = (PropsMetadata) v;
             MapRecipe mr = new MapRecipe(Properties.class);
             for (MapEntry entry : mapValue.getEntries()) {
-                Object key = getValue(entry.getKey(), String.class);
-                Object val = getValue(entry.getValue(), String.class);
+                Recipe key = getValue(entry.getKey(), String.class);
+                Recipe val = getValue(entry.getValue(), String.class);
                 mr.put(key, val);
             }
             return mr;

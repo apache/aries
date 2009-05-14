@@ -18,26 +18,35 @@
  */
 package org.apache.geronimo.blueprint.context;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.apache.xbean.recipe.ConstructionException;
-import org.apache.xbean.recipe.ExecutionContext;
-import org.apache.xbean.recipe.ObjectRecipe;
-import org.apache.xbean.recipe.Recipe;
-import org.apache.xbean.recipe.RecipeHelper;
-import org.apache.xbean.recipe.ReferenceRecipe;
-import org.apache.xbean.recipe.Option;
+import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.utils.ArgumentsMatch;
 import org.apache.geronimo.blueprint.utils.ArgumentsMatcher;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
-import org.apache.geronimo.blueprint.BeanProcessor;
+import org.apache.xbean.recipe.AbstractRecipe;
+import org.apache.xbean.recipe.ConstructionException;
+import org.apache.xbean.recipe.ExecutionContext;
+import org.apache.xbean.recipe.Option;
+import org.apache.xbean.recipe.Recipe;
+import org.apache.xbean.recipe.RecipeHelper;
+import static org.apache.xbean.recipe.RecipeHelper.toClass;
+import org.apache.xbean.recipe.ReferenceRecipe;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.MapMetadata;
@@ -50,7 +59,12 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev$, $Date$
  */
-public class BlueprintObjectRecipe extends ObjectRecipe {
+public class BlueprintObjectRecipe extends AbstractRecipe {
+
+    private String typeName;
+    private Class typeClass;
+    private final LinkedHashMap<String,Object> properties = new LinkedHashMap<String,Object>();
+    private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
 
     private final BlueprintContextImpl blueprintContext;
     private boolean keepRecipe = false;
@@ -58,23 +72,56 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
     private String destroyMethod;
     private List<String> explicitDependencies;
     
-    private Object factory; // could be Recipe or actual object
+    private Recipe factory; // could be Recipe or actual object
     private String factoryMethod;
     private List<Object> arguments;
     private List<BeanArgument> beanArguments;
     private boolean reorderArguments;
     
     public BlueprintObjectRecipe(BlueprintContextImpl blueprintContext, Class typeName) {
-        super(typeName);
+        this.typeClass = typeName;
         this.blueprintContext = blueprintContext;
         allow(Option.LAZY_ASSIGNMENT);
     }
     
+    public void allow(Option option){
+        options.add(option);
+    }
+
+    public void disallow(Option option){
+        options.remove(option);
+    }
+
+    public Set<Option> getOptions() {
+        return Collections.unmodifiableSet(options);
+    }
+
+    public Object getProperty(String name) {
+        return properties.get(name);
+    }
+
+    public Map<String, Object> getProperties() {
+        return new LinkedHashMap<String, Object>(properties);
+    }
+
+    public void setProperty(String name, Object value) {
+        properties.put(name, value);
+    }
+
+    public void setAllProperties(Map<?,?> map) {
+        if (map == null) throw new NullPointerException("map is null");
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            String name = (String) entry.getKey();
+            Object value = entry.getValue();
+            setProperty(name, value);
+        }
+    }
+
     public void setFactoryMethod(String method) {
         this.factoryMethod = method;
     }
     
-    public void setFactoryComponent(Object factory) {
+    public void setFactoryComponent(Recipe factory) {
         this.factory = factory;
     }
     
@@ -163,7 +210,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
                     obj = new TypedRecipe();
                 } else if (obj instanceof Recipe) {                
                     if (shouldPreinstantiate(argument.getValue())) {
-                        obj = RecipeHelper.convert(Object.class, obj, refAllowed);
+                        obj = ((Recipe) obj).create(Object.class, refAllowed);
                     }
                 }
             }
@@ -181,7 +228,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         for (int i = 0; i < arguments.size(); i++) {
             Object argument = arguments.get(i);
             if (argument instanceof Recipe) {
-                argument = RecipeHelper.convert(parameterTypes[i], argument, refAllowed);
+                argument = ((Recipe) argument).create(parameterTypes[i], refAllowed);
             }
             args.add(argument);
         }
@@ -230,7 +277,7 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         
         if (factory != null) {
             // look for instance method on factory object
-            Object factoryObj = RecipeHelper.convert(Object.class, factory, refAllowed);
+            Object factoryObj = factory.create(Object.class, refAllowed);
             options.add(ArgumentsMatcher.Option.INSTANCE_METHODS_ONLY);
             ArgumentsMatch match = ArgumentsMatcher.findMethod(factoryObj.getClass(), factoryMethod, arguments, options);
             // convert parameters
@@ -314,10 +361,10 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
         return method;
     }
     
-    @Override
     public boolean canCreate(Type type) {
         if (factoryMethod == null) {
-            return super.canCreate(type);
+            Class myType = getType();
+            return RecipeHelper.isAssignable(type, myType) || RecipeHelper.isAssignable(type, myType);
         } else {
             // factory-method was specified, so we're not really sure what type of object we create
             // until we actually create it
@@ -388,4 +435,120 @@ public class BlueprintObjectRecipe extends ObjectRecipe {
             processor.afterDestroy(obj, getName());
         }
     }
+
+    public Type[] getTypes() {
+        Class type = getType();
+        if (type != null) {
+            return new Type[] { getType() };
+        } else{
+            return new Type[] { Object.class };
+        }
+    }
+
+    public void setProperties(Object instance) throws ConstructionException {
+        // clone the properties so they can be used again
+        Map<String,Object> propertyValues = new LinkedHashMap<String,Object>(properties);
+        setProperties(propertyValues, instance, instance.getClass());
+    }
+
+    public Class getType() {
+        if (typeClass != null || typeName != null) {
+            Class type = typeClass;
+            if (type == null) {
+                try {
+                    type = RecipeHelper.loadClass(typeName);
+                } catch (ClassNotFoundException e) {
+                    throw new ConstructionException("Type class could not be found: " + typeName);
+                }
+            }
+
+            return type;
+        }
+
+        return null;
+    }
+
+    private void setProperties(Map<String, Object> propertyValues, Object instance, Class clazz) {
+        // set remaining properties
+        for (Map.Entry<String, Object> entry : propertyValues.entrySet()) {
+            String propertyName = entry.getKey();
+            Object propertyValue = entry.getValue();
+
+            setProperty(instance, clazz, propertyName, propertyValue);
+        }
+
+    }
+
+    private void setProperty(Object instance, Class clazz, String propertyName, Object propertyValue) {
+        String[] names = propertyName.split("\\.");
+        for (int i = 0; i < names.length - 1; i++) {
+            Method getter = getPropertyDescriptor(clazz, names[i]).getReadMethod();
+            if (getter != null) {
+                try {
+                    instance = getter.invoke(instance);
+                    clazz = instance.getClass();
+                } catch (Exception e) {
+                    Throwable t = e;
+                    if (e instanceof InvocationTargetException) {
+                        InvocationTargetException invocationTargetException = (InvocationTargetException) e;
+                        if (invocationTargetException.getCause() != null) {
+                            t = invocationTargetException.getCause();
+                        }
+                    }
+                    throw new ConstructionException("Error getting property: " + names[i] + " on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName(), t);
+                }
+            } else {
+                throw new ConstructionException("No getter for " + names[i] + " property");
+            }
+        }
+        Method setter = getPropertyDescriptor(clazz, names[names.length - 1]).getWriteMethod();
+        if (setter != null) {
+            // convert the value to type of setter/field
+            Type type = setter.getGenericParameterTypes()[0];
+            // Instanciate value
+            if (propertyValue instanceof Recipe) {
+                propertyValue = ((Recipe) propertyValue).create(type, false);
+            }
+            try {
+                propertyValue = blueprintContext.getConversionService().convert(propertyValue, toClass(type));
+            } catch (Exception e) {
+                String valueType = propertyValue == null ? "null" : propertyValue.getClass().getName();
+                String memberType = type instanceof Class ? ((Class) type).getName() : type.toString();
+                throw new ConstructionException("Unable to convert property value" +
+                        " from " + valueType +
+                        " to " + memberType +
+                        " for injection " + setter, e);
+            }
+            try {
+                // set value
+                setter.invoke(instance, propertyValue);
+            } catch (Exception e) {
+                Throwable t = e;
+                if (e instanceof InvocationTargetException) {
+                    InvocationTargetException invocationTargetException = (InvocationTargetException) e;
+                    if (invocationTargetException.getCause() != null) {
+                        t = invocationTargetException.getCause();
+                    }
+                }
+                throw new ConstructionException("Error setting property: " + setter, t);
+            }
+        } else {
+            throw new ConstructionException("No setter for " + names[names.length - 1] + " property");
+        }
+    }
+
+    PropertyDescriptor getPropertyDescriptor(Class clazz, String name) {
+        try {
+            BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
+            for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
+                if (pd.getName().equals(name)) {
+                    return pd;
+                }
+            }
+            throw new ConstructionException("Unable to find property descriptor " + name + " on class " + clazz.getName());
+        } catch (IntrospectionException e) {
+            throw new ConstructionException("Unable to find property descriptor " + name + " on class " + clazz.getName(), e);
+        }
+    }
+
 }

@@ -53,6 +53,26 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
     private ServiceRegistration registration = null;
     private Map registrationProperties = null;
 
+    public void setBlueprintContext(BlueprintContextImpl blueprintContext) {
+        this.blueprintContext = blueprintContext;
+    }
+
+    public void setService(Object service) {
+        this.service = service;
+    }
+
+    public void setServiceProperties(Map serviceProperties) {
+        this.serviceProperties = serviceProperties;
+    }
+
+    public void setMetadata(ServiceMetadata metadata) {
+        this.metadata = metadata;
+    }
+
+    public void setListeners(List<Listener> listeners) {
+        this.listeners = listeners;
+    }
+
     protected Object getService() {
         return service;
     }
@@ -192,7 +212,15 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
         private List<Method> registerMethods;
         private List<Method> unregisterMethods;
         private boolean initialized = false;
-        
+
+        public void setListener(Object listener) {
+            this.listener = listener;
+        }
+
+        public void setMetadata(RegistrationListener metadata) {
+            this.metadata = metadata;
+        }
+
         private synchronized void init(ServiceRegistrationProxy registration) {
             if (initialized) {
                 return;

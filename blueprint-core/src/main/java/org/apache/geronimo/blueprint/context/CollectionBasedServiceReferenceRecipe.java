@@ -140,9 +140,11 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
     
     public void stop() {
         super.stop();
-        List<ServiceDispatcher> dispatchers = new ArrayList<ServiceDispatcher>(collection.getDispatchers());
-        for (ServiceDispatcher dispatcher : dispatchers) {
-            untrack(dispatcher.reference);
+        if (collection != null) {
+            List<ServiceDispatcher> dispatchers = new ArrayList<ServiceDispatcher>(collection.getDispatchers());
+            for (ServiceDispatcher dispatcher : dispatchers) {
+                untrack(dispatcher.reference);
+            }
         }
     }
 

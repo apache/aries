@@ -58,7 +58,7 @@ public class TypedRecipe extends AbstractRecipe {
         if (value == null) {
             return null;
         } else if (value instanceof Recipe) {
-            obj = RecipeHelper.convert(Object.class, value, lazyRefAllowed);
+            obj = ((Recipe) value).create(Object.class, lazyRefAllowed);
         }
         
         try {

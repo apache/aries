@@ -36,30 +36,30 @@ import java.util.concurrent.ConcurrentMap;
  * @version $Rev: 6687 $ $Date: 2005-12-28T21:08:56.733437Z $
  */
 public class MapRecipe extends AbstractRecipe {
-    private final List<Object[]> entries;
+    private final List<Recipe[]> entries;
     private String typeName;
     private Class typeClass;
     private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
 
     public MapRecipe() {
-        entries = new ArrayList<Object[]>();
+        entries = new ArrayList<Recipe[]>();
     }
 
     public MapRecipe(String type) {
         this.typeName = type;
-        entries = new ArrayList<Object[]>();
+        entries = new ArrayList<Recipe[]>();
     }
 
     public MapRecipe(Class type) {
         if (type == null) throw new NullPointerException("type is null");
         this.typeClass = type;
-        entries = new ArrayList<Object[]>();
+        entries = new ArrayList<Recipe[]>();
     }
 
-    public MapRecipe(Map<?,?> map) {
+    public MapRecipe(Map<Recipe,Recipe> map) {
         if (map == null) throw new NullPointerException("map is null");
 
-        entries = new ArrayList<Object[]>(map.size());
+        entries = new ArrayList<Recipe[]>(map.size());
 
         // If the specified set has a default constructor we will recreate the set, otherwise we use a LinkedHashMap or TreeMap
         if (RecipeHelper.hasDefaultConstructor(map.getClass())) {
@@ -78,7 +78,7 @@ public class MapRecipe extends AbstractRecipe {
         if (mapRecipe == null) throw new NullPointerException("mapRecipe is null");
         this.typeName = mapRecipe.typeName;
         this.typeClass = mapRecipe.typeClass;
-        entries = new ArrayList<Object[]>(mapRecipe.entries);
+        entries = new ArrayList<Recipe[]>(mapRecipe.entries);
     }
 
     public void allow(Option option){
@@ -166,9 +166,9 @@ public class MapRecipe extends AbstractRecipe {
 
         // add map entries
         boolean refAllowed = options.contains(Option.LAZY_ASSIGNMENT);
-        for (Object[] entry : entries) {
-            Object key = RecipeHelper.convert(keyType, entry[0], refAllowed);
-            Object value = RecipeHelper.convert(valueType, entry[1], refAllowed);
+        for (Recipe[] entry : entries) {
+            Object key = entry[0].create(keyType, refAllowed);
+            Object value = entry[1].create(valueType, refAllowed);
 
             if (key instanceof Reference) {
                 // when the key reference and optional value reference are both resolved
@@ -230,16 +230,16 @@ public class MapRecipe extends AbstractRecipe {
         }
     }
 
-    public void put(Object key, Object value) {
+    public void put(Recipe key, Recipe value) {
         if (key == null) throw new NullPointerException("key is null");
-        entries.add(new Object[] { key, value});
+        entries.add(new Recipe[] { key, value});
     }
 
-    public void putAll(Map<?,?> map) {
+    public void putAll(Map<Recipe,Recipe> map) {
         if (map == null) throw new NullPointerException("map is null");
-        for (Map.Entry<?,?> entry : map.entrySet()) {
-            Object key = entry.getKey();
-            Object value = entry.getValue();
+        for (Map.Entry<Recipe,Recipe> entry : map.entrySet()) {
+            Recipe key = entry.getKey();
+            Recipe value = entry.getValue();
             put(key, value);
         }
     }

@@ -47,6 +47,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
+import org.osgi.service.blueprint.reflect.Listener;
 
 /**
  * Abstract class for service reference recipes.
@@ -261,6 +262,14 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         private Set<Method> bindMethodsTwoArgs = new HashSet<Method>();
         private Set<Method> unbindMethodsOneArg = new HashSet<Method>();
         private Set<Method> unbindMethodsTwoArgs = new HashSet<Method>();
+
+        public void setListener(Object listener) {
+            this.listener = listener;
+        }
+
+        public void setMetadata(org.osgi.service.blueprint.reflect.Listener metadata) {
+            this.metadata = metadata;
+        }
 
         public void init(Collection<Class> classes) {
             Set<Class> clazzes = new HashSet<Class>(classes);
