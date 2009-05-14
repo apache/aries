@@ -75,6 +75,12 @@ public class BlueprintObjectRepository implements Repository {
 
         instances.put(name, instance);
     }
+
+    public void updateRecipe(String name, Recipe recipe) {
+        if (instances.get(name) instanceof Recipe) {
+            instances.put(name, recipe);
+        }
+    }
         
     public void destroy() {
         // destroy objects in reverse creation order
