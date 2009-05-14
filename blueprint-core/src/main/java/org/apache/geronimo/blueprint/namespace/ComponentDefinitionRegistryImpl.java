@@ -49,11 +49,13 @@ import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 public class ComponentDefinitionRegistryImpl implements ExtendedComponentDefinitionRegistry {
 
     private final Map<String, ComponentMetadata> components;
+    private final List<Target> typeConverters;
     private String defaultInitMethod;
     private String defaultDestroyMethod;
 
     public ComponentDefinitionRegistryImpl() {
         components = new ConcurrentHashMap<String, ComponentMetadata>();
+        typeConverters = new CopyOnWriteArrayList<Target>();
     }
 
     public boolean containsComponentDefinition(String name) {
@@ -82,6 +84,17 @@ public class ComponentDefinitionRegistryImpl implements ExtendedComponentDefinit
 
     public void removeComponentDefinition(String name) {
         components.remove(name);
+    }
+
+    public void registerTypeConverter(Target component) {
+        typeConverters.add(component);
+        if (component instanceof ComponentMetadata) {
+            registerComponentDefinition((ComponentMetadata) component);
+        }
+    }
+
+    public List<Target> getTypeConverters() {
+        return typeConverters;
     }
 
     public void setDefaultInitMethod(String method) {

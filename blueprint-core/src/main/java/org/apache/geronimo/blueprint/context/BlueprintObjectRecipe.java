@@ -61,7 +61,6 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
  */
 public class BlueprintObjectRecipe extends AbstractRecipe {
 
-    private String typeName;
     private Class typeClass;
     private final LinkedHashMap<String,Object> properties = new LinkedHashMap<String,Object>();
     private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
@@ -78,8 +77,8 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
     private List<BeanArgument> beanArguments;
     private boolean reorderArguments;
     
-    public BlueprintObjectRecipe(BlueprintContextImpl blueprintContext, Class typeName) {
-        this.typeClass = typeName;
+    public BlueprintObjectRecipe(BlueprintContextImpl blueprintContext, Class typeClass) {
+        this.typeClass = typeClass;
         this.blueprintContext = blueprintContext;
         allow(Option.LAZY_ASSIGNMENT);
     }
@@ -458,20 +457,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
     }
 
     public Class getType() {
-        if (typeClass != null || typeName != null) {
-            Class type = typeClass;
-            if (type == null) {
-                try {
-                    type = RecipeHelper.loadClass(typeName);
-                } catch (ClassNotFoundException e) {
-                    throw new ConstructionException("Type class could not be found: " + typeName);
-                }
-            }
-
-            return type;
-        }
-
-        return null;
+        return typeClass;
     }
 
     private void setProperties(Map<String, Object> propertyValues, Object instance, Class clazz) {

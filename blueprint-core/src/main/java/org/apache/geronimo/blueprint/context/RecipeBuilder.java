@@ -82,6 +82,7 @@ public class RecipeBuilder {
 
     public RecipeBuilder(BlueprintContextImpl blueprintContext) {
         this.blueprintContext = blueprintContext;
+        this.registry = blueprintContext.getComponentDefinitionRegistry();
     }
     
     private void addBuiltinComponents(Repository repository) {
@@ -93,9 +94,7 @@ public class RecipeBuilder {
         }
     }
     
-    public BlueprintObjectRepository createRepository(ExtendedComponentDefinitionRegistry registry) throws Exception {
-        this.registry = registry;
-
+    public BlueprintObjectRepository createRepository() throws Exception {
         BlueprintObjectRepository repository = new BlueprintObjectRepository();
         addBuiltinComponents(repository);
         
@@ -106,6 +105,14 @@ public class RecipeBuilder {
             repository.add(name, recipe);
         }
         return repository;
+    }
+
+    public void updateRepository(BlueprintObjectRepository repository) throws Exception {
+        for (String name : registry.getComponentDefinitionNames()) {
+            ComponentMetadata component = registry.getComponentDefinition(name);
+            Recipe recipe = createRecipe(component);
+            repository.updateRecipe(name, recipe);
+        }
     }
 
     private Recipe createRecipe(ComponentMetadata component) throws Exception {

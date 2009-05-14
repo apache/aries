@@ -43,6 +43,7 @@ import org.ops4j.pax.exam.OptionUtils;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.configProfile;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.profile;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.context.BlueprintContext;
@@ -129,6 +130,9 @@ public class TestBlueprintContext extends AbstractIntegrationTest {
             // Bundles
             mavenBundle("org.apache.geronimo", "blueprint-bundle"),
             mavenBundle("org.apache.geronimo", "blueprint-sample").noStart(),
+
+            //vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+
 
             felix(), equinox() //, knopflerfish()
         );

@@ -203,7 +203,6 @@ public class Parser {
     private String defaultLazyInit;
     private String defaultInitMethod;
     private String defaultDestroyMethod;
-    private boolean mainSection;
     private Set<URI> namespaces;
     private boolean validated;
 
@@ -261,22 +260,10 @@ public class Parser {
         }
     }
 
-    public void populateHelperSection(NamespaceHandlerRegistry handlers,
-                                      ExtendedComponentDefinitionRegistry registry) {
-        doPopulate(handlers, registry, false);
-    }
-
-    public void populateMainSection(NamespaceHandlerRegistry handlers,
-                                    ExtendedComponentDefinitionRegistry registry) {
-        doPopulate(handlers, registry, true);
-    }
-
-    private void doPopulate(NamespaceHandlerRegistry handlers,
-                            ExtendedComponentDefinitionRegistry registry,
-                            boolean mainSection) {
+    public void populate(NamespaceHandlerRegistry handlers,
+                         ExtendedComponentDefinitionRegistry registry) {
         this.namespaceHandlerRegistry = handlers;
         this.registry = registry;
-        this.mainSection = mainSection;
         // Validate xmls
         if (this.documents == null) {
             throw new IllegalStateException("Documents should be parsed before populating the registry");
@@ -378,15 +365,12 @@ public class Parser {
             if (node instanceof Element) {
                 Element element = (Element) node;
                 String namespaceUri = element.getNamespaceURI();
-                boolean parse = mainSection ^ (isBlueprintNamespace(namespaceUri) && nodeNameEquals(element, TYPE_CONVERTERS_ELEMENT));
-                if (parse) {
-                    if (isBlueprintNamespace(namespaceUri)) {
-                        parseBlueprintElement(element);
-                    } else {
-                        ComponentMetadata component = parseCustomElement(element, null);
-                        if (component != null) {
-                            registry.registerComponentDefinition(component);
-                        }
+                if (isBlueprintNamespace(namespaceUri)) {
+                    parseBlueprintElement(element);
+                } else {
+                    ComponentMetadata component = parseCustomElement(element, null);
+                    if (component != null) {
+                        registry.registerComponentDefinition(component);
                     }
                 }
             }
@@ -440,14 +424,23 @@ public class Parser {
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
+                Object target = null;
                 if (isBlueprintNamespace(e.getNamespaceURI())) {
-                    parseBlueprintElement(e);
-                } else {
-                    ComponentMetadata component = parseCustomElement(e, null);
-                    if (component != null) {
-                        registry.registerComponentDefinition(component);
+                    if (nodeNameEquals(e, BEAN_ELEMENT)) {
+                        target = parseBeanMetadata(e, true);
+                    } else if (nodeNameEquals(e, REF_ELEMENT)) {
+                        String componentName = e.getAttribute(COMPONENT_ATTRIBUTE);
+                        target = new RefMetadataImpl(componentName);
+                    } else if (nodeNameEquals(e, REFERENCE_ELEMENT)) {
+                        target = parseReference(e, true);
                     }
+                } else {
+                    target = parseCustomElement(e, null);
                 }
+                if (!(target instanceof Target)) {
+                    throw new ComponentDefinitionException("Metadata parsed for element " + e.getNodeName() + " can not be used as a type converter");
+                }
+                registry.registerTypeConverter((Target) target);
             }
         }
     }

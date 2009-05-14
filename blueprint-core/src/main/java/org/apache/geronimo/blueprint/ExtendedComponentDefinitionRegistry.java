@@ -18,7 +18,10 @@
  */
 package org.apache.geronimo.blueprint;
 
+import java.util.List;
+
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
+import org.osgi.service.blueprint.reflect.Target;
 
 /**
  * An extended ComponentDefinitionRegistry that allows converters and processors to be registered.
@@ -35,4 +38,9 @@ public interface ExtendedComponentDefinitionRegistry extends ComponentDefinition
     String getDefaultDestroyMethod();
 
     void setDefaultDestroyMethod(String defaultDestroyMethod);
+
+    void registerTypeConverter(Target component);
+
+    List<Target> getTypeConverters();
+
 }

@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.RecipeHelper;
+import org.apache.xbean.recipe.MissingAccessorException;
 
 /**
  * TODO: javadoc
@@ -132,11 +133,11 @@ public class ArgumentsMatcher {
 
         int size = matches.size();
         if (size == 0) {
-            throw new RuntimeException("Did not find any matching method");
+            throw new MissingAccessorException("Did not find any matching method on class " + type + " for arguments " + arguments, -1);
         } else if (size == 1) {
-            return matches.get(0);
+            return matches.iterator().next();
         } else {
-            throw new RuntimeException("Found multiple matching methods");
+            throw new MissingAccessorException("Found multiple matching methods on class " + type + " for arguments " + arguments, -1);
         }
     }
        
@@ -217,11 +218,11 @@ public class ArgumentsMatcher {
 
         int size = matches.size();
         if (size == 0) {
-            throw new RuntimeException("Did not find any matching constructor");
+            throw new MissingAccessorException("Did not find any matching constructor on class " + type + " for arguments " + arguments, -1);
         } else if (size == 1) {
             return matches.iterator().next();
         } else {
-            throw new RuntimeException("Found multiple matching constructors");
+            throw new MissingAccessorException("Found multiple matching constructors on class " + type + " for arguments " + arguments, -1);
         }
     }
     

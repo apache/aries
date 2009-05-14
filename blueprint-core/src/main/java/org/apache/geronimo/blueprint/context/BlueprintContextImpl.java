@@ -64,6 +64,8 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
+import org.osgi.service.blueprint.reflect.Target;
+import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +88,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         WaitForTrigger,
         Create,
         Created,
-        Failed
+        Failed,
+        Destroyed,
     }
 
     private final BundleContext bundleContext;
@@ -94,7 +97,6 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     private final NamespaceHandlerRegistry handlers;
     private final List<URL> urls;
     private final boolean lazyActivation;
-    private final ComponentDefinitionRegistryImpl helperComponentDefinitionRegistry;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
     private final ConversionServiceImpl conversionService;
     private final ExecutorService executors;
@@ -119,7 +121,6 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         this.handlers = handlers;
         this.urls = urls;
         this.conversionService = new ConversionServiceImpl(this);
-        this.helperComponentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
         this.lazyActivation = lazyActivation;
@@ -199,16 +200,11 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                                 return;
                             }
                         }
-                        parser.populateHelperSection(handlers, helperComponentDefinitionRegistry);
-                        parser.populateMainSection(handlers, componentDefinitionRegistry);
-                        // TODO: need to wait for references from the helper section, such as ConfigAdmin or Converter from the OSGi registry
-                        processHelperSection();
+                        parser.populate(handlers, componentDefinitionRegistry);
                         state = State.Populated;
                         break;
                     case Populated:
-                        RecipeBuilder i = new RecipeBuilder(this);
-                        Repository repository = i.createRepository(componentDefinitionRegistry);
-                        instantiator = new BlueprintObjectInstantiator(repository);
+                        instantiator = new BlueprintObjectInstantiator(new RecipeBuilder(this).createRepository());
                         trackServiceReferences();
                         if (checkAllSatisfiables() || !waitForDependencies) {
                             state = State.InitialReferencesSatisfied;
@@ -228,6 +224,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                             return;
                         }
                     case InitialReferencesSatisfied:
+                        processHelpers();
+                        new RecipeBuilder(this).updateRepository((BlueprintObjectRepository) instantiator.getRepository());
                         // TODO: we should always register ServiceFactory in all cases.
                         //       the reason is that the trigger service creation may actually trigger the activation of
                         //       the bundle if the service properties reference any other components (thus loading a class
@@ -254,6 +252,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                                       bundleContext.getBundle().getSymbolicName());
                             props.put(BlueprintConstants.CONTEXT_VERSION_PROPERTY,
                                       bundleContext.getBundle().getHeaders().get(Constants.BUNDLE_VERSION));
+                            // TODO: register a service factory so that we can honor the bundle scope when
+                            //    BlueprintContext.getComponent(String) is called directly
                             registration = bundleContext.registerService(BlueprintContext.class.getName(), this, props);
 
                             sender.sendCreated(this);
@@ -262,6 +262,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         break;
                     case Created:
                     case Failed:
+                    case Destroyed:
                         return;
                 }
             }
@@ -273,30 +274,28 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         }
     }
 
-    private void processHelperSection() throws Exception {
-        RecipeBuilder i = new RecipeBuilder(this);
-        Repository repository = i.createRepository(helperComponentDefinitionRegistry);
-        BlueprintObjectInstantiator instantiator = new BlueprintObjectInstantiator(repository);
-        Map<String, Object> objects = instantiator.createAll(helperComponentDefinitionRegistry.getComponentDefinitionNames());
+    private void processHelpers() throws Exception {
+        List<String> typeConverters = new ArrayList<String>();
+        for (Target target : componentDefinitionRegistry.getTypeConverters()) {
+            if (target instanceof ComponentMetadata) {
+                typeConverters.add(((ComponentMetadata) target).getId());
+            } else if (target instanceof RefMetadata) {
+                typeConverters.add(((RefMetadata) target).getComponentId());
+            } else {
+                throw new ComponentDefinitionException("Unexpected metadata for type converter: " + target);
+            }
+        }
+
+        Map<String, Object> objects = instantiator.createAll(typeConverters.toArray(new String[typeConverters.size()]));
         for (Object obj : objects.values()) {
             if (obj instanceof Converter) {
                 conversionService.registerConverter((Converter) obj);
-            }
-        }
-        for (Object obj : objects.values()) {
-            if (obj instanceof ComponentDefinitionRegistryProcessor) {
-                ((ComponentDefinitionRegistryProcessor) obj).process(componentDefinitionRegistry);
-            }
-        }
-        for (Object obj : objects.values()) {
-            if (obj instanceof BeanProcessor) {
-                this.beanProcessors.add((BeanProcessor) obj);
+            } else {
+                throw new ComponentDefinitionException("Type converter " + obj + " does not implement the " + Converter.class.getName() + " interface");
             }
         }
 
         // Instanciate ComponentDefinitionRegistryProcessor and BeanProcessor
-        repository = i.createRepository(componentDefinitionRegistry);
-        instantiator = new BlueprintObjectInstantiator(repository);
         for (BeanMetadata bean : getBeanComponentsMetadata()) {
             Class clazz = bean.getRuntimeClass();
             if (clazz == null && bean.getClassName() != null) {
@@ -585,7 +584,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         return bundleContext;
     }
     
-    public void destroy() {
+    public synchronized void destroy() {
+        state = State.Destroyed;
         sender.sendDestroying(this);
         
         if (registration != null) {
