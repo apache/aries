@@ -160,7 +160,7 @@ public class CollectionRecipe extends AbstractRecipe {
 
         int index = 0;
         for (Recipe recipe : list) {
-            Object value = recipe.create(componentType, refAllowed);
+            Object value = recipe != null ? recipe.create(componentType, refAllowed) : recipe;
 
             if (value instanceof Reference) {
                 Reference reference = (Reference) value;

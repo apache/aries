@@ -168,7 +168,7 @@ public class MapRecipe extends AbstractRecipe {
         boolean refAllowed = options.contains(Option.LAZY_ASSIGNMENT);
         for (Recipe[] entry : entries) {
             Object key = entry[0].create(keyType, refAllowed);
-            Object value = entry[1].create(valueType, refAllowed);
+            Object value = entry[1] != null ? entry[1].create(valueType, refAllowed) : null;
 
             if (key instanceof Reference) {
                 // when the key reference and optional value reference are both resolved
