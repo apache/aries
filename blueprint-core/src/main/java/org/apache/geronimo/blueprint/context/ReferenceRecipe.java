@@ -116,9 +116,7 @@ public class ReferenceRecipe extends AbstractRecipe {
                 Recipe recipe = (Recipe) object;
                 object = recipe.create(expectedType, false);
             } else if (isServiceReferenceInjection(object, expectedType)) {
-                // TODO: I don't think this is sufficient as the reference injection may be done by
-                // TODO: having a direct dependency on the service and not go through a <ref> element
-                // TODO: the conversion has to be done by the conversion service imho
+                // TODO: this conversion might potentially be done via conversion service
                 object = ((ServiceReferenceAccessor) object).getServiceReference();
             }
         }
