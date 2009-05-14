@@ -20,35 +20,30 @@ package org.apache.geronimo.blueprint.compendium.cm;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.LinkedList;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
-import org.apache.xbean.recipe.ReflectionUtil;
 import org.apache.xbean.recipe.MissingAccessorException;
-import org.apache.xbean.recipe.Option;
-import org.apache.xbean.recipe.RecipeHelper;
-import org.apache.xbean.recipe.Recipe;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO
@@ -154,7 +149,7 @@ public class CmManagedProperties implements BeanProcessor {
     }
 
     public Object beforeInit(Object bean, String beanName) {
-        if (beanName.equals(this.beanName)) {
+        if (beanName != null && beanName.equals(this.beanName)) {
             LOGGER.debug("Adding bean for bean={} / pid={}", beanName, persistentId);
             synchronized (lock) {
                 beans.add(bean);
