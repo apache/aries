@@ -18,17 +18,24 @@
  */
 package org.apache.geronimo.blueprint.context;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
+import net.sf.cglib.proxy.Callback;
+import net.sf.cglib.proxy.CallbackFilter;
 import net.sf.cglib.proxy.Dispatcher;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ExecutionContext;
 import org.apache.xbean.recipe.Recipe;
+import org.apache.xbean.recipe.RecipeHelper;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.ServiceUnavailableException;
@@ -67,7 +74,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         try {
             // Create the proxy
-            proxy = createProxy(new ServiceDispatcher(), metadata.getInterfaceNames());
+            proxy = createProxy();
             proxyClass = proxy.getClass();
             // Create the listeners and initialize them
             createListeners();
@@ -81,38 +88,69 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             retrack();
             
             // Return the object
-            return proxy;
+            Class expectedClass = RecipeHelper.toClass(expectedType);
+            if (ServiceReference.class.equals(expectedClass)) {
+                return getServiceReference();
+            } else {
+                return proxy;
+            }
         } catch (Throwable t) {
             throw new ConstructionException(t);
         }
     }
 
+    private List<Class> getSupportedTypes() throws ClassNotFoundException {
+        List<Class> list = getAllClasses(metadata.getInterfaceNames());
+        list.add(ServiceReference.class);
+        return list;
+    }
+    
     public Type[] getTypes() {
         try {
-            List<String> interfaceNames = metadata.getInterfaceNames();
-            Type[] types = new Type[interfaceNames.size()];
-            for (int i = 0; i < interfaceNames.size(); i++) {
-                types[i] = proxyClassLoader.loadClass(interfaceNames.get(i));
-            }
-            return types;
+            List<Class> interfaceList = getSupportedTypes();
+            return (Type[]) interfaceList.toArray(new Type [interfaceList.size()]);
         } catch (ClassNotFoundException e) {
             throw new ConstructionException(e);
         }
     }
 
     public boolean canCreate(Type type) {
-        return true;
+        try {
+            List<Class> interfaceList = getSupportedTypes();
+            for (Class clazz : interfaceList) {
+                if (RecipeHelper.isAssignable(type, clazz)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (ClassNotFoundException e) {
+            throw new ConstructionException(e);
+        }
     }
-    
+        
     @Override
     public void stop() {
         super.stop();
         unbind();
-        synchronized(monitor) {
+        synchronized (monitor) {
             monitor.notifyAll();
         }
     }
 
+    private Object createProxy() throws Exception {
+        Enhancer e = new Enhancer();
+        e.setClassLoader(proxyClassLoader);
+        e.setSuperclass(getTargetClass(metadata.getInterfaceNames()));
+        List<Class> interfaceList = getInterfaces(metadata.getInterfaceNames());
+        interfaceList.add(ServiceReferenceAccessor.class);
+        e.setInterfaces(toClassArray(interfaceList));
+        e.setInterceptDuringConstruction(false);
+        e.setCallbacks(new Callback [] {new ServiceDispatcher(), new ServiceReferenceMethodInterceptor() });
+        e.setCallbackFilter(new ServiceCallbackFilter());
+        e.setUseFactory(false);
+        return e.create();
+    }
+    
     private void retrack() {
         synchronized (monitor) {
             ServiceReference ref = tracker.getBestServiceReference();
@@ -138,6 +176,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
                 blueprintContext.getBundleContext().ungetService(trackedServiceReference);
             }
             trackedServiceReference = ref;
+            trackedService = null;
             monitor.notifyAll();
             for (Listener listener : listeners) {
                 listener.bind(trackedServiceReference, proxy);
@@ -148,7 +187,9 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private void unbind() {
         synchronized (monitor) {
             if (trackedServiceReference != null) {
-                // Listeners are not called for a reference
+                for (Listener listener : listeners) {
+                    listener.unbind(trackedServiceReference, proxy);
+                }
                 blueprintContext.getBundleContext().ungetService(trackedServiceReference);
                 trackedServiceReference = null;
                 trackedService = null;
@@ -156,29 +197,72 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
         }
     }
 
+    private Object getService() throws InterruptedException {
+        synchronized (monitor) {
+            if (tracker.isStarted() && trackedServiceReference == null && metadata.getTimeout() > 0) {
+                Set<String> interfaces = new HashSet<String>(metadata.getInterfaceNames());
+                sender.sendWaiting(blueprintContext, interfaces.toArray(new String[interfaces.size()]), getOsgiFilter());
+                monitor.wait(metadata.getTimeout());
+            }
+            if (trackedServiceReference == null) {
+                if (tracker.isStarted()) {
+                    throw new ServiceUnavailableException("Timeout expired when waiting for OSGi service", proxyClass.getSuperclass(), getOsgiFilter());
+                } else {
+                    throw new ServiceUnavailableException("Service tracker is stopped", proxyClass.getSuperclass(), getOsgiFilter());
+                }
+            }
+            if (trackedService == null) {
+                trackedService = blueprintContext.getBundleContext().getService(trackedServiceReference);
+            }
+            return trackedService;
+        }
+    }
+    
+    private ServiceReference getServiceReference() throws InterruptedException {
+        synchronized (monitor) {
+            if (!optional) {
+                getService();
+            }           
+            return trackedServiceReference;
+        }           
+    }
+    
     public class ServiceDispatcher implements Dispatcher {
 
         public Object loadObject() throws Exception {
-            synchronized (monitor) {
-                if (tracker.isStarted() && trackedServiceReference == null && metadata.getTimeout() > 0) {
-                    Set<String> interfaces = new HashSet<String>(metadata.getInterfaceNames());
-                    sender.sendWaiting(blueprintContext, interfaces.toArray(new String[interfaces.size()]), getOsgiFilter());
-                    monitor.wait(metadata.getTimeout());
-                }
-                if (trackedServiceReference == null) {
-                    if (tracker.isStarted()) {
-                        throw new ServiceUnavailableException("Timeout expired when waiting for OSGi service", proxyClass.getSuperclass(), getOsgiFilter());
-                    } else {
-                        throw new ServiceUnavailableException("Service tracker is stopped", proxyClass.getSuperclass(), getOsgiFilter());
-                    }
-                }
-                if (trackedService == null) {
-                    trackedService = blueprintContext.getBundleContext().getService(trackedServiceReference);
-                }
-                return trackedService;
-            }
+            return getService();
         }
 
     }
+    
+    public class ServiceReferenceMethodInterceptor implements MethodInterceptor {
+        
+        public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+            return getServiceReference();
+        }
+        
+    }
+    
+    private static class ServiceCallbackFilter implements CallbackFilter {
 
+        private Method getReferenceMethod;
+        
+        public ServiceCallbackFilter() throws NoSuchMethodException {
+            getReferenceMethod = ServiceReferenceAccessor.class.getMethod("getServiceReference", null);
+        }
+        
+        public int accept(Method method) {
+            if (isGetReferenceMethod(method)) {
+                // use getServiceReference callback
+                return 1;
+            } 
+            // use Dispatcher callback
+            return 0;
+        }
+        
+        private boolean isGetReferenceMethod(Method method) {
+            return getReferenceMethod.equals(method);
+        }
+    }
+        
 }

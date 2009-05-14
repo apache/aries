@@ -64,6 +64,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     private String filter;
     protected final ClassLoader proxyClassLoader;
     protected ServiceReferenceTracker tracker;
+    protected boolean optional;
 
     protected AbstractServiceReferenceRecipe(BlueprintContext blueprintContext,
                                              BlueprintContextEventSender sender,
@@ -78,7 +79,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         this.proxyClassLoader = new BundleDelegatingClassLoader(blueprintContext.getBundleContext().getBundle(),
                                                                 getClass().getClassLoader());
         
-        boolean optional = (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL);
+        this.optional = (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL);
         this.tracker = new ServiceReferenceTracker(blueprintContext.getBundleContext(), getOsgiFilter(), optional);
     }
 
@@ -162,7 +163,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return classes;
     }
 
-    protected Class[] getInterfaces(Iterable<String> interfaceNames) throws ClassNotFoundException {
+    protected List<Class> getInterfaces(Iterable<String> interfaceNames) throws ClassNotFoundException {
         List<Class> interfaces = new ArrayList<Class>();
         for (String name : interfaceNames) {
             Class clazz = proxyClassLoader.loadClass(name);
@@ -170,9 +171,13 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 interfaces.add(clazz);
             }
         }
-        return interfaces.toArray(new Class[interfaces.size()]);
+        return interfaces;
     }
 
+    protected static Class[] toClassArray(List<Class> classes) {
+        return classes.toArray(new Class [classes.size()]);
+    }
+    
     protected Class getTargetClass(Iterable<String> interfaceNames) throws ClassNotFoundException {
         Class root = Object.class;
         for (String name : interfaceNames) {
@@ -206,7 +211,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         Enhancer e = new Enhancer();
         e.setClassLoader(proxyClassLoader);
         e.setSuperclass(getTargetClass(interfaces));
-        e.setInterfaces(getInterfaces(interfaces));
+        e.setInterfaces(toClassArray(getInterfaces(interfaces)));
         e.setInterceptDuringConstruction(false);
         e.setCallback(dispatcher);
         e.setUseFactory(false);
