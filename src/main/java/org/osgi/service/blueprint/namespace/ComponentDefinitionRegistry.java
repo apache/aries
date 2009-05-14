@@ -19,6 +19,7 @@ package org.osgi.service.blueprint.namespace;
 import java.util.Set;
 
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.Target;
 
 public interface ComponentDefinitionRegistry  {
     
@@ -31,5 +32,4 @@ public interface ComponentDefinitionRegistry  {
     void registerComponentDefinition(ComponentMetadata component);
     
     void removeComponentDefinition(String name);
-             
 }
