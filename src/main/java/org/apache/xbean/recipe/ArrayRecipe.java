@@ -123,7 +123,7 @@ public class ArrayRecipe extends AbstractRecipe {
 
         int index = 0;
         for (Recipe recipe : list) {
-            Object value = recipe.create(type, refAllowed);
+            Object value = recipe != null ? recipe.create(type, refAllowed) : null;
             
             if (value instanceof Reference) {
                 Reference reference = (Reference) value;
