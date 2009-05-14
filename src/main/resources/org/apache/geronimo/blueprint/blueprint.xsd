@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
     /*
-    * $Revision: 6946 $
+    * $Revision: 7017 $
     *
     * Copyright (c) OSGi Alliance (2008, 2009). All Rights Reserved.
     *
@@ -953,6 +953,7 @@
         <xsd:sequence>
             <xsd:element name="entry" type="TservicePropertyEntry" minOccurs="0"
                 maxOccurs="unbounded" />
+            <xsd:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded" />
         </xsd:sequence>
     </xsd:complexType>
 
