@@ -171,7 +171,13 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
 
     @Override
     public List<Recipe> getNestedRecipes() {
-        List<Recipe> recipes = super.getNestedRecipes();
+        List<Recipe> recipes = new ArrayList<Recipe>();
+        for (Object o : properties.values()) {
+            if (o instanceof Recipe) {
+                Recipe recipe = (Recipe) o;
+                recipes.add(recipe);
+            }
+        }
         if (arguments != null) {
             for (Object argument : arguments) {
                 if (argument instanceof Recipe) {
