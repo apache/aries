@@ -71,22 +71,6 @@ public class ReferenceRecipe extends AbstractRecipe {
         }
     }
 
-    public boolean canCreate(Type type) {
-        if (referenceName == null) {
-            throw new ConstructionException("Reference name has not been set");
-        }
-
-        ExecutionContext context = ExecutionContext.getContext();
-
-        Object object = context.getObject(referenceName);
-        if (object instanceof Recipe) {
-            Recipe recipe = (Recipe) object;
-            return recipe.canCreate(type);
-        } else {
-            return RecipeHelper.isInstance(type, object);
-        }
-    }
-
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         if (referenceName == null) {
             throw new ConstructionException("Reference name has not been set");

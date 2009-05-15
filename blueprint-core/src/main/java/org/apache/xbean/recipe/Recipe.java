@@ -28,8 +28,6 @@ public interface Recipe extends Serializable {
 
     Type[] getTypes();
 
-    boolean canCreate(Type type);
-
     Object create() throws ConstructionException;
     Object create(ClassLoader classLoader) throws ConstructionException;
     Object create(Type expectedType, boolean lazyRefAllowed) throws ConstructionException;

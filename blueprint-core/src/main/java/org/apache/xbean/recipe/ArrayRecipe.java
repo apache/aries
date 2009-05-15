@@ -97,12 +97,6 @@ public class ArrayRecipe extends AbstractRecipe {
         }
     }
 
-    public boolean canCreate(Type expectedType) {
-        Class expectedClass = RecipeHelper.toClass(expectedType);
-        Class myType = getType(expectedType);
-        return expectedClass.isArray() && RecipeHelper.isAssignable(expectedClass.getComponentType(), myType);
-    }
-
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         Class type = getType(expectedType);
 

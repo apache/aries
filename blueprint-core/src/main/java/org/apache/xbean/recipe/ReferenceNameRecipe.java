@@ -73,11 +73,6 @@ public class ReferenceNameRecipe extends AbstractRecipe {
         return new Type[] { String.class };
     }
 
-    public boolean canCreate(Type type) {
-        Object object = getReference();
-        return String.class == RecipeHelper.toClass(type);
-    }
-
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         Object object = getReference();
         return referenceName;

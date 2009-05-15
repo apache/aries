@@ -64,24 +64,6 @@ public class ReferenceRecipe extends AbstractRecipe {
         return getNestedRecipes();
     }
 
-    public boolean canCreate(Type type) {
-        if (referenceName == null) {
-            throw new ConstructionException("Reference name has not been set");
-        }
-
-        ExecutionContext context = ExecutionContext.getContext();
-
-        Object object = context.getObject(referenceName);
-        if (object instanceof Recipe) {
-            Recipe recipe = (Recipe) object;
-            return recipe.canCreate(type);
-        } else if (isServiceReferenceInjection(object, type)) {
-            return true;
-        } else {
-            return RecipeHelper.isInstance(type, object);
-        }
-    }
-
     public Type[] getTypes() {
         if (referenceName == null) {
             throw new ConstructionException("Reference name has not been set");

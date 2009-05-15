@@ -120,11 +120,6 @@ public class CollectionRecipe extends AbstractRecipe {
         return new Type[] { type };
     }
 
-    public boolean canCreate(Type expectedType) {
-        Class myType = getType(expectedType);
-        return RecipeHelper.isAssignable(expectedType, myType);
-    }
-
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         Class type = getType(expectedType);
 

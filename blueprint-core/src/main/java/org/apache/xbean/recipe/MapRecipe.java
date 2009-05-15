@@ -118,11 +118,6 @@ public class MapRecipe extends AbstractRecipe {
         return new Type[] { typeClass };
     }
 
-    public boolean canCreate(Type type) {
-        Class myType = getType(type);
-        return RecipeHelper.isAssignable(type, myType);
-    }
-
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         Class mapType = getType(expectedType);
 

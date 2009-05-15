@@ -110,44 +110,6 @@ public final class RecipeHelper {
         return instance == null || type.isInstance(instance);
     }
 
-    public static boolean isConvertable(Type type, Object propertyValue) {
-        if (propertyValue instanceof Recipe) {
-            Recipe recipe = (Recipe) propertyValue;
-            return recipe.canCreate(type);
-        }
-        throw new IllegalStateException();
-        //return (propertyValue instanceof String && PropertyEditors.canConvert(toClass(type)));
-    }
-
-    public static boolean isAssignableFrom(Class expected, Class actual) {
-        if (expected == null) return true;
-
-        if (expected.isPrimitive()) {
-            // verify actual is the correct wrapper type
-            if (expected.equals(boolean.class)) {
-                return actual.equals(Boolean.class);
-            } else if (expected.equals(char.class)) {
-                return actual.equals(Character.class);
-            } else if (expected.equals(byte.class)) {
-                return actual.equals(Byte.class);
-            } else if (expected.equals(short.class)) {
-                return actual.equals(Short.class);
-            } else if (expected.equals(int.class)) {
-                return actual.equals(Integer.class);
-            } else if (expected.equals(long.class)) {
-                return actual.equals(Long.class);
-            } else if (expected.equals(float.class)) {
-                return actual.equals(Float.class);
-            } else if (expected.equals(double.class)) {
-                return actual.equals(Double.class);
-            } else {
-                throw new AssertionError("Invalid primitve type: " + expected);
-            }
-        }
-
-        return expected.isAssignableFrom(actual);
-    }
-
     public static boolean isAssignable(Type expectedType, Type actualType) {
         Class expectedClass = toClass(expectedType);
         Class actualClass = toClass(actualType);

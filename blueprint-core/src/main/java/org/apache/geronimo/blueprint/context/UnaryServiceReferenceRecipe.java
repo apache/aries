@@ -114,20 +114,6 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
         }
     }
 
-    public boolean canCreate(Type type) {
-        try {
-            List<Class> interfaceList = getSupportedTypes();
-            for (Class clazz : interfaceList) {
-                if (RecipeHelper.isAssignable(type, clazz)) {
-                    return true;
-                }
-            }
-            return false;
-        } catch (ClassNotFoundException e) {
-            throw new ConstructionException(e);
-        }
-    }
-        
     @Override
     public void stop() {
         super.stop();

@@ -85,6 +85,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         Populated,
         WaitForInitialReferences,
         InitialReferencesSatisfied,
+        WaitForInitialReferences2,
+        InitialReferencesSatisfied2,
         WaitForTrigger,
         Create,
         Created,
@@ -224,8 +226,44 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                             return;
                         }
                     case InitialReferencesSatisfied:
-                        processHelpers();
-                        new RecipeBuilder(this).updateRepository((BlueprintObjectRepository) instantiator.getRepository());
+                        processTypeConverters();
+                        processProcessors();
+                        BlueprintObjectRepository repository = (BlueprintObjectRepository) instantiator.getRepository();
+                        BlueprintObjectRepository tmpRepo = new RecipeBuilder(this).createRepository();
+
+                        BlueprintObjectInstantiator oldInstantiator = instantiator;
+                        instantiator = new BlueprintObjectInstantiator(new RecipeBuilder(this).createRepository());
+
+                        untrackServiceReferences();
+                        for (String name : repository.getNames()) {
+                            Recipe recipe = repository.getRecipe(name);
+                            Object instance = repository.getInstance(name);
+                            if (instance != null) {
+                                tmpRepo.putRecipe(name, recipe);
+                                tmpRepo.putInstance(name, instance);
+                            }
+                        }
+                        satisfiables = null;
+                        instantiator = new BlueprintObjectInstantiator(tmpRepo);
+                        trackServiceReferences();
+                        if (checkAllSatisfiables() || !waitForDependencies) {
+                            state = State.InitialReferencesSatisfied2;
+                        } else {
+                            // TODO: pass correct parameters
+                            // TODO: do we need to send one event for each missing reference ?
+                            // TODO: create a timer, then fail after it elapsed
+                            sender.sendWaiting(this, null, null);
+                            state = State.WaitForInitialReferences2;
+                        }
+                        break;
+                    case WaitForInitialReferences2:
+                        if (checkAllSatisfiables()) {
+                            state = State.InitialReferencesSatisfied2;
+                            break;
+                        } else {
+                            return;
+                        }
+                    case InitialReferencesSatisfied2:
                         // TODO: we should always register ServiceFactory in all cases.
                         //       the reason is that the trigger service creation may actually trigger the activation of
                         //       the bundle if the service properties reference any other components (thus loading a class
@@ -274,7 +312,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         }
     }
 
-    private void processHelpers() throws Exception {
+    private void processTypeConverters() throws Exception {
         List<String> typeConverters = new ArrayList<String>();
         for (Target target : componentDefinitionRegistry.getTypeConverters()) {
             if (target instanceof ComponentMetadata) {
@@ -294,13 +332,15 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                 throw new ComponentDefinitionException("Type converter " + obj + " does not implement the " + Converter.class.getName() + " interface");
             }
         }
+    }
 
+    private void processProcessors() throws Exception {
         // Instanciate ComponentDefinitionRegistryProcessor and BeanProcessor
         for (BeanMetadata bean : getBeanComponentsMetadata()) {
             Class clazz = bean.getRuntimeClass();
             if (clazz == null && bean.getClassName() != null) {
                 clazz = loadClass(bean.getClassName());
-            } 
+            }
             if (clazz == null) {
                 continue;
             }
@@ -312,8 +352,6 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                 this.beanProcessors.add((BeanProcessor) obj);
             }
         }
-        
-        // TODO: need to destroy all those objects at the end
     }
 
     private Map<String, List<SatisfiableRecipe>> getSatisfiableDependenciesMap() {
@@ -325,17 +363,14 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
             try {
                 satisfiables = new HashMap<String, List<SatisfiableRecipe>>();
                 for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
-                    Object val = instantiator.getRepository().get(name);
-                    if (val instanceof Recipe) {
-                        Recipe r = (Recipe) val;
-                        List<SatisfiableRecipe> recipes = new ArrayList<SatisfiableRecipe>();
-                        if (r instanceof SatisfiableRecipe) {
-                            recipes.add((SatisfiableRecipe) r);
-                        }
-                        getSatisfiableDependencies(r, recipes, new HashSet<Recipe>());
-                        if (!recipes.isEmpty()) {
-                            satisfiables.put(name, recipes);
-                        }
+                    Recipe r = ((BlueprintObjectRepository) instantiator.getRepository()).getRecipe(name);
+                    List<SatisfiableRecipe> recipes = new ArrayList<SatisfiableRecipe>();
+                    if (r instanceof SatisfiableRecipe) {
+                        recipes.add((SatisfiableRecipe) r);
+                    }
+                    getSatisfiableDependencies(r, recipes, new HashSet<Recipe>());
+                    if (!recipes.isEmpty()) {
+                        satisfiables.put(name, recipes);
                     }
                 }
                 return satisfiables;

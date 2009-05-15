@@ -235,9 +235,13 @@ public class WiringTest extends AbstractBlueprintTest {
         
         Object obj8 = graph.create("multipleString");
         testMultiple(obj8, "123", -1, null);
-        
-        Object obj9 = graph.create("multipleStringConvertable");
-        testMultiple(obj9, "hello", -1, null);
+
+        try {
+            graph.create("multipleStringConvertable");
+            fail("Did not throw exception");
+        } catch (RuntimeException e) {
+            // we expect exception
+        }
         
         Object obj10 = graph.create("multipleFactory1");
         testMultiple(obj10, null, 1234, null);
@@ -256,8 +260,9 @@ public class WiringTest extends AbstractBlueprintTest {
         Object obj12 = graph.create("multipleFactoryTypedNull");
         testMultiple(obj12, "hello-boolean", -1, null);
 
-        Object obj13 = graph.create("mapConstruction");
-        Object obj14 = graph.create("propsConstruction");
+        // TODO: check the below tests when the incoherence between TCK / spec is solved
+//        Object obj13 = graph.create("mapConstruction");
+//        Object obj14 = graph.create("propsConstruction");
     }
     
     private void testPojoB(Object obj, URI uri, int intValue) {

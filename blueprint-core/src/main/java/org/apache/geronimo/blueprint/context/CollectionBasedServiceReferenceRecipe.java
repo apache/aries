@@ -75,10 +75,6 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         return new Type[] { metadata.getCollectionType() };
     }
 
-    public boolean canCreate(Type type) {
-        return true;
-    }
-
     @Override
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         Comparator comparator = null;

@@ -63,21 +63,21 @@ public class ServiceReferenceTracker implements ServiceListener {
         if (started) {
             return;
         }
+        satisfied = optional;
         context.addServiceListener(this, filter);
         ServiceReference[] references = context.getServiceReferences(null, filter);
         if (references != null) {
             for (ServiceReference reference : references) {
-                referenceSet.add(reference);
+                serviceAdded(new ServiceEvent(ServiceEvent.REGISTERED, reference));
             }
         }
-        satisfied = (optional) ? true : !referenceSet.isEmpty();   
         started = true;
     }
     
     public synchronized void stop() {
         context.removeServiceListener(this);
         referenceSet.clear();
-        satisfactionListeners.clear();
+        satisfied = false;
         started = false;
     }
     

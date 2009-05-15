@@ -64,36 +64,11 @@ public class ReflectionUtils {
         return null;
     }
     
-    public static Method findMethod(Class clazz, String name, Class[] paramTypes) {
-        try {
-            return clazz.getMethod(name, paramTypes);
-        } catch (NoSuchMethodException e) {
-            return findCompatibleMethod(clazz, name, paramTypes);
-        }
-    }
-
-    public static Method findCompatibleMethod(Class clazz, String name, Class[] paramTypes) {
-        Method[] methods = clazz.getMethods();
-        for (Method method :  methods) {
-            Class[] methodParams = method.getParameterTypes();
-            if (name.equals(method.getName()) && methodParams.length == paramTypes.length) {
-                boolean assignable = true;
-                for (int i = 0; i < paramTypes.length && assignable; i++) {
-                    assignable = methodParams[i].isAssignableFrom(paramTypes[i]);
-                }
-                if (assignable) {
-                    return method;
-                }                        
-            }
-        }
-        return null;
-    }
-
     public static List<Method> findCompatibleMethods(Class clazz, String name, Class[] paramTypes) {
         List<Method> methods = new ArrayList<Method>();
         for (Method method : clazz.getMethods()) {
             Class[] methodParams = method.getParameterTypes();
-            if (name.equals(method.getName()) && methodParams.length == paramTypes.length) {
+            if (name.equals(method.getName()) && Void.TYPE.equals(method.getReturnType()) && methodParams.length == paramTypes.length) {
                 boolean assignable = true;
                 for (int i = 0; i < paramTypes.length && assignable; i++) {
                     assignable = methodParams[i].isAssignableFrom(paramTypes[i]);
