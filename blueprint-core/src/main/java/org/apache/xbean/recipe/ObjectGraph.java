@@ -267,8 +267,8 @@ public class ObjectGraph {
             return executionContext.containsObject(name);
         }
 
-        public void addObject(String name, Object object) {
-            executionContext.addObject(name, object);
+        public void addObject(String name, Object object, boolean partialObject) {
+            executionContext.addObject(name, object, partialObject);
             constructedObject.put(name, object);
         }
 
@@ -282,6 +282,14 @@ public class ObjectGraph {
 
         public ClassLoader getClassLoader() {
             return executionContext.getClassLoader();
+        }
+
+        public boolean containsCreatedObject(String name) {
+            return executionContext.containsCreatedObject(name);
+        }
+
+        public Object getCreatedObject(String name) {
+            return executionContext.getCreatedObject(name);
         }
     }
 }

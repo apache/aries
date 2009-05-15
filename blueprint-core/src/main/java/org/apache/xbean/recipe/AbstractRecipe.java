@@ -28,6 +28,7 @@ public abstract class AbstractRecipe implements Recipe {
     private static final AtomicLong ID = new AtomicLong(1);
     private long id;
     private String name;
+    protected Boolean allowPartial;
 
     protected AbstractRecipe() {
         id = ID.getAndIncrement();
@@ -83,8 +84,9 @@ public abstract class AbstractRecipe implements Recipe {
             ExecutionContext context = ExecutionContext.getContext();
 
             // if this recipe has already been executed in this context, return the currently registered value
-            if (getName() != null && context.containsObject(getName()) && !(context.getObject(getName()) instanceof Recipe)) {
-                return context.getObject(getName());
+            String name = getName();
+            if (name != null && context.containsCreatedObject(name)) {
+                return context.getCreatedObject(name);
             }
 
             // execute the recipe
@@ -119,7 +121,29 @@ public abstract class AbstractRecipe implements Recipe {
     }
 
     protected abstract Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException;
-
+    
+    public void setAllowPartial(Boolean allowPartial) {
+        this.allowPartial = allowPartial;
+    }
+    
+    public Boolean getAllowPartial() {
+        return allowPartial;
+    }
+    
+    private boolean isAllowPartial() {
+        return (allowPartial == null) ? true : allowPartial.booleanValue();
+    }
+    
+    protected void addObject(Object obj, boolean partial) {
+        if (partial && !isAllowPartial()) {
+            return;
+        }
+        String name = getName();
+        if (name != null) {
+            ExecutionContext.getContext().addObject(name, obj, partial);
+        }
+    }
+    
     public List<Recipe> getNestedRecipes() {
         return new ArrayList<Recipe>();
     }

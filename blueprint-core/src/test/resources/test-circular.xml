@@ -26,5 +26,32 @@
     <bean id="b" class="org.apache.geronimo.blueprint.pojos.PojoCircular">
         <property name="circular" ref="a"/>
     </bean>
+    
+    <bean id="c" class="org.apache.geronimo.blueprint.pojos.PojoCircular" init-method = "init">
+        <property name="circular" ref="d"/>
+    </bean>
 
+    <bean id="d" class="org.apache.geronimo.blueprint.pojos.PojoCircular">
+        <property name="circular" ref="c"/>
+    </bean>
+    
+    
+    <bean id="serviceBean" class="org.apache.geronimo.blueprint.pojos.PojoB">
+        <property name="uri" value="urn:myuri" />
+    </bean>
+    
+    <bean id="listener" class="org.apache.geronimo.blueprint.pojos.PojoListener">
+        <property name="service" ref="service" />
+    </bean>
+    
+    <service id="service" ref="serviceBean" interface="org.apache.geronimo.blueprint.pojos.PojoB">
+        <service-properties>
+            <entry key="key1" value="value1"/>
+            <entry key="key2" value="value2"/>
+        </service-properties>    
+        <registration-listener ref="listener"
+           registration-method="register"
+           unregistration-method="unregister"/>
+    </service>
+    
 </blueprint>

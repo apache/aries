@@ -26,6 +26,11 @@ public class DefaultExecutionContext extends ExecutionContext {
     private Repository repository;
 
     /**
+     * Contains partial objects.
+     */
+    private Map<String, Object> partialObjects = new HashMap<String, Object>();
+    
+    /**
      * Before each recipe is executed it is pushed on the stack.  The
      * stack is used to detect circular dependencies and so a recipe can
      * access the caller recipe (e.g. UnsetPropertiesRecipe returns a
@@ -88,7 +93,7 @@ public class DefaultExecutionContext extends ExecutionContext {
         boolean contains = repository.contains(name);
         return contains;
     }
-
+    
     public Object getObject(String name) {
         Object object = repository.get(name);
         return object;
@@ -106,6 +111,35 @@ public class DefaultExecutionContext extends ExecutionContext {
         }
     }
 
+    public void addObject(String name, Object object, boolean partialObject) {
+        if (partialObject) {
+            partialObjects.put(name, object);
+        } else {
+            addObject(name, object);
+            partialObjects.remove(name);
+        }        
+    }
+    
+    public boolean containsCreatedObject(String name) {
+        if (repository.contains(name)) {
+            Object obj = repository.get(name);
+            if (!(obj instanceof Recipe)) {
+                return true;
+            }
+        }
+        return partialObjects.containsKey(name);
+    }
+    
+    public Object getCreatedObject(String name) {
+        if (repository.contains(name)) {
+            Object obj = repository.get(name);
+            if (!(obj instanceof Recipe)) {
+                return obj;
+            }
+        }
+        return partialObjects.get(name);
+    }
+    
     public void addReference(Reference reference) {
         Object value = repository.get(reference.getName());
         if (value != null && !(value instanceof Recipe)) {

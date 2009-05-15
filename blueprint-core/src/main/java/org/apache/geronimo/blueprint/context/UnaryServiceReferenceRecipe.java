@@ -76,12 +76,15 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             // Create the proxy
             proxy = createProxy();
             proxyClass = proxy.getClass();
+            
+            // Add partially created proxy to the context
+            addObject(proxy, true);
+            
             // Create the listeners and initialize them
             createListeners();
-            // Add the created proxy to the context
-            if (getName() != null) {
-                ExecutionContext.getContext().addObject(getName(), proxy);
-            }
+            
+            // Add fully created proxy to the context
+            addObject(proxy, false);
 
             // Start tracking the service
             tracker.registerServiceListener(this);

@@ -37,6 +37,7 @@ import org.apache.geronimo.blueprint.pojos.Multiple;
 import org.apache.geronimo.blueprint.pojos.PojoA;
 import org.apache.geronimo.blueprint.pojos.PojoB;
 import org.apache.geronimo.blueprint.pojos.PojoGenerics;
+import org.apache.geronimo.blueprint.pojos.PojoListener;
 import org.apache.xbean.recipe.Repository;
 import org.osgi.framework.ServiceRegistration;
 
@@ -338,12 +339,27 @@ public class WiringTest extends AbstractBlueprintTest {
         Repository repository = i.createRepository();
         BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(repository);
 
+        // this should pass (we allow circular dependencies for components without init method)
+        Object obj1 = graph.create("a");
+        
+        // this should fail (we do not allow circular dependencies for components with init method)
         try {
-            Object obj1 = graph.create("a");
+            graph.create("c");
             fail("Test should have thrown an exception caused by the circular reference");
         } catch (Exception e) {
             // ok
         }
+        
+        // test service and listener circular dependencies
+        Object obj2 = graph.create("service");
+        assertNotNull(obj2);
+        assertTrue(obj2 instanceof ServiceRegistration);
+        
+        Object obj3 = graph.create("listener");
+        assertNotNull(obj3);
+        assertTrue(obj3 instanceof PojoListener);
+        
+        assertEquals(obj2, ((PojoListener) obj3).getService() );        
     }
      
 }

@@ -138,11 +138,12 @@ public class RecipeBuilder {
             comparatorRecipe = (Recipe) getValue(metadata.getComparator(), Comparator.class);
         }
         CollectionBasedServiceReferenceRecipe recipe = new CollectionBasedServiceReferenceRecipe(
-                blueprintContext,
+                                                                   blueprintContext,
                                                                    blueprintContext.getSender(),
                                                                    metadata,
                                                                    listenersRecipe,
                                                                    comparatorRecipe);
+        recipe.setAllowPartial(true);
         recipe.setName(getName(metadata.getId()));
         return recipe;
     }
@@ -156,9 +157,10 @@ public class RecipeBuilder {
             }
         }
         UnaryServiceReferenceRecipe recipe = new UnaryServiceReferenceRecipe(blueprintContext,
-                                                                   blueprintContext.getSender(),
-                                                                   metadata,
-                                                                   listenersRecipe);
+                                                                             blueprintContext.getSender(),
+                                                                             metadata,
+                                                                             listenersRecipe);
+        recipe.setAllowPartial(true);
         recipe.setName(getName(metadata.getId()));
         return recipe;
     }
@@ -168,6 +170,7 @@ public class RecipeBuilder {
         recipe.setName(getName(serviceExport.getId()));
         recipe.setExplicitDependencies(serviceExport.getExplicitDependencies());
         recipe.setInitMethod("init");
+        recipe.setAllowPartial(true);
         recipe.setProperty("blueprintContext", blueprintContext);
         BeanMetadata exportedComponent = getLocalServiceComponent(serviceExport.getServiceComponent());
         if (exportedComponent != null && BeanMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
