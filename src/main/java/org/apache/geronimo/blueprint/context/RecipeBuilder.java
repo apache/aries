@@ -102,20 +102,16 @@ public class RecipeBuilder {
         for (String name : registry.getComponentDefinitionNames()) {
             ComponentMetadata component = registry.getComponentDefinition(name);
             Recipe recipe = createRecipe(component);
-            repository.add(name, recipe);
+            addRecipe(repository, recipe);
         }
         return repository;
     }
 
-    public void updateRepository(BlueprintObjectRepository repository) throws Exception {
-        for (String name : registry.getComponentDefinitionNames()) {
-            ComponentMetadata component = registry.getComponentDefinition(name);
-            Recipe recipe = createRecipe(component);
-            repository.updateRecipe(name, recipe);
-        }
+    private void addRecipe(BlueprintObjectRepository repository, Recipe recipe) {
+        repository.add(recipe.getName(), recipe); 
     }
 
-    private Recipe createRecipe(ComponentMetadata component) throws Exception {
+    public Recipe createRecipe(ComponentMetadata component) throws Exception {
         if (component instanceof BeanMetadata) {
             return createBeanRecipe((BeanMetadata) component);
         } else if (component instanceof ServiceMetadata) {
@@ -214,7 +210,7 @@ public class RecipeBuilder {
         recipe.setName(getName(local.getId()));
         recipe.setExplicitDependencies(local.getExplicitDependencies());
         for (BeanProperty property : local.getProperties()) {
-            Object value = getValue(property.getValue(), null);
+            Recipe value = getValue(property.getValue(), null);
             recipe.setProperty(property.getName(), value);
         }
         if (BeanMetadata.SCOPE_PROTOTYPE.equals(local.getScope())) {
@@ -232,7 +228,7 @@ public class RecipeBuilder {
             }
             List<Object> arguments = new ArrayList<Object>();
             for (BeanArgument argument : beanArguments) {
-                Object value = getValue(argument.getValue(), null);
+                Recipe value = getValue(argument.getValue(), null);
                 arguments.add(value);
             }
             recipe.setArguments(arguments);
