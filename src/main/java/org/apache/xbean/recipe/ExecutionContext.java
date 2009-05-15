@@ -87,7 +87,11 @@ public abstract class ExecutionContext {
      * @param object the object instance
      * @throws ConstructionException if another object instance is already registered with the name
      */
-    public abstract void addObject(String name, Object object);
+    public abstract void addObject(String name, Object object, boolean partialObject);
+    
+    public void addObject(String name, Object object) {
+        addObject(name, object, false);
+    }
 
     /**
      * Adds a reference to an object to this context.  If an object is already registered under
@@ -111,4 +115,9 @@ public abstract class ExecutionContext {
      * @return the class loader for loading classes in this context
      */
     public abstract ClassLoader getClassLoader();
+    
+    public abstract boolean containsCreatedObject(String name);
+    
+    public abstract Object getCreatedObject(String name);
+    
 }

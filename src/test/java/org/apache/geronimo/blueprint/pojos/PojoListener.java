@@ -18,18 +18,25 @@
  */
 package org.apache.geronimo.blueprint.pojos;
 
-public class PojoCircular {
+import java.util.Map;
 
-    private PojoCircular circular;
+import org.osgi.framework.ServiceRegistration;
 
-    public PojoCircular getCircular() {
-        return circular;
-    }
+public class PojoListener {
 
-    public void setCircular(PojoCircular circular) {
-        this.circular = circular;
+    private ServiceRegistration registration;
+    
+    public ServiceRegistration getService() {
+        return registration;
     }
     
-    public void init() {        
+    public void setService(ServiceRegistration registration) {
+        this.registration = registration;
+    }
+    
+    public void register(PojoB pojo, Map props) {        
+    }
+    
+    public void unregister(PojoB pojo, Map props) {        
     }
 }

@@ -64,7 +64,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
     private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
 
     private final BlueprintContextImpl blueprintContext;
-    private boolean keepRecipe = false;
+    private boolean keepRecipe = false;    
     private String initMethod;
     private String destroyMethod;
     private List<String> explicitDependencies;
@@ -141,7 +141,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
     public boolean getKeepRecipe() {
         return keepRecipe;
     }
-    
+        
     public void setInitMethod(String initMethod) {
         this.initMethod = initMethod;
     }
@@ -450,12 +450,21 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         instantiateExplicitDependencies();
 
         Object obj = getInstance(lazyRefAllowed);
-        
+                
         // check for init lifecycle method (if any)
         Method initMethod = getInitMethod(obj);
         
         // check for destroy lifecycle method (if any)
         getDestroyMethod(obj);
+        
+        if (allowPartial == null) {
+            allowPartial = (initMethod == null);
+        }
+        
+        if (!keepRecipe) {
+            // Add partially created object to the context
+            addObject(obj, true);
+        }
         
         // inject properties
         setProperties(obj);
@@ -476,8 +485,9 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
             }
         }
         
-        if (getName() != null && !keepRecipe) {
-            ExecutionContext.getContext().addObject(getName(), obj);
+        if (!keepRecipe) {
+            // Add fully created object to the context
+            addObject(obj, false);
         }
         
         return obj;

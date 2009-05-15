@@ -102,13 +102,14 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
                 throw new IllegalArgumentException("Unsupported collection type " + metadata.getCollectionType().getName());
             }
 
+            // Add partially created collection to the context
+            addObject(collection, true);
+            
             // Create the listeners and initialize them
             createListeners();
-
-            // Add the created proxy to the context
-            if (getName() != null) {
-                ExecutionContext.getContext().addObject(getName(), collection);
-            }
+            
+            // Add fully created collection to the context
+            addObject(collection, false);
 
             // Start tracking the service
             tracker.registerServiceListener(this);
