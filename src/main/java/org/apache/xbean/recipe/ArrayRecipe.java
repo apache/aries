@@ -24,6 +24,9 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.osgi.service.blueprint.convert.ConversionService;
+import org.apache.geronimo.blueprint.utils.ConversionUtils;
+
 /**
  * @version $Rev$ $Date$
  */
@@ -31,20 +34,12 @@ public class ArrayRecipe extends AbstractRecipe {
     private final List<Recipe> list;
     private Class typeClass;
     private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
+    private final ConversionService conversionService;
 
-    public ArrayRecipe() {
-        list = new ArrayList<Recipe>();
-    }
-
-    public ArrayRecipe(Class type) {
+    public ArrayRecipe(ConversionService conversionService, Class type) {
+        this.conversionService = conversionService;
         this.list = new ArrayList<Recipe>();
         this.typeClass = type;
-    }
-
-    public ArrayRecipe(ArrayRecipe collectionRecipe) {
-        if (collectionRecipe == null) throw new NullPointerException("setRecipe is null");
-        this.typeClass = collectionRecipe.typeClass;
-        list = new ArrayList<Recipe>(collectionRecipe.list);
     }
 
     public void allow(Option option) {
@@ -73,16 +68,8 @@ public class ArrayRecipe extends AbstractRecipe {
         return Collections.emptyList();
     }
 
-    public Type[] getTypes() {
-        if (typeClass != null) {
-            return new Type[] { typeClass };
-        } else {
-            return new Type[] { Object[].class };
-        }
-    }
-
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
-        Class type = getType(expectedType);
+        Class type = typeClass != null ? typeClass : Object.class;
 
         // create array instance
         Object array;
@@ -101,7 +88,16 @@ public class ArrayRecipe extends AbstractRecipe {
 
         int index = 0;
         for (Recipe recipe : list) {
-            Object value = recipe != null ? recipe.create(type, refAllowed) : null;
+            Object value;
+            if (recipe != null) {
+                try {
+                    value = ConversionUtils.convert(recipe.create(Object.class, refAllowed), type, conversionService);
+                } catch (Exception e) {
+                    throw new ConstructionException("Unable to convert value " + recipe + " to type " + type, e);
+                }
+            } else {
+                value = null;
+            }
             
             if (value instanceof Reference) {
                 Reference reference = (Reference) value;

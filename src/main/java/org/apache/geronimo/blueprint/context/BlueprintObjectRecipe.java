@@ -617,15 +617,6 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         }
     }
 
-    public Type[] getTypes() {
-        Class type = getType();
-        if (type != null) {
-            return new Type[] { getType() };
-        } else{
-            return new Type[] { Object.class };
-        }
-    }
-
     public void setProperties(Object instance) throws ConstructionException {
         // clone the properties so they can be used again
         Map<String,Object> propertyValues = new LinkedHashMap<String,Object>(properties);
@@ -675,7 +666,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
             Type type = setter.getGenericParameterTypes()[0];
             // Instanciate value
             if (propertyValue instanceof Recipe) {
-                propertyValue = ((Recipe) propertyValue).create(type, false);
+                propertyValue = ((Recipe) propertyValue).create(Object.class, false);
             }
             try {
                 propertyValue = convert(propertyValue, type);

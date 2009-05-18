@@ -105,21 +105,6 @@ public class CollectionRecipe extends AbstractRecipe {
         return Collections.emptyList();
     }
 
-    public Type[] getTypes() {
-        Class type = typeClass;
-        if (type == null && typeName != null) {
-            try {
-                type = RecipeHelper.loadClass(typeName);
-            } catch (ClassNotFoundException e) {
-                throw new ConstructionException("Type class could not be found: " + typeName);
-            }
-        }
-        if (type == null) {
-            type = Collection.class;
-        }
-        return new Type[] { type };
-    }
-
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         Class type = getType(expectedType);
 
