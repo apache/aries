@@ -41,12 +41,12 @@ import org.apache.geronimo.blueprint.utils.DynamicSet;
 import org.apache.geronimo.blueprint.utils.DynamicSortedList;
 import org.apache.geronimo.blueprint.utils.DynamicSortedSet;
 import org.apache.xbean.recipe.ConstructionException;
-import org.apache.xbean.recipe.ExecutionContext;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.RecipeHelper;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.context.BlueprintContext;
+import org.osgi.service.blueprint.context.ServiceUnavailableException;
 import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
 
 /**
@@ -202,14 +202,11 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             this.memberReference = memberReference;
         }
 
-        public synchronized Object getMember() {
+        public Object getMember() {
             if (memberReference) {
                 return reference;
             } else {
-                if (service == null && reference != null) {
-                    service = reference.getBundle().getBundleContext().getService(reference);
-                }
-                return service;
+                return proxy;
             }
         }
         
@@ -224,7 +221,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
 
         public synchronized Object loadObject() throws Exception {
             if (reference == null) {
-                throw new ServiceUnregisteredException();
+                throw new ServiceUnavailableException("Service is unavailable", null, null);
             }
             if (service == null) {
                 service = reference.getBundle().getBundleContext().getService(reference);
