@@ -62,16 +62,6 @@ public class ValueRecipe extends AbstractRecipe {
         }
     }
 
-    public Type[] getTypes() {
-        if (type != null) {
-            return new Type[] { type };
-        //} else if (value.getTypeName() != null) {
-            // TODO
-        } else {
-            return new Type[] { String.class };
-        }
-    }
-
     public String toString() {
         return "ValueRecipe: " + type + " " + value.getStringValue();
     }

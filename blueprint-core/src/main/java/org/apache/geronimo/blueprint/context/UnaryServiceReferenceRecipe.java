@@ -108,15 +108,6 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
         return list;
     }
     
-    public Type[] getTypes() {
-        try {
-            List<Class> interfaceList = getSupportedTypes();
-            return (Type[]) interfaceList.toArray(new Type [interfaceList.size()]);
-        } catch (ClassNotFoundException e) {
-            throw new ConstructionException(e);
-        }
-    }
-
     @Override
     public void stop() {
         super.stop();

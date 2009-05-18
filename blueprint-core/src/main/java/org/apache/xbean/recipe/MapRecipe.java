@@ -107,10 +107,6 @@ public class MapRecipe extends AbstractRecipe {
         return Collections.emptyList();
     }
 
-    public Type[] getTypes() {
-        return new Type[] { typeClass };
-    }
-
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         Class mapType = getType(expectedType);
 

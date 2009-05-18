@@ -69,10 +69,6 @@ public class ReferenceNameRecipe extends AbstractRecipe {
         return getNestedRecipes();
     }
 
-    public Type[] getTypes() {
-        return new Type[] { String.class };
-    }
-
     protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
         Object object = getReference();
         return referenceName;

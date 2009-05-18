@@ -76,11 +76,11 @@
             </array>
         </property>
         <property name="numberArray">
-            <array value-type="java.lang.Integer">
-                <value>1</value>
+            <array>
+                <value type="int">1</value>
                 <value type="java.math.BigInteger">50</value>
                 <value type="java.lang.Long">100</value>
-                <value>200</value>
+                <value type="int">200</value>
             </array>
         </property>
         <property name="number">

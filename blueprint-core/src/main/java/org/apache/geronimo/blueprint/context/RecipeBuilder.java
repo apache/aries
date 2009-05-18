@@ -293,7 +293,7 @@ public class RecipeBuilder {
             Class cl = collectionMetadata.getCollectionClass();
             Class type = loadClass(collectionMetadata.getValueTypeName());
             if (cl == Object[].class) {
-                ArrayRecipe ar = new ArrayRecipe(type);
+                ArrayRecipe ar = new ArrayRecipe(getConversionService(), type);
                 for (Metadata lv : collectionMetadata.getValues()) {
                     ar.add(getValue(lv, type));
                 }

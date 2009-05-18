@@ -200,7 +200,7 @@ public class ConversionServiceImpl implements ConversionService {
 
     private static Object createObject(String value, Class type) throws Exception {
         if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
-            throw new Exception("Unable to convert. Type class is an interface or is an abstract class");
+            throw new Exception("Unable to convert value " + value + " to type " + type + ". Type " + type + " is an interface or an abstract class");
         }
         Constructor constructor = null;
         try {
