@@ -323,19 +323,27 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         // Find a direct match with no conversion
         if (TCK_COMPLIANCE && matches.size() != 1) {
             Map<Method, List<Object>> nmatches = new HashMap<Method, List<Object>>();
+            int bestExactMatch = -1;
             for (Method mth : methods) {
                 boolean found = true;
+                int exactMatch = 0;
                 List<Object> match = new ArrayList<Object>();
                 for (int i = 0; i < args.size(); i++) {
                     if (types.get(i) != null) {
-                        if (!toClass(mth.getParameterTypes()[i]).isAssignableFrom(types.get(i))) {
+                        if (!mth.getParameterTypes()[i].isAssignableFrom(types.get(i))) {
                             found = false;
                             break;
+                        }
+                        if (mth.getParameterTypes()[i] == types.get(i)) {
+                            exactMatch++;
                         }
                     } else {
                         if (!mth.getParameterTypes()[i].isInstance(args.get(i))) {
                             found = false;
                             break;
+                        }
+                        if (args.get(i) != null && mth.getParameterTypes()[i] == args.get(i).getClass()) {
+                            exactMatch++;
                         }
                     }
                     try {
@@ -346,7 +354,11 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                         break;
                     }
                 }
-                if (found) {
+                if (found && exactMatch >= bestExactMatch) {
+                    if (exactMatch > bestExactMatch) {
+                        bestExactMatch = exactMatch;
+                        nmatches.clear();
+                    }
                     nmatches.put(mth, match);
                 }
             }
@@ -411,8 +423,10 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         // Find a direct match with no conversion
         if (TCK_COMPLIANCE && matches.size() != 1) {
             Map<Constructor, List<Object>> nmatches = new HashMap<Constructor, List<Object>>();
+            int bestExactMatch = -1;
             for (Constructor cns : constructors) {
                 boolean found = true;
+                int exactMatch = 0;
                 List<Object> match = new ArrayList<Object>();
                 for (int i = 0; i < args.size(); i++) {
                     if (types.get(i) != null) {
@@ -420,10 +434,16 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                             found = false;
                             break;
                         }
+                        if (cns.getParameterTypes()[i] == types.get(i)) {
+                            exactMatch++;
+                        }
                     } else {
                         if (!cns.getParameterTypes()[i].isInstance(args.get(i))) {
                             found = false;
                             break;
+                        }
+                        if (args.get(i) != null && cns.getParameterTypes()[i] == args.get(i).getClass()) {
+                            exactMatch++;
                         }
                     }
                     try {
@@ -434,7 +454,11 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                         break;
                     }
                 }
-                if (found) {
+                if (found && exactMatch >= bestExactMatch) {
+                    if (exactMatch > bestExactMatch) {
+                        bestExactMatch = exactMatch;
+                        nmatches.clear();
+                    }
                     nmatches.put(cns, match);
                 }
             }

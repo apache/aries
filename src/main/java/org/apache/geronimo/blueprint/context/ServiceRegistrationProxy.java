@@ -260,7 +260,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
                 try {
                     method.invoke(listener, args);
                 } catch (Exception e) {
-                    LOGGER.info("Error calling listener", e);
+                    LOGGER.info("Error calling listener method " + method, e);
                 }
             }
         }

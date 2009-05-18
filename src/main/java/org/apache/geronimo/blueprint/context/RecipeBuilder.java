@@ -85,12 +85,12 @@ public class RecipeBuilder {
         this.registry = blueprintContext.getComponentDefinitionRegistry();
     }
     
-    private void addBuiltinComponents(Repository repository) {
+    private void addBuiltinComponents(BlueprintObjectRepository repository) {
         if (blueprintContext != null) {
-            repository.add("blueprintContext", blueprintContext);
-            repository.add("bundleContext", blueprintContext.getBundleContext());
-            repository.add("bundle", blueprintContext.getBundleContext().getBundle());
-            repository.add("conversionService", blueprintContext.getConversionService());
+            repository.putDefault("blueprintContext", blueprintContext);
+            repository.putDefault("bundleContext", blueprintContext.getBundleContext());
+            repository.putDefault("bundle", blueprintContext.getBundleContext().getBundle());
+            repository.putDefault("conversionService", blueprintContext.getConversionService());
         }
     }
     
@@ -293,7 +293,7 @@ public class RecipeBuilder {
             Class cl = collectionMetadata.getCollectionClass();
             Class type = loadClass(collectionMetadata.getValueTypeName());
             if (cl == Object[].class) {
-                ArrayRecipe ar = new ArrayRecipe();
+                ArrayRecipe ar = new ArrayRecipe(type);
                 for (Metadata lv : collectionMetadata.getValues()) {
                     ar.add(getValue(lv, type));
                 }

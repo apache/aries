@@ -37,16 +37,10 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class MapRecipe extends AbstractRecipe {
     private final List<Recipe[]> entries;
-    private String typeName;
     private Class typeClass;
     private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
 
     public MapRecipe() {
-        entries = new ArrayList<Recipe[]>();
-    }
-
-    public MapRecipe(String type) {
-        this.typeName = type;
         entries = new ArrayList<Recipe[]>();
     }
 
@@ -76,7 +70,6 @@ public class MapRecipe extends AbstractRecipe {
 
     public MapRecipe(MapRecipe mapRecipe) {
         if (mapRecipe == null) throw new NullPointerException("mapRecipe is null");
-        this.typeName = mapRecipe.typeName;
         this.typeClass = mapRecipe.typeClass;
         entries = new ArrayList<Recipe[]>(mapRecipe.entries);
     }
@@ -190,16 +183,8 @@ public class MapRecipe extends AbstractRecipe {
 
     private Class getType(Type expectedType) {
         Class expectedClass = RecipeHelper.toClass(expectedType);
-        if (typeClass != null || typeName != null) {
+        if (typeClass != null) {
             Class type = typeClass;
-            if (type == null) {
-                try {
-                    type = RecipeHelper.loadClass(typeName);
-                } catch (ClassNotFoundException e) {
-                    throw new ConstructionException("Type class could not be found: " + typeName);
-                }
-            }
-
             // if expectedType is a subclass of the assigned type,
             // we use it assuming it has a default constructor
             if (type.isAssignableFrom(expectedClass)) {
