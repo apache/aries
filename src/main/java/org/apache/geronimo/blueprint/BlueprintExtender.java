@@ -117,46 +117,51 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     
     private void checkBundle(Bundle bundle, boolean lazyActivation) {
         LOGGER.debug("Scanning bundle {} for blueprint application (lazy: {})", bundle.getSymbolicName(), lazyActivation);
-
-        List<URL> urls = new ArrayList<URL>();
-        Dictionary headers = bundle.getHeaders();
-        String blueprintHeader = (String)headers.get(BlueprintConstants.BUNDLE_BLUEPRINT_HEADER);
-        if (blueprintHeader != null) {
-            List<PathElement> paths = HeaderParser.parseHeader(blueprintHeader);
-            for (PathElement path : paths) {
-                URL url = bundle.getEntry(path.getName());
-                if (url != null) {
-                    urls.add(url);
+        try {
+            List<URL> urls = new ArrayList<URL>();
+            Dictionary headers = bundle.getHeaders();
+            String blueprintHeader = (String)headers.get(BlueprintConstants.BUNDLE_BLUEPRINT_HEADER);
+            if (blueprintHeader != null) {
+                List<PathElement> paths = HeaderParser.parseHeader(blueprintHeader);
+                for (PathElement path : paths) {
+                    URL url = bundle.getEntry(path.getName());
+                    if (url != null) {
+                        urls.add(url);
+                    } else {
+                        throw new IllegalArgumentException("Unable to find bundle entry for config file " + path.getName());
+                    }
                 }
             }
-        }
-        if (urls.isEmpty()) {
-            Enumeration e = bundle.findEntries("OSGI-INF/blueprint", "*.xml", false);
-            if (e != null) {
-                while (e.hasMoreElements()) {
-                    URL u = (URL) e.nextElement();
-                    urls.add(u);
+            if (urls.isEmpty()) {
+                Enumeration e = bundle.findEntries("OSGI-INF/blueprint", "*.xml", false);
+                if (e != null) {
+                    while (e.hasMoreElements()) {
+                        URL u = (URL) e.nextElement();
+                        urls.add(u);
+                    }
                 }
             }
-        }
-        if (!urls.isEmpty()) {
-            LOGGER.debug("Found blueprint application in bundle {} with urls: {}", bundle.getSymbolicName(), urls);
+            if (!urls.isEmpty()) {
+                LOGGER.debug("Found blueprint application in bundle {} with urls: {}", bundle.getSymbolicName(), urls);
 
-            // Check compatibility 
-            // XXX: we can't check compatibility when dealing with lazy activated bundles since that will trigger
-            // the bundle to be fully started
-            boolean compatible = lazyActivation || isCompatible(bundle);
-            if (compatible) {
-                final BlueprintContextImpl blueprintContext = new BlueprintContextImpl(bundle.getBundleContext(), sender, handlers, executors, urls, lazyActivation);
-                contextMap.put(bundle, blueprintContext);
-                // run synchronous when bundle is lazy activated 
-                blueprintContext.run(lazyActivation ? false: true);
+                // Check compatibility
+                // XXX: we can't check compatibility when dealing with lazy activated bundles since that will trigger
+                // the bundle to be fully started
+                boolean compatible = lazyActivation || isCompatible(bundle);
+                if (compatible) {
+                    final BlueprintContextImpl blueprintContext = new BlueprintContextImpl(bundle.getBundleContext(), sender, handlers, executors, urls, lazyActivation);
+                    contextMap.put(bundle, blueprintContext);
+                    // run synchronous when bundle is lazy activated
+                    blueprintContext.run(lazyActivation ? false: true);
+                } else {
+                    LOGGER.info("Bundle {} is not compatible with this blueprint extender", bundle.getSymbolicName());
+                }
+
             } else {
-                LOGGER.info("Bundle {} is not compatible with this blueprint extender", bundle.getSymbolicName());
+                LOGGER.debug("No blueprint application found in bundle {}", bundle.getSymbolicName());
             }
-
-        } else {
-            LOGGER.debug("No blueprint application found in bundle {}", bundle.getSymbolicName());
+        } catch (Throwable t) {
+            sender.sendFailure(bundle, t);
         }
     }
 

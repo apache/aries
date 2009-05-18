@@ -16,27 +16,27 @@
  */
 package org.apache.xbean.recipe;
 
+import org.osgi.service.blueprint.context.ComponentDefinitionException;
+
 /**
  * @version $Rev: 6680 $ $Date: 2005-12-24T04:38:27.427468Z $
  */
-public class ConstructionException extends RuntimeException {
+public class ConstructionException extends ComponentDefinitionException {
 
     private String className;
     private String attributeName;
-
-    public ConstructionException() {
-    }
 
     public ConstructionException(String message) {
         super(message);
     }
 
     public ConstructionException(String message, Throwable cause) {
-        super(message, cause);
+        super(message);
+        initCause(cause);
     }
 
     public ConstructionException(Throwable cause) {
-        super(cause);
+        this("", cause);
     }
 
     public String getClassName() {
@@ -53,9 +53,6 @@ public class ConstructionException extends RuntimeException {
 
     public void setAttributeName(String attributeName) {
         this.attributeName = attributeName;
-    }
-
-    public void setPrependAttributeName(String attributeName) {
     }
 
     public String getMessage() {
