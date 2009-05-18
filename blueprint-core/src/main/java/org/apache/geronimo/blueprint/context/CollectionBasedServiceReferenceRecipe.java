@@ -116,6 +116,8 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             retrack();
             
             return collection;
+        } catch (ConstructionException t) {
+            throw t;
         } catch (Throwable t) {
             throw new ConstructionException(t);
         }

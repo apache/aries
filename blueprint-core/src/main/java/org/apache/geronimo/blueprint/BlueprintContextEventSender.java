@@ -18,7 +18,7 @@
  */
 package org.apache.geronimo.blueprint;
 
-import org.osgi.service.blueprint.context.BlueprintContext;
+import org.osgi.framework.Bundle;
 
 /**
  * Interface used to send events related to blueprint context life cycle.
@@ -28,12 +28,12 @@ import org.osgi.service.blueprint.context.BlueprintContext;
  */
 public interface BlueprintContextEventSender extends Destroyable {
 
-    void sendCreating(BlueprintContext blueprintContext);
-    void sendCreated(BlueprintContext blueprintContext);
-    void sendDestroying(BlueprintContext blueprintContext);
-    void sendDestroyed(BlueprintContext blueprintContext);
-    void sendWaiting(BlueprintContext blueprintContext, String[] serviceObjectClass, String serviceFilter);
-    void sendFailure(BlueprintContext blueprintContext, Throwable cause);
-    void sendFailure(BlueprintContext blueprintContext, Throwable cause, String[] serviceObjectClass, String serviceFilter);
+    void sendCreating(Bundle bundle);
+    void sendCreated(Bundle bundle);
+    void sendDestroying(Bundle bundle);
+    void sendDestroyed(Bundle bundle);
+    void sendWaiting(Bundle bundle, String[] serviceObjectClass, String serviceFilter);
+    void sendFailure(Bundle bundle, Throwable cause);
+    void sendFailure(Bundle bundle, Throwable cause, String[] serviceObjectClass, String serviceFilter);
 
 }

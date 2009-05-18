@@ -49,6 +49,7 @@ import org.apache.xbean.recipe.Option;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.RecipeHelper;
 import org.apache.xbean.recipe.ReferenceRecipe;
+import static org.apache.xbean.recipe.RecipeHelper.toClass;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 
@@ -241,7 +242,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
             // look for instance method on factory object
             Object factoryObj = factory.create(Object.class, false);
             // Map of matching methods
-            Map<Method, List<Object>> matches = findMatchingMethods(factoryObj.getClass(), factoryMethod, true, args, types, arguments);
+            Map<Method, List<Object>> matches = findMatchingMethods(factoryObj.getClass(), factoryMethod, true, args, types);
             if (matches.size() == 1) {
                 try {
                     Map.Entry<Method, List<Object>> match = matches.entrySet().iterator().next();
@@ -259,7 +260,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
             }
         } else if (factoryMethod != null) {
             // Map of matching methods
-            Map<Method, List<Object>> matches = findMatchingMethods(getType(), factoryMethod, false, args, types, arguments);
+            Map<Method, List<Object>> matches = findMatchingMethods(getType(), factoryMethod, false, args, types);
             if (matches.size() == 1) {
                 try {
                     Map.Entry<Method, List<Object>> match = matches.entrySet().iterator().next();
@@ -277,7 +278,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
             }
         } else {
             // Map of matching constructors
-            Map<Constructor, List<Object>> matches = findMatchingConstructors(args, types, args);
+            Map<Constructor, List<Object>> matches = findMatchingConstructors(getType(), args, types);
             if (matches.size() == 1) {
                 try {
                     Map.Entry<Constructor, List<Object>> match = matches.entrySet().iterator().next();
@@ -302,7 +303,9 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         return ConversionUtils.convert(obj, type, blueprintContext.getConversionService());
     }
 
-    private Map<Method, List<Object>> findMatchingMethods(Class type, String name, boolean instance, List<Object> args, List<Class> types, List<Object> arguments) {
+    public static final boolean TCK_COMPLIANCE = true;
+
+    private Map<Method, List<Object>> findMatchingMethods(Class type, String name, boolean instance, List<Object> args, List<Class> types) {
         Map<Method, List<Object>> matches = new HashMap<Method, List<Object>>();
         // Get constructors
         List<Method> methods = new ArrayList<Method>(Arrays.asList(type.getMethods()));
@@ -313,33 +316,73 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                 it.remove();
             } else if (mth.getParameterTypes().length != args.size()) {
                 it.remove();
-            } else if (!instance ^ Modifier.isStatic(mth.getModifiers())) {
+            } else if (instance ^ !Modifier.isStatic(mth.getModifiers())) {
                 it.remove();
             }
         }
-        // Find a direct match
-        for (Method mth : methods) {
-            boolean found = true;
-            List<Object> match = new ArrayList<Object>();
-            for (int i = 0; i < args.size(); i++) {
-                if (types.get(i) != null && types.get(i) != mth.getParameterTypes()[i]) {
-                    found = false;
-                    break;
+        // Find a direct match with no conversion
+        if (TCK_COMPLIANCE && matches.size() != 1) {
+            Map<Method, List<Object>> nmatches = new HashMap<Method, List<Object>>();
+            for (Method mth : methods) {
+                boolean found = true;
+                List<Object> match = new ArrayList<Object>();
+                for (int i = 0; i < args.size(); i++) {
+                    if (types.get(i) != null) {
+                        if (!toClass(mth.getParameterTypes()[i]).isAssignableFrom(types.get(i))) {
+                            found = false;
+                            break;
+                        }
+                    } else {
+                        if (!mth.getParameterTypes()[i].isInstance(args.get(i))) {
+                            found = false;
+                            break;
+                        }
+                    }
+                    try {
+                        Object val = convert(args.get(i), mth.getGenericParameterTypes()[i]);
+                        match.add(val);
+                    } catch (Throwable t) {
+                        found = false;
+                        break;
+                    }
                 }
-                try {
-                    Object val = convert(args.get(i), mth.getGenericParameterTypes()[i]);
-                    match.add(val);
-                } catch (Throwable t) {
-                    found = false;
-                    break;
+                if (found) {
+                    nmatches.put(mth, match);
                 }
             }
-            if (found) {
-                matches.put(mth, match);
+            if (nmatches.size() > 0) {
+                matches = nmatches;
+            }
+        }
+        // Find a direct match
+        if (matches.size() != 1) {
+            Map<Method, List<Object>> nmatches = new HashMap<Method, List<Object>>();
+            for (Method mth : methods) {
+                boolean found = true;
+                List<Object> match = new ArrayList<Object>();
+                for (int i = 0; i < args.size(); i++) {
+                    if (types.get(i) != null && types.get(i) != mth.getParameterTypes()[i]) {
+                        found = false;
+                        break;
+                    }
+                    try {
+                        Object val = convert(args.get(i), mth.getGenericParameterTypes()[i]);
+                        match.add(val);
+                    } catch (Throwable t) {
+                        found = false;
+                        break;
+                    }
+                }
+                if (found) {
+                    nmatches.put(mth, match);
+                }
+            }
+            if (nmatches.size() > 0) {
+                matches = nmatches;
             }
         }
         // Start reordering
-        if (matches.size() != 1 && reorderArguments && arguments.size() > 1) {
+        if (matches.size() != 1 && reorderArguments && args.size() > 1) {
             Map<Method, List<Object>> nmatches = new HashMap<Method, List<Object>>();
             for (Method mth : methods) {
                 ArgumentMatcher matcher = new ArgumentMatcher(mth.getGenericParameterTypes());
@@ -355,35 +398,75 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         return matches;
     }
 
-    private Map<Constructor, List<Object>> findMatchingConstructors(List<Object> args, List<Class> types, List<Object> arguments) {
+    private Map<Constructor, List<Object>> findMatchingConstructors(Class type, List<Object> args, List<Class> types) {
         Map<Constructor, List<Object>> matches = new HashMap<Constructor, List<Object>>();
         // Get constructors
-        List<Constructor> constructors = new ArrayList<Constructor>(Arrays.asList(getType().getConstructors()));
+        List<Constructor> constructors = new ArrayList<Constructor>(Arrays.asList(type.getConstructors()));
         // Discard any signature with wrong cardinality
         for (Iterator<Constructor> it = constructors.iterator(); it.hasNext();) {
             if (it.next().getParameterTypes().length != args.size()) {
                 it.remove();
             }
         }
-        // Find a direct match
-        for (Constructor cns : constructors) {
-            boolean found = true;
-            List<Object> match = new ArrayList<Object>();
-            for (int i = 0; i < args.size(); i++) {
-                if (types.get(i) != null && types.get(i) != cns.getParameterTypes()[i]) {
-                    found = false;
-                    break;
+        // Find a direct match with no conversion
+        if (TCK_COMPLIANCE && matches.size() != 1) {
+            Map<Constructor, List<Object>> nmatches = new HashMap<Constructor, List<Object>>();
+            for (Constructor cns : constructors) {
+                boolean found = true;
+                List<Object> match = new ArrayList<Object>();
+                for (int i = 0; i < args.size(); i++) {
+                    if (types.get(i) != null) {
+                        if (!toClass(cns.getParameterTypes()[i]).isAssignableFrom(types.get(i))) {
+                            found = false;
+                            break;
+                        }
+                    } else {
+                        if (!cns.getParameterTypes()[i].isInstance(args.get(i))) {
+                            found = false;
+                            break;
+                        }
+                    }
+                    try {
+                        Object val = convert(args.get(i), cns.getGenericParameterTypes()[i]);
+                        match.add(val);
+                    } catch (Throwable t) {
+                        found = false;
+                        break;
+                    }
                 }
-                try {
-                    Object val = convert(args.get(i), cns.getGenericParameterTypes()[i]);
-                    match.add(val);
-                } catch (Throwable t) {
-                    found = false;
-                    break;
+                if (found) {
+                    nmatches.put(cns, match);
                 }
             }
-            if (found) {
-                matches.put(cns, match);
+            if (nmatches.size() > 0) {
+                matches = nmatches;
+            }
+        }
+        // Find a direct match
+        if (matches.size() != 1) {
+            Map<Constructor, List<Object>> nmatches = new HashMap<Constructor, List<Object>>();
+            for (Constructor cns : constructors) {
+                boolean found = true;
+                List<Object> match = new ArrayList<Object>();
+                for (int i = 0; i < args.size(); i++) {
+                    if (types.get(i) != null && types.get(i) != cns.getParameterTypes()[i]) {
+                        found = false;
+                        break;
+                    }
+                    try {
+                        Object val = convert(args.get(i), cns.getGenericParameterTypes()[i]);
+                        match.add(val);
+                    } catch (Throwable t) {
+                        found = false;
+                        break;
+                    }
+                }
+                if (found) {
+                    nmatches.put(cns, match);
+                }
+            }
+            if (nmatches.size() > 0) {
+                matches = nmatches;
             }
         }
         // Start reordering
@@ -559,7 +642,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                     throw new ConstructionException("Error getting property: " + names[i] + " on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName(), t);
                 }
             } else {
-                throw new ConstructionException("No getter for " + names[i] + " property");
+                throw new ConstructionException("No getter for " + names[i] + " property on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName());
             }
         }
         Method setter = getPropertyDescriptor(clazz, names[names.length - 1]).getWriteMethod();
@@ -618,7 +701,6 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
 
     private class ArgumentMatcher {
 
-        private ConversionService converter;
         private List<TypeEntry> entries;
 
         public ArgumentMatcher(Type[] types) {

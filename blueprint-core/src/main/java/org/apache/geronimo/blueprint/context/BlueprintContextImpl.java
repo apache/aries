@@ -49,6 +49,7 @@ import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.ExecutionContext;
 import org.apache.xbean.recipe.DefaultExecutionContext;
 import org.apache.xbean.recipe.ConstructionException;
+import org.apache.xbean.recipe.ReferenceNameRecipe;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -183,7 +184,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                 switch (state) {
                     case Unknown:
                         checkDirectives();
-                        sender.sendCreating(this);
+                        sender.sendCreating(getBundleContext().getBundle());
                         parser = new Parser();
                         parser.parse(urls);
                         namespaces = parser.getNamespaces();
@@ -196,7 +197,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         for (URI ns : namespaces) {
                             if (handlers.getNamespaceHandler(ns) == null) {
                                 if (!waitForNamespaceHandlersEventSent) {
-                                    sender.sendWaiting(this, new String[] {NamespaceHandler.class.getName() }, null);
+                                    sender.sendWaiting(getBundleContext().getBundle(), new String[] {NamespaceHandler.class.getName() }, null);
                                     waitForNamespaceHandlersEventSent = true;
                                 }
                                 return;
@@ -207,6 +208,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         break;
                     case Populated:
                         instantiator = new BlueprintObjectInstantiator(new RecipeBuilder(this).createRepository());
+                        checkReferences();
                         trackServiceReferences();
                         if (checkAllSatisfiables() || !waitForDependencies) {
                             state = State.InitialReferencesSatisfied;
@@ -214,7 +216,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                             // TODO: pass correct parameters
                             // TODO: do we need to send one event for each missing reference ?
                             // TODO: create a timer, then fail after it elapsed
-                            sender.sendWaiting(this, null, null);
+                            sender.sendWaiting(getBundleContext().getBundle(), null, null);
                             state = State.WaitForInitialReferences;
                         }
                         break;
@@ -252,7 +254,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                             // TODO: pass correct parameters
                             // TODO: do we need to send one event for each missing reference ?
                             // TODO: create a timer, then fail after it elapsed
-                            sender.sendWaiting(this, null, null);
+                            sender.sendWaiting(getBundleContext().getBundle(), null, null);
                             state = State.WaitForInitialReferences2;
                         }
                         break;
@@ -294,7 +296,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                             //    BlueprintContext.getComponent(String) is called directly
                             registration = bundleContext.registerService(BlueprintContext.class.getName(), this, props);
 
-                            sender.sendCreated(this);
+                            sender.sendCreated(getBundleContext().getBundle());
                             state = State.Created;
                         }
                         break;
@@ -308,7 +310,48 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
             state = State.Failed;
             // TODO: clean up
             LOGGER.error("Unable to start blueprint context for bundle " + bundleContext.getBundle().getSymbolicName(), t);
-            sender.sendFailure(this, t);
+            sender.sendFailure(getBundleContext().getBundle(), t);
+        }
+    }
+
+    private void checkReferences() throws Exception {
+        BlueprintObjectRepository repository = (BlueprintObjectRepository) instantiator.getRepository();
+        List<Recipe> recipes = new ArrayList<Recipe>();
+        boolean createNewContext = !ExecutionContext.isContextSet();
+        if (createNewContext) {
+            ExecutionContext.setContext(new DefaultExecutionContext(instantiator.getRepository()));
+        }
+        try {
+            for (String name : repository.getNames()) {
+                Recipe recipe = repository.getRecipe(name);
+                if (recipe != null) {
+                    getAllRecipes(recipe, recipes);
+                }
+            }
+        } finally {
+            if (createNewContext) {
+                ExecutionContext.setContext(null);
+            }
+        }
+        for (Recipe recipe : recipes) {
+            String ref = null;
+            if (recipe instanceof ReferenceRecipe) {
+                ref = ((ReferenceRecipe) recipe).getReferenceName();
+            } else if (recipe instanceof ReferenceNameRecipe) {
+                ref = ((ReferenceNameRecipe) recipe).getReferenceName();
+            }
+            if (ref != null && repository.get(ref) == null) {
+                throw new ComponentDefinitionException("Unresolved ref/idref to component: " + ref);
+            }
+        }
+    }
+
+    private void getAllRecipes(Recipe recipe, List<Recipe> recipes) {
+        if (!recipes.contains(recipe)) {
+            recipes.add(recipe);
+            for (Recipe r : recipe.getNestedRecipes()) {
+                getAllRecipes(r, recipes);
+            }
         }
     }
 
@@ -479,8 +522,10 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         LOGGER.debug("Instantiating components: {}", components);
         try {
             instantiator.createAll(components);
-        } catch (ConstructionException e) {
-            throw (ComponentDefinitionException) new ComponentDefinitionException("Unable to instantiate components").initCause(e);
+        } catch (ComponentDefinitionException e) {
+            throw e;
+        } catch (Throwable t) {
+            throw (ComponentDefinitionException) new ComponentDefinitionException("Unable to instantiate components").initCause(t);
         }
     }
 
@@ -565,8 +610,10 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
             return instantiator.create(name);
         } catch (org.apache.xbean.recipe.NoSuchObjectException e) {
             throw new NoSuchComponentException(name);
-        } catch (ConstructionException e) {
-            throw (ComponentDefinitionException) new ComponentDefinitionException("Cound not create component instance for " + name).initCause(e);
+        } catch (ComponentDefinitionException e) {
+            throw e;
+        } catch (Throwable t) {
+            throw (ComponentDefinitionException) new ComponentDefinitionException("Cound not create component instance for " + name).initCause(t);
         }
     }
 
@@ -621,7 +668,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     
     public synchronized void destroy() {
         state = State.Destroyed;
-        sender.sendDestroying(this);
+        sender.sendDestroying(getBundleContext().getBundle());
         
         if (registration != null) {
             registration.unregister();
@@ -632,7 +679,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         unregisterTriggerServices();
         destroyComponents();
         
-        sender.sendDestroyed(this);
+        sender.sendDestroyed(getBundleContext().getBundle());
         LOGGER.debug("Module context destroyed: " + this.bundleContext);
     }
 
