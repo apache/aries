@@ -46,6 +46,8 @@ import org.osgi.service.cm.Configuration;
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.geronimo.blueprint.beans.AbstractPropertyPlaceholder;
 import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * TODO: javadoc
@@ -54,6 +56,8 @@ import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
 public class CmPropertyPlaceholder extends AbstractPropertyPlaceholder {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CmPropertyPlaceholder.class);
 
     private BlueprintContext blueprintContext;
     private ConfigurationAdmin configAdmin; 
@@ -98,6 +102,7 @@ public class CmPropertyPlaceholder extends AbstractPropertyPlaceholder {
     }
 
     protected String getProperty(String val) {
+        LOGGER.debug("Retrieving property value {} from configuration with pid {}", val, persistentId);
         Object v = null;
         try {
             Configuration config = configAdmin.getConfiguration(persistentId);
@@ -105,16 +110,27 @@ public class CmPropertyPlaceholder extends AbstractPropertyPlaceholder {
                 Dictionary props = config.getProperties();
                 if (props != null) {
                     v = props.get(val);
+                    if (v != null) {
+                        LOGGER.debug("Found property value {}", v);
+                    } else {
+                        LOGGER.debug("Property not found in configuration");
+                    }
+                } else {
+                    LOGGER.debug("No dictionary available from configuration");
                 }
+            } else {
+                LOGGER.debug("No configuration available");
             }
         } catch (Throwable t) {
-            t.printStackTrace();
-            // TODO: log ?
+            LOGGER.info("Unable to retrieve property value " + val + " from configuration with pid " + persistentId, t);
         }
         if (v == null && defaultProperties != null && defaultProperties.containsKey(val)) {
             v = defaultProperties.get(val);
+            if (v != null) {
+                LOGGER.debug("Retrieved value from defaults {}", v);
+            }
         }
-        return v instanceof String ? (String) v : null;
+        return v != null ? v.toString() : null;
     }
 
     public class LateBindingValueMetadata implements MutableValueMetadata {
