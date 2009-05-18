@@ -29,7 +29,6 @@ import java.util.List;
  */
 public class ArrayRecipe extends AbstractRecipe {
     private final List<Recipe> list;
-    private String typeName;
     private Class typeClass;
     private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
 
@@ -37,21 +36,13 @@ public class ArrayRecipe extends AbstractRecipe {
         list = new ArrayList<Recipe>();
     }
 
-    public ArrayRecipe(String type) {
-        list = new ArrayList<Recipe>();
-        this.typeName = type;
-    }
-
     public ArrayRecipe(Class type) {
-        if (type == null) throw new NullPointerException("type is null");
-
         this.list = new ArrayList<Recipe>();
         this.typeClass = type;
     }
 
     public ArrayRecipe(ArrayRecipe collectionRecipe) {
         if (collectionRecipe == null) throw new NullPointerException("setRecipe is null");
-        this.typeName = collectionRecipe.typeName;
         this.typeClass = collectionRecipe.typeClass;
         list = new ArrayList<Recipe>(collectionRecipe.list);
     }
@@ -85,13 +76,6 @@ public class ArrayRecipe extends AbstractRecipe {
     public Type[] getTypes() {
         if (typeClass != null) {
             return new Type[] { typeClass };
-        } else if (typeName != null) {
-            try {
-                Type type = RecipeHelper.loadClass(typeName);
-                return new Type[] { type };
-            } catch (ClassNotFoundException e) {
-                throw new ConstructionException("Type class could not be found: " + typeName);
-            }
         } else {
             return new Type[] { Object[].class };
         }
@@ -138,16 +122,8 @@ public class ArrayRecipe extends AbstractRecipe {
             expectedClass = expectedClass.getComponentType();
         }
         Class type = expectedClass;
-        if (typeClass != null || typeName != null) {
+        if (typeClass != null ) {
             type = typeClass;
-            if (type == null) {
-                try {
-                    type = RecipeHelper.loadClass(typeName);
-                } catch (ClassNotFoundException e) {
-                    throw new ConstructionException("Type class could not be found: " + typeName);
-                }
-            }
-            
             // in case where expectedType is a subclass of the assigned type
             if (type.isAssignableFrom(expectedClass)) {
                 type = expectedClass;

@@ -30,7 +30,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Properties;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.utils.HeaderParser;
@@ -103,6 +106,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
     private final ConversionServiceImpl conversionService;
     private final ExecutorService executors;
+    private final Timer timer;
     private Set<URI> namespaces;
     private State state = State.Unknown;
     private Parser parser;
@@ -117,8 +121,9 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     private Map<ServiceMetadata, TriggerService> triggerServices;
     private long timeout = 5 * 60 * 1000; 
     private boolean waitForDependencies = true;
+    private TimerTask timerTask;
 
-    public BlueprintContextImpl(BundleContext bundleContext, BlueprintContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, List<URL> urls, boolean lazyActivation) {
+    public BlueprintContextImpl(BundleContext bundleContext, BlueprintContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, Timer timer, List<URL> urls, boolean lazyActivation) {
         this.bundleContext = bundleContext;
         this.sender = sender;
         this.handlers = handlers;
@@ -126,6 +131,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         this.conversionService = new ConversionServiceImpl(this);
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
+        this.timer = timer;
         this.lazyActivation = lazyActivation;
         this.triggerServices = new HashMap<ServiceMetadata, TriggerService>();
         this.beanProcessors = new ArrayList<BeanProcessor>();
@@ -210,12 +216,23 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         instantiator = new BlueprintObjectInstantiator(new RecipeBuilder(this).createRepository());
                         checkReferences();
                         trackServiceReferences();
+                        timerTask = new TimerTask() {
+                            public void run() {
+                                synchronized (BlueprintContextImpl.this) {
+                                    Throwable t = new TimeoutException();
+                                    state = State.Failed;
+                                    // TODO: clean up
+                                    LOGGER.error("Unable to start blueprint context for bundle " + bundleContext.getBundle().getSymbolicName(), t);
+                                    sender.sendFailure(getBundleContext().getBundle(), t);
+                                }
+                            }
+                        };
+                        timer.schedule(timerTask, timeout);
                         if (checkAllSatisfiables() || !waitForDependencies) {
                             state = State.InitialReferencesSatisfied;
                         } else {
                             // TODO: pass correct parameters
                             // TODO: do we need to send one event for each missing reference ?
-                            // TODO: create a timer, then fail after it elapsed
                             sender.sendWaiting(getBundleContext().getBundle(), null, null);
                             state = State.WaitForInitialReferences;
                         }
@@ -233,7 +250,6 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         BlueprintObjectRepository repository = (BlueprintObjectRepository) instantiator.getRepository();
                         BlueprintObjectRepository tmpRepo = new RecipeBuilder(this).createRepository();
 
-                        BlueprintObjectInstantiator oldInstantiator = instantiator;
                         instantiator = new BlueprintObjectInstantiator(new RecipeBuilder(this).createRepository());
 
                         untrackServiceReferences();
@@ -283,6 +299,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                     case WaitForTrigger:
                         return;
                     case Create:
+                        timerTask.cancel();
                         instantiateComponents();
 
                         // Register the BlueprintContext in the OSGi registry
@@ -669,7 +686,10 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     public synchronized void destroy() {
         state = State.Destroyed;
         sender.sendDestroying(getBundleContext().getBundle());
-        
+
+        if (timerTask != null) {
+            timerTask.cancel();
+        }
         if (registration != null) {
             registration.unregister();
         }
@@ -701,3 +721,75 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         }
     }
 }
+
+
+/* TODO: fix the following deadlock
+
+      [bnd] "pool-3-thread-1" prio=5 tid=0x01018790 nid=0x8a2c00 in Object.wait() [0xb0f90000..0xb0f90d90]
+      [bnd] 	at java.lang.Object.wait(Native Method)
+      [bnd] 	- waiting on <0x25671928> (a java.lang.Object)
+      [bnd] 	at org.apache.geronimo.blueprint.context.UnaryServiceReferenceRecipe.getService(UnaryServiceReferenceRecipe.java:197)
+      [bnd] 	- locked <0x25671928> (a java.lang.Object)
+      [bnd] 	at org.apache.geronimo.blueprint.context.UnaryServiceReferenceRecipe.access$000(UnaryServiceReferenceRecipe.java:55)
+      [bnd] 	at org.apache.geronimo.blueprint.context.UnaryServiceReferenceRecipe$ServiceDispatcher.loadObject(UnaryServiceReferenceRecipe.java:225)
+      [bnd] 	at org.osgi.test.cases.blueprint.services.ServiceManager$$EnhancerByCGLIB$$f740783d.getActiveServices(<generated>)
+      [bnd] 	at org.osgi.test.cases.blueprint.components.serviceimport.NullReferenceList.init(NullReferenceList.java:43)
+      [bnd] 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+      [bnd] 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+      [bnd] 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+      [bnd] 	at java.lang.reflect.Method.invoke(Method.java:585)
+      [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintObjectRecipe.internalCreate(BlueprintObjectRecipe.java:586)
+      [bnd] 	at org.apache.xbean.recipe.AbstractRecipe.create(AbstractRecipe.java:95)
+      [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintObjectInstantiator.createInstance(BlueprintObjectInstantiator.java:83)
+      [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintObjectInstantiator.createAll(BlueprintObjectInstantiator.java:65)
+      [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintContextImpl.instantiateComponents(BlueprintContextImpl.java:541)
+      [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintContextImpl.run(BlueprintContextImpl.java:303)
+      [bnd] 	- locked <0x25730658> (a org.apache.geronimo.blueprint.context.BlueprintContextImpl)
+      [bnd] 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:417)
+      [bnd] 	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:269)
+      [bnd] 	at java.util.concurrent.FutureTask.run(FutureTask.java:123)
+      [bnd] 	at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:650)
+      [bnd] 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:675)
+      [bnd] 	at java.lang.Thread.run(Thread.java:613)
+      [bnd]
+      [bnd] "main" prio=5 tid=0x01001460 nid=0xb0801000 waiting for monitor entry [0xb07ff000..0xb0800148]
+      [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintContextImpl.destroy(BlueprintContextImpl.java:687)
+      [bnd] 	- waiting to lock <0x25730658> (a org.apache.geronimo.blueprint.context.BlueprintContextImpl)
+      [bnd] 	at org.apache.geronimo.blueprint.BlueprintExtender.destroyContext(BlueprintExtender.java:121)
+      [bnd] 	at org.apache.geronimo.blueprint.BlueprintExtender.bundleChanged(BlueprintExtender.java:113)
+      [bnd] 	at org.eclipse.osgi.framework.internal.core.BundleContextImpl.dispatchEvent(BundleContextImpl.java:916)
+      [bnd] 	at org.eclipse.osgi.framework.eventmgr.EventManager.dispatchEvent(EventManager.java:220)
+      [bnd] 	at org.eclipse.osgi.framework.eventmgr.ListenerQueue.dispatchEventSynchronous(ListenerQueue.java:149)
+      [bnd] 	at org.eclipse.osgi.framework.internal.core.Framework.publishBundleEventPrivileged(Framework.java:1350)
+      [bnd] 	at org.eclipse.osgi.framework.internal.core.Framework.publishBundleEvent(Framework.java:1301)
+      [bnd] 	at org.eclipse.osgi.framework.internal.core.BundleHost.stopWorker(BundleHost.java:470)
+      [bnd] 	at org.eclipse.osgi.framework.internal.core.AbstractBundle.uninstallWorker(AbstractBundle.java:784)
+      [bnd] 	at org.eclipse.osgi.framework.internal.core.AbstractBundle.uninstall(AbstractBundle.java:764)
+      [bnd] 	at org.osgi.test.cases.blueprint.framework.BlueprintMetadata.cleanup(BlueprintMetadata.java:670)
+      [bnd] 	at org.osgi.test.cases.blueprint.framework.EventSet.stop(EventSet.java:97)
+      [bnd] 	at org.osgi.test.cases.blueprint.framework.TestPhase.stopEventSets(TestPhase.java:119)
+      [bnd] 	at org.osgi.test.cases.blueprint.framework.TestPhase.cleanup(TestPhase.java:98)
+      [bnd] 	at org.osgi.test.cases.blueprint.framework.BaseTestController.cleanup(BaseTestController.java:219)
+      [bnd] 	at org.osgi.test.cases.blueprint.framework.StandardTestController.cleanup(StandardTestController.java:177)
+      [bnd] 	at org.osgi.test.cases.blueprint.framework.BaseTestController.terminate(BaseTestController.java:340)
+      [bnd] 	at org.osgi.test.cases.blueprint.framework.BaseTestController.run(BaseTestController.java:363)
+      [bnd] 	at org.osgi.test.cases.blueprint.tests.TestReferenceCollection.testEmptyListCollectionServiceListener(TestReferenceCollection.java:527)
+      [bnd] 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+      [bnd] 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+      [bnd] 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+      [bnd] 	at java.lang.reflect.Method.invoke(Method.java:585)
+      [bnd] 	at junit.framework.TestCase.runTest(TestCase.java:164)
+      [bnd] 	at junit.framework.TestCase.runBare(TestCase.java:130)
+      [bnd] 	at junit.framework.TestResult$1.protect(TestResult.java:106)
+      [bnd] 	at junit.framework.TestResult.runProtected(TestResult.java:124)
+      [bnd] 	at junit.framework.TestResult.run(TestResult.java:109)
+      [bnd] 	at junit.framework.TestCase.run(TestCase.java:120)
+      [bnd] 	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+      [bnd] 	at junit.framework.TestSuite.run(TestSuite.java:225)
+      [bnd] 	at junit.framework.TestSuite.runTest(TestSuite.java:230)
+      [bnd] 	at junit.framework.TestSuite.run(TestSuite.java:225)
+      [bnd] 	at aQute.junit.runtime.Target.doTesting(Target.java:157)
+      [bnd] 	at aQute.junit.runtime.Target.run(Target.java:40)
+      [bnd] 	at aQute.junit.runtime.Target.main(Target.java:33)
+
+*/

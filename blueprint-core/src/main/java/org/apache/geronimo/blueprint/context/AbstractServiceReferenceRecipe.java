@@ -48,6 +48,8 @@ import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Listener;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * Abstract class for service reference recipes.
@@ -105,6 +107,15 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     public boolean isSatisfied() {
         return tracker.isSatisfied();
+    }
+
+    @Override
+    public List<Recipe> getNestedRecipes() {
+        List<Recipe> recipes = super.getNestedRecipes();
+        if (listenersRecipe != null) {
+            recipes.add(listenersRecipe);
+        }
+        return recipes;
     }
 
     protected String getOsgiFilter() {
@@ -253,6 +264,8 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     
     public static class Listener {
 
+        private static final Logger LOGGER = LoggerFactory.getLogger(Listener.class);
+
         /* Inject by ObjectRecipe */
         private Object listener;
         /* Inject by ObjectRecipe */
@@ -281,12 +294,18 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 for (Class clazz : clazzes) {
                     bindMethodsTwoArgs.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, bindName, new Class[] { clazz, Map.class }));
                 }
+                if (bindMethodsOneArg.size() + bindMethodsTwoArgs.size() == 0) {
+                    throw new ConstructionException("No matching methods found for listener bind method: " + bindName);
+                }
             }
             String unbindName = metadata.getUnbindMethodName();
             if (unbindName != null) {
                 unbindMethodsOneArg.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, unbindName, new Class[] { ServiceReference.class }));
                 for (Class clazz : clazzes) {
                     unbindMethodsTwoArgs.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, unbindName, new Class[] { clazz, Map.class }));
+                }
+                if (unbindMethodsOneArg.size() + unbindMethodsTwoArgs.size() == 0) {
+                    throw new ConstructionException("No matching methods found for listener bind method: " + bindName);
                 }
             }
         }
@@ -304,7 +323,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 try {
                     method.invoke(listener, reference);
                 } catch (Exception e) {
-                    e.printStackTrace(); // TODO: log
+                    LOGGER.info("Error calling listener method " + method, e);
                 }
             }
             Map<String, Object> props = null;
@@ -318,7 +337,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 try {
                     method.invoke(listener, service, props);
                 } catch (Exception e) {
-                    e.printStackTrace(); // TODO: log
+                    LOGGER.info("Error calling listener method " + method, e);
                 }
             }
         }

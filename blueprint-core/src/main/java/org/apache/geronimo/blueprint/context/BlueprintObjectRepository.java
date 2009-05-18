@@ -37,18 +37,21 @@ import org.apache.xbean.recipe.Repository;
  */
 public class BlueprintObjectRepository implements Repository {
 
+    private Map<String, Object> defaults;
     private Map<String, Recipe> recipes;
     private Map<String, Object> instances;
     private List<DestroyCallback> destroyList;
 
     public BlueprintObjectRepository() {
         recipes = new TreeMap<String, Recipe>();
+        defaults = new TreeMap<String, Object>();
         instances = new TreeMap<String, Object>();
         destroyList = new ArrayList<DestroyCallback>();
     }
     
     public BlueprintObjectRepository(BlueprintObjectRepository source) {
         recipes = new TreeMap<String, Recipe>(source.recipes);
+        defaults = new TreeMap<String, Object>();
         instances = new TreeMap<String, Object>(source.instances);
         destroyList = new ArrayList<DestroyCallback>();
     }
@@ -62,11 +65,11 @@ public class BlueprintObjectRepository implements Repository {
     }
     
     public boolean contains(String name) {
-        return recipes.containsKey(name) || instances.containsKey(name);
+        return recipes.containsKey(name) || instances.containsKey(name) || defaults.containsKey(name);
     }
 
     public Object get(String name) {
-        return instances.get(name) != null ? instances.get(name) : recipes.get(name);
+        return instances.get(name) != null ? instances.get(name) : (recipes.get(name) != null ? recipes.get(name) : defaults.get(name));
     }
 
     public Object getInstance(String name) {
@@ -81,6 +84,7 @@ public class BlueprintObjectRepository implements Repository {
         Set<String> names = new HashSet<String>();
         names.addAll(recipes.keySet());
         names.addAll(instances.keySet());
+        names.addAll(defaults.keySet());
         return names;
     }
 
@@ -100,6 +104,10 @@ public class BlueprintObjectRepository implements Repository {
             }
             instances.put(name, instance);
         }
+    }
+
+    public void putDefault(String name, Object instance) {
+        defaults.put(name, instance);
     }
 
     public void putRecipe(String name, Recipe recipe) {

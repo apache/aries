@@ -127,6 +127,9 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     }
 
     private Object createProxy() throws Exception {
+        // TODO: we should use the bundle to load classes, not this weird proxyClassLoader
+        // TODO: find another way to handle ServiceReference injection instead of implementing the ServiceReferenceAccessor
+        // TODO: class which may not be available from the bundle classloader
         Enhancer e = new Enhancer();
         e.setClassLoader(proxyClassLoader);
         e.setSuperclass(getTargetClass(metadata.getInterfaceNames()));
