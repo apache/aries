@@ -166,6 +166,15 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
         }
     }
     
+    private ServiceReference getServiceReference() throws InterruptedException {
+        synchronized (monitor) {
+            if (!optional) {
+                getService();
+            }
+            return trackedServiceReference;
+        }
+    }
+    
     public class ServiceDispatcher implements Dispatcher {
 
         public Object loadObject() throws Exception {
@@ -178,7 +187,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
 
         public Object convert(Type type) throws Exception {
             if (type == ServiceReference.class) {
-                return trackedServiceReference;
+                return getServiceReference();
             } else if (TypeUtils.toClass(type).isInstance(proxy)) {
                 return proxy;
             } else {
