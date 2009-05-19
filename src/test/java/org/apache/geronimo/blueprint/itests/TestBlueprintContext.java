@@ -40,13 +40,10 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.OptionUtils;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.configProfile;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.profile;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
-import org.osgi.service.blueprint.context.BlueprintContext;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
@@ -67,10 +64,10 @@ public class TestBlueprintContext extends AbstractIntegrationTest {
 
         bundle.start();
 
-        BlueprintContext blueprintContext = getBlueprintContextForBundle("blueprint-sample", 5000);
-        assertNotNull(blueprintContext);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample", 5000);
+        assertNotNull(blueprintContainer);
 
-        Object obj = blueprintContext.getComponent("bar");
+        Object obj = blueprintContainer.getComponent("bar");
         assertNotNull(obj);
         assertEquals(Bar.class, obj.getClass());
         Bar bar = (Bar) obj;
@@ -80,7 +77,7 @@ public class TestBlueprintContext extends AbstractIntegrationTest {
         assertEquals(2, bar.getList().size());
         assertEquals("a list element", bar.getList().get(0));
         assertEquals(Integer.valueOf(5), bar.getList().get(1));
-        obj = blueprintContext.getComponent("foo");
+        obj = blueprintContainer.getComponent("foo");
         assertNotNull(obj);
         assertEquals(Foo.class, obj.getClass());
         Foo foo = (Foo) obj;
@@ -102,10 +99,10 @@ public class TestBlueprintContext extends AbstractIntegrationTest {
         Thread.sleep(1000);
 
         try {
-            blueprintContext = getBlueprintContextForBundle("blueprint-sample", 1);
-            fail("BlueprintContext should have been unregistered");
+            blueprintContainer = getBlueprintContainerForBundle("blueprint-sample", 1);
+            fail("BlueprintContainer should have been unregistered");
         } catch (Exception e) {
-            // Expected, as the module context should have been unregistered
+            // Expected, as the module container should have been unregistered
         }
 
         assertTrue(foo.isInitialized());
