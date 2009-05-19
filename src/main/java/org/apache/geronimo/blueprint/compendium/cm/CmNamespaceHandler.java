@@ -32,7 +32,7 @@ import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableRefMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableIdRefMetadata;
-import org.osgi.service.blueprint.context.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
 import org.osgi.service.blueprint.namespace.ParserContext;
@@ -114,7 +114,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
         metadata.setId(getName(element));
         metadata.setRuntimeClass(CmPropertyPlaceholder.class);
-        metadata.addProperty("blueprintContext", createRef(context, "blueprintContext"));
+        metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
         metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
         metadata.addProperty("persistentId", createValue(context, element.getAttribute(PERSISTENT_ID_ATTRIBUTE)));
         String prefix = element.hasAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
@@ -192,7 +192,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         metadata.setRuntimeClass(CmManagedProperties.class);
         metadata.setInitMethodName("init");
         metadata.setDestroyMethodName("destroy");
-        metadata.addProperty("blueprintContext", createRef(context, "blueprintContext"));
+        metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
         metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
         metadata.addProperty("persistentId", createValue(context, element.getAttribute(PERSISTENT_ID_ATTRIBUTE)));
         if (element.hasAttribute(UPDATE_STRATEGY_ATTRIBUTE)) {
