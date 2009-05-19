@@ -59,6 +59,7 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
 
     public DefaultBlueprintContextEventSender(final BundleContext bundleContext) {
         this.extenderBundle = bundleContext.getBundle();
+        this.states = new ConcurrentHashMap<Bundle, Object>();
         this.eventAdminServiceTracker = new ServiceTracker(bundleContext, EventAdmin.class.getName(), null);
         this.eventAdminServiceTracker.open();
         this.contextListenerTracker = new ServiceTracker(bundleContext, BlueprintContextListener.class.getName(), new ServiceTrackerCustomizer() {
@@ -74,13 +75,14 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
             }
         });
         this.contextListenerTracker.open();
-        this.states = new ConcurrentHashMap<Bundle, Object>();
         this.registration = bundleContext.registerService(BlueprintStateManager.class.getName(), this, null);
     }
 
     protected void sendInitialEvents(BlueprintContextListener listener) {
-        for (Map.Entry<Bundle, Object> entry : states.entrySet()) {
-            callListener(listener, entry.getKey(), entry.getValue());
+        if (states != null) {
+            for (Map.Entry<Bundle, Object> entry : states.entrySet()) {
+                callListener(listener, entry.getKey(), entry.getValue());
+            }
         }
     }
 
