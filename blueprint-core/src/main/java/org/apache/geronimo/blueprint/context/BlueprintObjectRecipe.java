@@ -18,10 +18,6 @@
  */
 package org.apache.geronimo.blueprint.context;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -46,9 +42,9 @@ import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.ConstructionException;
 import org.apache.geronimo.blueprint.di.Option;
 import org.apache.geronimo.blueprint.di.Recipe;
-import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
 import org.apache.geronimo.blueprint.di.ReferenceRecipe;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
+import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
 
 /**
  *
@@ -623,7 +619,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
     private void setProperty(Object instance, Class clazz, String propertyName, Object propertyValue) {
         String[] names = propertyName.split("\\.");
         for (int i = 0; i < names.length - 1; i++) {
-            Method getter = getPropertyDescriptor(clazz, names[i]).getReadMethod();
+            Method getter = getPropertyDescriptor(clazz, names[i]).getGetter();
             if (getter != null) {
                 try {
                     instance = getter.invoke(instance);
@@ -642,7 +638,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                 throw new ConstructionException("No getter for " + names[i] + " property on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName());
             }
         }
-        Method setter = getPropertyDescriptor(clazz, names[names.length - 1]).getWriteMethod();
+        Method setter = getPropertyDescriptor(clazz, names[names.length - 1]).getSetter();
         if (setter != null) {
             // convert the value to type of setter/field
             Type type = setter.getGenericParameterTypes()[0];
@@ -678,20 +674,13 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         }
     }
 
-    PropertyDescriptor getPropertyDescriptor(Class clazz, String name) {
-        // TODO: it seems to fail in some cases, for example if there are two setters and no getters
-        //    it should throw an exception
-        try {
-            BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
-            for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
-                if (pd.getName().equals(name)) {
-                    return pd;
-                }
+    private ReflectionUtils.PropertyDescriptor getPropertyDescriptor(Class clazz, String name) {
+        for (ReflectionUtils.PropertyDescriptor pd : ReflectionUtils.getPropertyDescriptors(clazz)) {
+            if (pd.getName().equals(name)) {
+                return pd;
             }
-            throw new ConstructionException("Unable to find property descriptor " + name + " on class " + clazz.getName());
-        } catch (IntrospectionException e) {
-            throw new ConstructionException("Unable to find property descriptor " + name + " on class " + clazz.getName(), e);
         }
+        throw new ConstructionException("Unable to find property descriptor " + name + " on class " + clazz.getName());
     }
 
     private static Object UNMATCHED = new Object();

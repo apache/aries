@@ -19,9 +19,14 @@
 package org.apache.geronimo.blueprint.utils;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 /**
  * TODO: javadoc
@@ -31,6 +36,8 @@ import java.util.Set;
  */
 public class ReflectionUtils {
            
+    private static Map<Class, PropertyDescriptor[]> beanInfos = Collections.synchronizedMap(new WeakHashMap<Class, PropertyDescriptor[]>());
+
     public static Set<String> getImplementedInterfaces(Set<String> classes, Class clazz) {
         if (clazz != null && clazz != Object.class) {
             for (Class itf : clazz.getInterfaces()) {
@@ -79,6 +86,118 @@ public class ReflectionUtils {
             }
         }
         return methods;
+    }
+
+    public static PropertyDescriptor[] getPropertyDescriptors(Class clazz) {
+        PropertyDescriptor[] properties = beanInfos.get(clazz);
+        if (properties == null) {
+            List<PropertyDescriptor> props = new ArrayList<PropertyDescriptor>();
+            for (Method method : clazz.getMethods()) {
+                if (Modifier.isStatic(method.getModifiers())) {
+                    continue;
+                }
+                String name = method.getName();
+                Class argTypes[] = method.getParameterTypes();
+                Class resultType = method.getReturnType();
+                if (name.length() > 3 && name.startsWith("set") && resultType == Void.TYPE && argTypes.length == 1) {
+                    props.add(new PropertyDescriptor(decapitalize(name.substring(3)), argTypes[0], null, method));
+
+                } else if (name.length() > 3 && name.startsWith("get") && argTypes.length == 0) {
+                    props.add(new PropertyDescriptor(decapitalize(name.substring(3)), resultType, method, null));
+                } else if (name.length() > 2 && name.startsWith("is") && argTypes.length == 0 && resultType == boolean.class) {
+                    props.add(new PropertyDescriptor(decapitalize(name.substring(2)), resultType, method, null));
+                }
+            }
+            PropertyDescriptor[] pds = props.toArray(new PropertyDescriptor[props.size()]);
+            for (int i = 0; i < pds.length - 1; i++) {
+                boolean remove = false;
+                for (int j = i + 1; j < pds.length; j++) {
+                    if (pds[i] != null && pds[j] != null) {
+                        if (pds[i].name.equals(pds[j].name)) {
+                            if (remove || !pds[i].type.equals(pds[j].type)) {
+                                remove = true;
+                                pds[j] = null;
+                                continue;
+                            } else {
+                                if (pds[j].getter != null) {
+                                    if (pds[i].getter == null) {
+                                        pds[i].getter = pds[j].getter;
+                                    } else if (pds[i].getter != pds[j].getter) {
+                                        remove = true;
+                                        pds[j] = null;
+                                        continue;
+                                    }
+                                }
+                                if (pds[j].setter != null) {
+                                    if (pds[i].setter == null) {
+                                        pds[i].setter = pds[j].setter;
+                                    } else if (pds[i].setter != pds[j].setter) {
+                                        remove = true;
+                                        pds[j] = null;
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (remove) {
+                    pds[i] = null;
+                }
+            }
+            props.clear();
+            for (int i = 0; i < pds.length - 1; i++) {
+                if (pds[i] != null) {
+                    props.add(pds[i]);
+                }
+            }
+            properties = props.toArray(new PropertyDescriptor[props.size()]);
+            beanInfos.put(clazz, properties);
+        }
+        return properties;
+    }
+
+    private static String decapitalize(String name) {
+        if (name == null || name.length() == 0) {
+            return name;
+        }
+        if (name.length() > 1 && Character.isUpperCase(name.charAt(1)) &&
+                Character.isUpperCase(name.charAt(0))) {
+            return name;
+        }
+        char chars[] = name.toCharArray();
+        chars[0] = Character.toLowerCase(chars[0]);
+        return new String(chars);
+    }
+
+    public static class PropertyDescriptor {
+        private String name;
+        private Class type;
+        private Method getter;
+        private Method setter;
+
+        public PropertyDescriptor(String name, Class type, Method getter, Method setter) {
+            this.name = name;
+            this.type = type;
+            this.getter = getter;
+            this.setter = setter;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Type getType() {
+            return type;
+        }
+
+        public Method getGetter() {
+            return getter;
+        }
+
+        public Method getSetter() {
+            return setter;
+        }
     }
 
 }
