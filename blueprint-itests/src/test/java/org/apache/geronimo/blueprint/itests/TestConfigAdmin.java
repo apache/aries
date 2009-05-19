@@ -35,7 +35,7 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.OptionUtils;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
-import org.osgi.service.blueprint.context.BlueprintContext;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
@@ -55,10 +55,10 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         assertNotNull(bundle);
         bundle.start();
 
-        BlueprintContext blueprintContext = getBlueprintContextForBundle("blueprint-sample", 5000);
-        assertNotNull(blueprintContext);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample", 5000);
+        assertNotNull(blueprintContainer);
 
-        Foo foo = (Foo) blueprintContext.getComponent("none-managed");
+        Foo foo = (Foo) blueprintContainer.getComponent("none-managed");
         assertNotNull(foo);
 
         assertEquals(5, foo.getA());
@@ -88,10 +88,10 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         assertNotNull(bundle);
         bundle.start();
 
-        BlueprintContext blueprintContext = getBlueprintContextForBundle("blueprint-sample", 5000);
-        assertNotNull(blueprintContext);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample", 5000);
+        assertNotNull(blueprintContainer);
 
-        Foo foo = (Foo) blueprintContext.getComponent("container-managed");
+        Foo foo = (Foo) blueprintContainer.getComponent("container-managed");
         assertNotNull(foo);
 
         assertEquals(5, foo.getA());
@@ -121,10 +121,10 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         assertNotNull(bundle);
         bundle.start();
 
-        BlueprintContext blueprintContext = getBlueprintContextForBundle("blueprint-sample", 5000);
-        assertNotNull(blueprintContext);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample", 5000);
+        assertNotNull(blueprintContainer);
 
-        Foo foo = (Foo) blueprintContext.getComponent("component-managed");
+        Foo foo = (Foo) blueprintContainer.getComponent("component-managed");
         assertNotNull(foo);
 
         assertEquals(5, foo.getA());

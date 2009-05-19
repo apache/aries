@@ -32,8 +32,8 @@ public class BlueprintConstants  {
     
     public static final String COMPONENT_NAME_PROPERTY = "osgi.service.blueprint.compname";
     
-    public static final String CONTEXT_SYMBOLIC_NAME_PROPERTY = "osgi.blueprint.context.symbolicname";
+    public static final String CONTEXT_SYMBOLIC_NAME_PROPERTY = "osgi.blueprint.container.symbolicname";
     
-    public static final String CONTEXT_VERSION_PROPERTY = "osgi.blueprint.context.version";
+    public static final String CONTEXT_VERSION_PROPERTY = "osgi.blueprint.container.version";
     
 }

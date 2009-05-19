@@ -18,10 +18,10 @@
  */
 package org.apache.geronimo.blueprint;
 
-import org.apache.geronimo.blueprint.context.BlueprintContextImpl;
+import org.apache.geronimo.blueprint.container.BlueprintContainerImpl;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 
-public class TestBlueprintContext extends BlueprintContextImpl {
+public class TestBlueprintContext extends BlueprintContainerImpl {
 
     private ComponentDefinitionRegistryImpl registry;
     

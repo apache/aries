@@ -33,7 +33,7 @@ public abstract class ExecutionContext {
     public static ExecutionContext getContext() {
         ExecutionContext executionContext = context.get();
         if (executionContext == null) {
-            throw new IllegalStateException("Execution context has not been set");
+            throw new IllegalStateException("Execution container has not been set");
         }
         return executionContext;
     }

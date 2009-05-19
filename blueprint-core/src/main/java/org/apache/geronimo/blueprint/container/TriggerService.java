@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.context;
+package org.apache.geronimo.blueprint.container;
 
 import java.util.Hashtable;
 import java.util.List;
@@ -42,15 +42,15 @@ public class TriggerService implements ServiceFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(TriggerService.class);
     
     private ServiceMetadata metadata;
-    private BlueprintContextImpl blueprintContext;  
+    private BlueprintContainerImpl blueprintContainer;  
     private ServiceRegistration registration;    
     private Map serviceProperties;
     
     private Object service;
-    
-    public TriggerService(ServiceMetadata metadata, BlueprintContextImpl blueprintContext) {
+
+    public TriggerService(ServiceMetadata metadata, BlueprintContainerImpl blueprintContainer) {
         this.metadata = metadata;
-        this.blueprintContext = blueprintContext;
+        this.blueprintContainer = blueprintContainer;
         this.serviceProperties = getServiceProperties();
     }
     
@@ -70,14 +70,14 @@ public class TriggerService implements ServiceFactory {
         }
         List<String> classes = getClasses();
         String[] classArray = classes.toArray(new String[classes.size()]);
-        registration = blueprintContext.getBundleContext().registerService(classArray, this, props);
+        registration = blueprintContainer.getBundleContext().registerService(classArray, this, props);
         
         LOGGER.debug("Trigger service {} registered with interfaces {} and properties {}", 
                      new Object[] { this, classes, props });
     }
     
     private Map getServiceProperties() {
-        RecipeBuilder builder = new RecipeBuilder(blueprintContext);
+        RecipeBuilder builder = new RecipeBuilder(blueprintContainer);
         Recipe recipe;
         try {
             recipe = builder.getServicePropertiesRecipe(metadata);
@@ -117,7 +117,7 @@ public class TriggerService implements ServiceFactory {
         LOGGER.debug("Service requested on trigger service. Requesting bundle start");
         
         try {
-            blueprintContext.forceActivation(true);
+            blueprintContainer.forceActivation(true);
         } catch (BundleException e) {
             LOGGER.debug("Bundle activation failed", e);
             // TODO: throw some exception or return null?

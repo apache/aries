@@ -33,7 +33,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
-import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.apache.geronimo.blueprint.di.MissingAccessorException;
 import org.osgi.framework.Bundle;
@@ -55,7 +55,7 @@ public class CmManagedProperties implements BeanProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CmManagedProperties.class);
 
-    private ExtendedBlueprintContext blueprintContext;
+    private ExtendedBlueprintContainer blueprintContainer;
     private ConfigurationAdmin configAdmin;
     private String persistentId;
     private String updateStrategy;
@@ -67,12 +67,12 @@ public class CmManagedProperties implements BeanProcessor {
     private ServiceRegistration registration;
     private Dictionary<String,Object> properties;
 
-    public ExtendedBlueprintContext getBlueprintContext() {
-        return blueprintContext;
+    public ExtendedBlueprintContainer getBlueprintContainer() {
+        return blueprintContainer;
     }
 
-    public void setBlueprintContext(ExtendedBlueprintContext blueprintContext) {
-        this.blueprintContext = blueprintContext;
+    public void setBlueprintContainer(ExtendedBlueprintContainer blueprintContainer) {
+        this.blueprintContainer = blueprintContainer;
     }
 
     public ConfigurationAdmin getConfigAdmin() {
@@ -119,11 +119,11 @@ public class CmManagedProperties implements BeanProcessor {
         LOGGER.debug("Initializing CmManagedProperties for bean={} / pid={}", beanName, persistentId);
         Properties props = new Properties();
         props.put(Constants.SERVICE_PID, persistentId);
-        Bundle bundle = blueprintContext.getBundleContext().getBundle();
+        Bundle bundle = blueprintContainer.getBundleContext().getBundle();
         props.put(Constants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
         props.put(Constants.BUNDLE_VERSION, bundle.getHeaders().get(Constants.BUNDLE_VERSION));
         synchronized (lock) {
-            registration = blueprintContext.getBundleContext().registerService(ManagedService.class.getName(), new ConfigurationWatcher(), props);
+            registration = blueprintContainer.getBundleContext().registerService(ManagedService.class.getName(), new ConfigurationWatcher(), props);
             try {
                 properties = configAdmin.getConfiguration(persistentId).getProperties();
             } catch (Throwable t) {
@@ -220,7 +220,7 @@ public class CmManagedProperties implements BeanProcessor {
                             Class methodParameterType = method.getParameterTypes()[0];
                             Object propertyValue;
                             try {
-                                propertyValue = blueprintContext.getConversionService().convert(val, methodParameterType);
+                                propertyValue = blueprintContainer.getConversionService().convert(val, methodParameterType);
                             } catch (Throwable t) {
                                 LOGGER.debug("Unable to convert value for setter: " + method, t);
                                 continue;

@@ -74,7 +74,7 @@ public class ArrayRecipe extends AbstractRecipe {
             throw new ConstructionException("Error while creating array instance: " + type.getName());
         }
 
-        // add to execution context if name is specified
+        // add to execution container if name is specified
         if (getName() != null) {
             ExecutionContext.getContext().addObject(getName(), array);
         }

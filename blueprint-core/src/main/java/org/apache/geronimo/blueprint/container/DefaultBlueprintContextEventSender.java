@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.context;
+package org.apache.geronimo.blueprint.container;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -32,8 +32,8 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.context.BlueprintContextListener;
-import org.osgi.service.blueprint.context.EventConstants;
+import org.osgi.service.blueprint.container.BlueprintContainerListener;
+import org.osgi.service.blueprint.container.EventConstants;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.util.tracker.ServiceTracker;
@@ -62,9 +62,9 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
         this.states = new ConcurrentHashMap<Bundle, Object>();
         this.eventAdminServiceTracker = new ServiceTracker(bundleContext, EventAdmin.class.getName(), null);
         this.eventAdminServiceTracker.open();
-        this.contextListenerTracker = new ServiceTracker(bundleContext, BlueprintContextListener.class.getName(), new ServiceTrackerCustomizer() {
+        this.contextListenerTracker = new ServiceTracker(bundleContext, BlueprintContainerListener.class.getName(), new ServiceTrackerCustomizer() {
             public Object addingService(ServiceReference reference) {
-                BlueprintContextListener listener = (BlueprintContextListener) bundleContext.getService(reference);
+                BlueprintContainerListener listener = (BlueprintContainerListener) bundleContext.getService(reference);
                 sendInitialEvents(listener);
                 return listener;
             }
@@ -78,7 +78,7 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
         this.registration = bundleContext.registerService(BlueprintStateManager.class.getName(), this, null);
     }
 
-    protected void sendInitialEvents(BlueprintContextListener listener) {
+    protected void sendInitialEvents(BlueprintContainerListener listener) {
         if (states != null) {
             for (Map.Entry<Bundle, Object> entry : states.entrySet()) {
                 callListener(listener, entry.getKey(), entry.getValue());
@@ -143,7 +143,7 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
 
     public void sendEvent(Bundle bundle, String topic, Throwable cause, String[] serviceObjectClass, String serviceFilter) {
 
-        LOGGER.debug("Sending blueprint context event {} for bundle {}", topic, bundle.getSymbolicName());
+        LOGGER.debug("Sending blueprint container event {} for bundle {}", topic, bundle.getSymbolicName());
 
         callListeners(bundle, topic, cause);
 
@@ -186,13 +186,13 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
             Object[] listeners = contextListenerTracker.getServices();
             if (listeners != null) {
                 for (Object listener : listeners) {
-                    callListener((BlueprintContextListener) listener, bundle, created ? CREATED : cause != null ? cause : FAILED);
+                    callListener((BlueprintContainerListener) listener, bundle, created ? CREATED : cause != null ? cause : FAILED);
                 }
             }
         }
     }
 
-    private void callListener(BlueprintContextListener listener, Bundle bundle, Object state) {
+    private void callListener(BlueprintContainerListener listener, Bundle bundle, Object state) {
         // TODO: listener is missing a few methods to replay the state (at least WAITING events)
         try {
             if (state instanceof Integer) {
@@ -205,7 +205,7 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
                 listener.contextCreationFailed(bundle, (Throwable) state);
             }
         } catch (Throwable t) {
-            LOGGER.info("Error calling blueprint context listener", t);
+            LOGGER.info("Error calling blueprint container listener", t);
         }
     }
 

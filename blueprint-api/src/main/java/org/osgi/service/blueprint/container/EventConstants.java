@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.osgi.service.blueprint.context;
+package org.osgi.service.blueprint.container;
 
 public interface EventConstants {
     
@@ -26,16 +26,16 @@ public interface EventConstants {
     
     static final String TOPIC_BLUEPRINT_EVENTS = "org/osgi/service/blueprint";
     
-    static final String TOPIC_CREATED = TOPIC_BLUEPRINT_EVENTS + "/context/CREATED";
+    static final String TOPIC_CREATED = TOPIC_BLUEPRINT_EVENTS + "/container/CREATED";
     
-    static final String TOPIC_CREATING = TOPIC_BLUEPRINT_EVENTS + "/context/CREATING";
+    static final String TOPIC_CREATING = TOPIC_BLUEPRINT_EVENTS + "/container/CREATING";
     
-    static final String TOPIC_DESTROYED = TOPIC_BLUEPRINT_EVENTS + "/context/DESTROYED";
+    static final String TOPIC_DESTROYED = TOPIC_BLUEPRINT_EVENTS + "/container/DESTROYED";
     
-    static final String TOPIC_DESTROYING = TOPIC_BLUEPRINT_EVENTS + "/context/DESTROYING";
+    static final String TOPIC_DESTROYING = TOPIC_BLUEPRINT_EVENTS + "/container/DESTROYING";
     
-    static final String TOPIC_FAILURE = TOPIC_BLUEPRINT_EVENTS + "/context/FAILURE";
+    static final String TOPIC_FAILURE = TOPIC_BLUEPRINT_EVENTS + "/container/FAILURE";
     
-    static final String TOPIC_WAITING = TOPIC_BLUEPRINT_EVENTS + "/context/WAITING";
+    static final String TOPIC_WAITING = TOPIC_BLUEPRINT_EVENTS + "/container/WAITING";
       
 }

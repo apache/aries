@@ -64,7 +64,7 @@ public class ObjectGraph {
     }
 
     public Map<String,Object> createAll(List<String> names) throws ConstructionException {
-        // setup execution context
+        // setup execution container
         boolean createNewContext = !ExecutionContext.isContextSet();
         if (createNewContext) {
             ExecutionContext.setContext(new DefaultExecutionContext(conversionService, repository));
@@ -103,7 +103,7 @@ public class ObjectGraph {
             objects.putAll(wrapperContext.getConstructedObject());
             return objects;
         } finally {
-            // if we set a new execution context, remove it from the thread
+            // if we set a new execution container, remove it from the thread
             if (createNewContext) {
                 ExecutionContext.setContext(null);
             }

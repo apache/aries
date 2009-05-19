@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.context;
+package org.apache.geronimo.blueprint.container;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,12 +36,12 @@ import org.osgi.framework.ServiceRegistration;
  */
 public class BundleScopeServiceFactory implements ServiceFactory {
 
-    private BlueprintContextImpl blueprintContext;
+    private BlueprintContainerImpl blueprintContainer;
     private BlueprintObjectRecipe serviceRecipe;
     private Map<Bundle, Entry> instanceMap = Collections.synchronizedMap(new HashMap<Bundle, Entry>());
 
-    public BundleScopeServiceFactory(BlueprintContextImpl blueprintContext, BlueprintObjectRecipe serviceRecipe) {
-        this.blueprintContext = blueprintContext;
+    public BundleScopeServiceFactory(BlueprintContainerImpl blueprintContainer, BlueprintObjectRecipe serviceRecipe) {
+        this.blueprintContainer = blueprintContainer;
         this.serviceRecipe = serviceRecipe;
     }
     
@@ -74,10 +74,10 @@ public class BundleScopeServiceFactory implements ServiceFactory {
     }
   
     private Object createInstance() {
-        Repository objectRepository = blueprintContext.getRepository();
+        Repository objectRepository = blueprintContainer.getRepository();
         DefaultRepository repository = new DefaultRepository((DefaultRepository)objectRepository);
         repository.set(serviceRecipe.getName(), serviceRecipe);
-        ObjectGraph graph = new ObjectGraph(blueprintContext.getConversionService(), repository);
+        ObjectGraph graph = new ObjectGraph(blueprintContainer.getConversionService(), repository);
         return graph.create(serviceRecipe.getName());
     }
     

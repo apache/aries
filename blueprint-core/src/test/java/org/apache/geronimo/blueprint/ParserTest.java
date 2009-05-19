@@ -198,7 +198,7 @@ public class ParserTest extends AbstractBlueprintTest {
         public ComponentMetadata decorate(Node node,
                                           ComponentMetadata component,
                                           ParserContext context) {
-            //System.out.println("decorate: " + node + " " + component + " " + context.getEnclosingComponent().getId());
+            //System.out.println("decorate: " + node + " " + component + " " + container.getEnclosingComponent().getId());
             
             if (node instanceof Attr) {
                 Attr attr = (Attr) node;

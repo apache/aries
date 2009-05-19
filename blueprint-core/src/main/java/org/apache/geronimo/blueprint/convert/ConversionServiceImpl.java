@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import org.apache.geronimo.blueprint.context.BlueprintContextImpl;
+import org.apache.geronimo.blueprint.container.BlueprintContainerImpl;
 import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.convert.Converter;
@@ -40,7 +40,7 @@ import org.osgi.service.blueprint.convert.Converter;
  * by using {@link #registerConverter(org.osgi.service.blueprint.convert.Converter)}
  * and unregistered using {@link #unregisterConverter(org.osgi.service.blueprint.convert.Converter)}.
  *
- * Each {@link org.osgi.service.blueprint.context.BlueprintContext} has its own ConversionService
+ * Each {@link org.osgi.service.blueprint.container.BlueprintContainer} has its own ConversionService
  * used to register converters defined by the related blueprint bundle.
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
@@ -48,11 +48,11 @@ import org.osgi.service.blueprint.convert.Converter;
  */
 public class ConversionServiceImpl implements ConversionService {
 
-    private BlueprintContextImpl blueprintContext;
+    private BlueprintContainerImpl blueprintContainer;
     private Map<Class, List<Converter>> convertersMap = new HashMap<Class, List<Converter>>();
 
-    public ConversionServiceImpl(BlueprintContextImpl blueprintContext) {
-        this.blueprintContext = blueprintContext;
+    public ConversionServiceImpl(BlueprintContainerImpl blueprintContainer) {
+        this.blueprintContainer = blueprintContainer;
     }
     
     public void registerConverter(Converter converter) {
@@ -133,7 +133,7 @@ public class ConversionServiceImpl implements ConversionService {
     private Object convertString(String value, Class toType) throws Exception {
         if (Class.class == toType) {
             try {
-                return blueprintContext.loadClass(value);
+                return blueprintContainer.loadClass(value);
             } catch (ClassNotFoundException e) {
                 throw new Exception("Unable to convert", e);
             }

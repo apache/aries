@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.context;
+package org.apache.geronimo.blueprint.container;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -32,8 +32,8 @@ import net.sf.cglib.proxy.Dispatcher;
 import net.sf.cglib.proxy.Enhancer;
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
-import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
-import org.apache.geronimo.blueprint.context.SatisfiableRecipe;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
+import org.apache.geronimo.blueprint.container.SatisfiableRecipe;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.ConstructionException;
 import org.apache.geronimo.blueprint.di.Recipe;
@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe implements ServiceListener, SatisfiableRecipe {
 
-    protected final ExtendedBlueprintContext blueprintContext;
+    protected final ExtendedBlueprintContainer blueprintContainer;
     protected final BlueprintContextEventSender sender;
     protected final ServiceReferenceMetadata metadata;
     protected final Recipe listenersRecipe;
@@ -66,21 +66,21 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected ServiceReferenceTracker tracker;
     protected boolean optional;
 
-    protected AbstractServiceReferenceRecipe(ExtendedBlueprintContext blueprintContext,
+    protected AbstractServiceReferenceRecipe(ExtendedBlueprintContainer blueprintContainer,
                                              BlueprintContextEventSender sender,
                                              ServiceReferenceMetadata metadata,
                                              Recipe listenersRecipe) {
-        this.blueprintContext = blueprintContext;
+        this.blueprintContainer = blueprintContainer;
         this.sender = sender;
         this.metadata = metadata;
         this.listenersRecipe = listenersRecipe;
         // Create a ClassLoader delegating to the bundle, but also being able to see our bundle classes
         // so that the created proxy can access cglib classes.
-        this.proxyClassLoader = new BundleDelegatingClassLoader(blueprintContext.getBundleContext().getBundle(),
+        this.proxyClassLoader = new BundleDelegatingClassLoader(blueprintContainer.getBundleContext().getBundle(),
                                                                 getClass().getClassLoader());
         
         this.optional = (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL);
-        this.tracker = new ServiceReferenceTracker(blueprintContext.getBundleContext(), getOsgiFilter(), optional);
+        this.tracker = new ServiceReferenceTracker(blueprintContainer.getBundleContext(), getOsgiFilter(), optional);
     }
 
     public void start() {

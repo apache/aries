@@ -87,7 +87,7 @@ public class CollectionRecipe extends AbstractRecipe {
         }
         Collection instance = (Collection) o;
 
-        // add to execution context if name is specified
+        // add to execution container if name is specified
         if (getName() != null) {
             ExecutionContext.getContext().addObject(getName(), instance);
         }

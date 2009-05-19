@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.context;
+package org.apache.geronimo.blueprint.container;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -35,7 +35,7 @@ import java.util.SortedSet;
 import net.sf.cglib.proxy.Dispatcher;
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.geronimo.blueprint.Destroyable;
-import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.ConstructionException;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.TypeUtils;
@@ -47,8 +47,8 @@ import org.apache.geronimo.blueprint.utils.DynamicSortedList;
 import org.apache.geronimo.blueprint.utils.DynamicSortedSet;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.context.ComponentDefinitionException;
-import org.osgi.service.blueprint.context.ServiceUnavailableException;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,12 +67,12 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
     private final Recipe comparatorRecipe;
     private ManagedCollection collection;
 
-    public CollectionBasedServiceReferenceRecipe(ExtendedBlueprintContext blueprintContext,
+    public CollectionBasedServiceReferenceRecipe(ExtendedBlueprintContainer blueprintContainer,
                                                  BlueprintContextEventSender sender,
                                                  RefCollectionMetadata metadata,
                                                  Recipe listenersRecipe,
                                                  Recipe comparatorRecipe) {
-        super(blueprintContext, sender, metadata, listenersRecipe);
+        super(blueprintContainer, sender, metadata, listenersRecipe);
         this.metadata = metadata;
         this.comparatorRecipe = comparatorRecipe;
     }
@@ -111,13 +111,13 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
                 throw new IllegalArgumentException("Unsupported collection type " + metadata.getCollectionType().getName());
             }
 
-            // Add partially created collection to the context
+            // Add partially created collection to the container
             addObject(collection, true);
             
             // Create the listeners and initialize them
             createListeners();
             
-            // Add fully created collection to the context
+            // Add fully created collection to the container
             addObject(collection, false);
 
             // Start tracking the service

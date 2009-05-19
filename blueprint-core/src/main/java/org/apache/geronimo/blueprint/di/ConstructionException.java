@@ -16,7 +16,7 @@
  */
 package org.apache.geronimo.blueprint.di;
 
-import org.osgi.service.blueprint.context.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
  * @version $Rev: 6680 $ $Date: 2005-12-24T04:38:27.427468Z $

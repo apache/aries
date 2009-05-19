@@ -18,7 +18,7 @@ package org.apache.geronimo.blueprint;
 
 import java.util.List;
 
-import org.osgi.service.blueprint.context.BlueprintContext;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
@@ -28,7 +28,7 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
-public interface ExtendedBlueprintContext extends BlueprintContext {
+public interface ExtendedBlueprintContainer extends BlueprintContainer {
 
     ConversionService getConversionService();
 

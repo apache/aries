@@ -9,7 +9,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.service.blueprint.context.BlueprintContext;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.util.tracker.ServiceTracker;
 
 public abstract class AbstractIntegrationTest {
@@ -19,12 +19,12 @@ public abstract class AbstractIntegrationTest {
     @Inject
     protected BundleContext bundleContext;
 
-    protected BlueprintContext getBlueprintContextForBundle(String symbolicName) throws Exception {
-        return getBlueprintContextForBundle(symbolicName, DEFAULT_TIMEOUT);
+    protected BlueprintContainer getBlueprintContainerForBundle(String symbolicName) throws Exception {
+        return getBlueprintContainerForBundle(symbolicName, DEFAULT_TIMEOUT);
     }
 
-    protected BlueprintContext getBlueprintContextForBundle(String symbolicName, long timeout) throws Exception {
-        return getOsgiService(BlueprintContext.class, "(osgi.blueprint.context.symbolicname=" + symbolicName + ")", timeout);
+    protected BlueprintContainer getBlueprintContainerForBundle(String symbolicName, long timeout) throws Exception {
+        return getOsgiService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=" + symbolicName + ")", timeout);
     }
 
     protected <T> T getOsgiService(Class<T> type, long timeout) {

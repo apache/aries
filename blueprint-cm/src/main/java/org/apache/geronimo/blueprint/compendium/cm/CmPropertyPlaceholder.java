@@ -19,31 +19,13 @@
 package org.apache.geronimo.blueprint.compendium.cm;
 
 import java.util.Map;
-import java.util.List;
 import java.util.Dictionary;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.osgi.service.blueprint.context.BlueprintContext;
-import org.osgi.service.blueprint.context.ComponentDefinitionException;
-import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
-import org.osgi.service.blueprint.reflect.BeanMetadata;
-import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
-import org.osgi.service.blueprint.reflect.ServiceMetadata;
-import org.osgi.service.blueprint.reflect.BeanArgument;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
-import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.MapEntry;
-import org.osgi.service.blueprint.reflect.RegistrationListener;
-import org.osgi.service.blueprint.reflect.CollectionMetadata;
-import org.osgi.service.blueprint.reflect.MapMetadata;
-import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.Listener;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.Configuration;
-import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.geronimo.blueprint.beans.AbstractPropertyPlaceholder;
 import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
 import org.slf4j.LoggerFactory;
@@ -59,17 +41,17 @@ public class CmPropertyPlaceholder extends AbstractPropertyPlaceholder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CmPropertyPlaceholder.class);
 
-    private BlueprintContext blueprintContext;
+    private BlueprintContainer blueprintContainer;
     private ConfigurationAdmin configAdmin; 
     private String persistentId;
     private Map defaultProperties;
 
-    public BlueprintContext getBlueprintContext() {
-        return blueprintContext;
+    public BlueprintContainer getBlueprintContainer() {
+        return blueprintContainer;
     }
 
-    public void setBlueprintContext(BlueprintContext blueprintContext) {
-        this.blueprintContext = blueprintContext;
+    public void setBlueprintContainer(BlueprintContainer blueprintContainer) {
+        this.blueprintContainer = blueprintContainer;
     }
 
     public ConfigurationAdmin getConfigAdmin() {

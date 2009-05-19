@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.context;
+package org.apache.geronimo.blueprint.container;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,7 +67,7 @@ import org.apache.geronimo.blueprint.reflect.RegistrationListenerImpl;
 import org.apache.geronimo.blueprint.reflect.ServiceMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ServiceReferenceMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ValueMetadataImpl;
-import org.osgi.service.blueprint.context.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;

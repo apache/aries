@@ -85,7 +85,7 @@ public class ReferenceRecipe extends AbstractRecipe {
             }
         }
 
-        // add to execution context if name is specified
+        // add to execution container if name is specified
         if (getName() != null) {
             if (object instanceof Reference) {
                 object = new WrapperReference(getName(), (Reference) object);
@@ -118,7 +118,7 @@ public class ReferenceRecipe extends AbstractRecipe {
                 throw new ConstructionException("Reference has already been resolved");
             }
 
-            // add to execution context
+            // add to execution container
             ExecutionContext.getContext().addObject(getName(), object);
 
             delegate.set(object);

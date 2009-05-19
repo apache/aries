@@ -1,4 +1,4 @@
-package org.apache.geronimo.blueprint.context;
+package org.apache.geronimo.blueprint.container;
 
 /**
  * Created by IntelliJ IDEA.

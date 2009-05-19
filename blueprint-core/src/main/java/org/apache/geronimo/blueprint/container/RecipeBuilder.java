@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.context;
+package org.apache.geronimo.blueprint.container;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.di.ArrayRecipe;
 import org.apache.geronimo.blueprint.di.CollectionRecipe;
@@ -81,20 +81,20 @@ public class RecipeBuilder {
     }
     
     private int nameCounter;
-    private BlueprintContextImpl blueprintContext;
+    private BlueprintContainerImpl blueprintContainer;
     private ExtendedComponentDefinitionRegistry registry;
 
-    public RecipeBuilder(BlueprintContextImpl blueprintContext) {
-        this.blueprintContext = blueprintContext;
-        this.registry = blueprintContext.getComponentDefinitionRegistry();
+    public RecipeBuilder(BlueprintContainerImpl blueprintContainer) {
+        this.blueprintContainer = blueprintContainer;
+        this.registry = blueprintContainer.getComponentDefinitionRegistry();
     }
     
     private void addBuiltinComponents(DefaultRepository repository) {
-        if (blueprintContext != null) {
-            repository.putDefault("blueprintContext", blueprintContext);
-            repository.putDefault("bundleContext", blueprintContext.getBundleContext());
-            repository.putDefault("bundle", blueprintContext.getBundleContext().getBundle());
-            repository.putDefault("conversionService", blueprintContext.getConversionService());
+        if (blueprintContainer != null) {
+            repository.putDefault("blueprintContainer", blueprintContainer);
+            repository.putDefault("bundleContext", blueprintContainer.getBundleContext());
+            repository.putDefault("bundle", blueprintContainer.getBundleContext().getBundle());
+            repository.putDefault("conversionService", blueprintContainer.getConversionService());
         }
     }
     
@@ -142,8 +142,8 @@ public class RecipeBuilder {
             comparatorRecipe = getValue(metadata.getComparator(), Comparator.class);
         }
         CollectionBasedServiceReferenceRecipe recipe = new CollectionBasedServiceReferenceRecipe(
-                                                                   blueprintContext,
-                                                                   blueprintContext.getSender(),
+                blueprintContainer,
+                                                                   blueprintContainer.getSender(),
                                                                    metadata,
                                                                    listenersRecipe,
                                                                    comparatorRecipe);
@@ -160,8 +160,8 @@ public class RecipeBuilder {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
-        UnaryServiceReferenceRecipe recipe = new UnaryServiceReferenceRecipe(blueprintContext,
-                                                                             blueprintContext.getSender(),
+        UnaryServiceReferenceRecipe recipe = new UnaryServiceReferenceRecipe(blueprintContainer,
+                                                                             blueprintContainer.getSender(),
                                                                              metadata,
                                                                              listenersRecipe);
         recipe.setAllowPartial(true);
@@ -170,16 +170,16 @@ public class RecipeBuilder {
     }
 
     private BlueprintObjectRecipe createServiceRecipe(ServiceMetadata serviceExport) throws Exception {
-        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, ServiceRegistrationProxy.class);
+        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, ServiceRegistrationProxy.class);
         recipe.setName(getName(serviceExport.getId()));
         recipe.setExplicitDependencies(serviceExport.getExplicitDependencies());
         recipe.setInitMethod("init");
         recipe.setAllowPartial(true);
-        recipe.setProperty("blueprintContext", blueprintContext);
+        recipe.setProperty("blueprintContainer", blueprintContainer);
         BeanMetadata exportedComponent = getLocalServiceComponent(serviceExport.getServiceComponent());
         if (exportedComponent != null && BeanMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
             BlueprintObjectRecipe exportedComponentRecipe = createBeanRecipe(exportedComponent);
-            recipe.setProperty("service", new BundleScopeServiceFactory(blueprintContext, exportedComponentRecipe));
+            recipe.setProperty("service", new BundleScopeServiceFactory(blueprintContainer, exportedComponentRecipe));
         } else {
             recipe.setProperty("service", getValue(serviceExport.getServiceComponent(), null));
         }
@@ -213,7 +213,7 @@ public class RecipeBuilder {
     
     private BlueprintObjectRecipe createBeanRecipe(BeanMetadata local) throws Exception {
         Class clazz = local.getRuntimeClass() != null ? local.getRuntimeClass() : loadClass(local.getClassName());
-        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, clazz);
+        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, clazz);
         recipe.setName(getName(local.getId()));
         recipe.setExplicitDependencies(local.getExplicitDependencies());
         for (BeanProperty property : local.getProperties()) {
@@ -261,14 +261,14 @@ public class RecipeBuilder {
     }
 
     private Recipe createRecipe(RegistrationListener listener) throws Exception {
-        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, ServiceRegistrationProxy.Listener.class);
+        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, ServiceRegistrationProxy.Listener.class);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         recipe.setProperty("metadata", listener);
         return recipe;
     }
 
     private Recipe createRecipe(Listener listener) throws Exception {
-        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContext, AbstractServiceReferenceRecipe.Listener.class);
+        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, AbstractServiceReferenceRecipe.Listener.class);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         recipe.setProperty("metadata", listener);
         return recipe;
@@ -350,11 +350,11 @@ public class RecipeBuilder {
     }
     
     protected ConversionService getConversionService() {
-        return blueprintContext.getConversionService();
+        return blueprintContainer.getConversionService();
     }
     
     private Class loadClass(String typeName) throws ClassNotFoundException {
-        return loadClass(blueprintContext, typeName);
+        return loadClass(blueprintContainer, typeName);
     }
     
     private String getName(String name) {
@@ -365,7 +365,7 @@ public class RecipeBuilder {
         }
     }
         
-    public static Class loadClass(ExtendedBlueprintContext context, String typeName) throws ClassNotFoundException {
+    public static Class loadClass(ExtendedBlueprintContainer context, String typeName) throws ClassNotFoundException {
         if (typeName == null) {
             return null;
         }

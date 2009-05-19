@@ -20,11 +20,9 @@ package org.apache.geronimo.blueprint.itests;
 
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Currency;
 
 import org.apache.geronimo.blueprint.sample.BindingListener;
 import org.apache.geronimo.blueprint.sample.InterfaceA;
-import org.apache.geronimo.blueprint.sample.Foo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -32,39 +30,32 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.felix;
-import static org.ops4j.pax.exam.CoreOptions.knopflerfish;
 import static org.ops4j.pax.exam.CoreOptions.mavenConfiguration;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.OptionUtils;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.configProfile;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.profile;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.blueprint.context.BlueprintContext;
-import org.osgi.service.blueprint.context.ServiceUnavailableException;
-import org.osgi.service.cm.ConfigurationAdmin;
-import org.osgi.service.cm.Configuration;
+import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.container.ServiceUnavailableException;
 
 @RunWith(JUnit4TestRunner.class)
 public class TestReferences extends AbstractIntegrationTest {
 
     @Test
     public void testUnaryReference() throws Exception {
-        BlueprintContext blueprintContext = getBlueprintContextForBundle("blueprint-sample");
-        assertNotNull(blueprintContext);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample");
+        assertNotNull(blueprintContainer);
 
-        BindingListener listener = (BindingListener) blueprintContext.getComponent("bindingListener");
+        BindingListener listener = (BindingListener) blueprintContainer.getComponent("bindingListener");
         assertNull(listener.getA());
         assertNull(listener.getReference());
 
-        InterfaceA a = (InterfaceA) blueprintContext.getComponent("ref2");
+        InterfaceA a = (InterfaceA) blueprintContainer.getComponent("ref2");
         try {
             a.hello("world");
             fail("A ServiceUnavailableException should have been thrown");
@@ -110,14 +101,14 @@ public class TestReferences extends AbstractIntegrationTest {
 
     @Test
     public void testListReferences() throws Exception {
-        BlueprintContext blueprintContext = getBlueprintContextForBundle("blueprint-sample");
-        assertNotNull(blueprintContext);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample");
+        assertNotNull(blueprintContainer);
 
-        BindingListener listener = (BindingListener) blueprintContext.getComponent("listBindingListener");
+        BindingListener listener = (BindingListener) blueprintContainer.getComponent("listBindingListener");
         assertNull(listener.getA());
         assertNull(listener.getReference());
 
-        List refs = (List) blueprintContext.getComponent("ref-list");
+        List refs = (List) blueprintContainer.getComponent("ref-list");
         assertNotNull(refs);
         assertTrue(refs.isEmpty());
 

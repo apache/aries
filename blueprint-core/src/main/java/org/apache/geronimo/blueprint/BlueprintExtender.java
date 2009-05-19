@@ -29,8 +29,8 @@ import java.util.Timer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.geronimo.blueprint.context.BlueprintContextImpl;
-import org.apache.geronimo.blueprint.context.DefaultBlueprintContextEventSender;
+import org.apache.geronimo.blueprint.container.BlueprintContainerImpl;
+import org.apache.geronimo.blueprint.container.DefaultBlueprintContextEventSender;
 import org.apache.geronimo.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.geronimo.blueprint.utils.HeaderParser;
 import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
@@ -39,7 +39,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.SynchronousBundleListener;
-import org.osgi.service.blueprint.context.BlueprintContext;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +55,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
 
     private ExecutorService executors;
     private Timer timer;
-    private Map<Bundle, BlueprintContextImpl> contextMap;
+    private Map<Bundle, BlueprintContainerImpl> contextMap;
     private BlueprintContextEventSender sender;
     private NamespaceHandlerRegistry handlers;
 
@@ -66,7 +66,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         handlers = new NamespaceHandlerRegistryImpl(context);
         executors = Executors.newCachedThreadPool();
         timer = new Timer("BlueprintExtender-Timer", true);
-        contextMap = new HashMap<Bundle, BlueprintContextImpl>();
+        contextMap = new HashMap<Bundle, BlueprintContainerImpl>();
 
         context.addBundleListener(this);
 
@@ -82,9 +82,9 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
 
     public void stop(BundleContext context) {
         LOGGER.debug("Stopping blueprint extender...");
-        // TODO: we should order the blueprint context destruction wrt service exports / dependencies
+        // TODO: we should order the blueprint container destruction wrt service exports / dependencies
         // TODO: also if a blueprint bundle is being stopped at the same time (this could happen if the framework
-        //        is shut down, we should not wait for the blueprint context to be destroyed if it is already being
+        //        is shut down, we should not wait for the blueprint container to be destroyed if it is already being
         //        destroyed by the extender
         List<Bundle> bundles = new ArrayList<Bundle>(contextMap.keySet());
         for (Bundle bundle : bundles) {
@@ -103,11 +103,11 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         if (event.getType() == BundleEvent.LAZY_ACTIVATION) {
             checkBundle(bundle, true);
         } else if (event.getType() == BundleEvent.STARTED) {
-            BlueprintContextImpl blueprintContext = contextMap.get(bundle);
-            if (blueprintContext == null) {
+            BlueprintContainerImpl blueprintContainer = contextMap.get(bundle);
+            if (blueprintContainer == null) {
                 checkBundle(bundle, false);
             } else {
-                blueprintContext.triggerActivation();
+                blueprintContainer.triggerActivation();
             }
         } else if (event.getType() == BundleEvent.STOPPING) {
             destroyContext(bundle);
@@ -115,10 +115,10 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     }
 
     private void destroyContext(Bundle bundle) {
-        BlueprintContextImpl blueprintContext = contextMap.remove(bundle);
-        if (blueprintContext != null) {
-            LOGGER.debug("Destroying BlueprintContext for bundle {}", bundle.getSymbolicName());
-            blueprintContext.destroy();
+        BlueprintContainerImpl blueprintContainer = contextMap.remove(bundle);
+        if (blueprintContainer != null) {
+            LOGGER.debug("Destroying BlueprintContainer for bundle {}", bundle.getSymbolicName());
+            blueprintContainer.destroy();
         }
     }
     
@@ -156,10 +156,10 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 // the bundle to be fully started
                 boolean compatible = lazyActivation || isCompatible(bundle);
                 if (compatible) {
-                    final BlueprintContextImpl blueprintContext = new BlueprintContextImpl(bundle.getBundleContext(), sender, handlers, executors, timer, urls, lazyActivation);
-                    contextMap.put(bundle, blueprintContext);
+                    final BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle.getBundleContext(), sender, handlers, executors, timer, urls, lazyActivation);
+                    contextMap.put(bundle, blueprintContainer);
                     // run synchronous when bundle is lazy activated
-                    blueprintContext.run(lazyActivation ? false: true);
+                    blueprintContainer.run(lazyActivation ? false: true);
                 } else {
                     LOGGER.info("Bundle {} is not compatible with this blueprint extender", bundle.getSymbolicName());
                 }
@@ -176,8 +176,8 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         // Check compatibility
         boolean compatible;
         try {
-            Class clazz = bundle.getBundleContext().getBundle().loadClass(BlueprintContext.class.getName());
-            compatible = (clazz == BlueprintContext.class);
+            Class clazz = bundle.getBundleContext().getBundle().loadClass(BlueprintContainer.class.getName());
+            compatible = (clazz == BlueprintContainer.class);
         } catch (ClassNotFoundException e) {
             compatible = true;
         }
