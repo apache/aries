@@ -14,11 +14,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.xbean.recipe;
+package org.apache.geronimo.blueprint.di;
 
 /**
  * @version $Rev$ $Date$
  */
-public enum Option {
-    LAZY_ASSIGNMENT,
+public class MissingAccessorException extends ConstructionException {
+    private final int matchLevel;
+
+    public MissingAccessorException(String message, int matchLevel) {
+        super(message);
+        this.matchLevel = matchLevel;
+    }
+
+    public int getMatchLevel() {
+        return matchLevel;
+    }
 }

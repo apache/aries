@@ -16,21 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.xbean.recipe;
+package org.apache.geronimo.blueprint.di;
 
-import java.lang.reflect.Type;
-
-import org.apache.xbean.recipe.AbstractRecipe;
-import org.apache.xbean.recipe.ConstructionException;
-import org.apache.xbean.recipe.RecipeHelper;
-import org.apache.xbean.recipe.Recipe;
-import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
-import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
-import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 /**
- * TODO: javadoc
+ * This recipe will be used to create an object from a ValueMetadata.
+ * We need to keep the reference to the ValueMetadata so that we can lazily retrieve
+ * the value, allowing for placeholders or such to be used at the last moment.
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev$, $Date$

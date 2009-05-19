@@ -18,9 +18,9 @@
  */
 package org.apache.geronimo.blueprint.utils;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
-import java.io.IOException;
 
 import org.osgi.framework.Bundle;
 

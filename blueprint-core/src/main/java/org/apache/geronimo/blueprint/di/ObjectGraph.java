@@ -15,17 +15,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.xbean.recipe;
+package org.apache.geronimo.blueprint.di;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
-import java.lang.reflect.Type;
 
 import org.osgi.service.blueprint.convert.ConversionService;
 

@@ -18,8 +18,8 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 /**
  * Implementation of ValueMetadata 

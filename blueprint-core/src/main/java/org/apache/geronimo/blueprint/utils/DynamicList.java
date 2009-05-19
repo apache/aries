@@ -18,12 +18,11 @@
  */
 package org.apache.geronimo.blueprint.utils;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Iterator;
-import java.util.Collection;
 import java.util.RandomAccess;
-import java.lang.ref.WeakReference;
 
 /**
  * Same as DynamicCollection but implementing the List interface.

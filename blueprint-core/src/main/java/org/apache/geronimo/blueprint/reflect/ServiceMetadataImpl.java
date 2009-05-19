@@ -18,18 +18,18 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.geronimo.blueprint.mutable.MutableServiceMetadata;
+import org.osgi.service.blueprint.reflect.MapEntry;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.NonNullMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
-import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.Target;
-import org.osgi.service.blueprint.reflect.NonNullMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
-import org.apache.geronimo.blueprint.mutable.MutableServiceMetadata;
 
 /**
  * Implementation of ServiceMetadata

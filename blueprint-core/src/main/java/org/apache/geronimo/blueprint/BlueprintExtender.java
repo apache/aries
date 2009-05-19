@@ -29,11 +29,11 @@ import java.util.Timer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
-import org.apache.geronimo.blueprint.context.DefaultBlueprintContextEventSender;
 import org.apache.geronimo.blueprint.context.BlueprintContextImpl;
+import org.apache.geronimo.blueprint.context.DefaultBlueprintContextEventSender;
 import org.apache.geronimo.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.geronimo.blueprint.utils.HeaderParser;
+import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

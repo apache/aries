@@ -18,8 +18,8 @@
  */
 package org.apache.geronimo.blueprint.context;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,14 +28,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.CharacterData;
@@ -47,48 +47,48 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
+import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
 import org.apache.geronimo.blueprint.namespace.ParserContextImpl;
+import org.apache.geronimo.blueprint.reflect.BeanArgumentImpl;
+import org.apache.geronimo.blueprint.reflect.BeanMetadataImpl;
+import org.apache.geronimo.blueprint.reflect.BeanPropertyImpl;
+import org.apache.geronimo.blueprint.reflect.CollectionMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.IdRefMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ListenerImpl;
-import org.apache.geronimo.blueprint.reflect.MetadataUtil;
-import org.apache.geronimo.blueprint.reflect.RefCollectionMetadataImpl;
-import org.apache.geronimo.blueprint.reflect.CollectionMetadataImpl;
-import org.apache.geronimo.blueprint.reflect.BeanMetadataImpl;
+import org.apache.geronimo.blueprint.reflect.MapEntryImpl;
 import org.apache.geronimo.blueprint.reflect.MapMetadataImpl;
-import org.apache.geronimo.blueprint.reflect.BeanArgumentImpl;
+import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 import org.apache.geronimo.blueprint.reflect.PropsMetadataImpl;
+import org.apache.geronimo.blueprint.reflect.RefCollectionMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.RefMetadataImpl;
+import org.apache.geronimo.blueprint.reflect.ReferenceMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.RegistrationListenerImpl;
 import org.apache.geronimo.blueprint.reflect.ServiceMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ServiceReferenceMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ValueMetadataImpl;
-import org.apache.geronimo.blueprint.reflect.ReferenceMetadataImpl;
-import org.apache.geronimo.blueprint.reflect.BeanPropertyImpl;
-import org.apache.geronimo.blueprint.reflect.MapEntryImpl;
 import org.osgi.service.blueprint.context.ComponentDefinitionException;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
-import org.osgi.service.blueprint.reflect.Listener;
-import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.service.blueprint.reflect.CollectionMetadata;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.Listener;
+import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.MapMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.NonNullMetadata;
 import org.osgi.service.blueprint.reflect.NullMetadata;
 import org.osgi.service.blueprint.reflect.PropsMetadata;
+import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.Target;
-import org.osgi.service.blueprint.reflect.CollectionMetadata;
-import org.osgi.service.blueprint.reflect.MapEntry;
-import org.osgi.service.blueprint.reflect.NonNullMetadata;
-import org.osgi.service.blueprint.reflect.BeanArgument;
-import org.osgi.service.blueprint.reflect.BeanProperty;
-import org.xml.sax.InputSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
 
 /**
  * TODO: javadoc

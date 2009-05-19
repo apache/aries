@@ -3,8 +3,8 @@ package org.apache.geronimo.blueprint;
 import org.w3c.dom.Element;
 
 import org.osgi.service.blueprint.namespace.ParserContext;
-import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
 
 /**
  * An extended ParserContext that also acts as a factory of Metadata objects.

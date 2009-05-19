@@ -18,9 +18,9 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.apache.geronimo.blueprint.mutable.MutableBeanProperty;
+import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.service.blueprint.reflect.Metadata;
 
 /**
  * Implementation of BeanProperty

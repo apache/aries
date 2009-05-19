@@ -19,23 +19,16 @@
 package org.apache.geronimo.blueprint.namespace;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
+import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.osgi.service.blueprint.namespace.ComponentNameAlreadyInUseException;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.RefMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.Target;
-import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
-import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 
 /**
  * ComponentDefinitionRegistry implementation.

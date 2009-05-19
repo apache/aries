@@ -19,9 +19,8 @@ package org.apache.geronimo.blueprint;
 import java.util.List;
 
 import org.osgi.service.blueprint.context.BlueprintContext;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.convert.ConversionService;
-import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
 /**
  * TODO: javadoc

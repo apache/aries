@@ -19,7 +19,6 @@
 package org.apache.geronimo.blueprint;
 
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
-import org.osgi.service.blueprint.context.ComponentDefinitionException;
 
 /**
  * TODO

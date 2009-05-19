@@ -19,15 +19,15 @@
 package org.apache.geronimo.blueprint.reflect;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
+import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
-import org.osgi.service.blueprint.reflect.Target;
 import org.osgi.service.blueprint.reflect.Metadata;
-import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
+import org.osgi.service.blueprint.reflect.Target;
 
 /**
  * Implementation of BeanMetadata

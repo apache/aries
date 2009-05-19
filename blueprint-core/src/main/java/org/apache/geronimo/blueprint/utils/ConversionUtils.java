@@ -18,16 +18,16 @@
  */
 package org.apache.geronimo.blueprint.utils;
 
-import java.lang.reflect.Type;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 
+import static org.apache.geronimo.blueprint.utils.TypeUtils.getTypeParameters;
+import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
 import org.osgi.service.blueprint.convert.ConversionService;
-import static org.apache.xbean.recipe.RecipeHelper.toClass;
-import static org.apache.xbean.recipe.RecipeHelper.getTypeParameters;
 
 /**
  * TODO: javadoc

@@ -18,9 +18,9 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
+import org.apache.geronimo.blueprint.mutable.MutableBeanArgument;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.Metadata;
-import org.apache.geronimo.blueprint.mutable.MutableBeanArgument;
 
 /**
  * Implementation of BeanArgument

@@ -18,10 +18,10 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.MapEntry;
-import org.osgi.service.blueprint.reflect.NonNullMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
 import org.apache.geronimo.blueprint.mutable.MutableMapEntry;
+import org.osgi.service.blueprint.reflect.MapEntry;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.NonNullMetadata;
 
 /**
  * Implementation of MapEntry

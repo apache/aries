@@ -18,28 +18,20 @@
  */
 package org.apache.geronimo.blueprint.context;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import net.sf.cglib.proxy.Callback;
-import net.sf.cglib.proxy.CallbackFilter;
 import net.sf.cglib.proxy.Dispatcher;
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
+import org.apache.geronimo.blueprint.di.ConstructionException;
+import org.apache.geronimo.blueprint.di.Recipe;
+import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
-import org.apache.xbean.recipe.ConstructionException;
-import org.apache.xbean.recipe.Recipe;
-import org.apache.xbean.recipe.RecipeHelper;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.context.ServiceUnavailableException;
 import org.osgi.service.blueprint.context.ComponentDefinitionException;
+import org.osgi.service.blueprint.context.ServiceUnavailableException;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 
 /**
@@ -187,7 +179,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
         public Object convert(Type type) throws Exception {
             if (type == ServiceReference.class) {
                 return trackedServiceReference;
-            } else if (RecipeHelper.toClass(type).isInstance(proxy)) {
+            } else if (TypeUtils.toClass(type).isInstance(proxy)) {
                 return proxy;
             } else {
                 throw new ComponentDefinitionException("Unable to convert to " + type);

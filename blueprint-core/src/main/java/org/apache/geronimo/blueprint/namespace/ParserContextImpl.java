@@ -18,15 +18,15 @@
  */
 package org.apache.geronimo.blueprint.namespace;
 
-import org.w3c.dom.Node;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
-import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
 import org.apache.geronimo.blueprint.ExtendedParserContext;
 import org.apache.geronimo.blueprint.context.Parser;
 import org.apache.geronimo.blueprint.reflect.MetadataUtil;
+import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
 
 /**
  * A simple ParserContext implementation.

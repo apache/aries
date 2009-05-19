@@ -29,7 +29,7 @@ import java.util.Set;
 
 import org.apache.geronimo.blueprint.CallbackTracker.Callback;
 import org.apache.geronimo.blueprint.context.BlueprintObjectInstantiator;
-import org.apache.xbean.recipe.DefaultRepository;
+import org.apache.geronimo.blueprint.di.DefaultRepository;
 import org.apache.geronimo.blueprint.context.RecipeBuilder;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.pojos.BeanD;
@@ -40,7 +40,7 @@ import org.apache.geronimo.blueprint.pojos.PojoGenerics;
 import org.apache.geronimo.blueprint.pojos.PojoListener;
 import org.apache.geronimo.blueprint.pojos.BeanF;
 import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
-import org.apache.xbean.recipe.Repository;
+import org.apache.geronimo.blueprint.di.Repository;
 import org.osgi.framework.ServiceRegistration;
 
 public class WiringTest extends AbstractBlueprintTest {

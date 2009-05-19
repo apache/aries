@@ -19,9 +19,9 @@
 package org.apache.geronimo.blueprint.utils;
 
 import java.lang.reflect.Method;
-import java.util.Set;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * TODO: javadoc

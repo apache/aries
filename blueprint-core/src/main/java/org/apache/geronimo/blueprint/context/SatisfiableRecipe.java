@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint;
+package org.apache.geronimo.blueprint.context;
 
-import org.apache.xbean.recipe.Recipe;
+import org.apache.geronimo.blueprint.di.Recipe;
 
 /**
  * Interface used to desribe an object which can satisfy a constraint or not.

@@ -19,12 +19,12 @@
 package org.apache.geronimo.blueprint.reflect;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
-import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableCollectionMetadata;
+import org.osgi.service.blueprint.reflect.CollectionMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
 
 /**
  * Implementation of CollectionMetadata

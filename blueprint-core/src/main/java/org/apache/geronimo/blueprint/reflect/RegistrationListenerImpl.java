@@ -18,9 +18,9 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
+import org.apache.geronimo.blueprint.mutable.MutableRegistrationListener;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.Target;
-import org.apache.geronimo.blueprint.mutable.MutableRegistrationListener;
 
 /**
  * Implementation of RegistrationListener.

@@ -15,12 +15,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.xbean.recipe;
+package org.apache.geronimo.blueprint.di;
 
+import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.lang.reflect.Type;
 
 public abstract class ExecutionContext {
 

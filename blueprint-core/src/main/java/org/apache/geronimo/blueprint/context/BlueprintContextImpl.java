@@ -18,59 +18,60 @@
  */
 package org.apache.geronimo.blueprint.context;
 
-import java.net.URL;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Properties;
-import java.util.HashMap;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.BlueprintConstants;
+import org.apache.geronimo.blueprint.BlueprintContextEventSender;
+import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
+import org.apache.geronimo.blueprint.Destroyable;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
+import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
+import org.apache.geronimo.blueprint.context.SatisfiableRecipe;
+import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
+import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
+import org.apache.geronimo.blueprint.di.DefaultRepository;
+import org.apache.geronimo.blueprint.di.ExecutionContext;
+import org.apache.geronimo.blueprint.di.NoSuchObjectException;
+import org.apache.geronimo.blueprint.di.Recipe;
+import org.apache.geronimo.blueprint.di.ReferenceNameRecipe;
+import org.apache.geronimo.blueprint.di.ReferenceRecipe;
+import org.apache.geronimo.blueprint.di.Repository;
+import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.utils.HeaderParser;
 import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
-import org.apache.geronimo.blueprint.BlueprintContextEventSender;
-import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
-import org.apache.geronimo.blueprint.Destroyable;
-import org.apache.geronimo.blueprint.SatisfiableRecipe;
-import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
-import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
-import org.apache.geronimo.blueprint.BeanProcessor;
-import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
-import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.xbean.recipe.Repository;
-import org.apache.xbean.recipe.Recipe;
-import org.apache.xbean.recipe.ExecutionContext;
-import org.apache.xbean.recipe.DefaultExecutionContext;
-import org.apache.xbean.recipe.ReferenceNameRecipe;
-import org.apache.xbean.recipe.ReferenceRecipe;
-import org.apache.xbean.recipe.DefaultRepository;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.context.BlueprintContext;
-import org.osgi.service.blueprint.context.NoSuchComponentException;
 import org.osgi.service.blueprint.context.ComponentDefinitionException;
+import org.osgi.service.blueprint.context.NoSuchComponentException;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.convert.Converter;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
-import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -626,7 +627,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         }
         try {
             return instantiator.create(name);
-        } catch (org.apache.xbean.recipe.NoSuchObjectException e) {
+        } catch (NoSuchObjectException e) {
             throw new NoSuchComponentException(name);
         } catch (ComponentDefinitionException e) {
             throw e;
@@ -740,7 +741,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
       [bnd] 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
       [bnd] 	at java.lang.reflect.Method.invoke(Method.java:585)
       [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintObjectRecipe.internalCreate(BlueprintObjectRecipe.java:586)
-      [bnd] 	at org.apache.xbean.recipe.AbstractRecipe.create(AbstractRecipe.java:95)
+      [bnd] 	at org.apache.geronimo.blueprint.di.AbstractRecipe.create(AbstractRecipe.java:95)
       [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintObjectInstantiator.createInstance(BlueprintObjectInstantiator.java:83)
       [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintObjectInstantiator.createAll(BlueprintObjectInstantiator.java:65)
       [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintContextImpl.instantiateComponents(BlueprintContextImpl.java:541)

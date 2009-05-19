@@ -18,8 +18,8 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableRefMetadata;
+import org.osgi.service.blueprint.reflect.RefMetadata;
 
 /**
  * Implementation of RefMetadata

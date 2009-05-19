@@ -18,43 +18,42 @@
  */
 package org.apache.geronimo.blueprint.beans;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
-import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableBeanArgument;
-import org.apache.geronimo.blueprint.mutable.MutableBeanProperty;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableServiceMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableRegistrationListener;
-import org.apache.geronimo.blueprint.mutable.MutableReferenceMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableListener;
-import org.apache.geronimo.blueprint.mutable.MutableRefCollectionMetadata;
-import org.apache.geronimo.blueprint.mutable.MutablePropsMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableMapEntry;
+import org.apache.geronimo.blueprint.mutable.MutableBeanProperty;
 import org.apache.geronimo.blueprint.mutable.MutableCollectionMetadata;
-import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
+import org.apache.geronimo.blueprint.mutable.MutableListener;
+import org.apache.geronimo.blueprint.mutable.MutableMapEntry;
+import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
+import org.apache.geronimo.blueprint.mutable.MutablePropsMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableRefCollectionMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableRegistrationListener;
+import org.apache.geronimo.blueprint.mutable.MutableServiceMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
 import org.osgi.service.blueprint.context.ComponentDefinitionException;
-import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.BeanMetadata;
-import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
-import org.osgi.service.blueprint.reflect.ServiceMetadata;
-import org.osgi.service.blueprint.reflect.ValueMetadata;
-import org.osgi.service.blueprint.reflect.CollectionMetadata;
-import org.osgi.service.blueprint.reflect.MapMetadata;
-import org.osgi.service.blueprint.reflect.PropsMetadata;
+import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.BeanArgument;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
-import org.osgi.service.blueprint.reflect.RegistrationListener;
+import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.Listener;
 import org.osgi.service.blueprint.reflect.MapEntry;
-import org.osgi.service.blueprint.reflect.Target;
+import org.osgi.service.blueprint.reflect.MapMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.NonNullMetadata;
+import org.osgi.service.blueprint.reflect.PropsMetadata;
+import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
+import org.osgi.service.blueprint.reflect.RegistrationListener;
+import org.osgi.service.blueprint.reflect.ServiceMetadata;
+import org.osgi.service.blueprint.reflect.Target;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 /**
  * Abstract class for property placeholders.

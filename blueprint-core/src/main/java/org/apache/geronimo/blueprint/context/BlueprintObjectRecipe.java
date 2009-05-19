@@ -39,16 +39,16 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
+import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
-import org.apache.geronimo.blueprint.Destroyable;
+import org.apache.geronimo.blueprint.di.AbstractRecipe;
+import org.apache.geronimo.blueprint.di.ConstructionException;
+import org.apache.geronimo.blueprint.di.Option;
+import org.apache.geronimo.blueprint.di.Recipe;
+import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
+import org.apache.geronimo.blueprint.di.ReferenceRecipe;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
-import static org.apache.xbean.recipe.RecipeHelper.toClass;
-import org.apache.xbean.recipe.AbstractRecipe;
-import org.apache.xbean.recipe.Option;
-import org.apache.xbean.recipe.Recipe;
-import org.apache.xbean.recipe.ReferenceRecipe;
-import org.apache.xbean.recipe.ConstructionException;
 
 /**
  *
