@@ -47,10 +47,7 @@ public final class ConversionUtils {
     public static Object convert(Object obj, Type type, ConversionService converter) throws Exception {
         // First convert service proxies
         if (obj instanceof Convertible) {
-            Object o = ((Convertible) obj).convert(type);
-            if (o != null) {
-                return o;
-            }
+            return ((Convertible) obj).convert(type);
         }
         // Handle arrays, collections and generics
         if (obj == null) {
