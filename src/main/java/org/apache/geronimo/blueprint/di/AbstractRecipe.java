@@ -51,10 +51,10 @@ public abstract class AbstractRecipe implements Recipe {
     }
 
     public final Object create(boolean lazyRefAllowed) throws ConstructionException {
-        // Ensure a context has been set
+        // Ensure a container has been set
         ExecutionContext context = ExecutionContext.getContext();
 
-        // if this recipe has already been executed in this context, return the currently registered value
+        // if this recipe has already been executed in this container, return the currently registered value
         String name = getName();
         if (name != null && context.containsCreatedObject(name)) {
             return context.getCreatedObject(name);

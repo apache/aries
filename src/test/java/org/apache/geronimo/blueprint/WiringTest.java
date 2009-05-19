@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.geronimo.blueprint.CallbackTracker.Callback;
-import org.apache.geronimo.blueprint.context.BlueprintObjectInstantiator;
+import org.apache.geronimo.blueprint.container.BlueprintObjectInstantiator;
 import org.apache.geronimo.blueprint.di.DefaultRepository;
-import org.apache.geronimo.blueprint.context.RecipeBuilder;
+import org.apache.geronimo.blueprint.container.RecipeBuilder;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.pojos.BeanD;
 import org.apache.geronimo.blueprint.pojos.Multiple;

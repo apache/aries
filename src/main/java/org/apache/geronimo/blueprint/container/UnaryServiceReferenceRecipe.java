@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.context;
+package org.apache.geronimo.blueprint.container;
 
 import java.lang.reflect.Type;
 import java.util.HashSet;
@@ -24,14 +24,15 @@ import java.util.Set;
 
 import net.sf.cglib.proxy.Dispatcher;
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
-import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
+import org.apache.geronimo.blueprint.container.AbstractServiceReferenceRecipe;
 import org.apache.geronimo.blueprint.di.ConstructionException;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.context.ComponentDefinitionException;
-import org.osgi.service.blueprint.context.ServiceUnavailableException;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 
 /**
@@ -55,11 +56,11 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private volatile Object trackedService;
     private final Object monitor = new Object();
 
-    public UnaryServiceReferenceRecipe(ExtendedBlueprintContext blueprintContext,
+    public UnaryServiceReferenceRecipe(ExtendedBlueprintContainer blueprintContainer,
                                        BlueprintContextEventSender sender,
                                        ReferenceMetadata metadata,
                                        Recipe listenersRecipe) {
-        super(blueprintContext,  sender, metadata, listenersRecipe);
+        super(blueprintContainer,  sender, metadata, listenersRecipe);
         this.metadata = metadata;
     }
 
@@ -69,13 +70,13 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             // Create the proxy
             proxy = createProxy(new ServiceDispatcher(), this.metadata.getInterfaceNames());
             proxyClass = proxy.getClass();
-            
+
             // Add partially created proxy to the context
             addObject(proxy, true);
-            
+
             // Create the listeners and initialize them
             createListeners();
-            
+
             // Add fully created proxy to the context
             addObject(proxy, false);
 
@@ -121,7 +122,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private void bind(ServiceReference ref) {
         synchronized (monitor) {
             if (trackedServiceReference != null) {
-                blueprintContext.getBundleContext().ungetService(trackedServiceReference);
+                blueprintContainer.getBundleContext().ungetService(trackedServiceReference);
             }
             trackedServiceReference = ref;
             trackedService = null;
@@ -138,7 +139,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
                 for (Listener listener : listeners) {
                     listener.unbind(trackedServiceReference, proxy);
                 }
-                blueprintContext.getBundleContext().ungetService(trackedServiceReference);
+                blueprintContainer.getBundleContext().ungetService(trackedServiceReference);
                 trackedServiceReference = null;
                 trackedService = null;
             }
@@ -149,7 +150,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
         synchronized (monitor) {
             if (tracker.isStarted() && trackedServiceReference == null && metadata.getTimeout() > 0) {
                 Set<String> interfaces = new HashSet<String>(metadata.getInterfaceNames());
-                sender.sendWaiting(blueprintContext.getBundleContext().getBundle(), interfaces.toArray(new String[interfaces.size()]), getOsgiFilter());
+                sender.sendWaiting(blueprintContainer.getBundleContext().getBundle(), interfaces.toArray(new String[interfaces.size()]), getOsgiFilter());
                 monitor.wait(metadata.getTimeout());
             }
             if (trackedServiceReference == null) {
@@ -160,12 +161,12 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
                 }
             }
             if (trackedService == null) {
-                trackedService = blueprintContext.getBundleContext().getService(trackedServiceReference);
+                trackedService = blueprintContainer.getBundleContext().getService(trackedServiceReference);
             }
             return trackedService;
         }
     }
-    
+
     private ServiceReference getServiceReference() throws InterruptedException {
         synchronized (monitor) {
             if (!optional) {
@@ -174,7 +175,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             return trackedServiceReference;
         }
     }
-    
+
     public class ServiceDispatcher implements Dispatcher {
 
         public Object loadObject() throws Exception {

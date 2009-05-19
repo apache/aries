@@ -103,7 +103,7 @@ public class MapRecipe extends AbstractRecipe {
             throw new ConstructionException("Specified map type does not implement the Map interface: " + mapType.getName());
         }
 
-        // add to execution context if name is specified
+        // add to execution container if name is specified
         if (getName() != null) {
             ExecutionContext.getContext().addObject(getName(), instance);
         }

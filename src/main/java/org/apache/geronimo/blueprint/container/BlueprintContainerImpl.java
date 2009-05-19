@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.context;
+package org.apache.geronimo.blueprint.container;
 
 import java.net.URI;
 import java.net.URL;
@@ -40,9 +40,9 @@ import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.geronimo.blueprint.Destroyable;
-import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
-import org.apache.geronimo.blueprint.context.SatisfiableRecipe;
+import org.apache.geronimo.blueprint.container.SatisfiableRecipe;
 import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
 import org.apache.geronimo.blueprint.di.DefaultRepository;
@@ -60,10 +60,9 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.framework.ServiceFactory;
-import org.osgi.service.blueprint.context.BlueprintContext;
-import org.osgi.service.blueprint.context.ComponentDefinitionException;
-import org.osgi.service.blueprint.context.NoSuchComponentException;
+import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.NoSuchComponentException;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.convert.Converter;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
@@ -82,9 +81,9 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class BlueprintContextImpl implements ExtendedBlueprintContext, NamespaceHandlerRegistry.Listener, Runnable, SatisfiableRecipe.SatisfactionListener {
+public class BlueprintContainerImpl implements ExtendedBlueprintContainer, NamespaceHandlerRegistry.Listener, Runnable, SatisfiableRecipe.SatisfactionListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContextImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContainerImpl.class);
 
     private enum State {
         Unknown,
@@ -126,7 +125,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     private boolean waitForDependencies = true;
     private TimerTask timerTask;
 
-    public BlueprintContextImpl(BundleContext bundleContext, BlueprintContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, Timer timer, List<URL> urls, boolean lazyActivation) {
+    public BlueprintContainerImpl(BundleContext bundleContext, BlueprintContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, Timer timer, List<URL> urls, boolean lazyActivation) {
         this.bundleContext = bundleContext;
         this.sender = sender;
         this.handlers = handlers;
@@ -189,7 +188,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     public synchronized void run() {
         try {
             for (;;) {
-                LOGGER.debug("Running blueprint context for bundle {} in state {}", bundleContext.getBundle().getSymbolicName(), state);
+                LOGGER.debug("Running blueprint container for bundle {} in state {}", bundleContext.getBundle().getSymbolicName(), state);
                 switch (state) {
                     case Unknown:
                         checkDirectives();
@@ -221,11 +220,11 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         trackServiceReferences();
                         timerTask = new TimerTask() {
                             public void run() {
-                                synchronized (BlueprintContextImpl.this) {
+                                synchronized (BlueprintContainerImpl.this) {
                                     Throwable t = new TimeoutException();
                                     state = State.Failed;
                                     // TODO: clean up
-                                    LOGGER.error("Unable to start blueprint context for bundle " + bundleContext.getBundle().getSymbolicName(), t);
+                                    LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName(), t);
                                     sender.sendFailure(getBundleContext().getBundle(), t);
                                 }
                             }
@@ -304,7 +303,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         timerTask.cancel();
                         instantiateComponents();
 
-                        // Register the BlueprintContext in the OSGi registry
+                        // Register the BlueprintContainer in the OSGi registry
                         if (registration == null) {
                             Properties props = new Properties();
                             props.put(BlueprintConstants.CONTEXT_SYMBOLIC_NAME_PROPERTY,
@@ -312,8 +311,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                             props.put(BlueprintConstants.CONTEXT_VERSION_PROPERTY,
                                       bundleContext.getBundle().getHeaders().get(Constants.BUNDLE_VERSION));
                             // TODO: register a service factory so that we can honor the bundle scope when
-                            //    BlueprintContext.getComponent(String) is called directly
-                            registration = bundleContext.registerService(BlueprintContext.class.getName(), this, props);
+                            //    BlueprintContainer.getComponent(String) is called directly
+                            registration = bundleContext.registerService(BlueprintContainer.class.getName(), this, props);
 
                             sender.sendCreated(getBundleContext().getBundle());
                             state = State.Created;
@@ -328,7 +327,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         } catch (Throwable t) {
             state = State.Failed;
             // TODO: clean up
-            LOGGER.error("Unable to start blueprint context for bundle " + bundleContext.getBundle().getSymbolicName(), t);
+            LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName(), t);
             sender.sendFailure(getBundleContext().getBundle(), t);
         }
     }
@@ -702,7 +701,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         destroyComponents();
         
         sender.sendDestroyed(getBundleContext().getBundle());
-        LOGGER.debug("Module context destroyed: " + this.bundleContext);
+        LOGGER.debug("Module container destroyed: " + this.bundleContext);
     }
 
     public synchronized void namespaceHandlerRegistered(URI uri) {
@@ -731,23 +730,23 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
       [bnd] "pool-3-thread-1" prio=5 tid=0x01018790 nid=0x8a2c00 in Object.wait() [0xb0f90000..0xb0f90d90]
       [bnd] 	at java.lang.Object.wait(Native Method)
       [bnd] 	- waiting on <0x25671928> (a java.lang.Object)
-      [bnd] 	at org.apache.geronimo.blueprint.context.UnaryServiceReferenceRecipe.getService(UnaryServiceReferenceRecipe.java:197)
+      [bnd] 	at org.apache.geronimo.blueprint.container.UnaryServiceReferenceRecipe.getService(UnaryServiceReferenceRecipe.java:197)
       [bnd] 	- locked <0x25671928> (a java.lang.Object)
-      [bnd] 	at org.apache.geronimo.blueprint.context.UnaryServiceReferenceRecipe.access$000(UnaryServiceReferenceRecipe.java:55)
-      [bnd] 	at org.apache.geronimo.blueprint.context.UnaryServiceReferenceRecipe$ServiceDispatcher.loadObject(UnaryServiceReferenceRecipe.java:225)
+      [bnd] 	at org.apache.geronimo.blueprint.container.UnaryServiceReferenceRecipe.access$000(UnaryServiceReferenceRecipe.java:55)
+      [bnd] 	at org.apache.geronimo.blueprint.container.UnaryServiceReferenceRecipe$ServiceDispatcher.loadObject(UnaryServiceReferenceRecipe.java:225)
       [bnd] 	at org.osgi.test.cases.blueprint.services.ServiceManager$$EnhancerByCGLIB$$f740783d.getActiveServices(<generated>)
       [bnd] 	at org.osgi.test.cases.blueprint.components.serviceimport.NullReferenceList.init(NullReferenceList.java:43)
       [bnd] 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
       [bnd] 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
       [bnd] 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
       [bnd] 	at java.lang.reflect.Method.invoke(Method.java:585)
-      [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintObjectRecipe.internalCreate(BlueprintObjectRecipe.java:586)
+      [bnd] 	at org.apache.geronimo.blueprint.container.BlueprintObjectRecipe.internalCreate(BlueprintObjectRecipe.java:586)
       [bnd] 	at org.apache.geronimo.blueprint.di.AbstractRecipe.create(AbstractRecipe.java:95)
-      [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintObjectInstantiator.createInstance(BlueprintObjectInstantiator.java:83)
-      [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintObjectInstantiator.createAll(BlueprintObjectInstantiator.java:65)
-      [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintContextImpl.instantiateComponents(BlueprintContextImpl.java:541)
-      [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintContextImpl.run(BlueprintContextImpl.java:303)
-      [bnd] 	- locked <0x25730658> (a org.apache.geronimo.blueprint.context.BlueprintContextImpl)
+      [bnd] 	at org.apache.geronimo.blueprint.container.BlueprintObjectInstantiator.createInstance(BlueprintObjectInstantiator.java:83)
+      [bnd] 	at org.apache.geronimo.blueprint.container.BlueprintObjectInstantiator.createAll(BlueprintObjectInstantiator.java:65)
+      [bnd] 	at org.apache.geronimo.blueprint.container.BlueprintContextImpl.instantiateComponents(BlueprintContextImpl.java:541)
+      [bnd] 	at org.apache.geronimo.blueprint.container.BlueprintContextImpl.run(BlueprintContextImpl.java:303)
+      [bnd] 	- locked <0x25730658> (a org.apache.geronimo.blueprint.container.BlueprintContextImpl)
       [bnd] 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:417)
       [bnd] 	at java.util.concurrent.FutureTask$Sync.innerRun(FutureTask.java:269)
       [bnd] 	at java.util.concurrent.FutureTask.run(FutureTask.java:123)
@@ -756,8 +755,8 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
       [bnd] 	at java.lang.Thread.run(Thread.java:613)
       [bnd]
       [bnd] "main" prio=5 tid=0x01001460 nid=0xb0801000 waiting for monitor entry [0xb07ff000..0xb0800148]
-      [bnd] 	at org.apache.geronimo.blueprint.context.BlueprintContextImpl.destroy(BlueprintContextImpl.java:687)
-      [bnd] 	- waiting to lock <0x25730658> (a org.apache.geronimo.blueprint.context.BlueprintContextImpl)
+      [bnd] 	at org.apache.geronimo.blueprint.container.BlueprintContextImpl.destroy(BlueprintContextImpl.java:687)
+      [bnd] 	- waiting to lock <0x25730658> (a org.apache.geronimo.blueprint.container.BlueprintContextImpl)
       [bnd] 	at org.apache.geronimo.blueprint.BlueprintExtender.destroyContext(BlueprintExtender.java:121)
       [bnd] 	at org.apache.geronimo.blueprint.BlueprintExtender.bundleChanged(BlueprintExtender.java:113)
       [bnd] 	at org.eclipse.osgi.framework.internal.core.BundleContextImpl.dispatchEvent(BundleContextImpl.java:916)

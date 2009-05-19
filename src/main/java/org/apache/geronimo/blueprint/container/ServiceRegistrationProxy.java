@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.context;
+package org.apache.geronimo.blueprint.container;
 
 import java.lang.reflect.Method;
 import java.util.Dictionary;
@@ -44,7 +44,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistrationProxy.class);
 
-    private BlueprintContextImpl blueprintContext;
+    private BlueprintContainerImpl blueprintContainer;
     private Object service;
     private Map serviceProperties;
     private List<Listener> listeners;
@@ -53,8 +53,8 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
     private ServiceRegistration registration = null;
     private Map registrationProperties = null;
 
-    public void setBlueprintContext(BlueprintContextImpl blueprintContext) {
-        this.blueprintContext = blueprintContext;
+    public void setBlueprintContainer(BlueprintContainerImpl blueprintContainer) {
+        this.blueprintContainer = blueprintContainer;
     }
 
     public void setService(Object service) {
@@ -83,7 +83,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
     
     public void init() {
         register();
-        blueprintContext.registerService(this);
+        blueprintContainer.registerService(this);
     }
     
     public ServiceMetadata getMetadata() {
@@ -99,7 +99,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
             return;
         }
                 
-        TriggerService triggerService = blueprintContext.removeTriggerService(metadata);
+        TriggerService triggerService = blueprintContainer.removeTriggerService(metadata);
         if (triggerService != null) {
             LOGGER.debug("Trigger service found");
             triggerService.setService(service);
@@ -118,7 +118,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
         }
         Set<String> classes = getClasses();
         String[] classArray = classes.toArray(new String[classes.size()]);
-        registration = blueprintContext.getBundleContext().registerService(classArray, service, props);
+        registration = blueprintContainer.getBundleContext().registerService(classArray, service, props);
         registrationProperties = props;
         
         LOGGER.debug("Service {} registered with interfaces {} and properties {}", 
@@ -203,7 +203,7 @@ public class ServiceRegistrationProxy implements ServiceRegistration {
             // TODO: set serviceProperties? convert somehow? should listeners be notified of this?
         }
     }
-    
+
     public static class Listener {
         
         private Object listener;

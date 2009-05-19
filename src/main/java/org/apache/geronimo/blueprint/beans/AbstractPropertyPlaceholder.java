@@ -36,7 +36,7 @@ import org.apache.geronimo.blueprint.mutable.MutableRefCollectionMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableRegistrationListener;
 import org.apache.geronimo.blueprint.mutable.MutableServiceMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
-import org.osgi.service.blueprint.context.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;

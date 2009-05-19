@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.context;
+package org.apache.geronimo.blueprint.container;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -36,7 +36,7 @@ import java.util.Set;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.Destroyable;
-import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.ConstructionException;
@@ -68,10 +68,10 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
     private List<Class> argTypes;
     private boolean reorderArguments;
 
-    protected ExtendedBlueprintContext blueprintContext;
+    protected ExtendedBlueprintContainer blueprintContainer;
 
-    public BlueprintObjectRecipe(ExtendedBlueprintContext blueprintContext, Class typeClass) {
-        this.blueprintContext = blueprintContext;
+    public BlueprintObjectRecipe(ExtendedBlueprintContainer blueprintContainer, Class typeClass) {
+        this.blueprintContainer = blueprintContainer;
         this.typeClass = typeClass;
         allow(Option.LAZY_ASSIGNMENT);
     }
@@ -485,7 +485,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
     protected Method getInitMethod(Object instance) throws ConstructionException {
         Method method = null;        
         if (initMethod == null) {
-            ExtendedComponentDefinitionRegistry registry = blueprintContext.getComponentDefinitionRegistry();
+            ExtendedComponentDefinitionRegistry registry = blueprintContainer.getComponentDefinitionRegistry();
             method = ReflectionUtils.getLifecycleMethod(instance.getClass(), registry.getDefaultInitMethod());
         } else if (initMethod.length() > 0) {
             method = ReflectionUtils.getLifecycleMethod(instance.getClass(), initMethod);
@@ -503,7 +503,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
     public Method getDestroyMethod(Object instance) throws ConstructionException {
         Method method = null;        
         if (destroyMethod == null) {
-            ExtendedComponentDefinitionRegistry registry = blueprintContext.getComponentDefinitionRegistry();
+            ExtendedComponentDefinitionRegistry registry = blueprintContainer.getComponentDefinitionRegistry();
             method = ReflectionUtils.getLifecycleMethod(instance.getClass(), registry.getDefaultDestroyMethod());
         } else if (destroyMethod.length() > 0) {
             method = ReflectionUtils.getLifecycleMethod(instance.getClass(), destroyMethod);
@@ -537,14 +537,14 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         }
         
         if (!keepRecipe) {
-            // Add partially created object to the context
+            // Add partially created object to the container
             addObject(obj, true);
         }
         
         // inject properties
         setProperties(obj);
 
-        for (BeanProcessor processor : blueprintContext.getBeanProcessors()) {
+        for (BeanProcessor processor : blueprintContainer.getBeanProcessors()) {
             obj = processor.beforeInit(obj, getName());
         }
         
@@ -561,7 +561,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         }
         
         if (!keepRecipe) {
-            // Add fully created object to the context
+            // Add fully created object to the container
             addObject(obj, false);
         }
         
@@ -569,7 +569,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
     }
     
     public void destroyInstance(Object obj) {
-        for (BeanProcessor processor : blueprintContext.getBeanProcessors()) {
+        for (BeanProcessor processor : blueprintContainer.getBeanProcessors()) {
             processor.beforeDestroy(obj, getName());
         }
         try {
@@ -580,7 +580,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         } catch (Exception e) {
             e.printStackTrace(); // TODO: log
         }
-        for (BeanProcessor processor : blueprintContext.getBeanProcessors()) {
+        for (BeanProcessor processor : blueprintContainer.getBeanProcessors()) {
             processor.afterDestroy(obj, getName());
         }
     }
