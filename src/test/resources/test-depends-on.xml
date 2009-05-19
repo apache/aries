@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           default-init-method="init"
-           default-destroy-method="destroy">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-    <bean id="c" class="org.apache.geronimo.blueprint.pojos.BeanC" depends-on="d" init-method="init"/>
+    <bean id="c" class="org.apache.geronimo.blueprint.pojos.BeanC" depends-on="d" init-method="init" destroy-method="destroy"/>
 
-    <bean id="d" class="org.apache.geronimo.blueprint.pojos.BeanD" init-method="init"/>
+    <bean id="d" class="org.apache.geronimo.blueprint.pojos.BeanD" init-method="init" destroy-method="destroy"/>
     
-    <bean id="e" class="org.apache.geronimo.blueprint.pojos.BeanE" init-method="init">
+    <bean id="e" class="org.apache.geronimo.blueprint.pojos.BeanE" init-method="init" destroy-method="destroy">
         <argument ref="c"/>
     </bean>
 

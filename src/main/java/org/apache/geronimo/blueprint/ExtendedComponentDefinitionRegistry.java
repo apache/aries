@@ -31,14 +31,6 @@ import org.osgi.service.blueprint.reflect.Target;
  */
 public interface ExtendedComponentDefinitionRegistry extends ComponentDefinitionRegistry {
 
-    String getDefaultInitMethod();
-
-    void setDefaultInitMethod(String defaultInitMethod);
-
-    String getDefaultDestroyMethod();
-
-    void setDefaultDestroyMethod(String defaultDestroyMethod);
-
     void registerTypeConverter(Target component);
 
     List<Target> getTypeConverters();

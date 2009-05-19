@@ -484,10 +484,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
      */
     protected Method getInitMethod(Object instance) throws ConstructionException {
         Method method = null;        
-        if (initMethod == null) {
-            ExtendedComponentDefinitionRegistry registry = blueprintContainer.getComponentDefinitionRegistry();
-            method = ReflectionUtils.getLifecycleMethod(instance.getClass(), registry.getDefaultInitMethod());
-        } else if (initMethod.length() > 0) {
+        if (initMethod != null && initMethod.length() > 0) {
             method = ReflectionUtils.getLifecycleMethod(instance.getClass(), initMethod);
             if (method == null) {
                 throw new ConstructionException("Component '" + getName() + "' does not have init-method: " + initMethod);
@@ -502,10 +499,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
      */
     public Method getDestroyMethod(Object instance) throws ConstructionException {
         Method method = null;        
-        if (destroyMethod == null) {
-            ExtendedComponentDefinitionRegistry registry = blueprintContainer.getComponentDefinitionRegistry();
-            method = ReflectionUtils.getLifecycleMethod(instance.getClass(), registry.getDefaultDestroyMethod());
-        } else if (destroyMethod.length() > 0) {
+        if (destroyMethod != null && destroyMethod.length() > 0) {
             method = ReflectionUtils.getLifecycleMethod(instance.getClass(), destroyMethod);
             if (method == null) {
                 throw new ConstructionException("Component '" + getName() + "' does not have destroy-method: " + destroyMethod);
