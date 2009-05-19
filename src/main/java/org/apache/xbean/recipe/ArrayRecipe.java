@@ -17,27 +17,22 @@
 package org.apache.xbean.recipe;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.osgi.service.blueprint.convert.ConversionService;
-import org.apache.geronimo.blueprint.utils.ConversionUtils;
-
 /**
  * @version $Rev$ $Date$
  */
 public class ArrayRecipe extends AbstractRecipe {
+
     private final List<Recipe> list;
     private Class typeClass;
     private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
-    private final ConversionService conversionService;
 
-    public ArrayRecipe(ConversionService conversionService, Class type) {
-        this.conversionService = conversionService;
+    public ArrayRecipe(Class type) {
         this.list = new ArrayList<Recipe>();
         this.typeClass = type;
     }
@@ -68,7 +63,7 @@ public class ArrayRecipe extends AbstractRecipe {
         return Collections.emptyList();
     }
 
-    protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
+    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
         Class type = typeClass != null ? typeClass : Object.class;
 
         // create array instance
@@ -91,7 +86,7 @@ public class ArrayRecipe extends AbstractRecipe {
             Object value;
             if (recipe != null) {
                 try {
-                    value = ConversionUtils.convert(recipe.create(Object.class, refAllowed), type, conversionService);
+                    value = convert(recipe.create(refAllowed), type);
                 } catch (Exception e) {
                     throw new ConstructionException("Unable to convert value " + recipe + " to type " + type, e);
                 }
@@ -110,23 +105,6 @@ public class ArrayRecipe extends AbstractRecipe {
         }
         
         return array;
-    }
-
-    private Class getType(Type expectedType) {       
-        Class expectedClass = RecipeHelper.toClass(expectedType);
-        if (expectedClass.isArray()) {
-            expectedClass = expectedClass.getComponentType();
-        }
-        Class type = expectedClass;
-        if (typeClass != null ) {
-            type = typeClass;
-            // in case where expectedType is a subclass of the assigned type
-            if (type.isAssignableFrom(expectedClass)) {
-                type = expectedClass;
-            }
-        }
-
-        return type;
     }
 
     public void add(Recipe value) {

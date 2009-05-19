@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.List;
 
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.DefaultExecutionContext;
@@ -28,14 +29,20 @@ import org.apache.xbean.recipe.ExecutionContext;
 import org.apache.xbean.recipe.NoSuchObjectException;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.Repository;
+import org.apache.xbean.recipe.Reference;
+import org.apache.xbean.recipe.UnresolvedReferencesException;
+import org.apache.geronimo.blueprint.utils.ConversionUtils;
+import org.osgi.service.blueprint.convert.ConversionService;
 
 /**
  */
 public class BlueprintObjectInstantiator  {
 
+    private ConversionService conversionService;
     private Repository repository;
 
-    public BlueprintObjectInstantiator(Repository repository) {
+    public BlueprintObjectInstantiator(ConversionService conversionService, Repository repository) {
+        this.conversionService = conversionService;
         this.repository = repository;
     }
     
@@ -58,15 +65,26 @@ public class BlueprintObjectInstantiator  {
             
             boolean createNewContext = !ExecutionContext.isContextSet();
             if (createNewContext) {
-                ExecutionContext.setContext(new DefaultExecutionContext(repository));
+                ExecutionContext.setContext(new DefaultExecutionContext(conversionService, repository));
             }
             
             try {
                 Object obj = createInstance(name);
+                try {
+                    obj = ConversionUtils.convert(obj, Object.class, conversionService);
+                } catch (Exception e) {
+                    throw new ConstructionException("Unable to convert instance " + name, e);
+                }
                 instances.put(name, obj);
             } finally {
                 if (createNewContext) {
+                    ExecutionContext context = ExecutionContext.getContext();
                     ExecutionContext.setContext(null);
+
+                    Map<String, List<Reference>> unresolvedRefs = context.getUnresolvedRefs();
+                    if (!unresolvedRefs.isEmpty()) {
+                        throw new UnresolvedReferencesException(unresolvedRefs);
+                    }
                 }
             }
         }
@@ -80,7 +98,7 @@ public class BlueprintObjectInstantiator  {
         }
         Object obj = recipe;
         if (recipe instanceof Recipe) {
-            obj = ((Recipe) recipe).create(Object.class, false);
+            obj = ((Recipe) recipe).create(false);
         }
         return obj;
     }

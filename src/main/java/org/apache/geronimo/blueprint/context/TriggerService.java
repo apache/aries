@@ -85,7 +85,7 @@ public class TriggerService implements ServiceFactory {
             if (recipe == null) {
                 return null;
             } else {
-                return (Map) recipe.create(Map.class, false);
+                return (Map) recipe.create(false);
             }
         } catch (Exception e) {
             LOGGER.debug("Failed to convert MapMetadata to Map", e);

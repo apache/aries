@@ -21,11 +21,10 @@ import java.util.Collections;
 import java.util.List;
 import java.lang.reflect.Type;
 
+import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
+
 public class ReferenceRecipe extends AbstractRecipe {
     private String referenceName;
-
-    public ReferenceRecipe() {
-    }
 
     public ReferenceRecipe(String referenceName) {
         this.referenceName = referenceName;
@@ -57,7 +56,7 @@ public class ReferenceRecipe extends AbstractRecipe {
         return getNestedRecipes();
     }
 
-    protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
+    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
         if (referenceName == null) {
             throw new ConstructionException("Reference name has not been set");
         }
@@ -83,7 +82,7 @@ public class ReferenceRecipe extends AbstractRecipe {
                     object = reference;
                 } else {
                     Recipe recipe = (Recipe) object;
-                    object = recipe.create(expectedType, false);
+                    object = recipe.create(false);
                 }
 
             }

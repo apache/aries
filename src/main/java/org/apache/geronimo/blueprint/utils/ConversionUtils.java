@@ -26,11 +26,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.osgi.service.blueprint.convert.ConversionService;
-import org.osgi.framework.ServiceReference;
-import org.apache.xbean.recipe.RecipeHelper;
 import static org.apache.xbean.recipe.RecipeHelper.toClass;
 import static org.apache.xbean.recipe.RecipeHelper.getTypeParameters;
-import org.apache.geronimo.blueprint.context.ServiceReferenceAccessor;
 
 /**
  * TODO: javadoc
@@ -42,7 +39,19 @@ public final class ConversionUtils {
 
     private ConversionUtils() { }
 
+    public static interface Convertible {
+
+        Object convert(Type type) throws Exception;
+    }
+
     public static Object convert(Object obj, Type type, ConversionService converter) throws Exception {
+        // First convert service proxies
+        if (obj instanceof Convertible) {
+            Object o = ((Convertible) obj).convert(type);
+            if (o != null) {
+                return o;
+            }
+        }
         // Handle arrays, collections and generics
         if (obj == null) {
             return null;
@@ -101,8 +110,6 @@ public final class ConversionUtils {
                 }
                 return newCol;
             }
-        } else if (type == ServiceReference.class && obj instanceof ServiceReferenceAccessor) {
-            return ((ServiceReferenceAccessor) obj).getServiceReference();
         }
         return converter.convert(obj, toClass(type));
     }

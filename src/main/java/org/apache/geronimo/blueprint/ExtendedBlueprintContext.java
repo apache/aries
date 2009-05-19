@@ -21,6 +21,7 @@ import java.util.List;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.convert.ConversionService;
+import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 
 /**
  * TODO: javadoc
@@ -36,4 +37,7 @@ public interface ExtendedBlueprintContext extends BlueprintContext {
 
     <T  extends ComponentMetadata> List<T> getComponentsMetadata(Class<T> type);
 
+    ExtendedComponentDefinitionRegistry getComponentDefinitionRegistry();
+
+    List<BeanProcessor> getBeanProcessors();
 }

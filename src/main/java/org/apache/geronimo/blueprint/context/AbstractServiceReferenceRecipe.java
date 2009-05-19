@@ -19,7 +19,6 @@
 package org.apache.geronimo.blueprint.context;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,9 +30,9 @@ import java.util.Set;
 
 import net.sf.cglib.proxy.Dispatcher;
 import net.sf.cglib.proxy.Enhancer;
-
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
 import org.apache.geronimo.blueprint.SatisfiableRecipe;
 import org.apache.geronimo.blueprint.utils.BundleDelegatingClassLoader;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
@@ -44,12 +43,10 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
-import org.osgi.service.blueprint.reflect.Listener;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract class for service reference recipes.
@@ -59,7 +56,7 @@ import org.slf4j.Logger;
  */
 public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe implements ServiceListener, SatisfiableRecipe {
 
-    protected final BlueprintContext blueprintContext;
+    protected final ExtendedBlueprintContext blueprintContext;
     protected final BlueprintContextEventSender sender;
     protected final ServiceReferenceMetadata metadata;
     protected final Recipe listenersRecipe;
@@ -69,7 +66,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected ServiceReferenceTracker tracker;
     protected boolean optional;
 
-    protected AbstractServiceReferenceRecipe(BlueprintContext blueprintContext,
+    protected AbstractServiceReferenceRecipe(ExtendedBlueprintContext blueprintContext,
                                              BlueprintContextEventSender sender,
                                              ServiceReferenceMetadata metadata,
                                              Recipe listenersRecipe) {
@@ -157,7 +154,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     protected void createListeners() throws ClassNotFoundException {
         if (listenersRecipe != null) {
-            listeners = (List<Listener>) listenersRecipe.create(proxyClassLoader);
+            listeners = (List<Listener>) listenersRecipe.create();
             for (Listener listener : listeners) {
                 listener.init(getAllClasses(metadata.getInterfaceNames()));
             }

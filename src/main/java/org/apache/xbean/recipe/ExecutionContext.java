@@ -20,8 +20,10 @@ package org.apache.xbean.recipe;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.lang.reflect.Type;
 
 public abstract class ExecutionContext {
+
     private static final ThreadLocal<ExecutionContext> context = new ThreadLocal<ExecutionContext>();
 
     public static boolean isContextSet() {
@@ -89,9 +91,7 @@ public abstract class ExecutionContext {
      */
     public abstract void addObject(String name, Object object, boolean partialObject);
     
-    public void addObject(String name, Object object) {
-        addObject(name, object, false);
-    }
+    public abstract void addObject(String name, Object object);
 
     /**
      * Adds a reference to an object to this context.  If an object is already registered under
@@ -109,15 +109,9 @@ public abstract class ExecutionContext {
      */
     public abstract Map<String, List<Reference>> getUnresolvedRefs();
 
-    /**
-     * Gets the class loader used for loading of all classes during the
-     * life of this execution context
-     * @return the class loader for loading classes in this context
-     */
-    public abstract ClassLoader getClassLoader();
-    
     public abstract boolean containsCreatedObject(String name);
     
     public abstract Object getCreatedObject(String name);
-    
+
+    public abstract Object convert(Object value, Type type) throws Exception;
 }

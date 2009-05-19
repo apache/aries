@@ -39,12 +39,6 @@ public final class RecipeHelper {
     private RecipeHelper() {
     }
 
-    public static Class loadClass(String name) throws ClassNotFoundException {
-        ClassLoader classLoader = ExecutionContext.getContext().getClassLoader();
-        Class<?> type = Class.forName(name, true, classLoader);
-        return type;
-    }
-
     public static boolean hasDefaultConstructor(Class type) {
         if (!Modifier.isPublic(type.getModifiers())) {
             return false;
@@ -60,21 +54,6 @@ public final class RecipeHelper {
             }
         }
         return false;
-    }
-
-    public static boolean isSimpleType(Object o) {
-        return  o == null ||
-                o instanceof Boolean ||
-                o instanceof Character ||
-                o instanceof Byte ||
-                o instanceof Short ||
-                o instanceof Integer ||
-                o instanceof Long ||
-                o instanceof Float ||
-                o instanceof Double ||
-                o instanceof String ||
-                o instanceof Recipe;
-
     }
 
     public static boolean isInstance(Type t, Object instance) {

@@ -89,4 +89,12 @@
         </argument>
     </bean>
 
+    <bean id="booleanPrim" class="org.apache.geronimo.blueprint.pojos.BeanF">
+        <argument><value type="boolean">no</value></argument>
+    </bean>
+
+    <bean id="booleanWrapped" class="org.apache.geronimo.blueprint.pojos.BeanF">
+        <argument type="java.lang.Boolean" value="no" />
+    </bean>
+
 </blueprint>

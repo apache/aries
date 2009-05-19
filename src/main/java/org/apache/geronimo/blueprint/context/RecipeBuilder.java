@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 import org.apache.xbean.recipe.ArrayRecipe;
@@ -34,7 +35,11 @@ import org.apache.xbean.recipe.CollectionRecipe;
 import org.apache.xbean.recipe.MapRecipe;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.ReferenceNameRecipe;
-import org.apache.xbean.recipe.Repository;
+import org.apache.xbean.recipe.ConstructionException;
+import org.apache.geronimo.blueprint.context.BlueprintObjectRecipe;
+import org.apache.xbean.recipe.ValueRecipe;
+import org.apache.xbean.recipe.ReferenceRecipe;
+import org.apache.xbean.recipe.DefaultRepository;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -85,7 +90,7 @@ public class RecipeBuilder {
         this.registry = blueprintContext.getComponentDefinitionRegistry();
     }
     
-    private void addBuiltinComponents(BlueprintObjectRepository repository) {
+    private void addBuiltinComponents(DefaultRepository repository) {
         if (blueprintContext != null) {
             repository.putDefault("blueprintContext", blueprintContext);
             repository.putDefault("bundleContext", blueprintContext.getBundleContext());
@@ -94,8 +99,8 @@ public class RecipeBuilder {
         }
     }
     
-    public BlueprintObjectRepository createRepository() throws Exception {
-        BlueprintObjectRepository repository = new BlueprintObjectRepository();
+    public DefaultRepository createRepository() throws Exception {
+        DefaultRepository repository = new DefaultRepository();
         addBuiltinComponents(repository);
         
         // Create component recipes
@@ -107,7 +112,7 @@ public class RecipeBuilder {
         return repository;
     }
 
-    private void addRecipe(BlueprintObjectRepository repository, Recipe recipe) {
+    private void addRecipe(DefaultRepository repository, Recipe recipe) {
         repository.add(recipe.getName(), recipe); 
     }
 
@@ -135,7 +140,7 @@ public class RecipeBuilder {
         }
         Recipe comparatorRecipe = null;
         if (metadata.getComparator() != null) {
-            comparatorRecipe = (Recipe) getValue(metadata.getComparator(), Comparator.class);
+            comparatorRecipe = getValue(metadata.getComparator(), Comparator.class);
         }
         CollectionBasedServiceReferenceRecipe recipe = new CollectionBasedServiceReferenceRecipe(
                                                                    blueprintContext,
@@ -230,12 +235,23 @@ public class RecipeBuilder {
                 beanArguments = beanArgumentsCopy;
             }
             List<Object> arguments = new ArrayList<Object>();
+            List<Class> argTypes = new ArrayList<Class>();
             for (BeanArgument argument : beanArguments) {
                 Recipe value = getValue(argument.getValue(), null);
                 arguments.add(value);
+                String valueType = argument.getValueType();
+                if (valueType != null) {
+                    try {
+                        argTypes.add(loadClass(valueType));
+                    } catch (Throwable t) {
+                        throw new ConstructionException("Error loading class " + valueType + " when instanciating bean " + recipe.getName());
+                    }
+                } else {
+                    argTypes.add(null);
+                }
             }
             recipe.setArguments(arguments);
-            recipe.setBeanArguments(beanArguments);
+            recipe.setArgTypes(argTypes);
             recipe.setReorderArguments(!hasIndex);
         }
         recipe.setFactoryMethod(local.getFactoryMethodName());
@@ -283,7 +299,7 @@ public class RecipeBuilder {
             ValueMetadata stringValue = (ValueMetadata) v;
             Class type = loadClass(stringValue.getTypeName());
             type = (type == null) ? groupingType : type;
-            return new ValueRecipe(getConversionService(), stringValue, type);
+            return new ValueRecipe(stringValue, type);
         } else if (v instanceof RefMetadata) {
             // TODO: make it work with property-placeholders?
             String componentName = ((RefMetadata) v).getComponentId();
@@ -293,7 +309,7 @@ public class RecipeBuilder {
             Class cl = collectionMetadata.getCollectionClass();
             Class type = loadClass(collectionMetadata.getValueTypeName());
             if (cl == Object[].class) {
-                ArrayRecipe ar = new ArrayRecipe(getConversionService(), type);
+                ArrayRecipe ar = new ArrayRecipe(type);
                 for (Metadata lv : collectionMetadata.getValues()) {
                     ar.add(getValue(lv, type));
                 }
@@ -350,7 +366,7 @@ public class RecipeBuilder {
         }
     }
         
-    public static Class loadClass(BlueprintContextImpl context, String typeName) throws ClassNotFoundException {
+    public static Class loadClass(ExtendedBlueprintContext context, String typeName) throws ClassNotFoundException {
         if (typeName == null) {
             return null;
         }

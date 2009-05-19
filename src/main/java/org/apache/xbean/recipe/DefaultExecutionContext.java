@@ -17,13 +17,26 @@
  */
 package org.apache.xbean.recipe;
 
-import java.util.*;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import org.apache.geronimo.blueprint.utils.ConversionUtils;
+import org.osgi.service.blueprint.convert.ConversionService;
 
 public class DefaultExecutionContext extends ExecutionContext {
     /**
      * The source of recipes and existing objects.
      */
     private Repository repository;
+
+    private ConversionService conversionService;
 
     /**
      * Contains partial objects.
@@ -43,12 +56,14 @@ public class DefaultExecutionContext extends ExecutionContext {
      */
     private final SortedMap<String, List<Reference>> unresolvedRefs = new TreeMap<String, List<Reference>>();
 
-    public DefaultExecutionContext() {
-        this(new DefaultRepository());
+    public DefaultExecutionContext(ConversionService conversionService) {
+        this(conversionService, new DefaultRepository());
     }
 
-    public DefaultExecutionContext(Repository repository) {
+    public DefaultExecutionContext(ConversionService conversionService, Repository repository) {
+        if (conversionService == null) throw new NullPointerException("conversionService is null");
         if (repository == null) throw new NullPointerException("repository is null");
+        this.conversionService = conversionService;
         this.repository = repository;
     }
 
@@ -158,9 +173,7 @@ public class DefaultExecutionContext extends ExecutionContext {
         return unresolvedRefs;
     }
 
-    public ClassLoader getClassLoader() {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        if (classLoader == null) classLoader = getClass().getClassLoader();
-        return classLoader;
+    public Object convert(Object value, Type type) throws Exception {
+        return ConversionUtils.convert(value, type, conversionService);
     }
 }

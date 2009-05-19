@@ -20,17 +20,21 @@ import java.io.Serializable;
 import java.util.List;
 import java.lang.reflect.Type;
 
+import org.apache.geronimo.blueprint.Destroyable;
+
 /**
  * @version $Rev: 6680 $ $Date: 2005-12-24T04:38:27.427468Z $
  */
-public interface Recipe extends Serializable {
+public interface Recipe {
+
     String getName();
 
     Object create() throws ConstructionException;
-    Object create(ClassLoader classLoader) throws ConstructionException;
-    Object create(Type expectedType, boolean lazyRefAllowed) throws ConstructionException;
+    Object create(boolean lazyRefAllowed) throws ConstructionException;
 
     List<Recipe> getNestedRecipes();
 
     List<Recipe> getConstructorRecipes();
+
+    Destroyable getDestroyable(Object instance);
 }

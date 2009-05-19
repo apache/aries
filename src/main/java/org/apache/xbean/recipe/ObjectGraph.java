@@ -25,16 +25,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
+import java.lang.reflect.Type;
+
+import org.osgi.service.blueprint.convert.ConversionService;
 
 public class ObjectGraph {
+
+    private ConversionService conversionService;
     private Repository repository;
 
-    public ObjectGraph() {
-        this(new DefaultRepository());
-    }
-
-    public ObjectGraph(Repository repository) {
+    public ObjectGraph(ConversionService conversionService, Repository repository) {
+        if (conversionService == null) throw new NullPointerException("conversionService is null");
         if (repository == null) throw new NullPointerException("repository is null");
+        this.conversionService = conversionService;
         this.repository = repository;
     }
 
@@ -64,7 +67,7 @@ public class ObjectGraph {
         // setup execution context
         boolean createNewContext = !ExecutionContext.isContextSet();
         if (createNewContext) {
-            ExecutionContext.setContext(new DefaultExecutionContext(repository));
+            ExecutionContext.setContext(new DefaultExecutionContext(conversionService, repository));
         }
         WrapperExecutionContext wrapperContext = new WrapperExecutionContext(ExecutionContext.getContext());
         ExecutionContext.setContext(wrapperContext);
@@ -90,7 +93,7 @@ public class ObjectGraph {
                 String name = entry.getKey();
                 Recipe recipe = entry.getValue();
                 if (!wrapperContext.containsObject(name) || wrapperContext.getObject(name) instanceof Recipe) {
-                    recipe.create(Object.class, false);
+                    recipe.create(false);
                 }
             }
 
@@ -272,6 +275,10 @@ public class ObjectGraph {
             constructedObject.put(name, object);
         }
 
+        public void addObject(String name, Object object) {
+            addObject(name, object, false);
+        }
+
         public void addReference(Reference reference) {
             executionContext.addReference(reference);
         }
@@ -280,16 +287,16 @@ public class ObjectGraph {
             return executionContext.getUnresolvedRefs();
         }
 
-        public ClassLoader getClassLoader() {
-            return executionContext.getClassLoader();
-        }
-
         public boolean containsCreatedObject(String name) {
             return executionContext.containsCreatedObject(name);
         }
 
         public Object getCreatedObject(String name) {
             return executionContext.getCreatedObject(name);
+        }
+
+        public Object convert(Object value, Type type) throws Exception {
+            return executionContext.convert(value, type);
         }
     }
 }

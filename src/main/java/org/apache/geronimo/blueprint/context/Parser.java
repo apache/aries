@@ -834,8 +834,8 @@ public class Parser {
             } else if (MEMBER_TYPE_SERVICE_REFERENCE.equals(memberType)) {
                 references.setMemberType(RefCollectionMetadata.MEMBER_TYPE_SERVICE_REFERENCE);
             }
-        } else {
-            references.setMemberType(RefCollectionMetadata.MEMBER_TYPE_SERVICE_INSTANCE);
+//        } else {
+//            references.setMemberType(RefCollectionMetadata.MEMBER_TYPE_SERVICE_INSTANCE);
         }
         if (element.hasAttribute(ORDERING_BASIS_ATTRIBUTE)) {
             String ordering = element.getAttribute(ORDERING_BASIS_ATTRIBUTE);
