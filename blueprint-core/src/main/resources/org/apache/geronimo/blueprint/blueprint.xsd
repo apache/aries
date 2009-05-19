@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
     /*
-    * $Revision: 7017 $
+    * $Revision: 7065 $
     *
     * Copyright (c) OSGi Alliance (2008, 2009). All Rights Reserved.
     *
@@ -101,36 +101,6 @@
                   for <bean> components.  If not specified, the global
                   default is "false".  Individual <bean> components may
                   override the default
-                  ]]>
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="default-init-method" type="Tmethod">
-            <xsd:annotation>
-                <xsd:documentation>
-                  <![CDATA[
-                  Specifies the default init-method that will be defined
-                  for <bean> components.  If not specified, no default
-                  init-method is defined.  It is not an error for a
-                  bean to not implement the indicated default init-method.
-                  The value will be ignored.  A bean can also specify
-                  a different init-method or disable the init-method
-                  call by specifying an init-method value of "".
-                  ]]>
-                </xsd:documentation>
-            </xsd:annotation>
-        </xsd:attribute>
-        <xsd:attribute name="default-destroy-method" type="Tmethod">
-            <xsd:annotation>
-                <xsd:documentation>
-                  <![CDATA[
-                  Specifies the default destroy-method that will be defined
-                  for <bean> components.  If not specified, no default
-                  destroy-method is defined.  It is not an error for a
-                  bean to not implement the indicated default destroy-method.
-                  The value will be ignored.  A bean can also specify
-                  a different destroy-method or disable the destroy-method
-                  call by specifying a destroy-method value of "".
                   ]]>
                 </xsd:documentation>
             </xsd:annotation>

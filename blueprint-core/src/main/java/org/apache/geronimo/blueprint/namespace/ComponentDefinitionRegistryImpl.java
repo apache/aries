@@ -43,8 +43,6 @@ public class ComponentDefinitionRegistryImpl implements ExtendedComponentDefinit
 
     private final Map<String, ComponentMetadata> components;
     private final List<Target> typeConverters;
-    private String defaultInitMethod;
-    private String defaultDestroyMethod;
 
     public ComponentDefinitionRegistryImpl() {
         components = new ConcurrentHashMap<String, ComponentMetadata>();
@@ -88,22 +86,6 @@ public class ComponentDefinitionRegistryImpl implements ExtendedComponentDefinit
 
     public List<Target> getTypeConverters() {
         return typeConverters;
-    }
-
-    public void setDefaultInitMethod(String method) {
-        defaultInitMethod = method;
-    }
-    
-    public String getDefaultInitMethod() {
-        return defaultInitMethod;
-    }
-    
-    public void setDefaultDestroyMethod(String method) {
-        defaultDestroyMethod = method;
-    }
-    
-    public String getDefaultDestroyMethod() {
-        return defaultDestroyMethod;
     }
     
 }

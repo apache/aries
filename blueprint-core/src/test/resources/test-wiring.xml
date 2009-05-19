@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           default-availability="mandatory"
-           default-init-method="init"
-           default-destroy-method="destroy">
+           default-availability="mandatory" >
 
     <type-converters>
             <bean id="converter1" class="org.apache.geronimo.blueprint.pojos.ConverterA">
@@ -21,7 +19,7 @@
         <property name="uri" value="urn:myuri" />
     </bean>
     
-    <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB" init-method = "init">
+    <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB" init-method = "init" destroy-method = "destroy" >
         <property name="uri" value="urn:myuri" />
     </bean>
 

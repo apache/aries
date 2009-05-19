@@ -131,8 +131,6 @@ public class Parser {
     public static final String KEY_ELEMENT = "key";
     public static final String COMPARATOR_ELEMENT = "comparator";
     public static final String DEFAULT_LAZY_INIT_ATTRIBUTE = "default-lazy-init";
-    public static final String DEFAULT_INIT_METHOD_ATTRIBUTE = "default-init-method";
-    public static final String DEFAULT_DESTROY_METHOD_ATTRIBUTE = "default-destroy-method";
     public static final String DEFAULT_TIMEOUT_ATTRIBUTE = "default-timeout";
     public static final String DEFAULT_AVAILABILITY_ATTRIBUTE = "default-availability";
     public static final String NAME_ATTRIBUTE = "name";
@@ -201,8 +199,6 @@ public class Parser {
     private String defaultTimeout;
     private String defaultAvailability;
     private String defaultLazyInit;
-    private String defaultInitMethod;
-    private String defaultDestroyMethod;
     private Set<URI> namespaces;
     private boolean validated;
 
@@ -316,8 +312,6 @@ public class Parser {
         defaultTimeout = TIMEOUT_DEFAULT;
         defaultAvailability = AVAILABILITY_DEFAULT;
         defaultLazyInit = LAZY_INIT_DEFAULT;
-        defaultInitMethod = null;
-        defaultDestroyMethod = null;
         Element root = doc.getDocumentElement();
         if (!isBlueprintNamespace(root.getNamespaceURI()) ||
                 !nodeNameEquals(root, BLUEPRINT_ELEMENT)) {
@@ -327,22 +321,13 @@ public class Parser {
         if (root.hasAttribute(DEFAULT_LAZY_INIT_ATTRIBUTE)) {
             defaultLazyInit = root.getAttribute(DEFAULT_LAZY_INIT_ATTRIBUTE);
         }
-        if (root.hasAttribute(DEFAULT_INIT_METHOD_ATTRIBUTE)) {
-            defaultInitMethod = root.getAttribute(DEFAULT_INIT_METHOD_ATTRIBUTE);
-        }
-        if (root.hasAttribute(DEFAULT_DESTROY_METHOD_ATTRIBUTE)) {
-            defaultDestroyMethod = root.getAttribute(DEFAULT_DESTROY_METHOD_ATTRIBUTE);
-        }
         if (root.hasAttribute(DEFAULT_TIMEOUT_ATTRIBUTE)) {
             defaultTimeout = root.getAttribute(DEFAULT_TIMEOUT_ATTRIBUTE);
         }
         if (root.hasAttribute(DEFAULT_AVAILABILITY_ATTRIBUTE)) {
             defaultAvailability = root.getAttribute(DEFAULT_AVAILABILITY_ATTRIBUTE);
         }
-        
-        registry.setDefaultInitMethod(defaultInitMethod);
-        registry.setDefaultDestroyMethod(defaultDestroyMethod);
-        
+                
         /*
         // Parse custom attributes
         NamedNodeMap attributes = root.getAttributes();

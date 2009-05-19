@@ -2,9 +2,7 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-            default-availability="mandatory"
-            default-init-method = "init"
-            default-destroy-method = "destroy" >
+            default-availability="mandatory" >
 
     <bean id="method" class="org.apache.geronimo.blueprint.pojos.PojoGenerics">
         <property name="list">
