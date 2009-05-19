@@ -14,24 +14,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.osgi.service.blueprint.context;
+package org.osgi.service.blueprint.container;
 
-public class NoSuchComponentException extends RuntimeException {
+public class ComponentDefinitionException extends RuntimeException {
     
-    private String componentName;
-    
-    public NoSuchComponentException(String componentName) {
-        this.componentName = componentName;
-    }
-    
-    public String getComponentName() {
-        return this.componentName;
+    public ComponentDefinitionException(String explanation) {
+        super(explanation);
     }
       
-    public String getMessage() {
-        return "No component named '" +
-               (this.componentName == null ? "<null>" : this.componentName) +
-               "' could be found";
-    }
-
 }

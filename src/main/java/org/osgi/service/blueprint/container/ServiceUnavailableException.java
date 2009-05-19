@@ -14,12 +14,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.osgi.service.blueprint.context;
+package org.osgi.service.blueprint.container;
 
-public class ComponentDefinitionException extends RuntimeException {
+public class ServiceUnavailableException extends RuntimeException {
     
-    public ComponentDefinitionException(String explanation) {
-        super(explanation);
+    private Class serviceType;
+    private String filter;
+
+    public ServiceUnavailableException(String message, Class serviceType, String filter) {
+        super(message);
+        this.serviceType = serviceType;
+        this.filter = filter;
     }
-      
+    
+    public Class getServiceType() {
+        return this.serviceType;
+    }
+    
+    public String getFilter() {
+        return this.filter;
+    }
+
 }

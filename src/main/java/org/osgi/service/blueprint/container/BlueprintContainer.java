@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.osgi.service.blueprint.context;
+package org.osgi.service.blueprint.container;
 
 import java.util.Collection;
 import java.util.Set;
@@ -25,7 +25,7 @@ import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 
-public interface BlueprintContext {
+public interface BlueprintContainer {
     
     static final int CONFIGURATION_ADMIN_OBJECT_DELTED = 1;
    

@@ -14,25 +14,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.osgi.service.blueprint.context;
+package org.osgi.service.blueprint.container;
 
-public class ServiceUnavailableException extends RuntimeException {
-    
-    private Class serviceType;
-    private String filter;
+import org.osgi.framework.Bundle;
 
-    public ServiceUnavailableException(String message, Class serviceType, String filter) {
-        super(message);
-        this.serviceType = serviceType;
-        this.filter = filter;
-    }
+public interface BlueprintContainerListener {
     
-    public Class getServiceType() {
-        return this.serviceType;
-    }
+    void contextCreated(Bundle forBundle);
     
-    public String getFilter() {
-        return this.filter;
-    }
-
+    void contextCreationFailed(Bundle forBundle, Throwable rootCause);    
+      
 }
