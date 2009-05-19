@@ -15,19 +15,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.xbean.recipe;
+package org.apache.geronimo.blueprint.di;
 
 import java.util.Collections;
 import java.util.List;
-import java.lang.reflect.Type;
-
-import org.apache.xbean.recipe.AbstractRecipe;
-import org.apache.xbean.recipe.ConstructionException;
-import org.apache.xbean.recipe.ExecutionContext;
-import org.apache.xbean.recipe.NoSuchObjectException;
-import org.apache.xbean.recipe.Recipe;
-import org.apache.xbean.recipe.RecipeHelper;
-import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
 
 /*
  * The ReferenceNameRecipe is used to inject the reference name into the object (as a String).

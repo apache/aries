@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.xbean.recipe;
+package org.apache.geronimo.blueprint.utils;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -23,20 +23,12 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 
 /**
  * @version $Rev: 6687 $ $Date: 2005-12-28T21:08:56.733437Z $
  */
-public final class RecipeHelper {
-    private RecipeHelper() {
+public final class TypeUtils {
+    private TypeUtils() {
     }
 
     public static boolean hasDefaultConstructor(Class type) {

@@ -18,8 +18,8 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.IdRefMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableIdRefMetadata;
+import org.osgi.service.blueprint.reflect.IdRefMetadata;
 
 /**
  * Implementation of IdRefMetadata

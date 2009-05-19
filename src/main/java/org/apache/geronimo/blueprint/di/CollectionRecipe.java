@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.xbean.recipe;
+package org.apache.geronimo.blueprint.di;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.apache.geronimo.blueprint.utils.TypeUtils;
 
 /**
  * @version $Rev: 6685 $ $Date: 2005-12-28T00:29:37.967210Z $
@@ -69,7 +71,7 @@ public class CollectionRecipe extends AbstractRecipe {
     protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
         Class type = getType(Object.class);
 
-        if (!RecipeHelper.hasDefaultConstructor(type)) {
+        if (!TypeUtils.hasDefaultConstructor(type)) {
             throw new ConstructionException("Type does not have a default constructor " + type.getName());
         }
 
@@ -125,7 +127,7 @@ public class CollectionRecipe extends AbstractRecipe {
     }
 
     private Class getType(Type expectedType) {
-        Class expectedClass = RecipeHelper.toClass(expectedType);
+        Class expectedClass = TypeUtils.toClass(expectedType);
         if (typeClass != null) {
             Class type = typeClass;
             // if expectedType is a subclass of the assigned type,
@@ -142,7 +144,7 @@ public class CollectionRecipe extends AbstractRecipe {
     }
 
     private Class getCollection(Class type) {
-        if (RecipeHelper.hasDefaultConstructor(type)) {
+        if (TypeUtils.hasDefaultConstructor(type)) {
             return type;
         } else if (SortedSet.class.isAssignableFrom(type)) {
             return TreeSet.class;

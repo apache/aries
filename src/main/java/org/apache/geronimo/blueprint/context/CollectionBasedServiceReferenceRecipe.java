@@ -18,8 +18,8 @@
  */
 package org.apache.geronimo.blueprint.context;
 
-import java.lang.reflect.Type;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,27 +33,25 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import net.sf.cglib.proxy.Dispatcher;
-
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
+import org.apache.geronimo.blueprint.di.ConstructionException;
+import org.apache.geronimo.blueprint.di.Recipe;
+import org.apache.geronimo.blueprint.utils.TypeUtils;
+import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.apache.geronimo.blueprint.utils.DynamicCollection;
 import org.apache.geronimo.blueprint.utils.DynamicList;
 import org.apache.geronimo.blueprint.utils.DynamicSet;
 import org.apache.geronimo.blueprint.utils.DynamicSortedList;
 import org.apache.geronimo.blueprint.utils.DynamicSortedSet;
-import org.apache.geronimo.blueprint.utils.ConversionUtils;
-import org.apache.xbean.recipe.ConstructionException;
-import org.apache.xbean.recipe.Recipe;
-import org.apache.xbean.recipe.RecipeHelper;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.context.BlueprintContext;
-import org.osgi.service.blueprint.context.ServiceUnavailableException;
 import org.osgi.service.blueprint.context.ComponentDefinitionException;
+import org.osgi.service.blueprint.context.ServiceUnavailableException;
 import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A recipe to create a managed collection of service references
@@ -268,10 +266,10 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             if (Object.class == type) {
                 return this;
             }
-            if (!Collection.class.isAssignableFrom(RecipeHelper.toClass(type))) {
+            if (!Collection.class.isAssignableFrom(TypeUtils.toClass(type))) {
                 throw new ComponentDefinitionException("<ref-list/> and <ref-set/> can only be converted to other collections, not " + type);
             }
-            if (RecipeHelper.toClass(type).isInstance(this)) {
+            if (TypeUtils.toClass(type).isInstance(this)) {
                 Boolean useRef = null;
                 if (type instanceof ParameterizedType) {
                     Type[] args = ((ParameterizedType) type).getActualTypeArguments();

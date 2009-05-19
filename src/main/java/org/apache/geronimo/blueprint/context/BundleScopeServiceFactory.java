@@ -24,10 +24,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.xbean.recipe.ObjectGraph;
-import org.apache.xbean.recipe.Repository;
-import org.apache.geronimo.blueprint.context.BlueprintObjectRecipe;
-import org.apache.xbean.recipe.DefaultRepository;
+import org.apache.geronimo.blueprint.di.DefaultRepository;
+import org.apache.geronimo.blueprint.di.ObjectGraph;
+import org.apache.geronimo.blueprint.di.Repository;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;

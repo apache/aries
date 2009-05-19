@@ -14,27 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.xbean.recipe;
+package org.apache.geronimo.blueprint.di;
 
 import java.lang.reflect.Type;
+import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Dictionary;
-import java.util.AbstractMap;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.osgi.service.blueprint.convert.ConversionService;
-import org.apache.geronimo.blueprint.utils.ConversionUtils;
-import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
+import org.apache.geronimo.blueprint.utils.TypeUtils;
 
 /**
  * @version $Rev: 6687 $ $Date: 2005-12-28T21:08:56.733437Z $
@@ -86,7 +83,7 @@ public class MapRecipe extends AbstractRecipe {
     protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
         Class mapType = getType(Object.class);
 
-        if (!RecipeHelper.hasDefaultConstructor(mapType)) {
+        if (!TypeUtils.hasDefaultConstructor(mapType)) {
             throw new ConstructionException("Type does not have a default constructor " + mapType.getName());
         }
 
@@ -141,7 +138,7 @@ public class MapRecipe extends AbstractRecipe {
     }
 
     private Class getType(Type expectedType) {
-        Class expectedClass = RecipeHelper.toClass(expectedType);
+        Class expectedClass = TypeUtils.toClass(expectedType);
         if (typeClass != null) {
             Class type = typeClass;
             // if expectedType is a subclass of the assigned type,
@@ -158,7 +155,7 @@ public class MapRecipe extends AbstractRecipe {
     }
     
     private Class getMap(Class type) {
-        if (RecipeHelper.hasDefaultConstructor(type)) {
+        if (TypeUtils.hasDefaultConstructor(type)) {
             return type;
         } else if (SortedMap.class.isAssignableFrom(type)) {
             return TreeMap.class;

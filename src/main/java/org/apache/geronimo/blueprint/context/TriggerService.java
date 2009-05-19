@@ -18,13 +18,12 @@
  */
 package org.apache.geronimo.blueprint.context;
 
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
-import org.apache.xbean.recipe.Recipe;
+import org.apache.geronimo.blueprint.di.Recipe;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;

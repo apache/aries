@@ -18,8 +18,8 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableComponentMetadata;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
 /**
  * Implementation of ComponentMetadata

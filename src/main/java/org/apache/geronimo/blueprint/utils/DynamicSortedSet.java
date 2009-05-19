@@ -18,11 +18,10 @@
  */
 package org.apache.geronimo.blueprint.utils;
 
-import java.util.Comparator;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.SortedSet;
+import java.util.Comparator;
 import java.util.NoSuchElementException;
+import java.util.SortedSet;
 
 /**
  *

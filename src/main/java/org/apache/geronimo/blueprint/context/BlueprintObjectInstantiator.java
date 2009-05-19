@@ -20,17 +20,17 @@ package org.apache.geronimo.blueprint.context;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.xbean.recipe.ConstructionException;
-import org.apache.xbean.recipe.DefaultExecutionContext;
-import org.apache.xbean.recipe.ExecutionContext;
-import org.apache.xbean.recipe.NoSuchObjectException;
-import org.apache.xbean.recipe.Recipe;
-import org.apache.xbean.recipe.Repository;
-import org.apache.xbean.recipe.Reference;
-import org.apache.xbean.recipe.UnresolvedReferencesException;
+import org.apache.geronimo.blueprint.di.ConstructionException;
+import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
+import org.apache.geronimo.blueprint.di.ExecutionContext;
+import org.apache.geronimo.blueprint.di.NoSuchObjectException;
+import org.apache.geronimo.blueprint.di.Recipe;
+import org.apache.geronimo.blueprint.di.Reference;
+import org.apache.geronimo.blueprint.di.Repository;
+import org.apache.geronimo.blueprint.di.UnresolvedReferencesException;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.osgi.service.blueprint.convert.ConversionService;
 

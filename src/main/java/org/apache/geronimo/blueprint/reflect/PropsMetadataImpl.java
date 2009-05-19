@@ -18,15 +18,15 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
-import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.MapEntry;
-import org.osgi.service.blueprint.reflect.NonNullMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
 import org.apache.geronimo.blueprint.mutable.MutablePropsMetadata;
+import org.osgi.service.blueprint.reflect.MapEntry;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.NonNullMetadata;
+import org.osgi.service.blueprint.reflect.PropsMetadata;
 
 /**
  * Implementation of PropsMetadata

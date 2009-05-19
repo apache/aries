@@ -18,9 +18,9 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
+import org.apache.geronimo.blueprint.mutable.MutableListener;
 import org.osgi.service.blueprint.reflect.Listener;
 import org.osgi.service.blueprint.reflect.Target;
-import org.apache.geronimo.blueprint.mutable.MutableListener;
 
 /**
  * Implementation of Listener

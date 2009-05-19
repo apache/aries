@@ -17,7 +17,6 @@
 package org.apache.geronimo.blueprint.convert;
 
 import java.io.ByteArrayInputStream;
-import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -30,7 +29,7 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 
 import org.apache.geronimo.blueprint.context.BlueprintContextImpl;
-import org.apache.xbean.recipe.RecipeHelper;
+import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.convert.Converter;
 
@@ -75,7 +74,7 @@ public class ConversionServiceImpl implements ConversionService {
     }
     
     public Object convert(Object fromValue, Class toType) throws Exception {
-        if (RecipeHelper.isInstance(toType, fromValue)) {
+        if (TypeUtils.isInstance(toType, fromValue)) {
             return fromValue;
         }
         Object value = doConvert(fromValue, toType);        
