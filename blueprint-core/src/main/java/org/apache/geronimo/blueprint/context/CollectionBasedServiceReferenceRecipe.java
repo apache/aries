@@ -280,12 +280,15 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
                 if (references == null) {
                     references = useRef != null ? useRef : false;
                     LOGGER.debug("ManagedCollection references={}", references);
-                } else if (useRef != null && references.booleanValue() != useRef.booleanValue()) {
-                    throw new ComponentDefinitionException("The same <ref-list/> or <ref-set/> can not be " +
-                            "injected as Collection<ServiceReference> and Collection<NotServiceReference> at the same time");
+                    return this;
+                } else if (useRef == null || references.booleanValue() == useRef.booleanValue()) {
+                    return this;
                 }
-                return this;
+                // TODO: create a new collectio if needed?
+                throw new ComponentDefinitionException("The same <ref-list/> or <ref-set/> can not be " +
+                        "injected as Collection<ServiceReference> and Collection<NotServiceReference> at the same time");
             } else {
+                // TODO: create a new collectio if needed?
                 throw new ComponentDefinitionException("Unsupported conversion to " + type);                
             }
         }
