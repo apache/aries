@@ -35,7 +35,7 @@ import java.util.Set;
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
-import org.apache.xbean.recipe.MissingAccessorException;
+import org.apache.geronimo.blueprint.di.MissingAccessorException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
