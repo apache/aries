@@ -60,6 +60,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.ServiceFactory;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.ComponentDefinitionException;
 import org.osgi.service.blueprint.context.NoSuchComponentException;
@@ -271,7 +272,6 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         } else {
                             // TODO: pass correct parameters
                             // TODO: do we need to send one event for each missing reference ?
-                            // TODO: create a timer, then fail after it elapsed
                             sender.sendWaiting(getBundleContext().getBundle(), null, null);
                             state = State.WaitForInitialReferences2;
                         }
@@ -722,6 +722,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
             executors.submit(this);
         }
     }
+
 }
 
 
