@@ -16,18 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.context;
+package org.apache.geronimo.blueprint.pojos;
 
-import org.osgi.framework.ServiceReference;
+public class BeanF {
 
-/**
- * This interface is added automatically to each service proxy in order to
- * obtain the ServiceReference associated with the actual service. 
- * This is used during injection so that a service object can either be injected
- * as itself or as a ServiceReference.
- */
-public interface ServiceReferenceAccessor {
-    
-    ServiceReference getServiceReference();
-    
+    private Boolean wrapped;
+    private Boolean prim;
+
+    public BeanF(Boolean wrapped) {
+        this.wrapped = wrapped;
+    }
+
+    public BeanF(boolean prim) {
+        this.prim = prim;
+    }
+
+    public Boolean getWrapped() {
+        return wrapped;
+    }
+
+    public Boolean getPrim() {
+        return prim;
+    }
 }

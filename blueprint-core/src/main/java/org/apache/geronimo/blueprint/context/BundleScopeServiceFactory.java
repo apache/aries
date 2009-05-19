@@ -26,6 +26,8 @@ import java.util.Set;
 
 import org.apache.xbean.recipe.ObjectGraph;
 import org.apache.xbean.recipe.Repository;
+import org.apache.geronimo.blueprint.context.BlueprintObjectRecipe;
+import org.apache.xbean.recipe.DefaultRepository;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
@@ -74,9 +76,9 @@ public class BundleScopeServiceFactory implements ServiceFactory {
   
     private Object createInstance() {
         Repository objectRepository = blueprintContext.getRepository();
-        BlueprintObjectRepository repository = new BlueprintObjectRepository((BlueprintObjectRepository)objectRepository);
+        DefaultRepository repository = new DefaultRepository((DefaultRepository)objectRepository);
         repository.set(serviceRecipe.getName(), serviceRecipe);
-        ObjectGraph graph = new ObjectGraph(repository);
+        ObjectGraph graph = new ObjectGraph(blueprintContext.getConversionService(), repository);
         return graph.create(serviceRecipe.getName());
     }
     

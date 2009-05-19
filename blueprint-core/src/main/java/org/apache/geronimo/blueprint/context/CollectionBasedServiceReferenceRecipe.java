@@ -19,6 +19,7 @@
 package org.apache.geronimo.blueprint.context;
 
 import java.lang.reflect.Type;
+import java.lang.reflect.ParameterizedType;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,11 +36,13 @@ import net.sf.cglib.proxy.Dispatcher;
 
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.geronimo.blueprint.Destroyable;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
 import org.apache.geronimo.blueprint.utils.DynamicCollection;
 import org.apache.geronimo.blueprint.utils.DynamicList;
 import org.apache.geronimo.blueprint.utils.DynamicSet;
 import org.apache.geronimo.blueprint.utils.DynamicSortedList;
 import org.apache.geronimo.blueprint.utils.DynamicSortedSet;
+import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.RecipeHelper;
@@ -47,7 +50,10 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.ServiceUnavailableException;
+import org.osgi.service.blueprint.context.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * A recipe to create a managed collection of service references
@@ -57,11 +63,13 @@ import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
  */
 public class CollectionBasedServiceReferenceRecipe extends AbstractServiceReferenceRecipe {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CollectionBasedServiceReferenceRecipe.class);
+
     private final RefCollectionMetadata metadata;
     private final Recipe comparatorRecipe;
     private ManagedCollection collection;
 
-    public CollectionBasedServiceReferenceRecipe(BlueprintContext blueprintContext,
+    public CollectionBasedServiceReferenceRecipe(ExtendedBlueprintContext blueprintContext,
                                                  BlueprintContextEventSender sender,
                                                  RefCollectionMetadata metadata,
                                                  Recipe listenersRecipe,
@@ -72,16 +80,23 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
     }
 
     @Override
-    protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
+    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
         Comparator comparator = null;
         try {
             if (comparatorRecipe != null) {
-                comparator = (Comparator) comparatorRecipe.create(proxyClassLoader);
+                comparator = (Comparator) comparatorRecipe.create();
             } else if (metadata.getOrderingBasis() != 0) {
                 comparator = new NaturalOrderComparator();
             }
             boolean orderReferences = metadata.getOrderingBasis() == RefCollectionMetadata.ORDERING_BASIS_SERVICE_REFERENCE;
-            boolean memberReferences = isReferenceCollection(expectedType) || metadata.getMemberType() == RefCollectionMetadata.MEMBER_TYPE_SERVICE_REFERENCE;
+            Boolean memberReferences;
+            if (metadata.getMemberType() == RefCollectionMetadata.MEMBER_TYPE_SERVICE_REFERENCE) {
+                memberReferences = true;
+            } else if (metadata.getMemberType() == RefCollectionMetadata.MEMBER_TYPE_SERVICE_INSTANCE) {
+                memberReferences = false;
+            } else {
+                memberReferences = null;
+            }
             if (metadata.getCollectionType() == List.class) {
                 if (comparator != null) {
                     collection = new ManagedSortedList(memberReferences, orderReferences, comparator);
@@ -119,20 +134,6 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         }
     }
     
-    private boolean isReferenceCollection(Type expectedType) {
-        Class componentType = getComponentType(expectedType);
-        return ServiceReference.class.equals(componentType);
-    }
-    
-    private Class getComponentType(Type expectedType) {
-        Type[] typeParameters = RecipeHelper.getTypeParameters(Collection.class, expectedType);
-        Class componentType = Object.class;
-        if (typeParameters != null && typeParameters.length == 1 && typeParameters[0] instanceof Class) {
-            componentType = (Class) typeParameters[0];
-        }
-        return componentType;
-    }
-    
     public void stop() {
         super.stop();
         if (collection != null) {
@@ -154,7 +155,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
 
     protected void track(ServiceReference reference) {
         try {
-            ServiceDispatcher dispatcher = new ServiceDispatcher(reference, collection.isMemberReferences());
+            ServiceDispatcher dispatcher = new ServiceDispatcher(reference);
             dispatcher.proxy = createProxy(dispatcher, Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS)));
             synchronized (collection) {
                 collection.addDispatcher(dispatcher);
@@ -163,7 +164,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
                 listener.bind(dispatcher.reference, dispatcher.proxy);
             }
         } catch (Throwable t) {
-            t.printStackTrace(); // TODO: log
+            LOGGER.info("Error tracking new service reference", t);
         }
     }
 
@@ -189,21 +190,18 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
     }
 
 
-    public static class ServiceDispatcher implements Dispatcher, Destroyable {
+    public class ServiceDispatcher implements Dispatcher, Destroyable {
 
         public ServiceReference reference;
         public Object service;
         public Object proxy;
         
-        private final boolean memberReference;
-
-        public ServiceDispatcher(ServiceReference reference, boolean memberReference) throws Exception {
+        public ServiceDispatcher(ServiceReference reference) throws Exception {
             this.reference = reference;
-            this.memberReference = memberReference;
         }
 
         public Object getMember() {
-            if (memberReference) {
+            if (collection.isMemberReferences()) {
                 return reference;
             } else {
                 return proxy;
@@ -251,18 +249,55 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
 
     }
 
-    public static class ManagedCollection extends AbstractCollection {
+    public static class ManagedCollection extends AbstractCollection implements ConversionUtils.Convertible {
 
-        protected final boolean references;
         protected final DynamicCollection<ServiceDispatcher> dispatchers;
+        protected Boolean references;
 
-        public ManagedCollection(boolean references, DynamicCollection<ServiceDispatcher> dispatchers) {
+        public ManagedCollection(Boolean references, DynamicCollection<ServiceDispatcher> dispatchers) {
             this.references = references;
             this.dispatchers = dispatchers;
+            LOGGER.debug("ManagedCollection references={}", references);
+        }
+
+        public Object convert(Type type) {
+            // TODO: consider creating a copy of this managed list with the same back end
+            // TODO: but suited to the requestor needs.  However this would break the contract
+            // TODO: where singletons have only a single instance created
+            LOGGER.debug("Converting ManagedCollection to {}", type);
+            if (Object.class == type) {
+                return this;
+            }
+            if (!Collection.class.isAssignableFrom(RecipeHelper.toClass(type))) {
+                throw new ComponentDefinitionException("<ref-list/> and <ref-set/> can only be converted to other collections, not " + type);
+            }
+            if (RecipeHelper.toClass(type).isInstance(this)) {
+                Boolean useRef = null;
+                if (type instanceof ParameterizedType) {
+                    Type[] args = ((ParameterizedType) type).getActualTypeArguments();
+                    if (args != null && args.length == 1) {
+                        useRef = (args[0] == ServiceReference.class);
+                    }
+                }
+                if (references == null) {
+                    references = useRef != null ? useRef : false;
+                    LOGGER.debug("ManagedCollection references={}", references);
+                } else if (useRef != null && references.booleanValue() != useRef.booleanValue()) {
+                    throw new ComponentDefinitionException("The same <ref-list/> or <ref-set/> can not be " +
+                            "injected as Collection<ServiceReference> and Collection<NotServiceReference> at the same time");
+                }
+                return this;
+            } else {
+                throw new ComponentDefinitionException("Unsupported conversion to " + type);                
+            }
         }
 
         public boolean isMemberReferences() {
-            return references;
+            if (references == null) {
+                references = false;
+            }
+            LOGGER.debug("Retrieving member in ManagedCollection references={}", references);
+            return references.booleanValue();
         }
         
         public boolean addDispatcher(ServiceDispatcher dispatcher) {
@@ -352,11 +387,11 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
 
         protected DynamicList<ServiceDispatcher> dispatchers;
 
-        public ManagedList(boolean references) {
+        public ManagedList(Boolean references) {
             this(references,  new DynamicList<ServiceDispatcher>());
         }
 
-        protected ManagedList(boolean references, DynamicList<ServiceDispatcher> dispatchers) {
+        protected ManagedList(Boolean references, DynamicList<ServiceDispatcher> dispatchers) {
             super(references, dispatchers);
             this.dispatchers = dispatchers;
         }
@@ -473,7 +508,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
 
     public static class ManagedSortedList extends ManagedList {
 
-        public ManagedSortedList(boolean references, boolean orderingReferences, Comparator comparator) {
+        public ManagedSortedList(Boolean references, boolean orderingReferences, Comparator comparator) {
             super(references, new DynamicSortedList<ServiceDispatcher>(new DispatcherComparator(comparator, orderingReferences)));
         }
 
@@ -481,11 +516,11 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
 
     public static class ManagedSet extends ManagedCollection implements Set {
 
-        public ManagedSet(boolean references) {
+        public ManagedSet(Boolean references) {
             super(references, new DynamicServiceDispatcherSet());
         }
         
-        protected ManagedSet(boolean references, DynamicSet<ServiceDispatcher> dispatchers) {
+        protected ManagedSet(Boolean references, DynamicSet<ServiceDispatcher> dispatchers) {
             super(references, dispatchers);
         }
         
@@ -510,7 +545,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         protected final DynamicSortedSet<ServiceDispatcher> dispatchers;
         protected final Comparator comparator;
 
-        public ManagedSortedSet(boolean references, boolean orderingReferences, Comparator comparator) {
+        public ManagedSortedSet(Boolean references, boolean orderingReferences, Comparator comparator) {
             super(references, new DynamicSortedSet<ServiceDispatcher>(new DispatcherComparator(comparator, orderingReferences)));
             this.dispatchers = (DynamicSortedSet<ServiceDispatcher>) super.dispatchers;
             this.comparator =  comparator;

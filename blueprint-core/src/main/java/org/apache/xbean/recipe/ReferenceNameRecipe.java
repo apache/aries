@@ -27,6 +27,7 @@ import org.apache.xbean.recipe.ExecutionContext;
 import org.apache.xbean.recipe.NoSuchObjectException;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.RecipeHelper;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
 
 /*
  * The ReferenceNameRecipe is used to inject the reference name into the object (as a String).
@@ -69,7 +70,7 @@ public class ReferenceNameRecipe extends AbstractRecipe {
         return getNestedRecipes();
     }
 
-    protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
+    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
         Object object = getReference();
         return referenceName;
     }

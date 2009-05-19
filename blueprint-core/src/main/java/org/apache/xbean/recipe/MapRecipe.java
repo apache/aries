@@ -32,6 +32,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.osgi.service.blueprint.convert.ConversionService;
+import org.apache.geronimo.blueprint.utils.ConversionUtils;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
+
 /**
  * @version $Rev: 6687 $ $Date: 2005-12-28T21:08:56.733437Z $
  */
@@ -40,38 +44,10 @@ public class MapRecipe extends AbstractRecipe {
     private Class typeClass;
     private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
 
-    public MapRecipe() {
-        entries = new ArrayList<Recipe[]>();
-    }
-
     public MapRecipe(Class type) {
         if (type == null) throw new NullPointerException("type is null");
         this.typeClass = type;
-        entries = new ArrayList<Recipe[]>();
-    }
-
-    public MapRecipe(Map<Recipe,Recipe> map) {
-        if (map == null) throw new NullPointerException("map is null");
-
-        entries = new ArrayList<Recipe[]>(map.size());
-
-        // If the specified set has a default constructor we will recreate the set, otherwise we use a LinkedHashMap or TreeMap
-        if (RecipeHelper.hasDefaultConstructor(map.getClass())) {
-            this.typeClass = map.getClass();
-        } else if (map instanceof SortedMap) {
-            this.typeClass = TreeMap.class;
-        } else if (map instanceof ConcurrentMap) {
-            this.typeClass = ConcurrentHashMap.class;
-        } else {
-            this.typeClass = LinkedHashMap.class;
-        }
-        putAll(map);
-    }
-
-    public MapRecipe(MapRecipe mapRecipe) {
-        if (mapRecipe == null) throw new NullPointerException("mapRecipe is null");
-        this.typeClass = mapRecipe.typeClass;
-        entries = new ArrayList<Recipe[]>(mapRecipe.entries);
+        this.entries = new ArrayList<Recipe[]>();
     }
 
     public void allow(Option option){
@@ -107,8 +83,8 @@ public class MapRecipe extends AbstractRecipe {
         return Collections.emptyList();
     }
 
-    protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
-        Class mapType = getType(expectedType);
+    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
+        Class mapType = getType(Object.class);
 
         if (!RecipeHelper.hasDefaultConstructor(mapType)) {
             throw new ConstructionException("Type does not have a default constructor " + mapType.getName());
@@ -130,19 +106,6 @@ public class MapRecipe extends AbstractRecipe {
             throw new ConstructionException("Specified map type does not implement the Map interface: " + mapType.getName());
         }
 
-        // get component type
-        Type keyType = Object.class;
-        Type valueType = Object.class;
-        Type[] typeParameters = RecipeHelper.getTypeParameters(Map.class, expectedType);
-        if (typeParameters != null && typeParameters.length == 2) {
-            if (typeParameters[0] instanceof Class) {
-                keyType = typeParameters[0];
-            }
-            if (typeParameters[1] instanceof Class) {
-                valueType = typeParameters[1];
-            }
-        }
-
         // add to execution context if name is specified
         if (getName() != null) {
             ExecutionContext.getContext().addObject(getName(), instance);
@@ -151,8 +114,8 @@ public class MapRecipe extends AbstractRecipe {
         // add map entries
         boolean refAllowed = options.contains(Option.LAZY_ASSIGNMENT);
         for (Recipe[] entry : entries) {
-            Object key = entry[0].create(keyType, refAllowed);
-            Object value = entry[1] != null ? entry[1].create(valueType, refAllowed) : null;
+            Object key = entry[0].create(refAllowed);
+            Object value = entry[1] != null ? entry[1].create(refAllowed) : null;
 
             if (key instanceof Reference) {
                 // when the key reference and optional value reference are both resolved

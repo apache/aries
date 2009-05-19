@@ -51,8 +51,9 @@ import org.apache.xbean.recipe.Repository;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.ExecutionContext;
 import org.apache.xbean.recipe.DefaultExecutionContext;
-import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.ReferenceNameRecipe;
+import org.apache.xbean.recipe.ReferenceRecipe;
+import org.apache.xbean.recipe.DefaultRepository;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -213,7 +214,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                         state = State.Populated;
                         break;
                     case Populated:
-                        instantiator = new BlueprintObjectInstantiator(new RecipeBuilder(this).createRepository());
+                        instantiator = new BlueprintObjectInstantiator(conversionService, new RecipeBuilder(this).createRepository());
                         checkReferences();
                         trackServiceReferences();
                         timerTask = new TimerTask() {
@@ -247,10 +248,10 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                     case InitialReferencesSatisfied:
                         processTypeConverters();
                         processProcessors();
-                        BlueprintObjectRepository repository = (BlueprintObjectRepository) instantiator.getRepository();
-                        BlueprintObjectRepository tmpRepo = new RecipeBuilder(this).createRepository();
+                        DefaultRepository repository = (DefaultRepository) instantiator.getRepository();
+                        DefaultRepository tmpRepo = new RecipeBuilder(this).createRepository();
 
-                        instantiator = new BlueprintObjectInstantiator(new RecipeBuilder(this).createRepository());
+                        instantiator = new BlueprintObjectInstantiator(conversionService, new RecipeBuilder(this).createRepository());
 
                         untrackServiceReferences();
                         for (String name : repository.getNames()) {
@@ -262,7 +263,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
                             }
                         }
                         satisfiables = null;
-                        instantiator = new BlueprintObjectInstantiator(tmpRepo);
+                        instantiator = new BlueprintObjectInstantiator(conversionService, tmpRepo);
                         trackServiceReferences();
                         if (checkAllSatisfiables() || !waitForDependencies) {
                             state = State.InitialReferencesSatisfied2;
@@ -332,11 +333,11 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
     }
 
     private void checkReferences() throws Exception {
-        BlueprintObjectRepository repository = (BlueprintObjectRepository) instantiator.getRepository();
+        DefaultRepository repository = (DefaultRepository) instantiator.getRepository();
         List<Recipe> recipes = new ArrayList<Recipe>();
         boolean createNewContext = !ExecutionContext.isContextSet();
         if (createNewContext) {
-            ExecutionContext.setContext(new DefaultExecutionContext(instantiator.getRepository()));
+            ExecutionContext.setContext(new DefaultExecutionContext(conversionService, instantiator.getRepository()));
         }
         try {
             for (String name : repository.getNames()) {
@@ -418,12 +419,12 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         if (satisfiables == null && instantiator != null) {
             boolean createNewContext = !ExecutionContext.isContextSet();
             if (createNewContext) {
-                ExecutionContext.setContext(new DefaultExecutionContext(instantiator.getRepository()));
+                ExecutionContext.setContext(new DefaultExecutionContext(conversionService, instantiator.getRepository()));
             }
             try {
                 satisfiables = new HashMap<String, List<SatisfiableRecipe>>();
                 for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
-                    Recipe r = ((BlueprintObjectRepository) instantiator.getRepository()).getRecipe(name);
+                    Recipe r = ((DefaultRepository) instantiator.getRepository()).getRecipe(name);
                     List<SatisfiableRecipe> recipes = new ArrayList<SatisfiableRecipe>();
                     if (r instanceof SatisfiableRecipe) {
                         recipes.add((SatisfiableRecipe) r);
@@ -548,7 +549,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
 
     private void destroyComponents() {
         if (instantiator != null) {
-            ((BlueprintObjectRepository)instantiator.getRepository()).destroy();
+            ((DefaultRepository)instantiator.getRepository()).destroy();
         }
         
         Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>(this.destroyables);
@@ -675,7 +676,7 @@ public class BlueprintContextImpl implements ExtendedBlueprintContext, Namespace
         return conversionService;
     }
     
-    protected ComponentDefinitionRegistryImpl getComponentDefinitionRegistry() {
+    public ComponentDefinitionRegistryImpl getComponentDefinitionRegistry() {
         return componentDefinitionRegistry;
     }
         

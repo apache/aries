@@ -20,11 +20,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Dictionary;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -34,49 +32,12 @@ import java.util.TreeSet;
  */
 public class CollectionRecipe extends AbstractRecipe {
     private final List<Recipe> list;
-    private String typeName;
     private Class typeClass;
     private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
 
-    public CollectionRecipe() {
-        list = new ArrayList<Recipe>();
-    }
-
-    public CollectionRecipe(String type) {
-        list = new ArrayList<Recipe>();
-        this.typeName = type;
-    }
-
     public CollectionRecipe(Class type) {
-        if (type == null) throw new NullPointerException("type is null");
         this.list = new ArrayList<Recipe>();
         this.typeClass = type;
-    }
-
-    public CollectionRecipe(Collection<Recipe> collection) {
-        if (collection == null) throw new NullPointerException("collection is null");
-
-        this.list = new ArrayList<Recipe>(collection);
-
-        // If the specified collection has a default constructor we will recreate the collection, otherwise we use a the default
-        if (RecipeHelper.hasDefaultConstructor(collection.getClass())) {
-            this.typeClass = collection.getClass();
-        } else if (collection instanceof SortedSet) {
-            this.typeClass = SortedSet.class;
-        } else if (collection instanceof Set) {
-            this.typeClass = Set.class;
-        } else if (collection instanceof List) {
-            this.typeClass = List.class;
-        } else {
-            this.typeClass = Collection.class;
-        }
-    }
-
-    public CollectionRecipe(CollectionRecipe collectionRecipe) {
-        if (collectionRecipe == null) throw new NullPointerException("setRecipe is null");
-        this.typeName = collectionRecipe.typeName;
-        this.typeClass = collectionRecipe.typeClass;
-        list = new ArrayList<Recipe>(collectionRecipe.list);
     }
 
     public void allow(Option option) {
@@ -105,8 +66,8 @@ public class CollectionRecipe extends AbstractRecipe {
         return Collections.emptyList();
     }
 
-    protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
-        Class type = getType(expectedType);
+    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
+        Class type = getType(Object.class);
 
         if (!RecipeHelper.hasDefaultConstructor(type)) {
             throw new ConstructionException("Type does not have a default constructor " + type.getName());
@@ -129,18 +90,20 @@ public class CollectionRecipe extends AbstractRecipe {
             ExecutionContext.getContext().addObject(getName(), instance);
         }
 
-        // get component type
-        Type[] typeParameters = RecipeHelper.getTypeParameters(Collection.class, expectedType);
-        Type componentType = Object.class;
-        if (typeParameters != null && typeParameters.length == 1 && typeParameters[0] instanceof Class) {
-            componentType = typeParameters[0];
-        }
-
         boolean refAllowed = options.contains(Option.LAZY_ASSIGNMENT);
 
         int index = 0;
         for (Recipe recipe : list) {
-            Object value = recipe != null ? recipe.create(componentType, refAllowed) : recipe;
+            Object value;
+            if (recipe != null) {
+                try {
+                    value = recipe.create(refAllowed);
+                } catch (Exception e) {
+                    throw new ConstructionException("Unable to convert value " + recipe + " to type " + type, e);
+                }
+            } else {
+                value = null;
+            }
 
             if (value instanceof Reference) {
                 Reference reference = (Reference) value;
@@ -163,16 +126,8 @@ public class CollectionRecipe extends AbstractRecipe {
 
     private Class getType(Type expectedType) {
         Class expectedClass = RecipeHelper.toClass(expectedType);
-        if (typeClass != null || typeName != null) {
+        if (typeClass != null) {
             Class type = typeClass;
-            if (type == null) {
-                try {
-                    type = RecipeHelper.loadClass(typeName);
-                } catch (ClassNotFoundException e) {
-                    throw new ConstructionException("Type class could not be found: " + typeName);
-                }
-            }
-
             // if expectedType is a subclass of the assigned type,
             // we use it assuming it has a default constructor
             if (type.isAssignableFrom(expectedClass)) {

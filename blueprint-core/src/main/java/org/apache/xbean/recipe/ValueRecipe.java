@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.context;
+package org.apache.xbean.recipe;
 
 import java.lang.reflect.Type;
 
@@ -25,6 +25,7 @@ import org.apache.xbean.recipe.ConstructionException;
 import org.apache.xbean.recipe.RecipeHelper;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
 import org.osgi.service.blueprint.convert.ConversionService;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 
@@ -36,27 +37,18 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
  */
 public class ValueRecipe extends AbstractRecipe {
 
-    private ConversionService conversionService;
     private ValueMetadata value;
     private Class type;
 
-    public ValueRecipe(ConversionService conversionService, ValueMetadata value, Class type) {
-        this.conversionService = conversionService;
+    public ValueRecipe(ValueMetadata value, Class type) {
         this.value = value;
         this.type = type;
     }
 
-    private static Class determineType(Class type, Type defaultType) {
-        // TODO: check if type is assignable from defaultType?
-        return (type != null) ? type : RecipeHelper.toClass(defaultType);
-    }
-
     @Override
-    protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
-        Class myType = determineType(type, expectedType);
-
+    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
         try {
-            return conversionService.convert(value.getStringValue(), myType);
+            return convert(value.getStringValue(), type != null ? type : Object.class);
         } catch (Exception e) {            
             throw new ConstructionException(e);
         }

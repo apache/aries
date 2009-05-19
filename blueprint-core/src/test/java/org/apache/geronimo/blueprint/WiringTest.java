@@ -29,7 +29,7 @@ import java.util.Set;
 
 import org.apache.geronimo.blueprint.CallbackTracker.Callback;
 import org.apache.geronimo.blueprint.context.BlueprintObjectInstantiator;
-import org.apache.geronimo.blueprint.context.BlueprintObjectRepository;
+import org.apache.xbean.recipe.DefaultRepository;
 import org.apache.geronimo.blueprint.context.RecipeBuilder;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.pojos.BeanD;
@@ -38,6 +38,8 @@ import org.apache.geronimo.blueprint.pojos.PojoA;
 import org.apache.geronimo.blueprint.pojos.PojoB;
 import org.apache.geronimo.blueprint.pojos.PojoGenerics;
 import org.apache.geronimo.blueprint.pojos.PojoListener;
+import org.apache.geronimo.blueprint.pojos.BeanF;
+import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.xbean.recipe.Repository;
 import org.osgi.framework.ServiceRegistration;
 
@@ -46,8 +48,8 @@ public class WiringTest extends AbstractBlueprintTest {
     public void testWiring() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
         RecipeBuilder i = new RecipeBuilder(new TestBlueprintContext(registry));
-        BlueprintObjectRepository repository = i.createRepository();
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(repository);
+        DefaultRepository repository = i.createRepository();
+        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new ConversionServiceImpl(null), repository);
         
         Object obj1 = graph.create("pojoA");
         assertNotNull(obj1);
@@ -136,8 +138,8 @@ public class WiringTest extends AbstractBlueprintTest {
     public void testCompoundProperties() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
         RecipeBuilder i = new RecipeBuilder(new TestBlueprintContext(registry));
-        BlueprintObjectRepository repository = i.createRepository();
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(repository);
+        DefaultRepository repository = i.createRepository();
+        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new ConversionServiceImpl(null), repository);
         
         Object obj5 = graph.create("compound");
         assertNotNull(obj5);
@@ -150,8 +152,8 @@ public class WiringTest extends AbstractBlueprintTest {
     public void testIdRefs() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
         RecipeBuilder i = new RecipeBuilder(new TestBlueprintContext(registry));
-        BlueprintObjectRepository repository = i.createRepository();
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(repository);
+        DefaultRepository repository = i.createRepository();
+        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new ConversionServiceImpl(null), repository);
         
         try {
             graph.create("badIdRef");
@@ -174,8 +176,8 @@ public class WiringTest extends AbstractBlueprintTest {
 
         ComponentDefinitionRegistryImpl registry = parse("/test-depends-on.xml");
         RecipeBuilder i = new RecipeBuilder(new TestBlueprintContext(registry));
-        BlueprintObjectRepository repository = i.createRepository();
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(repository);
+        DefaultRepository repository = i.createRepository();
+        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new ConversionServiceImpl(null), repository);
         Map instances = graph.createAll("c", "d", "e");
         
         List<Callback> callback = CallbackTracker.getCallbacks();
@@ -206,8 +208,8 @@ public class WiringTest extends AbstractBlueprintTest {
         ComponentDefinitionRegistryImpl registry = parse("/test-constructor.xml");
         RecipeBuilder i = new RecipeBuilder(new TestBlueprintContext(registry));
         Repository repository = i.createRepository();
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(repository);
-        
+        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new ConversionServiceImpl(null), repository);
+
         Object obj1 = graph.create("pojoA");
         assertNotNull(obj1);
         assertTrue(obj1 instanceof PojoA);
@@ -265,6 +267,17 @@ public class WiringTest extends AbstractBlueprintTest {
         // TODO: check the below tests when the incoherence between TCK / spec is solved
 //        Object obj13 = graph.create("mapConstruction");
 //        Object obj14 = graph.create("propsConstruction");
+
+        BeanF obj15 = (BeanF) graph.create("booleanWrapped");
+        assertNotNull(obj15.getWrapped());
+        assertEquals(false, (boolean) obj15.getWrapped());
+        assertNull(obj15.getPrim());
+
+        // TODO: check the below tests when the incoherence between TCK / spec is solved
+//        BeanF obj16 = (BeanF) graph.create("booleanPrim");
+//        assertNotNull(obj16.getPrim());
+//        assertEquals(false, (boolean) obj16.getPrim());
+//        assertNull(obj16.getWrapped());
     }
     
     private void testPojoB(Object obj, URI uri, int intValue) {
@@ -287,7 +300,7 @@ public class WiringTest extends AbstractBlueprintTest {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics.xml");
         RecipeBuilder i = new RecipeBuilder(new TestBlueprintContext(registry));
         Repository repository = i.createRepository();
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(repository);
+        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new ConversionServiceImpl(null), repository);
         
         List<Integer> expectedList = new ArrayList<Integer>();
         expectedList.add(new Integer(10));
@@ -338,7 +351,7 @@ public class WiringTest extends AbstractBlueprintTest {
         ComponentDefinitionRegistryImpl registry = parse("/test-circular.xml");
         RecipeBuilder i = new RecipeBuilder(new TestBlueprintContext(registry));
         Repository repository = i.createRepository();
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(repository);
+        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new ConversionServiceImpl(null), repository);
 
         // this should pass (we allow circular dependencies for components without init method)
         Object obj1 = graph.create("a");

@@ -32,13 +32,14 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContext;
+import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.apache.xbean.recipe.ConstructionException;
-import org.apache.xbean.recipe.ExecutionContext;
 import org.apache.xbean.recipe.Recipe;
 import org.apache.xbean.recipe.RecipeHelper;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.context.BlueprintContext;
 import org.osgi.service.blueprint.context.ServiceUnavailableException;
+import org.osgi.service.blueprint.context.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 
 /**
@@ -62,7 +63,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private volatile Object trackedService;
     private final Object monitor = new Object();
 
-    public UnaryServiceReferenceRecipe(BlueprintContext blueprintContext,
+    public UnaryServiceReferenceRecipe(ExtendedBlueprintContext blueprintContext,
                                        BlueprintContextEventSender sender,
                                        ReferenceMetadata metadata,
                                        Recipe listenersRecipe) {
@@ -71,10 +72,10 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     }
 
     @Override
-    protected Object internalCreate(Type expectedType, boolean lazyRefAllowed) throws ConstructionException {
+    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
         try {
             // Create the proxy
-            proxy = createProxy();
+            proxy = createProxy(new ServiceDispatcher(), this.metadata.getInterfaceNames());
             proxyClass = proxy.getClass();
             
             // Add partially created proxy to the context
@@ -89,25 +90,14 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             // Start tracking the service
             tracker.registerServiceListener(this);
             retrack();
-            
-            // Return the object
-            Class expectedClass = RecipeHelper.toClass(expectedType);
-            if (ServiceReference.class.equals(expectedClass)) {
-                return getServiceReference();
-            } else {
-                return proxy;
-            }
+
+            // Return a ServiceProxy that can injection of references or proxies can be done correctly
+            return new ServiceProxyWrapper();
         } catch (Throwable t) {
             throw new ConstructionException(t);
         }
     }
 
-    private List<Class> getSupportedTypes() throws ClassNotFoundException {
-        List<Class> list = getAllClasses(metadata.getInterfaceNames());
-        list.add(ServiceReference.class);
-        return list;
-    }
-    
     @Override
     public void stop() {
         super.stop();
@@ -117,23 +107,6 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
         }
     }
 
-    private Object createProxy() throws Exception {
-        // TODO: we should use the bundle to load classes, not this weird proxyClassLoader
-        // TODO: find another way to handle ServiceReference injection instead of implementing the ServiceReferenceAccessor
-        // TODO: class which may not be available from the bundle classloader
-        Enhancer e = new Enhancer();
-        e.setClassLoader(proxyClassLoader);
-        e.setSuperclass(getTargetClass(metadata.getInterfaceNames()));
-        List<Class> interfaceList = getInterfaces(metadata.getInterfaceNames());
-        interfaceList.add(ServiceReferenceAccessor.class);
-        e.setInterfaces(toClassArray(interfaceList));
-        e.setInterceptDuringConstruction(false);
-        e.setCallbacks(new Callback [] {new ServiceDispatcher(), new ServiceReferenceMethodInterceptor() });
-        e.setCallbackFilter(new ServiceCallbackFilter());
-        e.setUseFactory(false);
-        return e.create();
-    }
-    
     private void retrack() {
         synchronized (monitor) {
             ServiceReference ref = tracker.getBestServiceReference();
@@ -201,15 +174,6 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
         }
     }
     
-    private ServiceReference getServiceReference() throws InterruptedException {
-        synchronized (monitor) {
-            if (!optional) {
-                getService();
-            }           
-            return trackedServiceReference;
-        }           
-    }
-    
     public class ServiceDispatcher implements Dispatcher {
 
         public Object loadObject() throws Exception {
@@ -217,35 +181,19 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
         }
 
     }
-    
-    public class ServiceReferenceMethodInterceptor implements MethodInterceptor {
-        
-        public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-            return getServiceReference();
-        }
-        
-    }
-    
-    private static class ServiceCallbackFilter implements CallbackFilter {
 
-        private Method getReferenceMethod;
-        
-        public ServiceCallbackFilter() throws NoSuchMethodException {
-            getReferenceMethod = ServiceReferenceAccessor.class.getMethod("getServiceReference", null);
+    public class ServiceProxyWrapper implements ConversionUtils.Convertible {
+
+        public Object convert(Type type) throws Exception {
+            if (type == ServiceReference.class) {
+                return trackedServiceReference;
+            } else if (RecipeHelper.toClass(type).isInstance(proxy)) {
+                return proxy;
+            } else {
+                throw new ComponentDefinitionException("Unable to convert to " + type);
+            }
         }
-        
-        public int accept(Method method) {
-            if (isGetReferenceMethod(method)) {
-                // use getServiceReference callback
-                return 1;
-            } 
-            // use Dispatcher callback
-            return 0;
-        }
-        
-        private boolean isGetReferenceMethod(Method method) {
-            return getReferenceMethod.equals(method);
-        }
+
     }
-        
+
 }

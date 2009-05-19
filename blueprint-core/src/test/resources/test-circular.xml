@@ -48,10 +48,10 @@
         <service-properties>
             <entry key="key1" value="value1"/>
             <entry key="key2" value="value2"/>
-        </service-properties>    
+        </service-properties>
         <registration-listener ref="listener"
            registration-method="register"
            unregistration-method="unregister"/>
     </service>
-    
+
 </blueprint>
