@@ -141,6 +141,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
 
     private ComponentMetadata parsePropertyPlaceholder(ExtendedParserContext context, Element element) {
         MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
+        metadata.setProcessor(true);
         metadata.setId(getName(element));
         metadata.setScope(BeanMetadata.SCOPE_SINGLETON);
         metadata.setRuntimeClass(CmPropertyPlaceholder.class);
@@ -280,6 +281,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         }
         generateIdIfNeeded(((MutableBeanMetadata) component));
         MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
+        metadata.setProcessor(true);
         metadata.setId(getName(element));
         metadata.setRuntimeClass(CmManagedProperties.class);
         metadata.setInitMethodName("init");

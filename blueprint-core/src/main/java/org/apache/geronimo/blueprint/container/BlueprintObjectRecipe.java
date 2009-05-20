@@ -37,7 +37,6 @@ import java.util.Set;
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
-import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.ConstructionException;
 import org.apache.geronimo.blueprint.di.Option;
@@ -57,7 +56,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintObjectRecipe.class);
 
-    private Class typeClass;
+    private Object type;
     private final LinkedHashMap<String,Object> properties = new LinkedHashMap<String,Object>();
     private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
 
@@ -69,14 +68,14 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
     private Recipe factory; // could be Recipe or actual object
     private String factoryMethod;
     private List<Object> arguments;
-    private List<Class> argTypes;
+    private List<String> argTypes;
     private boolean reorderArguments;
 
     protected ExtendedBlueprintContainer blueprintContainer;
 
-    public BlueprintObjectRecipe(ExtendedBlueprintContainer blueprintContainer, Class typeClass) {
+    public BlueprintObjectRecipe(ExtendedBlueprintContainer blueprintContainer, Object type) {
         this.blueprintContainer = blueprintContainer;
-        this.typeClass = typeClass;
+        this.type = type;
         allow(Option.LAZY_ASSIGNMENT);
     }
 
@@ -121,7 +120,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         this.factory = factory;
     }
     
-    public void setArgTypes(List<Class> argTypes) {
+    public void setArgTypes(List<String> argTypes) {
         this.argTypes = argTypes;
     }
     
@@ -203,6 +202,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         
         // Instanciate arguments
         List<Object> args = new ArrayList<Object>();
+        List<Class> argTypes = new ArrayList<Class>();
         if (arguments != null) {
             for (int i = 0; i < arguments.size(); i++) {
                 Object arg = arguments.get(i);
@@ -210,6 +210,9 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                     args.add(((Recipe) arg).create(refAllowed));
                 } else {
                     args.add(arg);
+                }
+                if (this.argTypes != null) {
+                    argTypes.add(this.argTypes.get(i) != null ? loadClass(this.argTypes.get(i)) : null);
                 }
             }
         }
@@ -603,7 +606,13 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
     }
 
     public Class getType() {
-        return typeClass;
+        if (type instanceof Class) {
+            return (Class) type;
+        } else if (type instanceof String) {
+            return loadClass((String) type);
+        } else {
+            return null;
+        }
     }
 
     private void setProperties(Map<String, Object> propertyValues, Object instance, Class clazz) {
