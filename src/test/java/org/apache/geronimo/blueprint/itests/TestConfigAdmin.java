@@ -144,6 +144,25 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         assertEquals("USD", foo.getProps().get("currency"));
     }
 
+    @Test
+    public void testManagedServiceFactory() throws Exception {
+        ConfigurationAdmin ca = getOsgiService(ConfigurationAdmin.class);
+        Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory", null);
+        Hashtable<String,String> props = new Hashtable<String,String>();
+        props.put("a", "5");
+        props.put("currency", "PLN");
+        cf.update(props);
+
+        Bundle bundle = getInstalledBundle("blueprint-sample");
+        assertNotNull(bundle);
+        bundle.start();
+
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample", 5000);
+        assertNotNull(blueprintContainer);
+
+        Thread.sleep(5000);
+    }
+
     @org.ops4j.pax.exam.junit.Configuration
     public static Option[] configuration() {
         Option[] options = options(
@@ -157,7 +176,7 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
 
 
             // this is how you set the default log level when using pax logging (logProfile)
-            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
             // Bundles
             mavenBundle("org.apache.geronimo", "blueprint-bundle"),
