@@ -11,6 +11,11 @@
 
     </type-converters>
 
+    <cm:managed-service-factory id="managed-service-factory" factory-pid="blueprint-sample-managed-service-factory"
+            interface="org.apache.geronimo.blueprint.sample.Foo">
+        <cm:managed-component class="org.apache.geronimo.blueprint.sample.Foo"/>
+    </cm:managed-service-factory>
+
     <cm:property-placeholder id="property-placeholder" persistent-id="blueprint-sample-placeholder">
         <cm:default-properties>
             <cm:property name="key.b" value="-1"/>
