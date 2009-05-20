@@ -635,6 +635,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             throw new NoSuchComponentException(name);
         }
         try {
+            LOGGER.debug("Instantiating component {}", name);
             return instantiator.create(name);
         } catch (NoSuchObjectException e) {
             throw new NoSuchComponentException(name);

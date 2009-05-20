@@ -369,6 +369,8 @@ public class Parser {
             return type.cast(parseBeanProperty(enclosingComponent, element));
         } else if (MapEntry.class.isAssignableFrom(type)) {
             return type.cast(parseMapEntry(element, enclosingComponent));
+        } else if (BeanMetadata.class.isAssignableFrom(type)) {
+            return type.cast(parseBeanMetadata(element, false));
         } else if (Metadata.class.isAssignableFrom(type)) {
             return type.cast(parseValueElement(element, enclosingComponent, true));
         } else {
