@@ -83,6 +83,13 @@
             <artifactId>pax-url-mvn</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Frameworks -->
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.main</artifactId>
+            <version>1.6.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <repositories>

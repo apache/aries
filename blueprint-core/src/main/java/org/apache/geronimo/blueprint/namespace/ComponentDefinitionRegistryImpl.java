@@ -67,6 +67,7 @@ public class ComponentDefinitionRegistryImpl implements ExtendedComponentDefinit
             // TODO: should we generate a unique name?
             throw new IllegalArgumentException("Component must have a valid id");
         }
+        // TODO: perform other validation: scope, class/runtimeClass/factoryMethod, etc...
         if (components.containsKey(id)) {
             throw new ComponentNameAlreadyInUseException(id);
         }

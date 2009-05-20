@@ -45,13 +45,17 @@ import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.di.ReferenceRecipe;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
- * @version $Rev: 775978 $, $Date: 2009-05-18 16:55:23 +0200 (Mon, 18 May 2009) $
+ * @version $Rev$, $Date$
  */
 public class BlueprintObjectRecipe extends AbstractRecipe {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintObjectRecipe.class);
 
     private Class typeClass;
     private final LinkedHashMap<String,Object> properties = new LinkedHashMap<String,Object>();
@@ -249,6 +253,9 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                 throw new ConstructionException("Multiple matching factory methods " + factoryMethod + " found on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
             }
         } else {
+            if (getType() == null) {
+                throw new ConstructionException("No factoryMethod nor class is defined for this bean"); 
+            }
             // Map of matching constructors
             Map<Constructor, List<Object>> matches = findMatchingConstructors(getType(), args, argTypes);
             if (matches.size() == 1) {
@@ -550,7 +557,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                 Throwable root = e.getTargetException();
                 throw new ConstructionException("init-method generated exception", root);
             } catch (Exception e) {
-                e.printStackTrace(); // TODO: log
+                LOGGER.info("Error invoking init method", e);
             }
         }
         
@@ -572,7 +579,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                 method.invoke(obj);
             }
         } catch (Exception e) {
-            e.printStackTrace(); // TODO: log
+            LOGGER.info("Error invoking destroy method", e);
         }
         for (BeanProcessor processor : blueprintContainer.getBeanProcessors()) {
             processor.afterDestroy(obj, getName());
