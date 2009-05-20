@@ -72,6 +72,18 @@ import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.BeanArgument;
+import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
+import org.osgi.service.blueprint.reflect.CollectionMetadata;
+import org.osgi.service.blueprint.reflect.MapMetadata;
+import org.osgi.service.blueprint.reflect.MapEntry;
+import org.osgi.service.blueprint.reflect.PropsMetadata;
+import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
+import org.osgi.service.blueprint.reflect.Listener;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
+import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -582,7 +594,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             ExecutionContext.setContext(new DefaultExecutionContext(conversionService, instantiator.getRepository()));
         }
         try {
-            // TODO: right now this only returns top-level services
             for (ServiceMetadata service : getExportedServicesMetadata()) {
                 // Trigger services are only created for services without listeners and explicitly defined interface classes
                 if (service.getRegistrationListeners().isEmpty() && !service.getInterfaceNames().isEmpty()) {
@@ -670,13 +681,63 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         List<T> metadatas = new ArrayList<T>();
         for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
             ComponentMetadata component = componentDefinitionRegistry.getComponentDefinition(name);
-            if (clazz.isInstance(component)) {
-                metadatas.add(clazz.cast(component));
-            }
+            getComponentsMetadata(clazz, component, metadatas);
         }
         metadatas = Collections.unmodifiableList(metadatas);
         return metadatas;
+    }
 
+    private <T extends ComponentMetadata> void getComponentsMetadata(Class<T> clazz, Metadata component, List<T> metadatas) {
+        if (component == null) {
+            return;
+        }
+        if (clazz.isInstance(component)) {
+            metadatas.add(clazz.cast(component));
+        }
+        if (component instanceof BeanMetadata) {
+            getComponentsMetadata(clazz, ((BeanMetadata) component).getFactoryComponent(), metadatas);
+            for (BeanArgument arg : ((BeanMetadata) component).getArguments()) {
+                getComponentsMetadata(clazz, arg.getValue(), metadatas);
+            }
+            for (BeanProperty prop : ((BeanMetadata) component).getProperties()) {
+                getComponentsMetadata(clazz, prop.getValue(), metadatas);
+            }
+        }
+        if (component instanceof CollectionMetadata) {
+            for (Metadata m : ((CollectionMetadata) component).getValues()) {
+                getComponentsMetadata(clazz, m, metadatas);
+            }
+        }
+        if (component instanceof MapMetadata) {
+            for (MapEntry m : ((MapMetadata) component).getEntries()) {
+                getComponentsMetadata(clazz, m.getKey(), metadatas);
+                getComponentsMetadata(clazz, m.getValue(), metadatas);
+            }
+        }
+        if (component instanceof PropsMetadata) {
+            for (MapEntry m : ((PropsMetadata) component).getEntries()) {
+                getComponentsMetadata(clazz, m.getKey(), metadatas);
+                getComponentsMetadata(clazz, m.getValue(), metadatas);
+            }
+        }
+        if (component instanceof ServiceReferenceMetadata) {
+            for (Listener l : ((ServiceReferenceMetadata) component).getServiceListeners()) {
+                getComponentsMetadata(clazz, l.getListenerComponent(), metadatas);
+            }
+        }
+        if (component instanceof RefCollectionMetadata) {
+            getComponentsMetadata(clazz, ((RefCollectionMetadata) component).getComparator(), metadatas);
+        }
+        if (component instanceof ServiceMetadata) {
+            getComponentsMetadata(clazz, ((ServiceMetadata) component).getServiceComponent(), metadatas);
+            for (MapEntry m : ((ServiceMetadata) component).getServiceProperties()) {
+                getComponentsMetadata(clazz, m.getKey(), metadatas);
+                getComponentsMetadata(clazz, m.getValue(), metadatas);
+            }
+            for (RegistrationListener l : ((ServiceMetadata) component).getRegistrationListeners()) {
+                getComponentsMetadata(clazz, l.getListenerComponent(), metadatas);
+            }
+        }
     }
 
     protected Repository getRepository() {
