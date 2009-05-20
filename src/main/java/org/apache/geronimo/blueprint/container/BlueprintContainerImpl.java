@@ -406,8 +406,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
 
     private void processProcessors() throws Exception {
-        // TODO: the whole lazy activation just because we need to discover processors
-        // TODO: we need something else to find out which beans are processors, maybe a subtype of BeanMetadata
         // Instanciate ComponentDefinitionRegistryProcessor and BeanProcessor
         for (BeanMetadata bean : getBeanComponentsMetadata()) {
             if (bean instanceof ExtendedBeanMetadata && !((ExtendedBeanMetadata) bean).isProcessor()) {
