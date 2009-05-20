@@ -577,13 +577,23 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
         
     private void registerTriggerServices() {
-        // TODO: right now this only returns top-level services
-        for (ServiceMetadata service : getExportedServicesMetadata()) {
-            // Trigger services are only created for services without listeners and explicitly defined interface classes
-            if (service.getRegistrationListeners().isEmpty() && !service.getInterfaceNames().isEmpty()) {
-                TriggerService triggerService = new TriggerService(service, this);
-                triggerService.register();
-                triggerServices.put(service, triggerService);
+        boolean createNewContext = !ExecutionContext.isContextSet();
+        if (createNewContext) {
+            ExecutionContext.setContext(new DefaultExecutionContext(conversionService, instantiator.getRepository()));
+        }
+        try {
+            // TODO: right now this only returns top-level services
+            for (ServiceMetadata service : getExportedServicesMetadata()) {
+                // Trigger services are only created for services without listeners and explicitly defined interface classes
+                if (service.getRegistrationListeners().isEmpty() && !service.getInterfaceNames().isEmpty()) {
+                    TriggerService triggerService = new TriggerService(service, this);
+                    triggerService.register();
+                    triggerServices.put(service, triggerService);
+                }
+            }
+        } finally {
+            if (createNewContext) {
+                ExecutionContext.setContext(null);
             }
         }
     }
