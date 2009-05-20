@@ -28,16 +28,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.osgi.service.blueprint.convert.ConversionService;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 
 public class ObjectGraph {
 
-    private ConversionService conversionService;
+    private ExtendedBlueprintContainer blueprintContainer;
     private Repository repository;
 
-    public ObjectGraph(ConversionService conversionService, Repository repository) {
-        if (conversionService == null) throw new NullPointerException("conversionService is null");
+    public ObjectGraph(ExtendedBlueprintContainer blueprintContainer, Repository repository) {
+        if (blueprintContainer == null) throw new NullPointerException("blueprintContainer is null");
         if (repository == null) throw new NullPointerException("repository is null");
-        this.conversionService = conversionService;
+        this.blueprintContainer = blueprintContainer;
         this.repository = repository;
     }
 
@@ -67,7 +68,7 @@ public class ObjectGraph {
         // setup execution container
         boolean createNewContext = !ExecutionContext.isContextSet();
         if (createNewContext) {
-            ExecutionContext.setContext(new DefaultExecutionContext(conversionService, repository));
+            ExecutionContext.setContext(new DefaultExecutionContext(blueprintContainer, repository));
         }
         WrapperExecutionContext wrapperContext = new WrapperExecutionContext(ExecutionContext.getContext());
         ExecutionContext.setContext(wrapperContext);
@@ -297,6 +298,10 @@ public class ObjectGraph {
 
         public Object convert(Object value, Type type) throws Exception {
             return executionContext.convert(value, type);
+        }
+
+        public Class loadClass(String className) throws ClassNotFoundException {
+            return executionContext.loadClass(className);
         }
     }
 }

@@ -29,12 +29,12 @@ import java.util.List;
 public class ArrayRecipe extends AbstractRecipe {
 
     private final List<Recipe> list;
-    private Class typeClass;
+    private Object type;
     private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
 
-    public ArrayRecipe(Class type) {
+    public ArrayRecipe(Object type) {
         this.list = new ArrayList<Recipe>();
-        this.typeClass = type;
+        this.type = type;
     }
 
     public void allow(Option option) {
@@ -64,7 +64,14 @@ public class ArrayRecipe extends AbstractRecipe {
     }
 
     protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
-        Class type = typeClass != null ? typeClass : Object.class;
+        Class type;
+        if (this.type instanceof Class) {
+            type = (Class) this.type;
+        } else if (this.type instanceof String) {
+            type = loadClass((String) this.type);
+        } else {
+            type = Object.class;
+        }
 
         // create array instance
         Object array;

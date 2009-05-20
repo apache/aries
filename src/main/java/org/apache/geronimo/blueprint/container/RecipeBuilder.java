@@ -67,19 +67,6 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
  */
 public class RecipeBuilder {
 
-    private static Map<String, Class> primitiveClasses = new HashMap<String, Class>();
-    
-    static {
-        primitiveClasses.put("int", int.class);
-        primitiveClasses.put("short", short.class);
-        primitiveClasses.put("long", long.class);
-        primitiveClasses.put("byte", byte.class);
-        primitiveClasses.put("char", char.class);
-        primitiveClasses.put("float", float.class);
-        primitiveClasses.put("double", double.class);
-        primitiveClasses.put("boolean", boolean.class);
-    }
-    
     private int nameCounter;
     private BlueprintContainerImpl blueprintContainer;
     private ExtendedComponentDefinitionRegistry registry;
@@ -212,8 +199,9 @@ public class RecipeBuilder {
     }
     
     private BlueprintObjectRecipe createBeanRecipe(BeanMetadata local) throws Exception {
-        Class clazz = local.getRuntimeClass() != null ? local.getRuntimeClass() : loadClass(local.getClassName());
-        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, clazz);
+        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(
+                blueprintContainer,
+                local.getRuntimeClass() != null ? local.getRuntimeClass() : local.getClassName());
         recipe.setName(getName(local.getId()));
         recipe.setExplicitDependencies(local.getExplicitDependencies());
         for (BeanProperty property : local.getProperties()) {
@@ -234,20 +222,11 @@ public class RecipeBuilder {
                 beanArguments = beanArgumentsCopy;
             }
             List<Object> arguments = new ArrayList<Object>();
-            List<Class> argTypes = new ArrayList<Class>();
+            List<String> argTypes = new ArrayList<String>();
             for (BeanArgument argument : beanArguments) {
                 Recipe value = getValue(argument.getValue(), null);
                 arguments.add(value);
-                String valueType = argument.getValueType();
-                if (valueType != null) {
-                    try {
-                        argTypes.add(loadClass(valueType));
-                    } catch (Throwable t) {
-                        throw new ConstructionException("Error loading class " + valueType + " when instanciating bean " + recipe.getName());
-                    }
-                } else {
-                    argTypes.add(null);
-                }
+                argTypes.add(argument.getValueType());
             }
             recipe.setArguments(arguments);
             recipe.setArgTypes(argTypes);
@@ -289,14 +268,14 @@ public class RecipeBuilder {
         }
     }
     
-    private Recipe getValue(Metadata v, Class groupingType) throws Exception {
+    private Recipe getValue(Metadata v, Object groupingType) throws Exception {
         if (v instanceof NullMetadata) {
             return null;
         } else if (v instanceof ComponentMetadata) {
             return createRecipe((ComponentMetadata) v);
         } else if (v instanceof ValueMetadata) {
             ValueMetadata stringValue = (ValueMetadata) v;
-            Class type = loadClass(stringValue.getTypeName());
+            Object type = stringValue.getTypeName();
             type = (type == null) ? groupingType : type;
             return new ValueRecipe(stringValue, type);
         } else if (v instanceof RefMetadata) {
@@ -306,7 +285,7 @@ public class RecipeBuilder {
         } else if (v instanceof CollectionMetadata) {
             CollectionMetadata collectionMetadata = (CollectionMetadata) v;
             Class cl = collectionMetadata.getCollectionClass();
-            Class type = loadClass(collectionMetadata.getValueTypeName());
+            Object type = collectionMetadata.getValueTypeName();
             if (cl == Object[].class) {
                 ArrayRecipe ar = new ArrayRecipe(type);
                 for (Metadata lv : collectionMetadata.getValues()) {
@@ -322,8 +301,8 @@ public class RecipeBuilder {
             }
         } else if (v instanceof MapMetadata) {
             MapMetadata mapValue = (MapMetadata) v;
-            Class keyType = loadClass(mapValue.getKeyTypeName());
-            Class valueType = loadClass(mapValue.getValueTypeName());
+            Object keyType = mapValue.getKeyTypeName();
+            Object valueType = mapValue.getValueTypeName();
             MapRecipe mr = new MapRecipe(HashMap.class);
             for (MapEntry entry : mapValue.getEntries()) {
                 Recipe key = getValue(entry.getKey(), keyType);
@@ -353,10 +332,6 @@ public class RecipeBuilder {
         return blueprintContainer.getConversionService();
     }
     
-    private Class loadClass(String typeName) throws ClassNotFoundException {
-        return loadClass(blueprintContainer, typeName);
-    }
-    
     private String getName(String name) {
         if (name == null) {
             return "recipe-" + ++nameCounter;
@@ -365,21 +340,4 @@ public class RecipeBuilder {
         }
     }
         
-    public static Class loadClass(ExtendedBlueprintContainer context, String typeName) throws ClassNotFoundException {
-        if (typeName == null) {
-            return null;
-        }
-
-        Class clazz = primitiveClasses.get(typeName);
-        if (clazz == null) {
-            if (context == null) {
-                ClassLoader loader = Thread.currentThread().getContextClassLoader();
-                clazz = loader.loadClass(typeName);
-            } else {
-                clazz = context.loadClass(typeName);
-            }
-        }
-        return clazz;
-    }
-            
 }

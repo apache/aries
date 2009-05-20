@@ -122,6 +122,14 @@ public abstract class AbstractRecipe implements Recipe {
         return ExecutionContext.getContext().convert(obj, type);
     }
 
+    protected Class loadClass(String className) {
+        try {
+            return ExecutionContext.getContext().loadClass(className);
+        } catch (ClassNotFoundException e) {
+            throw new ConstructionException(e);
+        }
+    }
+
     public Destroyable getDestroyable(Object instance) {
         return null;
     }

@@ -28,6 +28,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
+import org.apache.geronimo.blueprint.container.RecipeBuilder;
 import org.osgi.service.blueprint.convert.ConversionService;
 
 public class DefaultExecutionContext extends ExecutionContext {
@@ -36,7 +38,7 @@ public class DefaultExecutionContext extends ExecutionContext {
      */
     private Repository repository;
 
-    private ConversionService conversionService;
+    private ExtendedBlueprintContainer blueprintContainer;
 
     /**
      * Contains partial objects.
@@ -56,14 +58,14 @@ public class DefaultExecutionContext extends ExecutionContext {
      */
     private final SortedMap<String, List<Reference>> unresolvedRefs = new TreeMap<String, List<Reference>>();
 
-    public DefaultExecutionContext(ConversionService conversionService) {
-        this(conversionService, new DefaultRepository());
+    public DefaultExecutionContext(ExtendedBlueprintContainer blueprintContainer) {
+        this(blueprintContainer, new DefaultRepository());
     }
 
-    public DefaultExecutionContext(ConversionService conversionService, Repository repository) {
-        if (conversionService == null) throw new NullPointerException("conversionService is null");
+    public DefaultExecutionContext(ExtendedBlueprintContainer blueprintContainer, Repository repository) {
+        if (blueprintContainer == null) throw new NullPointerException("blueprintContainer is null");
         if (repository == null) throw new NullPointerException("repository is null");
-        this.conversionService = conversionService;
+        this.blueprintContainer = blueprintContainer;
         this.repository = repository;
     }
 
@@ -174,6 +176,35 @@ public class DefaultExecutionContext extends ExecutionContext {
     }
 
     public Object convert(Object value, Type type) throws Exception {
-        return ConversionUtils.convert(value, type, conversionService);
+        return ConversionUtils.convert(value, type, blueprintContainer.getConversionService());
+    }
+
+    private static Map<String, Class> primitiveClasses = new HashMap<String, Class>();
+
+    static {
+        primitiveClasses.put("int", int.class);
+        primitiveClasses.put("short", short.class);
+        primitiveClasses.put("long", long.class);
+        primitiveClasses.put("byte", byte.class);
+        primitiveClasses.put("char", char.class);
+        primitiveClasses.put("float", float.class);
+        primitiveClasses.put("double", double.class);
+        primitiveClasses.put("boolean", boolean.class);
+    }
+
+    public Class loadClass(String typeName) throws ClassNotFoundException {
+        if (typeName == null) {
+            return null;
+        }
+        Class clazz = primitiveClasses.get(typeName);
+        if (clazz == null && typeName.startsWith("java.")) {
+            // We can bypass classes starting with "java." because they are always delegated
+            // to the system bundle, so we'll end up with the same class in all cases 
+            clazz = getClass().getClassLoader().loadClass(typeName);
+        }
+        if (clazz == null) {
+            clazz = blueprintContainer.loadClass(typeName);
+        }
+        return clazz;
     }
 }

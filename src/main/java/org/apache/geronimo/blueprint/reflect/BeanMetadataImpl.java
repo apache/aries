@@ -48,6 +48,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     private String scope;
     private Class runtimeClass;
     private List<String> explicitDependencies;
+    private boolean processor;
 
     public BeanMetadataImpl() {
     }
@@ -221,7 +222,15 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
             this.explicitDependencies.remove(dependency);
         }
     }
-    
+
+    public boolean isProcessor() {
+        return processor;
+    }
+
+    public void setProcessor(boolean processor) {
+        this.processor = processor;
+    }
+
     @Override
     public String toString() {
         return "BeanMetadata[" +

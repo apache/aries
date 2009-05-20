@@ -42,6 +42,7 @@ import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
+import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
 import org.apache.geronimo.blueprint.container.SatisfiableRecipe;
 import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
@@ -75,14 +76,12 @@ import org.osgi.service.blueprint.reflect.Target;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanProperty;
-import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.PropsMetadata;
 import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
 import org.osgi.service.blueprint.reflect.Listener;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -227,7 +226,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         state = State.Populated;
                         break;
                     case Populated:
-                        instantiator = new BlueprintObjectInstantiator(conversionService, new RecipeBuilder(this).createRepository());
+                        instantiator = new BlueprintObjectInstantiator(this, new RecipeBuilder(this).createRepository());
                         checkReferences();
                         trackServiceReferences();
                         timerTask = new TimerTask() {
@@ -261,12 +260,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                     case InitialReferencesSatisfied:
                         processTypeConverters();
                         processProcessors();
+                        // Update repository wrt bean processing
+                        untrackServiceReferences();
                         DefaultRepository repository = (DefaultRepository) instantiator.getRepository();
                         DefaultRepository tmpRepo = new RecipeBuilder(this).createRepository();
-
-                        instantiator = new BlueprintObjectInstantiator(conversionService, new RecipeBuilder(this).createRepository());
-
-                        untrackServiceReferences();
                         for (String name : repository.getNames()) {
                             Recipe recipe = repository.getRecipe(name);
                             Object instance = repository.getInstance(name);
@@ -276,8 +273,9 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             }
                         }
                         satisfiables = null;
-                        instantiator = new BlueprintObjectInstantiator(conversionService, tmpRepo);
+                        instantiator = new BlueprintObjectInstantiator(this, tmpRepo);
                         trackServiceReferences();
+                        // Check references
                         if (checkAllSatisfiables() || !waitForDependencies) {
                             state = State.InitialReferencesSatisfied2;
                         } else {
@@ -313,7 +311,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         return;
                     case Create:
                         timerTask.cancel();
-                        instantiateComponents();
+                        instantiateEagerSingletonBeans();
 
                         // Register the BlueprintContainer in the OSGi registry
                         if (registration == null) {
@@ -349,7 +347,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         List<Recipe> recipes = new ArrayList<Recipe>();
         boolean createNewContext = !ExecutionContext.isContextSet();
         if (createNewContext) {
-            ExecutionContext.setContext(new DefaultExecutionContext(conversionService, instantiator.getRepository()));
+            ExecutionContext.setContext(new DefaultExecutionContext(this, instantiator.getRepository()));
         }
         try {
             for (String name : repository.getNames()) {
@@ -408,8 +406,13 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
 
     private void processProcessors() throws Exception {
+        // TODO: the whole lazy activation just because we need to discover processors
+        // TODO: we need something else to find out which beans are processors, maybe a subtype of BeanMetadata
         // Instanciate ComponentDefinitionRegistryProcessor and BeanProcessor
         for (BeanMetadata bean : getBeanComponentsMetadata()) {
+            if (bean instanceof ExtendedBeanMetadata && !((ExtendedBeanMetadata) bean).isProcessor()) {
+                continue;
+            }
             Class clazz = bean.getRuntimeClass();
             if (clazz == null && bean.getClassName() != null) {
                 clazz = loadClass(bean.getClassName());
@@ -431,7 +434,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         if (satisfiables == null && instantiator != null) {
             boolean createNewContext = !ExecutionContext.isContextSet();
             if (createNewContext) {
-                ExecutionContext.setContext(new DefaultExecutionContext(conversionService, instantiator.getRepository()));
+                ExecutionContext.setContext(new DefaultExecutionContext(this, instantiator.getRepository()));
             }
             try {
                 satisfiables = new HashMap<String, List<SatisfiableRecipe>>();
@@ -535,7 +538,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         }
     }
 
-    private void instantiateComponents() {
+    private void instantiateEagerSingletonBeans() {
         List<String> components = new ArrayList<String>();
         for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
             ComponentMetadata component = componentDefinitionRegistry.getComponentDefinition(name);
@@ -591,7 +594,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private void registerTriggerServices() {
         boolean createNewContext = !ExecutionContext.isContextSet();
         if (createNewContext) {
-            ExecutionContext.setContext(new DefaultExecutionContext(conversionService, instantiator.getRepository()));
+            ExecutionContext.setContext(new DefaultExecutionContext(this, instantiator.getRepository()));
         }
         try {
             for (ServiceMetadata service : getExportedServicesMetadata()) {

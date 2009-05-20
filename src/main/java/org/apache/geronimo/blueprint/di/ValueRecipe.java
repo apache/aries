@@ -18,7 +18,12 @@
  */
 package org.apache.geronimo.blueprint.di;
 
+import java.lang.reflect.Type;
+
 import org.osgi.service.blueprint.reflect.ValueMetadata;
+import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.apache.geronimo.blueprint.container.RecipeBuilder;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 
 /**
  * This recipe will be used to create an object from a ValueMetadata.
@@ -31,9 +36,9 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
 public class ValueRecipe extends AbstractRecipe {
 
     private ValueMetadata value;
-    private Class type;
+    private Object type;
 
-    public ValueRecipe(ValueMetadata value, Class type) {
+    public ValueRecipe(ValueMetadata value, Object type) {
         this.value = value;
         this.type = type;
     }
@@ -41,7 +46,13 @@ public class ValueRecipe extends AbstractRecipe {
     @Override
     protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
         try {
-            return convert(value.getStringValue(), type != null ? type : Object.class);
+            Type type = Object.class;
+            if (this.type instanceof Type) {
+                type = (Type) this.type;
+            } else if (this.type instanceof String) {
+                type = loadClass((String) this.type);
+            }
+            return convert(value.getStringValue(), type);
         } catch (Exception e) {            
             throw new ConstructionException(e);
         }

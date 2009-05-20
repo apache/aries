@@ -32,17 +32,18 @@ import org.apache.geronimo.blueprint.di.Reference;
 import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.di.UnresolvedReferencesException;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.osgi.service.blueprint.convert.ConversionService;
 
 /**
  */
 public class BlueprintObjectInstantiator  {
 
-    private ConversionService conversionService;
+    private ExtendedBlueprintContainer blueprintContainer;
     private Repository repository;
 
-    public BlueprintObjectInstantiator(ConversionService conversionService, Repository repository) {
-        this.conversionService = conversionService;
+    public BlueprintObjectInstantiator(ExtendedBlueprintContainer blueprintContainer, Repository repository) {
+        this.blueprintContainer = blueprintContainer;
         this.repository = repository;
     }
     
@@ -65,13 +66,14 @@ public class BlueprintObjectInstantiator  {
             
             boolean createNewContext = !ExecutionContext.isContextSet();
             if (createNewContext) {
-                ExecutionContext.setContext(new DefaultExecutionContext(conversionService, repository));
+                ExecutionContext.setContext(new DefaultExecutionContext(blueprintContainer, repository));
             }
             
             try {
                 Object obj = createInstance(name);
                 try {
-                    obj = ConversionUtils.convert(obj, Object.class, conversionService);
+                    // Make sure to go through the conversion step in case we have a Convertible object
+                    obj = ConversionUtils.convert(obj, Object.class, blueprintContainer.getConversionService());
                 } catch (Exception e) {
                     throw new ConstructionException("Unable to convert instance " + name, e);
                 }
