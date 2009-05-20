@@ -36,108 +36,86 @@ import org.osgi.framework.ServiceRegistration;
 public class TestBundleContext implements BundleContext {
 
     public void addBundleListener(BundleListener arg0) {
-        // TODO Auto-generated method stub
     }
 
     public void addFrameworkListener(FrameworkListener arg0) {
-        // TODO Auto-generated method stub
     }
 
     public void addServiceListener(ServiceListener arg0) {
-        // TODO Auto-generated method stub
     }
 
     public void addServiceListener(ServiceListener arg0, String arg1)
         throws InvalidSyntaxException {
-        // TODO Auto-generated method stub
     }
 
     public Filter createFilter(String arg0) throws InvalidSyntaxException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public ServiceReference[] getAllServiceReferences(String arg0, String arg1)
         throws InvalidSyntaxException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public Bundle getBundle() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public Bundle getBundle(long arg0) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public Bundle[] getBundles() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public File getDataFile(String arg0) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public String getProperty(String arg0) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public Object getService(ServiceReference arg0) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public ServiceReference getServiceReference(String arg0) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public ServiceReference[] getServiceReferences(String arg0, String arg1)
     throws InvalidSyntaxException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public Bundle installBundle(String arg0) throws BundleException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public Bundle installBundle(String arg0, InputStream arg1) throws BundleException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public ServiceRegistration registerService(String[] arg0, Object arg1, Dictionary arg2) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public ServiceRegistration registerService(String arg0, Object arg1, Dictionary arg2) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public void removeBundleListener(BundleListener arg0) {
-        // TODO Auto-generated method stub
     }
 
     public void removeFrameworkListener(FrameworkListener arg0) {
-        // TODO Auto-generated method stub
     }
 
     public void removeServiceListener(ServiceListener arg0) {
-        // TODO Auto-generated method stub
     }
 
     public boolean ungetService(ServiceReference arg0) {
-        // TODO Auto-generated method stub
         return false;
     }
 
