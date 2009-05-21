@@ -17,9 +17,19 @@
 package org.osgi.service.blueprint.container;
 
 public class ComponentDefinitionException extends RuntimeException {
-    
+
+    public ComponentDefinitionException() {
+    }
+
     public ComponentDefinitionException(String explanation) {
         super(explanation);
     }
-      
+
+    public ComponentDefinitionException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ComponentDefinitionException(Throwable cause) {
+        super(cause);
+    }
 }

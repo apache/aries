@@ -296,7 +296,7 @@ public class Parser {
                 schema.newValidator().validate(new DOMSource(doc));
             }
         } catch (Exception e) {
-            throw (RuntimeException) new ComponentDefinitionException("Unable to validate xml").initCause(e);
+            throw new ComponentDefinitionException("Unable to validate xml", e);
         } finally {
             for (StreamSource s : schemaSources) {
                 try {
