@@ -94,6 +94,10 @@ import org.slf4j.LoggerFactory;
  */
 public class BlueprintContainerImpl implements ExtendedBlueprintContainer, NamespaceHandlerRegistry.Listener, Runnable, SatisfiableRecipe.SatisfactionListener {
 
+    public static final boolean BEHAVIOR_TCK_INJECTION = true;
+    public static final boolean BEHAVIOR_NO_GRACE_PERIOD = false;
+    public static final boolean BEHAVIOR_ENHANCED_LAZY_ACTIVATION = false;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContainerImpl.class);
 
     private enum State {
@@ -172,17 +176,21 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         Dictionary headers = bundle.getHeaders();
         String symbolicName = (String)headers.get(Constants.BUNDLE_SYMBOLICNAME);
         List<PathElement> paths = HeaderParser.parseHeader(symbolicName);
-        
-        String timeoutDirective = paths.get(0).getDirective(BlueprintConstants.TIMEOUT_DIRECTIVE);        
-        if (timeoutDirective != null) {
-            LOGGER.debug("Timeout directive: " + timeoutDirective);
-            timeout = Integer.parseInt(timeoutDirective);
-        }
-        
-        String waitForDependenciesDirective = paths.get(0).getDirective(BlueprintConstants.WAIT_FOR_DEPENDENCIES_DIRECTIVE);
-        if (waitForDependenciesDirective != null) {
-            LOGGER.debug("Wait-for-dependencies directive: " + waitForDependenciesDirective);
-            waitForDependencies = Boolean.parseBoolean(waitForDependenciesDirective);
+
+        if (BEHAVIOR_NO_GRACE_PERIOD) {
+            waitForDependencies = false;
+        } else {
+            String timeoutDirective = paths.get(0).getDirective(BlueprintConstants.TIMEOUT_DIRECTIVE);
+            if (timeoutDirective != null) {
+                LOGGER.debug("Timeout directive: " + timeoutDirective);
+                timeout = Integer.parseInt(timeoutDirective);
+            }
+
+            String waitForDependenciesDirective = paths.get(0).getDirective(BlueprintConstants.WAIT_FOR_DEPENDENCIES_DIRECTIVE);
+            if (waitForDependenciesDirective != null) {
+                LOGGER.debug("Wait-for-dependencies directive: " + waitForDependenciesDirective);
+                waitForDependencies = Boolean.parseBoolean(waitForDependenciesDirective);
+            }
         }
         
         // TODO: add support for custom directive to disable schema validation?
@@ -300,11 +308,15 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         //       the lazy activation should be a best effot and the lazy creation of services should be
                         //       done in all cases
                         //       Not sure about listeners
-                        if (lazyActivation) {
-                            registerTriggerServices();
-                            state = State.WaitForTrigger;                            
-                        } else {
+                        if (BEHAVIOR_ENHANCED_LAZY_ACTIVATION) {
                             state = State.Create;
+                        } else {
+                            if (lazyActivation) {
+                                registerTriggerServices();
+                                state = State.WaitForTrigger;
+                            } else {
+                                state = State.Create;
+                            }
                         }
                         break;
                     case WaitForTrigger:
@@ -523,13 +535,24 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             break;
                         }
                     }
-                    ServiceRegistrationProxy reg = (ServiceRegistrationProxy) getComponent(name);
-                    if (satisfied && !reg.isRegistered()) {
-                        LOGGER.debug("Registering service {} due to satisfied references", name);
-                        reg.register();
-                    } else if (!satisfied && reg.isRegistered()) {
-                        LOGGER.debug("Unregistering service {} due to unsatisfied references", name);
-                        reg.unregister();
+                    if (BEHAVIOR_ENHANCED_LAZY_ACTIVATION) {
+                        ServiceExportRecipe reg = (ServiceExportRecipe) getComponent(name);
+                        if (satisfied && !reg.isRegistered()) {
+                            LOGGER.debug("Registering service {} due to satisfied references", name);
+                            reg.register();
+                        } else if (!satisfied && reg.isRegistered()) {
+                            LOGGER.debug("Unregistering service {} due to unsatisfied references", name);
+                            reg.unregister();
+                        }
+                    } else {
+                        ServiceRegistrationProxy reg = (ServiceRegistrationProxy) getComponent(name);
+                        if (satisfied && !reg.isRegistered()) {
+                            LOGGER.debug("Registering service {} due to satisfied references", name);
+                            reg.register();
+                        } else if (!satisfied && reg.isRegistered()) {
+                            LOGGER.debug("Unregistering service {} due to unsatisfied references", name);
+                            reg.unregister();
+                        }
                     }
                 }
             }
@@ -547,7 +570,27 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                     components.add(name);
                 }
             } else {
-                components.add(name);
+                if (BEHAVIOR_ENHANCED_LAZY_ACTIVATION) {
+                    if (component instanceof ServiceMetadata) {
+                        List<SatisfiableRecipe> dependencies = getSatisfiableDependenciesMap().get(name);
+                        boolean satisfied = true;
+                        if (dependencies != null) {
+                            for (SatisfiableRecipe recipe : dependencies) {
+                                if (!recipe.isSatisfied()) {
+                                    satisfied = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (satisfied) {
+                            Recipe r = ((DefaultRepository) instantiator.getRepository()).getRecipe(name);
+                            ((ServiceExportRecipe) r).register();
+                        }
+                        components.add(name);
+                    }
+                } else {
+                    components.add(name);
+                }
             }
         }
         LOGGER.debug("Instantiating components: {}", components);

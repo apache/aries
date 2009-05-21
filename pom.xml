@@ -136,7 +136,7 @@
             <dependency>
                 <groupId>org.ops4j.pax.url</groupId>
                 <artifactId>pax-url-mvn</artifactId>
-                <version>0.3.3</version>
+                <version>0.5.2</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

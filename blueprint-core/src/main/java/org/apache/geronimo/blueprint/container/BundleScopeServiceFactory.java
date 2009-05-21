@@ -30,11 +30,15 @@ import org.apache.geronimo.blueprint.di.Repository;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** 
  * TODO: javadoc
  */
 public class BundleScopeServiceFactory implements ServiceFactory {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BundleScopeServiceFactory.class);
 
     private BlueprintContainerImpl blueprintContainer;
     private BlueprintObjectRecipe serviceRecipe;
@@ -51,7 +55,7 @@ public class BundleScopeServiceFactory implements ServiceFactory {
             entry = instanceMap.get(bundle);
             if (entry == null) {
                 entry = new Entry(createInstance());
-                System.out.println("Created service instance for bundle: " + bundle + " " + entry.getServiceInstance().hashCode());
+                LOGGER.debug("Created service instance for bundle: " + bundle + " " + entry.getServiceInstance().hashCode());
                 instanceMap.put(bundle, entry);                
             }       
             entry.addServiceRegistration(registration);
@@ -66,7 +70,7 @@ public class BundleScopeServiceFactory implements ServiceFactory {
                 entry.removeServiceRegistration(registration);
                 if (!entry.hasServiceRegistrations()) {
                     destroyInstance(entry.getServiceInstance());
-                    System.out.println("Destroyed service instance for bundle: " + bundle);
+                    LOGGER.debug("Destroyed service instance for bundle: " + bundle);
                     instanceMap.remove(bundle);
                 }
             }
