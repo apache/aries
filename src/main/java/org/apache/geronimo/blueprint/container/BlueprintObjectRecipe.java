@@ -281,8 +281,6 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         return instance;
     }
 
-    public static final boolean TCK_COMPLIANCE = true;
-
     private Map<Method, List<Object>> findMatchingMethods(Class type, String name, boolean instance, List<Object> args, List<Class> types) {
         Map<Method, List<Object>> matches = new HashMap<Method, List<Object>>();
         // Get constructors
@@ -299,7 +297,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
             }
         }
         // Find a direct match with no conversion
-        if (TCK_COMPLIANCE && matches.size() != 1) {
+        if (BlueprintContainerImpl.BEHAVIOR_TCK_INJECTION && matches.size() != 1) {
             Map<Method, List<Object>> nmatches = new HashMap<Method, List<Object>>();
             int bestExactMatch = -1;
             for (Method mth : methods) {
@@ -399,7 +397,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
             }
         }
         // Find a direct match with no conversion
-        if (TCK_COMPLIANCE && matches.size() != 1) {
+        if (BlueprintContainerImpl.BEHAVIOR_TCK_INJECTION && matches.size() != 1) {
             Map<Constructor, List<Object>> nmatches = new HashMap<Constructor, List<Object>>();
             int bestExactMatch = -1;
             for (Constructor cns : constructors) {

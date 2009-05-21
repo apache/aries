@@ -156,33 +156,51 @@ public class RecipeBuilder {
         return recipe;
     }
 
-    private BlueprintObjectRecipe createServiceRecipe(ServiceMetadata serviceExport) throws Exception {
-        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, ServiceRegistrationProxy.class);
-        recipe.setName(getName(serviceExport.getId()));
-        recipe.setExplicitDependencies(serviceExport.getExplicitDependencies());
-        recipe.setInitMethod("init");
-        recipe.setAllowPartial(true);
-        recipe.setProperty("blueprintContainer", blueprintContainer);
-        BeanMetadata exportedComponent = getLocalServiceComponent(serviceExport.getServiceComponent());
-        if (exportedComponent != null && BeanMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
-            BlueprintObjectRecipe exportedComponentRecipe = createBeanRecipe(exportedComponent);
-            recipe.setProperty("service", new BundleScopeServiceFactory(blueprintContainer, exportedComponentRecipe));
-        } else {
-            recipe.setProperty("service", getValue(serviceExport.getServiceComponent(), null));
-        }
-        recipe.setProperty("metadata", serviceExport);
-        Recipe propertiesRecipe = getServicePropertiesRecipe(serviceExport);
-        if (propertiesRecipe != null) {
-            recipe.setProperty("serviceProperties", propertiesRecipe);
-        }
-        if (serviceExport.getRegistrationListeners() != null) {
+    private Recipe createServiceRecipe(ServiceMetadata serviceExport) throws Exception {
+        if (BlueprintContainerImpl.BEHAVIOR_ENHANCED_LAZY_ACTIVATION) {
             CollectionRecipe listenersRecipe = new CollectionRecipe(ArrayList.class);
-            for (RegistrationListener listener : serviceExport.getRegistrationListeners()) {
-                listenersRecipe.add(createRecipe(listener));
+            if (serviceExport.getRegistrationListeners() != null) {
+                for (RegistrationListener listener : serviceExport.getRegistrationListeners()) {
+                    listenersRecipe.add(createRecipe(listener));
+                }
             }
-            recipe.setProperty("listeners", listenersRecipe);
+            listenersRecipe.setName(getName(null));
+            ServiceExportRecipe recipe = new ServiceExportRecipe(
+                    blueprintContainer,
+                    serviceExport,
+                    getValue(serviceExport.getServiceComponent(), null),
+                    listenersRecipe,
+                    (MapRecipe) getServicePropertiesRecipe(serviceExport));
+            recipe.setName(getName(serviceExport.getId()));
+            return recipe;
+        } else {
+            BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, ServiceRegistrationProxy.class);
+            recipe.setName(getName(serviceExport.getId()));
+            recipe.setExplicitDependencies(serviceExport.getExplicitDependencies());
+            recipe.setInitMethod("init");
+            recipe.setAllowPartial(true);
+            recipe.setProperty("blueprintContainer", blueprintContainer);
+            BeanMetadata exportedComponent = getLocalServiceComponent(serviceExport.getServiceComponent());
+            if (exportedComponent != null && BeanMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
+                BlueprintObjectRecipe exportedComponentRecipe = createBeanRecipe(exportedComponent);
+                recipe.setProperty("service", new BundleScopeServiceFactory(blueprintContainer, exportedComponentRecipe));
+            } else {
+                recipe.setProperty("service", getValue(serviceExport.getServiceComponent(), null));
+            }
+            recipe.setProperty("metadata", serviceExport);
+            Recipe propertiesRecipe = getServicePropertiesRecipe(serviceExport);
+            if (propertiesRecipe != null) {
+                recipe.setProperty("serviceProperties", propertiesRecipe);
+            }
+            if (serviceExport.getRegistrationListeners() != null) {
+                CollectionRecipe listenersRecipe = new CollectionRecipe(ArrayList.class);
+                for (RegistrationListener listener : serviceExport.getRegistrationListeners()) {
+                    listenersRecipe.add(createRecipe(listener));
+                }
+                recipe.setProperty("listeners", listenersRecipe);
+            }
+            return recipe;
         }
-        return recipe;
     }
 
     protected Recipe getServicePropertiesRecipe(ServiceMetadata metadata) throws Exception {
@@ -240,16 +258,26 @@ public class RecipeBuilder {
     }
 
     private Recipe createRecipe(RegistrationListener listener) throws Exception {
-        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, ServiceRegistrationProxy.Listener.class);
-        recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
-        recipe.setProperty("metadata", listener);
-        return recipe;
+        if (BlueprintContainerImpl.BEHAVIOR_ENHANCED_LAZY_ACTIVATION) {
+            BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, ServiceExportRecipe.Listener.class);
+            recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
+            recipe.setProperty("metadata", listener);
+            recipe.setName(getName(null));
+            return recipe;
+        } else {
+            BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, ServiceRegistrationProxy.Listener.class);
+            recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
+            recipe.setProperty("metadata", listener);
+            recipe.setName(getName(null));
+            return recipe;
+        }
     }
 
     private Recipe createRecipe(Listener listener) throws Exception {
         BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, AbstractServiceReferenceRecipe.Listener.class);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         recipe.setProperty("metadata", listener);
+        recipe.setName(getName(null));
         return recipe;
     }
 
@@ -277,11 +305,15 @@ public class RecipeBuilder {
             ValueMetadata stringValue = (ValueMetadata) v;
             Object type = stringValue.getTypeName();
             type = (type == null) ? groupingType : type;
-            return new ValueRecipe(stringValue, type);
+            ValueRecipe vr = new ValueRecipe(stringValue, type);
+            vr.setName(getName(null));
+            return vr;
         } else if (v instanceof RefMetadata) {
             // TODO: make it work with property-placeholders?
             String componentName = ((RefMetadata) v).getComponentId();
-            return new ReferenceRecipe(componentName);
+            ReferenceRecipe rr = new ReferenceRecipe(componentName);
+            rr.setName(getName(null));
+            return rr;
         } else if (v instanceof CollectionMetadata) {
             CollectionMetadata collectionMetadata = (CollectionMetadata) v;
             Class cl = collectionMetadata.getCollectionClass();
@@ -291,12 +323,14 @@ public class RecipeBuilder {
                 for (Metadata lv : collectionMetadata.getValues()) {
                     ar.add(getValue(lv, type));
                 }
+                ar.setName(getName(null));
                 return ar;
             } else {
                 CollectionRecipe cr = new CollectionRecipe(cl);
                 for (Metadata lv : collectionMetadata.getValues()) {
                     cr.add(getValue(lv, type));
                 }
+                cr.setName(getName(null));
                 return cr;
             }
         } else if (v instanceof MapMetadata) {
@@ -309,6 +343,7 @@ public class RecipeBuilder {
                 Recipe val = getValue(entry.getValue(), valueType);
                 mr.put(key, val);
             }
+            mr.setName(getName(null));
             return mr;
         } else if (v instanceof PropsMetadata) {
             PropsMetadata mapValue = (PropsMetadata) v;
@@ -318,11 +353,14 @@ public class RecipeBuilder {
                 Recipe val = getValue(entry.getValue(), String.class);
                 mr.put(key, val);
             }
+            mr.setName(getName(null));
             return mr;
         } else if (v instanceof IdRefMetadata) {
             // TODO: make it work with property-placeholders?
             String componentName = ((IdRefMetadata) v).getComponentId();
-            return new ReferenceNameRecipe(componentName);
+            ReferenceNameRecipe rnr = new ReferenceNameRecipe(componentName);
+            rnr.setName(getName(null));
+            return rnr;
         } else {
             throw new IllegalStateException("Unsupported value: " + v.getClass().getName());
         }
