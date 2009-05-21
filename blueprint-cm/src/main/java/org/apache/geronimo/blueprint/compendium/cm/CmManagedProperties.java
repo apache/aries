@@ -38,10 +38,7 @@ import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.apache.geronimo.blueprint.di.MissingAccessorException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +61,6 @@ public class CmManagedProperties implements BeanProcessor {
 
     private final Object lock = new Object();
     private final Set<Object> beans = new HashSet<Object>();
-    private ServiceRegistration registration;
     private Dictionary<String,Object> properties;
 
     public ExtendedBlueprintContainer getBlueprintContainer() {
@@ -123,7 +119,7 @@ public class CmManagedProperties implements BeanProcessor {
         props.put(Constants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
         props.put(Constants.BUNDLE_VERSION, bundle.getHeaders().get(Constants.BUNDLE_VERSION));
         synchronized (lock) {
-            registration = blueprintContainer.getBundleContext().registerService(ManagedService.class.getName(), new ConfigurationWatcher(), props);
+            ManagedServiceManager.register(this, props);
             try {
                 properties = configAdmin.getConfiguration(persistentId).getProperties();
             } catch (Throwable t) {
@@ -133,9 +129,7 @@ public class CmManagedProperties implements BeanProcessor {
     }
 
     public void destroy() {
-        if (registration != null) {
-            registration.unregister();
-        }
+        ManagedServiceManager.unregister(this);
     }
 
     public void updated(Dictionary<String,Object> props) {
@@ -261,13 +255,6 @@ public class CmManagedProperties implements BeanProcessor {
                     LOGGER.warn("Unable to call method " + method + " on bean " + beanName, t);
                 }
             }
-        }
-    }
-
-    private class ConfigurationWatcher implements ManagedService {
-
-        public void updated(Dictionary props) throws ConfigurationException {
-            CmManagedProperties.this.updated(props);
         }
     }
 
