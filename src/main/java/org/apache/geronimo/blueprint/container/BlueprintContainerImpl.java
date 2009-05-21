@@ -536,7 +536,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         }
                     }
                     if (BEHAVIOR_ENHANCED_LAZY_ACTIVATION) {
-                        ServiceExportRecipe reg = (ServiceExportRecipe) getComponent(name);
+                        ServiceExportRecipe reg = (ServiceExportRecipe) getComponentInstance(name);
                         if (satisfied && !reg.isRegistered()) {
                             LOGGER.debug("Registering service {} due to satisfied references", name);
                             reg.register();
@@ -545,7 +545,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             reg.unregister();
                         }
                     } else {
-                        ServiceRegistrationProxy reg = (ServiceRegistrationProxy) getComponent(name);
+                        ServiceRegistrationProxy reg = (ServiceRegistrationProxy) getComponentInstance(name);
                         if (satisfied && !reg.isRegistered()) {
                             LOGGER.debug("Registering service {} due to satisfied references", name);
                             reg.register();
@@ -681,23 +681,23 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         }
     }
     
-    public Set<String> getComponentNames() {
+    public Set<String> getComponentIds() {
         return componentDefinitionRegistry.getComponentDefinitionNames();
     }
     
-    public Object getComponent(String name) throws NoSuchComponentException {
+    public Object getComponentInstance(String id) throws NoSuchComponentException {
         if (instantiator == null) {
-            throw new NoSuchComponentException(name);
+            throw new NoSuchComponentException(id);
         }
         try {
-            LOGGER.debug("Instantiating component {}", name);
-            return instantiator.create(name);
+            LOGGER.debug("Instantiating component {}", id);
+            return instantiator.create(id);
         } catch (NoSuchObjectException e) {
-            throw new NoSuchComponentException(name);
+            throw new NoSuchComponentException(id);
         } catch (ComponentDefinitionException e) {
             throw e;
         } catch (Throwable t) {
-            throw (ComponentDefinitionException) new ComponentDefinitionException("Cound not create component instance for " + name).initCause(t);
+            throw (ComponentDefinitionException) new ComponentDefinitionException("Cound not create component instance for " + id).initCause(t);
         }
     }
 
@@ -710,18 +710,18 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
 
     public Collection<ServiceReferenceMetadata> getReferencedServicesMetadata() {
-        return getComponentsMetadata(ServiceReferenceMetadata.class);
+        return getMetadata(ServiceReferenceMetadata.class);
     }
 
     public Collection<ServiceMetadata> getExportedServicesMetadata() {
-        return getComponentsMetadata(ServiceMetadata.class);
+        return getMetadata(ServiceMetadata.class);
     }
 
     public Collection<BeanMetadata> getBeanComponentsMetadata() {
-        return getComponentsMetadata(BeanMetadata.class);
+        return getMetadata(BeanMetadata.class);
     }
 
-    public <T extends ComponentMetadata> List<T> getComponentsMetadata(Class<T> clazz) {
+    public <T extends ComponentMetadata> List<T> getMetadata(Class<T> clazz) {
         List<T> metadatas = new ArrayList<T>();
         for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
             ComponentMetadata component = componentDefinitionRegistry.getComponentDefinition(name);
