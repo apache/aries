@@ -59,7 +59,7 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample", 5000);
         assertNotNull(blueprintContainer);
 
-        Foo foo = (Foo) blueprintContainer.getComponent("none-managed");
+        Foo foo = (Foo) blueprintContainer.getComponentInstance("none-managed");
         assertNotNull(foo);
 
         assertEquals(5, foo.getA());
@@ -92,7 +92,7 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample", 5000);
         assertNotNull(blueprintContainer);
 
-        Foo foo = (Foo) blueprintContainer.getComponent("container-managed");
+        Foo foo = (Foo) blueprintContainer.getComponentInstance("container-managed");
         assertNotNull(foo);
 
         assertEquals(5, foo.getA());
@@ -125,7 +125,7 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample", 5000);
         assertNotNull(blueprintContainer);
 
-        Foo foo = (Foo) blueprintContainer.getComponent("component-managed");
+        Foo foo = (Foo) blueprintContainer.getComponentInstance("component-managed");
         assertNotNull(foo);
 
         assertEquals(5, foo.getA());

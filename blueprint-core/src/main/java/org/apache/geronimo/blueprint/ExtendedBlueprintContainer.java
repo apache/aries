@@ -34,8 +34,6 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
 
     Class loadClass(String name) throws ClassNotFoundException;
 
-    <T  extends ComponentMetadata> List<T> getComponentsMetadata(Class<T> type);
-
     ExtendedComponentDefinitionRegistry getComponentDefinitionRegistry();
 
     List<BeanProcessor> getBeanProcessors();

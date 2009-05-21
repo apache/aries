@@ -113,7 +113,7 @@ public class CmManagedServiceFactory {
 
     protected void updated(String pid, Dictionary props) {
         LOGGER.error("Updated configuration {} with props {}", pid, props);
-        Object component = blueprintContainer.getComponent(managedComponentName);
+        Object component = blueprintContainer.getComponentInstance(managedComponentName);
         // TODO: autoExport, ranking, init instance, call listeners, etc...
         ServiceRegistration reg = blueprintContainer.getBundleContext().registerService(interfaces.toArray(new String[interfaces.size()]), component, new Properties());
         services.put(reg, component);
