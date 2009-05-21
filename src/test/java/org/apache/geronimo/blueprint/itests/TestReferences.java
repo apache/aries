@@ -51,11 +51,11 @@ public class TestReferences extends AbstractIntegrationTest {
         BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample");
         assertNotNull(blueprintContainer);
 
-        BindingListener listener = (BindingListener) blueprintContainer.getComponent("bindingListener");
+        BindingListener listener = (BindingListener) blueprintContainer.getComponentInstance("bindingListener");
         assertNull(listener.getA());
         assertNull(listener.getReference());
 
-        InterfaceA a = (InterfaceA) blueprintContainer.getComponent("ref2");
+        InterfaceA a = (InterfaceA) blueprintContainer.getComponentInstance("ref2");
         try {
             a.hello("world");
             fail("A ServiceUnavailableException should have been thrown");
@@ -104,11 +104,11 @@ public class TestReferences extends AbstractIntegrationTest {
         BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample");
         assertNotNull(blueprintContainer);
 
-        BindingListener listener = (BindingListener) blueprintContainer.getComponent("listBindingListener");
+        BindingListener listener = (BindingListener) blueprintContainer.getComponentInstance("listBindingListener");
         assertNull(listener.getA());
         assertNull(listener.getReference());
 
-        List refs = (List) blueprintContainer.getComponent("ref-list");
+        List refs = (List) blueprintContainer.getComponentInstance("ref-list");
         assertNotNull(refs);
         assertTrue(refs.isEmpty());
 

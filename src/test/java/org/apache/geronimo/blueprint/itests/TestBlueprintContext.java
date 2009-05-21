@@ -67,7 +67,7 @@ public class TestBlueprintContext extends AbstractIntegrationTest {
         BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample", 5000);
         assertNotNull(blueprintContainer);
 
-        Object obj = blueprintContainer.getComponent("bar");
+        Object obj = blueprintContainer.getComponentInstance("bar");
         assertNotNull(obj);
         assertEquals(Bar.class, obj.getClass());
         Bar bar = (Bar) obj;
@@ -77,7 +77,7 @@ public class TestBlueprintContext extends AbstractIntegrationTest {
         assertEquals(2, bar.getList().size());
         assertEquals("a list element", bar.getList().get(0));
         assertEquals(Integer.valueOf(5), bar.getList().get(1));
-        obj = blueprintContainer.getComponent("foo");
+        obj = blueprintContainer.getComponentInstance("foo");
         assertNotNull(obj);
         assertEquals(Foo.class, obj.getClass());
         Foo foo = (Foo) obj;
