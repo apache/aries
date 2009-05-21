@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ServiceExportRecipe extends AbstractRecipe implements ServiceRegistration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistrationProxy.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceExportRecipe.class);
 
     private BlueprintContainerImpl blueprintContainer;
     private ServiceMetadata metadata;
@@ -127,6 +127,7 @@ public class ServiceExportRecipe extends AbstractRecipe implements ServiceRegist
             // TODO: shouldn't listeners be called before unregistering the service?
             registration.unregister();
             if (listeners != null) {
+                LOGGER.debug("Calling listeners for service unregistration");
                 for (Listener listener : listeners) {
                     listener.unregister(this);
                 }
@@ -141,19 +142,25 @@ public class ServiceExportRecipe extends AbstractRecipe implements ServiceRegist
     }
 
     public Object getService(Bundle bundle, ServiceRegistration registration) {
+        LOGGER.debug("Retrieving service for bundle {} and service registration {}", bundle, registration);
         // Create initial service
         if (this.service == null) {
             synchronized (this) {
                 if (this.service == null) {
                     bundleScope = isBundleScope(metadata.getServiceComponent());
+                    LOGGER.debug("Creating service instance (bundle scope = {})", bundleScope);
                     this.service = createInstance(false);
+                    LOGGER.debug("Service created: {}", this.service);
                     // When the service is first requested, we need to create listeners and call them
                     if (listeners == null) {
+                        LOGGER.debug("Creating listeners");
                         if (listenersRecipe != null) {
                             listeners = (List) createSimpleRecipe(listenersRecipe);
                         } else {
                             listeners = Collections.emptyList();
                         }
+                        LOGGER.debug("Listeners created: {}", listeners);
+                        LOGGER.debug("Calling listeners for service registration");
                         for (Listener listener : listeners) {
                             listener.register(this);
                         }
@@ -224,7 +231,7 @@ public class ServiceExportRecipe extends AbstractRecipe implements ServiceRegist
                 recipe = (Recipe) objectRepository.get(((ReferenceRecipe) recipe).getReferenceName());
             }
             DefaultRepository repository = new DefaultRepository((DefaultRepository) objectRepository);
-            repository.set(recipe.getName(), recipe);
+            repository.putRecipe(recipe.getName(), recipe);
             BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(blueprintContainer, repository);
             return graph.create(recipe.getName());
         } else {

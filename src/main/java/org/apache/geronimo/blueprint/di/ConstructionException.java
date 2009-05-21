@@ -31,8 +31,7 @@ public class ConstructionException extends ComponentDefinitionException {
     }
 
     public ConstructionException(String message, Throwable cause) {
-        super(message);
-        initCause(cause);
+        super(message, cause);
     }
 
     public ConstructionException(Throwable cause) {

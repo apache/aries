@@ -21,7 +21,6 @@ package org.apache.geronimo.blueprint.container;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -32,6 +31,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeoutException;
 
@@ -419,7 +419,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
     private void processProcessors() throws Exception {
         // Instanciate ComponentDefinitionRegistryProcessor and BeanProcessor
-        for (BeanMetadata bean : getBeanComponentsMetadata()) {
+        for (BeanMetadata bean : getMetadata(BeanMetadata.class)) {
             if (bean instanceof ExtendedBeanMetadata && !((ExtendedBeanMetadata) bean).isProcessor()) {
                 continue;
             }
@@ -599,7 +599,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         } catch (ComponentDefinitionException e) {
             throw e;
         } catch (Throwable t) {
-            throw (ComponentDefinitionException) new ComponentDefinitionException("Unable to instantiate components").initCause(t);
+            throw new ComponentDefinitionException("Unable to instantiate components", t);
         }
     }
 
@@ -638,7 +638,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             ExecutionContext.setContext(new DefaultExecutionContext(this, instantiator.getRepository()));
         }
         try {
-            for (ServiceMetadata service : getExportedServicesMetadata()) {
+            for (ServiceMetadata service : getMetadata(ServiceMetadata.class)) {
                 // Trigger services are only created for services without listeners and explicitly defined interface classes
                 if (service.getRegistrationListeners().isEmpty() && !service.getInterfaceNames().isEmpty()) {
                     TriggerService triggerService = new TriggerService(service, this);
@@ -697,41 +697,29 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         } catch (ComponentDefinitionException e) {
             throw e;
         } catch (Throwable t) {
-            throw (ComponentDefinitionException) new ComponentDefinitionException("Cound not create component instance for " + id).initCause(t);
+            throw new ComponentDefinitionException("Cound not create component instance for " + id, t);
         }
     }
 
-    public ComponentMetadata getComponentMetadata(String name) {
-        ComponentMetadata metadata = componentDefinitionRegistry.getComponentDefinition(name);
+    public ComponentMetadata getComponentMetadata(String id) {
+        ComponentMetadata metadata = componentDefinitionRegistry.getComponentDefinition(id);
         if (metadata == null) {
-            throw new NoSuchComponentException(name);
+            throw new NoSuchComponentException(id);
         }
         return metadata;
     }
 
-    public Collection<ServiceReferenceMetadata> getReferencedServicesMetadata() {
-        return getMetadata(ServiceReferenceMetadata.class);
-    }
-
-    public Collection<ServiceMetadata> getExportedServicesMetadata() {
-        return getMetadata(ServiceMetadata.class);
-    }
-
-    public Collection<BeanMetadata> getBeanComponentsMetadata() {
-        return getMetadata(BeanMetadata.class);
-    }
-
-    public <T extends ComponentMetadata> List<T> getMetadata(Class<T> clazz) {
-        List<T> metadatas = new ArrayList<T>();
+    public <T extends ComponentMetadata> Collection<T> getMetadata(Class<T> clazz) {
+        Collection<T> metadatas = new ArrayList<T>();
         for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
             ComponentMetadata component = componentDefinitionRegistry.getComponentDefinition(name);
-            getComponentsMetadata(clazz, component, metadatas);
+            getMetadata(clazz, component, metadatas);
         }
-        metadatas = Collections.unmodifiableList(metadatas);
+        metadatas = Collections.unmodifiableCollection(metadatas);
         return metadatas;
     }
 
-    private <T extends ComponentMetadata> void getComponentsMetadata(Class<T> clazz, Metadata component, List<T> metadatas) {
+    private <T extends ComponentMetadata> void getMetadata(Class<T> clazz, Metadata component, Collection<T> metadatas) {
         if (component == null) {
             return;
         }
@@ -739,47 +727,47 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             metadatas.add(clazz.cast(component));
         }
         if (component instanceof BeanMetadata) {
-            getComponentsMetadata(clazz, ((BeanMetadata) component).getFactoryComponent(), metadatas);
+            getMetadata(clazz, ((BeanMetadata) component).getFactoryComponent(), metadatas);
             for (BeanArgument arg : ((BeanMetadata) component).getArguments()) {
-                getComponentsMetadata(clazz, arg.getValue(), metadatas);
+                getMetadata(clazz, arg.getValue(), metadatas);
             }
             for (BeanProperty prop : ((BeanMetadata) component).getProperties()) {
-                getComponentsMetadata(clazz, prop.getValue(), metadatas);
+                getMetadata(clazz, prop.getValue(), metadatas);
             }
         }
         if (component instanceof CollectionMetadata) {
             for (Metadata m : ((CollectionMetadata) component).getValues()) {
-                getComponentsMetadata(clazz, m, metadatas);
+                getMetadata(clazz, m, metadatas);
             }
         }
         if (component instanceof MapMetadata) {
             for (MapEntry m : ((MapMetadata) component).getEntries()) {
-                getComponentsMetadata(clazz, m.getKey(), metadatas);
-                getComponentsMetadata(clazz, m.getValue(), metadatas);
+                getMetadata(clazz, m.getKey(), metadatas);
+                getMetadata(clazz, m.getValue(), metadatas);
             }
         }
         if (component instanceof PropsMetadata) {
             for (MapEntry m : ((PropsMetadata) component).getEntries()) {
-                getComponentsMetadata(clazz, m.getKey(), metadatas);
-                getComponentsMetadata(clazz, m.getValue(), metadatas);
+                getMetadata(clazz, m.getKey(), metadatas);
+                getMetadata(clazz, m.getValue(), metadatas);
             }
         }
         if (component instanceof ServiceReferenceMetadata) {
             for (Listener l : ((ServiceReferenceMetadata) component).getServiceListeners()) {
-                getComponentsMetadata(clazz, l.getListenerComponent(), metadatas);
+                getMetadata(clazz, l.getListenerComponent(), metadatas);
             }
         }
         if (component instanceof RefCollectionMetadata) {
-            getComponentsMetadata(clazz, ((RefCollectionMetadata) component).getComparator(), metadatas);
+            getMetadata(clazz, ((RefCollectionMetadata) component).getComparator(), metadatas);
         }
         if (component instanceof ServiceMetadata) {
-            getComponentsMetadata(clazz, ((ServiceMetadata) component).getServiceComponent(), metadatas);
+            getMetadata(clazz, ((ServiceMetadata) component).getServiceComponent(), metadatas);
             for (MapEntry m : ((ServiceMetadata) component).getServiceProperties()) {
-                getComponentsMetadata(clazz, m.getKey(), metadatas);
-                getComponentsMetadata(clazz, m.getValue(), metadatas);
+                getMetadata(clazz, m.getKey(), metadatas);
+                getMetadata(clazz, m.getValue(), metadatas);
             }
             for (RegistrationListener l : ((ServiceMetadata) component).getRegistrationListeners()) {
-                getComponentsMetadata(clazz, l.getListenerComponent(), metadatas);
+                getMetadata(clazz, l.getListenerComponent(), metadatas);
             }
         }
     }
