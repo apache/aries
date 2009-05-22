@@ -149,9 +149,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private Object getService() throws InterruptedException {
         synchronized (monitor) {
             if (tracker.isStarted() && trackedServiceReference == null && metadata.getTimeout() > 0) {
-                Set<String> interfaces = new HashSet<String>(metadata.getInterfaceNames());
-                // TODO: create unified filter from interfaces and filter
-                sender.sendWaiting(blueprintContainer.getBundleContext().getBundle(), null);
+                sender.sendWaiting(blueprintContainer.getBundleContext().getBundle(), getOsgiFilter());
                 monitor.wait(metadata.getTimeout());
             }
             if (trackedServiceReference == null) {

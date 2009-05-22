@@ -53,4 +53,6 @@ public interface SatisfiableRecipe extends Recipe {
     
     void unregisterListener(SatisfactionListener listener);
 
+    String getOsgiFilter();
+
 }

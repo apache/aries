@@ -52,6 +52,7 @@ import org.apache.geronimo.blueprint.di.ReferenceNameRecipe;
 import org.apache.geronimo.blueprint.di.ReferenceRecipe;
 import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.geronimo.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.geronimo.blueprint.utils.HeaderParser;
 import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
 import org.osgi.framework.Bundle;
@@ -125,7 +126,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private Parser parser;
     private BlueprintObjectInstantiator instantiator;
     private ServiceRegistration registration;
-    private boolean waitForNamespaceHandlersEventSent;
     private List<BeanProcessor> beanProcessors;
     private Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>();
     private Map<String, List<SatisfiableRecipe>> satisfiables;
@@ -213,18 +213,21 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         state = State.WaitForNamespaceHandlers;
                         break;
                     case WaitForNamespaceHandlers:
+                    {
+                        List<String> missing = new ArrayList<String>();
                         for (URI ns : namespaces) {
                             if (handlers.getNamespaceHandler(ns) == null) {
-                                if (!waitForNamespaceHandlersEventSent) {
-                                    sender.sendWaiting(getBundleContext().getBundle(), "(" + Constants.OBJECTCLASS + "=" + NamespaceHandler.class.getName() + ")");
-                                    waitForNamespaceHandlersEventSent = true;
-                                }
-                                return;
+                                missing.add("(&(" + Constants.OBJECTCLASS + "=" + NamespaceHandler.class.getName() + ")(" + NamespaceHandlerRegistryImpl.NAMESPACE + "=" + ns + "))");
                             }
+                        }
+                        if (missing.size() > 0) {
+                            sender.sendGracePeriod(getBundleContext().getBundle(), missing.toArray(new String[missing.size()]));
+                            return;
                         }
                         parser.populate(handlers, componentDefinitionRegistry);
                         state = State.Populated;
                         break;
+                    }
                     case Populated:
                         instantiator = new BlueprintObjectInstantiator(this, new RecipeBuilder(this).createRepository());
                         checkReferences();
@@ -236,7 +239,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                                     state = State.Failed;
                                     // TODO: clean up
                                     LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName(), t);
-                                    sender.sendFailure(getBundleContext().getBundle(), t);
+                                    sender.sendFailure(getBundleContext().getBundle(), t, getMissingDependencies());
                                 }
                             }
                         };
@@ -244,8 +247,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         if (checkAllSatisfiables() || !waitForDependencies) {
                             state = State.InitialReferencesSatisfied;
                         } else {
-                            // TODO: pass correct parameters for missing dependencies
-                            sender.sendGracePeriod(getBundleContext().getBundle(), null);
+                            sender.sendGracePeriod(getBundleContext().getBundle(), getMissingDependencies());
                             state = State.WaitForInitialReferences;
                         }
                         break;
@@ -608,6 +610,19 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             }
         }
     }
+
+    private String[] getMissingDependencies() {
+        List<String> missing = new ArrayList<String>();
+        Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
+        for (String name : dependencies.keySet()) {
+            for (SatisfiableRecipe recipe : dependencies.get(name)) {
+                if (!recipe.isSatisfied()) {
+                    missing.add(recipe.getOsgiFilter());
+                }
+            }
+        }
+        return missing.toArray(new String[missing.size()]);
+    }
     
     protected void registerService(ServiceRegistrationProxy registration) { 
         ServiceMetadata metadata = registration.getMetadata();
@@ -810,7 +825,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             destroyComponents();
             // TODO: stop all reference / collections
             // TODO: clear the repository
-            waitForNamespaceHandlersEventSent = false;
             state = State.WaitForNamespaceHandlers;
             executors.submit(this);
         }
