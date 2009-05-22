@@ -202,11 +202,11 @@ public class CmNamespaceHandler implements NamespaceHandler {
         String id = getName(element);
 
         MutableBeanMetadata factoryMetadata = context.createMetadata(MutableBeanMetadata.class);
+        generateIdIfNeeded(factoryMetadata);        
         factoryMetadata.setScope(BeanMetadata.SCOPE_SINGLETON);
         factoryMetadata.setRuntimeClass(CmManagedServiceFactory.class);
         factoryMetadata.setInitMethodName("init");
         factoryMetadata.setDestroyMethodName("destroy");
-        factoryMetadata.addProperty("id", createValue(context, id));
         factoryMetadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
         factoryMetadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
         factoryMetadata.addProperty("factoryPid", createValue(context, element.getAttribute(FACTORY_PID_ATTRIBUTE)));
@@ -266,10 +266,12 @@ public class CmNamespaceHandler implements NamespaceHandler {
             }
         }
 
+        context.getComponentDefinitionRegistry().registerComponentDefinition(factoryMetadata);
+        
         MutableBeanMetadata mapMetadata = context.createMetadata(MutableBeanMetadata.class);
         mapMetadata.setScope(BeanMetadata.SCOPE_SINGLETON);
         mapMetadata.setId(id);
-        mapMetadata.setFactoryComponent(factoryMetadata);
+        mapMetadata.setFactoryComponent(createRef(context, factoryMetadata.getId()));
         mapMetadata.setFactoryMethodName("getServiceMap");
         return mapMetadata;
     }
