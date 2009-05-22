@@ -32,8 +32,9 @@ public interface BlueprintContextEventSender extends Destroyable {
     void sendCreated(Bundle bundle);
     void sendDestroying(Bundle bundle);
     void sendDestroyed(Bundle bundle);
-    void sendWaiting(Bundle bundle, String[] serviceObjectClass, String serviceFilter);
+    void sendGracePeriod(Bundle bundle, String[] dependencies);
     void sendFailure(Bundle bundle, Throwable cause);
-    void sendFailure(Bundle bundle, Throwable cause, String[] serviceObjectClass, String serviceFilter);
+    void sendFailure(Bundle bundle, Throwable cause, String[] dependencies);
+    void sendWaiting(Bundle bundle, String dependency);
 
 }
