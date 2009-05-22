@@ -21,6 +21,7 @@ package org.apache.geronimo.blueprint.container;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -31,7 +32,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeoutException;
 
@@ -40,11 +40,9 @@ import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.geronimo.blueprint.Destroyable;
+import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
-import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
-import org.apache.geronimo.blueprint.container.SatisfiableRecipe;
-import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
 import org.apache.geronimo.blueprint.di.DefaultRepository;
 import org.apache.geronimo.blueprint.di.ExecutionContext;
@@ -63,26 +61,25 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
-import org.osgi.service.blueprint.convert.ConversionService;
-import org.osgi.service.blueprint.convert.Converter;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
+import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.Listener;
+import org.osgi.service.blueprint.reflect.MapEntry;
+import org.osgi.service.blueprint.reflect.MapMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.PropsMetadata;
+import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
-import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.BeanArgument;
-import org.osgi.service.blueprint.reflect.BeanProperty;
-import org.osgi.service.blueprint.reflect.CollectionMetadata;
-import org.osgi.service.blueprint.reflect.MapMetadata;
-import org.osgi.service.blueprint.reflect.MapEntry;
-import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
-import org.osgi.service.blueprint.reflect.Listener;
-import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,7 +118,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private final List<URL> urls;
     private final boolean lazyActivation;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
-    private final ConversionServiceImpl conversionService;
+    private final AggregateConverter conversionService;
     private final ExecutorService executors;
     private final Timer timer;
     private Set<URI> namespaces;
@@ -145,7 +142,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         this.sender = sender;
         this.handlers = handlers;
         this.urls = urls;
-        this.conversionService = new ConversionServiceImpl(this);
+        this.conversionService = new AggregateConverter(this);
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
         this.timer = timer;
@@ -776,7 +773,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         return instantiator.getRepository();
     }
     
-    public ConversionService getConversionService() {
+    public Converter getConversionService() {
         return conversionService;
     }
     

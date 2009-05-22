@@ -19,8 +19,7 @@ package org.apache.geronimo.blueprint;
 import java.util.List;
 
 import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.osgi.service.blueprint.convert.ConversionService;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.container.Converter;
 
 /**
  * TODO: javadoc
@@ -30,7 +29,7 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
  */
 public interface ExtendedBlueprintContainer extends BlueprintContainer {
 
-    ConversionService getConversionService();
+    Converter getConversionService();
 
     Class loadClass(String name) throws ClassNotFoundException;
 

@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.osgi.service.blueprint.convert.ConversionService;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 
 public class ObjectGraph {
