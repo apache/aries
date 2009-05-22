@@ -14,10 +14,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.osgi.service.blueprint.convert;
+package org.osgi.service.blueprint.container;
 
-public interface ConversionService  {
-    
+public interface Converter {
+
+    boolean canConvert(Object fromValue, Class toType);
+
     Object convert(Object fromValue, Class toType) throws Exception;
       
 }
