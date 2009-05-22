@@ -251,7 +251,14 @@ public class CmNamespaceHandler implements NamespaceHandler {
                     if (nodeNameEquals(e, MANAGED_COMPONENT_ELEMENT)) {
                         MutableBeanMetadata managedComponent = context.parseElement(MutableBeanMetadata.class, null, e);
                         generateIdIfNeeded(managedComponent);
-                        managedComponent.setScope("prototype");
+                        managedComponent.setScope(BeanMetadata.SCOPE_PROTOTYPE);
+                        // destroy-method on managed-component has different signature than on regular beans
+                        // so we'll handle it differently
+                        String destroyMethod = managedComponent.getDestroyMethodName();
+                        if (destroyMethod != null) {
+                            factoryMetadata.addProperty("componentDestroyMethod", createValue(context, destroyMethod));
+                            managedComponent.setDestroyMethodName(null);
+                        }
                         context.getComponentDefinitionRegistry().registerComponentDefinition(managedComponent);
                         factoryMetadata.addProperty("managedComponentName", createIdRef(context, managedComponent.getId()));
                     }
@@ -284,11 +291,17 @@ public class CmNamespaceHandler implements NamespaceHandler {
         metadata.setProcessor(true);
         metadata.setId(getName(element));
         metadata.setRuntimeClass(CmManagedProperties.class);
-        metadata.setInitMethodName("init");
-        metadata.setDestroyMethodName("destroy");
+        String persistentId = element.getAttribute(PERSISTENT_ID_ATTRIBUTE);
+        // if persistentId is "" the managed properties element in nested in managed-service-factory
+        // and the configuration object will come from the factory. So we only really need to register
+        // ManagedService if the persistentId is not an empty string.
+        if (persistentId.length() > 0) {
+            metadata.setInitMethodName("init");
+            metadata.setDestroyMethodName("destroy");
+        }
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
         metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
-        metadata.addProperty("persistentId", createValue(context, element.getAttribute(PERSISTENT_ID_ATTRIBUTE)));
+        metadata.addProperty("persistentId", createValue(context, persistentId));
         if (element.hasAttribute(UPDATE_STRATEGY_ATTRIBUTE)) {
             metadata.addProperty("updateStrategy", createValue(context, element.getAttribute(UPDATE_STRATEGY_ATTRIBUTE)));
         }
