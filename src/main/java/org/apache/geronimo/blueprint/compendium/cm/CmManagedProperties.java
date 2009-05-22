@@ -214,7 +214,7 @@ public class CmManagedProperties implements BeanProcessor {
                             Class methodParameterType = method.getParameterTypes()[0];
                             Object propertyValue;
                             try {
-                                propertyValue = blueprintContainer.getConversionService().convert(val, methodParameterType);
+                                propertyValue = blueprintContainer.getConverter().convert(val, methodParameterType);
                             } catch (Throwable t) {
                                 LOGGER.debug("Unable to convert value for setter: " + method, t);
                                 continue;
