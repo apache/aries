@@ -92,7 +92,7 @@ import org.slf4j.LoggerFactory;
 public class BlueprintContainerImpl implements ExtendedBlueprintContainer, NamespaceHandlerRegistry.Listener, Runnable, SatisfiableRecipe.SatisfactionListener {
 
     public static final boolean BEHAVIOR_TCK_INJECTION = true;
-    public static final boolean BEHAVIOR_ENHANCED_LAZY_ACTIVATION = false;
+    public static final boolean BEHAVIOR_ENHANCED_LAZY_ACTIVATION = true;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContainerImpl.class);
 
