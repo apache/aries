@@ -92,7 +92,6 @@ import org.slf4j.LoggerFactory;
 public class BlueprintContainerImpl implements ExtendedBlueprintContainer, NamespaceHandlerRegistry.Listener, Runnable, SatisfiableRecipe.SatisfactionListener {
 
     public static final boolean BEHAVIOR_TCK_INJECTION = true;
-    public static final boolean BEHAVIOR_NO_GRACE_PERIOD = false;
     public static final boolean BEHAVIOR_ENHANCED_LAZY_ACTIVATION = false;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContainerImpl.class);
@@ -174,20 +173,16 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         String symbolicName = (String)headers.get(Constants.BUNDLE_SYMBOLICNAME);
         List<PathElement> paths = HeaderParser.parseHeader(symbolicName);
 
-        if (BEHAVIOR_NO_GRACE_PERIOD) {
-            waitForDependencies = false;
-        } else {
-            String timeoutDirective = paths.get(0).getDirective(BlueprintConstants.TIMEOUT_DIRECTIVE);
-            if (timeoutDirective != null) {
-                LOGGER.debug("Timeout directive: " + timeoutDirective);
-                timeout = Integer.parseInt(timeoutDirective);
-            }
+        String timeoutDirective = paths.get(0).getDirective(BlueprintConstants.TIMEOUT_DIRECTIVE);
+        if (timeoutDirective != null) {
+            LOGGER.debug("Timeout directive: " + timeoutDirective);
+            timeout = Integer.parseInt(timeoutDirective);
+        }
 
-            String waitForDependenciesDirective = paths.get(0).getDirective(BlueprintConstants.WAIT_FOR_DEPENDENCIES_DIRECTIVE);
-            if (waitForDependenciesDirective != null) {
-                LOGGER.debug("Wait-for-dependencies directive: " + waitForDependenciesDirective);
-                waitForDependencies = Boolean.parseBoolean(waitForDependenciesDirective);
-            }
+        String waitForDependenciesDirective = paths.get(0).getDirective(BlueprintConstants.WAIT_FOR_DEPENDENCIES_DIRECTIVE);
+        if (waitForDependenciesDirective != null) {
+            LOGGER.debug("Wait-for-dependencies directive: " + waitForDependenciesDirective);
+            waitForDependencies = Boolean.parseBoolean(waitForDependenciesDirective);
         }
         
         // TODO: add support for custom directive to disable schema validation?
