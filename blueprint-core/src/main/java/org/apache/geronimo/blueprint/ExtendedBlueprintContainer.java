@@ -29,7 +29,7 @@ import org.osgi.service.blueprint.container.Converter;
  */
 public interface ExtendedBlueprintContainer extends BlueprintContainer {
 
-    Converter getConversionService();
+    Converter getConverter();
 
     Class loadClass(String name) throws ClassNotFoundException;
 

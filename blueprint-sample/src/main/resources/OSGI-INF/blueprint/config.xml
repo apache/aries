@@ -48,7 +48,7 @@
 
     <bean id="bar" class="org.apache.geronimo.blueprint.sample.Bar">
         <property name="value"><value>Hello FooBar</value></property>
-        <property name="context" ref="bundleContext"/>
+        <property name="context" ref="blueprintBundleContext"/>
         <property name="list">
             <list>
                 <value>a list element</value>

@@ -72,7 +72,7 @@ public class BlueprintObjectInstantiator  {
                 Object obj = createInstance(name);
                 try {
                     // Make sure to go through the conversion step in case we have a Convertible object
-                    obj = ConversionUtils.convert(obj, Object.class, blueprintContainer.getConversionService());
+                    obj = ConversionUtils.convert(obj, Object.class, blueprintContainer.getConverter());
                 } catch (Exception e) {
                     throw new ConstructionException("Unable to convert instance " + name, e);
                 }

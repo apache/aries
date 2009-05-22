@@ -174,7 +174,7 @@ public class DefaultExecutionContext extends ExecutionContext {
     }
 
     public Object convert(Object value, Type type) throws Exception {
-        return ConversionUtils.convert(value, type, blueprintContainer.getConversionService());
+        return ConversionUtils.convert(value, type, blueprintContainer.getConverter());
     }
 
     private static Map<String, Class> primitiveClasses = new HashMap<String, Class>();
