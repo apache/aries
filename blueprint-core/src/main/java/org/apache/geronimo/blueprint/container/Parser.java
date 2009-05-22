@@ -36,6 +36,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.CharacterData;
@@ -93,8 +94,7 @@ import org.xml.sax.InputSource;
 /**
  * TODO: javadoc
  *
- * TODO: cache DocumentBuilderFactory and SchemaFactory in static variables
- * TODO: option to disable validation 
+ * TODO: option to disable validation
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
@@ -191,6 +191,9 @@ public class Parser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
 
+    private static DocumentBuilderFactory documentBuilderFactory;
+    private static SchemaFactory schemaFactory;
+
     private List<Document> documents;
     private ExtendedComponentDefinitionRegistry registry;
     private NamespaceHandlerRegistry namespaceHandlerRegistry;
@@ -212,14 +215,12 @@ public class Parser {
     public void parse(List<URL> urls) throws Exception {
         List<Document> documents = new ArrayList<Document>();
         // Create document builder factory
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        documentBuilderFactory.setNamespaceAware(true);
         // Load documents
         for (URL url : urls) {
             InputStream inputStream = url.openStream();
             try {
                 InputSource inputSource = new InputSource(inputStream);
-                DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+                DocumentBuilder builder = getDocumentBuilderFactory().newDocumentBuilder();
                 Document doc = builder.parse(inputSource);
                 documents.add(doc);
             } finally {
@@ -290,10 +291,10 @@ public class Parser {
                     LOGGER.warn("No URL is defined for schema " + uri + ". This schema will not be validated");
                 }
             }
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = factory.newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
+            Schema schema = getSchemaFactory().newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
+            Validator validator = schema.newValidator();
             for (Document doc : this.documents) {
-                schema.newValidator().validate(new DOMSource(doc));
+                validator.validate(new DOMSource(doc));
             }
         } catch (Exception e) {
             throw new ComponentDefinitionException("Unable to validate xml", e);
@@ -1163,5 +1164,21 @@ public class Parser {
             }
         }
         return value.toString();
+    }
+
+    private static DocumentBuilderFactory getDocumentBuilderFactory() {
+        if (documentBuilderFactory == null) {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            documentBuilderFactory = dbf;
+        }
+        return documentBuilderFactory;
+    }
+
+    private static SchemaFactory getSchemaFactory() {
+        if (schemaFactory == null) {
+            schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        }
+        return schemaFactory;
     }
 }
