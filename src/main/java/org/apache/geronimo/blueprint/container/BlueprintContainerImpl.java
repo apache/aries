@@ -37,7 +37,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.BlueprintConstants;
-import org.apache.geronimo.blueprint.BlueprintContextEventSender;
+import org.apache.geronimo.blueprint.BlueprintEventSender;
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
@@ -113,7 +113,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
 
     private final BundleContext bundleContext;
-    private final BlueprintContextEventSender sender;
+    private final Bundle extenderBundle;
+    private final BlueprintEventSender sender;
     private final NamespaceHandlerRegistry handlers;
     private final List<URL> urls;
     private final boolean lazyActivation;
@@ -135,8 +136,9 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private boolean waitForDependencies = true;
     private ScheduledFuture timeoutFuture;
 
-    public BlueprintContainerImpl(BundleContext bundleContext, BlueprintContextEventSender sender, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<URL> urls, boolean lazyActivation) {
+    public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintEventSender sender, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<URL> urls, boolean lazyActivation) {
         this.bundleContext = bundleContext;
+        this.extenderBundle = extenderBundle;
         this.sender = sender;
         this.handlers = handlers;
         this.urls = urls;
@@ -147,6 +149,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         this.triggerServices = new HashMap<ServiceMetadata, TriggerService>();
         this.beanProcessors = new ArrayList<BeanProcessor>();
         this.services = Collections.synchronizedMap(new HashMap<ServiceMetadata, ServiceRegistrationProxy>());
+    }
+
+    public Bundle getExtenderBundle() {
+        return extenderBundle;
     }
 
     public Class loadClass(String name) throws ClassNotFoundException {
@@ -161,7 +167,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         return beanProcessors;
     }
 
-    public BlueprintContextEventSender getSender() {
+    public BlueprintEventSender getSender() {
         return sender;
     }
 
@@ -768,7 +774,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         return instantiator.getRepository();
     }
     
-    public Converter getConversionService() {
+    public Converter getConverter() {
         return conversionService;
     }
     

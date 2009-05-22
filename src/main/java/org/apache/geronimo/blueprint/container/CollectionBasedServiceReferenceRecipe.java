@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import net.sf.cglib.proxy.Dispatcher;
-import org.apache.geronimo.blueprint.BlueprintContextEventSender;
+import org.apache.geronimo.blueprint.BlueprintEventSender;
 import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.ConstructionException;
@@ -68,7 +68,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
     private ManagedCollection collection;
 
     public CollectionBasedServiceReferenceRecipe(ExtendedBlueprintContainer blueprintContainer,
-                                                 BlueprintContextEventSender sender,
+                                                 BlueprintEventSender sender,
                                                  RefCollectionMetadata metadata,
                                                  Recipe listenersRecipe,
                                                  Recipe comparatorRecipe) {

@@ -21,7 +21,7 @@ package org.apache.geronimo.blueprint.container;
 import java.lang.reflect.Type;
 
 import net.sf.cglib.proxy.Dispatcher;
-import org.apache.geronimo.blueprint.BlueprintContextEventSender;
+import org.apache.geronimo.blueprint.BlueprintEventSender;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.ConstructionException;
 import org.apache.geronimo.blueprint.di.Recipe;
@@ -54,7 +54,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private final Object monitor = new Object();
 
     public UnaryServiceReferenceRecipe(ExtendedBlueprintContainer blueprintContainer,
-                                       BlueprintContextEventSender sender,
+                                       BlueprintEventSender sender,
                                        ReferenceMetadata metadata,
                                        Recipe listenersRecipe) {
         super(blueprintContainer,  sender, metadata, listenersRecipe);

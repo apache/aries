@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
-import org.apache.geronimo.blueprint.BlueprintContextEventSender;
+import org.apache.geronimo.blueprint.BlueprintEventSender;
 import org.apache.geronimo.blueprint.BlueprintStateManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class DefaultBlueprintContextEventSender implements BlueprintContextEventSender, EventConstants, BlueprintStateManager {
+public class DefaultBlueprintContextEventSender implements BlueprintEventSender, EventConstants, BlueprintStateManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultBlueprintContextEventSender.class);
 
@@ -186,11 +186,15 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
         props.put(EventConstants.BUNDLE_ID, event.getBundle().getBundleId());
         Version version = getBundleVersion(event.getBundle());
         if (version != null) {
-            props.put(BlueprintConstants.BUNDLE_VERSION, version);
+            props.put(EventConstants.BUNDLE_VERSION, version);
         }
         props.put(EventConstants.EXTENDER_BUNDLE, extenderBundle);
         props.put(EventConstants.EXTENDER_BUNDLE_ID, extenderBundle.getBundleId());
         props.put(EventConstants.EXTENDER_BUNDLE_SYMBOLICNAME, extenderBundle.getSymbolicName());
+        version = getBundleVersion(extenderBundle);
+        if (version != null) {
+            props.put(EventConstants.EXTENDER_BUNDLE_VERSION, version);
+        }
 
         if (event.getException() != null) {
             props.put(EventConstants.EXCEPTION, event.getException());

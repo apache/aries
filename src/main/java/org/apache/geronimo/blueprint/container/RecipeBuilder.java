@@ -55,6 +55,7 @@ import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
+import org.osgi.framework.Bundle;
 
 /**
  * TODO: javadoc
@@ -76,9 +77,10 @@ public class RecipeBuilder {
     private void addBuiltinComponents(DefaultRepository repository) {
         if (blueprintContainer != null) {
             repository.putDefault("blueprintContainer", blueprintContainer);
-            repository.putDefault("bundleContext", blueprintContainer.getBundleContext());
-            repository.putDefault("bundle", blueprintContainer.getBundleContext().getBundle());
-            repository.putDefault("conversionService", blueprintContainer.getConversionService());
+            repository.putDefault("blueprintBundle", blueprintContainer.getBundleContext().getBundle());
+            repository.putDefault("blueprintBundleContext", blueprintContainer.getBundleContext());
+            repository.putDefault("blueprintConverter", blueprintContainer.getConverter());
+            repository.putDefault("blueprintExtenderBundle", blueprintContainer.getExtenderBundle());
         }
     }
     
@@ -364,7 +366,7 @@ public class RecipeBuilder {
     }
     
     protected Converter getConversionService() {
-        return blueprintContainer.getConversionService();
+        return blueprintContainer.getConverter();
     }
     
     private String getName(String name) {
