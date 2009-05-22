@@ -18,6 +18,7 @@
  */
 package org.apache.geronimo.blueprint.compendium.cm;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashSet;
@@ -28,6 +29,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.geronimo.blueprint.BeanProcessor;
+import org.apache.geronimo.blueprint.container.BlueprintContainerImpl;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
@@ -53,13 +56,14 @@ public class CmManagedServiceFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(CmManagedServiceFactory.class);
 
     private String id;
-    private BlueprintContainer blueprintContainer;
+    private BlueprintContainerImpl blueprintContainer;
     private ConfigurationAdmin configAdmin;
     private String factoryPid;
     private List<String> interfaces;
     private int autoExport;
     private int ranking;
     private String managedComponentName;
+    private String componentDestroyMethod;
     private final Object lock = new Object();
 
     private ServiceRegistration registration;
@@ -95,6 +99,12 @@ public class CmManagedServiceFactory {
         if (registration != null) {
             registration.unregister();
         }
+        for (Map.Entry<ServiceRegistration, Object> entry : services.entrySet()) {
+            destroyComponent(entry.getValue(), BlueprintContainer.BUNDLE_STOPPING);
+            entry.getKey().unregister();
+        }
+        services.clear();
+        pids.clear();
     }
 
     public Map<ServiceRegistration, Object> getServiceMap() {
@@ -105,7 +115,7 @@ public class CmManagedServiceFactory {
         this.id = id;
     }
 
-    public void setBlueprintContainer(BlueprintContainer blueprintContainer) {
+    public void setBlueprintContainer(BlueprintContainerImpl blueprintContainer) {
         this.blueprintContainer = blueprintContainer;
     }
 
@@ -133,28 +143,82 @@ public class CmManagedServiceFactory {
         this.managedComponentName = managedComponentName;
     }
 
+    public void setComponentDestroyMethod(String componentDestroyMethod) {
+        this.componentDestroyMethod = componentDestroyMethod;
+    }
+    
     protected void updated(String pid, Dictionary props) {
-        LOGGER.error("Updated configuration {} with props {}", pid, props);
-        Object component = blueprintContainer.getComponentInstance(managedComponentName);
-        // TODO: init instance, call listeners, etc...
+        LOGGER.debug("Updated configuration {} with props {}", pid, props);
+        ServiceRegistration reg = pids.get(pid);
+        if (reg == null) {      
+            updateComponentProperties(props);
+
+            Object component = blueprintContainer.getComponentInstance(managedComponentName);
+            //  TODO: init instance, call listeners, etc...
         
-        Hashtable regProps = new Hashtable();
-        regProps.put(Constants.SERVICE_PID, pid);
-        regProps.put(Constants.SERVICE_RANKING, ranking);
-        Set<String> classes = getClasses(component);
-        String[] classArray = classes.toArray(new String[classes.size()]);
-        ServiceRegistration reg = blueprintContainer.getBundleContext().registerService(classArray, component, regProps);
-        LOGGER.debug("Service {} registered with interfaces {} and properties {}", new Object [] { component, classes, props });
-        services.put(reg, component);
-        pids.put(pid, reg);
+            Hashtable regProps = new Hashtable();
+            regProps.put(Constants.SERVICE_PID, pid);
+            regProps.put(Constants.SERVICE_RANKING, ranking);
+            Set<String> classes = getClasses(component);
+            String[] classArray = classes.toArray(new String[classes.size()]);
+            reg = blueprintContainer.getBundleContext().registerService(classArray, component, regProps);
+            LOGGER.debug("Service {} registered with interfaces {} and properties {}", new Object [] { component, classes, props });
+            
+            services.put(reg, component);
+            pids.put(pid, reg);
+        } else {
+            updateComponentProperties(props);
+        }
     }
 
+    private void updateComponentProperties(Dictionary props) {
+        CmManagedProperties cm = findManagedProperties();
+        if (cm != null) {
+            cm.updated(props);
+        }
+    }
+    
+    private CmManagedProperties findManagedProperties() {
+        for (BeanProcessor beanProcessor : blueprintContainer.getBeanProcessors()) {
+            if (beanProcessor instanceof CmManagedProperties) {
+                CmManagedProperties cm = (CmManagedProperties) beanProcessor;
+                if (managedComponentName.equals(cm.getBeanName())) {
+                    return cm;
+                }
+            }
+        }
+        return null;
+    }
+    
+    private void destroyComponent(Object instance, int reason) {
+        Method method = findDestroyMethod(instance.getClass());
+        if (method != null) {
+            try {
+                method.invoke(instance, new Object [] { reason });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    private Method findDestroyMethod(Class clazz) {
+        Method method = null;        
+        if (componentDestroyMethod != null && componentDestroyMethod.length() > 0) {
+            List<Method> methods = ReflectionUtils.findCompatibleMethods(clazz, componentDestroyMethod, new Class [] { int.class });
+            if (methods != null & !methods.isEmpty()) {
+                method = methods.get(0);
+            }
+        }
+        return method;
+    }
+    
     protected void deleted(String pid) {
-        LOGGER.error("Deleted configuration {}", pid);
+        LOGGER.debug("Deleted configuration {}", pid);
         ServiceRegistration reg = pids.remove(pid);
         if (reg != null) {
             // TODO: destroy instance, etc...
-            services.remove(reg);
+            Object component = services.remove(reg);
+            destroyComponent(component, BlueprintContainer.CONFIGURATION_ADMIN_OBJECT_DELETED);
             reg.unregister();
         }
     }
