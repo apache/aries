@@ -24,10 +24,6 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
 public interface BlueprintContainer {
     
-    static final int CONFIGURATION_ADMIN_OBJECT_DELETED = 1;
-   
-    static final int BUNDLE_STOPPING = 2;
-
     Set<String> getComponentIds();
 
     Object getComponentInstance(String id) throws NoSuchComponentException;
