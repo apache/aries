@@ -20,7 +20,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.osgi.service.blueprint.convert.Converter;
+import org.osgi.service.blueprint.container.Converter;
 
 public class DateTypeConverter implements Converter {
 
@@ -30,12 +30,12 @@ public class DateTypeConverter implements Converter {
         dateFormat = new SimpleDateFormat(format);
     }
     
-    public Object convert(Object source) throws Exception {
+    public Object convert(Object source, Class toType) throws Exception {
         return dateFormat.parse(source.toString());
     }
 
-    public Class getTargetClass() {
-        return Date.class;
+    public boolean canConvert(Object fromValue, Class toType) {
+        return Date.class.isAssignableFrom(toType);
     }
-    
+
 }
