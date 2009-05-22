@@ -27,7 +27,7 @@ import java.io.ByteArrayOutputStream;
 
 import junit.framework.TestCase;
 
-import org.apache.geronimo.blueprint.TestBlueprintContext;
+import org.apache.geronimo.blueprint.TestBlueprintContainer;
 import org.osgi.service.blueprint.container.Converter;
 
 public class AggregateConverterTest extends TestCase {
@@ -35,7 +35,7 @@ public class AggregateConverterTest extends TestCase {
     private Converter service;
 
     protected void setUp() {
-        service = new AggregateConverter(new TestBlueprintContext(null));
+        service = new AggregateConverter(new TestBlueprintContainer(null));
     }
 
     public void testConvertSimpleTypes() throws Exception {
@@ -135,7 +135,7 @@ public class AggregateConverterTest extends TestCase {
     }
     
     public void testCustom() throws Exception {
-        AggregateConverter s = new AggregateConverter(new TestBlueprintContext(null));
+        AggregateConverter s = new AggregateConverter(new TestBlueprintContainer(null));
         s.registerConverter(new RegionConverter());
         s.registerConverter(new EuRegionConverter());
         
@@ -149,7 +149,7 @@ public class AggregateConverterTest extends TestCase {
         assertTrue(result instanceof EuRegion);
         
         // find first converter that matches the type
-        s = new AggregateConverter(new TestBlueprintContext(null));
+        s = new AggregateConverter(new TestBlueprintContainer(null));
         s.registerConverter(new AsianRegionConverter());
         s.registerConverter(new EuRegionConverter());
         

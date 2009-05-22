@@ -259,9 +259,6 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
         }
 
         public Object convert(Type type) {
-            // TODO: consider creating a copy of this managed list with the same back end
-            // TODO: but suited to the requestor needs.  However this would break the contract
-            // TODO: where singletons have only a single instance created
             LOGGER.debug("Converting ManagedCollection to {}", type);
             if (Object.class == type) {
                 return this;
@@ -284,12 +281,12 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
                 } else if (useRef == null || references.booleanValue() == useRef.booleanValue()) {
                     return this;
                 }
-                // TODO: create a new collectio if needed?
+                // TODO: the current collection can not be converted, so we need to create a new collection
                 throw new ComponentDefinitionException("The same <ref-list/> or <ref-set/> can not be " +
                         "injected as Collection<ServiceReference> and Collection<NotServiceReference> at the same time");
             } else {
-                // TODO: create a new collectio if needed?
-                throw new ComponentDefinitionException("Unsupported conversion to " + type);                
+                // TODO: the current collection can not be converted, so we need to create a new collection
+                throw new ComponentDefinitionException("Unsupported conversion to " + type);
             }
         }
 

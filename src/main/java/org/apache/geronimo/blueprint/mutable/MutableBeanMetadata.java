@@ -18,12 +18,11 @@
  */
 package org.apache.geronimo.blueprint.mutable;
 
+import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanArgument;
-import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.Target;
-import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
 
 /**
  * A mutable version of the <code>BeanMetadata</code> that allows modifications.

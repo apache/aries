@@ -21,9 +21,6 @@ package org.apache.geronimo.blueprint.di;
 import java.lang.reflect.Type;
 
 import org.osgi.service.blueprint.reflect.ValueMetadata;
-import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.apache.geronimo.blueprint.container.RecipeBuilder;
-import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 
 /**
  * This recipe will be used to create an object from a ValueMetadata.

@@ -25,9 +25,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.geronimo.blueprint.container.BlueprintContainerImpl;
 import org.apache.geronimo.blueprint.container.DefaultBlueprintContextEventSender;
@@ -53,8 +52,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintExtender.class);
 
-    private ExecutorService executors;
-    private Timer timer;
+    private ScheduledExecutorService executors;
     private Map<Bundle, BlueprintContainerImpl> contextMap;
     private BlueprintContextEventSender sender;
     private NamespaceHandlerRegistry handlers;
@@ -64,8 +62,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
 
         sender = new DefaultBlueprintContextEventSender(context);
         handlers = new NamespaceHandlerRegistryImpl(context);
-        executors = Executors.newCachedThreadPool();
-        timer = new Timer("BlueprintExtender-Timer", true);
+        executors = Executors.newScheduledThreadPool(1);
         contextMap = new HashMap<Bundle, BlueprintContainerImpl>();
 
         context.addBundleListener(this);
@@ -94,7 +91,6 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         this.sender.destroy();
         this.handlers.destroy();
         executors.shutdown();
-        timer.cancel();
         LOGGER.debug("Blueprint extender stopped");
     }
 
@@ -156,7 +152,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 // the bundle to be fully started
                 boolean compatible = lazyActivation || isCompatible(bundle);
                 if (compatible) {
-                    final BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle.getBundleContext(), sender, handlers, executors, timer, urls, lazyActivation);
+                    final BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle.getBundleContext(), sender, handlers, executors, urls, lazyActivation);
                     contextMap.put(bundle, blueprintContainer);
                     // run synchronous when bundle is lazy activated
                     blueprintContainer.run(lazyActivation ? false: true);
