@@ -21,12 +21,12 @@ package org.apache.geronimo.blueprint;
 import org.apache.geronimo.blueprint.container.BlueprintContainerImpl;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 
-public class TestBlueprintContext extends BlueprintContainerImpl {
+public class TestBlueprintContainer extends BlueprintContainerImpl {
 
     private ComponentDefinitionRegistryImpl registry;
     
-    public TestBlueprintContext(ComponentDefinitionRegistryImpl registry) {
-        super(new TestBundleContext(), null, null, null, null, null, false);
+    public TestBlueprintContainer(ComponentDefinitionRegistryImpl registry) {
+        super(new TestBundleContext(), null, null, null, null, false);
         this.registry = registry;
     }
 

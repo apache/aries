@@ -22,6 +22,8 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
@@ -57,10 +59,12 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
     private final ServiceTracker eventAdminServiceTracker;
     private final ServiceTracker contextListenerTracker;
     private final Map<Bundle, BlueprintEvent> states;
+    private final ExecutorService executor;
 
     public DefaultBlueprintContextEventSender(final BundleContext bundleContext) {
         this.extenderBundle = bundleContext.getBundle();
         this.states = new ConcurrentHashMap<Bundle, BlueprintEvent>();
+        this.executor = Executors.newSingleThreadExecutor();
         this.eventAdminServiceTracker = new ServiceTracker(bundleContext, EventAdmin.class.getName(), null);
         this.eventAdminServiceTracker.open();
         this.contextListenerTracker = new ServiceTracker(bundleContext, BlueprintListener.class.getName(), new ServiceTrackerCustomizer() {
@@ -147,14 +151,15 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
         sendEvent(event);
     }
 
-    public void sendEvent(BlueprintEvent event) {
-        // TODO: events should be sent asynchronously
+    public void sendEvent(final BlueprintEvent event) {
         LOGGER.debug("Sending blueprint container event {} for bundle {}", event, event.getBundle().getSymbolicName());
-
         states.put(event.getBundle(), event);
-
-        callListeners(event);
-        sendEventAdmin(event);
+        executor.submit(new Runnable() {
+            public void run() {
+                callListeners(event);
+                sendEventAdmin(event);
+            }
+        });
     }
 
     private void callListeners(BlueprintEvent event) {
@@ -233,6 +238,7 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
     }
 
     public void destroy() {
+        this.executor.shutdown();
         this.registration.unregister();
         this.eventAdminServiceTracker.close();
         this.contextListenerTracker.close();

@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
@@ -119,8 +119,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private final boolean lazyActivation;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
     private final AggregateConverter conversionService;
-    private final ExecutorService executors;
-    private final Timer timer;
+    private final ScheduledExecutorService executors;
     private Set<URI> namespaces;
     private State state = State.Unknown;
     private Parser parser;
@@ -134,9 +133,9 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private Map<ServiceMetadata, TriggerService> triggerServices;
     private long timeout = 5 * 60 * 1000; 
     private boolean waitForDependencies = true;
-    private TimerTask timerTask;
+    private ScheduledFuture timeoutFuture;
 
-    public BlueprintContainerImpl(BundleContext bundleContext, BlueprintContextEventSender sender, NamespaceHandlerRegistry handlers, ExecutorService executors, Timer timer, List<URL> urls, boolean lazyActivation) {
+    public BlueprintContainerImpl(BundleContext bundleContext, BlueprintContextEventSender sender, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<URL> urls, boolean lazyActivation) {
         this.bundleContext = bundleContext;
         this.sender = sender;
         this.handlers = handlers;
@@ -144,7 +143,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         this.conversionService = new AggregateConverter(this);
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
-        this.timer = timer;
         this.lazyActivation = lazyActivation;
         this.triggerServices = new HashMap<ServiceMetadata, TriggerService>();
         this.beanProcessors = new ArrayList<BeanProcessor>();
@@ -232,7 +230,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         instantiator = new BlueprintObjectInstantiator(this, new RecipeBuilder(this).createRepository());
                         checkReferences();
                         trackServiceReferences();
-                        timerTask = new TimerTask() {
+                        Runnable r = new Runnable() {
                             public void run() {
                                 synchronized (BlueprintContainerImpl.this) {
                                     Throwable t = new TimeoutException();
@@ -243,7 +241,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                                 }
                             }
                         };
-                        timer.schedule(timerTask, timeout);
+                        timeoutFuture = executors.schedule(r, timeout, TimeUnit.MILLISECONDS);
                         if (checkAllSatisfiables() || !waitForDependencies) {
                             state = State.InitialReferencesSatisfied;
                         } else {
@@ -280,8 +278,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         if (checkAllSatisfiables() || !waitForDependencies) {
                             state = State.InitialReferencesSatisfied2;
                         } else {
-                            // TODO: pass correct parameters
-                            sender.sendGracePeriod(getBundleContext().getBundle(), null);
+                            sender.sendGracePeriod(getBundleContext().getBundle(), getMissingDependencies());
                             state = State.WaitForInitialReferences2;
                         }
                         break;
@@ -293,13 +290,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             return;
                         }
                     case InitialReferencesSatisfied2:
-                        // TODO: we should always register ServiceFactory in all cases.
-                        //       the reason is that the trigger service creation may actually trigger the activation of
-                        //       the bundle if the service properties reference any other components (thus loading a class
-                        //       from the bundle and activating it)
-                        //       the lazy activation should be a best effot and the lazy creation of services should be
-                        //       done in all cases
-                        //       Not sure about listeners
                         if (BEHAVIOR_ENHANCED_LAZY_ACTIVATION) {
                             state = State.Create;
                         } else {
@@ -314,7 +304,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                     case WaitForTrigger:
                         return;
                     case Create:
-                        timerTask.cancel();
+                        timeoutFuture.cancel(false);
                         instantiateEagerSingletonBeans();
 
                         // Register the BlueprintContainer in the OSGi registry
@@ -324,10 +314,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                                       bundleContext.getBundle().getSymbolicName());
                             props.put(BlueprintConstants.CONTEXT_VERSION_PROPERTY,
                                       bundleContext.getBundle().getHeaders().get(Constants.BUNDLE_VERSION));
-                            // TODO: register a service factory so that we can honor the bundle scope when
-                            //    BlueprintContainer.getComponent(String) is called directly
                             registration = bundleContext.registerService(BlueprintContainer.class.getName(), this, props);
-
                             sender.sendCreated(getBundleContext().getBundle());
                             state = State.Created;
                         }
@@ -797,8 +784,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         state = State.Destroyed;
         sender.sendDestroying(getBundleContext().getBundle());
 
-        if (timerTask != null) {
-            timerTask.cancel();
+        if (timeoutFuture != null) {
+            timeoutFuture.cancel(false);
         }
         if (registration != null) {
             registration.unregister();
