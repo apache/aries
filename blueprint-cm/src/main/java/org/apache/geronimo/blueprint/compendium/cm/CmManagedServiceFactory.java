@@ -53,6 +53,10 @@ import org.slf4j.LoggerFactory;
  */
 public class CmManagedServiceFactory {
 
+    static final int CONFIGURATION_ADMIN_OBJECT_DELETED = 1;
+
+    static final int BUNDLE_STOPPING = 2;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CmManagedServiceFactory.class);
     
     private BlueprintContainerImpl blueprintContainer;
@@ -99,7 +103,7 @@ public class CmManagedServiceFactory {
             registration.unregister();
         }
         for (Map.Entry<ServiceRegistration, Object> entry : services.entrySet()) {
-            destroyComponent(entry.getValue(), BlueprintContainer.BUNDLE_STOPPING);
+            destroyComponent(entry.getValue(), BUNDLE_STOPPING);
             entry.getKey().unregister();
         }
         services.clear();
@@ -213,7 +217,7 @@ public class CmManagedServiceFactory {
         if (reg != null) {
             // TODO: destroy instance, etc...
             Object component = services.remove(reg);
-            destroyComponent(component, BlueprintContainer.CONFIGURATION_ADMIN_OBJECT_DELETED);
+            destroyComponent(component, CONFIGURATION_ADMIN_OBJECT_DELETED);
             reg.unregister();
         }
     }
