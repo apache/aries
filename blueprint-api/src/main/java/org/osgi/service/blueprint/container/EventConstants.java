@@ -71,11 +71,11 @@ public interface EventConstants {
  	 */
 	public static final String BUNDLE = "bundle";
 
-	/**
- 	 * The bundle id property defining the id of the blueprint bundle for which an event has been issued.
-	 * This property is of type {@link java.lang.Integer}.
- 	 */
-	public static final String BUNDLE_ID = "bundle.id";
+    /**
+     * The bundle id property defining the id of the blueprint bundle for which an event has been issued.
+     * This property is of type {@link java.lang.Integer}.
+     */
+    public static final String BUNDLE_ID = "bundle.id";
 
 	/**
  	 * The bundle symbolic name property defining the symbolic name of
@@ -83,6 +83,12 @@ public interface EventConstants {
 	 * This property is of type {@link java.lang.String}.
  	 */
 	public static final String BUNDLE_SYMBOLICNAME = "bundle.symbolicName";
+
+    /**
+     * The bundle version property defining the version of the blueprint bundle for which an event has been issued.
+     * This property is of type {@link Version}.
+     */
+    public static final String BUNDLE_VERSION = "bundle.version";
 
 	/**
 	 * The extender bundle property defining the extender bundle processing the
@@ -93,12 +99,12 @@ public interface EventConstants {
 	 */
 	public static final String EXTENDER_BUNDLE = "extender.bundle";
 
-	/**
-	 * The extender bundle id property defining the id of the extender bundle
-	 * processing the blueprint container for which an event has been issued.
-	 * This property is of type {@link java.lang.Integer}.
-	 */
-	public static final String EXTENDER_BUNDLE_ID = "extender.bundle.id";
+    /**
+     * The extender bundle id property defining the id of the extender bundle
+     * processing the blueprint container for which an event has been issued.
+     * This property is of type {@link java.lang.Integer}.
+     */
+    public static final String EXTENDER_BUNDLE_ID = "extender.bundle.id";
 
 	/**
 	 * The extender bundle symbolic name property defining the symbolic name of
@@ -107,6 +113,13 @@ public interface EventConstants {
 	 * This property is of type {@link java.lang.String}.
 	 */
 	public static final String EXTENDER_BUNDLE_SYMBOLICNAME = "extender.bundle.symbolicName";
+
+    /**
+     * The extender bundle version property defining the version of the extender bundle
+     * processing the blueprint container for which an event has been issued.
+     * This property is of type {@link Version}.
+     */
+    public static final String EXTENDER_BUNDLE_VERSION = "extender.bundle.version";
 
 	/**
  	 * The dependencies property containing an array of filters describing the missing
