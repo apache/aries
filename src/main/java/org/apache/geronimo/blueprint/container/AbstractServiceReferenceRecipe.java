@@ -115,7 +115,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return recipes;
     }
 
-    protected String getOsgiFilter() {
+    public String getOsgiFilter() {
         if (filter == null) {
             List<String> members = new ArrayList<String>();
             // Handle filter
