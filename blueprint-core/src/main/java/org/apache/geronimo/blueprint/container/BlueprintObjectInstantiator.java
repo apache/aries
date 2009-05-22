@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.ConstructionException;
 import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
 import org.apache.geronimo.blueprint.di.ExecutionContext;
@@ -32,7 +33,6 @@ import org.apache.geronimo.blueprint.di.Reference;
 import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.di.UnresolvedReferencesException;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
-import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 
 /**
  */
