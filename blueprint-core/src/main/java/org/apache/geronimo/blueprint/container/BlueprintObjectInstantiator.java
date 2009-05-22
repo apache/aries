@@ -33,7 +33,6 @@ import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.di.UnresolvedReferencesException;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
-import org.osgi.service.blueprint.convert.ConversionService;
 
 /**
  */

@@ -20,18 +20,19 @@ package org.apache.geronimo.blueprint.pojos;
 
 import java.io.File;
 
-import org.osgi.service.blueprint.convert.Converter;
+import org.osgi.service.blueprint.container.Converter;
 
 public class ConverterA implements Converter {
 
-    public Object convert(Object source) throws Exception {
+    public boolean canConvert(Object fromValue, Class toType) {
+        return fromValue instanceof String && toType == File.class;
+    }
+
+    public Object convert(Object source, Class toType) throws Exception {
         if (source instanceof String) {
             return new File((String) source);
         }
         throw new Exception("Unable to convert from " + (source != null ? source.getClass().getName() : "<null>") + " to " + File.class.getName());
     }
 
-    public Class getTargetClass() {
-        return File.class;
-    }
 }

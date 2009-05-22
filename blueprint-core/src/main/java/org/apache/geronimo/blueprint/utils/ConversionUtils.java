@@ -27,7 +27,7 @@ import java.util.Map;
 
 import static org.apache.geronimo.blueprint.utils.TypeUtils.getTypeParameters;
 import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
-import org.osgi.service.blueprint.convert.ConversionService;
+import org.osgi.service.blueprint.container.Converter;
 
 /**
  * TODO: javadoc
@@ -44,7 +44,7 @@ public final class ConversionUtils {
         Object convert(Type type) throws Exception;
     }
 
-    public static Object convert(Object obj, Type type, ConversionService converter) throws Exception {
+    public static Object convert(Object obj, Type type, Converter converter) throws Exception {
         // First convert service proxies
         if (obj instanceof Convertible) {
             return ((Convertible) obj).convert(type);

@@ -14,31 +14,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.geronimo.blueprint.convert;
+package org.apache.geronimo.blueprint.container;
 
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import org.apache.geronimo.blueprint.container.BlueprintContainerImpl;
 import org.apache.geronimo.blueprint.utils.TypeUtils;
-import org.osgi.service.blueprint.convert.ConversionService;
-import org.osgi.service.blueprint.convert.Converter;
+import org.osgi.service.blueprint.container.Converter;
 
 /**
- * Implementation of the ConverterService.
+ * Implementation of the Converter.
  *
  * This object contains all the registered Converters which can be registered
- * by using {@link #registerConverter(org.osgi.service.blueprint.convert.Converter)}
- * and unregistered using {@link #unregisterConverter(org.osgi.service.blueprint.convert.Converter)}.
+ * by using {@link #registerConverter(Converter)}
+ * and unregistered using {@link #unregisterConverter(Converter)}.
  *
  * Each {@link org.osgi.service.blueprint.container.BlueprintContainer} has its own ConversionService
  * used to register converters defined by the related blueprint bundle.
@@ -46,41 +42,52 @@ import org.osgi.service.blueprint.convert.Converter;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ConversionServiceImpl implements ConversionService {
+public class AggregateConverter implements Converter {
 
     private BlueprintContainerImpl blueprintContainer;
-    private Map<Class, List<Converter>> convertersMap = new HashMap<Class, List<Converter>>();
+    private List<Converter> converters = new ArrayList<Converter>();
 
-    public ConversionServiceImpl(BlueprintContainerImpl blueprintContainer) {
+    public AggregateConverter(BlueprintContainerImpl blueprintContainer) {
         this.blueprintContainer = blueprintContainer;
     }
-    
+
     public void registerConverter(Converter converter) {
-        Class type = converter.getTargetClass();
-        List<Converter> converters = convertersMap.get(type);
-        if (converters == null) {
-            converters = new ArrayList<Converter>();
-            convertersMap.put(type, converters);
-        }
         converters.add(converter);
     }
 
     public void unregisterConverter(Converter converter) {
-        Class type = converter.getTargetClass();
-        List<Converter> converters = convertersMap.get(type);
-        if (converters != null) {
-            converters.remove(converter);
-        }
+        converters.remove(converter);
     }
-    
+
+    public boolean canConvert(Object fromValue, Class toType) {
+        if (fromValue == null) {
+            return true;
+        }
+        if (TypeUtils.isInstance(toType, fromValue)) {
+            return true;
+        }
+        for (Converter converter : converters) {
+            if (converter.canConvert(fromValue, toType)) {
+                return true;
+            }
+        }
+        if (fromValue instanceof String) {
+
+        }
+        return false;
+    }
+
     public Object convert(Object fromValue, Class toType) throws Exception {
+        if (fromValue == null) {
+            return null;
+        }
         if (TypeUtils.isInstance(toType, fromValue)) {
             return fromValue;
         }
         Object value = doConvert(fromValue, toType);        
         if (value == null) {
             if (fromValue instanceof String) {
-                return convertString( (String)fromValue, toType);
+                return convertString((String) fromValue, toType);
             } else {
                 throw new Exception("Unable to convert value " + fromValue + " to type: " + toType.getName());
             }
@@ -89,47 +96,19 @@ public class ConversionServiceImpl implements ConversionService {
         }
     }
 
-    private Object doConvert(Object source, Class type) {
-        Object value = null;
-        
-        // do explicit lookup
-        List<Converter> converters = convertersMap.get(type);
-        if (converters != null) {
-            value = convert(converters, source);
-            if (value != null) {
-                return value;
-            }
-        }
-                
-        // try to find converter that matches the type
-        for (Map.Entry<Class, List<Converter>> entry : convertersMap.entrySet()) {
-            Class converterClass = entry.getKey();
-            if (type.isAssignableFrom(converterClass)) {
-                value = convert(entry.getValue(), source);
-                if (value != null) {
-                    return value;
-                }
-            }
-        }        
-
-        return null;
-    }
-
-    private Object convert(List<Converter> converters, Object source) {
+    private Object doConvert(Object source, Class type) throws Exception {
         Object value = null;
         for (Converter converter : converters) {
-            try {
-                value = converter.convert(source);
+            if (converter.canConvert(source, type)) {
+                value = converter.convert(source, type);
                 if (value != null) {
                     return value;
                 }
-            } catch (Exception e) {
-                // ignore
             }
         }
-        return null;
+        return value;
     }
-    
+
     private Object convertString(String value, Class toType) throws Exception {
         if (Class.class == toType) {
             try {

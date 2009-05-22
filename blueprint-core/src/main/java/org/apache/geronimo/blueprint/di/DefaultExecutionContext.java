@@ -29,8 +29,6 @@ import java.util.TreeMap;
 
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
-import org.apache.geronimo.blueprint.container.RecipeBuilder;
-import org.osgi.service.blueprint.convert.ConversionService;
 
 public class DefaultExecutionContext extends ExecutionContext {
     /**

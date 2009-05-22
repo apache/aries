@@ -18,16 +18,16 @@ package org.apache.geronimo.blueprint.sample;
 
 import java.util.Currency;
 
-import org.osgi.service.blueprint.convert.Converter;
+import org.osgi.service.blueprint.container.Converter;
 
 public class CurrencyTypeConverter implements Converter {
 
-    public Object convert(Object source) throws Exception {
+    public boolean canConvert(Object fromValue, Class toType) {
+        return Currency.class.isAssignableFrom(toType);
+    }
+
+    public Object convert(Object source, Class toType) throws Exception {
         return Currency.getInstance(source.toString());
     }
 
-    public Class getTargetClass() {
-        return Currency.class;
-    }
-    
 }

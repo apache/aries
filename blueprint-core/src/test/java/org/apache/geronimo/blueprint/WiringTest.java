@@ -39,7 +39,6 @@ import org.apache.geronimo.blueprint.pojos.PojoB;
 import org.apache.geronimo.blueprint.pojos.PojoGenerics;
 import org.apache.geronimo.blueprint.pojos.PojoListener;
 import org.apache.geronimo.blueprint.pojos.BeanF;
-import org.apache.geronimo.blueprint.convert.ConversionServiceImpl;
 import org.apache.geronimo.blueprint.di.Repository;
 import org.osgi.framework.ServiceRegistration;
 

@@ -23,14 +23,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
-import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.di.ArrayRecipe;
 import org.apache.geronimo.blueprint.di.CollectionRecipe;
-import org.apache.geronimo.blueprint.di.ConstructionException;
 import org.apache.geronimo.blueprint.di.DefaultRepository;
 import org.apache.geronimo.blueprint.di.MapRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
@@ -39,7 +36,7 @@ import org.apache.geronimo.blueprint.di.ReferenceRecipe;
 import org.apache.geronimo.blueprint.di.ValueRecipe;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.reflect.MetadataUtil;
-import org.osgi.service.blueprint.convert.ConversionService;
+import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -366,7 +363,7 @@ public class RecipeBuilder {
         }
     }
     
-    protected ConversionService getConversionService() {
+    protected Converter getConversionService() {
         return blueprintContainer.getConversionService();
     }
     
