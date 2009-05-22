@@ -19,17 +19,14 @@
 package org.apache.geronimo.blueprint.container;
 
 import java.lang.reflect.Type;
-import java.util.HashSet;
-import java.util.Set;
 
 import net.sf.cglib.proxy.Dispatcher;
 import org.apache.geronimo.blueprint.BlueprintContextEventSender;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
-import org.apache.geronimo.blueprint.container.AbstractServiceReferenceRecipe;
 import org.apache.geronimo.blueprint.di.ConstructionException;
 import org.apache.geronimo.blueprint.di.Recipe;
-import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
+import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
