@@ -32,8 +32,9 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.container.BlueprintContainerListener;
+import org.osgi.service.blueprint.container.BlueprintListener;
 import org.osgi.service.blueprint.container.EventConstants;
+import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.util.tracker.ServiceTracker;
@@ -55,16 +56,16 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
     private final Bundle extenderBundle;
     private final ServiceTracker eventAdminServiceTracker;
     private final ServiceTracker contextListenerTracker;
-    private final Map<Bundle, Object> states;
+    private final Map<Bundle, BlueprintEvent> states;
 
     public DefaultBlueprintContextEventSender(final BundleContext bundleContext) {
         this.extenderBundle = bundleContext.getBundle();
-        this.states = new ConcurrentHashMap<Bundle, Object>();
+        this.states = new ConcurrentHashMap<Bundle, BlueprintEvent>();
         this.eventAdminServiceTracker = new ServiceTracker(bundleContext, EventAdmin.class.getName(), null);
         this.eventAdminServiceTracker.open();
-        this.contextListenerTracker = new ServiceTracker(bundleContext, BlueprintContainerListener.class.getName(), new ServiceTrackerCustomizer() {
+        this.contextListenerTracker = new ServiceTracker(bundleContext, BlueprintListener.class.getName(), new ServiceTrackerCustomizer() {
             public Object addingService(ServiceReference reference) {
-                BlueprintContainerListener listener = (BlueprintContainerListener) bundleContext.getService(reference);
+                BlueprintListener listener = (BlueprintListener) bundleContext.getService(reference);
                 sendInitialEvents(listener);
                 return listener;
             }
@@ -78,10 +79,10 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
         this.registration = bundleContext.registerService(BlueprintStateManager.class.getName(), this, null);
     }
 
-    protected void sendInitialEvents(BlueprintContainerListener listener) {
+    protected void sendInitialEvents(BlueprintListener listener) {
         if (states != null) {
-            for (Map.Entry<Bundle, Object> entry : states.entrySet()) {
-                callListener(listener, entry.getKey(), entry.getValue());
+            for (Map.Entry<Bundle, BlueprintEvent> entry : states.entrySet()) {
+                listener.blueprintEvent(entry.getValue());
             }
         }
     }
@@ -107,106 +108,118 @@ public class DefaultBlueprintContextEventSender implements BlueprintContextEvent
     }
 
     public void sendCreating(Bundle bundle) {
-        states.put(bundle,  CREATING);
-        sendEvent(bundle, TOPIC_CREATING, null, null, null);
+        BlueprintEvent event = new BlueprintEvent(BlueprintEvent.CREATING, bundle, extenderBundle);
+        sendEvent(event);
     }
 
     public void sendCreated(Bundle bundle) {
-        states.put(bundle,  CREATED);
-        sendEvent(bundle, TOPIC_CREATED, null, null, null);
+        BlueprintEvent event = new BlueprintEvent(BlueprintEvent.CREATED, bundle, extenderBundle);
+        sendEvent(event);
     }
 
     public void sendDestroying(Bundle bundle) {
-        states.put(bundle,  DESTROYING);
-        sendEvent(bundle, TOPIC_DESTROYING, null, null, null);
+        BlueprintEvent event = new BlueprintEvent(BlueprintEvent.DESTROYING, bundle, extenderBundle);
+        sendEvent(event);
     }
 
     public void sendDestroyed(Bundle bundle) {
-        states.put(bundle,  DESTROYED);
-        sendEvent(bundle, TOPIC_DESTROYED, null, null, null);
+        BlueprintEvent event = new BlueprintEvent(BlueprintEvent.DESTROYED, bundle, extenderBundle);
+        sendEvent(event);
     }
 
-    public void sendWaiting(Bundle bundle, String[] serviceObjectClass, String serviceFilter) {
-        states.put(bundle,  WAITING);
-        sendEvent(bundle, TOPIC_WAITING, null, serviceObjectClass, serviceFilter);
+    public void sendGracePeriod(Bundle bundle, String[] dependencies) {
+        BlueprintEvent event = new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, bundle, extenderBundle, dependencies);
+        sendEvent(event);
+    }
+
+    public void sendWaiting(Bundle bundle, String dependency) {
+        BlueprintEvent event = new BlueprintEvent(BlueprintEvent.WAITING, bundle, extenderBundle, new String[] { dependency });
+        sendEvent(event);
     }
 
     public void sendFailure(Bundle bundle, Throwable cause) {
-        states.put(bundle,  cause != null ? cause : FAILED);
-        sendEvent(bundle, TOPIC_FAILURE, cause, null, null);
+        BlueprintEvent event = new BlueprintEvent(BlueprintEvent.FAILURE, bundle, extenderBundle, cause);
+        sendEvent(event);
     }
 
-    public void sendFailure(Bundle bundle, Throwable cause, String[] serviceObjectClass, String serviceFilter) {
-        states.put(bundle,  cause != null ? cause : FAILED);
-        sendEvent(bundle, TOPIC_FAILURE, cause, serviceObjectClass, serviceFilter);
+    public void sendFailure(Bundle bundle, Throwable cause, String[] dependencies) {
+        BlueprintEvent event = new BlueprintEvent(BlueprintEvent.FAILURE, bundle, extenderBundle, dependencies, cause);
+        sendEvent(event);
     }
 
-    public void sendEvent(Bundle bundle, String topic, Throwable cause, String[] serviceObjectClass, String serviceFilter) {
+    public void sendEvent(BlueprintEvent event) {
+        // TODO: events should be sent asynchronously
+        LOGGER.debug("Sending blueprint container event {} for bundle {}", event, event.getBundle().getSymbolicName());
 
-        LOGGER.debug("Sending blueprint container event {} for bundle {}", topic, bundle.getSymbolicName());
+        states.put(event.getBundle(), event);
 
-        callListeners(bundle, topic, cause);
+        callListeners(event);
+        sendEventAdmin(event);
+    }
 
+    private void callListeners(BlueprintEvent event) {
+        Object[] listeners = contextListenerTracker.getServices();
+        if (listeners != null) {
+            for (Object listener : listeners) {
+                ((BlueprintListener) listener).blueprintEvent(event);
+            }
+        }
+    }
+
+    private void sendEventAdmin(BlueprintEvent event) {
         EventAdmin eventAdmin = getEventAdmin();
         if (eventAdmin == null) {
             return;
         }
 
         Dictionary<String,Object> props = new Hashtable<String,Object>();
-        props.put(org.osgi.service.event.EventConstants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
-        props.put(org.osgi.service.event.EventConstants.BUNDLE_ID, bundle.getBundleId());
-        props.put(org.osgi.service.event.EventConstants.BUNDLE, bundle);
-        Version version = getBundleVersion(bundle);
+        props.put(EventConstants.TYPE, event.getType());
+        props.put(EventConstants.EVENT, event);
+        props.put(EventConstants.TIMESTAMP, event.getTimestamp());
+        props.put(EventConstants.BUNDLE, event.getBundle());
+        props.put(EventConstants.BUNDLE_SYMBOLICNAME, event.getBundle().getSymbolicName());
+        props.put(EventConstants.BUNDLE_ID, event.getBundle().getBundleId());
+        Version version = getBundleVersion(event.getBundle());
         if (version != null) {
             props.put(BlueprintConstants.BUNDLE_VERSION, version);
         }
-        props.put(org.osgi.service.event.EventConstants.TIMESTAMP, System.currentTimeMillis());
         props.put(EventConstants.EXTENDER_BUNDLE, extenderBundle);
-        props.put(EventConstants.EXTENDER_ID, extenderBundle.getBundleId());
-        props.put(EventConstants.EXTENDER_SYMBOLICNAME, extenderBundle.getSymbolicName());
-        
-        if (cause != null) {
-            props.put(org.osgi.service.event.EventConstants.EXCEPTION, cause);
-        }
-        if (serviceObjectClass != null) {
-            props.put(org.osgi.service.event.EventConstants.SERVICE_OBJECTCLASS, serviceObjectClass);
-        }
-        if (serviceFilter != null) {
-            props.put(BlueprintConstants.SERVICE_FILTER, serviceFilter);
-        }
+        props.put(EventConstants.EXTENDER_BUNDLE_ID, extenderBundle.getBundleId());
+        props.put(EventConstants.EXTENDER_BUNDLE_SYMBOLICNAME, extenderBundle.getSymbolicName());
 
-        Event event = new Event(topic, props);
-        eventAdmin.postEvent(event);
-    }
-
-    private void callListeners(Bundle bundle, String topic, Throwable cause) {
-        boolean created = TOPIC_CREATED.equals(topic);
-        boolean failure = TOPIC_FAILURE.equals(topic);
-        if (created || failure) {
-            Object[] listeners = contextListenerTracker.getServices();
-            if (listeners != null) {
-                for (Object listener : listeners) {
-                    callListener((BlueprintContainerListener) listener, bundle, created ? CREATED : cause != null ? cause : FAILED);
-                }
-            }
+        if (event.getException() != null) {
+            props.put(EventConstants.EXCEPTION, event.getException());
         }
-    }
-
-    private void callListener(BlueprintContainerListener listener, Bundle bundle, Object state) {
-        // TODO: listener is missing a few methods to replay the state (at least WAITING events)
-        try {
-            if (state instanceof Integer) {
-                if ((Integer) state == CREATED) {
-                    listener.contextCreated(bundle);
-                } else if ((Integer) state == FAILED) {
-                    listener.contextCreationFailed(bundle, null);
-                }
-            } else if (state instanceof Throwable) {
-                listener.contextCreationFailed(bundle, (Throwable) state);
-            }
-        } catch (Throwable t) {
-            LOGGER.info("Error calling blueprint container listener", t);
+        if (event.getDependencies() != null) {
+            props.put(EventConstants.DEPENDENCIES, event.getDependencies());
         }
+        String topic;
+        switch (event.getType()) {
+            case BlueprintEvent.CREATING:
+                topic = EventConstants.TOPIC_CREATING;
+                break;
+            case BlueprintEvent.CREATED:
+                topic = EventConstants.TOPIC_CREATED;
+                break;
+            case BlueprintEvent.DESTROYING:
+                topic = EventConstants.TOPIC_DESTROYING;
+                break;
+            case BlueprintEvent.DESTROYED:
+                topic = EventConstants.TOPIC_DESTROYED;
+                break;
+            case BlueprintEvent.FAILURE:
+                topic = EventConstants.TOPIC_FAILURE;
+                break;
+            case BlueprintEvent.GRACE_PERIOD:
+                topic = EventConstants.TOPIC_GRACE_PERIOD;
+                break;
+            case BlueprintEvent.WAITING:
+                topic = EventConstants.TOPIC_WAITING;
+                break;
+            default:
+                throw new IllegalStateException("Unknown blueprint event type: " + event.getType());
+        }
+        eventAdmin.postEvent(new Event(topic, props));
     }
 
     private static Version getBundleVersion(Bundle bundle) {

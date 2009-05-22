@@ -221,7 +221,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         for (URI ns : namespaces) {
                             if (handlers.getNamespaceHandler(ns) == null) {
                                 if (!waitForNamespaceHandlersEventSent) {
-                                    sender.sendWaiting(getBundleContext().getBundle(), new String[] {NamespaceHandler.class.getName() }, null);
+                                    sender.sendWaiting(getBundleContext().getBundle(), "(" + Constants.OBJECTCLASS + "=" + NamespaceHandler.class.getName() + ")");
                                     waitForNamespaceHandlersEventSent = true;
                                 }
                                 return;
@@ -249,9 +249,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         if (checkAllSatisfiables() || !waitForDependencies) {
                             state = State.InitialReferencesSatisfied;
                         } else {
-                            // TODO: pass correct parameters
-                            // TODO: do we need to send one event for each missing reference ?
-                            sender.sendWaiting(getBundleContext().getBundle(), null, null);
+                            // TODO: pass correct parameters for missing dependencies
+                            sender.sendGracePeriod(getBundleContext().getBundle(), null);
                             state = State.WaitForInitialReferences;
                         }
                         break;
@@ -285,8 +284,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             state = State.InitialReferencesSatisfied2;
                         } else {
                             // TODO: pass correct parameters
-                            // TODO: do we need to send one event for each missing reference ?
-                            sender.sendWaiting(getBundleContext().getBundle(), null, null);
+                            sender.sendGracePeriod(getBundleContext().getBundle(), null);
                             state = State.WaitForInitialReferences2;
                         }
                         break;
