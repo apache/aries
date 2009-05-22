@@ -122,8 +122,8 @@ public class CmManagedProperties implements BeanProcessor {
             ManagedServiceManager.register(this, props);
             try {
                 properties = configAdmin.getConfiguration(persistentId).getProperties();
-            } catch (Throwable t) {
-                LOGGER.debug("Unable to retrieve initial configuration for bean={} / pid={}", beanName,  persistentId);
+            } catch (Exception e) {
+                LOGGER.debug("Unable to retrieve initial configuration for bean={} / pid={}", new Object [] { beanName,  persistentId}, e);
             }
         }
     }

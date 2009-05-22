@@ -20,15 +20,21 @@ package org.apache.geronimo.blueprint.compendium.cm;
 
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.reflect.ServiceMetadata;
+import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
@@ -54,19 +60,35 @@ public class CmManagedServiceFactory {
     private int autoExport;
     private int ranking;
     private String managedComponentName;
+    private final Object lock = new Object();
 
     private ServiceRegistration registration;
     private Map<String, ServiceRegistration> pids = new ConcurrentHashMap<String, ServiceRegistration>();
     private Map<ServiceRegistration, Object> services = new ConcurrentHashMap<ServiceRegistration, Object>();
 
     public void init() {
-        LOGGER.debug("Initializing CmManagedServiceFactory for pid={}", factoryPid);
+        LOGGER.debug("Initializing CmManagedServiceFactory for factoryPid={}", factoryPid);
         Properties props = new Properties();
         props.put(Constants.SERVICE_PID, factoryPid);
         Bundle bundle = blueprintContainer.getBundleContext().getBundle();
         props.put(Constants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
         props.put(Constants.BUNDLE_VERSION, bundle.getHeaders().get(Constants.BUNDLE_VERSION));
-        registration = blueprintContainer.getBundleContext().registerService(ManagedServiceFactory.class.getName(), new ConfigurationWatcher(), props);
+        
+        synchronized(lock) {
+            registration = blueprintContainer.getBundleContext().registerService(ManagedServiceFactory.class.getName(), new ConfigurationWatcher(), props);
+        
+            String filter = '(' + ConfigurationAdmin.SERVICE_FACTORYPID + '=' + this.factoryPid + ')';
+            try {
+                Configuration[] configs = configAdmin.listConfigurations(filter);
+                if (configs != null) {
+                    for (Configuration config : configs) {
+                        updated(config.getPid(), config.getProperties());
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.error("Unable to retrieve initial configurations for factoryPid={}", factoryPid, e);
+            }
+        }
     }
 
     public void destroy() {
@@ -114,8 +136,15 @@ public class CmManagedServiceFactory {
     protected void updated(String pid, Dictionary props) {
         LOGGER.error("Updated configuration {} with props {}", pid, props);
         Object component = blueprintContainer.getComponentInstance(managedComponentName);
-        // TODO: autoExport, ranking, init instance, call listeners, etc...
-        ServiceRegistration reg = blueprintContainer.getBundleContext().registerService(interfaces.toArray(new String[interfaces.size()]), component, new Properties());
+        // TODO: init instance, call listeners, etc...
+        
+        Hashtable regProps = new Hashtable();
+        regProps.put(Constants.SERVICE_PID, pid);
+        regProps.put(Constants.SERVICE_RANKING, ranking);
+        Set<String> classes = getClasses(component);
+        String[] classArray = classes.toArray(new String[classes.size()]);
+        ServiceRegistration reg = blueprintContainer.getBundleContext().registerService(classArray, component, regProps);
+        LOGGER.debug("Service {} registered with interfaces {} and properties {}", new Object [] { component, classes, props });
         services.put(reg, component);
         pids.put(pid, reg);
     }
@@ -130,6 +159,27 @@ public class CmManagedServiceFactory {
         }
     }
 
+    private Set<String> getClasses(Object service) {
+        Class serviceClass = service.getClass();
+        Set<String> classes;
+        switch (autoExport) {
+            case ServiceMetadata.AUTO_EXPORT_INTERFACES:
+                classes = ReflectionUtils.getImplementedInterfaces(new HashSet<String>(), serviceClass);
+                break;
+            case ServiceMetadata.AUTO_EXPORT_CLASS_HIERARCHY:
+                classes = ReflectionUtils.getSuperClasses(new HashSet<String>(), serviceClass);
+                break;
+            case ServiceMetadata.AUTO_EXPORT_ALL_CLASSES:
+                classes = ReflectionUtils.getSuperClasses(new HashSet<String>(), serviceClass);
+                classes = ReflectionUtils.getImplementedInterfaces(classes, serviceClass);
+                break;
+            default:
+                classes = new HashSet<String>(interfaces);
+                break;
+        }
+        return classes;
+    }
+    
     private class ConfigurationWatcher implements ManagedServiceFactory {
 
         public String getName() {
