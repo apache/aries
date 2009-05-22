@@ -54,8 +54,7 @@ import org.slf4j.LoggerFactory;
 public class CmManagedServiceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CmManagedServiceFactory.class);
-
-    private String id;
+    
     private BlueprintContainerImpl blueprintContainer;
     private ConfigurationAdmin configAdmin;
     private String factoryPid;
@@ -109,10 +108,6 @@ public class CmManagedServiceFactory {
 
     public Map<ServiceRegistration, Object> getServiceMap() {
         return Collections.unmodifiableMap(services);
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setBlueprintContainer(BlueprintContainerImpl blueprintContainer) {
