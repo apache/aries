@@ -49,9 +49,9 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class DefaultBlueprintContextEventSender implements BlueprintEventSender, EventConstants, BlueprintStateManager {
+public class DefaultBlueprintEventSender implements BlueprintEventSender, EventConstants, BlueprintStateManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultBlueprintContextEventSender.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultBlueprintEventSender.class);
 
     private final ServiceRegistration registration;
     private final Bundle extenderBundle;
@@ -60,7 +60,7 @@ public class DefaultBlueprintContextEventSender implements BlueprintEventSender,
     private final Map<Bundle, BlueprintEvent> states;
     private final ExecutorService executor;
 
-    public DefaultBlueprintContextEventSender(final BundleContext bundleContext) {
+    public DefaultBlueprintEventSender(final BundleContext bundleContext) {
         this.extenderBundle = bundleContext.getBundle();
         this.states = new ConcurrentHashMap<Bundle, BlueprintEvent>();
         this.executor = Executors.newSingleThreadExecutor();

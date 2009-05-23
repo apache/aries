@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.geronimo.blueprint.container.BlueprintContainerImpl;
-import org.apache.geronimo.blueprint.container.DefaultBlueprintContextEventSender;
+import org.apache.geronimo.blueprint.container.DefaultBlueprintEventSender;
 import org.apache.geronimo.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.geronimo.blueprint.utils.HeaderParser;
 import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
@@ -62,7 +62,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         LOGGER.debug("Starting blueprint extender...");
 
         this.context = context;
-        sender = new DefaultBlueprintContextEventSender(context);
+        sender = new DefaultBlueprintEventSender(context);
         handlers = new NamespaceHandlerRegistryImpl(context);
         executors = Executors.newScheduledThreadPool(1);
         containers = new HashMap<Bundle, BlueprintContainerImpl>();
