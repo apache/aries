@@ -290,9 +290,9 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         // Register the BlueprintContainer in the OSGi registry
                         if (registration == null) {
                             Properties props = new Properties();
-                            props.put(BlueprintConstants.CONTEXT_SYMBOLIC_NAME_PROPERTY,
+                            props.put(BlueprintConstants.CONTAINER_SYMBOLIC_NAME_PROPERTY,
                                       bundleContext.getBundle().getSymbolicName());
-                            props.put(BlueprintConstants.CONTEXT_VERSION_PROPERTY,
+                            props.put(BlueprintConstants.CONTAINER_VERSION_PROPERTY,
                                       bundleContext.getBundle().getHeaders().get(Constants.BUNDLE_VERSION));
                             registration = bundleContext.registerService(BlueprintContainer.class.getName(), this, props);
                             sender.sendCreated(getBundleContext().getBundle());

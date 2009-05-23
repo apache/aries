@@ -28,12 +28,10 @@ public class BlueprintConstants  {
     
     public static final String BUNDLE_VERSION = "bundle.version";
     
-    public static final String SERVICE_FILTER = "service.Filter";
-    
     public static final String COMPONENT_NAME_PROPERTY = "osgi.service.blueprint.compname";
     
-    public static final String CONTEXT_SYMBOLIC_NAME_PROPERTY = "osgi.blueprint.container.symbolicname";
+    public static final String CONTAINER_SYMBOLIC_NAME_PROPERTY = "osgi.blueprint.container.symbolicname";
     
-    public static final String CONTEXT_VERSION_PROPERTY = "osgi.blueprint.container.version";
-    
+    public static final String CONTAINER_VERSION_PROPERTY = "osgi.blueprint.container.version";
+
 }
