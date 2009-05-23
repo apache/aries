@@ -46,7 +46,6 @@ import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
 import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
 import org.apache.geronimo.blueprint.di.DefaultRepository;
 import org.apache.geronimo.blueprint.di.ExecutionContext;
-import org.apache.geronimo.blueprint.di.NoSuchObjectException;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.di.ReferenceNameRecipe;
 import org.apache.geronimo.blueprint.di.ReferenceRecipe;
@@ -57,7 +56,6 @@ import org.apache.geronimo.blueprint.utils.HeaderParser;
 import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintContainer;
@@ -93,7 +91,6 @@ import org.slf4j.LoggerFactory;
 public class BlueprintContainerImpl implements ExtendedBlueprintContainer, NamespaceHandlerRegistry.Listener, Runnable, SatisfiableRecipe.SatisfactionListener {
 
     public static final boolean BEHAVIOR_TCK_INJECTION = true;
-    public static final boolean BEHAVIOR_ENHANCED_LAZY_ACTIVATION = true;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContainerImpl.class);
 
@@ -104,8 +101,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         WaitForInitialReferences,
         InitialReferencesSatisfied,
         WaitForInitialReferences2,
-        InitialReferencesSatisfied2,
-        WaitForTrigger,
         Create,
         Created,
         Failed,
@@ -117,7 +112,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private final BlueprintEventSender sender;
     private final NamespaceHandlerRegistry handlers;
     private final List<URL> urls;
-    private final boolean lazyActivation;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
     private final AggregateConverter conversionService;
     private final ScheduledExecutorService executors;
@@ -129,10 +123,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private List<BeanProcessor> beanProcessors;
     private Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>();
     private Map<String, List<SatisfiableRecipe>> satisfiables;
-    private Map<ServiceMetadata, ServiceRegistrationProxy> services;
-    private boolean serviceActivation;
-    private Map<ServiceMetadata, TriggerService> triggerServices;
-    private long timeout = 5 * 60 * 1000; 
+    private long timeout = 5 * 60 * 1000;
     private boolean waitForDependencies = true;
     private ScheduledFuture timeoutFuture;
 
@@ -145,10 +136,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         this.conversionService = new AggregateConverter(this);
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
-        this.lazyActivation = lazyActivation;
-        this.triggerServices = new HashMap<ServiceMetadata, TriggerService>();
         this.beanProcessors = new ArrayList<BeanProcessor>();
-        this.services = Collections.synchronizedMap(new HashMap<ServiceMetadata, ServiceRegistrationProxy>());
     }
 
     public Bundle getExtenderBundle() {
@@ -282,7 +270,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         trackServiceReferences();
                         // Check references
                         if (checkAllSatisfiables() || !waitForDependencies) {
-                            state = State.InitialReferencesSatisfied2;
+                            state = State.Create;
                         } else {
                             sender.sendGracePeriod(getBundleContext().getBundle(), getMissingDependencies());
                             state = State.WaitForInitialReferences2;
@@ -290,25 +278,11 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         break;
                     case WaitForInitialReferences2:
                         if (checkAllSatisfiables()) {
-                            state = State.InitialReferencesSatisfied2;
+                            state = State.Create;
                             break;
                         } else {
                             return;
                         }
-                    case InitialReferencesSatisfied2:
-                        if (BEHAVIOR_ENHANCED_LAZY_ACTIVATION) {
-                            state = State.Create;
-                        } else {
-                            if (lazyActivation) {
-                                registerTriggerServices();
-                                state = State.WaitForTrigger;
-                            } else {
-                                state = State.Create;
-                            }
-                        }
-                        break;
-                    case WaitForTrigger:
-                        return;
                     case Create:
                         timeoutFuture.cancel(false);
                         instantiateEagerSingletonBeans();
@@ -520,24 +494,13 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             break;
                         }
                     }
-                    if (BEHAVIOR_ENHANCED_LAZY_ACTIVATION) {
-                        ServiceExportRecipe reg = (ServiceExportRecipe) getComponentInstance(name);
-                        if (satisfied && !reg.isRegistered()) {
-                            LOGGER.debug("Registering service {} due to satisfied references", name);
-                            reg.register();
-                        } else if (!satisfied && reg.isRegistered()) {
-                            LOGGER.debug("Unregistering service {} due to unsatisfied references", name);
-                            reg.unregister();
-                        }
-                    } else {
-                        ServiceRegistrationProxy reg = (ServiceRegistrationProxy) getComponentInstance(name);
-                        if (satisfied && !reg.isRegistered()) {
-                            LOGGER.debug("Registering service {} due to satisfied references", name);
-                            reg.register();
-                        } else if (!satisfied && reg.isRegistered()) {
-                            LOGGER.debug("Unregistering service {} due to unsatisfied references", name);
-                            reg.unregister();
-                        }
+                    ServiceExportRecipe reg = (ServiceExportRecipe) getComponentInstance(name);
+                    if (satisfied && !reg.isRegistered()) {
+                        LOGGER.debug("Registering service {} due to satisfied references", name);
+                        reg.register();
+                    } else if (!satisfied && reg.isRegistered()) {
+                        LOGGER.debug("Unregistering service {} due to unsatisfied references", name);
+                        reg.unregister();
                     }
                 }
             }
@@ -555,25 +518,21 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                     components.add(name);
                 }
             } else {
-                if (BEHAVIOR_ENHANCED_LAZY_ACTIVATION) {
-                    if (component instanceof ServiceMetadata) {
-                        List<SatisfiableRecipe> dependencies = getSatisfiableDependenciesMap().get(name);
-                        boolean satisfied = true;
-                        if (dependencies != null) {
-                            for (SatisfiableRecipe recipe : dependencies) {
-                                if (!recipe.isSatisfied()) {
-                                    satisfied = false;
-                                    break;
-                                }
+                if (component instanceof ServiceMetadata) {
+                    List<SatisfiableRecipe> dependencies = getSatisfiableDependenciesMap().get(name);
+                    boolean satisfied = true;
+                    if (dependencies != null) {
+                        for (SatisfiableRecipe recipe : dependencies) {
+                            if (!recipe.isSatisfied()) {
+                                satisfied = false;
+                                break;
                             }
                         }
-                        if (satisfied) {
-                            Recipe r = ((DefaultRepository) instantiator.getRepository()).getRecipe(name);
-                            ((ServiceExportRecipe) r).register();
-                        }
-                        components.add(name);
                     }
-                } else {
+                    if (satisfied) {
+                        Recipe r = ((DefaultRepository) instantiator.getRepository()).getRecipe(name);
+                        ((ServiceExportRecipe) r).register();
+                    }
                     components.add(name);
                 }
             }
@@ -617,68 +576,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         return missing.toArray(new String[missing.size()]);
     }
     
-    protected void registerService(ServiceRegistrationProxy registration) { 
-        ServiceMetadata metadata = registration.getMetadata();
-        if (services.put(metadata, registration) != null) {
-            LOGGER.warn("Service for this metadata is already registered {}", metadata);
-        }
-    }
-        
-    private void unregisterServices() {
-        for (ServiceRegistrationProxy proxy : services.values()) {
-            proxy.unregister();
-        }
-    }
-        
-    private void registerTriggerServices() {
-        boolean createNewContext = !ExecutionContext.isContextSet();
-        if (createNewContext) {
-            ExecutionContext.setContext(new DefaultExecutionContext(this, instantiator.getRepository()));
-        }
-        try {
-            for (ServiceMetadata service : getMetadata(ServiceMetadata.class)) {
-                // Trigger services are only created for services without listeners and explicitly defined interface classes
-                if (service.getRegistrationListeners().isEmpty() && !service.getInterfaceNames().isEmpty()) {
-                    TriggerService triggerService = new TriggerService(service, this);
-                    triggerService.register();
-                    triggerServices.put(service, triggerService);
-                }
-            }
-        } finally {
-            if (createNewContext) {
-                ExecutionContext.setContext(null);
-            }
-        }
-    }
-    
-    private void unregisterTriggerServices() {
-        for (TriggerService service : triggerServices.values()) {
-            service.unregister();
-        }
-        triggerServices.clear();
-    }
-        
-    protected TriggerService removeTriggerService(ServiceMetadata metadata) {
-        return triggerServices.remove(metadata);
-    }
-    
-    protected void forceActivation(boolean serviceActivation) throws BundleException {
-        this.serviceActivation = serviceActivation;
-        getBundleContext().getBundle().start(Bundle.START_TRANSIENT);
-    }
-    
-    public synchronized void triggerActivation() {
-        if (!lazyActivation) {
-            throw new IllegalStateException("triggerActivation can only be called for bundles with lazy activation policy");
-        }
-        if (state == State.WaitForTrigger) {
-            LOGGER.debug("Activation triggered (service activation: {})", serviceActivation); 
-            state = State.Create;
-            // service triggered activation runs synchronously but classloader triggered activation runs asynchronously
-            run(serviceActivation ? false : true);
-        }
-    }
-    
     public Set<String> getComponentIds() {
         return componentDefinitionRegistry.getComponentDefinitionNames();
     }
@@ -690,8 +587,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         try {
             LOGGER.debug("Instantiating component {}", id);
             return instantiator.create(id);
-        } catch (NoSuchObjectException e) {
-            throw new NoSuchComponentException(id);
         } catch (ComponentDefinitionException e) {
             throw e;
         } catch (Throwable t) {
@@ -796,10 +691,9 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         if (registration != null) {
             registration.unregister();
         }
-        handlers.removeListener(this);        
+        handlers.removeListener(this);
+        // TODO: unregister services
         untrackServiceReferences();
-        unregisterServices();  
-        unregisterTriggerServices();
         destroyComponents();
         
         sender.sendDestroyed(getBundleContext().getBundle());
@@ -814,8 +708,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
     public synchronized void namespaceHandlerUnregistered(URI uri) {
         if (namespaces != null && namespaces.contains(uri)) {
-            unregisterServices();
             destroyComponents();
+            // TODO: unregister services
             // TODO: stop all reference / collections
             // TODO: clear the repository
             state = State.WaitForNamespaceHandlers;

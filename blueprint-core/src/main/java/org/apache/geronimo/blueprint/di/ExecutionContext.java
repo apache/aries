@@ -18,9 +18,7 @@
 package org.apache.geronimo.blueprint.di;
 
 import java.lang.reflect.Type;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public abstract class ExecutionContext {
 
@@ -59,14 +57,6 @@ public abstract class ExecutionContext {
     public abstract Recipe pop();
 
     /**
-     * Gets a snapshot of the current execution stack.  The returned list is
-     * a snapshot so any modification of the returned list does not modify
-     * the stack contained in this object.
-     * @return a snapshot of the current execution stack
-     */
-    public abstract LinkedList<Recipe> getStack();
-
-    /**
      * Does this context contain a object with the specified name.
      *
      * @param name the unique name of the object instance
@@ -87,27 +77,11 @@ public abstract class ExecutionContext {
      *
      * @param name the unique name of the object instance
      * @param object the object instance
-     * @throws ConstructionException if another object instance is already registered with the name
+     * @throws org.osgi.service.blueprint.container.ComponentDefinitionException if another object instance is already registered with the name
      */
     public abstract void addObject(String name, Object object, boolean partialObject);
     
     public abstract void addObject(String name, Object object);
-
-    /**
-     * Adds a reference to an object to this context.  If an object is already registered under
-     * the referenced name, the reference will immedately be set.  Otherwise, the reference will be set
-     * when an object is added with the referenced name.
-     *
-     * @param reference the reference to set
-     */
-    public abstract void addReference(Reference reference);
-
-    /**
-     * Gets the unresolved references by name.
-     *
-     * @return the unresolved references by name
-     */
-    public abstract Map<String, List<Reference>> getUnresolvedRefs();
 
     public abstract boolean containsCreatedObject(String name);
     

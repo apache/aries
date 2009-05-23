@@ -20,6 +20,9 @@ package org.apache.geronimo.blueprint.di;
 import java.util.Collections;
 import java.util.List;
 
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.NoSuchComponentException;
+
 /*
  * The ReferenceNameRecipe is used to inject the reference name into the object (as a String).
  * The ReferenceNameRecipe ensures the actual reference object exists before the reference name is injected. 
@@ -38,11 +41,11 @@ public class ReferenceNameRecipe extends AbstractRecipe {
 
     private Object getReference() {
         if (referenceName == null) {
-            throw new ConstructionException("Reference name has not been set");
+            throw new ComponentDefinitionException("Reference name has not been set");
         }
         ExecutionContext context = ExecutionContext.getContext();
         if (!context.containsObject(referenceName)) {
-            throw new NoSuchObjectException(referenceName);
+            throw new NoSuchComponentException(referenceName);
         }
         return context.getObject(referenceName);
     }
@@ -57,11 +60,7 @@ public class ReferenceNameRecipe extends AbstractRecipe {
         }
     }
 
-    public List<Recipe> getConstructorRecipes() {
-        return getNestedRecipes();
-    }
-
-    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
+    protected Object internalCreate() throws ComponentDefinitionException {
         Object object = getReference();
         return referenceName;
     }

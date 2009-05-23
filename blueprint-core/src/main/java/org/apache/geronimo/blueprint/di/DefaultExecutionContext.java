@@ -24,8 +24,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
@@ -52,11 +50,6 @@ public class DefaultExecutionContext extends ExecutionContext {
      * map of the caller's unset properties)
      */
     private final LinkedList<Recipe> stack = new LinkedList<Recipe>();
-
-    /**
-     * The unresolved references by name.
-     */
-    private final SortedMap<String, List<Reference>> unresolvedRefs = new TreeMap<String, List<Reference>>();
 
     public DefaultExecutionContext(ExtendedBlueprintContainer blueprintContainer) {
         this(blueprintContainer, new DefaultRepository());
@@ -119,14 +112,6 @@ public class DefaultExecutionContext extends ExecutionContext {
 
     public void addObject(String name, Object object) {
         repository.add(name, object);
-
-        // set any pending references
-        List<Reference> list = unresolvedRefs.remove(name);
-        if (list != null) {
-            for (Reference Reference : list) {
-                Reference.set(object);
-            }
-        }
     }
 
     public void addObject(String name, Object object, boolean partialObject) {
@@ -158,24 +143,6 @@ public class DefaultExecutionContext extends ExecutionContext {
 
     public List<Recipe> getCreatedRecipes() {
         return createdRecipes;
-    }
-
-    public void addReference(Reference reference) {
-        Object value = repository.get(reference.getName());
-        if (value != null && !(value instanceof Recipe)) {
-            reference.set(value);
-        } else {
-            List<Reference> list = unresolvedRefs.get(reference.getName());
-            if (list == null) {
-                list = new ArrayList<Reference>();
-                unresolvedRefs.put(reference.getName(), list);
-            }
-            list.add(reference);
-        }
-    }
-
-    public SortedMap<String, List<Reference>> getUnresolvedRefs() {
-        return unresolvedRefs;
     }
 
     public Object convert(Object value, Type type) throws Exception {

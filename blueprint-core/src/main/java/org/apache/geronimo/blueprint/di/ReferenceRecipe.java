@@ -20,6 +20,9 @@ package org.apache.geronimo.blueprint.di;
 import java.util.Collections;
 import java.util.List;
 
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.NoSuchComponentException;
+
 public class ReferenceRecipe extends AbstractRecipe {
     private String referenceName;
 
@@ -38,7 +41,7 @@ public class ReferenceRecipe extends AbstractRecipe {
     public List<Recipe> getNestedRecipes() {
         ExecutionContext context = ExecutionContext.getContext();
         if (!context.containsObject(referenceName)) {
-            throw new NoSuchObjectException(referenceName);
+            throw new NoSuchComponentException(referenceName);
         }
 
         Object object = ExecutionContext.getContext().getObject(referenceName);
@@ -49,83 +52,31 @@ public class ReferenceRecipe extends AbstractRecipe {
         return Collections.emptyList();
     }
 
-    public List<Recipe> getConstructorRecipes() {
-        return getNestedRecipes();
-    }
-
-    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
+    protected Object internalCreate() throws ComponentDefinitionException {
         if (referenceName == null) {
-            throw new ConstructionException("Reference name has not been set");
+            throw new ComponentDefinitionException("Reference name has not been set");
         }
 
         ExecutionContext context = ExecutionContext.getContext();
 
         Object object;
         if (!context.containsObject(referenceName)) {
-            if (!lazyRefAllowed) {
-                throw new ConstructionException("Currently no object registered with name " + referenceName +
-                        " and a lazy reference not allowed");
-            }
-
-            Reference reference = new Reference(referenceName);
-            context.addReference(reference);
-            object = reference;
+            throw new ComponentDefinitionException("Currently no object registered with name " + referenceName +
+                    " and a lazy reference not allowed");
         } else {
             object = context.getObject(referenceName);
             if (object instanceof Recipe) {
-                if (lazyRefAllowed) {
-                    Reference reference = new Reference(referenceName);
-                    context.addReference(reference);
-                    object = reference;
-                } else {
-                    Recipe recipe = (Recipe) object;
-                    object = recipe.create(false);
-                }
-
+                Recipe recipe = (Recipe) object;
+                object = recipe.create();
             }
         }
 
         // add to execution container if name is specified
         if (getName() != null) {
-            if (object instanceof Reference) {
-                object = new WrapperReference(getName(), (Reference) object);
-            } else {
-                ExecutionContext.getContext().addObject(getName(), object);
-            }
+            ExecutionContext.getContext().addObject(getName(), object);
         }
 
         return object;
     }
 
-    private static class WrapperReference extends Reference {
-        private final Reference delegate;
-
-        private WrapperReference(String name, Reference delegate) {
-            super(name);
-            this.delegate = delegate;
-        }
-
-        public boolean isResolved() {
-            return delegate.isResolved();
-        }
-
-        public Object get() {
-            return delegate.get();
-        }
-
-        public void set(Object object) {
-            if (isResolved()) {
-                throw new ConstructionException("Reference has already been resolved");
-            }
-
-            // add to execution container
-            ExecutionContext.getContext().addObject(getName(), object);
-
-            delegate.set(object);
-        }
-
-        public void setAction(Action action) {
-            delegate.setAction(action);
-        }
-    }
 }

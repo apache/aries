@@ -19,7 +19,9 @@ package org.apache.geronimo.blueprint.di;
 
 import java.util.List;
 
-public class CircularDependencyException extends ConstructionException {
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
+
+public class CircularDependencyException extends ComponentDefinitionException {
     private final List<Recipe> circularDependency;
 
     public CircularDependencyException(List<Recipe> circularDependency) {

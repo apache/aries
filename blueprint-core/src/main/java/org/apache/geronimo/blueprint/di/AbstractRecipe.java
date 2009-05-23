@@ -19,22 +19,17 @@ package org.apache.geronimo.blueprint.di;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.geronimo.blueprint.Destroyable;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 public abstract class AbstractRecipe implements Recipe {
 
-    private static final AtomicLong ID = new AtomicLong(1);
-
-    private final long id;
     private String name;
     protected Boolean allowPartial;
 
     protected AbstractRecipe() {
-        this.id = ID.getAndIncrement();
     }
 
     public String getName() {
@@ -46,11 +41,7 @@ public abstract class AbstractRecipe implements Recipe {
         this.name = name;
     }
 
-    public Object create() throws ConstructionException {
-        return create(false);
-    }
-
-    public final Object create(boolean lazyRefAllowed) throws ConstructionException {
+    public final Object create() throws ComponentDefinitionException {
         // Ensure a container has been set
         ExecutionContext context = ExecutionContext.getContext();
 
@@ -63,7 +54,7 @@ public abstract class AbstractRecipe implements Recipe {
         // execute the recipe
         context.push(this);
         try {
-            return internalCreate(lazyRefAllowed);
+            return internalCreate();
         } finally {
             Recipe popped = context.pop();
             if (popped != this) {
@@ -74,7 +65,7 @@ public abstract class AbstractRecipe implements Recipe {
         }
     }
 
-    protected abstract Object internalCreate(boolean lazyRefAllowed) throws ConstructionException;
+    protected abstract Object internalCreate() throws ComponentDefinitionException;
 
     public void postCreate() {
     }
@@ -88,7 +79,7 @@ public abstract class AbstractRecipe implements Recipe {
     }
     
     private boolean isAllowPartial() {
-        return (allowPartial == null) ? true : allowPartial.booleanValue();
+        return (allowPartial == null) || allowPartial;
     }
     
     protected void addObject(Object obj, boolean partial) {
@@ -105,20 +96,15 @@ public abstract class AbstractRecipe implements Recipe {
         return new ArrayList<Recipe>();
     }
 
-    public List<Recipe> getConstructorRecipes() {
-        return Collections.emptyList();
-    }
-
     public String toString() {
         if (name != null) {
             return name;
         }
-
         String string = getClass().getSimpleName();
         if (string.endsWith("Recipe")) {
             string = string.substring(0, string.length() - "Recipe".length());
         }
-        return string + "@" + id;
+        return string;
     }
 
     protected Object convert(Object obj, Type type) throws Exception {
@@ -129,7 +115,7 @@ public abstract class AbstractRecipe implements Recipe {
         try {
             return ExecutionContext.getContext().loadClass(className);
         } catch (ClassNotFoundException e) {
-            throw new ConstructionException(e);
+            throw new ComponentDefinitionException(e);
         }
     }
 

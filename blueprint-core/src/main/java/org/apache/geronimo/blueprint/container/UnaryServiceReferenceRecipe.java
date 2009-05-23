@@ -23,7 +23,6 @@ import java.lang.reflect.Type;
 import net.sf.cglib.proxy.Dispatcher;
 import org.apache.geronimo.blueprint.BlueprintEventSender;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
-import org.apache.geronimo.blueprint.di.ConstructionException;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.apache.geronimo.blueprint.utils.TypeUtils;
@@ -62,7 +61,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     }
 
     @Override
-    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
+    protected Object internalCreate() throws ComponentDefinitionException {
         try {
             // Create the proxy
             proxy = createProxy(new ServiceDispatcher(), this.metadata.getInterfaceNames());
@@ -79,7 +78,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             // Return a ServiceProxy that can injection of references or proxies can be done correctly
             return new ServiceProxyWrapper();
         } catch (Throwable t) {
-            throw new ConstructionException(t);
+            throw new ComponentDefinitionException(t);
         }
     }
 

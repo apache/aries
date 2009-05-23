@@ -20,6 +20,7 @@ package org.apache.geronimo.blueprint.di;
 
 import java.lang.reflect.Type;
 
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 /**
@@ -41,7 +42,7 @@ public class ValueRecipe extends AbstractRecipe {
     }
 
     @Override
-    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
+    protected Object internalCreate() throws ComponentDefinitionException {
         try {
             Type type = Object.class;
             if (this.type instanceof Type) {
@@ -51,7 +52,7 @@ public class ValueRecipe extends AbstractRecipe {
             }
             return convert(value.getStringValue(), type);
         } catch (Exception e) {            
-            throw new ConstructionException(e);
+            throw new ComponentDefinitionException(e);
         }
     }
 

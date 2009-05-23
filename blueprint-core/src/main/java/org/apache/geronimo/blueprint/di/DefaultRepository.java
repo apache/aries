@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.geronimo.blueprint.Destroyable;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
  * 
@@ -85,7 +86,7 @@ public class DefaultRepository implements Repository {
 
     public void add(String name, Object instance) {
         if (instances.get(name) != null) {
-            throw new ConstructionException("Name " + name + " is already registered to instance " + instances.get(name));
+            throw new ComponentDefinitionException("Name " + name + " is already registered to instance " + instances.get(name));
         }
         if (instance instanceof Recipe) {
             recipes.put(name, (Recipe) instance);

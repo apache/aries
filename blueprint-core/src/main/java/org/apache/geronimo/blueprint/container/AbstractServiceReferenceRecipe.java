@@ -34,7 +34,6 @@ import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.BlueprintEventSender;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
-import org.apache.geronimo.blueprint.di.ConstructionException;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.BundleDelegatingClassLoader;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
@@ -42,6 +41,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.slf4j.Logger;
@@ -162,7 +162,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 listeners = Collections.emptyList();
             }
         } catch (ClassNotFoundException e) {
-            throw new ConstructionException(e);
+            throw new ComponentDefinitionException(e);
         }
     }
 
@@ -211,7 +211,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                         continue;
                     }
                 }
-                throw new ConstructionException("Classes " + root.getClass().getName() + " and " + clazz.getName() + " are not in the same hierarchy");
+                throw new ComponentDefinitionException("Classes " + root.getClass().getName() + " and " + clazz.getName() + " are not in the same hierarchy");
             }
         }
         return root;
@@ -220,6 +220,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected Object createProxy(Dispatcher dispatcher, Iterable<String> interfaces) throws Exception {
         // TODO: we only use cglib for this small piece of code, we might want to use asm directly to
         //       lower the number of dependencies / reduce size of jars
+        //       or have an optional import an asm / cglib and use JDK proxies if not present
+        //       also, check what the spec will say about that (optional imports could be fine if
+        //       the spec does not mandate support for classes proxying
         Enhancer e = new Enhancer();
         e.setClassLoader(proxyClassLoader);
         e.setSuperclass(getTargetClass(interfaces));
@@ -295,7 +298,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                     bindMethodsTwoArgs.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, bindName, new Class[] { clazz, Map.class }));
                 }
                 if (bindMethodsOneArg.size() + bindMethodsTwoArgs.size() == 0) {
-                    throw new ConstructionException("No matching methods found for listener bind method: " + bindName);
+                    throw new ComponentDefinitionException("No matching methods found for listener bind method: " + bindName);
                 }
             }
             String unbindName = metadata.getUnbindMethodName();
@@ -305,7 +308,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                     unbindMethodsTwoArgs.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, unbindName, new Class[] { clazz, Map.class }));
                 }
                 if (unbindMethodsOneArg.size() + unbindMethodsTwoArgs.size() == 0) {
-                    throw new ConstructionException("No matching methods found for listener bind method: " + bindName);
+                    throw new ComponentDefinitionException("No matching methods found for listener bind method: " + bindName);
                 }
             }
         }

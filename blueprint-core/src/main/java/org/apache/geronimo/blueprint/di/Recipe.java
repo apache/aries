@@ -19,6 +19,7 @@ package org.apache.geronimo.blueprint.di;
 import java.util.List;
 
 import org.apache.geronimo.blueprint.Destroyable;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
  * @version $Rev: 6680 $ $Date: 2005-12-24T04:38:27.427468Z $
@@ -27,12 +28,9 @@ public interface Recipe {
 
     String getName();
 
-    Object create() throws ConstructionException;
-    Object create(boolean lazyRefAllowed) throws ConstructionException;
+    Object create() throws ComponentDefinitionException;
 
     List<Recipe> getNestedRecipes();
-
-    List<Recipe> getConstructorRecipes();
 
     Destroyable getDestroyable(Object instance);
 
