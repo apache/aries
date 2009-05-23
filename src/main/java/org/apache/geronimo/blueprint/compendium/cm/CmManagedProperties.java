@@ -35,7 +35,6 @@ import java.util.Set;
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
-import org.apache.geronimo.blueprint.di.MissingAccessorException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -181,7 +180,6 @@ public class CmManagedProperties implements BeanProcessor {
                     if (key.length() > 0) {
                         setterName += key.substring(1);
                     }
-                    MissingAccessorException missException = null;
                     Set<Method> validSetters = new LinkedHashSet<Method>();
                     List<Method> methods = new ArrayList<Method>(Arrays.asList(bean.getClass().getMethods()));
                     methods.addAll(Arrays.asList(bean.getClass().getDeclaredMethods()));
