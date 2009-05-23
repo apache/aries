@@ -55,7 +55,6 @@ import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
-import org.osgi.framework.Bundle;
 
 /**
  * TODO: javadoc
@@ -128,7 +127,7 @@ public class RecipeBuilder {
             comparatorRecipe = getValue(metadata.getComparator(), Comparator.class);
         }
         CollectionBasedServiceReferenceRecipe recipe = new CollectionBasedServiceReferenceRecipe(
-                blueprintContainer,
+                                                                   blueprintContainer,
                                                                    blueprintContainer.getSender(),
                                                                    metadata,
                                                                    listenersRecipe,
@@ -154,49 +153,21 @@ public class RecipeBuilder {
     }
 
     private Recipe createServiceRecipe(ServiceMetadata serviceExport) throws Exception {
-        if (BlueprintContainerImpl.BEHAVIOR_ENHANCED_LAZY_ACTIVATION) {
-            CollectionRecipe listenersRecipe = new CollectionRecipe(ArrayList.class);
-            if (serviceExport.getRegistrationListeners() != null) {
-                for (RegistrationListener listener : serviceExport.getRegistrationListeners()) {
-                    listenersRecipe.add(createRecipe(listener));
-                }
+        CollectionRecipe listenersRecipe = new CollectionRecipe(ArrayList.class);
+        if (serviceExport.getRegistrationListeners() != null) {
+            for (RegistrationListener listener : serviceExport.getRegistrationListeners()) {
+                listenersRecipe.add(createRecipe(listener));
             }
-            listenersRecipe.setName(getName(null));
-            ServiceExportRecipe recipe = new ServiceExportRecipe(
-                    blueprintContainer,
-                    serviceExport,
-                    getValue(serviceExport.getServiceComponent(), null),
-                    listenersRecipe,
-                    (MapRecipe) getServicePropertiesRecipe(serviceExport));
-            recipe.setName(getName(serviceExport.getId()));
-            return recipe;
-        } else {
-            BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, ServiceRegistrationProxy.class);
-            recipe.setName(getName(serviceExport.getId()));
-            recipe.setExplicitDependencies(serviceExport.getExplicitDependencies());
-            recipe.setInitMethod("init");
-            recipe.setProperty("blueprintContainer", blueprintContainer);
-            BeanMetadata exportedComponent = getLocalServiceComponent(serviceExport.getServiceComponent());
-            if (exportedComponent != null && BeanMetadata.SCOPE_BUNDLE.equals(exportedComponent.getScope())) {
-                BlueprintObjectRecipe exportedComponentRecipe = createBeanRecipe(exportedComponent);
-                recipe.setProperty("service", new BundleScopeServiceFactory(blueprintContainer, exportedComponentRecipe));
-            } else {
-                recipe.setProperty("service", getValue(serviceExport.getServiceComponent(), null));
-            }
-            recipe.setProperty("metadata", serviceExport);
-            Recipe propertiesRecipe = getServicePropertiesRecipe(serviceExport);
-            if (propertiesRecipe != null) {
-                recipe.setProperty("serviceProperties", propertiesRecipe);
-            }
-            if (serviceExport.getRegistrationListeners() != null) {
-                CollectionRecipe listenersRecipe = new CollectionRecipe(ArrayList.class);
-                for (RegistrationListener listener : serviceExport.getRegistrationListeners()) {
-                    listenersRecipe.add(createRecipe(listener));
-                }
-                recipe.setProperty("listeners", listenersRecipe);
-            }
-            return recipe;
         }
+        listenersRecipe.setName(getName(null));
+        ServiceExportRecipe recipe = new ServiceExportRecipe(
+                blueprintContainer,
+                serviceExport,
+                getValue(serviceExport.getServiceComponent(), null),
+                listenersRecipe,
+                (MapRecipe) getServicePropertiesRecipe(serviceExport));
+        recipe.setName(getName(serviceExport.getId()));
+        return recipe;
     }
 
     protected Recipe getServicePropertiesRecipe(ServiceMetadata metadata) throws Exception {
@@ -254,19 +225,11 @@ public class RecipeBuilder {
     }
 
     private Recipe createRecipe(RegistrationListener listener) throws Exception {
-        if (BlueprintContainerImpl.BEHAVIOR_ENHANCED_LAZY_ACTIVATION) {
-            BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, ServiceExportRecipe.Listener.class);
-            recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
-            recipe.setProperty("metadata", listener);
-            recipe.setName(getName(null));
-            return recipe;
-        } else {
-            BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, ServiceRegistrationProxy.Listener.class);
-            recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
-            recipe.setProperty("metadata", listener);
-            recipe.setName(getName(null));
-            return recipe;
-        }
+        BlueprintObjectRecipe recipe = new BlueprintObjectRecipe(blueprintContainer, ServiceExportRecipe.Listener.class);
+        recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
+        recipe.setProperty("metadata", listener);
+        recipe.setName(getName(null));
+        return recipe;
     }
 
     private Recipe createRecipe(Listener listener) throws Exception {

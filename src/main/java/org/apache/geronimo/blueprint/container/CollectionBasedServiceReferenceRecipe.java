@@ -36,7 +36,6 @@ import net.sf.cglib.proxy.Dispatcher;
 import org.apache.geronimo.blueprint.BlueprintEventSender;
 import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
-import org.apache.geronimo.blueprint.di.ConstructionException;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.apache.geronimo.blueprint.utils.DynamicCollection;
@@ -78,7 +77,7 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
     }
 
     @Override
-    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
+    protected Object internalCreate() throws ComponentDefinitionException {
         Comparator comparator = null;
         try {
             if (comparatorRecipe != null) {
@@ -115,10 +114,10 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             addObject(collection, false);
 
             return collection;
-        } catch (ConstructionException t) {
+        } catch (ComponentDefinitionException t) {
             throw t;
         } catch (Throwable t) {
-            throw new ConstructionException(t);
+            throw new ComponentDefinitionException(t);
         }
     }
 

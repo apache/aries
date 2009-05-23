@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.osgi.service.blueprint.container.Converter;
 
@@ -44,10 +45,10 @@ import org.osgi.service.blueprint.container.Converter;
  */
 public class AggregateConverter implements Converter {
 
-    private BlueprintContainerImpl blueprintContainer;
+    private ExtendedBlueprintContainer blueprintContainer;
     private List<Converter> converters = new ArrayList<Converter>();
 
-    public AggregateConverter(BlueprintContainerImpl blueprintContainer) {
+    public AggregateConverter(ExtendedBlueprintContainer blueprintContainer) {
         this.blueprintContainer = blueprintContainer;
     }
 

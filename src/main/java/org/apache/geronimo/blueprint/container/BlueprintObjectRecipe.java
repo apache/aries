@@ -25,25 +25,21 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
-import org.apache.geronimo.blueprint.di.ConstructionException;
-import org.apache.geronimo.blueprint.di.Option;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.di.ReferenceRecipe;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +54,6 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
 
     private Object type;
     private final LinkedHashMap<String,Object> properties = new LinkedHashMap<String,Object>();
-    private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
 
     private boolean keepRecipe = false;
     private String initMethod;
@@ -76,19 +71,6 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
     public BlueprintObjectRecipe(ExtendedBlueprintContainer blueprintContainer, Object type) {
         this.blueprintContainer = blueprintContainer;
         this.type = type;
-        allow(Option.LAZY_ASSIGNMENT);
-    }
-
-    public void allow(Option option){
-        options.add(option);
-    }
-
-    public void disallow(Option option){
-        options.remove(option);
-    }
-
-    public Set<Option> getOptions() {
-        return Collections.unmodifiableSet(options);
     }
 
     public Object getProperty(String name) {
@@ -192,12 +174,12 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         if (explicitDependencies != null) {
             for (String name : explicitDependencies) {
                 Recipe recipe = new ReferenceRecipe(name);
-                recipe.create(false);
+                recipe.create();
             }
         }
     }
 
-    private Object getInstance(boolean refAllowed) throws ConstructionException {
+    private Object getInstance() throws ComponentDefinitionException {
         Object instance;
         
         // Instanciate arguments
@@ -207,7 +189,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
             for (int i = 0; i < arguments.size(); i++) {
                 Object arg = arguments.get(i);
                 if (arg instanceof Recipe) {
-                    args.add(((Recipe) arg).create(refAllowed));
+                    args.add(((Recipe) arg).create());
                 } else {
                     args.add(arg);
                 }
@@ -219,7 +201,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
 
         if (factory != null) {
             // look for instance method on factory object
-            Object factoryObj = factory.create(false);
+            Object factoryObj = factory.create();
             // Map of matching methods
             Map<Method, List<Object>> matches = findMatchingMethods(factoryObj.getClass(), factoryMethod, true, args, argTypes);
             if (matches.size() == 1) {
@@ -228,14 +210,14 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                     instance = match.getKey().invoke(factoryObj, match.getValue().toArray());
                 } catch (InvocationTargetException e) {
                     Throwable root = e.getTargetException();
-                    throw new ConstructionException("Error when instanciating bean " + getName() + " of class " + getType(), root);
+                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), root);
                 } catch (Throwable e) {
-                    throw new ConstructionException("Error when instanciating bean " + getName() + " of class " + getType(), e);
+                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), e);
                 }
             } else if (matches.size() == 0) {
-                throw new ConstructionException("Unable to find a matching factory method " + factoryMethod + " on class " + factoryObj.getClass() + " for arguments " + args + " when instanciating bean " + getName());
+                throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + factoryObj.getClass() + " for arguments " + args + " when instanciating bean " + getName());
             } else {
-                throw new ConstructionException("Multiple matching factory methods " + factoryMethod + " found on class " + factoryObj.getClass() + " for arguments " + args + " when instanciating bean " + getName());
+                throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + factoryObj.getClass() + " for arguments " + args + " when instanciating bean " + getName());
             }
         } else if (factoryMethod != null) {
             // Map of matching methods
@@ -246,18 +228,18 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                     instance = match.getKey().invoke(null, match.getValue().toArray());
                 } catch (InvocationTargetException e) {
                     Throwable root = e.getTargetException();
-                    throw new ConstructionException("Error when instanciating bean " + getName() + " of class " + getType(), root);
+                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), root);
                 } catch (Throwable e) {
-                    throw new ConstructionException("Error when instanciating bean " + getName() + " of class " + getType(), e);
+                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), e);
                 }
             } else if (matches.size() == 0) {
-                throw new ConstructionException("Unable to find a matching factory method " + factoryMethod + " on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
+                throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
             } else {
-                throw new ConstructionException("Multiple matching factory methods " + factoryMethod + " found on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
+                throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
             }
         } else {
             if (getType() == null) {
-                throw new ConstructionException("No factoryMethod nor class is defined for this bean"); 
+                throw new ComponentDefinitionException("No factoryMethod nor class is defined for this bean");
             }
             // Map of matching constructors
             Map<Constructor, List<Object>> matches = findMatchingConstructors(getType(), args, argTypes);
@@ -267,14 +249,14 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                     instance = match.getKey().newInstance(match.getValue().toArray());
                 } catch (InvocationTargetException e) {
                     Throwable root = e.getTargetException();
-                    throw new ConstructionException("Error when instanciating bean " + getName() + " of class " + getType(), root);
+                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), root);
                 } catch (Throwable e) {
-                    throw new ConstructionException("Error when instanciating bean " + getName() + " of class " + getType(), e);
+                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), e);
                 }
             } else if (matches.size() == 0) {
-                throw new ConstructionException("Unable to find a matching constructor on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
+                throw new ComponentDefinitionException("Unable to find a matching constructor on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
             } else {
-                throw new ConstructionException("Multiple matching constructors found on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
+                throw new ComponentDefinitionException("Multiple matching constructors found on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
             }
         }
         
@@ -490,12 +472,12 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
      * Returns init method (if any). Throws exception if the init-method was set explicitly on the bean
      * and the method is not found on the instance.
      */
-    protected Method getInitMethod(Object instance) throws ConstructionException {
+    protected Method getInitMethod(Object instance) throws ComponentDefinitionException {
         Method method = null;        
         if (initMethod != null && initMethod.length() > 0) {
             method = ReflectionUtils.getLifecycleMethod(instance.getClass(), initMethod);
             if (method == null) {
-                throw new ConstructionException("Component '" + getName() + "' does not have init-method: " + initMethod);
+                throw new ComponentDefinitionException("Component '" + getName() + "' does not have init-method: " + initMethod);
             }
         }
         return method;
@@ -505,28 +487,23 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
      * Returns destroy method (if any). Throws exception if the destroy-method was set explicitly on the bean
      * and the method is not found on the instance.
      */
-    public Method getDestroyMethod(Object instance) throws ConstructionException {
+    public Method getDestroyMethod(Object instance) throws ComponentDefinitionException {
         Method method = null;        
         if (destroyMethod != null && destroyMethod.length() > 0) {
             method = ReflectionUtils.getLifecycleMethod(instance.getClass(), destroyMethod);
             if (method == null) {
-                throw new ConstructionException("Component '" + getName() + "' does not have destroy-method: " + destroyMethod);
+                throw new ComponentDefinitionException("Component '" + getName() + "' does not have destroy-method: " + destroyMethod);
             }
         }
         return method;
     }
     
     @Override
-    public List<Recipe> getConstructorRecipes() {
-        return getNestedRecipes();
-    }
-    
-    @Override
-    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
+    protected Object internalCreate() throws ComponentDefinitionException {
         
         instantiateExplicitDependencies();
 
-        Object obj = getInstance(lazyRefAllowed);
+        Object obj = getInstance();
                 
         // check for init lifecycle method (if any)
         Method initMethod = getInitMethod(obj);
@@ -556,7 +533,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                 initMethod.invoke(obj);
             } catch (InvocationTargetException e) {
                 Throwable root = e.getTargetException();
-                throw new ConstructionException("init-method generated exception", root);
+                throw new ComponentDefinitionException("init-method generated exception", root);
             } catch (Exception e) {
                 LOGGER.info("Error invoking init method", e);
             }
@@ -597,7 +574,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         }
     }
 
-    public void setProperties(Object instance) throws ConstructionException {
+    public void setProperties(Object instance) throws ComponentDefinitionException {
         // clone the properties so they can be used again
         Map<String,Object> propertyValues = new LinkedHashMap<String,Object>(properties);
         setProperties(propertyValues, instance, instance.getClass());
@@ -640,10 +617,10 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                             t = invocationTargetException.getCause();
                         }
                     }
-                    throw new ConstructionException("Error getting property: " + names[i] + " on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName(), t);
+                    throw new ComponentDefinitionException("Error getting property: " + names[i] + " on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName(), t);
                 }
             } else {
-                throw new ConstructionException("No getter for " + names[i] + " property on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName());
+                throw new ComponentDefinitionException("No getter for " + names[i] + " property on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName());
             }
         }
         Method setter = getPropertyDescriptor(clazz, names[names.length - 1]).getSetter();
@@ -652,14 +629,14 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
             Type type = setter.getGenericParameterTypes()[0];
             // Instanciate value
             if (propertyValue instanceof Recipe) {
-                propertyValue = ((Recipe) propertyValue).create(false);
+                propertyValue = ((Recipe) propertyValue).create();
             }
             try {
                 propertyValue = convert(propertyValue, type);
             } catch (Exception e) {
                     String valueType = propertyValue == null ? "null" : propertyValue.getClass().getName();
                 String memberType = type instanceof Class ? ((Class) type).getName() : type.toString();
-                throw new ConstructionException("Unable to convert property value" +
+                throw new ComponentDefinitionException("Unable to convert property value" +
                         " from " + valueType +
                         " to " + memberType +
                         " for injection " + setter, e);
@@ -675,10 +652,10 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                         t = invocationTargetException.getCause();
                     }
                 }
-                throw new ConstructionException("Error setting property: " + setter, t);
+                throw new ComponentDefinitionException("Error setting property: " + setter, t);
             }
         } else {
-            throw new ConstructionException("No setter for " + names[names.length - 1] + " property");
+            throw new ComponentDefinitionException("No setter for " + names[names.length - 1] + " property");
         }
     }
 
@@ -688,7 +665,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
                 return pd;
             }
         }
-        throw new ConstructionException("Unable to find property descriptor " + name + " on class " + clazz.getName());
+        throw new ComponentDefinitionException("Unable to find property descriptor " + name + " on class " + clazz.getName());
     }
 
     private static Object UNMATCHED = new Object();

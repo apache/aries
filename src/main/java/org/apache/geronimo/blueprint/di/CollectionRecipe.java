@@ -20,7 +20,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +27,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.geronimo.blueprint.utils.TypeUtils;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
  * @version $Rev: 6685 $ $Date: 2005-12-28T00:29:37.967210Z $
@@ -35,19 +35,10 @@ import org.apache.geronimo.blueprint.utils.TypeUtils;
 public class CollectionRecipe extends AbstractRecipe {
     private final List<Recipe> list;
     private Class typeClass;
-    private final EnumSet<Option> options = EnumSet.noneOf(Option.class);
 
     public CollectionRecipe(Class type) {
         this.list = new ArrayList<Recipe>();
         this.typeClass = type;
-    }
-
-    public void allow(Option option) {
-        options.add(option);
-    }
-
-    public void disallow(Option option) {
-        options.remove(option);
     }
 
     public List<Recipe> getNestedRecipes() {
@@ -61,18 +52,11 @@ public class CollectionRecipe extends AbstractRecipe {
         return nestedRecipes;
     }
 
-    public List<Recipe> getConstructorRecipes() {
-        if (!options.contains(Option.LAZY_ASSIGNMENT)) {
-            return getNestedRecipes();
-        }
-        return Collections.emptyList();
-    }
-
-    protected Object internalCreate(boolean lazyRefAllowed) throws ConstructionException {
+    protected Object internalCreate() throws ComponentDefinitionException {
         Class type = getType(Object.class);
 
         if (!TypeUtils.hasDefaultConstructor(type)) {
-            throw new ConstructionException("Type does not have a default constructor " + type.getName());
+            throw new ComponentDefinitionException("Type does not have a default constructor " + type.getName());
         }
 
         // create collection instance
@@ -80,10 +64,10 @@ public class CollectionRecipe extends AbstractRecipe {
         try {
             o = type.newInstance();
         } catch (Exception e) {
-            throw new ConstructionException("Error while creating collection instance: " + type.getName());
+            throw new ComponentDefinitionException("Error while creating collection instance: " + type.getName());
         }
         if (!(o instanceof Collection)) {
-            throw new ConstructionException("Specified collection type does not implement the Collection interface: " + type.getName());
+            throw new ComponentDefinitionException("Specified collection type does not implement the Collection interface: " + type.getName());
         }
         Collection instance = (Collection) o;
 
@@ -92,35 +76,19 @@ public class CollectionRecipe extends AbstractRecipe {
             ExecutionContext.getContext().addObject(getName(), instance);
         }
 
-        boolean refAllowed = options.contains(Option.LAZY_ASSIGNMENT);
-
         int index = 0;
         for (Recipe recipe : list) {
             Object value;
             if (recipe != null) {
                 try {
-                    value = recipe.create(refAllowed);
+                    value = recipe.create();
                 } catch (Exception e) {
-                    throw new ConstructionException("Unable to convert value " + recipe + " to type " + type, e);
+                    throw new ComponentDefinitionException("Unable to convert value " + recipe + " to type " + type, e);
                 }
             } else {
                 value = null;
             }
-
-            if (value instanceof Reference) {
-                Reference reference = (Reference) value;
-                if (instance instanceof List) {
-                    // add a null place holder in the list that will be updated later
-                    //noinspection unchecked
-                    instance.add(null);
-                    reference.setAction(new UpdateList((List) instance, index));
-                } else {
-                    reference.setAction(new UpdateCollection(instance));
-                }
-            } else {
-                //noinspection unchecked
-                instance.add(value);
-            }
+            instance.add(value);
             index++;
         }
         return instance;
@@ -177,31 +145,4 @@ public class CollectionRecipe extends AbstractRecipe {
         return Collections.unmodifiableList(list);
     }
 
-    private static class UpdateCollection implements Reference.Action {
-        private final Collection collection;
-
-        public UpdateCollection(Collection collection) {
-            this.collection = collection;
-        }
-
-        @SuppressWarnings({"unchecked"})
-        public void onSet(Reference ref) {
-            collection.add(ref.get());
-        }
-    }
-
-    private static class UpdateList implements Reference.Action {
-        private final List list;
-        private final int index;
-
-        public UpdateList(List list, int index) {
-            this.list = list;
-            this.index = index;
-        }
-
-        @SuppressWarnings({"unchecked"})
-        public void onSet(Reference ref) {
-            list.set(index, ref.get());
-        }
-    }
 }

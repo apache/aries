@@ -104,8 +104,6 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
             BlueprintContainerImpl blueprintContainer = containers.get(bundle);
             if (blueprintContainer == null) {
                 checkBundle(bundle, false);
-            } else {
-                blueprintContainer.triggerActivation();
             }
         } else if (event.getType() == BundleEvent.STOPPING) {
             destroyContext(bundle);

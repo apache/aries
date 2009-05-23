@@ -39,7 +39,7 @@ public interface Repository {
      *
      * @param name the unique name of the object instance
      * @param object the object instance
-     * @throws ConstructionException if another object instance is already registered with the name
+     * @throws ComponentDefinitionException if another object instance is already registered with the name
      */
     void add(String name, Object object);
 }
