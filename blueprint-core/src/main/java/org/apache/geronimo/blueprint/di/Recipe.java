@@ -35,4 +35,7 @@ public interface Recipe {
     List<Recipe> getConstructorRecipes();
 
     Destroyable getDestroyable(Object instance);
+
+    void postCreate();
+
 }

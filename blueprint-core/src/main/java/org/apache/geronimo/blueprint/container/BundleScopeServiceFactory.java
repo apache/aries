@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.geronimo.blueprint.di.DefaultRepository;
-import org.apache.geronimo.blueprint.di.ObjectGraph;
 import org.apache.geronimo.blueprint.di.Repository;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
@@ -81,7 +80,7 @@ public class BundleScopeServiceFactory implements ServiceFactory {
         Repository objectRepository = blueprintContainer.getRepository();
         DefaultRepository repository = new DefaultRepository((DefaultRepository)objectRepository);
         repository.set(serviceRecipe.getName(), serviceRecipe);
-        ObjectGraph graph = new ObjectGraph(blueprintContainer, repository);
+        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(blueprintContainer, repository);
         return graph.create(serviceRecipe.getName());
     }
     

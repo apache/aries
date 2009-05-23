@@ -75,7 +75,10 @@ public abstract class AbstractRecipe implements Recipe {
     }
 
     protected abstract Object internalCreate(boolean lazyRefAllowed) throws ConstructionException;
-    
+
+    public void postCreate() {
+    }
+
     public void setAllowPartial(Boolean allowPartial) {
         this.allowPartial = allowPartial;
     }

@@ -112,18 +112,8 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             }
 
             // Add partially created collection to the container
-            addObject(collection, true);
-            
-            // Create the listeners and initialize them
-            createListeners();
-            
-            // Add fully created collection to the container
             addObject(collection, false);
 
-            // Start tracking the service
-            tracker.registerServiceListener(this);
-            retrack();
-            
             return collection;
         } catch (ConstructionException t) {
             throw t;
@@ -131,7 +121,17 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             throw new ConstructionException(t);
         }
     }
-    
+
+    @Override
+    public void postCreate() {
+        // Create the listeners and initialize them
+        createListeners();
+        // Start tracking the service
+        tracker.registerServiceListener(this);
+        // Retrack to inform listeners
+        retrack();
+    }
+
     public void stop() {
         super.stop();
         if (collection != null) {
@@ -158,8 +158,10 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
             synchronized (collection) {
                 collection.addDispatcher(dispatcher);
             }
-            for (Listener listener : listeners) {
-                listener.bind(dispatcher.reference, dispatcher.proxy);
+            if (listeners != null) {
+                for (Listener listener : listeners) {
+                    listener.bind(dispatcher.reference, dispatcher.proxy);
+                }
             }
         } catch (Throwable t) {
             LOGGER.info("Error tracking new service reference", t);
@@ -169,8 +171,10 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
     protected void untrack(ServiceReference reference) {
         ServiceDispatcher dispatcher = collection.findDispatcher(reference);
         if (dispatcher != null) {
-            for (Listener listener : listeners) {
-                listener.unbind(dispatcher.reference, dispatcher.proxy);
+            if (listeners != null) {
+                for (Listener listener : listeners) {
+                    listener.unbind(dispatcher.reference, dispatcher.proxy);
+                }
             }
             synchronized (collection) {
                 collection.removeDispatcher(dispatcher);

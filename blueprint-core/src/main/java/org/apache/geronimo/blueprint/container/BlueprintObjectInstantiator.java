@@ -22,6 +22,9 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.ArrayList;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.ConstructionException;
@@ -77,6 +80,18 @@ public class BlueprintObjectInstantiator  {
                     throw new ConstructionException("Unable to convert instance " + name, e);
                 }
                 instances.put(name, obj);
+                Set<Recipe> processed = new HashSet<Recipe>();
+                boolean modified;
+                do {
+                    modified = false;
+                    List<Recipe> recipes = new ArrayList<Recipe>(ExecutionContext.getContext().getCreatedRecipes());
+                    for (Recipe recipe : recipes) {
+                        if (processed.add(recipe)) {
+                            recipe.postCreate();
+                            modified = true;
+                        }
+                    }
+                } while (modified);
             } finally {
                 if (createNewContext) {
                     ExecutionContext context = ExecutionContext.getContext();

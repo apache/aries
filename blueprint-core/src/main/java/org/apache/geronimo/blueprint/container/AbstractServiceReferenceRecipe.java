@@ -151,14 +151,18 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return filter;
     }
 
-    protected void createListeners() throws ClassNotFoundException {
-        if (listenersRecipe != null) {
-            listeners = (List<Listener>) listenersRecipe.create();
-            for (Listener listener : listeners) {
-                listener.init(getAllClasses(metadata.getInterfaceNames()));
+    protected void createListeners() {
+        try {
+            if (listenersRecipe != null) {
+                listeners = (List<Listener>) listenersRecipe.create();
+                for (Listener listener : listeners) {
+                    listener.init(getAllClasses(metadata.getInterfaceNames()));
+                }
+            } else {
+                listeners = Collections.emptyList();
             }
-        } else {
-            listeners = Collections.emptyList();
+        } catch (ClassNotFoundException e) {
+            throw new ConstructionException(e);
         }
     }
 
