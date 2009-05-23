@@ -69,16 +69,11 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             proxyClass = proxy.getClass();
 
             // Add partially created proxy to the context
-            addObject(proxy, true);
-
-            // Create the listeners and initialize them
-            createListeners();
-
-            // Add fully created proxy to the context
             addObject(proxy, false);
 
-            // Start tracking the service
+            // Start track the service
             tracker.registerServiceListener(this);
+            // Handle initial references
             retrack();
 
             // Return a ServiceProxy that can injection of references or proxies can be done correctly
@@ -86,6 +81,14 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
         } catch (Throwable t) {
             throw new ConstructionException(t);
         }
+    }
+
+    @Override
+    public void postCreate() {
+        // Create the listeners and initialize them
+        createListeners();
+        // Retrack to inform listeners
+        retrack();
     }
 
     @Override
@@ -124,8 +127,10 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
             trackedServiceReference = ref;
             trackedService = null;
             monitor.notifyAll();
-            for (Listener listener : listeners) {
-                listener.bind(trackedServiceReference, proxy);
+            if (listeners != null) {
+                for (Listener listener : listeners) {
+                    listener.bind(trackedServiceReference, proxy);
+                }
             }
         }
     }
@@ -133,8 +138,10 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private void unbind() {
         synchronized (monitor) {
             if (trackedServiceReference != null) {
-                for (Listener listener : listeners) {
-                    listener.unbind(trackedServiceReference, proxy);
+                if (listeners != null) {
+                    for (Listener listener : listeners) {
+                        listener.unbind(trackedServiceReference, proxy);
+                    }
                 }
                 blueprintContainer.getBundleContext().ungetService(trackedServiceReference);
                 trackedServiceReference = null;

@@ -41,7 +41,9 @@ public class DefaultExecutionContext extends ExecutionContext {
     /**
      * Contains partial objects.
      */
-    private Map<String, Object> partialObjects = new HashMap<String, Object>();
+    private Map<String, Object> createdObjects = new HashMap<String, Object>();
+
+    private List<Recipe> createdRecipes = new ArrayList<Recipe>();
     
     /**
      * Before each recipe is executed it is pushed on the stack.  The
@@ -85,6 +87,7 @@ public class DefaultExecutionContext extends ExecutionContext {
             throw new CircularDependencyException(circularity);
         }
         stack.add(recipe);
+        createdRecipes.add(recipe);
     }
 
     public Recipe pop() {
@@ -127,12 +130,10 @@ public class DefaultExecutionContext extends ExecutionContext {
     }
 
     public void addObject(String name, Object object, boolean partialObject) {
-        if (partialObject) {
-            partialObjects.put(name, object);
-        } else {
+        createdObjects.put(name, object);
+        if (!partialObject) {
             addObject(name, object);
-            partialObjects.remove(name);
-        }        
+        }
     }
     
     public boolean containsCreatedObject(String name) {
@@ -142,7 +143,7 @@ public class DefaultExecutionContext extends ExecutionContext {
                 return true;
             }
         }
-        return partialObjects.containsKey(name);
+        return createdObjects.containsKey(name);
     }
     
     public Object getCreatedObject(String name) {
@@ -152,9 +153,13 @@ public class DefaultExecutionContext extends ExecutionContext {
                 return obj;
             }
         }
-        return partialObjects.get(name);
+        return createdObjects.get(name);
     }
-    
+
+    public List<Recipe> getCreatedRecipes() {
+        return createdRecipes;
+    }
+
     public void addReference(Reference reference) {
         Object value = repository.get(reference.getName());
         if (value != null && !(value instanceof Recipe)) {
