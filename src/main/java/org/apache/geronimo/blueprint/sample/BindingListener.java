@@ -17,6 +17,7 @@
 package org.apache.geronimo.blueprint.sample;
 
 import java.util.Map;
+import java.util.List;
 import java.io.Serializable;
 
 import org.osgi.framework.ServiceReference;
@@ -26,6 +27,7 @@ public class BindingListener {
     private InterfaceA a;
     private Map props;
     private ServiceReference reference;
+    private List list;
 
     public InterfaceA getA() {
         return a;
@@ -37,6 +39,17 @@ public class BindingListener {
 
     public ServiceReference getReference() {
         return reference;
+    }
+
+    public List getList() {
+        return list;
+    }
+
+    public void setList(List list) {
+        this.list = list;
+    }
+
+    public void init() {
     }
 
     public void bind(InterfaceA a, Map props) {

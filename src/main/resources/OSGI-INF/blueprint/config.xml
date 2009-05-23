@@ -83,5 +83,12 @@
 
     <bean id="listBindingListener" class="org.apache.geronimo.blueprint.sample.BindingListener"/>
 
+    <bean id="circularReference" class="org.apache.geronimo.blueprint.sample.BindingListener" init-method="init">
+        <property name="list">
+            <ref-list interface="org.apache.geronimo.blueprint.sample.InterfaceA" availability="optional">
+                <listener bind-method="bind" unbind-method="unbind" ref="circularReference"/>
+            </ref-list>
+        </property>
+    </bean>
 </blueprint>
 
