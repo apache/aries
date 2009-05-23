@@ -113,7 +113,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private final NamespaceHandlerRegistry handlers;
     private final List<URL> urls;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
-    private final AggregateConverter conversionService;
+    private final AggregateConverter converter;
     private final ScheduledExecutorService executors;
     private Set<URI> namespaces;
     private State state = State.Unknown;
@@ -133,7 +133,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         this.sender = sender;
         this.handlers = handlers;
         this.urls = urls;
-        this.conversionService = new AggregateConverter(this);
+        this.converter = new AggregateConverter(this);
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
         this.beanProcessors = new ArrayList<BeanProcessor>();
@@ -369,7 +369,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         Map<String, Object> objects = instantiator.createAll(typeConverters.toArray(new String[typeConverters.size()]));
         for (Object obj : objects.values()) {
             if (obj instanceof Converter) {
-                conversionService.registerConverter((Converter) obj);
+                converter.registerConverter((Converter) obj);
             } else {
                 throw new ComponentDefinitionException("Type converter " + obj + " does not implement the " + Converter.class.getName() + " interface");
             }
@@ -670,7 +670,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
     
     public Converter getConverter() {
-        return conversionService;
+        return converter;
     }
     
     public ComponentDefinitionRegistryImpl getComponentDefinitionRegistry() {

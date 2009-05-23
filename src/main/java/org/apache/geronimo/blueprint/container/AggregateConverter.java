@@ -37,7 +37,7 @@ import org.osgi.service.blueprint.container.Converter;
  * by using {@link #registerConverter(Converter)}
  * and unregistered using {@link #unregisterConverter(Converter)}.
  *
- * Each {@link org.osgi.service.blueprint.container.BlueprintContainer} has its own ConversionService
+ * Each {@link org.osgi.service.blueprint.container.BlueprintContainer} has its own AggregateConverter
  * used to register converters defined by the related blueprint bundle.
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
