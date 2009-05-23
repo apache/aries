@@ -44,7 +44,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.apache.geronimo.blueprint*;version="${pom.version}"</Export-Package>
+                        <Export-Package>org.apache.geronimo.blueprint.compendium.cm*;version="${pom.version}"</Export-Package>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                     </instructions>
                 </configuration>
