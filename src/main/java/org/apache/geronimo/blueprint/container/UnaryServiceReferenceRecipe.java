@@ -21,7 +21,6 @@ package org.apache.geronimo.blueprint.container;
 import java.lang.reflect.Type;
 
 import net.sf.cglib.proxy.Dispatcher;
-import org.apache.geronimo.blueprint.BlueprintEventSender;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
@@ -29,6 +28,7 @@ import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
+import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 
 /**
@@ -53,10 +53,9 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private final Object monitor = new Object();
 
     public UnaryServiceReferenceRecipe(ExtendedBlueprintContainer blueprintContainer,
-                                       BlueprintEventSender sender,
                                        ReferenceMetadata metadata,
                                        Recipe listenersRecipe) {
-        super(blueprintContainer,  sender, metadata, listenersRecipe);
+        super(blueprintContainer, metadata, listenersRecipe);
         this.metadata = metadata;
     }
 
@@ -152,7 +151,7 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private Object getService() throws InterruptedException {
         synchronized (monitor) {
             if (tracker.isStarted() && trackedServiceReference == null && metadata.getTimeout() > 0) {
-                sender.sendWaiting(blueprintContainer.getBundleContext().getBundle(), getOsgiFilter());
+                blueprintContainer.getEventDispatcher().blueprintEvent(new BlueprintEvent(BlueprintEvent.WAITING, blueprintContainer.getBundleContext().getBundle(), blueprintContainer.getExtenderBundle(), new String[] { getOsgiFilter() }));
                 monitor.wait(metadata.getTimeout());
             }
             if (trackedServiceReference == null) {

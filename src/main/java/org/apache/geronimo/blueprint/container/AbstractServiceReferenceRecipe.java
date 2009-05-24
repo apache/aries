@@ -31,7 +31,6 @@ import java.util.Set;
 import net.sf.cglib.proxy.Dispatcher;
 import net.sf.cglib.proxy.Enhancer;
 import org.apache.geronimo.blueprint.BlueprintConstants;
-import org.apache.geronimo.blueprint.BlueprintEventSender;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
@@ -56,7 +55,6 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe implements ServiceListener, SatisfiableRecipe {
 
     protected final ExtendedBlueprintContainer blueprintContainer;
-    protected final BlueprintEventSender sender;
     protected final ServiceReferenceMetadata metadata;
     protected final Recipe listenersRecipe;
     protected List<Listener> listeners;
@@ -66,11 +64,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected boolean optional;
 
     protected AbstractServiceReferenceRecipe(ExtendedBlueprintContainer blueprintContainer,
-                                             BlueprintEventSender sender,
                                              ServiceReferenceMetadata metadata,
                                              Recipe listenersRecipe) {
         this.blueprintContainer = blueprintContainer;
-        this.sender = sender;
         this.metadata = metadata;
         this.listenersRecipe = listenersRecipe;
         // Create a ClassLoader delegating to the bundle, but also being able to see our bundle classes

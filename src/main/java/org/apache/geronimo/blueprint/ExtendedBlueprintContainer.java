@@ -20,6 +20,9 @@ import java.util.List;
 
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.Converter;
+import org.osgi.service.blueprint.container.BlueprintListener;
+import org.osgi.framework.Bundle;
+import org.apache.geronimo.blueprint.di.Repository;
 
 /**
  * TODO: javadoc
@@ -29,6 +32,10 @@ import org.osgi.service.blueprint.container.Converter;
  */
 public interface ExtendedBlueprintContainer extends BlueprintContainer {
 
+    Bundle getExtenderBundle();
+
+    BlueprintListener getEventDispatcher();
+
     Converter getConverter();
 
     Class loadClass(String name) throws ClassNotFoundException;
@@ -36,4 +43,6 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
     ExtendedComponentDefinitionRegistry getComponentDefinitionRegistry();
 
     List<BeanProcessor> getBeanProcessors();
+
+    Repository getRepository();
 }
