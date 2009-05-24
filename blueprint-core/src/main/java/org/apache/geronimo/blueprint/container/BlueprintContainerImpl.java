@@ -37,7 +37,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.BlueprintConstants;
-import org.apache.geronimo.blueprint.BlueprintEventSender;
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
@@ -62,6 +61,8 @@ import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
+import org.osgi.service.blueprint.container.BlueprintListener;
+import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -109,7 +110,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
     private final BundleContext bundleContext;
     private final Bundle extenderBundle;
-    private final BlueprintEventSender sender;
+    private final BlueprintListener eventDispatcher;
     private final NamespaceHandlerRegistry handlers;
     private final List<URL> urls;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
@@ -127,10 +128,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private boolean waitForDependencies = true;
     private ScheduledFuture timeoutFuture;
 
-    public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintEventSender sender, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<URL> urls, boolean lazyActivation) {
+    public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<URL> urls, boolean lazyActivation) {
         this.bundleContext = bundleContext;
         this.extenderBundle = extenderBundle;
-        this.sender = sender;
+        this.eventDispatcher = eventDispatcher;
         this.handlers = handlers;
         this.urls = urls;
         this.converter = new AggregateConverter(this);
@@ -155,8 +156,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         return beanProcessors;
     }
 
-    public BlueprintEventSender getSender() {
-        return sender;
+    public BlueprintListener getEventDispatcher() {
+        return eventDispatcher;
     }
 
     private void checkDirectives() {
@@ -195,7 +196,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                 switch (state) {
                     case Unknown:
                         checkDirectives();
-                        sender.sendCreating(getBundleContext().getBundle());
+                        eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATING, getBundleContext().getBundle(), getExtenderBundle()));
                         parser = new Parser();
                         parser.parse(urls);
                         namespaces = parser.getNamespaces();
@@ -213,7 +214,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             }
                         }
                         if (missing.size() > 0) {
-                            sender.sendGracePeriod(getBundleContext().getBundle(), missing.toArray(new String[missing.size()]));
+                            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), missing.toArray(new String[missing.size()])));
                             return;
                         }
                         parser.populate(handlers, componentDefinitionRegistry);
@@ -231,7 +232,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                                     state = State.Failed;
                                     // TODO: clean up
                                     LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName(), t);
-                                    sender.sendFailure(getBundleContext().getBundle(), t, getMissingDependencies());
+                                    eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundleContext().getBundle(), getExtenderBundle(), getMissingDependencies(), t));
                                 }
                             }
                         };
@@ -239,7 +240,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         if (checkAllSatisfiables() || !waitForDependencies) {
                             state = State.InitialReferencesSatisfied;
                         } else {
-                            sender.sendGracePeriod(getBundleContext().getBundle(), getMissingDependencies());
+                            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), getMissingDependencies()));
                             state = State.WaitForInitialReferences;
                         }
                         break;
@@ -272,7 +273,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         if (checkAllSatisfiables() || !waitForDependencies) {
                             state = State.Create;
                         } else {
-                            sender.sendGracePeriod(getBundleContext().getBundle(), getMissingDependencies());
+                            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), getMissingDependencies()));
                             state = State.WaitForInitialReferences2;
                         }
                         break;
@@ -295,7 +296,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             props.put(BlueprintConstants.CONTAINER_VERSION_PROPERTY,
                                       bundleContext.getBundle().getHeaders().get(Constants.BUNDLE_VERSION));
                             registration = bundleContext.registerService(BlueprintContainer.class.getName(), this, props);
-                            sender.sendCreated(getBundleContext().getBundle());
+                            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATED, getBundleContext().getBundle(), getExtenderBundle()));
                             state = State.Created;
                         }
                         break;
@@ -309,7 +310,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             state = State.Failed;
             // TODO: clean up
             LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName(), t);
-            sender.sendFailure(getBundleContext().getBundle(), t);
+            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundleContext().getBundle(), getExtenderBundle(), t));
         }
     }
 
@@ -665,7 +666,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         }
     }
 
-    protected Repository getRepository() {
+    public Repository getRepository() {
         return instantiator.getRepository();
     }
     
@@ -683,7 +684,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     
     public synchronized void destroy() {
         state = State.Destroyed;
-        sender.sendDestroying(getBundleContext().getBundle());
+        eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYING, getBundleContext().getBundle(), getExtenderBundle()));
 
         if (timeoutFuture != null) {
             timeoutFuture.cancel(false);
@@ -696,7 +697,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         untrackServiceReferences();
         destroyComponents();
         
-        sender.sendDestroyed(getBundleContext().getBundle());
+        eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYED, getBundleContext().getBundle(), getExtenderBundle()));
         LOGGER.debug("Module container destroyed: " + this.bundleContext);
     }
 

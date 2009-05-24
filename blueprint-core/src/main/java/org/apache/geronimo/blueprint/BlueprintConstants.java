@@ -18,7 +18,7 @@
  */
 package org.apache.geronimo.blueprint;
 
-public class BlueprintConstants  {
+public interface BlueprintConstants  {
    
     public static final String BUNDLE_BLUEPRINT_HEADER = "Bundle-Blueprint";
     

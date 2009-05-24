@@ -163,7 +163,7 @@ public class ServiceReferenceTracker implements ServiceListener {
             int maxRanking = Integer.MIN_VALUE;
             for (int i = 0; i < length; i++) {
                 Object property = referenceSet.get(i).getProperty(Constants.SERVICE_RANKING);
-                int ranking = (property instanceof Integer) ? ((Integer) property).intValue() : 0;
+                int ranking = (property instanceof Integer) ? (Integer) property : 0;
                 rankings[i] = ranking;
                 if (ranking > maxRanking) {
                     index = i;
@@ -179,7 +179,7 @@ public class ServiceReferenceTracker implements ServiceListener {
                 long minId = Long.MAX_VALUE;
                 for (int i = 0; i < length; i++) {
                     if (rankings[i] == maxRanking) {
-                        long id = ((Long) (referenceSet.get(i).getProperty(Constants.SERVICE_ID))).longValue();
+                        long id = (Long) referenceSet.get(i).getProperty(Constants.SERVICE_ID);
                         if (id < minId) {
                             index = i;
                             minId = id;

@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.geronimo.blueprint.container.BlueprintContainerImpl;
-import org.apache.geronimo.blueprint.container.DefaultBlueprintEventSender;
+import org.apache.geronimo.blueprint.container.BlueprintEventDispatcher;
 import org.apache.geronimo.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.geronimo.blueprint.utils.HeaderParser;
 import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
@@ -39,6 +39,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,14 +56,14 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     private BundleContext context;
     private ScheduledExecutorService executors;
     private Map<Bundle, BlueprintContainerImpl> containers;
-    private BlueprintEventSender sender;
+    private BlueprintEventDispatcher eventDispatcher;
     private NamespaceHandlerRegistry handlers;
 
     public void start(BundleContext context) {
         LOGGER.debug("Starting blueprint extender...");
 
         this.context = context;
-        sender = new DefaultBlueprintEventSender(context);
+        eventDispatcher = new BlueprintEventDispatcher(context);
         handlers = new NamespaceHandlerRegistryImpl(context);
         executors = Executors.newScheduledThreadPool(1);
         containers = new HashMap<Bundle, BlueprintContainerImpl>();
@@ -90,7 +91,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
             destroyContext(bundle);
         }
         context.removeBundleListener(this);
-        this.sender.destroy();
+        this.eventDispatcher.destroy();
         this.handlers.destroy();
         executors.shutdown();
         LOGGER.debug("Blueprint extender stopped");
@@ -152,7 +153,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 // the bundle to be fully started
                 boolean compatible = lazyActivation || isCompatible(bundle);
                 if (compatible) {
-                    final BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle.getBundleContext(), context.getBundle(), sender, handlers, executors, urls, lazyActivation);
+                    final BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle.getBundleContext(), context.getBundle(), eventDispatcher, handlers, executors, urls, lazyActivation);
                     containers.put(bundle, blueprintContainer);
                     // run synchronous when bundle is lazy activated
                     blueprintContainer.run(lazyActivation ? false: true);
@@ -164,7 +165,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 LOGGER.debug("No blueprint application found in bundle {}", bundle.getSymbolicName());
             }
         } catch (Throwable t) {
-            sender.sendFailure(bundle, t);
+            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, bundle, context.getBundle(), t));
         }
     }
 

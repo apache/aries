@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.CollectionRecipe;
 import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
@@ -46,7 +47,7 @@ public class ServiceExportRecipe extends AbstractRecipe implements ServiceRegist
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceExportRecipe.class);
 
-    private BlueprintContainerImpl blueprintContainer;
+    private ExtendedBlueprintContainer blueprintContainer;
     private ServiceMetadata metadata;
     private Recipe serviceRecipe;
     private CollectionRecipe listenersRecipe;
@@ -60,7 +61,7 @@ public class ServiceExportRecipe extends AbstractRecipe implements ServiceRegist
     private Object service;
     private boolean bundleScope;
 
-    public ServiceExportRecipe(BlueprintContainerImpl blueprintContainer,
+    public ServiceExportRecipe(ExtendedBlueprintContainer blueprintContainer,
                                ServiceMetadata metadata,
                                Recipe serviceRecipe,
                                CollectionRecipe listenersRecipe,

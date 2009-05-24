@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.di.ArrayRecipe;
 import org.apache.geronimo.blueprint.di.CollectionRecipe;
@@ -65,10 +66,10 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
 public class RecipeBuilder {
 
     private int nameCounter;
-    private BlueprintContainerImpl blueprintContainer;
+    private ExtendedBlueprintContainer blueprintContainer;
     private ExtendedComponentDefinitionRegistry registry;
 
-    public RecipeBuilder(BlueprintContainerImpl blueprintContainer) {
+    public RecipeBuilder(ExtendedBlueprintContainer blueprintContainer) {
         this.blueprintContainer = blueprintContainer;
         this.registry = blueprintContainer.getComponentDefinitionRegistry();
     }
@@ -128,7 +129,6 @@ public class RecipeBuilder {
         }
         CollectionBasedServiceReferenceRecipe recipe = new CollectionBasedServiceReferenceRecipe(
                                                                    blueprintContainer,
-                                                                   blueprintContainer.getSender(),
                                                                    metadata,
                                                                    listenersRecipe,
                                                                    comparatorRecipe);
@@ -145,7 +145,6 @@ public class RecipeBuilder {
             }
         }
         UnaryServiceReferenceRecipe recipe = new UnaryServiceReferenceRecipe(blueprintContainer,
-                                                                             blueprintContainer.getSender(),
                                                                              metadata,
                                                                              listenersRecipe);
         recipe.setName(getName(metadata.getId()));
@@ -240,21 +239,6 @@ public class RecipeBuilder {
         return recipe;
     }
 
-    private BeanMetadata getLocalServiceComponent(Metadata value) throws Exception {
-        ComponentMetadata metadata = null;
-        if (value instanceof RefMetadata) {
-            RefMetadata ref = (RefMetadata) value;
-            metadata = registry.getComponentDefinition(ref.getComponentId());
-        } else if (value instanceof ComponentMetadata) {
-            metadata = (ComponentMetadata) value;
-        }
-        if (metadata instanceof BeanMetadata) {
-            return (BeanMetadata) metadata;
-        } else {
-            return null;
-        }
-    }
-    
     private Recipe getValue(Metadata v, Object groupingType) throws Exception {
         if (v instanceof NullMetadata) {
             return null;
