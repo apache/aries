@@ -126,6 +126,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private Map<String, List<SatisfiableRecipe>> satisfiables;
     private long timeout = 5 * 60 * 1000;
     private boolean waitForDependencies = true;
+    private boolean xmlValidation = true;
     private ScheduledFuture timeoutFuture;
 
     public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<URL> urls, boolean lazyActivation) {
@@ -177,8 +178,12 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             LOGGER.debug("Wait-for-dependencies directive: " + waitForDependenciesDirective);
             waitForDependencies = Boolean.parseBoolean(waitForDependenciesDirective);
         }
-        
-        // TODO: add support for custom directive to disable schema validation?
+
+        String xmlValidationDirective = paths.get(0).getDirective(BlueprintConstants.XML_VALIDATION);
+        if (xmlValidationDirective != null) {
+            LOGGER.debug("Xml-validation directive: " + xmlValidationDirective);
+            xmlValidation = Boolean.parseBoolean(xmlValidationDirective);
+        }
     }
     
     public void run(boolean asynch) {
@@ -198,6 +203,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         checkDirectives();
                         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATING, getBundleContext().getBundle(), getExtenderBundle()));
                         parser = new Parser();
+                        parser.setValidation(xmlValidation);
                         parser.parse(urls);
                         namespaces = parser.getNamespaces();
                         if (namespaces.size() > 0) {

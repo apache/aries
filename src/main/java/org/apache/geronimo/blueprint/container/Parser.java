@@ -94,8 +94,6 @@ import org.xml.sax.InputSource;
 /**
  * TODO: javadoc
  *
- * TODO: option to disable validation
- *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
@@ -203,6 +201,7 @@ public class Parser {
     private String defaultAvailability;
     private String defaultLazyInit;
     private Set<URI> namespaces;
+    private boolean validation;
     private boolean validated;
 
     public Parser() {
@@ -210,6 +209,10 @@ public class Parser {
 
     public Parser(String namePrefix) {
         this.namePrefix = namePrefix;
+    }
+
+    public void setValidation(boolean validation) {
+        this.validation = validation;
     }
 
     public void parse(List<URL> urls) throws Exception {
@@ -261,11 +264,11 @@ public class Parser {
                          ExtendedComponentDefinitionRegistry registry) {
         this.namespaceHandlerRegistry = handlers;
         this.registry = registry;
-        // Validate xmls
         if (this.documents == null) {
             throw new IllegalStateException("Documents should be parsed before populating the registry");
         }
-        if (!this.validated) {
+        // Validate xmls
+        if (!this.validated && validation) {
             validate();
             this.validated = true;
         }
