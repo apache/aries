@@ -195,8 +195,9 @@ public class Parser {
     private List<Document> documents;
     private ExtendedComponentDefinitionRegistry registry;
     private NamespaceHandlerRegistry namespaceHandlerRegistry;
-    private String namePrefix = "component-";
-    private int nameCounter;
+    private String idPrefix = "component-";
+    private Set<String> ids = new HashSet<String>();
+    private int idCounter;
     private String defaultTimeout;
     private String defaultAvailability;
     private String defaultLazyInit;
@@ -207,8 +208,8 @@ public class Parser {
     public Parser() {
     }
 
-    public Parser(String namePrefix) {
-        this.namePrefix = namePrefix;
+    public Parser(String idPrefix) {
+        this.idPrefix = idPrefix;
     }
 
     public void setValidation(boolean validation) {
@@ -439,7 +440,7 @@ public class Parser {
     private ComponentMetadata parseBeanMetadata(Element element, boolean topElement) {
         BeanMetadataImpl metadata = new BeanMetadataImpl();
         if (topElement) {
-            metadata.setId(getName(element));
+            metadata.setId(getId(element));
         }
         if (element.hasAttribute(CLASS_ATTRIBUTE)) {
             metadata.setClassName(element.getAttribute(CLASS_ATTRIBUTE));
@@ -533,7 +534,7 @@ public class Parser {
         ServiceMetadataImpl service = new ServiceMetadataImpl();
         boolean hasInterfaceNameAttribute = false;
         if (topElement) {
-            service.setId(getName(element));
+            service.setId(getId(element));
         }
         if (element.hasAttribute(INTERFACE_ATTRIBUTE)) {
             service.setInterfaceNames(Collections.singletonList(element.getAttribute(INTERFACE_ATTRIBUTE)));
@@ -790,7 +791,7 @@ public class Parser {
     private ComponentMetadata parseReference(Element element, boolean topElement) {       
         ReferenceMetadataImpl reference = new ReferenceMetadataImpl();
         if (topElement) {
-            reference.setId(getName(element));
+            reference.setId(getId(element));
         }
         parseReference(element, reference);
         String timeout = element.hasAttribute(TIMEOUT_ATTRIBUTE) ? element.getAttribute(TIMEOUT_ATTRIBUTE) : this.defaultTimeout;
@@ -811,7 +812,7 @@ public class Parser {
     private ComponentMetadata parseRefCollection(Element element, Class collectionType, boolean topElement) {
         RefCollectionMetadataImpl references = new RefCollectionMetadataImpl();
         if (topElement) {
-            references.setId(getName(element));
+            references.setId(getId(element));
         }
         references.setCollectionType(collectionType);
 
@@ -1129,12 +1130,17 @@ public class Parser {
         return handler;
     }
     
-    public String getName(Element element) {
+    public String getId(Element element) {
+        String id;
         if (element.hasAttribute(ID_ATTRIBUTE)) {
-            return element.getAttribute(ID_ATTRIBUTE);
+            id = element.getAttribute(ID_ATTRIBUTE);
         } else {
-            return namePrefix + ++nameCounter;
+            do {
+                id = idPrefix + ++idCounter;
+            } while (ids.contains(id));
         }
+        ids.add(id);
+        return id;
     }
 
     public static boolean isBlueprintNamespace(String ns) {

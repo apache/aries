@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -101,7 +102,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CmNamespaceHandler.class);
 
-    private int nameCounter;
+    private int idCounter;
 
     public URL getSchemaLocation(String namespace) {
         return getClass().getResource("blueprint-cm.xsd");
@@ -142,7 +143,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     private ComponentMetadata parsePropertyPlaceholder(ExtendedParserContext context, Element element) {
         MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
         metadata.setProcessor(true);
-        metadata.setId(getName(element));
+        metadata.setId(getId(context, element));
         metadata.setScope(BeanMetadata.SCOPE_SINGLETON);
         metadata.setRuntimeClass(CmPropertyPlaceholder.class);
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
@@ -199,10 +200,10 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     private ComponentMetadata parseManagedServiceFactory(ExtendedParserContext context, Element element) {
-        String id = getName(element);
+        String id = getId(context, element);
 
         MutableBeanMetadata factoryMetadata = context.createMetadata(MutableBeanMetadata.class);
-        generateIdIfNeeded(factoryMetadata);        
+        generateIdIfNeeded(context, factoryMetadata);
         factoryMetadata.setScope(BeanMetadata.SCOPE_SINGLETON);
         factoryMetadata.setRuntimeClass(CmManagedServiceFactory.class);
         factoryMetadata.setInitMethodName("init");
@@ -250,7 +251,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
                 } else if (BLUEPRINT_CM_NAMESPACE.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, MANAGED_COMPONENT_ELEMENT)) {
                         MutableBeanMetadata managedComponent = context.parseElement(MutableBeanMetadata.class, null, e);
-                        generateIdIfNeeded(managedComponent);
+                        generateIdIfNeeded(context, managedComponent);
                         managedComponent.setScope(BeanMetadata.SCOPE_PROTOTYPE);
                         // destroy-method on managed-component has different signature than on regular beans
                         // so we'll handle it differently
@@ -288,10 +289,10 @@ public class CmNamespaceHandler implements NamespaceHandler {
         if (!(component instanceof MutableBeanMetadata)) {
             throw new ComponentDefinitionException("Element " + MANAGED_PROPERTIES_ELEMENT + " must be used inside a <bp:bean> element");
         }
-        generateIdIfNeeded(((MutableBeanMetadata) component));
+        generateIdIfNeeded(context, ((MutableBeanMetadata) component));
         MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
         metadata.setProcessor(true);
-        metadata.setId(getName(element));
+        metadata.setId(getId(context, element));
         metadata.setRuntimeClass(CmManagedProperties.class);
         String persistentId = element.getAttribute(PERSISTENT_ID_ATTRIBUTE);
         // if persistentId is "" the managed properties element in nested in managed-service-factory
@@ -406,18 +407,26 @@ public class CmNamespaceHandler implements NamespaceHandler {
         return BLUEPRINT_NAMESPACE.equals(ns);
     }
 
-    public String getName(Element element) {
+    public String getId(ExtendedParserContext context, Element element) {
         if (element.hasAttribute(ID_ATTRIBUTE)) {
             return element.getAttribute(ID_ATTRIBUTE);
         } else {
-            return "cm-" + ++nameCounter;
+            return generateId(context);
         }
     }
 
-    public void generateIdIfNeeded(MutableBeanMetadata metadata) {
+    public void generateIdIfNeeded(ExtendedParserContext context, MutableBeanMetadata metadata) {
         if (metadata.getId() == null) {
-            metadata.setId("cm-" + ++nameCounter);
+            metadata.setId(generateId(context));
         }
+    }
+
+    private String generateId(ExtendedParserContext context) {
+        String id;
+        do {
+            id = "#cm-" + ++idCounter;
+        } while (context.getComponentDefinitionRegistry().containsComponentDefinition(id));
+        return id;
     }
 
 }
