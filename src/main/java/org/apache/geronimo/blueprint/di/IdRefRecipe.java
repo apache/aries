@@ -27,11 +27,11 @@ import org.osgi.service.blueprint.container.NoSuchComponentException;
  * The ReferenceNameRecipe is used to inject the reference name into the object (as a String).
  * The ReferenceNameRecipe ensures the actual reference object exists before the reference name is injected. 
  */
-public class ReferenceNameRecipe extends AbstractRecipe {
+public class IdRefRecipe extends AbstractRecipe {
     
     private String referenceName;
 
-    public ReferenceNameRecipe(String name, String referenceName) {
+    public IdRefRecipe(String name, String referenceName) {
         super(name);
         this.referenceName = referenceName;
     }

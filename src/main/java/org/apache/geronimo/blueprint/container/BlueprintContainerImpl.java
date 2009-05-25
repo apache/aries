@@ -36,7 +36,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.BlueprintConstants;
@@ -49,8 +48,8 @@ import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
 import org.apache.geronimo.blueprint.di.DefaultRepository;
 import org.apache.geronimo.blueprint.di.ExecutionContext;
 import org.apache.geronimo.blueprint.di.Recipe;
-import org.apache.geronimo.blueprint.di.ReferenceNameRecipe;
-import org.apache.geronimo.blueprint.di.ReferenceRecipe;
+import org.apache.geronimo.blueprint.di.IdRefRecipe;
+import org.apache.geronimo.blueprint.di.RefRecipe;
 import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.namespace.NamespaceHandlerRegistryImpl;
@@ -346,10 +345,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         DefaultRepository repository = (DefaultRepository) instantiator.getRepository();
         for (Recipe recipe : getAllRecipes()) {
             String ref = null;
-            if (recipe instanceof ReferenceRecipe) {
-                ref = ((ReferenceRecipe) recipe).getReferenceName();
-            } else if (recipe instanceof ReferenceNameRecipe) {
-                ref = ((ReferenceNameRecipe) recipe).getReferenceName();
+            if (recipe instanceof RefRecipe) {
+                ref = ((RefRecipe) recipe).getReferenceName();
+            } else if (recipe instanceof IdRefRecipe) {
+                ref = ((IdRefRecipe) recipe).getReferenceName();
             }
             if (ref != null && repository.get(ref) == null) {
                 throw new ComponentDefinitionException("Unresolved ref/idref to component: " + ref);
@@ -480,7 +479,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             break;
                         }
                     }
-                    ServiceExportRecipe reg = (ServiceExportRecipe) getComponentInstance(name);
+                    ServiceRecipe reg = (ServiceRecipe) getComponentInstance(name);
                     if (satisfied && !reg.isRegistered()) {
                         LOGGER.debug("Registering service {} due to satisfied references", name);
                         reg.register();
@@ -520,8 +519,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
 
     private void registerServices() {
-        List<ServiceExportRecipe> recipes = getAllRecipes(ServiceExportRecipe.class);
-        for (ServiceExportRecipe r : recipes) {
+        List<ServiceRecipe> recipes = getAllRecipes(ServiceRecipe.class);
+        for (ServiceRecipe r : recipes) {
             List<SatisfiableRecipe> dependencies = getSatisfiableDependenciesMap().get(r.getName());
             boolean satisfied = true;
             if (dependencies != null) {
@@ -540,8 +539,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
     private void unregisterServices() {
         if (instantiator != null) {
-            List<ServiceExportRecipe> recipes = getAllRecipes(ServiceExportRecipe.class);
-            for (ServiceExportRecipe r : recipes) {
+            List<ServiceRecipe> recipes = getAllRecipes(ServiceRecipe.class);
+            for (ServiceRecipe r : recipes) {
                 r.unregister();
             }
         }

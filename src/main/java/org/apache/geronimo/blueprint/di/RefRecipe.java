@@ -23,10 +23,10 @@ import java.util.List;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
 
-public class ReferenceRecipe extends AbstractRecipe {
+public class RefRecipe extends AbstractRecipe {
     private String referenceName;
 
-    public ReferenceRecipe(String name, String referenceName) {
+    public RefRecipe(String name, String referenceName) {
         super(name);
         this.referenceName = referenceName;
     }

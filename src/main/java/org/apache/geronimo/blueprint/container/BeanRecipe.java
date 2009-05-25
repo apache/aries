@@ -36,7 +36,6 @@ import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
-import org.apache.geronimo.blueprint.di.ReferenceRecipe;
 import org.apache.geronimo.blueprint.di.ExecutionContext;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
@@ -49,9 +48,9 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev$, $Date$
  */
-public class BlueprintObjectRecipe extends AbstractRecipe {
+public class BeanRecipe extends AbstractRecipe {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintObjectRecipe.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BeanRecipe.class);
 
     private Object type;
     private final LinkedHashMap<String,Object> properties = new LinkedHashMap<String,Object>();
@@ -69,7 +68,7 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
 
     protected ExtendedBlueprintContainer blueprintContainer;
 
-    public BlueprintObjectRecipe(String name, ExtendedBlueprintContainer blueprintContainer, Object type) {
+    public BeanRecipe(String name, ExtendedBlueprintContainer blueprintContainer, Object type) {
         super(name);
         this.blueprintContainer = blueprintContainer;
         this.type = type;
