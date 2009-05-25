@@ -18,7 +18,6 @@ package org.apache.geronimo.blueprint.di;
 
 import java.util.List;
 
-import org.apache.geronimo.blueprint.Destroyable;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**

@@ -29,7 +29,9 @@ import java.util.Set;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
 import org.apache.geronimo.blueprint.di.ExecutionContext;
+import org.apache.geronimo.blueprint.di.IdRefRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
+import org.apache.geronimo.blueprint.di.RefRecipe;
 import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
@@ -45,6 +47,7 @@ public class BlueprintObjectInstantiator  {
     public BlueprintObjectInstantiator(ExtendedBlueprintContainer blueprintContainer, Repository repository) {
         this.blueprintContainer = blueprintContainer;
         this.repository = repository;
+        checkReferences();
     }
     
     public  Repository getRepository() {
@@ -99,16 +102,77 @@ public class BlueprintObjectInstantiator  {
         return instances;
     }
     
+    public <T> List<T> getAllRecipes(Class<T> clazz, String... names) {
+        List<T> recipes = new ArrayList<T>();
+        for (Recipe r : getAllRecipes(names)) {
+            if (clazz.isInstance(r)) {
+                recipes.add(clazz.cast(r));
+            }
+        }
+        return recipes;
+    }
+
+    public Set<Recipe> getAllRecipes(String... names) {
+        boolean createNewContext = !ExecutionContext.isContextSet();
+        if (createNewContext) {
+            ExecutionContext.setContext(new DefaultExecutionContext(blueprintContainer, repository));
+        }
+        try {
+            Set<Recipe> recipes = new HashSet<Recipe>();
+            Set<String> topLevel = names != null && names.length > 0 ? new HashSet<String>(Arrays.asList(names)) : repository.getNames();
+            for (String name : topLevel) {
+                internalGetAllRecipes(recipes, repository.getRecipe(name));
+            }
+            return recipes;
+        } finally {
+            if (createNewContext) {
+                ExecutionContext.setContext(null);
+            }
+        }
+    }
+
+    /*
+     * This method should not be called directly, only from one of the getAllRecipes() methods.
+     */
+    private void internalGetAllRecipes(Set<Recipe> recipes, Recipe r) {
+        if (r != null) {
+            if (recipes.add(r)) {
+                for (Recipe c : r.getNestedRecipes()) {
+                    internalGetAllRecipes(recipes, c);
+                }
+            }
+        }
+    }
+
     private Object createInstance(String name) {
-        Object recipe = repository.get(name);
-        if (recipe == null) {
+        Object instance = repository.getInstance(name);
+        if (instance == null) {
+            Recipe recipe = repository.getRecipe(name);
+            if (recipe != null) {
+                instance = recipe.create();
+            }
+        }
+        if (instance == null) {
+            instance = repository.getDefault(name);
+        }
+        if (instance == null) {
             throw new NoSuchComponentException(name);
         }
-        Object obj = recipe;
-        if (recipe instanceof Recipe) {
-            obj = ((Recipe) recipe).create();
-        }
-        return obj;
+        return instance;
     }
         
+    private void checkReferences() {
+        for (Recipe recipe : getAllRecipes()) {
+            String ref = null;
+            if (recipe instanceof RefRecipe) {
+                ref = ((RefRecipe) recipe).getIdRef();
+            } else if (recipe instanceof IdRefRecipe) {
+                ref = ((IdRefRecipe) recipe).getIdRef();
+            }
+            if (ref != null && repository.getRecipe(ref) == null && repository.getDefault(ref) == null) {
+                throw new ComponentDefinitionException("Unresolved ref/idref to component: " + ref);
+            }
+        }
+    }
+
 }

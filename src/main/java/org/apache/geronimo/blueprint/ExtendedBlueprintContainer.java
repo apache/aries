@@ -18,11 +18,11 @@ package org.apache.geronimo.blueprint;
 
 import java.util.List;
 
-import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.osgi.service.blueprint.container.Converter;
-import org.osgi.service.blueprint.container.BlueprintListener;
-import org.osgi.framework.Bundle;
 import org.apache.geronimo.blueprint.di.Repository;
+import org.osgi.framework.Bundle;
+import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.container.BlueprintListener;
+import org.osgi.service.blueprint.container.Converter;
 
 /**
  * TODO: javadoc

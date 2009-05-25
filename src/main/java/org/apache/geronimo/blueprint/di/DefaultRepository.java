@@ -25,13 +25,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.geronimo.blueprint.Destroyable;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 
+ * The default repository implementation
  */
 public class DefaultRepository implements Repository {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultRepository.class);
 
     private Map<String, Object> defaults;
     private Map<String, Recipe> recipes;
@@ -76,6 +79,10 @@ public class DefaultRepository implements Repository {
         return recipes.get(name);
     }
 
+    public Object getDefault(String name) {
+        return defaults.get(name);
+    }
+
     public Set<String> getNames() {
         Set<String> names = new HashSet<String>();
         names.addAll(recipes.keySet());
@@ -84,43 +91,42 @@ public class DefaultRepository implements Repository {
         return names;
     }
 
-    public void add(String name, Object instance) {
-        if (instances.get(name) != null) {
-            throw new ComponentDefinitionException("Name " + name + " is already registered to instance " + instances.get(name));
-        }
-        if (instance instanceof Recipe) {
-            recipes.put(name, (Recipe) instance);
-        } else {
-            Recipe recipe = recipes.get(name);
-            if (recipe != null) {
-                Destroyable destroy = recipe.getDestroyable(instance);
-                if (destroy != null) {
-                    destroyList.add(destroy);
-                }
-            }
-            instances.put(name, instance);
-        }
-    }
-
     public void putDefault(String name, Object instance) {
         defaults.put(name, instance);
     }
 
     public void putRecipe(String name, Recipe recipe) {
+        if (instances.get(name) != null) {
+            throw new ComponentDefinitionException("Name " + name + " is already registered to instance " + instances.get(name));
+        }
         recipes.put(name, recipe);
     }
 
     public void putInstance(String name, Object instance) {
+        if (instances.get(name) != null) {
+            throw new ComponentDefinitionException("Name " + name + " is already registered to instance " + instances.get(name));
+        }
+        Recipe recipe = recipes.get(name);
+        if (recipe != null) {
+            Destroyable destroy = recipe.getDestroyable(instance);
+            if (destroy != null) {
+                destroyList.add(destroy);
+            }
+        }
         instances.put(name, instance);
     }
 
     public void destroy() {
         // destroy objects in reverse creation order
         ListIterator<Destroyable> reverse = destroyList.listIterator(destroyList.size());
-        while(reverse.hasPrevious()) {
-            reverse.previous().destroy();
+        while (reverse.hasPrevious()) {
+            Destroyable d = reverse.previous();
+            try {
+                d.destroy();
+            } catch (Exception e) {
+                LOGGER.info("Error destroying bean " + d, e);
+            }
         }
-
         destroyList.clear();
         instances.clear();
     }

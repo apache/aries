@@ -39,7 +39,7 @@ public class DefaultExecutionContext extends ExecutionContext {
     /**
      * Contains partial objects.
      */
-    private Map<String, Object> createdObjects = new HashMap<String, Object>();
+    private Map<String, Object> partialObjects = new HashMap<String, Object>();
 
     private List<Recipe> createdRecipes = new ArrayList<Recipe>();
     
@@ -50,10 +50,6 @@ public class DefaultExecutionContext extends ExecutionContext {
      * map of the caller's unset properties)
      */
     private final LinkedList<Recipe> stack = new LinkedList<Recipe>();
-
-    public DefaultExecutionContext(ExtendedBlueprintContainer blueprintContainer) {
-        this(blueprintContainer, new DefaultRepository());
-    }
 
     public DefaultExecutionContext(ExtendedBlueprintContainer blueprintContainer, Repository repository) {
         if (blueprintContainer == null) throw new NullPointerException("blueprintContainer is null");
@@ -91,60 +87,49 @@ public class DefaultExecutionContext extends ExecutionContext {
         return new LinkedList<Recipe>(stack);
     }
 
-    public Repository getRepository() {
-        return repository;
-    }
-
-    public void setRepository(Repository repository) {
-        if (repository == null) throw new NullPointerException("repository is null");
-        this.repository = repository;
-    }
-
     public boolean containsObject(String name) {
-        boolean contains = repository.contains(name);
-        return contains;
+        return repository.getInstance(name) != null
+                || repository.getRecipe(name) != null
+                || repository.getDefault(name) != null;
     }
     
     public Object getObject(String name) {
-        Object object = repository.get(name);
+        Object object = repository.getInstance(name);
+        if (object == null) {
+            Recipe recipe = repository.getRecipe(name);
+            if (recipe != null) {
+                object = recipe.create();
+            }
+        }
+        if (object == null) {
+            object = repository.getDefault(name);
+        }
         return object;
     }
 
     public void addObject(String name, Object object, boolean partialObject) {
-        createdObjects.put(name, object);
-        if (!partialObject) {
-            repository.add(name, object);
+        if (partialObject) {
+            partialObjects.put(name, object);
+        } else {
+            repository.putInstance(name, object);
+            partialObjects.remove(name);
         }
     }
     
-    public boolean containsCreatedObject(String name) {
-        if (createdObjects.containsKey(name)) {
-            return true;
+    public Object getPartialObject(String name) {
+        Object obj = partialObjects.get(name);
+        if (obj == null) {
+            obj = repository.getInstance(name);
         }
-        if (repository.contains(name)) {
-            Object obj = repository.get(name);
-            if (!(obj instanceof Recipe)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    public Object getCreatedObject(String name) {
-        if (createdObjects.containsKey(name)) {
-            return createdObjects.get(name);
-        }
-        if (repository.contains(name)) {
-            Object obj = repository.get(name);
-            if (!(obj instanceof Recipe)) {
-                return obj;
-            }
-        }
-        return null;
+        return obj;
     }
 
     public List<Recipe> getCreatedRecipes() {
         return createdRecipes;
+    }
+
+    public Recipe getRecipe(String name) {
+        return repository.getRecipe(name);
     }
 
     public Object convert(Object value, Type type) throws Exception {

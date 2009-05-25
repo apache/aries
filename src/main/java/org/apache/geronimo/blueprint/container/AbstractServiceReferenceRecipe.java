@@ -68,6 +68,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                                              ServiceReferenceMetadata metadata,
                                              Recipe listenersRecipe) {
         super(name);
+        this.prototype = false;
         this.blueprintContainer = blueprintContainer;
         this.metadata = metadata;
         this.listenersRecipe = listenersRecipe;

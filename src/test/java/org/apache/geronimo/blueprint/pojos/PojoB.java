@@ -19,9 +19,11 @@
 package org.apache.geronimo.blueprint.pojos;
 
 import java.net.URI;
+import java.util.List;
 
 public class PojoB {
 
+    private List<Object> objects;
     private URI uri;
     private int number;
     private BeanD bean;
@@ -44,7 +46,15 @@ public class PojoB {
     public void setUri(URI uri) {
         this.uri = uri;
     }
-    
+
+    public List<Object> getObjects() {
+        return objects;
+    }
+
+    public void setObjects(List<Object> objects) {
+        this.objects = objects;
+    }
+
     public void init() {
         initCalled = true;
     }

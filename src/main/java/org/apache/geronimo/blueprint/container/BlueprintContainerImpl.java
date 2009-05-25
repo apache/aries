@@ -25,12 +25,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -40,16 +38,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
-import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
 import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
-import org.apache.geronimo.blueprint.di.DefaultRepository;
 import org.apache.geronimo.blueprint.di.ExecutionContext;
 import org.apache.geronimo.blueprint.di.Recipe;
-import org.apache.geronimo.blueprint.di.IdRefRecipe;
-import org.apache.geronimo.blueprint.di.RefRecipe;
 import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.namespace.NamespaceHandlerRegistryImpl;
@@ -60,11 +54,11 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.container.BlueprintEvent;
+import org.osgi.service.blueprint.container.BlueprintListener;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
-import org.osgi.service.blueprint.container.BlueprintListener;
-import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.namespace.NamespaceHandler;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -124,7 +118,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private BlueprintObjectInstantiator instantiator;
     private ServiceRegistration registration;
     private List<BeanProcessor> beanProcessors;
-    private Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>();
     private Map<String, List<SatisfiableRecipe>> satisfiables;
     private long timeout = 5 * 60 * 1000;
     private boolean waitForDependencies = true;
@@ -150,10 +143,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
     public Class loadClass(String name) throws ClassNotFoundException {
         return bundleContext.getBundle().loadClass(name);
-    }
-
-    public void addDestroyable(String name, Destroyable destroyable) {
-        destroyables.put(name, destroyable);
     }
 
     public List<BeanProcessor> getBeanProcessors() {
@@ -243,7 +232,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                     }
                     case Populated:
                         instantiator = new BlueprintObjectInstantiator(this, new RecipeBuilder(this).createRepository());
-                        checkReferences();
                         trackServiceReferences();
                         Runnable r = new Runnable() {
                             public void run() {
@@ -276,20 +264,16 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                     case InitialReferencesSatisfied:
                         processTypeConverters();
                         processProcessors();
-                        // Update repository wrt bean processing
+                        // Update repository with recipes processed by the processors
                         untrackServiceReferences();
-                        DefaultRepository repository = (DefaultRepository) instantiator.getRepository();
-                        DefaultRepository tmpRepo = new RecipeBuilder(this).createRepository();
-                        for (String name : repository.getNames()) {
-                            Recipe recipe = repository.getRecipe(name);
-                            Object instance = repository.getInstance(name);
-                            if (instance != null) {
-                                tmpRepo.putRecipe(name, recipe);
-                                tmpRepo.putInstance(name, instance);
+                        Repository repository = instantiator.getRepository();
+                        Repository tmpRepo = new RecipeBuilder(this).createRepository();
+                        for (String name : tmpRepo.getNames()) {
+                            if (repository.getInstance(name) == null) {
+                                repository.putRecipe(name, tmpRepo.getRecipe(name));
                             }
                         }
                         satisfiables = null;
-                        instantiator = new BlueprintObjectInstantiator(this, tmpRepo);
                         trackServiceReferences();
                         // Check references
                         if (checkAllSatisfiables() || !waitForDependencies) {
@@ -338,21 +322,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             destroyComponents();
             LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName(), t);
             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundleContext().getBundle(), getExtenderBundle(), t));
-        }
-    }
-
-    private void checkReferences() throws Exception {
-        DefaultRepository repository = (DefaultRepository) instantiator.getRepository();
-        for (Recipe recipe : getAllRecipes()) {
-            String ref = null;
-            if (recipe instanceof RefRecipe) {
-                ref = ((RefRecipe) recipe).getReferenceName();
-            } else if (recipe instanceof IdRefRecipe) {
-                ref = ((IdRefRecipe) recipe).getReferenceName();
-            }
-            if (ref != null && repository.get(ref) == null) {
-                throw new ComponentDefinitionException("Unresolved ref/idref to component: " + ref);
-            }
         }
     }
 
@@ -409,8 +378,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             }
             try {
                 satisfiables = new HashMap<String, List<SatisfiableRecipe>>();
-                for (Recipe r : getAllRecipes()) {
-                    List<SatisfiableRecipe> recipes = getAllRecipes(SatisfiableRecipe.class, r.getName());
+                for (Recipe r : instantiator.getAllRecipes()) {
+                    List<SatisfiableRecipe> recipes = instantiator.getAllRecipes(SatisfiableRecipe.class, r.getName());
                     if (!recipes.isEmpty()) {
                         satisfiables.put(r.getName(), recipes);
                     }
@@ -519,7 +488,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
 
     private void registerServices() {
-        List<ServiceRecipe> recipes = getAllRecipes(ServiceRecipe.class);
+        List<ServiceRecipe> recipes = instantiator.getAllRecipes(ServiceRecipe.class);
         for (ServiceRecipe r : recipes) {
             List<SatisfiableRecipe> dependencies = getSatisfiableDependenciesMap().get(r.getName());
             boolean satisfied = true;
@@ -539,69 +508,16 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
     private void unregisterServices() {
         if (instantiator != null) {
-            List<ServiceRecipe> recipes = getAllRecipes(ServiceRecipe.class);
+            List<ServiceRecipe> recipes = instantiator.getAllRecipes(ServiceRecipe.class);
             for (ServiceRecipe r : recipes) {
                 r.unregister();
             }
         }
     }
 
-    private <T> List<T> getAllRecipes(Class<T> clazz, String... names) {
-        List<T> recipes = new ArrayList<T>();
-        for (Recipe r : getAllRecipes(names)) {
-            if (clazz.isInstance(r)) {
-                recipes.add(clazz.cast(r));
-            }
-        }
-        return recipes;
-    }
-
-    private Set<Recipe> getAllRecipes(String... names) {
-        boolean createNewContext = !ExecutionContext.isContextSet();
-        if (createNewContext) {
-            ExecutionContext.setContext(new DefaultExecutionContext(this, instantiator.getRepository()));
-        }
-        try {
-            Set<Recipe> recipes = new HashSet<Recipe>();
-            DefaultRepository repo = (DefaultRepository) instantiator.getRepository();
-            Set<String> topLevel = names != null && names.length > 0 ? new HashSet<String>(Arrays.asList(names)) : repo.getNames();
-            for (String name : topLevel) {
-                internalGetAllRecipes(recipes, repo.getRecipe(name));
-            }
-            return recipes;
-        } finally {
-            if (createNewContext) {
-                ExecutionContext.setContext(null);
-            }
-        }
-    }
-
-    /*
-     * This method should not be called directly, only from one of the getAllRecipes() methods.
-     */
-    private void internalGetAllRecipes(Set<Recipe> recipes, Recipe r) {
-        if (r != null) {
-            if (recipes.add(r)) {
-                for (Recipe c : r.getNestedRecipes()) {
-                    internalGetAllRecipes(recipes, c);
-                }
-            }
-        }
-    }
-
     private void destroyComponents() {
         if (instantiator != null) {
-            ((DefaultRepository)instantiator.getRepository()).destroy();
-        }
-        
-        Map<String, Destroyable> destroyables = new HashMap<String, Destroyable>(this.destroyables);
-        this.destroyables.clear();
-        for (Map.Entry<String, Destroyable> entry : destroyables.entrySet()) {
-            try {
-                entry.getValue().destroy();
-            } catch (Exception e) {
-                LOGGER.info("Error destroying bean " + entry.getKey(), e);
-            }
+            instantiator.getRepository().destroy();
         }
     }
 

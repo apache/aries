@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import net.sf.cglib.proxy.Dispatcher;
-import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
@@ -187,7 +186,7 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
     }
 
 
-    public class ServiceDispatcher implements Dispatcher, Destroyable {
+    public class ServiceDispatcher implements Dispatcher {
 
         public ServiceReference reference;
         public Object service;

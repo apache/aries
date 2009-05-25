@@ -17,31 +17,28 @@
  */
 package org.apache.geronimo.blueprint.di;
 
-import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import java.util.Set;
 
 public interface Repository {
-    /**
-     * Does this repository contain a object with the specified name.
-     *
-     * @param name the unique name of the object instance
-     * @return true if this repository contain a object with the specified name
-     */
-    boolean contains(String name);
 
     /**
-     * Gets the object or recipe with the specified name from the repository.
-     *
-     * @param name the unique name of the object instance
-     * @return the object instance, a recipe to build the object or null
+     * Returns the set of all known object names (recipes, instances or default objects)
+     * @return
      */
-    Object get(String name);
+    Set<String> getNames();
 
-    /**
-     * Add an object to the repository.
-     *
-     * @param name the unique name of the object instance
-     * @param object the object instance
-     * @throws ComponentDefinitionException if another object instance is already registered with the name
-     */
-    void add(String name, Object object) throws ComponentDefinitionException;
+    Object getInstance(String name);
+
+    Recipe getRecipe(String name);
+
+    Object getDefault(String name);
+
+    void putInstance(String name, Object instance);
+
+    void putRecipe(String name, Recipe recipe);
+
+    void putDefault(String name, Object instance);
+
+    void destroy();
+
 }

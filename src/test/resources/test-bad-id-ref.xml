@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           default-availability="mandatory" >
+
+   <bean id="badIdRef" class="org.apache.geronimo.blueprint.pojos.BeanD">
+        <property name="name">
+          <idref component="doesnotexist"/>
+        </property>
+    </bean>
+    
+</blueprint>

@@ -47,7 +47,7 @@ public class WiringTest extends AbstractBlueprintTest {
     public void testWiring() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
         RecipeBuilder i = new RecipeBuilder(new TestBlueprintContainer(registry));
-        DefaultRepository repository = i.createRepository();
+        Repository repository = i.createRepository();
         BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new TestBlueprintContainer(registry), repository);
         
         Object obj1 = graph.create("pojoA");
@@ -137,7 +137,7 @@ public class WiringTest extends AbstractBlueprintTest {
     public void testCompoundProperties() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
         RecipeBuilder i = new RecipeBuilder(new TestBlueprintContainer(registry));
-        DefaultRepository repository = i.createRepository();
+        Repository repository = i.createRepository();
         BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new TestBlueprintContainer(registry), repository);
         
         Object obj5 = graph.create("compound");
@@ -146,28 +146,27 @@ public class WiringTest extends AbstractBlueprintTest {
         PojoB pojob = (PojoB) obj5;
     
         assertEquals("hello bean property", pojob.getBean().getName());
+
+        Object obj = graph.create("goodIdRef");
+        assertNotNull(obj);
+        assertTrue(obj instanceof BeanD);
+        BeanD bean = (BeanD) obj;
+
+        assertEquals("pojoA", bean.getName());
     }
 
     public void testIdRefs() throws Exception {
-        ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
+        ComponentDefinitionRegistryImpl registry = parse("/test-bad-id-ref.xml");
         RecipeBuilder i = new RecipeBuilder(new TestBlueprintContainer(registry));
-        DefaultRepository repository = i.createRepository();
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new TestBlueprintContainer(registry), repository);
-        
+        Repository repository = i.createRepository();
+
         try {
-            graph.create("badIdRef");
+            new BlueprintObjectInstantiator(new TestBlueprintContainer(registry), repository);
             fail("Did not throw exception");
         } catch (RuntimeException e) {
             // we expect exception
             // TODO: check error string?
         }
-        
-        Object obj = graph.create("goodIdRef");
-        assertNotNull(obj);
-        assertTrue(obj instanceof BeanD);
-        BeanD bean = (BeanD) obj;
-    
-        assertEquals("pojoA", bean.getName());
     }
     
     public void testDependencies() throws Exception {
@@ -175,7 +174,7 @@ public class WiringTest extends AbstractBlueprintTest {
 
         ComponentDefinitionRegistryImpl registry = parse("/test-depends-on.xml");
         RecipeBuilder i = new RecipeBuilder(new TestBlueprintContainer(registry));
-        DefaultRepository repository = i.createRepository();
+        Repository repository = i.createRepository();
         BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new TestBlueprintContainer(registry), repository);
         Map instances = graph.createAll("c", "d", "e");
         

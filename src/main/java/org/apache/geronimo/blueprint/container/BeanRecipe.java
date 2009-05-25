@@ -32,11 +32,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
-import org.apache.geronimo.blueprint.Destroyable;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
+import org.apache.geronimo.blueprint.di.Destroyable;
 import org.apache.geronimo.blueprint.di.Recipe;
-import org.apache.geronimo.blueprint.di.ExecutionContext;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
@@ -59,7 +58,7 @@ public class BeanRecipe extends AbstractRecipe {
 
     private String initMethod;
     private String destroyMethod;
-    private List<String> explicitDependencies;
+    private List<Recipe> explicitDependencies;
     
     private Recipe factory;
     private String factoryMethod;
@@ -122,11 +121,11 @@ public class BeanRecipe extends AbstractRecipe {
         return destroyMethod;
     }
 
-    public List<String> getExplicitDependencies() {
+    public List<Recipe> getExplicitDependencies() {
         return explicitDependencies;
     }
 
-    public void setExplicitDependencies(List<String> explicitDependencies) {
+    public void setExplicitDependencies(List<Recipe> explicitDependencies) {
         this.explicitDependencies = explicitDependencies;
     }
 
@@ -147,23 +146,15 @@ public class BeanRecipe extends AbstractRecipe {
             }
         }
         if (explicitDependencies != null) {
-            for (String name : explicitDependencies) {
-                Object obj = ExecutionContext.getContext().getObject(name);
-                if (obj instanceof Recipe) {
-                    recipes.add((Recipe) obj);
-                }
-            }
+            recipes.addAll(explicitDependencies);
         }
         return recipes; 
     }
 
     private void instantiateExplicitDependencies() {
         if (explicitDependencies != null) {
-            for (String name : explicitDependencies) {
-                Object obj = ExecutionContext.getContext().getObject(name);
-                if (obj instanceof Recipe) {
-                    ((Recipe) obj).create();
-                }
+            for (Recipe recipe : explicitDependencies) {
+                recipe.create();
             }
         }
     }

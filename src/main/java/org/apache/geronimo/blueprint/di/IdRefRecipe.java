@@ -29,34 +29,21 @@ import org.osgi.service.blueprint.container.NoSuchComponentException;
  */
 public class IdRefRecipe extends AbstractRecipe {
     
-    private String referenceName;
+    private String idRef;
 
-    public IdRefRecipe(String name, String referenceName) {
+    public IdRefRecipe(String name, String idRef) {
         super(name);
-        this.referenceName = referenceName;
+        if (idRef == null) throw new NullPointerException("idRef is null");
+        this.idRef = idRef;
     }
 
-    public String getReferenceName() {
-        return referenceName;
+    public String getIdRef() {
+        return idRef;
     }
 
-    private Object getReference() {
-        if (referenceName == null) {
-            throw new ComponentDefinitionException("Reference name has not been set");
-        }
-        ExecutionContext context = ExecutionContext.getContext();
-        if (!context.containsObject(referenceName)) {
-            throw new NoSuchComponentException(referenceName);
-        }
-        return context.getObject(referenceName);
-    }
-    
     public List<Recipe> getNestedRecipes() {
-        // TODO: this does not looks good as the list of nested recipes depends if the objects have already been created or not
-        // TODO: it could lead to problems when determining the list of dependencies for example
-        Object object = getReference();
-        if (object instanceof Recipe) {
-            Recipe recipe = (Recipe) object;
+        Recipe recipe = ExecutionContext.getContext().getRecipe(idRef);
+        if (recipe != null) {
             return Collections.singletonList(recipe);
         } else {
             return Collections.emptyList();
@@ -64,8 +51,19 @@ public class IdRefRecipe extends AbstractRecipe {
     }
 
     protected Object internalCreate() throws ComponentDefinitionException {
-        Object object = getReference();
-        return referenceName;
+        ExecutionContext context = ExecutionContext.getContext();
+        if (!context.containsObject(idRef)) {
+            throw new NoSuchComponentException(idRef);
+        }
+        return idRef;
     }
     
+    @Override
+    public String toString() {
+        return "IdRefRecipe[" +
+                "name='" + name + '\'' +
+                ", idRef='" + idRef + '\'' +
+                ']';
+    }
+
 }

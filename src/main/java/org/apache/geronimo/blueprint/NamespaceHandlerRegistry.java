@@ -28,7 +28,7 @@ import org.osgi.service.blueprint.namespace.NamespaceHandler;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public interface NamespaceHandlerRegistry extends Destroyable {
+public interface NamespaceHandlerRegistry {
 
     /**
      * Retrieve the <code>NamespaceHandler</code> for the specified URI
@@ -51,6 +51,11 @@ public interface NamespaceHandlerRegistry extends Destroyable {
      * @param listener the listener to unregister
      */
     void removeListener(Listener listener);
+
+    /**
+     * Destroy this registry
+     */
+    void destroy();
 
     /**
      * Interface used to listen to registered or unregistered namespace handlers.
