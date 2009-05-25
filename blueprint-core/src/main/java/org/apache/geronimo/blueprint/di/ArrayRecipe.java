@@ -67,11 +67,6 @@ public class ArrayRecipe extends AbstractRecipe {
             throw new ComponentDefinitionException("Error while creating array instance: " + type.getName());
         }
 
-        // add to execution container if name is specified
-        if (getName() != null) {
-            ExecutionContext.getContext().addObject(getName(), array);
-        }
-
         int index = 0;
         for (Recipe recipe : list) {
             Object value;

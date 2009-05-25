@@ -30,12 +30,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
-import org.apache.geronimo.blueprint.container.BlueprintContainerImpl;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -59,7 +58,7 @@ public class CmManagedServiceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CmManagedServiceFactory.class);
     
-    private BlueprintContainerImpl blueprintContainer;
+    private ExtendedBlueprintContainer blueprintContainer;
     private ConfigurationAdmin configAdmin;
     private String factoryPid;
     private List<String> interfaces;
@@ -114,7 +113,7 @@ public class CmManagedServiceFactory {
         return Collections.unmodifiableMap(services);
     }
 
-    public void setBlueprintContainer(BlueprintContainerImpl blueprintContainer) {
+    public void setBlueprintContainer(ExtendedBlueprintContainer blueprintContainer) {
         this.blueprintContainer = blueprintContainer;
     }
 

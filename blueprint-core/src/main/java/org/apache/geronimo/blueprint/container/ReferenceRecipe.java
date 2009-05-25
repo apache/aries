@@ -68,7 +68,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             proxyClass = proxy.getClass();
 
             // Add partially created proxy to the context
-            addObject(proxy, false);
+            addObject(proxy, true);
 
             // Start track the service
             tracker.registerServiceListener(this);

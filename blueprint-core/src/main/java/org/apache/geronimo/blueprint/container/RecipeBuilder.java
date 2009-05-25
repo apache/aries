@@ -190,7 +190,7 @@ public class RecipeBuilder {
             recipe.setProperty(property.getName(), value);
         }
         if (BeanMetadata.SCOPE_PROTOTYPE.equals(beanMetadata.getScope())) {
-            recipe.setKeepRecipe(true);
+            recipe.setPrototype(true);
         }
         recipe.setInitMethod(beanMetadata.getInitMethodName());
         recipe.setDestroyMethod(beanMetadata.getDestroyMethodName());

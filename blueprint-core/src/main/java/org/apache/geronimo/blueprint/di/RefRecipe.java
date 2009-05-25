@@ -72,11 +72,6 @@ public class RefRecipe extends AbstractRecipe {
             }
         }
 
-        // add to execution container if name is specified
-        if (getName() != null) {
-            ExecutionContext.getContext().addObject(getName(), object);
-        }
-
         return object;
     }
 

@@ -57,8 +57,13 @@ public class ValueRecipe extends AbstractRecipe {
         }
     }
 
+    @Override
     public String toString() {
-        return "ValueRecipe: " + type + " " + value.getStringValue();
+        return getClass().getSimpleName() + "[" +
+                "name='" + name + '\'' +
+                ", value=" + value +
+                ", type=" + type +
+                ']';
     }
 
 }

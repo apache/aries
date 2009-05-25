@@ -72,12 +72,6 @@ public class CollectionRecipe extends AbstractRecipe {
         }
         Collection instance = (Collection) o;
 
-        // add to execution container if name is specified
-        if (getName() != null) {
-            ExecutionContext.getContext().addObject(getName(), instance);
-        }
-
-        int index = 0;
         for (Recipe recipe : list) {
             Object value;
             if (recipe != null) {
@@ -90,7 +84,6 @@ public class CollectionRecipe extends AbstractRecipe {
                 value = null;
             }
             instance.add(value);
-            index++;
         }
         return instance;
     }
