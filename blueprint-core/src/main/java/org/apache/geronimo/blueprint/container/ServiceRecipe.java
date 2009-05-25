@@ -19,7 +19,7 @@ import org.apache.geronimo.blueprint.di.DefaultRepository;
 import org.apache.geronimo.blueprint.di.ExecutionContext;
 import org.apache.geronimo.blueprint.di.MapRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
-import org.apache.geronimo.blueprint.di.ReferenceRecipe;
+import org.apache.geronimo.blueprint.di.RefRecipe;
 import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
@@ -43,9 +43,9 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 776360 $, $Date: 2009-05-19 17:40:47 +0200 (Tue, 19 May 2009) $
  */
-public class ServiceExportRecipe extends AbstractRecipe implements ServiceRegistration {
+public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceExportRecipe.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRecipe.class);
 
     private ExtendedBlueprintContainer blueprintContainer;
     private ServiceMetadata metadata;
@@ -61,7 +61,7 @@ public class ServiceExportRecipe extends AbstractRecipe implements ServiceRegist
     private Object service;
     private boolean bundleScope;
 
-    public ServiceExportRecipe(String name,
+    public ServiceRecipe(String name,
                                ExtendedBlueprintContainer blueprintContainer,
                                ServiceMetadata metadata,
                                Recipe serviceRecipe,
@@ -229,8 +229,8 @@ public class ServiceExportRecipe extends AbstractRecipe implements ServiceRegist
         if (scoped) {
             Recipe recipe = serviceRecipe;
             Repository objectRepository = blueprintContainer.getRepository();
-            if (recipe instanceof ReferenceRecipe) {
-                recipe = (Recipe) objectRepository.get(((ReferenceRecipe) recipe).getReferenceName());
+            if (recipe instanceof RefRecipe) {
+                recipe = (Recipe) objectRepository.get(((RefRecipe) recipe).getReferenceName());
             }
             DefaultRepository repository = new DefaultRepository((DefaultRepository) objectRepository);
             repository.putRecipe(recipe.getName(), recipe);
@@ -254,10 +254,10 @@ public class ServiceExportRecipe extends AbstractRecipe implements ServiceRegist
     private void destroyInstance(Object instance) {
         Recipe recipe = serviceRecipe;
         Repository objectRepository = blueprintContainer.getRepository();
-        if (recipe instanceof ReferenceRecipe) {
-            recipe = (Recipe) objectRepository.get(((ReferenceRecipe) recipe).getReferenceName());
+        if (recipe instanceof RefRecipe) {
+            recipe = (Recipe) objectRepository.get(((RefRecipe) recipe).getReferenceName());
         }
-        ((BlueprintObjectRecipe) recipe).destroyInstance(instance);
+        ((BeanRecipe) recipe).destroyInstance(instance);
     }
 
     private boolean isBundleScope(Metadata value) {
@@ -306,11 +306,11 @@ public class ServiceExportRecipe extends AbstractRecipe implements ServiceRegist
     private class TriggerServiceFactory implements ServiceFactory {
 
         public Object getService(Bundle bundle, ServiceRegistration registration) {
-            return ServiceExportRecipe.this.getService(bundle, registration);
+            return ServiceRecipe.this.getService(bundle, registration);
         }
 
         public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
-            ServiceExportRecipe.this.ungetService(bundle, registration, service);
+            ServiceRecipe.this.ungetService(bundle, registration, service);
         }
 
     }
@@ -332,16 +332,16 @@ public class ServiceExportRecipe extends AbstractRecipe implements ServiceRegist
             this.metadata = metadata;
         }
 
-        public void register(ServiceExportRecipe recipe) {
+        public void register(ServiceRecipe recipe) {
             init(recipe);
             invokeMethod(registerMethods, recipe);
         }
 
-        public void unregister(ServiceExportRecipe recipe) {
+        public void unregister(ServiceRecipe recipe) {
             invokeMethod(unregisterMethods, recipe);
         }
 
-        private synchronized void init(ServiceExportRecipe recipe) {
+        private synchronized void init(ServiceRecipe recipe) {
             if (initialized) {
                 return;
             }
@@ -358,7 +358,7 @@ public class ServiceExportRecipe extends AbstractRecipe implements ServiceRegist
             initialized = true;
         }
 
-        private void invokeMethod(List<Method> methods, ServiceExportRecipe recipe) {
+        private void invokeMethod(List<Method> methods, ServiceRecipe recipe) {
             if (methods == null || methods.isEmpty()) {
                 return;
             }

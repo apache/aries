@@ -57,15 +57,15 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class CollectionBasedServiceReferenceRecipe extends AbstractServiceReferenceRecipe {
+public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CollectionBasedServiceReferenceRecipe.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RefCollectionRecipe.class);
 
     private final RefCollectionMetadata metadata;
     private final Recipe comparatorRecipe;
     private ManagedCollection collection;
 
-    public CollectionBasedServiceReferenceRecipe(String name,
+    public RefCollectionRecipe(String name,
                                                  ExtendedBlueprintContainer blueprintContainer,
                                                  RefCollectionMetadata metadata,
                                                  Recipe listenersRecipe,
