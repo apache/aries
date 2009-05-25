@@ -17,6 +17,8 @@
  */
 package org.apache.geronimo.blueprint.di;
 
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
+
 public interface Repository {
     /**
      * Does this repository contain a object with the specified name.
@@ -41,5 +43,5 @@ public interface Repository {
      * @param object the object instance
      * @throws ComponentDefinitionException if another object instance is already registered with the name
      */
-    void add(String name, Object object);
+    void add(String name, Object object) throws ComponentDefinitionException;
 }

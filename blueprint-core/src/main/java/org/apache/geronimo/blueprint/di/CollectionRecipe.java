@@ -19,7 +19,6 @@ package org.apache.geronimo.blueprint.di;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,9 +43,8 @@ public class CollectionRecipe extends AbstractRecipe {
 
     public List<Recipe> getNestedRecipes() {
         List<Recipe> nestedRecipes = new ArrayList<Recipe>(list.size());
-        for (Object o : list) {
-            if (o instanceof Recipe) {
-                Recipe recipe = (Recipe) o;
+        for (Recipe recipe : list) {
+            if (recipe != null) {
                 nestedRecipes.add(recipe);
             }
         }
@@ -121,22 +119,6 @@ public class CollectionRecipe extends AbstractRecipe {
     
     public void add(Recipe value) {
         list.add(value);
-    }
-
-    public void addAll(Collection<Recipe> value) {
-        list.addAll(value);
-    }
-
-    public void remove(Recipe value) {
-        list.remove(value);
-    }
-
-    public void removeAll(Recipe value) {
-        list.remove(value);
-    }
-
-    public List<Recipe> getAll() {
-        return Collections.unmodifiableList(list);
     }
 
 }

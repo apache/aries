@@ -18,8 +18,6 @@ package org.apache.geronimo.blueprint.di;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
@@ -40,9 +38,8 @@ public class ArrayRecipe extends AbstractRecipe {
 
     public List<Recipe> getNestedRecipes() {
         List<Recipe> nestedRecipes = new ArrayList<Recipe>(list.size());
-        for (Object o : list) {
-            if (o instanceof Recipe) {
-                Recipe recipe = (Recipe) o;
+        for (Recipe recipe : list) {
+            if (recipe != null) {
                 nestedRecipes.add(recipe);
             }
         }
@@ -89,22 +86,6 @@ public class ArrayRecipe extends AbstractRecipe {
 
     public void add(Recipe value) {
         list.add(value);
-    }
-
-    public void addAll(Collection<Recipe> value) {
-        list.addAll(value);
-    }
-
-    public void remove(Object value) {
-        list.remove(value);
-    }
-
-    public void removeAll(Object value) {
-        list.remove(value);
-    }
-
-    public List<Recipe> getAll() {
-        return Collections.unmodifiableList(list);
     }
 
 }
