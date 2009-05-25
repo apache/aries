@@ -20,6 +20,7 @@ package org.apache.geronimo.blueprint.compendium.cm;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
@@ -224,8 +225,8 @@ public class CmManagedProperties implements BeanProcessor {
                             if (validSetters.add(method)) {
                                 try {
                                     method.invoke(bean, propertyValue);
-                                } catch (Throwable t) {
-                                    LOGGER.debug("Setter can not be invoked: " + method, t);
+                                } catch (Exception t) {
+                                    LOGGER.debug("Setter can not be invoked: " + method, getRealCause(t));
                                 }
                             }
                         }
@@ -250,10 +251,17 @@ public class CmManagedProperties implements BeanProcessor {
                 try {
                     method.invoke(bean, map);
                 } catch (Throwable t) {
-                    LOGGER.warn("Unable to call method " + method + " on bean " + beanName, t);
+                    LOGGER.warn("Unable to call method " + method + " on bean " + beanName, getRealCause(t));
                 }
             }
         }
+    }
+
+    private static Throwable getRealCause(Throwable t) {
+        if (t instanceof InvocationTargetException && t.getCause() != null) {
+            return t.getCause();
+        }
+        return t;
     }
 
 }

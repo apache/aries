@@ -18,7 +18,6 @@ package org.apache.geronimo.blueprint.container;
 
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +26,7 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
+import static org.apache.geronimo.blueprint.utils.ReflectionUtils.getRealCause;
 import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.osgi.service.blueprint.container.Converter;
 
@@ -189,10 +189,8 @@ public class AggregateConverter implements Converter {
         }
         try {
             return constructor.newInstance(value);
-        } catch (InvocationTargetException e) {
-            throw new Exception("Unable to convert ", e.getTargetException());
         } catch (Exception e) {
-            throw new Exception("Unable to convert ", e);
+            throw new Exception("Unable to convert ", getRealCause(e));
         }
     }
 
