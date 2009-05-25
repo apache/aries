@@ -33,8 +33,8 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
  */
 public class ValueRecipe extends AbstractRecipe {
 
-    private ValueMetadata value;
-    private Object type;
+    private final ValueMetadata value;
+    private final Object type;
 
     public ValueRecipe(String name, ValueMetadata value, Object type) {
         super(name);
@@ -59,7 +59,7 @@ public class ValueRecipe extends AbstractRecipe {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[" +
+        return "ValueRecipe[" +
                 "name='" + name + '\'' +
                 ", value=" + value +
                 ", type=" + type +

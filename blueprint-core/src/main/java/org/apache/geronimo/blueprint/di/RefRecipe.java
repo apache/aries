@@ -24,57 +24,50 @@ import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
 
 public class RefRecipe extends AbstractRecipe {
-    private String referenceName;
 
-    public RefRecipe(String name, String referenceName) {
+    private String idRef;
+
+    public RefRecipe(String name, String idRef) {
         super(name);
-        this.referenceName = referenceName;
+        this.idRef = idRef;
     }
 
-    public String getReferenceName() {
-        return referenceName;
+    public String getIdRef() {
+        return idRef;
     }
 
-    public void setReferenceName(String name) {
-        this.referenceName = name;
+    public void setIdRef(String name) {
+        this.idRef = name;
     }
 
     public List<Recipe> getNestedRecipes() {
-        // TODO: this does not looks good as the list of nested recipes depends if the objects have already been created or not
-        // TODO: it could lead to problems when determining the list of dependencies for example
-        ExecutionContext context = ExecutionContext.getContext();
-        if (!context.containsObject(referenceName)) {
-            throw new NoSuchComponentException(referenceName);
-        }
-
-        Object object = ExecutionContext.getContext().getObject(referenceName);
-        if (object instanceof Recipe) {
-            Recipe recipe = (Recipe) object;
+        Recipe recipe = ExecutionContext.getContext().getRecipe(idRef);
+        if (recipe != null) {
             return Collections.singletonList(recipe);
+        } else {
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
     }
 
     protected Object internalCreate() throws ComponentDefinitionException {
-        if (referenceName == null) {
-            throw new ComponentDefinitionException("Reference name has not been set");
-        }
-
         ExecutionContext context = ExecutionContext.getContext();
-
-        Object object;
-        if (!context.containsObject(referenceName)) {
-            throw new ComponentDefinitionException("Currently no object registered with name " + referenceName +
-                    " and a lazy reference not allowed");
-        } else {
-            object = context.getObject(referenceName);
-            if (object instanceof Recipe) {
-                Recipe recipe = (Recipe) object;
-                object = recipe.create();
-            }
+        if (!context.containsObject(idRef)) {
+            throw new NoSuchComponentException(idRef);
         }
+        Object instance = context.getObject(idRef);
+        if (instance instanceof Recipe) {
+            Recipe recipe = (Recipe) instance;
+            instance = recipe.create();
+        }
+        return instance;
+    }
 
-        return object;
+    @Override
+    public String toString() {
+        return "RefRecipe[" +
+                "name='" + name + '\'' +
+                ", idRef='" + idRef + '\'' +
+                ']';
     }
 
 }

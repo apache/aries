@@ -22,20 +22,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.HashSet;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.di.ArrayRecipe;
 import org.apache.geronimo.blueprint.di.CollectionRecipe;
 import org.apache.geronimo.blueprint.di.DefaultRepository;
+import org.apache.geronimo.blueprint.di.IdRefRecipe;
 import org.apache.geronimo.blueprint.di.MapRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
-import org.apache.geronimo.blueprint.di.IdRefRecipe;
 import org.apache.geronimo.blueprint.di.RefRecipe;
+import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.di.ValueRecipe;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.reflect.MetadataUtil;
@@ -76,7 +77,7 @@ public class RecipeBuilder {
         this.registry = blueprintContainer.getComponentDefinitionRegistry();
     }
     
-    private void addBuiltinComponents(DefaultRepository repository) {
+    private void addBuiltinComponents(Repository repository) {
         if (blueprintContainer != null) {
             repository.putDefault("blueprintContainer", blueprintContainer);
             repository.putDefault("blueprintBundle", blueprintContainer.getBundleContext().getBundle());
@@ -86,21 +87,16 @@ public class RecipeBuilder {
         }
     }
     
-    public DefaultRepository createRepository() throws Exception {
-        DefaultRepository repository = new DefaultRepository();
+    public Repository createRepository() throws Exception {
+        Repository repository = new DefaultRepository();
         addBuiltinComponents(repository);
-        
         // Create component recipes
         for (String name : registry.getComponentDefinitionNames()) {
             ComponentMetadata component = registry.getComponentDefinition(name);
             Recipe recipe = createRecipe(component);
-            addRecipe(repository, recipe);
+            repository.putRecipe(recipe.getName(), recipe);
         }
         return repository;
-    }
-
-    private void addRecipe(DefaultRepository repository, Recipe recipe) {
-        repository.add(recipe.getName(), recipe); 
     }
 
     public Recipe createRecipe(ComponentMetadata component) throws Exception {
@@ -186,9 +182,14 @@ public class RecipeBuilder {
                 getName(beanMetadata.getId()),
                 blueprintContainer,
                 beanMetadata.getRuntimeClass() != null ? beanMetadata.getRuntimeClass() : beanMetadata.getClassName());
-        recipe.setExplicitDependencies(beanMetadata.getExplicitDependencies());
-        if (BeanMetadata.SCOPE_PROTOTYPE.equals(beanMetadata.getScope())) {
-            recipe.setPrototype(true);
+        // Create refs for explicit dependencies
+        List<Recipe> deps = new ArrayList<Recipe>();
+        for (String name : beanMetadata.getExplicitDependencies()) {
+            deps.add(new RefRecipe(getName(null), name));
+        }
+        recipe.setExplicitDependencies(deps);
+        if (!BeanMetadata.SCOPE_PROTOTYPE.equals(beanMetadata.getScope())) {
+            recipe.setPrototype(false);
         }
         recipe.setInitMethod(beanMetadata.getInitMethodName());
         recipe.setDestroyMethod(beanMetadata.getDestroyMethodName());

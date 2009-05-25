@@ -21,13 +21,12 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.geronimo.blueprint.Destroyable;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 public abstract class AbstractRecipe implements Recipe {
 
-    protected String name;
-    protected boolean prototype;
+    protected final String name;
+    protected boolean prototype = true;
 
     protected AbstractRecipe(String name) {
         if (name == null) throw new NullPointerException("name is null");
@@ -51,15 +50,15 @@ public abstract class AbstractRecipe implements Recipe {
         ExecutionContext context = ExecutionContext.getContext();
 
         // if this recipe has already been executed in this container, return the currently registered value
-        String name = getName();
-        if (name != null && context.containsCreatedObject(name)) {
-            return context.getCreatedObject(name);
+        Object obj = context.getPartialObject(name);
+        if (obj != null) {
+            return obj;
         }
 
         // execute the recipe
         context.push(this);
         try {
-            Object obj = internalCreate();
+            obj = internalCreate();
             addObject(obj, false);
             return obj;
         } finally {

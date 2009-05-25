@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint;
+package org.apache.geronimo.blueprint.di;
 
 /**
  * Interface used as a callback to destroy a given object.

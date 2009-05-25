@@ -26,9 +26,9 @@ import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
-import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 
 /**

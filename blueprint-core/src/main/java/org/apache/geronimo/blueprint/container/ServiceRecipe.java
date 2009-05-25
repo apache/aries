@@ -68,6 +68,7 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
                                CollectionRecipe listenersRecipe,
                                MapRecipe propertiesRecipe) {
         super(name);
+        this.prototype = false;
         this.blueprintContainer = blueprintContainer;
         this.metadata = metadata;
         this.serviceRecipe = serviceRecipe;
@@ -228,11 +229,11 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
     private Object createInstance(boolean scoped) {
         if (scoped) {
             Recipe recipe = serviceRecipe;
-            Repository objectRepository = blueprintContainer.getRepository();
+            Repository repo = blueprintContainer.getRepository();
             if (recipe instanceof RefRecipe) {
-                recipe = (Recipe) objectRepository.get(((RefRecipe) recipe).getReferenceName());
+                recipe = repo.getRecipe(((RefRecipe) recipe).getIdRef());
             }
-            DefaultRepository repository = new DefaultRepository((DefaultRepository) objectRepository);
+            DefaultRepository repository = new DefaultRepository((DefaultRepository) repo);
             repository.putRecipe(recipe.getName(), recipe);
             BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(blueprintContainer, repository);
             return graph.create(recipe.getName());
@@ -243,7 +244,7 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
 
     private Object createSimpleRecipe(Recipe recipe) {
         String name = recipe.getName();
-        DefaultRepository repo = (DefaultRepository) blueprintContainer.getRepository();
+        Repository repo = blueprintContainer.getRepository();
         if (repo.getRecipe(name) == null) {
             repo.putRecipe(name, recipe);
         }
@@ -255,7 +256,7 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
         Recipe recipe = serviceRecipe;
         Repository objectRepository = blueprintContainer.getRepository();
         if (recipe instanceof RefRecipe) {
-            recipe = (Recipe) objectRepository.get(((RefRecipe) recipe).getReferenceName());
+            recipe = objectRepository.getRecipe(((RefRecipe) recipe).getIdRef());
         }
         ((BeanRecipe) recipe).destroyInstance(instance);
     }

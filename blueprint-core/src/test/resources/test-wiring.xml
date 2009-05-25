@@ -4,7 +4,7 @@
 
     <type-converters>
             <bean id="converter1" class="org.apache.geronimo.blueprint.pojos.ConverterA">
-                <property name="bundle" ref="bundle" />
+                <property name="bundle" ref="blueprintBundleContext" />
             </bean>
     </type-converters>
     
@@ -17,6 +17,11 @@
 
     <bean id="pojoC" class="org.apache.geronimo.blueprint.pojos.PojoB" scope = "prototype">
         <property name="uri" value="urn:myuri" />
+        <property name="objects">
+            <list>
+                <value>list value</value>
+            </list>
+        </property>
     </bean>
     
     <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB" init-method = "init" destroy-method = "destroy" >
@@ -88,12 +93,6 @@
 
     <bean id="compound" class="org.apache.geronimo.blueprint.pojos.PojoB">
         <property name="bean.name" value="hello bean property" />
-    </bean>
-    
-    <bean id="badIdRef" class="org.apache.geronimo.blueprint.pojos.BeanD">
-        <property name="name">
-          <idref component="doesnotexist"/>
-        </property>
     </bean>
     
     <bean id="goodIdRef" class="org.apache.geronimo.blueprint.pojos.BeanD">

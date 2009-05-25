@@ -81,13 +81,14 @@ public abstract class ExecutionContext {
      */
     public abstract void addObject(String name, Object object, boolean partialObject);
     
-    public abstract boolean containsCreatedObject(String name);
-    
-    public abstract Object getCreatedObject(String name);
+    public abstract Object getPartialObject(String name);
 
     public abstract List<Recipe> getCreatedRecipes();
 
     public abstract Object convert(Object value, Type type) throws Exception;
 
     public abstract Class loadClass(String className) throws ClassNotFoundException;
+
+    public abstract Recipe getRecipe(String name);
 }
+
