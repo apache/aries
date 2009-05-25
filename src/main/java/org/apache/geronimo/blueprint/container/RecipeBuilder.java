@@ -24,6 +24,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
@@ -37,7 +39,6 @@ import org.apache.geronimo.blueprint.di.RefRecipe;
 import org.apache.geronimo.blueprint.di.ValueRecipe;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.reflect.MetadataUtil;
-import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -65,6 +66,7 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
  */
 public class RecipeBuilder {
 
+    private Set<String> names = new HashSet<String>();
     private int nameCounter;
     private ExtendedBlueprintContainer blueprintContainer;
     private ExtendedComponentDefinitionRegistry registry;
@@ -301,12 +303,13 @@ public class RecipeBuilder {
     }
 
     private String getName(String name) {
-        // TODO: what if name.startWith("recipe-") ?
         if (name == null) {
-            return "recipe-" + ++nameCounter;
-        } else {
-            return name;
+            do {
+                name = "#recipe-" + ++nameCounter;
+            } while (names.contains(name) || registry.containsComponentDefinition(name));
         }
+        names.add(name);
+        return name;
     }
 
 }
