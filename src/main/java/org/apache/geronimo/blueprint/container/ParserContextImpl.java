@@ -16,13 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.namespace;
+package org.apache.geronimo.blueprint.container;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import org.apache.geronimo.blueprint.ExtendedParserContext;
-import org.apache.geronimo.blueprint.container.Parser;
 import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;

@@ -96,10 +96,7 @@ public class DefaultExecutionContext extends ExecutionContext {
     public Object getObject(String name) {
         Object object = repository.getInstance(name);
         if (object == null) {
-            Recipe recipe = repository.getRecipe(name);
-            if (recipe != null) {
-                object = recipe.create();
-            }
+            object = repository.getRecipe(name);
         }
         if (object == null) {
             object = repository.getDefault(name);

@@ -19,7 +19,6 @@
 package org.apache.geronimo.blueprint.container;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -37,6 +36,7 @@ import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.Destroyable;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
+import static org.apache.geronimo.blueprint.utils.ReflectionUtils.getRealCause;
 import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.slf4j.Logger;
@@ -188,11 +188,8 @@ public class BeanRecipe extends AbstractRecipe {
                 try {
                     Map.Entry<Method, List<Object>> match = matches.entrySet().iterator().next();
                     instance = match.getKey().invoke(factoryObj, match.getValue().toArray());
-                } catch (InvocationTargetException e) {
-                    Throwable root = e.getTargetException();
-                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), root);
                 } catch (Throwable e) {
-                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), e);
+                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), getRealCause(e));
                 }
             } else if (matches.size() == 0) {
                 throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + factoryObj.getClass() + " for arguments " + args + " when instanciating bean " + getName());
@@ -206,11 +203,8 @@ public class BeanRecipe extends AbstractRecipe {
                 try {
                     Map.Entry<Method, List<Object>> match = matches.entrySet().iterator().next();
                     instance = match.getKey().invoke(null, match.getValue().toArray());
-                } catch (InvocationTargetException e) {
-                    Throwable root = e.getTargetException();
-                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), root);
                 } catch (Throwable e) {
-                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), e);
+                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), getRealCause(e));
                 }
             } else if (matches.size() == 0) {
                 throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
@@ -227,11 +221,8 @@ public class BeanRecipe extends AbstractRecipe {
                 try {
                     Map.Entry<Constructor, List<Object>> match = matches.entrySet().iterator().next();
                     instance = match.getKey().newInstance(match.getValue().toArray());
-                } catch (InvocationTargetException e) {
-                    Throwable root = e.getTargetException();
-                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), root);
                 } catch (Throwable e) {
-                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), e);
+                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), getRealCause(e));
                 }
             } else if (matches.size() == 0) {
                 throw new ComponentDefinitionException("Unable to find a matching constructor on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
@@ -507,11 +498,8 @@ public class BeanRecipe extends AbstractRecipe {
         if (initMethod != null) {
             try {
                 initMethod.invoke(obj);
-            } catch (InvocationTargetException e) {
-                Throwable root = e.getTargetException();
-                throw new ComponentDefinitionException("init-method generated exception", root);
-            } catch (Exception e) {
-                LOGGER.info("Error invoking init method", e);
+            } catch (Throwable t) {
+                LOGGER.info("Error invoking init method", getRealCause(t));
             }
         }
         
@@ -528,7 +516,7 @@ public class BeanRecipe extends AbstractRecipe {
                 method.invoke(obj);
             }
         } catch (Exception e) {
-            LOGGER.info("Error invoking destroy method", e);
+            LOGGER.info("Error invoking destroy method", getRealCause(e));
         }
         for (BeanProcessor processor : blueprintContainer.getBeanProcessors()) {
             processor.afterDestroy(obj, getName());
@@ -581,14 +569,7 @@ public class BeanRecipe extends AbstractRecipe {
                     instance = getter.invoke(instance);
                     clazz = instance.getClass();
                 } catch (Exception e) {
-                    Throwable t = e;
-                    if (e instanceof InvocationTargetException) {
-                        InvocationTargetException invocationTargetException = (InvocationTargetException) e;
-                        if (invocationTargetException.getCause() != null) {
-                            t = invocationTargetException.getCause();
-                        }
-                    }
-                    throw new ComponentDefinitionException("Error getting property: " + names[i] + " on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName(), t);
+                    throw new ComponentDefinitionException("Error getting property: " + names[i] + " on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName(), getRealCause(e));
                 }
             } else {
                 throw new ComponentDefinitionException("No getter for " + names[i] + " property on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName());
@@ -616,14 +597,7 @@ public class BeanRecipe extends AbstractRecipe {
                 // set value
                 setter.invoke(instance, propertyValue);
             } catch (Exception e) {
-                Throwable t = e;
-                if (e instanceof InvocationTargetException) {
-                    InvocationTargetException invocationTargetException = (InvocationTargetException) e;
-                    if (invocationTargetException.getCause() != null) {
-                        t = invocationTargetException.getCause();
-                    }
-                }
-                throw new ComponentDefinitionException("Error setting property: " + setter, t);
+                throw new ComponentDefinitionException("Error setting property: " + setter, getRealCause(e));
             }
         } else {
             throw new ComponentDefinitionException("No setter for " + names[names.length - 1] + " property");
@@ -719,7 +693,7 @@ public class BeanRecipe extends AbstractRecipe {
 
     }
 
-    private static class DestroyCallback implements Destroyable {
+    private class DestroyCallback implements Destroyable {
 
         private Method method;
         private Object instance;
@@ -733,7 +707,7 @@ public class BeanRecipe extends AbstractRecipe {
             try {
                 method.invoke(instance);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.info("Error destroying bean " + getName(), getRealCause(e));
             }
         }
 

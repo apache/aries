@@ -18,6 +18,7 @@
  */
 package org.apache.geronimo.blueprint.utils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -198,6 +199,13 @@ public class ReflectionUtils {
         public Method getSetter() {
             return setter;
         }
+    }
+
+    public static Throwable getRealCause(Throwable t) {
+        if (t instanceof InvocationTargetException && t.getCause() != null) {
+            return t.getCause();
+        }
+        return t;
     }
 
 }

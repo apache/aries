@@ -50,7 +50,7 @@ import org.w3c.dom.NodeList;
 
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
-import org.apache.geronimo.blueprint.namespace.ParserContextImpl;
+import org.apache.geronimo.blueprint.container.ParserContextImpl;
 import org.apache.geronimo.blueprint.reflect.BeanArgumentImpl;
 import org.apache.geronimo.blueprint.reflect.BeanMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.BeanPropertyImpl;
