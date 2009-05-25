@@ -24,8 +24,8 @@ import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
 
 /*
- * The ReferenceNameRecipe is used to inject the reference name into the object (as a String).
- * The ReferenceNameRecipe ensures the actual reference object exists before the reference name is injected. 
+ * The IdRefRecipe is used to inject the reference name into the object (as a String).
+ * The IdRefRecipe ensures the actual reference object exists before the reference name is injected. 
  */
 public class IdRefRecipe extends AbstractRecipe {
     
@@ -52,6 +52,8 @@ public class IdRefRecipe extends AbstractRecipe {
     }
     
     public List<Recipe> getNestedRecipes() {
+        // TODO: this does not looks good as the list of nested recipes depends if the objects have already been created or not
+        // TODO: it could lead to problems when determining the list of dependencies for example
         Object object = getReference();
         if (object instanceof Recipe) {
             Recipe recipe = (Recipe) object;

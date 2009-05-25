@@ -40,6 +40,8 @@ public class RefRecipe extends AbstractRecipe {
     }
 
     public List<Recipe> getNestedRecipes() {
+        // TODO: this does not looks good as the list of nested recipes depends if the objects have already been created or not
+        // TODO: it could lead to problems when determining the list of dependencies for example
         ExecutionContext context = ExecutionContext.getContext();
         if (!context.containsObject(referenceName)) {
             throw new NoSuchComponentException(referenceName);

@@ -16,7 +16,6 @@
  */
 package org.apache.geronimo.blueprint.di;
 
-import java.lang.reflect.Type;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -48,24 +47,17 @@ public class MapRecipe extends AbstractRecipe {
 
     public List<Recipe> getNestedRecipes() {
         List<Recipe> nestedRecipes = new ArrayList<Recipe>(entries.size() * 2);
-        for (Object[] entry : entries) {
-            Object key = entry[0];
-            if (key instanceof Recipe) {
-                Recipe recipe = (Recipe) key;
-                nestedRecipes.add(recipe);
-            }
-
-            Object value = entry[1];
-            if (value instanceof Recipe) {
-                Recipe recipe = (Recipe) value;
-                nestedRecipes.add(recipe);
+        for (Recipe[] entry : entries) {
+            nestedRecipes.add(entry[0]);
+            if (entry[1] != null) {
+                nestedRecipes.add(entry[1]);
             }
         }
         return nestedRecipes;
     }
 
     protected Object internalCreate() throws ComponentDefinitionException {
-        Class mapType = getType(Object.class);
+        Class mapType = getMap(typeClass);
 
         if (!TypeUtils.hasDefaultConstructor(mapType)) {
             throw new ComponentDefinitionException("Type does not have a default constructor " + mapType.getName());
@@ -96,23 +88,6 @@ public class MapRecipe extends AbstractRecipe {
         return instance;
     }
 
-    private Class getType(Type expectedType) {
-        Class expectedClass = TypeUtils.toClass(expectedType);
-        if (typeClass != null) {
-            Class type = typeClass;
-            // if expectedType is a subclass of the assigned type,
-            // we use it assuming it has a default constructor
-            if (type.isAssignableFrom(expectedClass)) {
-                return getMap(expectedClass);                
-            } else {
-                return getMap(type);
-            }
-        }
-
-        // no type explicitly set
-        return getMap(expectedClass);
-    }
-    
     private Class getMap(Class type) {
         if (TypeUtils.hasDefaultConstructor(type)) {
             return type;
