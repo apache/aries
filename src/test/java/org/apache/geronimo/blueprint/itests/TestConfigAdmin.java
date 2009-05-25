@@ -68,6 +68,7 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         props = new Hashtable<String,String>();
         props.put("a", "10");
         props.put("currency", "USD");
+        cf = ca.getConfiguration("blueprint-sample-managed.none", null);
         cf.update(props);
 
         Thread.sleep(100);
