@@ -32,13 +32,15 @@ import org.osgi.service.blueprint.container.ComponentDefinitionException;
  * @version $Rev: 6685 $ $Date: 2005-12-28T00:29:37.967210Z $
  */
 public class CollectionRecipe extends AbstractRecipe {
+
     private final List<Recipe> list;
-    private Class typeClass;
+    private final Class typeClass;
 
     public CollectionRecipe(String name, Class type) {
         super(name);
-        this.list = new ArrayList<Recipe>();
+        if (type == null) throw new NullPointerException("type is null");
         this.typeClass = type;
+        this.list = new ArrayList<Recipe>();
     }
 
     public List<Recipe> getNestedRecipes() {
@@ -52,7 +54,7 @@ public class CollectionRecipe extends AbstractRecipe {
     }
 
     protected Object internalCreate() throws ComponentDefinitionException {
-        Class type = getType(Object.class);
+        Class type = getCollection(typeClass);
 
         if (!TypeUtils.hasDefaultConstructor(type)) {
             throw new ComponentDefinitionException("Type does not have a default constructor " + type.getName());
@@ -84,23 +86,6 @@ public class CollectionRecipe extends AbstractRecipe {
             instance.add(value);
         }
         return instance;
-    }
-
-    private Class getType(Type expectedType) {
-        Class expectedClass = TypeUtils.toClass(expectedType);
-        if (typeClass != null) {
-            Class type = typeClass;
-            // if expectedType is a subclass of the assigned type,
-            // we use it assuming it has a default constructor
-            if (type.isAssignableFrom(expectedClass)) {
-                return getCollection(expectedClass);                
-            } else {
-                return getCollection(type);
-            }
-        }
-        
-        // no type explicitly set
-        return getCollection(expectedClass);
     }
 
     private Class getCollection(Class type) {

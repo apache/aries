@@ -185,10 +185,6 @@ public class RecipeBuilder {
                 blueprintContainer,
                 beanMetadata.getRuntimeClass() != null ? beanMetadata.getRuntimeClass() : beanMetadata.getClassName());
         recipe.setExplicitDependencies(beanMetadata.getExplicitDependencies());
-        for (BeanProperty property : beanMetadata.getProperties()) {
-            Recipe value = getValue(property.getValue(), null);
-            recipe.setProperty(property.getName(), value);
-        }
         if (BeanMetadata.SCOPE_PROTOTYPE.equals(beanMetadata.getScope())) {
             recipe.setPrototype(true);
         }
@@ -216,6 +212,10 @@ public class RecipeBuilder {
         recipe.setFactoryMethod(beanMetadata.getFactoryMethodName());
         if (beanMetadata.getFactoryComponent() != null) {
             recipe.setFactoryComponent(getValue(beanMetadata.getFactoryComponent(), null));
+        }
+        for (BeanProperty property : beanMetadata.getProperties()) {
+            Recipe value = getValue(property.getValue(), null);
+            recipe.setProperty(property.getName(), value);
         }
         return recipe;
     }
@@ -261,7 +261,7 @@ public class RecipeBuilder {
                 }
                 return ar;
             } else {
-                CollectionRecipe cr = new CollectionRecipe(getName(null), cl);
+                CollectionRecipe cr = new CollectionRecipe(getName(null), cl != null ? cl : ArrayList.class);
                 for (Metadata lv : collectionMetadata.getValues()) {
                     cr.add(getValue(lv, type));
                 }
@@ -289,8 +289,8 @@ public class RecipeBuilder {
     }
 
     private MapRecipe createMapRecipe(MapMetadata mapValue) throws Exception {
-        Object keyType = mapValue.getKeyTypeName();
-        Object valueType = mapValue.getValueTypeName();
+        String keyType = mapValue.getKeyTypeName();
+        String valueType = mapValue.getValueTypeName();
         MapRecipe mr = new MapRecipe(getName(null), HashMap.class);
         for (MapEntry entry : mapValue.getEntries()) {
             Recipe key = getValue(entry.getKey(), keyType);

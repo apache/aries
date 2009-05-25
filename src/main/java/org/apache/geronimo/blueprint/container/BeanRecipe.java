@@ -44,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * A <code>Recipe</code> to create POJOs.
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev$, $Date$
@@ -52,20 +53,20 @@ public class BeanRecipe extends AbstractRecipe {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BeanRecipe.class);
 
-    private Object type;
+    private final ExtendedBlueprintContainer blueprintContainer;
     private final LinkedHashMap<String,Object> properties = new LinkedHashMap<String,Object>();
+    private final Object type;
 
     private String initMethod;
     private String destroyMethod;
     private List<String> explicitDependencies;
     
-    private Recipe factory; // could be Recipe or actual object
+    private Recipe factory;
     private String factoryMethod;
     private List<Object> arguments;
     private List<String> argTypes;
     private boolean reorderArguments;
 
-    protected ExtendedBlueprintContainer blueprintContainer;
 
     public BeanRecipe(String name, ExtendedBlueprintContainer blueprintContainer, Object type) {
         super(name);
@@ -83,15 +84,6 @@ public class BeanRecipe extends AbstractRecipe {
 
     public void setProperty(String name, Object value) {
         properties.put(name, value);
-    }
-
-    public void setAllProperties(Map<?,?> map) {
-        if (map == null) throw new NullPointerException("map is null");
-        for (Map.Entry<?, ?> entry : map.entrySet()) {
-            String name = (String) entry.getKey();
-            Object value = entry.getValue();
-            setProperty(name, value);
-        }
     }
 
     public void setFactoryMethod(String method) {

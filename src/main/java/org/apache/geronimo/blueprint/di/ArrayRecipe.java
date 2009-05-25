@@ -28,12 +28,12 @@ import org.osgi.service.blueprint.container.ComponentDefinitionException;
 public class ArrayRecipe extends AbstractRecipe {
 
     private final List<Recipe> list;
-    private Object type;
+    private final Object type;
 
     public ArrayRecipe(String name, Object type) {
         super(name);
-        this.list = new ArrayList<Recipe>();
         this.type = type;
+        this.list = new ArrayList<Recipe>();
     }
 
     public List<Recipe> getNestedRecipes() {

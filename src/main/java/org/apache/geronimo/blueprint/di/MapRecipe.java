@@ -35,8 +35,9 @@ import org.osgi.service.blueprint.container.ComponentDefinitionException;
  * @version $Rev: 6687 $ $Date: 2005-12-28T21:08:56.733437Z $
  */
 public class MapRecipe extends AbstractRecipe {
+
     private final List<Recipe[]> entries;
-    private Class typeClass;
+    private final Class typeClass;
 
     public MapRecipe(String name, Class type) {
         super(name);
