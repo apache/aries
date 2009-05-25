@@ -110,35 +110,37 @@ public class DefaultExecutionContext extends ExecutionContext {
         return object;
     }
 
-    public void addObject(String name, Object object) {
-        repository.add(name, object);
-    }
-
     public void addObject(String name, Object object, boolean partialObject) {
         createdObjects.put(name, object);
         if (!partialObject) {
-            addObject(name, object);
+            repository.add(name, object);
         }
     }
     
     public boolean containsCreatedObject(String name) {
+        if (createdObjects.containsKey(name)) {
+            return true;
+        }
         if (repository.contains(name)) {
             Object obj = repository.get(name);
             if (!(obj instanceof Recipe)) {
                 return true;
             }
         }
-        return createdObjects.containsKey(name);
+        return false;
     }
     
     public Object getCreatedObject(String name) {
+        if (createdObjects.containsKey(name)) {
+            return createdObjects.get(name);
+        }
         if (repository.contains(name)) {
             Object obj = repository.get(name);
             if (!(obj instanceof Recipe)) {
                 return obj;
             }
         }
-        return createdObjects.get(name);
+        return null;
     }
 
     public List<Recipe> getCreatedRecipes() {

@@ -26,8 +26,8 @@ import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 public abstract class AbstractRecipe implements Recipe {
 
-    private String name;
-    protected Boolean allowPartial;
+    protected String name;
+    protected boolean prototype;
 
     protected AbstractRecipe(String name) {
         if (name == null) throw new NullPointerException("name is null");
@@ -36,6 +36,14 @@ public abstract class AbstractRecipe implements Recipe {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isPrototype() {
+        return prototype;
+    }
+
+    public void setPrototype(boolean prototype) {
+        this.prototype = prototype;
     }
 
     public final Object create() throws ComponentDefinitionException {
@@ -51,7 +59,9 @@ public abstract class AbstractRecipe implements Recipe {
         // execute the recipe
         context.push(this);
         try {
-            return internalCreate();
+            Object obj = internalCreate();
+            addObject(obj, false);
+            return obj;
         } finally {
             Recipe popped = context.pop();
             if (popped != this) {
@@ -67,41 +77,15 @@ public abstract class AbstractRecipe implements Recipe {
     public void postCreate() {
     }
 
-    public void setAllowPartial(Boolean allowPartial) {
-        this.allowPartial = allowPartial;
-    }
-    
-    public Boolean getAllowPartial() {
-        return allowPartial;
-    }
-    
-    private boolean isAllowPartial() {
-        return (allowPartial == null) || allowPartial;
-    }
-    
     protected void addObject(Object obj, boolean partial) {
-        if (partial && !isAllowPartial()) {
+        if (prototype) {
             return;
         }
-        String name = getName();
-        if (name != null) {
-            ExecutionContext.getContext().addObject(name, obj, partial);
-        }
+        ExecutionContext.getContext().addObject(name, obj, partial);
     }
     
     public List<Recipe> getNestedRecipes() {
         return new ArrayList<Recipe>();
-    }
-
-    public String toString() {
-        if (name != null) {
-            return name;
-        }
-        String string = getClass().getSimpleName();
-        if (string.endsWith("Recipe")) {
-            string = string.substring(0, string.length() - "Recipe".length());
-        }
-        return string;
     }
 
     protected Object convert(Object obj, Type type) throws Exception {
@@ -119,4 +103,12 @@ public abstract class AbstractRecipe implements Recipe {
     public Destroyable getDestroyable(Object instance) {
         return null;
     }
+
+    public String toString() {
+        return getClass().getSimpleName() + "[" +
+                "name='" + name + '\'' +
+                ']';
+
+    }
+
 }

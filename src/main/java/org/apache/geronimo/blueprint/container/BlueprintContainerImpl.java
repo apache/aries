@@ -247,7 +247,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         trackServiceReferences();
                         Runnable r = new Runnable() {
                             public void run() {
-                                synchronized (BlueprintContainerImpl.this) {
+                                synchronized (scheduled) {
                                     Throwable t = new TimeoutException();
                                     state = State.Failed;
                                     unregisterServices();

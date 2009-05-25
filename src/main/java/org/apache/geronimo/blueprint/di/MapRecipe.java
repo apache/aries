@@ -87,11 +87,6 @@ public class MapRecipe extends AbstractRecipe {
             throw new ComponentDefinitionException("Specified map type does not implement the Map interface: " + mapType.getName());
         }
 
-        // add to execution container if name is specified
-        if (getName() != null) {
-            ExecutionContext.getContext().addObject(getName(), instance);
-        }
-
         // add map entries
         for (Recipe[] entry : entries) {
             Object key = entry[0].create();

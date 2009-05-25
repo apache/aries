@@ -81,8 +81,6 @@ public abstract class ExecutionContext {
      */
     public abstract void addObject(String name, Object object, boolean partialObject);
     
-    public abstract void addObject(String name, Object object);
-
     public abstract boolean containsCreatedObject(String name);
     
     public abstract Object getCreatedObject(String name);

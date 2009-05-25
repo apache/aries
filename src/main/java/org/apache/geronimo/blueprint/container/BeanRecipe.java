@@ -55,7 +55,6 @@ public class BeanRecipe extends AbstractRecipe {
     private Object type;
     private final LinkedHashMap<String,Object> properties = new LinkedHashMap<String,Object>();
 
-    private boolean keepRecipe = false;
     private String initMethod;
     private String destroyMethod;
     private List<String> explicitDependencies;
@@ -115,14 +114,6 @@ public class BeanRecipe extends AbstractRecipe {
         this.reorderArguments = reorder;
     }
     
-    public void setKeepRecipe(boolean keepRecipe) {
-        this.keepRecipe = keepRecipe;
-    }
-    
-    public boolean getKeepRecipe() {
-        return keepRecipe;
-    }
-        
     public void setInitMethod(String initMethod) {
         this.initMethod = initMethod;
     }
@@ -517,15 +508,11 @@ public class BeanRecipe extends AbstractRecipe {
         // check for destroy lifecycle method (if any)
         getDestroyMethod(obj);
         
-        if (allowPartial == null) {
-            allowPartial = (initMethod == null);
-        }
-        
-        if (!keepRecipe) {
-            // Add partially created object to the container
+        // Add partially created object to the container
+        if (initMethod == null) {
             addObject(obj, true);
         }
-        
+
         // inject properties
         setProperties(obj);
 
@@ -543,11 +530,6 @@ public class BeanRecipe extends AbstractRecipe {
             } catch (Exception e) {
                 LOGGER.info("Error invoking init method", e);
             }
-        }
-        
-        if (!keepRecipe) {
-            // Add fully created object to the container
-            addObject(obj, false);
         }
         
         return obj;

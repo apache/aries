@@ -109,9 +109,6 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
                 throw new IllegalArgumentException("Unsupported collection type " + metadata.getCollectionType().getName());
             }
 
-            // Add partially created collection to the container
-            addObject(collection, false);
-
             return collection;
         } catch (ComponentDefinitionException t) {
             throw t;
