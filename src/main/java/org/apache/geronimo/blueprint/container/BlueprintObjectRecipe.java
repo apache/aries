@@ -37,6 +37,7 @@ import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.di.ReferenceRecipe;
+import org.apache.geronimo.blueprint.di.ExecutionContext;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
@@ -68,7 +69,8 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
 
     protected ExtendedBlueprintContainer blueprintContainer;
 
-    public BlueprintObjectRecipe(ExtendedBlueprintContainer blueprintContainer, Object type) {
+    public BlueprintObjectRecipe(String name, ExtendedBlueprintContainer blueprintContainer, Object type) {
+        super(name);
         this.blueprintContainer = blueprintContainer;
         this.type = type;
     }
@@ -164,7 +166,10 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
         }
         if (explicitDependencies != null) {
             for (String name : explicitDependencies) {
-                recipes.add(new ReferenceRecipe(name));
+                Object obj = ExecutionContext.getContext().getObject(name);
+                if (obj instanceof Recipe) {
+                    recipes.add((Recipe) obj);
+                }
             }
         }
         return recipes; 
@@ -173,8 +178,10 @@ public class BlueprintObjectRecipe extends AbstractRecipe {
     private void instantiateExplicitDependencies() {
         if (explicitDependencies != null) {
             for (String name : explicitDependencies) {
-                Recipe recipe = new ReferenceRecipe(name);
-                recipe.create();
+                Object obj = ExecutionContext.getContext().getObject(name);
+                if (obj instanceof Recipe) {
+                    ((Recipe) obj).create();
+                }
             }
         }
     }

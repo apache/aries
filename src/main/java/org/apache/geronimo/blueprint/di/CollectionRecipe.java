@@ -36,7 +36,8 @@ public class CollectionRecipe extends AbstractRecipe {
     private final List<Recipe> list;
     private Class typeClass;
 
-    public CollectionRecipe(Class type) {
+    public CollectionRecipe(String name, Class type) {
+        super(name);
         this.list = new ArrayList<Recipe>();
         this.typeClass = type;
     }

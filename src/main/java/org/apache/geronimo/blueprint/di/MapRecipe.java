@@ -39,7 +39,8 @@ public class MapRecipe extends AbstractRecipe {
     private final List<Recipe[]> entries;
     private Class typeClass;
 
-    public MapRecipe(Class type) {
+    public MapRecipe(String name, Class type) {
+        super(name);
         if (type == null) throw new NullPointerException("type is null");
         this.typeClass = type;
         this.entries = new ArrayList<Recipe[]>();

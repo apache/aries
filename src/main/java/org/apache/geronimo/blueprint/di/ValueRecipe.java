@@ -36,7 +36,8 @@ public class ValueRecipe extends AbstractRecipe {
     private ValueMetadata value;
     private Object type;
 
-    public ValueRecipe(ValueMetadata value, Object type) {
+    public ValueRecipe(String name, ValueMetadata value, Object type) {
+        super(name);
         this.value = value;
         this.type = type;
     }

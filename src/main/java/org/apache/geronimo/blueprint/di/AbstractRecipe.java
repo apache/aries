@@ -29,16 +29,13 @@ public abstract class AbstractRecipe implements Recipe {
     private String name;
     protected Boolean allowPartial;
 
-    protected AbstractRecipe() {
+    protected AbstractRecipe(String name) {
+        if (name == null) throw new NullPointerException("name is null");
+        this.name = name;
     }
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        if (name == null) throw new NullPointerException("name is null");
-        this.name = name;
     }
 
     public final Object create() throws ComponentDefinitionException {

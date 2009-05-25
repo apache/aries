@@ -31,7 +31,8 @@ public class ReferenceNameRecipe extends AbstractRecipe {
     
     private String referenceName;
 
-    public ReferenceNameRecipe(String referenceName) {
+    public ReferenceNameRecipe(String name, String referenceName) {
+        super(name);
         this.referenceName = referenceName;
     }
 
