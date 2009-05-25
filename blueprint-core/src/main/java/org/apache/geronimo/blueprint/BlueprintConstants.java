@@ -34,4 +34,5 @@ public interface BlueprintConstants  {
     
     public static final String CONTAINER_VERSION_PROPERTY = "osgi.blueprint.container.version";
 
+    public static final String XML_VALIDATION = "blueprint.geronimo.xml-validation";
 }
