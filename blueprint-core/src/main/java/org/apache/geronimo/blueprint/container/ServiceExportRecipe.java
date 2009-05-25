@@ -61,11 +61,13 @@ public class ServiceExportRecipe extends AbstractRecipe implements ServiceRegist
     private Object service;
     private boolean bundleScope;
 
-    public ServiceExportRecipe(ExtendedBlueprintContainer blueprintContainer,
+    public ServiceExportRecipe(String name,
+                               ExtendedBlueprintContainer blueprintContainer,
                                ServiceMetadata metadata,
                                Recipe serviceRecipe,
                                CollectionRecipe listenersRecipe,
                                MapRecipe propertiesRecipe) {
+        super(name);
         this.blueprintContainer = blueprintContainer;
         this.metadata = metadata;
         this.serviceRecipe = serviceRecipe;

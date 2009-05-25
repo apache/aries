@@ -72,8 +72,9 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
 
         Bundle[] bundles = context.getBundles();
         for (Bundle b : bundles) {
+            // TODO: need to check lazy bundles in STARTING state
             if (b.getState() == Bundle.ACTIVE) {
-                checkBundle(b, false);
+                checkBundle(b);
             }
         }
         LOGGER.debug("Blueprint extender started");
@@ -100,11 +101,11 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     public void bundleChanged(BundleEvent event) {
         Bundle bundle = event.getBundle();
         if (event.getType() == BundleEvent.LAZY_ACTIVATION) {
-            checkBundle(bundle, true);
+            checkBundle(bundle);
         } else if (event.getType() == BundleEvent.STARTED) {
             BlueprintContainerImpl blueprintContainer = containers.get(bundle);
             if (blueprintContainer == null) {
-                checkBundle(bundle, false);
+                checkBundle(bundle);
             }
         } else if (event.getType() == BundleEvent.STOPPING) {
             destroyContext(bundle);
@@ -119,8 +120,8 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         }
     }
     
-    private void checkBundle(Bundle bundle, boolean lazyActivation) {
-        LOGGER.debug("Scanning bundle {} for blueprint application (lazy: {})", bundle.getSymbolicName(), lazyActivation);
+    private void checkBundle(Bundle bundle) {
+        LOGGER.debug("Scanning bundle {} for blueprint application", bundle.getSymbolicName());
         try {
             List<URL> urls = new ArrayList<URL>();
             Dictionary headers = bundle.getHeaders();
@@ -149,14 +150,14 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 LOGGER.debug("Found blueprint application in bundle {} with urls: {}", bundle.getSymbolicName(), urls);
 
                 // Check compatibility
-                // XXX: we can't check compatibility when dealing with lazy activated bundles since that will trigger
-                // the bundle to be fully started
-                boolean compatible = lazyActivation || isCompatible(bundle);
+                // TODO: For lazy bundles, the class is either loaded from an imported package or not found, so it should
+                // not trigger the activation.  If it does, we need to use something else like package admin or
+                // ServiceReference, or just not do this check, which could be quite harmful.
+                boolean compatible = isCompatible(bundle);
                 if (compatible) {
-                    final BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle.getBundleContext(), context.getBundle(), eventDispatcher, handlers, executors, urls, lazyActivation);
+                    final BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle.getBundleContext(), context.getBundle(), eventDispatcher, handlers, executors, urls);
                     containers.put(bundle, blueprintContainer);
-                    // run synchronous when bundle is lazy activated
-                    blueprintContainer.run(lazyActivation ? false: true);
+                    blueprintContainer.schedule();
                 } else {
                     LOGGER.info("Bundle {} is not compatible with this blueprint extender", bundle.getSymbolicName());
                 }

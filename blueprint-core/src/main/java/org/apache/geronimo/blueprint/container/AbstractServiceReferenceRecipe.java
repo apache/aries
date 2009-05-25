@@ -63,9 +63,11 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected ServiceReferenceTracker tracker;
     protected boolean optional;
 
-    protected AbstractServiceReferenceRecipe(ExtendedBlueprintContainer blueprintContainer,
+    protected AbstractServiceReferenceRecipe(String name,
+                                             ExtendedBlueprintContainer blueprintContainer,
                                              ServiceReferenceMetadata metadata,
                                              Recipe listenersRecipe) {
+        super(name);
         this.blueprintContainer = blueprintContainer;
         this.metadata = metadata;
         this.listenersRecipe = listenersRecipe;

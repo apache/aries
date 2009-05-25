@@ -32,7 +32,8 @@ public class ArrayRecipe extends AbstractRecipe {
     private final List<Recipe> list;
     private Object type;
 
-    public ArrayRecipe(Object type) {
+    public ArrayRecipe(String name, Object type) {
+        super(name);
         this.list = new ArrayList<Recipe>();
         this.type = type;
     }

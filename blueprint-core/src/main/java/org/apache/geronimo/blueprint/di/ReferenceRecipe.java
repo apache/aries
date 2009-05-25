@@ -26,7 +26,8 @@ import org.osgi.service.blueprint.container.NoSuchComponentException;
 public class ReferenceRecipe extends AbstractRecipe {
     private String referenceName;
 
-    public ReferenceRecipe(String referenceName) {
+    public ReferenceRecipe(String name, String referenceName) {
+        super(name);
         this.referenceName = referenceName;
     }
 

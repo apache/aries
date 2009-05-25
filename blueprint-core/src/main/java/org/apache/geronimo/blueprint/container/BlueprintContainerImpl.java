@@ -30,10 +30,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.BlueprintConstants;
@@ -105,7 +108,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         Create,
         Created,
         Failed,
-        Destroyed,
     }
 
     private final BundleContext bundleContext;
@@ -118,6 +120,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private final ScheduledExecutorService executors;
     private Set<URI> namespaces;
     private State state = State.Unknown;
+    private boolean destroyed;
     private Parser parser;
     private BlueprintObjectInstantiator instantiator;
     private ServiceRegistration registration;
@@ -128,8 +131,9 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private boolean waitForDependencies = true;
     private boolean xmlValidation = true;
     private ScheduledFuture timeoutFuture;
+    private final AtomicBoolean scheduled = new AtomicBoolean();
 
-    public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<URL> urls, boolean lazyActivation) {
+    public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<URL> urls) {
         this.bundleContext = bundleContext;
         this.extenderBundle = extenderBundle;
         this.eventDispatcher = eventDispatcher;
@@ -186,17 +190,28 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         }
     }
     
-    public void run(boolean asynch) {
-        if (asynch) {
+    public void schedule() {
+        if (scheduled.compareAndSet(false, true)) {
             executors.submit(this);
-        } else {
-            run();
         }
     }
     
-    public synchronized void run() {
+    public void run() {
+        scheduled.set(false);
+        synchronized (scheduled) {
+            doRun();
+        }
+    }
+
+    /**
+     * This method must be called inside a synchronized block to ensure this method is not run concurrently
+     */
+    private void doRun() {
         try {
             for (;;) {
+                if (destroyed) {
+                    return;
+                }
                 LOGGER.debug("Running blueprint container for bundle {} in state {}", bundleContext.getBundle().getSymbolicName(), state);
                 switch (state) {
                     case Unknown:
@@ -236,7 +251,9 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                                 synchronized (BlueprintContainerImpl.this) {
                                     Throwable t = new TimeoutException();
                                     state = State.Failed;
-                                    // TODO: clean up
+                                    unregisterServices();
+                                    untrackServiceReferences();
+                                    destroyComponents();
                                     LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName(), t);
                                     eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundleContext().getBundle(), getExtenderBundle(), getMissingDependencies(), t));
                                 }
@@ -293,6 +310,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                     case Create:
                         timeoutFuture.cancel(false);
                         instantiateEagerSingletonBeans();
+                        registerServices();
 
                         // Register the BlueprintContainer in the OSGi registry
                         if (registration == null) {
@@ -308,13 +326,17 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         break;
                     case Created:
                     case Failed:
-                    case Destroyed:
                         return;
                 }
             }
         } catch (Throwable t) {
             state = State.Failed;
-            // TODO: clean up
+            if (timeoutFuture != null) {
+                timeoutFuture.cancel(false);
+            }
+            unregisterServices();
+            untrackServiceReferences();
+            destroyComponents();
             LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName(), t);
             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundleContext().getBundle(), getExtenderBundle(), t));
         }
@@ -322,24 +344,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
     private void checkReferences() throws Exception {
         DefaultRepository repository = (DefaultRepository) instantiator.getRepository();
-        List<Recipe> recipes = new ArrayList<Recipe>();
-        boolean createNewContext = !ExecutionContext.isContextSet();
-        if (createNewContext) {
-            ExecutionContext.setContext(new DefaultExecutionContext(this, instantiator.getRepository()));
-        }
-        try {
-            for (String name : repository.getNames()) {
-                Recipe recipe = repository.getRecipe(name);
-                if (recipe != null) {
-                    getAllRecipes(recipe, recipes);
-                }
-            }
-        } finally {
-            if (createNewContext) {
-                ExecutionContext.setContext(null);
-            }
-        }
-        for (Recipe recipe : recipes) {
+        for (Recipe recipe : getAllRecipes()) {
             String ref = null;
             if (recipe instanceof ReferenceRecipe) {
                 ref = ((ReferenceRecipe) recipe).getReferenceName();
@@ -348,15 +353,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             }
             if (ref != null && repository.get(ref) == null) {
                 throw new ComponentDefinitionException("Unresolved ref/idref to component: " + ref);
-            }
-        }
-    }
-
-    private void getAllRecipes(Recipe recipe, List<Recipe> recipes) {
-        if (!recipes.contains(recipe)) {
-            recipes.add(recipe);
-            for (Recipe r : recipe.getNestedRecipes()) {
-                getAllRecipes(r, recipes);
             }
         }
     }
@@ -414,15 +410,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             }
             try {
                 satisfiables = new HashMap<String, List<SatisfiableRecipe>>();
-                for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
-                    Recipe r = ((DefaultRepository) instantiator.getRepository()).getRecipe(name);
-                    List<SatisfiableRecipe> recipes = new ArrayList<SatisfiableRecipe>();
-                    if (r instanceof SatisfiableRecipe) {
-                        recipes.add((SatisfiableRecipe) r);
-                    }
-                    getSatisfiableDependencies(r, recipes, new HashSet<Recipe>());
+                for (Recipe r : getAllRecipes()) {
+                    List<SatisfiableRecipe> recipes = getAllRecipes(SatisfiableRecipe.class, r.getName());
                     if (!recipes.isEmpty()) {
-                        satisfiables.put(name, recipes);
+                        satisfiables.put(r.getName(), recipes);
                     }
                 }
                 return satisfiables;
@@ -433,18 +424,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             }
         }
         return satisfiables;
-    }
-
-    private void getSatisfiableDependencies(Recipe r, List<SatisfiableRecipe> recipes, Set<Recipe> visited) {
-        if (!visited.contains(r)) {
-            visited.add(r);
-            for (Recipe dep : r.getNestedRecipes()) {
-                if (dep instanceof SatisfiableRecipe) {
-                    recipes.add((SatisfiableRecipe) dep);
-                }
-                getSatisfiableDependencies(dep, recipes, visited);
-            }
-        }
     }
 
     private void trackServiceReferences() {
@@ -488,7 +467,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         LOGGER.debug("Notified satisfaction {} in bundle {}: {}",
                 new Object[] { satisfiable.getName(), bundleContext.getBundle().getSymbolicName(), satisfiable.isSatisfied() });
         if (state == State.WaitForInitialReferences) {
-            executors.submit(this);
+            schedule();
         } else if (state == State.Created) {
             Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
             for (String name : dependencies.keySet()) {
@@ -526,20 +505,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                 }
             } else {
                 if (component instanceof ServiceMetadata) {
-                    List<SatisfiableRecipe> dependencies = getSatisfiableDependenciesMap().get(name);
-                    boolean satisfied = true;
-                    if (dependencies != null) {
-                        for (SatisfiableRecipe recipe : dependencies) {
-                            if (!recipe.isSatisfied()) {
-                                satisfied = false;
-                                break;
-                            }
-                        }
-                    }
-                    if (satisfied) {
-                        Recipe r = ((DefaultRepository) instantiator.getRepository()).getRecipe(name);
-                        ((ServiceExportRecipe) r).register();
-                    }
                     components.add(name);
                 }
             }
@@ -551,6 +516,77 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             throw e;
         } catch (Throwable t) {
             throw new ComponentDefinitionException("Unable to instantiate components", t);
+        }
+    }
+
+    private void registerServices() {
+        List<ServiceExportRecipe> recipes = getAllRecipes(ServiceExportRecipe.class);
+        for (ServiceExportRecipe r : recipes) {
+            List<SatisfiableRecipe> dependencies = getSatisfiableDependenciesMap().get(r.getName());
+            boolean satisfied = true;
+            if (dependencies != null) {
+                for (SatisfiableRecipe recipe : dependencies) {
+                    if (!recipe.isSatisfied()) {
+                        satisfied = false;
+                        break;
+                    }
+                }
+            }
+            if (satisfied) {
+                r.register();
+            }
+        }
+    }
+
+    private void unregisterServices() {
+        if (instantiator != null) {
+            List<ServiceExportRecipe> recipes = getAllRecipes(ServiceExportRecipe.class);
+            for (ServiceExportRecipe r : recipes) {
+                r.unregister();
+            }
+        }
+    }
+
+    private <T> List<T> getAllRecipes(Class<T> clazz, String... names) {
+        List<T> recipes = new ArrayList<T>();
+        for (Recipe r : getAllRecipes(names)) {
+            if (clazz.isInstance(r)) {
+                recipes.add(clazz.cast(r));
+            }
+        }
+        return recipes;
+    }
+
+    private Set<Recipe> getAllRecipes(String... names) {
+        boolean createNewContext = !ExecutionContext.isContextSet();
+        if (createNewContext) {
+            ExecutionContext.setContext(new DefaultExecutionContext(this, instantiator.getRepository()));
+        }
+        try {
+            Set<Recipe> recipes = new HashSet<Recipe>();
+            DefaultRepository repo = (DefaultRepository) instantiator.getRepository();
+            Set<String> topLevel = names != null && names.length > 0 ? new HashSet<String>(Arrays.asList(names)) : repo.getNames();
+            for (String name : topLevel) {
+                internalGetAllRecipes(recipes, repo.getRecipe(name));
+            }
+            return recipes;
+        } finally {
+            if (createNewContext) {
+                ExecutionContext.setContext(null);
+            }
+        }
+    }
+
+    /*
+     * This method should not be called directly, only from one of the getAllRecipes() methods.
+     */
+    private void internalGetAllRecipes(Set<Recipe> recipes, Recipe r) {
+        if (r != null) {
+            if (recipes.add(r)) {
+                for (Recipe c : r.getNestedRecipes()) {
+                    internalGetAllRecipes(recipes, c);
+                }
+            }
         }
     }
 
@@ -688,8 +724,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         return bundleContext;
     }
     
-    public synchronized void destroy() {
-        state = State.Destroyed;
+    public void destroy() {
+        destroyed = true;
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYING, getBundleContext().getBundle(), getExtenderBundle()));
 
         if (timeoutFuture != null) {
@@ -699,7 +735,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             registration.unregister();
         }
         handlers.removeListener(this);
-        // TODO: unregister services
+        unregisterServices();
         untrackServiceReferences();
         destroyComponents();
         
@@ -707,20 +743,19 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         LOGGER.debug("Module container destroyed: " + this.bundleContext);
     }
 
-    public synchronized void namespaceHandlerRegistered(URI uri) {
+    public void namespaceHandlerRegistered(URI uri) {
         if (namespaces != null && namespaces.contains(uri)) {
-            executors.submit(this);
+            schedule();
         }
     }
 
-    public synchronized void namespaceHandlerUnregistered(URI uri) {
+    public void namespaceHandlerUnregistered(URI uri) {
         if (namespaces != null && namespaces.contains(uri)) {
+            unregisterServices();
+            untrackServiceReferences();
             destroyComponents();
-            // TODO: unregister services
-            // TODO: stop all reference / collections
-            // TODO: clear the repository
             state = State.WaitForNamespaceHandlers;
-            executors.submit(this);
+            schedule();
         }
     }
 

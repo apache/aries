@@ -65,11 +65,12 @@ public class CollectionBasedServiceReferenceRecipe extends AbstractServiceRefere
     private final Recipe comparatorRecipe;
     private ManagedCollection collection;
 
-    public CollectionBasedServiceReferenceRecipe(ExtendedBlueprintContainer blueprintContainer,
+    public CollectionBasedServiceReferenceRecipe(String name,
+                                                 ExtendedBlueprintContainer blueprintContainer,
                                                  RefCollectionMetadata metadata,
                                                  Recipe listenersRecipe,
                                                  Recipe comparatorRecipe) {
-        super(blueprintContainer, metadata, listenersRecipe);
+        super(name, blueprintContainer, metadata, listenersRecipe);
         this.metadata = metadata;
         this.comparatorRecipe = comparatorRecipe;
     }

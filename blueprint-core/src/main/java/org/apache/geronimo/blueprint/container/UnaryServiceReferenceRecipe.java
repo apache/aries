@@ -52,10 +52,11 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     private volatile Object trackedService;
     private final Object monitor = new Object();
 
-    public UnaryServiceReferenceRecipe(ExtendedBlueprintContainer blueprintContainer,
+    public UnaryServiceReferenceRecipe(String name,
+                                       ExtendedBlueprintContainer blueprintContainer,
                                        ReferenceMetadata metadata,
                                        Recipe listenersRecipe) {
-        super(blueprintContainer, metadata, listenersRecipe);
+        super(name, blueprintContainer, metadata, listenersRecipe);
         this.metadata = metadata;
     }
 
@@ -92,8 +93,8 @@ public class UnaryServiceReferenceRecipe extends AbstractServiceReferenceRecipe 
     @Override
     public void stop() {
         super.stop();
-        unbind();
         synchronized (monitor) {
+            unbind();
             monitor.notifyAll();
         }
     }
