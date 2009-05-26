@@ -64,6 +64,7 @@ public class CmManagedServiceFactory {
     private List<String> interfaces;
     private int autoExport;
     private int ranking;
+    private Map serviceProperties;
     private String managedComponentName;
     private String componentDestroyMethod;
     private final Object lock = new Object();
@@ -137,6 +138,10 @@ public class CmManagedServiceFactory {
         this.ranking = ranking;
     }
 
+    public void setServiceProperties(Map serviceProperties) {
+        this.serviceProperties = serviceProperties;
+    }
+    
     public void setManagedComponentName(String managedComponentName) {
         this.managedComponentName = managedComponentName;
     }
@@ -155,12 +160,15 @@ public class CmManagedServiceFactory {
             //  TODO: init instance, call listeners, etc...
         
             Hashtable regProps = new Hashtable();
+            if (serviceProperties != null) {
+                regProps.putAll(serviceProperties);
+            }
             regProps.put(Constants.SERVICE_PID, pid);
             regProps.put(Constants.SERVICE_RANKING, ranking);
             Set<String> classes = getClasses(component);
             String[] classArray = classes.toArray(new String[classes.size()]);
             reg = blueprintContainer.getBundleContext().registerService(classArray, component, regProps);
-            LOGGER.debug("Service {} registered with interfaces {} and properties {}", new Object [] { component, classes, props });
+            LOGGER.debug("Service {} registered with interfaces {} and properties {}", new Object [] { component, classes, regProps });
             
             services.put(reg, component);
             pids.put(pid, reg);

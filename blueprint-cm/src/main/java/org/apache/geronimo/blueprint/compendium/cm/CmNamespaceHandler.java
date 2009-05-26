@@ -33,6 +33,7 @@ import org.w3c.dom.EntityReference;
 
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.ExtendedParserContext;
+import org.apache.geronimo.blueprint.container.Parser;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
@@ -245,9 +246,13 @@ public class CmNamespaceHandler implements NamespaceHandler {
                             throw new ComponentDefinitionException("Only one of " + INTERFACE_ATTRIBUTE + " attribute or " + INTERFACES_ELEMENT + " element must be used");
                         }
                         interfaces = parseInterfaceNames(e);
-                        factoryMetadata.addProperty("interfaces", createList(context, interfaces));
+                        factoryMetadata.addProperty("interfaces", createList(context, interfaces));                    
+                    } else if (nodeNameEquals(e, Parser.SERVICE_PROPERTIES_ELEMENT)) {                    
+                        MutableMapMetadata map = context.parseElement(MutableMapMetadata.class, null, e);
+                        factoryMetadata.addProperty("serviceProperties", map);
+                    } else {
+                        // TODO: parse listeners
                     }
-                    // TODO: parse service-properties, listeners, etc...
                 } else if (BLUEPRINT_CM_NAMESPACE.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, MANAGED_COMPONENT_ELEMENT)) {
                         MutableBeanMetadata managedComponent = context.parseElement(MutableBeanMetadata.class, null, e);
