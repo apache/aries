@@ -13,6 +13,9 @@
 
     <cm:managed-service-factory id="managed-service-factory" factory-pid="blueprint-sample-managed-service-factory"
             interface="org.apache.geronimo.blueprint.sample.Foo">
+        <service-properties>
+            <entry key="key1" value="value1"/>
+        </service-properties>
         <cm:managed-component class="org.apache.geronimo.blueprint.sample.Foo"/>
     </cm:managed-service-factory>
 
