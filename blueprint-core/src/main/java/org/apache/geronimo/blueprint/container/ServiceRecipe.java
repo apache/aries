@@ -57,8 +57,6 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
     private ServiceRegistration registration;
     private Map registrationProperties;
     private List<Listener> listeners;
-    // TODO: the framework will cache the service, so there should be need to have a list of registrations for a given bundle
-    private Map<Bundle, Entry> instanceMap = Collections.synchronizedMap(new HashMap<Bundle, Entry>());
     private Object service;
     private boolean bundleScope;
 
@@ -176,34 +174,16 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
         if (service instanceof ServiceFactory) {
             service = ((ServiceFactory) service).getService(bundle, registration);
         } else if (bundleScope) {
-            Entry entry;
-            synchronized(bundle) {
-                entry = instanceMap.get(bundle);
-                if (entry == null) {
-                    entry = new Entry(createInstance(true));
-                    LOGGER.debug("Created service instance for bundle: " + bundle + " " + entry.getServiceInstance().hashCode());
-                    instanceMap.put(bundle, entry);
-                }
-                entry.addServiceRegistration(registration);
-            }
-            service = entry.getServiceInstance();
+            service = createInstance(true);
+            LOGGER.debug("Created service instance for bundle: " + bundle + " " + service.hashCode());
         }
         return service;
     }
 
     public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
         if (bundleScope) {
-            synchronized(bundle) {
-                Entry entry = instanceMap.get(bundle);
-                if (entry != null) {
-                    entry.removeServiceRegistration(registration);
-                    if (!entry.hasServiceRegistrations()) {
-                        destroyInstance(entry.getServiceInstance());
-                        LOGGER.debug("Destroyed service instance for bundle: " + bundle);
-                        instanceMap.remove(bundle);
-                    }
-                }
-            }
+            destroyInstance(service);
+            LOGGER.debug("Destroyed service instance for bundle: " + bundle);
         }
     }
 
@@ -374,33 +354,6 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
                     LOGGER.info("Error calling listener method " + method, e);
                 }
             }
-        }
-
-    }
-
-    private static class Entry {
-
-        private final Object serviceInstance;
-        private final Set<ServiceRegistration> registrations = new HashSet<ServiceRegistration>();
-
-        public Entry(Object serviceInstance) {
-            this.serviceInstance = serviceInstance;
-        }
-
-        public Object getServiceInstance() {
-            return this.serviceInstance;
-        }
-
-        public boolean hasServiceRegistrations() {
-            return !registrations.isEmpty();
-        }
-
-        public void addServiceRegistration(ServiceRegistration registration) {
-            registrations.add(registration);
-        }
-
-        public void removeServiceRegistration(ServiceRegistration registration) {
-            registrations.remove(registration);
         }
 
     }
