@@ -57,6 +57,7 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
     private ServiceRegistration registration;
     private Map registrationProperties;
     private List<Listener> listeners;
+    // TODO: the framework will cache the service, so there should be need to have a list of registrations for a given bundle
     private Map<Bundle, Entry> instanceMap = Collections.synchronizedMap(new HashMap<Bundle, Entry>());
     private Object service;
     private boolean bundleScope;

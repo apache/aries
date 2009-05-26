@@ -399,8 +399,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         List<String> satisfiables = new ArrayList<String>();
         for (String name : dependencies.keySet()) {
             for (SatisfiableRecipe satisfiable : dependencies.get(name)) {
-                satisfiable.registerListener(this);
-                satisfiable.start();
+                satisfiable.start(this);
                 satisfiables.add(satisfiable.getName());
             }
         }
@@ -412,7 +411,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         if (dependencies != null) {
             for (String name : dependencies.keySet()) {
                 for (SatisfiableRecipe satisfiable : dependencies.get(name)) {
-                    satisfiable.unregisterListener(this);
                     satisfiable.stop();
                 }
             }
