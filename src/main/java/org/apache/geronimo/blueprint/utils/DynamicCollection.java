@@ -25,6 +25,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Comparator;
+import java.util.Collections;
+import java.util.ListIterator;
 
 /**
  * Collection that allows iterators to see addition or removals of elements while iterating.
@@ -37,20 +40,24 @@ import java.util.NoSuchElementException;
  */
 public class DynamicCollection<E> extends AbstractCollection<E> {
 
+    protected final boolean allowDuplicates;
+    protected final Comparator comparator;
     protected final Object lock = new Object();
     protected final List<E> storage;
     protected final List<WeakReference<DynamicIterator>> iterators;
 
-    public DynamicCollection() {
+    public DynamicCollection(boolean allowDuplicates, Comparator comparator) {
+        this.allowDuplicates = allowDuplicates;
+        this.comparator = comparator;
         this.storage = new ArrayList<E>();
         this.iterators = new ArrayList<WeakReference<DynamicIterator>>();
     }
 
-    public Iterator<E> iterator() {
+    public DynamicIterator iterator() {
         return iterator(0);
     }
 
-    public Iterator<E> iterator(int index) {
+    public DynamicIterator iterator(int index) {
         DynamicIterator iterator = createIterator(index);
         synchronized (lock) {
             for (Iterator<WeakReference<DynamicIterator>> it = iterators.iterator(); it.hasNext();) {
@@ -109,7 +116,38 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
             throw new NullPointerException();
         }
         synchronized (lock) {
-            return storage.add(o);
+            if (comparator != null) {
+                if (allowDuplicates) {
+                    int index = Collections.binarySearch(storage, o, comparator);
+                    if (index < 0) {
+                        index = -index - 1;
+                    } else {
+                        index = index + 1;
+                    }
+                    internalAdd(index, o);
+                    return true;
+                } else {
+                    int index = Collections.binarySearch(storage, o, comparator);
+                    if (index < 0) {
+                        internalAdd(-index - 1, o);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            } else {
+                if (allowDuplicates) {
+                    internalAdd(storage.size(), o);
+                    return true;
+                } else {
+                    if (!storage.contains(o)) {
+                        internalAdd(storage.size(), o);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }
         }
     }
 
@@ -123,7 +161,13 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
         }
     }
 
-    public void add(int index, E o) {
+    public E get(int index) {
+        synchronized (lock) {
+            return storage.get(index);
+        }
+    }
+
+    private void internalAdd(int index, E o) {
         if (o == null) {
             throw new NullPointerException();
         }
@@ -137,6 +181,13 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
                     i.addedIndex(index);
                 }
             }
+        }
+    }
+
+    @Override
+    public void clear() {
+        synchronized (lock) {
+            storage.clear();
         }
     }
 
@@ -156,7 +207,27 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
         }
     }
 
-    public class DynamicIterator implements Iterator<E> {
+    public E first() {
+        synchronized (lock) {
+            if (storage.isEmpty()) {
+                throw new NoSuchElementException();
+            } else {
+                return storage.get(0);
+            }
+        }
+    }
+
+    public E last() {
+        synchronized (lock) {
+            if (storage.isEmpty()) {
+                throw new NoSuchElementException();
+            } else {
+                return storage.get(storage.size() - 1);
+            }
+        }
+    }
+
+    public class DynamicIterator implements ListIterator<E> {
 
         protected int index;
         protected boolean hasNextCalled;
@@ -187,10 +258,10 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
 
         public synchronized boolean hasNext() {
             synchronized (lock) {
-                hasPreviousCalled = false;
-                hasNextCalled = true;
                 next = index < storage.size() ? storage.get(index) : null;
-                return next != null;
+                hasPreviousCalled = false;
+                hasNextCalled = next != null;
+                return hasNextCalled;
             }
         }
 
@@ -247,17 +318,18 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
             return index - 1;
         }
 
-        public synchronized void remove() {
-            if (last == null) {
-                throw new IllegalStateException();
-            }
-            synchronized (lock) {
-                if (storage.get(index - 1) == last) {
-                    storage.remove(index - 1);
-                }
-            }
-            last = null;
-
+        public void set(E o) {
+            throw new UnsupportedOperationException();
         }
+
+        public void add(E o) {
+            throw new UnsupportedOperationException();
+        }
+
+        public synchronized void remove() {
+            throw new UnsupportedOperationException();
+        }
+
     }
+
 }
