@@ -30,17 +30,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.RandomAccess;
 import java.util.Set;
-import java.util.SortedSet;
 
 import net.sf.cglib.proxy.Dispatcher;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.apache.geronimo.blueprint.utils.DynamicCollection;
-import org.apache.geronimo.blueprint.utils.DynamicList;
-import org.apache.geronimo.blueprint.utils.DynamicSet;
-import org.apache.geronimo.blueprint.utils.DynamicSortedList;
-import org.apache.geronimo.blueprint.utils.DynamicSortedSet;
 import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -94,13 +89,13 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
             }
             if (metadata.getCollectionType() == List.class) {
                 if (comparator != null) {
-                    collection = new ManagedSortedList(memberReferences, orderReferences, comparator);
+                    collection = new ManagedList(memberReferences, orderReferences, comparator);
                 } else {
                     collection = new ManagedList(memberReferences);
                 }
             } else if (metadata.getCollectionType() == Set.class) {
                 if (comparator != null) {
-                    collection = new ManagedSortedSet(memberReferences, orderReferences, comparator);
+                    collection = new ManagedSet(memberReferences, orderReferences, comparator);
                 } else {
                     collection = new ManagedSet(memberReferences);
                 }
@@ -212,7 +207,20 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
             }
             return service;
         }
-        
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ServiceDispatcher that = (ServiceDispatcher) o;
+            if (this.getMember() != null ? !this.getMember().equals(that.getMember()) : that.getMember() != null) return false;
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return getMember() != null ? getMember().hashCode() : 0;
+        }
     }
 
     public static class DispatcherComparator implements Comparator<ServiceDispatcher> {
@@ -283,7 +291,7 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
                 references = false;
             }
             LOGGER.debug("Retrieving member in ManagedCollection references={}", references);
-            return references.booleanValue();
+            return references;
         }
         
         public boolean addDispatcher(ServiceDispatcher dispatcher) {
@@ -371,15 +379,12 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
 
     public static class ManagedList extends ManagedCollection implements List, RandomAccess {
 
-        protected DynamicList<ServiceDispatcher> dispatchers;
-
         public ManagedList(Boolean references) {
-            this(references,  new DynamicList<ServiceDispatcher>());
+            super(references,  new DynamicCollection<ServiceDispatcher>(true, null));
         }
 
-        protected ManagedList(Boolean references, DynamicList<ServiceDispatcher> dispatchers) {
-            super(references, dispatchers);
-            this.dispatchers = dispatchers;
+        public ManagedList(Boolean references, boolean orderingReferences, Comparator comparator) {
+            super(references, new DynamicCollection<ServiceDispatcher>(true, new DispatcherComparator(comparator, orderingReferences)));
         }
 
         @Override
@@ -422,7 +427,7 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
         }
 
         public ListIterator listIterator(int index) {
-            return new ManagedListIterator(dispatchers.listIterator(index));
+            return new ManagedListIterator(dispatchers.iterator(index));
         }
 
         public List<ServiceDispatcher> subList(int fromIndex, int toIndex) {
@@ -492,73 +497,14 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
 
     }
 
-    public static class ManagedSortedList extends ManagedList {
-
-        public ManagedSortedList(Boolean references, boolean orderingReferences, Comparator comparator) {
-            super(references, new DynamicSortedList<ServiceDispatcher>(new DispatcherComparator(comparator, orderingReferences)));
-        }
-
-    }
-
     public static class ManagedSet extends ManagedCollection implements Set {
 
         public ManagedSet(Boolean references) {
-            super(references, new DynamicServiceDispatcherSet());
+            super(references, new DynamicCollection<ServiceDispatcher>(false, null));
         }
         
-        protected ManagedSet(Boolean references, DynamicSet<ServiceDispatcher> dispatchers) {
-            super(references, dispatchers);
-        }
-        
-    }
-    
-    private static class DynamicServiceDispatcherSet extends DynamicSet<ServiceDispatcher> {
-        public boolean add(ServiceDispatcher newDispatcher) {
-            synchronized (lock) {
-                for (ServiceDispatcher dispatcher : storage) {
-                    if (dispatcher.getMember().equals(newDispatcher.getMember())) {
-                        return false;
-                    }
-                }
-                storage.add(newDispatcher);
-                return true;
-            }
-        }
-    }
-    
-    public static class ManagedSortedSet extends ManagedSet implements SortedSet {
-
-        protected final DynamicSortedSet<ServiceDispatcher> dispatchers;
-        protected final Comparator comparator;
-
-        public ManagedSortedSet(Boolean references, boolean orderingReferences, Comparator comparator) {
-            super(references, new DynamicSortedSet<ServiceDispatcher>(new DispatcherComparator(comparator, orderingReferences)));
-            this.dispatchers = (DynamicSortedSet<ServiceDispatcher>) super.dispatchers;
-            this.comparator =  comparator;
-        }
-
-        public Comparator comparator() {
-            return comparator;
-        }
-
-        public SortedSet subSet(Object fromElement, Object toElement) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        public SortedSet headSet(Object toElement) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        public SortedSet tailSet(Object fromElement) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-
-        public Object first() {
-            return dispatchers.first().getMember();
-        }
-
-        public Object last() {
-            return dispatchers.last().getMember();
+        public ManagedSet(Boolean references, boolean orderingReferences, Comparator comparator) {
+            super(references, new DynamicCollection<ServiceDispatcher>(false, new DispatcherComparator(comparator, orderingReferences)));
         }
 
     }

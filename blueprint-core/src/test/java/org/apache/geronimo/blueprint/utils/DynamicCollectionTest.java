@@ -32,7 +32,7 @@ public class DynamicCollectionTest extends TestCase {
     protected DynamicCollection<Object> collection;
 
     protected void setUp() {
-        collection = new DynamicCollection<Object>();
+        collection = new DynamicCollection<Object>(true, null);
     }
 
     public void testAddRemove() throws Exception {
@@ -110,15 +110,4 @@ public class DynamicCollectionTest extends TestCase {
         assertFalse(iterator.hasNext());
     }
 
-    public void testIteratorRemove() throws Exception {
-        collection.add(O0);
-
-        Iterator iterator = collection.iterator();
-        assertTrue(iterator.hasNext());
-        assertEquals(O0, iterator.next());
-        iterator.remove();
-        assertFalse(iterator.hasNext());
-        assertTrue(collection.isEmpty());
-        assertFalse(iterator.hasNext());
-    }
 }
