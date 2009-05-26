@@ -65,10 +65,10 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
     private ManagedCollection collection;
 
     public RefCollectionRecipe(String name,
-                                                 ExtendedBlueprintContainer blueprintContainer,
-                                                 RefCollectionMetadata metadata,
-                                                 Recipe listenersRecipe,
-                                                 Recipe comparatorRecipe) {
+                               ExtendedBlueprintContainer blueprintContainer,
+                               RefCollectionMetadata metadata,
+                               Recipe listenersRecipe,
+                               Recipe comparatorRecipe) {
         super(name, blueprintContainer, metadata, listenersRecipe);
         this.metadata = metadata;
         this.comparatorRecipe = comparatorRecipe;
@@ -116,16 +116,6 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
         }
     }
 
-    @Override
-    public void postCreate() {
-        // Create the listeners and initialize them
-        createListeners();
-        // Start tracking the service
-        tracker.registerServiceListener(this);
-        // Retrack to inform listeners
-        retrack();
-    }
-
     public void stop() {
         super.stop();
         if (collection != null) {
@@ -136,8 +126,8 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
         }
     }
 
-    private void retrack() {
-        List<ServiceReference> refs = tracker.getServiceReferences();
+    protected void retrack() {
+        List<ServiceReference> refs = getServiceReferences();
         if (refs != null) {
             for (ServiceReference ref : refs) {
                 track(ref);

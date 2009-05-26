@@ -43,15 +43,11 @@ public interface SatisfiableRecipe extends Recipe {
 
     }
 
-    void start();
+    void start(SatisfactionListener listener);
     
     void stop();
     
     boolean isSatisfied();
-
-    void registerListener(SatisfactionListener listener);
-    
-    void unregisterListener(SatisfactionListener listener);
 
     String getOsgiFilter();
 

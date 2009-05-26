@@ -53,9 +53,9 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     private final Object monitor = new Object();
 
     public ReferenceRecipe(String name,
-                                       ExtendedBlueprintContainer blueprintContainer,
-                                       ReferenceMetadata metadata,
-                                       Recipe listenersRecipe) {
+                           ExtendedBlueprintContainer blueprintContainer,
+                           ReferenceMetadata metadata,
+                           Recipe listenersRecipe) {
         super(name, blueprintContainer, metadata, listenersRecipe);
         this.metadata = metadata;
     }
@@ -70,8 +70,6 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             // Add partially created proxy to the context
             addObject(proxy, true);
 
-            // Start track the service
-            tracker.registerServiceListener(this);
             // Handle initial references
             retrack();
 
@@ -83,14 +81,6 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     }
 
     @Override
-    public void postCreate() {
-        // Create the listeners and initialize them
-        createListeners();
-        // Retrack to inform listeners
-        retrack();
-    }
-
-    @Override
     public void stop() {
         super.stop();
         synchronized (monitor) {
@@ -99,14 +89,12 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
         }
     }
 
-    private void retrack() {
-        synchronized (monitor) {
-            ServiceReference ref = tracker.getBestServiceReference();
-            if (ref != null) {
-                bind(ref);
-            } else {
-                unbind();
-            }
+    protected void retrack() {
+        ServiceReference ref = getBestServiceReference();
+        if (ref != null) {
+            bind(ref);
+        } else {
+            unbind();
         }
     }
 
@@ -151,12 +139,12 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
 
     private Object getService() throws InterruptedException {
         synchronized (monitor) {
-            if (tracker.isStarted() && trackedServiceReference == null && metadata.getTimeout() > 0) {
+            if (isStarted() && trackedServiceReference == null && metadata.getTimeout() > 0) {
                 blueprintContainer.getEventDispatcher().blueprintEvent(new BlueprintEvent(BlueprintEvent.WAITING, blueprintContainer.getBundleContext().getBundle(), blueprintContainer.getExtenderBundle(), new String[] { getOsgiFilter() }));
                 monitor.wait(metadata.getTimeout());
             }
             if (trackedServiceReference == null) {
-                if (tracker.isStarted()) {
+                if (isStarted()) {
                     throw new ServiceUnavailableException("Timeout expired when waiting for OSGi service", proxyClass.getSuperclass(), getOsgiFilter());
                 } else {
                     throw new ServiceUnavailableException("Service tracker is stopped", proxyClass.getSuperclass(), getOsgiFilter());

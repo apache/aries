@@ -27,6 +27,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.sf.cglib.proxy.Dispatcher;
 import net.sf.cglib.proxy.Enhancer;
@@ -40,6 +42,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
@@ -54,14 +57,22 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe implements ServiceListener, SatisfiableRecipe {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(RefCollectionRecipe.class);
+
     protected final ExtendedBlueprintContainer blueprintContainer;
     protected final ServiceReferenceMetadata metadata;
     protected final Recipe listenersRecipe;
-    protected List<Listener> listeners;
-    private String filter;
     protected final ClassLoader proxyClassLoader;
-    protected ServiceReferenceTracker tracker;
-    protected boolean optional;
+    protected final boolean optional;
+    /** The OSGi filter for tracking references */
+    protected final String filter;
+    /** The list of listeners for this reference.  This list will be lazy created */
+    protected List<Listener> listeners;
+
+    private final List<ServiceReference> references = new ArrayList<ServiceReference>();
+    private final AtomicBoolean started = new AtomicBoolean();
+    private final AtomicBoolean satisfied = new AtomicBoolean();
+    private SatisfactionListener satisfactionListener;
 
     protected AbstractServiceReferenceRecipe(String name,
                                              ExtendedBlueprintContainer blueprintContainer,
@@ -78,30 +89,48 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                                                                 getClass().getClassLoader());
         
         this.optional = (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL);
-        this.tracker = new ServiceReferenceTracker(blueprintContainer.getBundleContext(), getOsgiFilter(), optional);
+        this.filter = createOsgiFilter(metadata);
     }
 
-    public void start() {
-        try {
-            tracker.start();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void start(SatisfactionListener listener) {
+        if (listener == null) throw new NullPointerException("satisfactionListener is null");
+        if (started.compareAndSet(false, true)) {
+            try {
+                satisfactionListener = listener;
+                satisfied.set(optional);
+                // Synchronized block on references so that service events won't interfere with initial references tracking
+                // though this may not be sufficient because we don't control ordering of those events
+                synchronized (references) {
+                    blueprintContainer.getBundleContext().addServiceListener(this, getOsgiFilter());
+                    ServiceReference[] references = blueprintContainer.getBundleContext().getServiceReferences(null, getOsgiFilter());
+                    if (references != null) {
+                        for (ServiceReference reference : references) {
+                            serviceAdded(reference);
+                        }
+                    }
+                }
+            } catch (InvalidSyntaxException e) {
+                throw new ComponentDefinitionException(e);
+            }
         }
     }
-    
+
     public void stop() {
-        tracker.stop();
+        if (started.compareAndSet(true, false)) {
+            synchronized (references) {
+                blueprintContainer.getBundleContext().removeServiceListener(this);
+                references.clear();
+                satisfied.set(false);
+            }
+        }
     }
-    
-    public void registerListener(SatisfactionListener listener) {
-        tracker.registerListener(new SatisfactionListenerWrapper(listener));
-    }
-    
-    public void unregisterListener(SatisfactionListener listener) {        
+
+    protected boolean isStarted() {
+        return started.get();
     }
 
     public boolean isSatisfied() {
-        return tracker.isSatisfied();
+        return satisfied.get();
     }
 
     @Override
@@ -114,43 +143,10 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
 
     public String getOsgiFilter() {
-        if (filter == null) {
-            List<String> members = new ArrayList<String>();
-            // Handle filter
-            String flt = metadata.getFilter();
-            if (flt != null && flt.length() > 0) {
-                if (!flt.startsWith("(")) {
-                    flt = "(" + flt + ")";
-                }
-                members.add(flt);
-            }
-            // Handle interfaces
-            Set<String> interfaces = new HashSet<String>(metadata.getInterfaceNames());
-            if (!interfaces.isEmpty()) {
-                for (String itf : interfaces) {
-                    members.add("(" + Constants.OBJECTCLASS + "=" + itf + ")");
-                }
-            }
-            // Handle component name
-            String componentName = metadata.getComponentName();
-            if (componentName != null && componentName.length() > 0) {
-                members.add("(" + BlueprintConstants.COMPONENT_NAME_PROPERTY + "=" + componentName + ")");
-            }
-            // Create filter
-            if (members.isEmpty()) {
-                throw new IllegalStateException("No constraints were specified on the service reference");
-            }
-            StringBuilder sb = new StringBuilder("(&");
-            for (String member : members) {
-                sb.append(member);
-            }
-            sb.append(")");
-            filter = sb.toString();
-        }
         return filter;
     }
 
-    protected void createListeners() {
+    private void createListeners() {
         try {
             if (listenersRecipe != null) {
                 listeners = (List<Listener>) listenersRecipe.create();
@@ -237,33 +233,122 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         ServiceReference ref = event.getServiceReference();
         switch (eventType) {
             case ServiceEvent.REGISTERED:
+                serviceAdded(ref);
+                break;
             case ServiceEvent.MODIFIED:
-                track(ref);
+                serviceModified(ref);
                 break;
             case ServiceEvent.UNREGISTERING:
-                untrack(ref);
+                serviceRemoved(ref);
                 break;
         }
+    }
+
+    private void serviceAdded(ServiceReference ref) {
+        boolean added;
+        boolean satisfied;
+        synchronized (references) {
+            added = !references.contains(ref);
+            if (added) {
+                references.add(ref);
+            }
+            satisfied = optional || !references.isEmpty();
+        }
+        if (added) {
+            track(ref);
+        }
+        setSatisfied(satisfied);
+    }
+
+    private void serviceModified(ServiceReference ref) {
+        track(ref);
+    }
+
+    private void serviceRemoved(ServiceReference ref) {
+        boolean removed;
+        boolean satisfied;
+        synchronized (references) {
+            removed = references.remove(ref);
+            satisfied = optional || !references.isEmpty();
+        }
+        if (removed) {
+            untrack(ref);
+        }
+        setSatisfied(satisfied);
+    }
+
+    protected void setSatisfied(boolean s) {
+        // This check will ensure an atomic comparision and set
+        // so that it will only be true if the value actually changed
+        if (satisfied.getAndSet(s) != s) {
+            LOGGER.debug("Service reference with filter {} satisfied {}", getOsgiFilter(), this.satisfied);
+            this.satisfactionListener.notifySatisfaction(this);
+        }
+    }
+
+    @Override
+    public void postCreate() {
+        // Create the listeners and initialize them
+        createListeners();
+        // Retrack to inform listeners
+        retrack();
     }
 
     protected abstract void track(ServiceReference reference);
 
     protected abstract void untrack(ServiceReference reference);
 
-    private class SatisfactionListenerWrapper implements ServiceReferenceTracker.SatisfactionListener {
+    protected abstract void retrack();
 
-        SatisfiableRecipe.SatisfactionListener listener;
-        
-        public SatisfactionListenerWrapper(SatisfiableRecipe.SatisfactionListener listener) {
-            this.listener = listener;
+    public List<ServiceReference> getServiceReferences() {
+        synchronized (references) {
+            return new ArrayList<ServiceReference>(references);
         }
-        
-        public void notifySatisfaction(ServiceReferenceTracker satisfiable) {
-            this.listener.notifySatisfaction(AbstractServiceReferenceRecipe.this);
-        }
-        
     }
-    
+
+    public ServiceReference getBestServiceReference() {
+        synchronized (references) {
+            int length = references.size();
+            if (length == 0) { /* if no service is being tracked */
+                return null;
+            }
+            int index = 0;
+            if (length > 1) { /* if more than one service, select highest ranking */
+                int rankings[] = new int[length];
+                int count = 0;
+                int maxRanking = Integer.MIN_VALUE;
+                for (int i = 0; i < length; i++) {
+                    Object property = references.get(i).getProperty(Constants.SERVICE_RANKING);
+                    int ranking = (property instanceof Integer) ? (Integer) property : 0;
+                    rankings[i] = ranking;
+                    if (ranking > maxRanking) {
+                        index = i;
+                        maxRanking = ranking;
+                        count = 1;
+                    } else {
+                        if (ranking == maxRanking) {
+                            count++;
+                        }
+                    }
+                }
+                // TODO: we could use a one pass search ...
+                if (count > 1) { /* if still more than one service, select lowest id */
+                    long minId = Long.MAX_VALUE;
+                    for (int i = 0; i < length; i++) {
+                        if (rankings[i] == maxRanking) {
+                            long id = (Long) references.get(i).getProperty(Constants.SERVICE_ID);
+                            if (id < minId) {
+                                index = i;
+                                minId = id;
+                            }
+                        }
+                    }
+                }
+            }
+            return references.get(index);
+        }
+    }
+
     public static class Listener {
 
         private static final Logger LOGGER = LoggerFactory.getLogger(Listener.class);
@@ -343,6 +428,46 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 }
             }
         }
+    }
+
+    /**
+     * Create the OSGi filter corresponding to the ServiceReferenceMetadata constraints
+     *
+     * @param metadata the service reference metadata
+     * @return the OSGi filter
+     */
+    private static String createOsgiFilter(ServiceReferenceMetadata metadata) {
+        List<String> members = new ArrayList<String>();
+        // Handle filter
+        String flt = metadata.getFilter();
+        if (flt != null && flt.length() > 0) {
+            if (!flt.startsWith("(")) {
+                flt = "(" + flt + ")";
+            }
+            members.add(flt);
+        }
+        // Handle interfaces
+        Set<String> interfaces = new HashSet<String>(metadata.getInterfaceNames());
+        if (!interfaces.isEmpty()) {
+            for (String itf : interfaces) {
+                members.add("(" + Constants.OBJECTCLASS + "=" + itf + ")");
+            }
+        }
+        // Handle component name
+        String componentName = metadata.getComponentName();
+        if (componentName != null && componentName.length() > 0) {
+            members.add("(" + BlueprintConstants.COMPONENT_NAME_PROPERTY + "=" + componentName + ")");
+        }
+        // Create filter
+        if (members.isEmpty()) {
+            throw new IllegalStateException("No constraints were specified on the service reference");
+        }
+        StringBuilder sb = new StringBuilder("(&");
+        for (String member : members) {
+            sb.append(member);
+        }
+        sb.append(")");
+        return sb.toString();
     }
 
 }
