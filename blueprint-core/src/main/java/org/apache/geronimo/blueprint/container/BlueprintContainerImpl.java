@@ -372,10 +372,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
     private Map<String, List<SatisfiableRecipe>> getSatisfiableDependenciesMap() {
         if (satisfiables == null && instantiator != null) {
-            boolean createNewContext = !ExecutionContext.isContextSet();
-            if (createNewContext) {
-                ExecutionContext.setContext(new DefaultExecutionContext(this, instantiator.getRepository()));
-            }
+            ExecutionContext oldContext = ExecutionContext.setContext(new DefaultExecutionContext(this, instantiator.getRepository()));
             try {
                 satisfiables = new HashMap<String, List<SatisfiableRecipe>>();
                 for (Recipe r : instantiator.getAllRecipes()) {
@@ -386,9 +383,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                 }
                 return satisfiables;
             } finally {
-                if (createNewContext) {
-                    ExecutionContext.setContext(null);
-                }
+                ExecutionContext.setContext(oldContext);
             }
         }
         return satisfiables;
@@ -446,7 +441,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             break;
                         }
                     }
-                    ServiceRecipe reg = (ServiceRecipe) getComponentInstance(name);
+                    ServiceRecipe reg = (ServiceRecipe) instantiator.getRepository().getRecipe(name);
                     if (satisfied && !reg.isRegistered()) {
                         LOGGER.debug("Registering service {} due to satisfied references", name);
                         reg.register();
