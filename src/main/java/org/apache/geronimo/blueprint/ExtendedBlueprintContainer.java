@@ -42,7 +42,7 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
 
     ExtendedComponentDefinitionRegistry getComponentDefinitionRegistry();
 
-    List<BeanProcessor> getBeanProcessors();
+    <T extends Processor> List<T> getProcessors(Class<T> type);
 
     Repository getRepository();
 }

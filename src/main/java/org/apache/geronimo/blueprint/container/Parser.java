@@ -579,7 +579,8 @@ public class Parser {
                         }
                         service.setInterfaceNames(parseInterfaceNames(e));
                     } else if (nodeNameEquals(e, SERVICE_PROPERTIES_ELEMENT)) {
-                        service.setServiceProperties(parseMap(e, service).getEntries());
+                        List<MapEntry> entries = parseServiceProperties(e, service).getEntries();
+                        service.setServiceProperties(entries); 
                     } else if (nodeNameEquals(e, REGISTRATION_LISTENER_ELEMENT)) {
                         service.addRegistrationListener(parseRegistrationListener(e));
                     } else if (nodeNameEquals(e, BEAN_ELEMENT)) {
@@ -743,6 +744,13 @@ public class Parser {
             }
         }
         return keyValue;
+    }
+    
+    public MapMetadata parseServiceProperties(Element element, ComponentMetadata enclosingComponent) {
+        // TODO: need to handle this better
+        MapMetadata map = parseMap(element, enclosingComponent);
+        handleCustomElements(element, enclosingComponent);
+        return map;
     }
     
     private RegistrationListener parseRegistrationListener(Element element) {
@@ -988,7 +996,7 @@ public class Parser {
         return listener;
     }
 
-    private List<String> parseInterfaceNames(Element element) {
+    public List<String> parseInterfaceNames(Element element) {
         List<String> interfaceNames = new ArrayList<String>();
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {

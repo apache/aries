@@ -11,8 +11,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.ArrayList;
 
+import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
+import org.apache.geronimo.blueprint.ServiceProcessor;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.CollectionRecipe;
 import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
@@ -22,6 +24,7 @@ import org.apache.geronimo.blueprint.di.MapRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.di.RefRecipe;
 import org.apache.geronimo.blueprint.di.Repository;
+import org.apache.geronimo.blueprint.utils.JavaUtils;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
@@ -110,6 +113,7 @@ public class ServiceRecipe extends AbstractRecipe {
         if (registration != null) {
             return;
         }
+        
         Hashtable props = new Hashtable();
         if (properties == null) {
             properties = (Map) createSimpleRecipe(propertiesRecipe);
@@ -120,6 +124,10 @@ public class ServiceRecipe extends AbstractRecipe {
         if (componentName != null) {
             props.put(BlueprintConstants.COMPONENT_NAME_PROPERTY, componentName);
         }
+        for (ServiceProcessor processor : blueprintContainer.getProcessors(ServiceProcessor.class)) {
+            processor.updateProperties(new PropertiesUpdater(), props);
+        }
+        
         Set<String> classes = getClasses();
         String[] classArray = classes.toArray(new String[classes.size()]);
         registration = blueprintContainer.getBundleContext().registerService(classArray, new TriggerServiceFactory(), props);
@@ -165,7 +173,7 @@ public class ServiceRecipe extends AbstractRecipe {
             registration = null;
         }
     }
-
+    
     public Object getService() {
         return getService(blueprintContainer.getBundleContext().getBundle(), null);
     }
@@ -341,6 +349,19 @@ public class ServiceRecipe extends AbstractRecipe {
         }
     }
 
+    private class PropertiesUpdater implements ServiceProcessor.ServicePropertiesUpdater {
+
+        public String getId() {
+            return metadata.getId();
+        }
+
+        public void updateProperties(Dictionary properties) {
+            Hashtable table = JavaUtils.getProperties(getReference());
+            JavaUtils.copy(table, properties);
+            setProperties(table);
+        }        
+    }
+    
     public static class Listener {
 
         private Object listener;
