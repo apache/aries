@@ -135,11 +135,19 @@ public class BlueprintObjectInstantiator  {
     }
 
     private Object createInstance(String name) {
+        // We need to synchronize recipe creation on the repository
+        // so that we don't end up with multiple threads creating the
+        // same instance at the same time.
         Object instance = repository.getInstance(name);
         if (instance == null) {
-            Recipe recipe = repository.getRecipe(name);
-            if (recipe != null) {
-                instance = recipe.create();
+            synchronized (repository) {
+                instance = repository.getInstance(name);
+                if (instance == null) {
+                    Recipe recipe = repository.getRecipe(name);
+                    if (recipe != null) {
+                        instance = recipe.create();
+                    }
+                }
             }
         }
         if (instance == null) {
