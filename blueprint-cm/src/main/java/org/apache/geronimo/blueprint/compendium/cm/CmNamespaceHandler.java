@@ -34,7 +34,9 @@ import org.w3c.dom.EntityReference;
 import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.ExtendedParserContext;
 import org.apache.geronimo.blueprint.container.Parser;
+import org.apache.geronimo.blueprint.container.ParserContextImpl;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableComponentMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableRefMetadata;
@@ -47,6 +49,7 @@ import org.osgi.service.blueprint.namespace.NamespaceHandler;
 import org.osgi.service.blueprint.namespace.ParserContext;
 import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
@@ -91,6 +94,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     public static final String AUTO_EXPORT_ATTRIBUTE = "auto-export";
     public static final String RANKING_ATTRIBUTE = "ranking";
     public static final String INTERFACE_ATTRIBUTE = "interface";
+    public static final String UPDATE_ATTRIBUTE = "update";
 
     public static final String CONFIG_ADMIN_REFERENCE_NAME = "blueprint.configadmin";
 
@@ -104,7 +108,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(CmNamespaceHandler.class);
 
     private int idCounter;
-
+    
     public URL getSchemaLocation(String namespace) {
         return getClass().getResource("blueprint-cm.xsd");
     }
@@ -205,6 +209,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
 
         MutableBeanMetadata factoryMetadata = context.createMetadata(MutableBeanMetadata.class);
         generateIdIfNeeded(context, factoryMetadata);
+        factoryMetadata.addProperty("id", createValue(context, factoryMetadata.getId()));
         factoryMetadata.setScope(BeanMetadata.SCOPE_SINGLETON);
         factoryMetadata.setRuntimeClass(CmManagedServiceFactory.class);
         factoryMetadata.setInitMethodName("init");
@@ -234,6 +239,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
             factoryMetadata.addProperty("interfaces", createList(context, interfaces));
         }
 
+        Parser parser = getParser(context);
+        
         // Parse elements
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
@@ -241,14 +248,14 @@ public class CmNamespaceHandler implements NamespaceHandler {
             if (node instanceof Element) {
                 Element e = (Element) node;
                 if (isBlueprintNamespace(e.getNamespaceURI())) {
-                    if (nodeNameEquals(e, INTERFACES_ELEMENT)) {
+                    if (nodeNameEquals(e, Parser.INTERFACES_ELEMENT)) {
                         if (interfaces != null) {
-                            throw new ComponentDefinitionException("Only one of " + INTERFACE_ATTRIBUTE + " attribute or " + INTERFACES_ELEMENT + " element must be used");
+                            throw new ComponentDefinitionException("Only one of " + Parser.INTERFACE_ATTRIBUTE + " attribute or " + INTERFACES_ELEMENT + " element must be used");
                         }
-                        interfaces = parseInterfaceNames(e);
+                        interfaces = parser.parseInterfaceNames(e);
                         factoryMetadata.addProperty("interfaces", createList(context, interfaces));                    
-                    } else if (nodeNameEquals(e, Parser.SERVICE_PROPERTIES_ELEMENT)) {                    
-                        MutableMapMetadata map = context.parseElement(MutableMapMetadata.class, null, e);
+                    } else if (nodeNameEquals(e, Parser.SERVICE_PROPERTIES_ELEMENT)) { 
+                        MapMetadata map = parser.parseServiceProperties(e, factoryMetadata);
                         factoryMetadata.addProperty("serviceProperties", map);
                     } else {
                         // TODO: parse listeners
@@ -283,11 +290,28 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     private ComponentMetadata decorateCmProperties(ExtendedParserContext context, Element element, ComponentMetadata component) {
-        if (!(component instanceof ServiceMetadata)) {
-            throw new ComponentDefinitionException("Element " + CM_PROPERTIES_ELEMENT + " must be used inside a <bp:service> element");
+        generateIdIfNeeded(context, ((MutableComponentMetadata) component));
+        MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
+        metadata.setProcessor(true);
+        metadata.setId(getId(context, element));
+        metadata.setRuntimeClass(CmProperties.class);
+        String persistentId = element.getAttribute(PERSISTENT_ID_ATTRIBUTE);
+        // if persistentId is "" the cm-properties element in nested in managed-service-factory
+        // and the configuration object will come from the factory. So we only really need to register
+        // ManagedService if the persistentId is not an empty string.
+        if (persistentId.length() > 0) {
+            metadata.setInitMethodName("init");
+            metadata.setDestroyMethodName("destroy");
         }
-        // TODO: implement cm-properties
-        throw new UnsupportedOperationException("Not implemented yet");
+        metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
+        metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
+        metadata.addProperty("persistentId", createValue(context, persistentId));
+        if (element.hasAttribute(UPDATE_ATTRIBUTE)) {
+            metadata.addProperty("update", createValue(context, element.getAttribute(UPDATE_ATTRIBUTE)));
+        }
+        metadata.addProperty("serviceId", createIdRef(context, component.getId()));
+        context.getComponentDefinitionRegistry().registerComponentDefinition(metadata);
+        return component;
     }
 
     private ComponentMetadata decorateManagedProperties(ExtendedParserContext context, Element element, ComponentMetadata component) {
@@ -371,39 +395,6 @@ public class CmNamespaceHandler implements NamespaceHandler {
         return m;
     }
 
-    private List<String> parseInterfaceNames(Element element) {
-        List<String> interfaceNames = new ArrayList<String>();
-        NodeList nl = element.getChildNodes();
-        for (int i = 0; i < nl.getLength(); i++) {
-            Node node = nl.item(i);
-            if (node instanceof Element) {
-                Element e = (Element) node;
-                if (nodeNameEquals(e, VALUE_ELEMENT)) {
-                    String v = getTextValue(e).trim();
-                    if (interfaceNames.contains(v)) {
-                        throw new ComponentDefinitionException("The element " + INTERFACES_ELEMENT + " should not contain the same interface twice");
-                    }
-                    interfaceNames.add(getTextValue(e));
-                } else {
-                    throw new ComponentDefinitionException("Unsupported element " + e.getNodeName() + " inside an " + INTERFACES_ELEMENT + " element");
-                }
-            }
-        }
-        return interfaceNames;
-    }
-
-    private static String getTextValue(Element element) {
-        StringBuffer value = new StringBuffer();
-        NodeList nl = element.getChildNodes();
-        for (int i = 0; i < nl.getLength(); i++) {
-            Node item = nl.item(i);
-            if ((item instanceof CharacterData && !(item instanceof Comment)) || item instanceof EntityReference) {
-                value.append(item.getNodeValue());
-            }
-        }
-        return value.toString();
-    }
-
     private static boolean nodeNameEquals(Node node, String name) {
         return (name.equals(node.getNodeName()) || name.equals(node.getLocalName()));
     }
@@ -420,7 +411,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         }
     }
 
-    public void generateIdIfNeeded(ExtendedParserContext context, MutableBeanMetadata metadata) {
+    public void generateIdIfNeeded(ExtendedParserContext context, MutableComponentMetadata metadata) {
         if (metadata.getId() == null) {
             metadata.setId(generateId(context));
         }
@@ -432,6 +423,13 @@ public class CmNamespaceHandler implements NamespaceHandler {
             id = "#cm-" + ++idCounter;
         } while (context.getComponentDefinitionRegistry().containsComponentDefinition(id));
         return id;
+    }
+    
+    private Parser getParser(ParserContext ctx) {
+        if (ctx instanceof ParserContextImpl) {
+            return ((ParserContextImpl) ctx).getParser();
+        }
+        throw new RuntimeException("Unable to get parser");
     }
 
 }

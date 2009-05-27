@@ -71,4 +71,8 @@ public class ParserContextImpl implements ExtendedParserContext {
     public <T> T parseElement(Class<T> type, ComponentMetadata enclosingComponent, Element element) {
         return parser.parseElement(type, enclosingComponent, element);
     }
+    
+    public Parser getParser() {
+        return parser;
+    }
 }

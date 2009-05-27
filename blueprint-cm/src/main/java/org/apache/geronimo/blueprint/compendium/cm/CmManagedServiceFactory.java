@@ -31,9 +31,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
+import org.apache.geronimo.blueprint.ServiceProcessor;
+import org.apache.geronimo.blueprint.utils.JavaUtils;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.cm.Configuration;
@@ -60,6 +63,7 @@ public class CmManagedServiceFactory {
     
     private ExtendedBlueprintContainer blueprintContainer;
     private ConfigurationAdmin configAdmin;
+    private String id;
     private String factoryPid;
     private List<String> interfaces;
     private int autoExport;
@@ -122,6 +126,10 @@ public class CmManagedServiceFactory {
         this.configAdmin = configAdmin;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+    
     public void setFactoryPid(String factoryPid) {
         this.factoryPid = factoryPid;
     }
@@ -157,45 +165,79 @@ public class CmManagedServiceFactory {
             updateComponentProperties(props);
 
             Object component = blueprintContainer.getComponentInstance(managedComponentName);
-            //  TODO: init instance, call listeners, etc...
-        
-            Hashtable regProps = new Hashtable();
-            if (serviceProperties != null) {
-                regProps.putAll(serviceProperties);
+            
+            //  TODO: call listeners, etc...
+                    
+            Hashtable regProps = getRegistrationProperties(pid);            
+            CmProperties cm = findServiceProcessor();
+            if (cm != null) {
+                if ("".equals(cm.getPersistentId())) {
+                    JavaUtils.copy(regProps, props);
+                }
+                cm.updateProperties(new PropertiesUpdater(pid), regProps);
             }
-            regProps.put(Constants.SERVICE_PID, pid);
-            regProps.put(Constants.SERVICE_RANKING, ranking);
+            
             Set<String> classes = getClasses(component);
             String[] classArray = classes.toArray(new String[classes.size()]);
             reg = blueprintContainer.getBundleContext().registerService(classArray, component, regProps);
+
             LOGGER.debug("Service {} registered with interfaces {} and properties {}", new Object [] { component, classes, regProps });
             
             services.put(reg, component);
             pids.put(pid, reg);
         } else {
             updateComponentProperties(props);
+            
+            CmProperties cm = findServiceProcessor();
+            if (cm != null && "".equals(cm.getPersistentId())) {
+                Dictionary regProps = getRegistrationProperties(pid);    
+                JavaUtils.copy(regProps, props);
+                cm.updated(regProps);
+            }
         }
     }
 
+    private Hashtable getRegistrationProperties(String pid) {
+        Hashtable regProps = new Hashtable();
+        if (serviceProperties != null) {
+            regProps.putAll(serviceProperties);
+        }
+        regProps.put(Constants.SERVICE_PID, pid);
+        regProps.put(Constants.SERVICE_RANKING, ranking);
+        return regProps;
+    }
+    
     private void updateComponentProperties(Dictionary props) {
-        CmManagedProperties cm = findManagedProperties();
+        CmManagedProperties cm = findBeanProcessor();
         if (cm != null) {
             cm.updated(props);
         }
     }
     
-    private CmManagedProperties findManagedProperties() {
-        for (BeanProcessor beanProcessor : blueprintContainer.getBeanProcessors()) {
+    private CmManagedProperties findBeanProcessor() {
+        for (BeanProcessor beanProcessor : blueprintContainer.getProcessors(BeanProcessor.class)) {
             if (beanProcessor instanceof CmManagedProperties) {
                 CmManagedProperties cm = (CmManagedProperties) beanProcessor;
-                if (managedComponentName.equals(cm.getBeanName())) {
+                if (managedComponentName.equals(cm.getBeanName()) && "".equals(cm.getPersistentId())) {
                     return cm;
                 }
             }
         }
         return null;
     }
-    
+        
+    private CmProperties findServiceProcessor() {
+        for (ServiceProcessor processor : blueprintContainer.getProcessors(ServiceProcessor.class)) {
+            if (processor instanceof CmProperties) {
+                CmProperties cm = (CmProperties) processor;
+                if (id.equals(cm.getServiceId())) {
+                    return cm;
+                }
+            }
+        }
+        return null;
+    }
+        
     private void destroyComponent(Object instance, int reason) {
         Method method = findDestroyMethod(instance.getClass());
         if (method != null) {
@@ -265,4 +307,29 @@ public class CmManagedServiceFactory {
         }
     }
 
+    private class PropertiesUpdater implements ServiceProcessor.ServicePropertiesUpdater {
+
+        private String pid;
+        
+        public PropertiesUpdater(String pid) {
+            this.pid = pid;
+        }
+        
+        public String getId() {
+            return id;
+        }
+
+        public void updateProperties(Dictionary properties) {
+            ServiceRegistration reg = pids.get(pid);
+            if (reg != null) {
+                ServiceReference ref = reg.getReference();
+                if (ref != null) {
+                    Hashtable table = JavaUtils.getProperties(ref);
+                    JavaUtils.copy(table, properties);
+                    reg.setProperties(table);
+                }
+            }
+        }
+    }
+    
 }

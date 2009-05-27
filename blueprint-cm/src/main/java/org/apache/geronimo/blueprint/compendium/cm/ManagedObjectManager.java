@@ -35,25 +35,25 @@ import org.slf4j.LoggerFactory;
  * Since persistence id can only be associated with one ManagedService in a bundle
  * this class ensures only one ManagedService is registered per persistence id.
  */
-public class ManagedServiceManager {
+public class ManagedObjectManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ManagedServiceManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ManagedObjectManager.class);
 
     private static HashMap<Key, ConfigurationWatcher> map = new HashMap<Key, ConfigurationWatcher>();
                
-    public static synchronized void register(CmManagedProperties cm, Properties props) {
+    public static synchronized void register(ManagedObject cm, Properties props) {
         Key key = new Key(cm);
         ConfigurationWatcher reg = map.get(key);
         if (reg == null) {
             reg = new ConfigurationWatcher(); 
-            ServiceRegistration registration = cm.getBlueprintContainer().getBundleContext().registerService(ManagedService.class.getName(), reg, props);
+            ServiceRegistration registration = cm.getBundle().getBundleContext().registerService(ManagedService.class.getName(), reg, props);
             reg.setRegistration(registration);            
             map.put(key, reg);
         }
         reg.add(cm);
     }
 
-    public static synchronized void unregister(CmManagedProperties cm) {
+    public static synchronized void unregister(ManagedObject cm) {
         Key key = new Key(cm);
         ConfigurationWatcher reg = map.get(key);
         if (reg != null) {
@@ -68,13 +68,13 @@ public class ManagedServiceManager {
     private static class ConfigurationWatcher implements ManagedService {
 
         private ServiceRegistration registration;
-        private List<CmManagedProperties> list = new ArrayList<CmManagedProperties>();
+        private List<ManagedObject> list = new ArrayList<ManagedObject>();
         
         public ConfigurationWatcher() {
         }
         
         public void updated(Dictionary props) throws ConfigurationException {
-            for (CmManagedProperties cm : list) {
+            for (ManagedObject cm : list) {
                 cm.updated(props);
             }
         }
@@ -87,11 +87,11 @@ public class ManagedServiceManager {
             return registration;
         }
         
-        private void add(CmManagedProperties cm) {
+        private void add(ManagedObject cm) {
             list.add(cm);
         }
         
-        private void remove(CmManagedProperties cm) {
+        private void remove(ManagedObject cm) {
             list.remove(cm);
         }
         
@@ -105,9 +105,9 @@ public class ManagedServiceManager {
         private String persistanceId;
         private Bundle bundle;
         
-        public Key(CmManagedProperties cm) {
+        public Key(ManagedObject cm) {
             this.persistanceId = cm.getPersistentId();
-            this.bundle = cm.getBlueprintContainer().getBundleContext().getBundle();
+            this.bundle = cm.getBundle();
         }
 
         public int hashCode() {

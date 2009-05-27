@@ -42,6 +42,7 @@ import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
+import org.apache.geronimo.blueprint.Processor;
 import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
 import org.apache.geronimo.blueprint.di.ExecutionContext;
 import org.apache.geronimo.blueprint.di.Recipe;
@@ -118,7 +119,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private Parser parser;
     private BlueprintObjectInstantiator instantiator;
     private ServiceRegistration registration;
-    private List<BeanProcessor> beanProcessors;
+    private List<Processor> processors;
     private Map<String, List<SatisfiableRecipe>> satisfiables;
     private long timeout = 5 * 60 * 1000;
     private boolean waitForDependencies = true;
@@ -135,7 +136,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         this.converter = new AggregateConverter(this);
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
-        this.beanProcessors = new ArrayList<BeanProcessor>();
+        this.processors = new ArrayList<Processor>();
     }
 
     public Bundle getExtenderBundle() {
@@ -146,8 +147,14 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         return bundleContext.getBundle().loadClass(name);
     }
 
-    public List<BeanProcessor> getBeanProcessors() {
-        return beanProcessors;
+    public <T extends Processor> List<T> getProcessors(Class<T> clazz) {
+        List<T> p = new ArrayList<T>();
+        for (Processor processor : processors) {
+            if (clazz.isInstance(processor)) {
+                p.add(clazz.cast(processor));
+            }
+        }
+        return p;
     }
 
     public BlueprintListener getEventDispatcher() {
@@ -364,9 +371,9 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             if (ComponentDefinitionRegistryProcessor.class.isAssignableFrom(clazz)) {
                 Object obj = instantiator.create(bean.getId());
                 ((ComponentDefinitionRegistryProcessor) obj).process(componentDefinitionRegistry);
-            } else if (BeanProcessor.class.isAssignableFrom(clazz)) {
+            } else if (Processor.class.isAssignableFrom(clazz)) {
                 Object obj = instantiator.create(bean.getId());
-                this.beanProcessors.add((BeanProcessor) obj);
+                this.processors.add((Processor) obj);
             }
         }
     }

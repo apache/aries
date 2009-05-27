@@ -490,7 +490,7 @@ public class BeanRecipe extends AbstractRecipe {
         // inject properties
         setProperties(obj);
 
-        for (BeanProcessor processor : blueprintContainer.getBeanProcessors()) {
+        for (BeanProcessor processor : blueprintContainer.getProcessors(BeanProcessor.class)) {
             obj = processor.beforeInit(obj, getName());
         }
         
@@ -508,7 +508,7 @@ public class BeanRecipe extends AbstractRecipe {
     }
     
     public void destroyInstance(Object obj) {
-        for (BeanProcessor processor : blueprintContainer.getBeanProcessors()) {
+        for (BeanProcessor processor : blueprintContainer.getProcessors(BeanProcessor.class)) {
             processor.beforeDestroy(obj, getName());
         }
         try {
@@ -519,7 +519,7 @@ public class BeanRecipe extends AbstractRecipe {
         } catch (Exception e) {
             LOGGER.info("Error invoking destroy method", getRealCause(e));
         }
-        for (BeanProcessor processor : blueprintContainer.getBeanProcessors()) {
+        for (BeanProcessor processor : blueprintContainer.getProcessors(BeanProcessor.class)) {
             processor.afterDestroy(obj, getName());
         }
     }
