@@ -21,6 +21,7 @@ package org.apache.geronimo.blueprint.container;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -84,7 +85,9 @@ public class BlueprintEventDispatcher implements BlueprintListener, EventConstan
     }
 
     public void blueprintEvent(final BlueprintEvent event) {
-        LOGGER.debug("Sending blueprint container event {} for bundle {}", event, event.getBundle().getSymbolicName());
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Sending blueprint container event {} for bundle {}", toString(event), event.getBundle().getSymbolicName());
+        }
         states.put(event.getBundle(), event);
         executor.submit(new Runnable() {
             public void run() {
@@ -92,6 +95,34 @@ public class BlueprintEventDispatcher implements BlueprintListener, EventConstan
                 sendEventAdmin(event);
             }
         });
+    }
+
+    private String toString(BlueprintEvent event) {
+        return "BlueprintEvent[type=" + getEventType(event.getType())
+                        + (event.getDependencies() != null ? ", dependencies=" + Arrays.asList(event.getDependencies()) : "")
+                        + (event.getException() != null ? ", exception=" + event.getException().getMessage() : "")
+                        + "]";
+    }
+
+    private String getEventType(int type) {
+        switch (type) {
+            case BlueprintEvent.CREATING:
+                return "CREATING";
+            case BlueprintEvent.CREATED:
+                return "CREATED";
+            case BlueprintEvent.DESTROYING:
+                return "DESTROYING";
+            case BlueprintEvent.DESTROYED:
+                return "DESTROYED";
+            case BlueprintEvent.FAILURE:
+                return "FAILURE";
+            case BlueprintEvent.GRACE_PERIOD:
+                return "GRACE_PERIOD";
+            case BlueprintEvent.WAITING:
+                return "WAITING";
+            default:
+                return "UNKNOWN";
+        }
     }
 
     private void callListeners(BlueprintEvent event) {
