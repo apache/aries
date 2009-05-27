@@ -46,18 +46,27 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.geronimo.blueprint.BlueprintExtender</Bundle-Activator>
+                        <Bundle-Activator>org.apache.geronimo.blueprint.container.BlueprintExtender</Bundle-Activator>
                         <Import-Package>
-                            org.apache.tools.ant*;resolution:=optional,
-                            org.apache.log4j*;resolution:=optional,
+                            org.apache.geronimo.blueprint*;version="${pom.version}",
+                            org.osgi.service.blueprint*;version="1.0",
                             *
                         </Import-Package>
                         <Export-Package>
-                            org.osgi.service.blueprint*;version="1.0",
-                            org.apache.geronimo.blueprint*;version="${pom.version}"
+                            =org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.geronimo.blueprint,org.apache.geronimo.blueprint.beans,org.apache.geronimo.blueprint.mutable";version="1.0",
+                            org.osgi.service.blueprint.container;version="1.0",
+                            org.osgi.service.blueprint.reflect;version="1.0",
+                            org.apache.geronimo.blueprint;version="${pom.version}",
+                            org.apache.geronimo.blueprint.beans;version="${pom.version}",
+                            org.apache.geronimo.blueprint.mutable;version="${pom.version}"
                         </Export-Package>
                         <Private-Package>
-                            org.apache.xbean*,
+                            org.apache.geronimo.blueprint.compendium.cm,
+                            org.apache.geronimo.blueprint.container,
+                            org.apache.geronimo.blueprint.di,
+                            org.apache.geronimo.blueprint.namespace,
+                            org.apache.geronimo.blueprint.reflect,
+                            org.apache.geronimo.blueprint.utils,
                             org.objectweb.asm,
                             org.objectweb.asm.commons,
                             org.objectweb.asm.signature,
@@ -67,6 +76,8 @@
                             net.sf.cglib.proxy,
                             net.sf.cglib.reflect,
                         </Private-Package>
+                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
+                        <_failok>true</_failok>
                      </instructions>
                     <unpackBundle>true</unpackBundle>
                 </configuration>
