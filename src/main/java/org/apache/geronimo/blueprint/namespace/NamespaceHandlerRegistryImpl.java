@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
+import org.apache.geronimo.blueprint.NamespaceHandler;
+import org.apache.geronimo.blueprint.container.NamespaceHandlerRegistry;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.namespace.NamespaceHandler;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;

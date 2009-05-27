@@ -17,32 +17,25 @@
 package org.apache.geronimo.blueprint;
 
 import java.util.List;
+import java.util.Set;
 
-import org.apache.geronimo.blueprint.di.Repository;
-import org.osgi.framework.Bundle;
-import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.osgi.service.blueprint.container.BlueprintListener;
-import org.osgi.service.blueprint.container.Converter;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.Target;
 
-/**
- * TODO: javadoc
- *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
- * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
- */
-public interface ExtendedBlueprintContainer extends BlueprintContainer {
+public interface ComponentDefinitionRegistry  {
+    
+    boolean containsComponentDefinition(String name);
+    
+    ComponentMetadata getComponentDefinition(String name);
+    
+    Set<String> getComponentDefinitionNames();
+    
+    void registerComponentDefinition(ComponentMetadata component);
+    
+    void removeComponentDefinition(String name);
 
-    Bundle getExtenderBundle();
+    void registerTypeConverter(Target component);
 
-    BlueprintListener getEventDispatcher();
+    List<Target> getTypeConverters();
 
-    Converter getConverter();
-
-    Class loadClass(String name) throws ClassNotFoundException;
-
-    ComponentDefinitionRegistry getComponentDefinitionRegistry();
-
-    <T extends Processor> List<T> getProcessors(Class<T> type);
-
-    Repository getRepository();
 }

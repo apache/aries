@@ -48,9 +48,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
-import org.apache.geronimo.blueprint.NamespaceHandlerRegistry;
-import org.apache.geronimo.blueprint.container.ParserContextImpl;
+import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
+import org.apache.geronimo.blueprint.NamespaceHandler;
 import org.apache.geronimo.blueprint.reflect.BeanArgumentImpl;
 import org.apache.geronimo.blueprint.reflect.BeanMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.BeanPropertyImpl;
@@ -69,7 +68,6 @@ import org.apache.geronimo.blueprint.reflect.ServiceMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ServiceReferenceMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ValueMetadataImpl;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
-import org.osgi.service.blueprint.namespace.NamespaceHandler;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -193,7 +191,7 @@ public class Parser {
     private static SchemaFactory schemaFactory;
 
     private List<Document> documents;
-    private ExtendedComponentDefinitionRegistry registry;
+    private ComponentDefinitionRegistry registry;
     private NamespaceHandlerRegistry namespaceHandlerRegistry;
     private String idPrefix = "component-";
     private Set<String> ids = new HashSet<String>();
@@ -262,7 +260,7 @@ public class Parser {
     }
 
     public void populate(NamespaceHandlerRegistry handlers,
-                         ExtendedComponentDefinitionRegistry registry) {
+                         ComponentDefinitionRegistry registry) {
         this.namespaceHandlerRegistry = handlers;
         this.registry = registry;
         if (this.documents == null) {

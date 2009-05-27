@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.geronimo.blueprint.mutable.MutableBeanArgument;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
@@ -37,7 +38,6 @@ import org.apache.geronimo.blueprint.mutable.MutableRegistrationListener;
 import org.apache.geronimo.blueprint.mutable.MutableServiceMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
-import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;

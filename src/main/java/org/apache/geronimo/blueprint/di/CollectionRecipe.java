@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
+import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**

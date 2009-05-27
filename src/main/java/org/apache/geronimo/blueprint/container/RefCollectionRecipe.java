@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.RandomAccess;
 import java.util.Set;
-import java.util.HashMap;
-import java.util.Map;
 
 import net.sf.cglib.proxy.Dispatcher;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;

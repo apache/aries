@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
-import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.di.ArrayRecipe;
 import org.apache.geronimo.blueprint.di.CollectionRecipe;
 import org.apache.geronimo.blueprint.di.DefaultRepository;
@@ -70,7 +70,7 @@ public class RecipeBuilder {
     private Set<String> names = new HashSet<String>();
     private int nameCounter;
     private ExtendedBlueprintContainer blueprintContainer;
-    private ExtendedComponentDefinitionRegistry registry;
+    private ComponentDefinitionRegistry registry;
 
     public RecipeBuilder(ExtendedBlueprintContainer blueprintContainer) {
         this.blueprintContainer = blueprintContainer;

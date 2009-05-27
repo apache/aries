@@ -22,9 +22,10 @@ import java.net.URI;
 import java.util.Collections;
 
 import junit.framework.TestCase;
-import org.osgi.service.blueprint.namespace.NamespaceHandler;
+import org.apache.geronimo.blueprint.NamespaceHandler;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.container.Parser;
+import org.apache.geronimo.blueprint.container.NamespaceHandlerRegistry;
 
 public abstract class AbstractBlueprintTest extends TestCase {
 

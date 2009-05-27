@@ -18,10 +18,10 @@
  */
 package org.apache.geronimo.blueprint.container;
 
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

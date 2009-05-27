@@ -25,8 +25,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
-import org.osgi.service.blueprint.namespace.ComponentNameAlreadyInUseException;
+import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
+import org.apache.geronimo.blueprint.ComponentNameAlreadyInUseException;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Target;
 
@@ -39,7 +39,7 @@ import org.osgi.service.blueprint.reflect.Target;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ComponentDefinitionRegistryImpl implements ExtendedComponentDefinitionRegistry {
+public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegistry {
 
     private final Map<String, ComponentMetadata> components;
     private final List<Target> typeConverters;

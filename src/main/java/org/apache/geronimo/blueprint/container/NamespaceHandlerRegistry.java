@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint;
+package org.apache.geronimo.blueprint.container;
 
 import java.net.URI;
 
-import org.osgi.service.blueprint.namespace.NamespaceHandler;
+import org.apache.geronimo.blueprint.NamespaceHandler;
 
 /**
  * Registry of NamespaceHandler.
@@ -60,8 +60,8 @@ public interface NamespaceHandlerRegistry {
     /**
      * Interface used to listen to registered or unregistered namespace handlers.
      *
-     * @see NamespaceHandlerRegistry#addListener(org.apache.geronimo.blueprint.NamespaceHandlerRegistry.Listener)
-     * @see NamespaceHandlerRegistry#removeListener(org.apache.geronimo.blueprint.NamespaceHandlerRegistry.Listener)
+     * @see NamespaceHandlerRegistry#addListener(org.apache.geronimo.blueprint.container.NamespaceHandlerRegistry.Listener)
+     * @see NamespaceHandlerRegistry#removeListener(org.apache.geronimo.blueprint.container.NamespaceHandlerRegistry.Listener) 
      */
     public interface Listener {
 

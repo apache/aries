@@ -16,33 +16,22 @@
  */
 package org.apache.geronimo.blueprint;
 
-import java.util.List;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
-import org.apache.geronimo.blueprint.di.Repository;
-import org.osgi.framework.Bundle;
-import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.osgi.service.blueprint.container.BlueprintListener;
-import org.osgi.service.blueprint.container.Converter;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
 
-/**
- * TODO: javadoc
- *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
- * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
- */
-public interface ExtendedBlueprintContainer extends BlueprintContainer {
-
-    Bundle getExtenderBundle();
-
-    BlueprintListener getEventDispatcher();
-
-    Converter getConverter();
-
-    Class loadClass(String name) throws ClassNotFoundException;
+public interface ParserContext  {
+    
+    Node getSourceNode();
 
     ComponentDefinitionRegistry getComponentDefinitionRegistry();
+    
+    ComponentMetadata getEnclosingComponent();
+    
+    <T extends Metadata> T createMetadata(Class<T> type);
 
-    <T extends Processor> List<T> getProcessors(Class<T> type);
+    <T> T parseElement(Class<T> type, ComponentMetadata enclosingComponent, Element element);
 
-    Repository getRepository();
 }
