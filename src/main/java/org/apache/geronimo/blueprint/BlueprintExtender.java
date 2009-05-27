@@ -125,10 +125,19 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         try {
             List<URL> urls = new ArrayList<URL>();
             Dictionary headers = bundle.getHeaders();
-            String blueprintHeader = (String)headers.get(BlueprintConstants.BUNDLE_BLUEPRINT_HEADER);
-            if (blueprintHeader != null) {
-                List<PathElement> paths = HeaderParser.parseHeader(blueprintHeader);
-                for (PathElement path : paths) {
+            String blueprintHeader = (String) headers.get(BlueprintConstants.BUNDLE_BLUEPRINT_HEADER);
+            if (blueprintHeader == null) {
+                blueprintHeader = "OSGI-INF/blueprint/";
+            }
+            List<PathElement> paths = HeaderParser.parseHeader(blueprintHeader);
+            for (PathElement path : paths) {
+                if (path.getName().endsWith("/")) {
+                    Enumeration e = bundle.findEntries(path.getName(), "*.xml", false);
+                    while (e != null && e.hasMoreElements()) {
+                        URL u = (URL) e.nextElement();
+                        urls.add(u);
+                    }
+                } else {
                     URL url = bundle.getEntry(path.getName());
                     if (url != null) {
                         urls.add(url);
@@ -137,18 +146,8 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                     }
                 }
             }
-            if (urls.isEmpty()) {
-                Enumeration e = bundle.findEntries("OSGI-INF/blueprint", "*.xml", false);
-                if (e != null) {
-                    while (e.hasMoreElements()) {
-                        URL u = (URL) e.nextElement();
-                        urls.add(u);
-                    }
-                }
-            }
             if (!urls.isEmpty()) {
                 LOGGER.debug("Found blueprint application in bundle {} with urls: {}", bundle.getSymbolicName(), urls);
-
                 // Check compatibility
                 // TODO: For lazy bundles, the class is either loaded from an imported package or not found, so it should
                 // not trigger the activation.  If it does, we need to use something else like package admin or
