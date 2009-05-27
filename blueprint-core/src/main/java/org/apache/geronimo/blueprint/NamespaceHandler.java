@@ -14,17 +14,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.osgi.service.blueprint.namespace;
+package org.apache.geronimo.blueprint;
 
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import java.net.URL;
+
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public interface ParserContext  {
-    
-    Node getSourceNode();
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
-    ComponentDefinitionRegistry getComponentDefinitionRegistry();
+public interface NamespaceHandler  {
     
-    ComponentMetadata getEnclosingComponent();
+    URL getSchemaLocation(String namespace);
     
+    ComponentMetadata parse(Element element, ParserContext context);
+    
+    ComponentMetadata decorate(Node node, ComponentMetadata component, ParserContext context);
+             
 }

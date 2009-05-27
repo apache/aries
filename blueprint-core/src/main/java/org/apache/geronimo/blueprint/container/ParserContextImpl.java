@@ -21,9 +21,9 @@ package org.apache.geronimo.blueprint.container;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import org.apache.geronimo.blueprint.ExtendedParserContext;
+import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
+import org.apache.geronimo.blueprint.ParserContext;
 import org.apache.geronimo.blueprint.reflect.MetadataUtil;
-import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 
@@ -35,7 +35,7 @@ import org.osgi.service.blueprint.reflect.Metadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ParserContextImpl implements ExtendedParserContext {
+public class ParserContextImpl implements ParserContext {
 
     private final Parser parser;
     private final ComponentDefinitionRegistry componentDefinitionRegistry;

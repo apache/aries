@@ -27,9 +27,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import org.apache.geronimo.blueprint.reflect.BeanMetadataImpl;
-import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
-import org.osgi.service.blueprint.namespace.NamespaceHandler;
-import org.osgi.service.blueprint.namespace.ParserContext;
+import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
+import org.apache.geronimo.blueprint.NamespaceHandler;
+import org.apache.geronimo.blueprint.ParserContext;
+import org.apache.geronimo.blueprint.container.NamespaceHandlerRegistry;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;

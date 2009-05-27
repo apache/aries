@@ -69,9 +69,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.apache.geronimo.blueprint*;version="${pom.version}"</Export-Package>
+                        <Export-Package>
+                            org.apache.geronimo.blueprint;version="${pom.version}",
+                            org.apache.geronimo.blueprint.beans;version="${pom.version}"
+                            org.apache.geronimo.blueprint.mutable;version="${pom.version}"
+                        </Export-Package>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.geronimo.blueprint.BlueprintExtender</Bundle-Activator>
+                        <Bundle-Activator>org.apache.geronimo.blueprint.container.BlueprintExtender</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

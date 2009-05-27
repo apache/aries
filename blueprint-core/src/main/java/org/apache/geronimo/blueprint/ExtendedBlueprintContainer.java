@@ -40,7 +40,7 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
 
     Class loadClass(String name) throws ClassNotFoundException;
 
-    ExtendedComponentDefinitionRegistry getComponentDefinitionRegistry();
+    ComponentDefinitionRegistry getComponentDefinitionRegistry();
 
     <T extends Processor> List<T> getProcessors(Class<T> type);
 

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint;
+package org.apache.geronimo.blueprint.container;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,8 +28,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.apache.geronimo.blueprint.container.BlueprintContainerImpl;
-import org.apache.geronimo.blueprint.container.BlueprintEventDispatcher;
+import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.geronimo.blueprint.utils.HeaderParser;
 import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;

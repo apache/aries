@@ -14,22 +14,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.osgi.service.blueprint.namespace;
+package org.apache.geronimo.blueprint;
 
-import java.util.Set;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.Target;
+import org.osgi.service.blueprint.reflect.Metadata;
 
-public interface ComponentDefinitionRegistry  {
+public interface ParserContext  {
     
-    boolean containsComponentDefinition(String name);
+    Node getSourceNode();
+
+    ComponentDefinitionRegistry getComponentDefinitionRegistry();
     
-    ComponentMetadata getComponentDefinition(String name);
+    ComponentMetadata getEnclosingComponent();
     
-    Set<String> getComponentDefinitionNames();
-    
-    void registerComponentDefinition(ComponentMetadata component);
-    
-    void removeComponentDefinition(String name);
+    <T extends Metadata> T createMetadata(Class<T> type);
+
+    <T> T parseElement(Class<T> type, ComponentMetadata enclosingComponent, Element element);
+
 }

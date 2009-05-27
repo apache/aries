@@ -14,20 +14,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.osgi.service.blueprint.namespace;
+package org.apache.geronimo.blueprint;
 
-import java.net.URL;
+import java.util.List;
+import java.util.Set;
 
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.osgi.service.blueprint.reflect.Target;
 
-public interface NamespaceHandler  {
+public interface ComponentDefinitionRegistry  {
     
-    URL getSchemaLocation(String namespace);
+    boolean containsComponentDefinition(String name);
     
-    ComponentMetadata parse(Element element, ParserContext context);
+    ComponentMetadata getComponentDefinition(String name);
     
-    ComponentMetadata decorate(Node node, ComponentMetadata component, ParserContext context);
-             
+    Set<String> getComponentDefinitionNames();
+    
+    void registerComponentDefinition(ComponentMetadata component);
+    
+    void removeComponentDefinition(String name);
+
+    void registerTypeConverter(Target component);
+
+    List<Target> getTypeConverters();
+
 }
