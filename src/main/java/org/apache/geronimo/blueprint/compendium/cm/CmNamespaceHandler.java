@@ -21,43 +21,36 @@ package org.apache.geronimo.blueprint.compendium.cm;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.CharacterData;
-import org.w3c.dom.Comment;
-import org.w3c.dom.EntityReference;
 
-import org.apache.geronimo.blueprint.ExtendedComponentDefinitionRegistry;
-import org.apache.geronimo.blueprint.ExtendedParserContext;
+import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
+import org.apache.geronimo.blueprint.NamespaceHandler;
+import org.apache.geronimo.blueprint.ParserContext;
 import org.apache.geronimo.blueprint.container.Parser;
 import org.apache.geronimo.blueprint.container.ParserContextImpl;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableCollectionMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableComponentMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableIdRefMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableRefMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableReferenceMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableIdRefMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableCollectionMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
-import org.osgi.service.blueprint.namespace.ComponentDefinitionRegistry;
-import org.osgi.service.blueprint.namespace.NamespaceHandler;
-import org.osgi.service.blueprint.namespace.ParserContext;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.IdRefMetadata;
 import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
-import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
-import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
-import org.osgi.service.blueprint.reflect.IdRefMetadata;
-import org.osgi.service.blueprint.reflect.CollectionMetadata;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,10 +106,9 @@ public class CmNamespaceHandler implements NamespaceHandler {
         return getClass().getResource("blueprint-cm.xsd");
     }
 
-    public ComponentMetadata parse(Element element, ParserContext ctx) {
+    public ComponentMetadata parse(Element element, ParserContext context) {
         LOGGER.debug("Parsing element {" + element.getNamespaceURI() + "}" + element.getLocalName());
-        ExtendedParserContext context = (ExtendedParserContext) ctx;
-        ExtendedComponentDefinitionRegistry registry = (ExtendedComponentDefinitionRegistry) context.getComponentDefinitionRegistry();
+        ComponentDefinitionRegistry registry = context.getComponentDefinitionRegistry();
         createConfigAdminProxy(context, registry);
         if (nodeNameEquals(element, PROPERTY_PLACEHOLDER_ELEMENT)) {
             return parsePropertyPlaceholder(context, element);
@@ -127,10 +119,9 @@ public class CmNamespaceHandler implements NamespaceHandler {
         }
     }
 
-    public ComponentMetadata decorate(Node node, ComponentMetadata component, ParserContext ctx) {
+    public ComponentMetadata decorate(Node node, ComponentMetadata component, ParserContext context) {
         LOGGER.debug("Decorating node {" + node.getNamespaceURI() + "}" + node.getLocalName());
-        ExtendedParserContext context = (ExtendedParserContext) ctx;
-        ExtendedComponentDefinitionRegistry registry = (ExtendedComponentDefinitionRegistry) context.getComponentDefinitionRegistry();
+        ComponentDefinitionRegistry registry = context.getComponentDefinitionRegistry();
         createConfigAdminProxy(context, registry);
         if (node instanceof Element) {
             if (nodeNameEquals(node, MANAGED_PROPERTIES_ELEMENT)) {
@@ -145,7 +136,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         }
     }
 
-    private ComponentMetadata parsePropertyPlaceholder(ExtendedParserContext context, Element element) {
+    private ComponentMetadata parsePropertyPlaceholder(ParserContext context, Element element) {
         MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
         metadata.setProcessor(true);
         metadata.setId(getId(context, element));
@@ -186,7 +177,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         return metadata;
     }
 
-    private Metadata parseDefaultProperties(ExtendedParserContext context, MutableBeanMetadata enclosingComponent, Element element) {
+    private Metadata parseDefaultProperties(ParserContext context, MutableBeanMetadata enclosingComponent, Element element) {
         MutableMapMetadata props = context.createMetadata(MutableMapMetadata.class);
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
@@ -204,7 +195,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         return props;
     }
 
-    private ComponentMetadata parseManagedServiceFactory(ExtendedParserContext context, Element element) {
+    private ComponentMetadata parseManagedServiceFactory(ParserContext context, Element element) {
         String id = getId(context, element);
 
         MutableBeanMetadata factoryMetadata = context.createMetadata(MutableBeanMetadata.class);
@@ -289,7 +280,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         return mapMetadata;
     }
 
-    private ComponentMetadata decorateCmProperties(ExtendedParserContext context, Element element, ComponentMetadata component) {
+    private ComponentMetadata decorateCmProperties(ParserContext context, Element element, ComponentMetadata component) {
         generateIdIfNeeded(context, ((MutableComponentMetadata) component));
         MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
         metadata.setProcessor(true);
@@ -314,7 +305,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         return component;
     }
 
-    private ComponentMetadata decorateManagedProperties(ExtendedParserContext context, Element element, ComponentMetadata component) {
+    private ComponentMetadata decorateManagedProperties(ParserContext context, Element element, ComponentMetadata component) {
         if (!(component instanceof MutableBeanMetadata)) {
             throw new ComponentDefinitionException("Element " + MANAGED_PROPERTIES_ELEMENT + " must be used inside a <bp:bean> element");
         }
@@ -351,7 +342,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
      *
      * @param registry the registry to add the config admin reference to
      */
-    private void createConfigAdminProxy(ExtendedParserContext context, ComponentDefinitionRegistry registry) {
+    private void createConfigAdminProxy(ParserContext context, ComponentDefinitionRegistry registry) {
         if (registry.getComponentDefinition(CONFIG_ADMIN_REFERENCE_NAME) == null) {
             MutableReferenceMetadata reference = context.createMetadata(MutableReferenceMetadata.class);
             reference.setId(CONFIG_ADMIN_REFERENCE_NAME);
@@ -362,30 +353,30 @@ public class CmNamespaceHandler implements NamespaceHandler {
         }
     }
 
-    private static ValueMetadata createValue(ExtendedParserContext context, String value) {
+    private static ValueMetadata createValue(ParserContext context, String value) {
         return createValue(context, value, null);
     }
 
-    private static ValueMetadata createValue(ExtendedParserContext context, String value, String type) {
+    private static ValueMetadata createValue(ParserContext context, String value, String type) {
         MutableValueMetadata m = context.createMetadata(MutableValueMetadata.class);
         m.setStringValue(value);
         m.setTypeName(type);
         return m;
     }
 
-    private static RefMetadata createRef(ExtendedParserContext context, String value) {
+    private static RefMetadata createRef(ParserContext context, String value) {
         MutableRefMetadata m = context.createMetadata(MutableRefMetadata.class);
         m.setComponentId(value);
         return m;
     }
 
-    private static IdRefMetadata createIdRef(ExtendedParserContext context, String value) {
+    private static IdRefMetadata createIdRef(ParserContext context, String value) {
         MutableIdRefMetadata m = context.createMetadata(MutableIdRefMetadata.class);
         m.setComponentId(value);
         return m;
     }
 
-    private static CollectionMetadata createList(ExtendedParserContext context, List<String> list) {
+    private static CollectionMetadata createList(ParserContext context, List<String> list) {
         MutableCollectionMetadata m = context.createMetadata(MutableCollectionMetadata.class);
         m.setCollectionClass(List.class);
         m.setValueTypeName(String.class.getName());
@@ -403,7 +394,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         return BLUEPRINT_NAMESPACE.equals(ns);
     }
 
-    public String getId(ExtendedParserContext context, Element element) {
+    public String getId(ParserContext context, Element element) {
         if (element.hasAttribute(ID_ATTRIBUTE)) {
             return element.getAttribute(ID_ATTRIBUTE);
         } else {
@@ -411,13 +402,13 @@ public class CmNamespaceHandler implements NamespaceHandler {
         }
     }
 
-    public void generateIdIfNeeded(ExtendedParserContext context, MutableComponentMetadata metadata) {
+    public void generateIdIfNeeded(ParserContext context, MutableComponentMetadata metadata) {
         if (metadata.getId() == null) {
             metadata.setId(generateId(context));
         }
     }
 
-    private String generateId(ExtendedParserContext context) {
+    private String generateId(ParserContext context) {
         String id;
         do {
             id = "#cm-" + ++idCounter;

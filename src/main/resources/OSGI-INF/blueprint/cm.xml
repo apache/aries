@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-    <service interface="org.osgi.service.blueprint.namespace.NamespaceHandler">
+    <service interface="org.apache.geronimo.blueprint.NamespaceHandler">
         <service-properties>
             <entry key="osgi.service.blueprint.namespace" value="http://www.osgi.org/xmlns/blueprint-cm/v1.0.0"/>
         </service-properties>

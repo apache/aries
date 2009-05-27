@@ -18,18 +18,18 @@
  */
 package org.apache.geronimo.blueprint.compendium.cm;
 
-import java.util.Map;
 import java.util.Dictionary;
+import java.util.Map;
 
-import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.osgi.service.blueprint.reflect.ValueMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.cm.ConfigurationAdmin;
-import org.osgi.service.cm.Configuration;
 import org.apache.geronimo.blueprint.beans.AbstractPropertyPlaceholder;
 import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO: javadoc
