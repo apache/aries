@@ -155,12 +155,17 @@ public class RecipeBuilder {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
+        List<Recipe> deps = new ArrayList<Recipe>();
+        for (String name : serviceExport.getExplicitDependencies()) {
+            deps.add(new RefRecipe(getName(null), name));
+        }
         ServiceRecipe recipe = new ServiceRecipe(getName(serviceExport.getId()),
                                                  blueprintContainer,
                                                  serviceExport,
                                                  getValue(serviceExport.getServiceComponent(), null),
                                                  listenersRecipe,
-                                                 getServicePropertiesRecipe(serviceExport));
+                                                 getServicePropertiesRecipe(serviceExport),
+                                                 deps);
         return recipe;
     }
 

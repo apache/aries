@@ -251,17 +251,17 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
         }
 
         protected synchronized void addedIndex(int index) {
-            if (index < this.index || (index == this.index && (hasNextCalled || hasPreviousCalled))) {
+            if (index < this.index || (index == this.index && (next != null || previous != null))) {
                 this.index++;
             }
         }
 
         public synchronized boolean hasNext() {
             synchronized (lock) {
-                next = index < storage.size() ? storage.get(index) : null;
                 hasPreviousCalled = false;
-                hasNextCalled = next != null;
-                return hasNextCalled;
+                hasNextCalled = true;
+                next = index < storage.size() ? storage.get(index) : null;
+                return next != null;
             }
         }
 
@@ -289,6 +289,8 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
             } finally {
                 hasPreviousCalled = false;
                 hasNextCalled = false;
+                next = null;
+                previous = null;
             }
         }
 
@@ -307,6 +309,8 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
             } finally {
                 hasPreviousCalled = false;
                 hasNextCalled = false;
+                next = null;
+                previous = null;
             }
         }
 

@@ -131,32 +131,40 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
     }
 
     protected void track(ServiceReference reference) {
-        try {
-            ServiceDispatcher dispatcher = new ServiceDispatcher(reference);
-            dispatcher.proxy = createProxy(dispatcher, Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS)));
-            synchronized (collection) {
-                collection.addDispatcher(dispatcher);
-            }
-            if (listeners != null) {
-                for (Listener listener : listeners) {
-                    listener.bind(dispatcher.reference, dispatcher.proxy);
+        if (collection != null) {
+            try {
+                ServiceDispatcher dispatcher = new ServiceDispatcher(reference);
+                dispatcher.proxy = createProxy(dispatcher, Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS)));
+                synchronized (collection) {
+                    collection.addDispatcher(dispatcher);
                 }
+                if (listeners != null) {
+                    for (Listener listener : listeners) {
+                        if (listener != null) {
+                            listener.bind(dispatcher.reference, dispatcher.proxy);
+                        }
+                    }
+                }
+            } catch (Throwable t) {
+                LOGGER.info("Error tracking new service reference", t);
             }
-        } catch (Throwable t) {
-            LOGGER.info("Error tracking new service reference", t);
         }
     }
 
     protected void untrack(ServiceReference reference) {
-        ServiceDispatcher dispatcher = collection.findDispatcher(reference);
-        if (dispatcher != null) {
-            if (listeners != null) {
-                for (Listener listener : listeners) {
-                    listener.unbind(dispatcher.reference, dispatcher.proxy);
+        if (collection != null) {
+            ServiceDispatcher dispatcher = collection.findDispatcher(reference);
+            if (dispatcher != null) {
+                if (listeners != null) {
+                    for (Listener listener : listeners) {
+                        if (listener != null) {
+                            listener.unbind(dispatcher.reference, dispatcher.proxy);
+                        }
+                    }
                 }
-            }
-            synchronized (collection) {
-                collection.removeDispatcher(dispatcher);
+                synchronized (collection) {
+                    collection.removeDispatcher(dispatcher);
+                }
             }
             dispatcher.destroy();
         }

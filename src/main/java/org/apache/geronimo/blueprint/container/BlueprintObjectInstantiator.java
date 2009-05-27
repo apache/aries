@@ -67,11 +67,8 @@ public class BlueprintObjectInstantiator  {
         Map<String, Object> instances = new LinkedHashMap<String, Object>();
         for (String name : names) {
             
-            boolean createNewContext = !ExecutionContext.isContextSet();
-            if (createNewContext) {
-                ExecutionContext.setContext(new DefaultExecutionContext(blueprintContainer, repository));
-            }
-            
+            ExecutionContext oldContext = ExecutionContext.setContext(new DefaultExecutionContext(blueprintContainer, repository));
+
             try {
                 Object obj = createInstance(name);
                 try {
@@ -94,9 +91,7 @@ public class BlueprintObjectInstantiator  {
                     }
                 } while (modified);
             } finally {
-                if (createNewContext) {
-                    ExecutionContext.setContext(null);
-                }
+                ExecutionContext.setContext(oldContext);
             }
         }
         return instances;
@@ -113,10 +108,7 @@ public class BlueprintObjectInstantiator  {
     }
 
     public Set<Recipe> getAllRecipes(String... names) {
-        boolean createNewContext = !ExecutionContext.isContextSet();
-        if (createNewContext) {
-            ExecutionContext.setContext(new DefaultExecutionContext(blueprintContainer, repository));
-        }
+        ExecutionContext oldContext = ExecutionContext.setContext(new DefaultExecutionContext(blueprintContainer, repository));
         try {
             Set<Recipe> recipes = new HashSet<Recipe>();
             Set<String> topLevel = names != null && names.length > 0 ? new HashSet<String>(Arrays.asList(names)) : repository.getNames();
@@ -125,9 +117,7 @@ public class BlueprintObjectInstantiator  {
             }
             return recipes;
         } finally {
-            if (createNewContext) {
-                ExecutionContext.setContext(null);
-            }
+            ExecutionContext.setContext(oldContext);
         }
     }
 

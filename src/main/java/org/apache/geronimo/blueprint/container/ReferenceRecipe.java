@@ -153,6 +153,9 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             if (trackedService == null) {
                 trackedService = blueprintContainer.getBundleContext().getService(trackedServiceReference);
             }
+            if (trackedService == null) {
+                throw new IllegalStateException("getService() returned null for " + trackedServiceReference);
+            }
             return trackedService;
         }
     }

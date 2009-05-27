@@ -500,6 +500,7 @@ public class BeanRecipe extends AbstractRecipe {
                 initMethod.invoke(obj);
             } catch (Throwable t) {
                 LOGGER.info("Error invoking init method", getRealCause(t));
+                throw new ComponentDefinitionException("Unable to intialize bean " + getName(), getRealCause(t));
             }
         }
         

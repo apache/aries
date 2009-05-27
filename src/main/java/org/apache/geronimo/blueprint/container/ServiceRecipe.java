@@ -9,6 +9,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.ArrayList;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 776360 $, $Date: 2009-05-19 17:40:47 +0200 (Tue, 19 May 2009) $
  */
-public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration {
+public class ServiceRecipe extends AbstractRecipe {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRecipe.class);
 
@@ -52,6 +53,7 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
     private Recipe serviceRecipe;
     private CollectionRecipe listenersRecipe;
     private MapRecipe propertiesRecipe;
+    private List<Recipe> explicitDependencies;
 
     private Map properties;
     private ServiceRegistration registration;
@@ -61,11 +63,12 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
     private boolean bundleScope;
 
     public ServiceRecipe(String name,
-                               ExtendedBlueprintContainer blueprintContainer,
-                               ServiceMetadata metadata,
-                               Recipe serviceRecipe,
-                               CollectionRecipe listenersRecipe,
-                               MapRecipe propertiesRecipe) {
+                         ExtendedBlueprintContainer blueprintContainer,
+                         ServiceMetadata metadata,
+                         Recipe serviceRecipe,
+                         CollectionRecipe listenersRecipe,
+                         MapRecipe propertiesRecipe,
+                         List<Recipe> explicitDependencies) {
         super(name);
         this.prototype = false;
         this.blueprintContainer = blueprintContainer;
@@ -73,10 +76,34 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
         this.serviceRecipe = serviceRecipe;
         this.listenersRecipe = listenersRecipe;
         this.propertiesRecipe = propertiesRecipe;
+        this.explicitDependencies = explicitDependencies;
+    }
+
+    @Override
+    public List<Recipe> getNestedRecipes() {
+        List<Recipe> recipes = new ArrayList<Recipe>();
+        if (serviceRecipe != null) {
+            recipes.add(serviceRecipe);
+        }
+        if (listenersRecipe != null) {
+            recipes.add(listenersRecipe);
+        }
+        if (propertiesRecipe != null) {
+            recipes.add(propertiesRecipe);
+        }
+        if (explicitDependencies != null) {
+            recipes.addAll(explicitDependencies);
+        }
+        return recipes;
     }
 
     protected Object internalCreate() throws ComponentDefinitionException {
-        return this;
+        if (explicitDependencies != null) {
+            for (Recipe recipe : explicitDependencies) {
+                recipe.create();
+            }
+        }
+        return new ServiceRegistrationProxy();
     }
 
     public synchronized void register() {
@@ -108,7 +135,7 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
 
     public synchronized ServiceReference getReference() {
         if (registration == null) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Service is not registered");
         } else {
             return registration.getReference();
         }
@@ -116,7 +143,7 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
 
     public synchronized void setProperties(Dictionary props) {
         if (registration == null) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Service is not registered");
         } else {
             registration.setProperties(props);
             // TODO: set serviceProperties? convert somehow? should listeners be notified of this?
@@ -176,6 +203,9 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
         } else if (bundleScope) {
             service = createInstance(true);
             LOGGER.debug("Created service instance for bundle: " + bundle + " " + service.hashCode());
+        }
+        if (service == null) {
+            throw new IllegalStateException("service is null");
         }
         return service;
     }
@@ -254,16 +284,11 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
             BeanMetadata bean = (BeanMetadata) metadata;
             Class clazz = bean.getRuntimeClass();
             if (clazz == null) {
-                boolean isNewContext = !ExecutionContext.isContextSet();
-                if (isNewContext) {
-                    ExecutionContext.setContext(new DefaultExecutionContext(blueprintContainer, blueprintContainer.getRepository()));
-                }
+                ExecutionContext oldContext = ExecutionContext.setContext(new DefaultExecutionContext(blueprintContainer, blueprintContainer.getRepository()));
                 try {
                     clazz = loadClass(bean.getClassName());
                 } finally {
-                    if (isNewContext) {
-                        ExecutionContext.setContext(null);
-                    }
+                    ExecutionContext.setContext(oldContext);
                 }
             }
             if (ServiceFactory.class.isAssignableFrom(clazz)) {
@@ -295,6 +320,21 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
             ServiceRecipe.this.ungetService(bundle, registration, service);
         }
 
+    }
+
+    private class ServiceRegistrationProxy implements ServiceRegistration {
+
+        public ServiceReference getReference() {
+            return ServiceRecipe.this.getReference();
+        }
+
+        public void setProperties(Dictionary properties) {
+            ServiceRecipe.this.setProperties(properties);
+        }
+
+        public void unregister() {
+            ServiceRecipe.this.unregister();
+        }
     }
 
     public static class Listener {
@@ -331,11 +371,13 @@ public class ServiceRecipe extends AbstractRecipe implements ServiceRegistration
             Class[] paramTypes = new Class[] { service.getClass(), Map.class };
             Class listenerClass = listener.getClass();
 
-            if (metadata.getRegistrationMethodName() != null) {
-                registerMethods = ReflectionUtils.findCompatibleMethods(listenerClass, metadata.getRegistrationMethodName(), paramTypes);
+            registerMethods = ReflectionUtils.findCompatibleMethods(listenerClass, metadata.getRegistrationMethodName(), paramTypes);
+            if (registerMethods.size() == 0) {
+                throw new ComponentDefinitionException("No matching methods found for listener registration method: " + metadata.getRegistrationMethodName());
             }
-            if (metadata.getUnregistrationMethodName() != null) {
-                unregisterMethods = ReflectionUtils.findCompatibleMethods(listenerClass, metadata.getUnregistrationMethodName(), paramTypes);
+            unregisterMethods = ReflectionUtils.findCompatibleMethods(listenerClass, metadata.getUnregistrationMethodName(), paramTypes);
+            if (unregisterMethods.size() == 0) {
+                throw new ComponentDefinitionException("No matching methods found for listener unregistration method: " + metadata.getUnregistrationMethodName());
             }
             initialized = true;
         }
