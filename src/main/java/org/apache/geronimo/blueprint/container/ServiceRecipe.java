@@ -285,7 +285,8 @@ public class ServiceRecipe extends AbstractRecipe {
         if (metadata instanceof BeanMetadata) {
             BeanMetadata bean = (BeanMetadata) metadata;
             Class clazz = bean.getRuntimeClass();
-            if (clazz == null) {
+            // Try to get the class from the className attribute
+            if (clazz == null && bean.getClassName() != null) {
                 ExecutionContext oldContext = ExecutionContext.setContext(new DefaultExecutionContext(blueprintContainer, blueprintContainer.getRepository()));
                 try {
                     clazz = loadClass(bean.getClassName());
@@ -293,7 +294,8 @@ public class ServiceRecipe extends AbstractRecipe {
                     ExecutionContext.setContext(oldContext);
                 }
             }
-            if (ServiceFactory.class.isAssignableFrom(clazz)) {
+            // TODO: if clazz == null, we must be using a factory, just ignore it for now
+            if (clazz != null && ServiceFactory.class.isAssignableFrom(clazz)) {
                 return false;
             } else {
                 return BeanMetadata.SCOPE_BUNDLE.equals(bean.getScope());
