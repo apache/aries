@@ -19,16 +19,12 @@ package org.apache.geronimo.blueprint.di;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.apache.geronimo.blueprint.utils.TypeUtils;
+import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
@@ -58,7 +54,7 @@ public class MapRecipe extends AbstractRecipe {
     }
 
     protected Object internalCreate() throws ComponentDefinitionException {
-        Class mapType = getMap(typeClass);
+        Class mapType = ConversionUtils.getMap(typeClass);
 
         if (!TypeUtils.hasDefaultConstructor(mapType)) {
             throw new ComponentDefinitionException("Type does not have a default constructor " + mapType.getName());
@@ -87,18 +83,6 @@ public class MapRecipe extends AbstractRecipe {
             instance.put(key, value);
         }
         return instance;
-    }
-
-    private Class getMap(Class type) {
-        if (TypeUtils.hasDefaultConstructor(type)) {
-            return type;
-        } else if (SortedMap.class.isAssignableFrom(type)) {
-            return TreeMap.class;
-        } else if (ConcurrentMap.class.isAssignableFrom(type)) {
-            return ConcurrentHashMap.class;
-        } else {
-            return LinkedHashMap.class;
-        }
     }
 
     public void put(Recipe key, Recipe value) {

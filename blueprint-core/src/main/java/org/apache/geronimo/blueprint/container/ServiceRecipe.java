@@ -245,7 +245,9 @@ public class ServiceRecipe extends AbstractRecipe {
                 recipe = repo.getRecipe(((RefRecipe) recipe).getIdRef());
             }
             DefaultRepository repository = new DefaultRepository((DefaultRepository) repo);
-            repository.putRecipe(recipe.getName(), recipe);
+            if (repository.getRecipe(recipe.getName()) != recipe) {
+                repository.putRecipe(recipe.getName(), recipe);
+            }
             BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(blueprintContainer, repository);
             return graph.create(recipe.getName());
         } else {
@@ -256,7 +258,7 @@ public class ServiceRecipe extends AbstractRecipe {
     private Object createSimpleRecipe(Recipe recipe) {
         String name = recipe.getName();
         Repository repo = blueprintContainer.getRepository();
-        if (repo.getRecipe(name) == null) {
+        if (repo.getRecipe(name) != recipe) {
             repo.putRecipe(name, recipe);
         }
         BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(blueprintContainer, repo);

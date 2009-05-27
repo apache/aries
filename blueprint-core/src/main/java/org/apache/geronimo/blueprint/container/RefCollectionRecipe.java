@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.RandomAccess;
 import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.cglib.proxy.Dispatcher;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
@@ -58,6 +60,7 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
     private final RefCollectionMetadata metadata;
     private final Recipe comparatorRecipe;
     private ManagedCollection collection;
+    private final List<ServiceDispatcher> unboundDispatchers = new ArrayList<ServiceDispatcher>();
 
     public RefCollectionRecipe(String name,
                                ExtendedBlueprintContainer blueprintContainer,
@@ -103,6 +106,9 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
                 throw new IllegalArgumentException("Unsupported collection type " + metadata.getCollectionType().getName());
             }
 
+            // Handle initial references
+            retrack();
+
             return collection;
         } catch (ComponentDefinitionException t) {
             throw t;
@@ -133,10 +139,27 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
     protected void track(ServiceReference reference) {
         if (collection != null) {
             try {
-                ServiceDispatcher dispatcher = new ServiceDispatcher(reference);
-                dispatcher.proxy = createProxy(dispatcher, Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS)));
-                synchronized (collection) {
-                    collection.addDispatcher(dispatcher);
+                // ServiceReferences may be tracked at multiple points:
+                //  * first after the collection creation in #internalCreate()
+                //  * in #postCreate() after listeners are created
+                //  * after creation time if a new reference shows up
+                //
+                // In the first step, listeners are not created, so we add
+                // the dispatcher to the unboundDispatchers list.  In the second
+                // step, the dispatcher has already been added to the collection
+                // so we just call the listener.
+                //
+                ServiceDispatcher dispatcher = collection.findDispatcher(reference);
+                if (dispatcher != null) {
+                    if (!unboundDispatchers.remove(dispatcher)) {
+                        return;
+                    }
+                } else {
+                    dispatcher = new ServiceDispatcher(reference);
+                    dispatcher.proxy = createProxy(dispatcher, Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS)));
+                    synchronized (collection) {
+                        collection.addDispatcher(dispatcher);
+                    }
                 }
                 if (listeners != null) {
                     for (Listener listener : listeners) {
@@ -144,6 +167,8 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
                             listener.bind(dispatcher.reference, dispatcher.proxy);
                         }
                     }
+                } else {
+                    unboundDispatchers.add(dispatcher);
                 }
             } catch (Throwable t) {
                 LOGGER.info("Error tracking new service reference", t);
@@ -170,15 +195,10 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
         }
     }
 
-    public static class NaturalOrderComparator implements Comparator<Comparable> {
-
-        public int compare(Comparable o1, Comparable o2) {
-            return o1.compareTo(o2);
-        }
-
-    }
-
-
+    /**
+     * The ServiceDispatcher is used when creating the cglib proxy.
+     * Thic class is responsible for getting the actual service that will be used.
+     */
     public class ServiceDispatcher implements Dispatcher {
 
         public ServiceReference reference;
@@ -231,6 +251,22 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
         }
     }
 
+    /**
+     * A natural order comparator working on objects implementing Comparable
+     * and simply delegating to Comparable.compareTo()
+     */
+    public static class NaturalOrderComparator implements Comparator<Comparable> {
+
+        public int compare(Comparable o1, Comparable o2) {
+            return o1.compareTo(o2);
+        }
+
+    }
+
+    /**
+     * A comparator to order ServiceDispatchers, sorting on references or proxies
+     * depending of the configuration of the <ref-list/> or <ref-set/>
+     */
     public static class DispatcherComparator implements Comparator<ServiceDispatcher> {
 
         private final Comparator comparator;
@@ -251,6 +287,11 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
 
     }
 
+    /**
+     * Base class for managed collections.
+     * This class implemenents the Convertible interface to detect if the collection need
+     * to use ServiceReference or proxies.
+     */
     public static class ManagedCollection extends AbstractCollection implements ConversionUtils.Convertible {
 
         protected final DynamicCollection<ServiceDispatcher> dispatchers;

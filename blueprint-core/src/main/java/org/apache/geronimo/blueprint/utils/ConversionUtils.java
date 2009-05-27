@@ -24,6 +24,17 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.LinkedHashMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.Set;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.apache.geronimo.blueprint.utils.TypeUtils.getTypeParameters;
 import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
@@ -72,7 +83,7 @@ public final class ConversionUtils {
             }
             return array;
         // TODO: removing the second part of the test will allow conversion between collections, is this desired?
-        } else if (type instanceof ParameterizedType && toClass(type).isInstance(obj)) {
+        } else if (type instanceof ParameterizedType /*&& toClass(type).isInstance(obj)*/) {
             Class cl = toClass(type);
             if (Map.class.isAssignableFrom(cl) && obj instanceof Map) {
                 Type keyType = Object.class;
@@ -82,7 +93,7 @@ public final class ConversionUtils {
                     keyType = typeParameters[0];
                     valueType = typeParameters[1];
                 }
-                Map newMap = (Map) obj.getClass().newInstance();
+                Map newMap = (Map) getMap(cl).newInstance();
                 for (Map.Entry e : ((Map<Object,Object>) obj).entrySet()) {
                     try {
                         newMap.put(convert(e.getKey(), keyType, converter), convert(e.getValue(), valueType, converter));
@@ -97,18 +108,44 @@ public final class ConversionUtils {
                 if (typeParameters != null && typeParameters.length == 1) {
                     valueType = typeParameters[0];
                 }
-                Collection newCol = (Collection) obj.getClass().newInstance();
+                Collection newCol = (Collection) getCollection(cl).newInstance();
                 for (Object item : (Collection) obj) {
                     try {
                         newCol.add(convert(item, valueType, converter));
                     } catch (Exception t) {
-                        throw new Exception("Unable to convert from " + obj + " to " + type + "(error converting map entry)", t);
+                        throw new Exception("Unable to convert from " + obj + " to " + type + "(error converting collection entry)", t);
                     }
                 }
                 return newCol;
             }
         }
         return converter.convert(obj, toClass(type));
+    }
+
+    public static Class getMap(Class type) {
+        if (TypeUtils.hasDefaultConstructor(type)) {
+            return type;
+        } else if (SortedMap.class.isAssignableFrom(type)) {
+            return TreeMap.class;
+        } else if (ConcurrentMap.class.isAssignableFrom(type)) {
+            return ConcurrentHashMap.class;
+        } else {
+            return LinkedHashMap.class;
+        }
+    }
+
+    public static Class getCollection(Class type) {
+        if (TypeUtils.hasDefaultConstructor(type)) {
+            return type;
+        } else if (SortedSet.class.isAssignableFrom(type)) {
+            return TreeSet.class;
+        } else if (Set.class.isAssignableFrom(type)) {
+            return LinkedHashSet.class;
+        } else if (List.class.isAssignableFrom(type)) {
+            return ArrayList.class;
+        } else {
+            return ArrayList.class;
+        }
     }
 
 }

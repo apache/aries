@@ -18,13 +18,10 @@ package org.apache.geronimo.blueprint.di;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.apache.geronimo.blueprint.utils.TypeUtils;
+import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
@@ -53,7 +50,7 @@ public class CollectionRecipe extends AbstractRecipe {
     }
 
     protected Object internalCreate() throws ComponentDefinitionException {
-        Class type = getCollection(typeClass);
+        Class type = ConversionUtils.getCollection(typeClass);
 
         if (!TypeUtils.hasDefaultConstructor(type)) {
             throw new ComponentDefinitionException("Type does not have a default constructor " + type.getName());
@@ -87,20 +84,6 @@ public class CollectionRecipe extends AbstractRecipe {
         return instance;
     }
 
-    private Class getCollection(Class type) {
-        if (TypeUtils.hasDefaultConstructor(type)) {
-            return type;
-        } else if (SortedSet.class.isAssignableFrom(type)) {
-            return TreeSet.class;
-        } else if (Set.class.isAssignableFrom(type)) {
-            return LinkedHashSet.class;
-        } else if (List.class.isAssignableFrom(type)) {
-            return ArrayList.class;
-        } else {
-            return ArrayList.class;
-        }
-    }
-    
     public void add(Recipe value) {
         list.add(value);
     }
