@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
-public class CmManagedProperties implements BeanProcessor {
+public class CmManagedProperties implements ManagedObject, BeanProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CmManagedProperties.class);
 
@@ -79,6 +79,10 @@ public class CmManagedProperties implements BeanProcessor {
         this.configAdmin = configAdmin;
     }
 
+    public Bundle getBundle() {
+        return blueprintContainer.getBundleContext().getBundle();
+    }
+    
     public String getPersistentId() {
         return persistentId;
     }
@@ -110,7 +114,7 @@ public class CmManagedProperties implements BeanProcessor {
     public void setBeanName(String beanName) {
         this.beanName = beanName;
     }
-
+    
     public void init() {
         LOGGER.debug("Initializing CmManagedProperties for bean={} / pid={}", beanName, persistentId);
         Properties props = new Properties();
@@ -119,7 +123,7 @@ public class CmManagedProperties implements BeanProcessor {
         props.put(Constants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
         props.put(Constants.BUNDLE_VERSION, bundle.getHeaders().get(Constants.BUNDLE_VERSION));
         synchronized (lock) {
-            ManagedServiceManager.register(this, props);
+            ManagedObjectManager.register(this, props);
             try {
                 properties = configAdmin.getConfiguration(persistentId).getProperties();
             } catch (Exception e) {
@@ -129,10 +133,10 @@ public class CmManagedProperties implements BeanProcessor {
     }
 
     public void destroy() {
-        ManagedServiceManager.unregister(this);
+        ManagedObjectManager.unregister(this);
     }
 
-    public void updated(Dictionary<String,Object> props) {
+    public void updated(Dictionary props) {
         LOGGER.debug("Configuration updated for bean={} / pid={}", beanName, persistentId);
         synchronized (lock) {
             this.properties = props;
