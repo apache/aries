@@ -128,7 +128,9 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
         synchronized (lock) {
             ManagedObjectManager.register(this, props);
             Configuration config = CmUtils.getConfiguration(configAdmin, persistentId);
-            properties = config.getProperties();
+            if (config != null) {
+                properties = config.getProperties();
+            }
         }
     }
 

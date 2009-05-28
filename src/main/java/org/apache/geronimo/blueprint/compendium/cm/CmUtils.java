@@ -39,11 +39,13 @@ public class CmUtils  {
             // this should not happen
             throw new RuntimeException("Invalid filter: " + filter);
         }
-        if (configs == null || configs.length == 0) {
-            // TODO: throw better exception
-            throw new RuntimeException("No configuration object for pid=" + persistentId);
+        if (configs != null && configs.length > 0) {
+            return configs[0];
+        } else {
+            // TODO: what should we do?
+            // throw new RuntimeException("No configuration object for pid=" + persistentId);
+            return null;
         }
-        return configs[0];
     }
   
 }

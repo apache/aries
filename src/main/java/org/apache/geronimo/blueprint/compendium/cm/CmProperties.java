@@ -107,7 +107,9 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
         synchronized (lock) {
             ManagedObjectManager.register(this, props);
             Configuration config = CmUtils.getConfiguration(configAdmin, persistentId);
-            properties = config.getProperties();
+            if (config != null) {
+                properties = config.getProperties();
+            }
         }
     }
 
