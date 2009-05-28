@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.IdRefMetadata;
@@ -188,6 +189,15 @@ public class MetadataUtil {
         public int compare(BeanArgument object1, BeanArgument object2) {
             return object1.getIndex() - object2.getIndex();
         }        
+    }
+    
+    public static BeanProperty getBeanProperty(BeanMetadata metadata, String name) {
+        for (BeanProperty property : metadata.getProperties()) {
+            if (name.equals(property.getName())) {
+                return property;
+            }
+        }
+        return null;
     }
     
 }
