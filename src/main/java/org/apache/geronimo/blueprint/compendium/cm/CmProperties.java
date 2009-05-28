@@ -19,7 +19,6 @@
 package org.apache.geronimo.blueprint.compendium.cm;
 
 import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -29,7 +28,7 @@ import org.apache.geronimo.blueprint.ServiceProcessor;
 import org.apache.geronimo.blueprint.utils.JavaUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,20 +95,19 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
         this.serviceId = serviceId;
     }
     
-    public void init() {
+    public void init() throws Exception {
         LOGGER.debug("Initializing CmProperties for service={} / pid={}", serviceId, persistentId);
+        
         Properties props = new Properties();
         props.put(Constants.SERVICE_PID, persistentId);
         Bundle bundle = blueprintContainer.getBundleContext().getBundle();
         props.put(Constants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
         props.put(Constants.BUNDLE_VERSION, bundle.getHeaders().get(Constants.BUNDLE_VERSION));
+                
         synchronized (lock) {
             ManagedObjectManager.register(this, props);
-            try {
-                properties = configAdmin.getConfiguration(persistentId).getProperties();
-            } catch (Exception e) {
-                LOGGER.debug("Unable to retrieve initial configuration for service={} / pid={}", new Object [] { serviceId,  persistentId}, e);
-            }
+            Configuration config = CmUtils.getConfiguration(configAdmin, persistentId);
+            properties = config.getProperties();
         }
     }
 

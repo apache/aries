@@ -18,6 +18,7 @@
  */
 package org.apache.geronimo.blueprint.compendium.cm;
 
+import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Map;
 
@@ -85,31 +86,33 @@ public class CmPropertyPlaceholder extends AbstractPropertyPlaceholder {
 
     protected String getProperty(String val) {
         LOGGER.debug("Retrieving property value {} from configuration with pid {}", val, persistentId);
-        Object v = null;
+        Configuration config = null;
         try {
-            Configuration config = configAdmin.getConfiguration(persistentId);
-            if (config != null) {
-                Dictionary props = config.getProperties();
-                if (props != null) {
-                    v = props.get(val);
-                    if (v != null) {
-                        LOGGER.debug("Found property value {}", v);
-                    } else {
-                        LOGGER.debug("Property not found in configuration");
-                    }
+            config = CmUtils.getConfiguration(configAdmin, persistentId);
+        } catch (IOException e) {
+            // ignore
+        }
+        Object v = null;
+        if (config != null) {
+            Dictionary props = config.getProperties();
+            if (props != null) {
+                v = props.get(val);
+                if (v != null) {
+                    LOGGER.debug("Found property value {}", v);
                 } else {
-                    LOGGER.debug("No dictionary available from configuration");
+                    LOGGER.debug("Property not found in configuration");
                 }
             } else {
-                LOGGER.debug("No configuration available");
+                LOGGER.debug("No dictionary available from configuration");
             }
-        } catch (Throwable t) {
-            LOGGER.info("Unable to retrieve property value " + val + " from configuration with pid " + persistentId, t);
         }
-        if (v == null && defaultProperties != null && defaultProperties.containsKey(val)) {
-            v = defaultProperties.get(val);
+        if (v == null && defaultProperties != null) {
+            v = defaultProperties.get(val);           
             if (v != null) {
                 LOGGER.debug("Retrieved value from defaults {}", v);
+            } else {
+                // TODO: throw better exception?
+                throw new RuntimeException("Property not found: " + val);
             }
         }
         return v != null ? v.toString() : null;

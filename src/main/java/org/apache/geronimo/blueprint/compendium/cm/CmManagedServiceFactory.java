@@ -77,7 +77,7 @@ public class CmManagedServiceFactory {
     private Map<String, ServiceRegistration> pids = new ConcurrentHashMap<String, ServiceRegistration>();
     private Map<ServiceRegistration, Object> services = new ConcurrentHashMap<ServiceRegistration, Object>();
 
-    public void init() {
+    public void init() throws Exception {
         LOGGER.debug("Initializing CmManagedServiceFactory for factoryPid={}", factoryPid);
         Properties props = new Properties();
         props.put(Constants.SERVICE_PID, factoryPid);
@@ -89,15 +89,11 @@ public class CmManagedServiceFactory {
             registration = blueprintContainer.getBundleContext().registerService(ManagedServiceFactory.class.getName(), new ConfigurationWatcher(), props);
         
             String filter = '(' + ConfigurationAdmin.SERVICE_FACTORYPID + '=' + this.factoryPid + ')';
-            try {
-                Configuration[] configs = configAdmin.listConfigurations(filter);
-                if (configs != null) {
-                    for (Configuration config : configs) {
-                        updated(config.getPid(), config.getProperties());
-                    }
+            Configuration[] configs = configAdmin.listConfigurations(filter);
+            if (configs != null) {
+                for (Configuration config : configs) {
+                    updated(config.getPid(), config.getProperties());
                 }
-            } catch (Exception e) {
-                LOGGER.error("Unable to retrieve initial configurations for factoryPid={}", factoryPid, e);
             }
         }
     }

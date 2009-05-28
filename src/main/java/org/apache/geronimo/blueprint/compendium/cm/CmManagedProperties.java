@@ -38,6 +38,7 @@ import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,20 +116,19 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
         this.beanName = beanName;
     }
     
-    public void init() {
+    public void init() throws Exception {
         LOGGER.debug("Initializing CmManagedProperties for bean={} / pid={}", beanName, persistentId);
+        
         Properties props = new Properties();
         props.put(Constants.SERVICE_PID, persistentId);
         Bundle bundle = blueprintContainer.getBundleContext().getBundle();
         props.put(Constants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
         props.put(Constants.BUNDLE_VERSION, bundle.getHeaders().get(Constants.BUNDLE_VERSION));
+                
         synchronized (lock) {
             ManagedObjectManager.register(this, props);
-            try {
-                properties = configAdmin.getConfiguration(persistentId).getProperties();
-            } catch (Exception e) {
-                LOGGER.debug("Unable to retrieve initial configuration for bean={} / pid={}", new Object [] { beanName,  persistentId}, e);
-            }
+            Configuration config = CmUtils.getConfiguration(configAdmin, persistentId);
+            properties = config.getProperties();
         }
     }
 
