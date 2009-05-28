@@ -200,9 +200,13 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
     
     private String getPlaceholderProperty(BeanMetadata bean, String name) {
-        BeanProperty property = MetadataUtil.getBeanProperty(bean, name);
-        ValueMetadata value = (ValueMetadata) property.getValue();
-        return value.getStringValue();
+        for (BeanProperty property : bean.getProperties()) {
+            if (name.equals(property.getName())) {
+                ValueMetadata value = (ValueMetadata) property.getValue();
+                return value.getStringValue();
+            }
+        }
+        return null;
     }
     
     private Metadata parseDefaultProperties(ParserContext context, MutableBeanMetadata enclosingComponent, Element element) {
