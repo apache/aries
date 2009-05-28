@@ -39,6 +39,7 @@ import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableRefMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
+import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -174,9 +175,36 @@ public class CmNamespaceHandler implements NamespaceHandler {
                 }
             }
         }
+        
+        validatePlaceholder(metadata, context.getComponentDefinitionRegistry());
+        
         return metadata;
     }
 
+    private void validatePlaceholder(MutableBeanMetadata metadata, ComponentDefinitionRegistry registry) {
+        String prefix = getPlaceholderProperty(metadata, "placeholderPrefix");
+        String suffix = getPlaceholderProperty(metadata, "placeholderSuffix");
+        for (String id : registry.getComponentDefinitionNames()) {
+            ComponentMetadata component = registry.getComponentDefinition(id);
+            if (component instanceof BeanMetadata) {
+                BeanMetadata bean = (BeanMetadata) component;
+                if (bean.getRuntimeClass() == CmPropertyPlaceholder.class) {
+                    String otherPrefix = getPlaceholderProperty(bean, "placeholderPrefix");
+                    String otherSuffix = getPlaceholderProperty(bean, "placeholderSuffix");
+                    if (prefix.equals(otherPrefix) && suffix.equals(otherSuffix)) {
+                        throw new ComponentDefinitionException("Multiple placeholders with the same prefix and suffix are not allowed");
+                    }
+                }
+            }
+        }
+    }
+    
+    private String getPlaceholderProperty(BeanMetadata bean, String name) {
+        BeanProperty property = MetadataUtil.getBeanProperty(bean, name);
+        ValueMetadata value = (ValueMetadata) property.getValue();
+        return value.getStringValue();
+    }
+    
     private Metadata parseDefaultProperties(ParserContext context, MutableBeanMetadata enclosingComponent, Element element) {
         MutableMapMetadata props = context.createMetadata(MutableMapMetadata.class);
         NodeList nl = element.getChildNodes();
