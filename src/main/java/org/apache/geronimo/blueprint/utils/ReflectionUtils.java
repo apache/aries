@@ -42,7 +42,9 @@ public class ReflectionUtils {
     public static Set<String> getImplementedInterfaces(Set<String> classes, Class clazz) {
         if (clazz != null && clazz != Object.class) {
             for (Class itf : clazz.getInterfaces()) {
-                classes.add(itf.getName());
+                if (Modifier.isPublic(itf.getModifiers())) {
+                    classes.add(itf.getName());
+                }
                 getImplementedInterfaces(classes, itf);
             }
             getImplementedInterfaces(classes, clazz.getSuperclass());
@@ -52,7 +54,9 @@ public class ReflectionUtils {
 
     public static Set<String> getSuperClasses(Set<String> classes, Class clazz) {
         if (clazz != null && clazz != Object.class) {
-            classes.add(clazz.getName());
+            if (Modifier.isPublic(clazz.getModifiers())) {
+                classes.add(clazz.getName());
+            }
             getSuperClasses(classes, clazz.getSuperclass());
         }
         return classes;
