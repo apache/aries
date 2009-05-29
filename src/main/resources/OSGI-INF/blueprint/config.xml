@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:cm="http://www.osgi.org/xmlns/blueprint-cm/v1.0.0"
+           xmlns:ext="http://geronimo.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
            default-availability="optional">
 
     <type-converters>
@@ -10,6 +11,8 @@
         <bean id="converter2" class="org.apache.geronimo.blueprint.sample.CurrencyTypeConverter"/>
 
     </type-converters>
+
+    <ext:system-property-placeholder placeholder-prefix="$[" placeholder-suffix="]"/>
 
     <cm:managed-service-factory id="managed-service-factory" factory-pid="blueprint-sample-managed-service-factory"
             interface="org.apache.geronimo.blueprint.sample.Foo">
