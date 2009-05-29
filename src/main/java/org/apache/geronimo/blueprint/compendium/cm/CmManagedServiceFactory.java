@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ServiceProcessor;
+import org.apache.geronimo.blueprint.container.ServiceListener;
 import org.apache.geronimo.blueprint.utils.JavaUtils;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
@@ -71,6 +72,7 @@ public class CmManagedServiceFactory {
     private Map serviceProperties;
     private String managedComponentName;
     private String componentDestroyMethod;
+    private List<ServiceListener> listeners;
     private final Object lock = new Object();
 
     private ServiceRegistration registration;
@@ -103,13 +105,24 @@ public class CmManagedServiceFactory {
             registration.unregister();
         }
         for (Map.Entry<ServiceRegistration, Object> entry : services.entrySet()) {
-            destroyComponent(entry.getValue(), BUNDLE_STOPPING);
-            entry.getKey().unregister();
+            destroy(entry.getValue(), entry.getKey(), BUNDLE_STOPPING);
         }
         services.clear();
         pids.clear();
     }
 
+    private void destroy(Object component, ServiceRegistration registration, int code) {
+        if (listeners != null) {
+            ServiceReference ref = registration.getReference();
+            for (ServiceListener listener : listeners) {
+                Hashtable props = JavaUtils.getProperties(ref);
+                listener.unregister(component, props);
+            }
+        }
+        destroyComponent(component, code);
+        registration.unregister();
+    }
+    
     public Map<ServiceRegistration, Object> getServiceMap() {
         return Collections.unmodifiableMap(services);
     }
@@ -122,6 +135,10 @@ public class CmManagedServiceFactory {
         this.configAdmin = configAdmin;
     }
 
+    public void setListeners(List<ServiceListener> listeners) {
+        this.listeners = listeners;
+    }
+    
     public void setId(String id) {
         this.id = id;
     }
@@ -181,6 +198,12 @@ public class CmManagedServiceFactory {
             
             services.put(reg, component);
             pids.put(pid, reg);
+            
+            if (listeners != null) {
+                for (ServiceListener listener : listeners) {
+                    listener.register(component, regProps);
+                }
+            }
         } else {
             updateComponentProperties(props);
             
@@ -260,10 +283,8 @@ public class CmManagedServiceFactory {
         LOGGER.debug("Deleted configuration {}", pid);
         ServiceRegistration reg = pids.remove(pid);
         if (reg != null) {
-            // TODO: destroy instance, etc...
             Object component = services.remove(reg);
-            destroyComponent(component, CONFIGURATION_ADMIN_OBJECT_DELETED);
-            reg.unregister();
+            destroy(component, reg, CONFIGURATION_ADMIN_OBJECT_DELETED);
         }
     }
 
@@ -327,5 +348,5 @@ public class CmManagedServiceFactory {
             }
         }
     }
-    
+   
 }

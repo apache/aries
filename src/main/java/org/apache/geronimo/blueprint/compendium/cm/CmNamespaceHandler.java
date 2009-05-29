@@ -19,19 +19,17 @@
 package org.apache.geronimo.blueprint.compendium.cm;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.NamespaceHandler;
 import org.apache.geronimo.blueprint.ParserContext;
-import org.apache.geronimo.blueprint.ext.PlaceholdersUtils;
 import org.apache.geronimo.blueprint.container.Parser;
 import org.apache.geronimo.blueprint.container.ParserContextImpl;
+import org.apache.geronimo.blueprint.container.ServiceListener;
+import org.apache.geronimo.blueprint.ext.PlaceholdersUtils;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableCollectionMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableComponentMetadata;
@@ -40,7 +38,6 @@ import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableRefMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
-import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -51,11 +48,15 @@ import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
+import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * TODO
@@ -242,6 +243,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         Parser parser = getParser(context);
         
         // Parse elements
+        List<RegistrationListener> listeners = new ArrayList<RegistrationListener>();
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
@@ -257,8 +259,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
                     } else if (nodeNameEquals(e, Parser.SERVICE_PROPERTIES_ELEMENT)) { 
                         MapMetadata map = parser.parseServiceProperties(e, factoryMetadata);
                         factoryMetadata.addProperty("serviceProperties", map);
-                    } else {
-                        // TODO: parse listeners
+                    } else if (nodeNameEquals(e, Parser.REGISTRATION_LISTENER_ELEMENT)) {
+                        listeners.add(parser.parseRegistrationListener(e, factoryMetadata));
                     }
                 } else if (BLUEPRINT_CM_NAMESPACE.equals(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, MANAGED_COMPONENT_ELEMENT)) {
@@ -279,6 +281,18 @@ public class CmNamespaceHandler implements NamespaceHandler {
             }
         }
 
+        MutableCollectionMetadata listenerCollection = context.createMetadata(MutableCollectionMetadata.class);
+        listenerCollection.setCollectionClass(List.class);
+        for (RegistrationListener listener : listeners) {
+            MutableBeanMetadata bean = context.createMetadata(MutableBeanMetadata.class);
+            bean.setRuntimeClass(ServiceListener.class);
+            bean.addProperty("listener", listener.getListenerComponent());
+            bean.addProperty("registerMethod", createValue(context, listener.getRegistrationMethodName()));
+            bean.addProperty("unregisterMethod", createValue(context, listener.getUnregistrationMethodName()));
+            listenerCollection.addValue(bean);
+        }
+        factoryMetadata.addProperty("listeners", listenerCollection);
+        
         context.getComponentDefinitionRegistry().registerComponentDefinition(factoryMetadata);
         
         MutableBeanMetadata mapMetadata = context.createMetadata(MutableBeanMetadata.class);
