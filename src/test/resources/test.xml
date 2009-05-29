@@ -8,7 +8,7 @@
 
     <type-converters>
         <bean class="org.apache.geronimo.blueprint.pojos.ConverterA"/>
-        <ref component="converterB"/>
+        <ref component-id="converterB"/>
     </type-converters>
 
     <bean id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA">
@@ -42,6 +42,6 @@
 
     <bean id="listenerA" class="org.apache.geronimo.blueprint.pojos.ListenerA"/>
 
-    <ref-list availability="optional" member-type="service-instance"/>
+    <ref-list availability="optional" member-type="service-object"/>
 
 </blueprint>
