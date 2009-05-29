@@ -128,8 +128,7 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.geronimo", "blueprint-bundle"),
             mavenBundle("org.apache.geronimo", "blueprint-sample").noStart(),
 
-            //vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
-
+//            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
             felix(), equinox() //, knopflerfish()
         );
