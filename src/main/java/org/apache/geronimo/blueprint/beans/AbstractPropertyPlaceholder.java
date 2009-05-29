@@ -194,8 +194,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     }
 
     protected Metadata processValueMetadata(ValueMetadata metadata) {
-        ((MutableValueMetadata) metadata).setStringValue(processString(metadata.getStringValue()));
-        return metadata;
+        return new LateBindingValueMetadata(metadata);
     }
 
     protected String processString(String str) {
@@ -219,6 +218,30 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
             pattern = Pattern.compile("\\Q" + placeholderPrefix + "\\E(.+)\\Q" + placeholderSuffix + "\\E");
         }
         return pattern;
+    }
+
+    public class LateBindingValueMetadata implements ValueMetadata {
+
+        private final ValueMetadata metadata;
+        private boolean retrieved;
+        private String retrievedValue;
+
+        public LateBindingValueMetadata(ValueMetadata metadata) {
+            this.metadata = metadata;
+        }
+
+        public String getStringValue() {
+            if (!retrieved) {
+                retrieved = true;
+                retrievedValue = processString(metadata.getStringValue());
+            }
+            return retrievedValue;
+        }
+
+        public String getTypeName() {
+            return metadata.getTypeName();
+        }
+
     }
 
 }
