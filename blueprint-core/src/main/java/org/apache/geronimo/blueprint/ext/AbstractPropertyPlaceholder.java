@@ -198,6 +198,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     }
 
     protected String processString(String str) {
+        // TODO: we need to handle escapes on the prefix / suffix
         Matcher matcher = getPattern().matcher(str);
         while (matcher.find()) {
             String rep = getProperty(matcher.group(1));

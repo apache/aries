@@ -12,7 +12,12 @@
 
     </type-converters>
 
-    <ext:system-property-placeholder placeholder-prefix="$[" placeholder-suffix="]"/>
+    <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]" ignore-missing-locations="true" system-properties="override">
+        <ext:default-properties>
+            <ext:property name="name" value="value"/>
+        </ext:default-properties>
+        <ext:location>file://url</ext:location>
+    </ext:property-placeholder>
 
     <cm:managed-service-factory id="managed-service-factory" factory-pid="blueprint-sample-managed-service-factory"
             interface="org.apache.geronimo.blueprint.sample.Foo">

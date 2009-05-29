@@ -20,11 +20,15 @@ package org.apache.geronimo.blueprint.ext;
 
 import java.net.URL;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Attr;
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Comment;
+import org.w3c.dom.EntityReference;
 
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -38,7 +42,6 @@ import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.apache.geronimo.blueprint.ParserContext;
-import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.ExtendedRefCollectionMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableComponentMetadata;
@@ -62,15 +65,22 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
     public static final String BLUEPRINT_NAMESPACE = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
     public static final String BLUEPRINT_EXT_NAMESPACE = "http://geronimo.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
 
-    public static final String SYSTEM_PROPERTY_PLACEHOLDER_ELEMENT = "system-property-placeholder";
+    public static final String PROPERTY_PLACEHOLDER_ELEMENT = "property-placeholder";
     public static final String DEFAULT_PROPERTIES_ELEMENT = "default-properties";
     public static final String PROPERTY_ELEMENT = "property";
     public static final String VALUE_ELEMENT = "value";
+    public static final String LOCATION_ELEMENT = "location";
 
     public static final String ID_ATTRIBUTE = "id";
     public static final String PLACEHOLDER_PREFIX_ATTRIBUTE = "placeholder-prefix";
     public static final String PLACEHOLDER_SUFFIX_ATTRIBUTE = "placeholder-suffix";
     public static final String DEFAULTS_REF_ATTRIBUTE = "defaults-ref";
+    public static final String IGNORE_MISSING_LOCATIONS_ATTRIBUTE = "ignore-missing-locations";
+
+    public static final String SYSTEM_PROPERTIES_ATTRIBUTE = "system-properties";
+    public static final String SYSTEM_PROPERTIES_NEVER = "never";
+    public static final String SYSTEM_PROPERTIES_FALLBACK = "fallback";
+    public static final String SYSTEM_PROPERTIES_OVERRIDE = "override";
 
     public static final String PROXY_METHOD_ATTRIBUTE = "proxy-method";
     public static final String PROXY_METHOD_DEFAULT = "default";
@@ -87,8 +97,8 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
 
     public Metadata parse(Element element, ParserContext context) {
         LOGGER.debug("Parsing element {" + element.getNamespaceURI() + "}" + element.getLocalName());
-        if (nodeNameEquals(element, SYSTEM_PROPERTY_PLACEHOLDER_ELEMENT)) {
-            return parseSystemPropertyPlaceholder(context, element);
+        if (nodeNameEquals(element, PROPERTY_PLACEHOLDER_ELEMENT)) {
+            return parsePropertyPlaceholder(context, element);
         } else {
             throw new ComponentDefinitionException("Unsupported element: " + element.getNodeName());
         }
@@ -130,12 +140,12 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
         return component;
     }
 
-    private Metadata parseSystemPropertyPlaceholder(ParserContext context, Element element) {
+    private Metadata parsePropertyPlaceholder(ParserContext context, Element element) {
         MutableBeanMetadata metadata = context.createMetadata(MutableBeanMetadata.class);
         metadata.setProcessor(true);
         metadata.setId(getId(context, element));
         metadata.setScope(BeanMetadata.SCOPE_SINGLETON);
-        metadata.setRuntimeClass(SystemPropertyPlaceholder.class);
+        metadata.setRuntimeClass(PropertyPlaceholder.class);
         String prefix = element.hasAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
                                     ? element.getAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
                                     : "${";
@@ -148,7 +158,16 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
         if (defaultsRef != null) {
             metadata.addProperty("defaultProperties", createRef(context, defaultsRef));
         }
+        String ignoreMissingLocations = element.hasAttribute(IGNORE_MISSING_LOCATIONS_ATTRIBUTE) ? element.getAttribute(IGNORE_MISSING_LOCATIONS_ATTRIBUTE) : null;
+        if (ignoreMissingLocations != null) {
+            metadata.addProperty("ignoreMissingLocations", createValue(context, ignoreMissingLocations));
+        }
+        String systemProperties = element.hasAttribute(SYSTEM_PROPERTIES_ATTRIBUTE) ? element.getAttribute(SYSTEM_PROPERTIES_ATTRIBUTE) : null;
+        if (systemProperties != null) {
+            metadata.addProperty("systemProperties", createValue(context, systemProperties));
+        }
         // Parse elements
+        List<String> locations = new ArrayList<String>();
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
@@ -161,9 +180,14 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
                         }
                         Metadata props = parseDefaultProperties(context, metadata, e);
                         metadata.addProperty("defaultProperties", props);
+                    } else if (nodeNameEquals(e, LOCATION_ELEMENT)) {
+                        locations.add(getTextValue(e));
                     }
                 }
             }
+        }
+        if (!locations.isEmpty()) {
+            metadata.addProperty("locations", createList(context, locations));
         }
 
         PlaceholdersUtils.validatePlaceholder(metadata, context.getComponentDefinitionRegistry());
@@ -242,6 +266,18 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
             m.addValue(createValue(context, v, String.class.getName()));
         }
         return m;
+    }
+
+    private static String getTextValue(Element element) {
+        StringBuffer value = new StringBuffer();
+        NodeList nl = element.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node item = nl.item(i);
+            if ((item instanceof CharacterData && !(item instanceof Comment)) || item instanceof EntityReference) {
+                value.append(item.getNodeValue());
+            }
+        }
+        return value.toString();
     }
 
     private static boolean nodeNameEquals(Node node, String name) {

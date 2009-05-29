@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.LinkedHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -45,7 +46,8 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
     private final List<Target> typeConverters;
 
     public ComponentDefinitionRegistryImpl() {
-        components = new ConcurrentHashMap<String, ComponentMetadata>();
+        // Use a linked hash map to keep the declaration order 
+        components = Collections.synchronizedMap(new LinkedHashMap<String, ComponentMetadata>());
         typeConverters = new CopyOnWriteArrayList<Target>();
     }
 
