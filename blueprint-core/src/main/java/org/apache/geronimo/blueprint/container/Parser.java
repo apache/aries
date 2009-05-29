@@ -145,7 +145,7 @@ public class Parser {
     public static final String KEY_ATTRIBUTE = "key";
     public static final String KEY_REF_ATTRIBUTE = "key-ref";
     public static final String REF_ATTRIBUTE = "ref";
-    public static final String COMPONENT_ATTRIBUTE = "component";
+    public static final String COMPONENT_ID_ATTRIBUTE = "component-id";
     public static final String INTERFACE_ATTRIBUTE = "interface";
     public static final String DEPENDS_ON_ATTRIBUTE = "depends-on";
     public static final String AUTO_EXPORT_ATTRIBUTE = "auto-export";
@@ -167,7 +167,7 @@ public class Parser {
     public static final String INIT_METHOD_ATTRIBUTE = "init-method";
     public static final String DESTROY_METHOD_ATTRIBUTE = "destroy-method";
     public static final String INITIALIZATION_ATTRIBUTE = "initialization";
-    public static final String FACTORY_COMPONENT_ATTRIBUTE = "factory-component";
+    public static final String FACTORY_REF_ATTRIBUTE = "factory-ref";
     public static final String FACTORY_METHOD_ATTRIBUTE = "factory-method";
 
     public static final String BOOLEAN_DEFAULT = "default";
@@ -446,7 +446,7 @@ public class Parser {
                     if (nodeNameEquals(e, BEAN_ELEMENT)) {
                         target = parseBeanMetadata(e, true);
                     } else if (nodeNameEquals(e, REF_ELEMENT)) {
-                        String componentName = e.getAttribute(COMPONENT_ATTRIBUTE);
+                        String componentName = e.getAttribute(COMPONENT_ID_ATTRIBUTE);
                         target = new RefMetadataImpl(componentName);
                     } else if (nodeNameEquals(e, REFERENCE_ELEMENT)) {
                         target = parseReference(e, true);
@@ -496,8 +496,8 @@ public class Parser {
         if (element.hasAttribute(DESTROY_METHOD_ATTRIBUTE)) {
             metadata.setDestroyMethodName(element.getAttribute(DESTROY_METHOD_ATTRIBUTE));
         }
-        if (element.hasAttribute(FACTORY_COMPONENT_ATTRIBUTE)) {
-            metadata.setFactoryComponent(new RefMetadataImpl(element.getAttribute(FACTORY_COMPONENT_ATTRIBUTE)));
+        if (element.hasAttribute(FACTORY_REF_ATTRIBUTE)) {
+            metadata.setFactoryComponent(new RefMetadataImpl(element.getAttribute(FACTORY_REF_ATTRIBUTE)));
         }
         if (element.hasAttribute(FACTORY_METHOD_ATTRIBUTE)) {
             String factoryMethod = element.getAttribute(FACTORY_METHOD_ATTRIBUTE);
@@ -506,7 +506,7 @@ public class Parser {
 
         // Do some validation
         if (metadata.getClassName() == null && metadata.getFactoryComponent() == null) {
-            throw new ComponentDefinitionException("Bean class or factory-component must be specified");
+            throw new ComponentDefinitionException("Bean class or factory-ref must be specified");
         }
         if (metadata.getFactoryComponent() != null && metadata.getFactoryMethodName() == null) {
             throw new ComponentDefinitionException("factory-method is required when factory-component is set");
@@ -614,9 +614,9 @@ public class Parser {
                         if (service.getServiceComponent() != null) {
                             throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element or " + REF_ELEMENT + " element can be set");
                         }
-                        String component = e.getAttribute(COMPONENT_ATTRIBUTE);
+                        String component = e.getAttribute(COMPONENT_ID_ATTRIBUTE);
                         if (component == null || component.length() == 0) {
-                            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ATTRIBUTE + " attribute");
+                            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
                         }
                         service.setServiceComponent(new RefMetadataImpl(component));
                     }
@@ -804,9 +804,9 @@ public class Parser {
                         if (listenerComponent != null) {
                             throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
                         }
-                        String component = e.getAttribute(COMPONENT_ATTRIBUTE);
+                        String component = e.getAttribute(COMPONENT_ID_ATTRIBUTE);
                         if (component == null || component.length() == 0) {
-                            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ATTRIBUTE + " attribute");
+                            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
                         }
                         listenerComponent = new RefMetadataImpl(component);
                     } else if (nodeNameEquals(e, BEAN_ELEMENT)) {
@@ -939,9 +939,9 @@ public class Parser {
                         if (comparator != null) {
                             throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
                         }
-                        String component = e.getAttribute(COMPONENT_ATTRIBUTE);
+                        String component = e.getAttribute(COMPONENT_ID_ATTRIBUTE);
                         if (component == null || component.length() == 0) {
-                            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ATTRIBUTE + " attribute");
+                            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
                         }
                         comparator = new RefMetadataImpl(component);
                     } else if (nodeNameEquals(e, BEAN_ELEMENT)) {
@@ -1033,9 +1033,9 @@ public class Parser {
                         if (listenerComponent != null) {
                             throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BLUEPRINT_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
                         }
-                        String component = e.getAttribute(COMPONENT_ATTRIBUTE);
+                        String component = e.getAttribute(COMPONENT_ID_ATTRIBUTE);
                         if (component == null || component.length() == 0) {
-                            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ATTRIBUTE + " attribute");
+                            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
                         }
                         listenerComponent = new RefMetadataImpl(component);
                     } else if (nodeNameEquals(e, BEAN_ELEMENT)) {
@@ -1160,16 +1160,16 @@ public class Parser {
     }
 
     private RefMetadata parseRef(Element element) {
-        String component = element.getAttribute(COMPONENT_ATTRIBUTE);
+        String component = element.getAttribute(COMPONENT_ID_ATTRIBUTE);
         if (component == null || component.length() == 0) {
-            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ATTRIBUTE + " attribute");
+            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
         }
         return new RefMetadataImpl(component);
     }
     private Metadata parseIdRef(Element element) {
-        String component = element.getAttribute(COMPONENT_ATTRIBUTE);
+        String component = element.getAttribute(COMPONENT_ID_ATTRIBUTE);
         if (component == null || component.length() == 0) {
-            throw new ComponentDefinitionException("Element " + IDREF_ELEMENT + " must have a valid " + COMPONENT_ATTRIBUTE + " attribute");
+            throw new ComponentDefinitionException("Element " + IDREF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
         }
         return new IdRefMetadataImpl(component);
     }

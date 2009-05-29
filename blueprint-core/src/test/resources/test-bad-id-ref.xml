@@ -4,7 +4,7 @@
 
    <bean id="badIdRef" class="org.apache.geronimo.blueprint.pojos.BeanD">
         <property name="name">
-          <idref component="doesnotexist"/>
+          <idref component-id="doesnotexist"/>
         </property>
     </bean>
     

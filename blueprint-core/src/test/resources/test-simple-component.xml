@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-    <bean id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA" depends-on=" pojoB , pojoC ,">
+    <bean id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA" depends-on=" pojoB  pojoC ">
         <argument value="val0"/>
         <argument ref="val1" />
         <argument>
@@ -19,7 +19,7 @@
             </array>
         </argument>
         <argument>
-            <ref component="pojoB"/>
+            <ref component-id="pojoB"/>
         </argument>
         <property name="prop1" ref="pojoB"/>
         <property name="prop2" value="value" />
@@ -29,7 +29,7 @@
         </property>
     </bean>
 
-    <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoA" init-method="initPojo" destroy-method="" >
+    <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoA" init-method="initPojo" >
         <argument index = "1" value="val0"/>
         <argument index = "0" ref="val1" />
     </bean>
