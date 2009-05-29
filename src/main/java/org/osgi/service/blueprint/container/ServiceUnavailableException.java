@@ -16,6 +16,9 @@
  */
 package org.osgi.service.blueprint.container;
 
+/**
+ * TODO: need to update this one wrt the official API, but it brings a dependency on osgi 1.5
+ */
 public class ServiceUnavailableException extends RuntimeException {
     
     private Class serviceType;
