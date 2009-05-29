@@ -19,6 +19,8 @@
 package org.apache.geronimo.blueprint.container;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,11 +30,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.Callable;
 
 import net.sf.cglib.proxy.Dispatcher;
 import net.sf.cglib.proxy.Enhancer;
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
+import org.apache.geronimo.blueprint.ExtendedServiceReferenceMetadata;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.BundleDelegatingClassLoader;
@@ -72,6 +76,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     private final AtomicBoolean started = new AtomicBoolean();
     private final AtomicBoolean satisfied = new AtomicBoolean();
     private SatisfactionListener satisfactionListener;
+    private ProxyFactory proxyFactory;
 
     protected AbstractServiceReferenceRecipe(String name,
                                              ExtendedBlueprintContainer blueprintContainer,
@@ -150,7 +155,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             if (listenersRecipe != null) {
                 listeners = (List<Listener>) listenersRecipe.create();
                 for (Listener listener : listeners) {
-                    listener.init(getAllClasses(metadata.getInterfaceNames()));
+                    listener.init(loadAllClasses(metadata.getInterfaceNames()));
                 }
             } else {
                 listeners = Collections.emptyList();
@@ -160,7 +165,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         }
     }
 
-    protected List<Class> getAllClasses(Iterable<String> interfaceNames) throws ClassNotFoundException {
+    protected List<Class> loadAllClasses(Iterable<String> interfaceNames) throws ClassNotFoundException {
         List<Class> classes = new ArrayList<Class>();
         for (String name : interfaceNames) {
             Class clazz = proxyClassLoader.loadClass(name);
@@ -169,67 +174,38 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return classes;
     }
 
-    protected List<Class> getInterfaces(Iterable<String> interfaceNames) throws ClassNotFoundException {
-        List<Class> interfaces = new ArrayList<Class>();
-        for (String name : interfaceNames) {
-            Class clazz = proxyClassLoader.loadClass(name);
-            if (clazz.isInterface()) {
-                interfaces.add(clazz);
-            }
-        }
-        return interfaces;
+    protected Object createProxy(final Callable<Object> dispatcher, Iterable<String> interfaces) throws Exception {
+        return getProxyFactory().createProxy(proxyClassLoader, toClassArray(loadAllClasses(interfaces)), dispatcher);
     }
 
-    protected static Class[] toClassArray(List<Class> classes) {
-        return classes.toArray(new Class [classes.size()]);
-    }
-    
-    protected Class getTargetClass(Iterable<String> interfaceNames) throws ClassNotFoundException {
-        Class root = Object.class;
-        for (String name : interfaceNames) {
-            Class clazz = proxyClassLoader.loadClass(name);
-            if (!clazz.isInterface()) {
-                if (root == Object.class) {
-                    root = clazz;
-                    continue;
-                }
-                // Check that all classes are in the same hierarchy
-                for (Class p = clazz; p != Object.class; p = p.getSuperclass()) {
-                    if (p == root) {
-                        root = clazz;
-                        continue;
+    protected ProxyFactory getProxyFactory() throws ClassNotFoundException {
+        if (proxyFactory == null) {
+            synchronized (this) {
+                if (proxyFactory == null) {
+                    boolean proxyClass = false;
+                    if (metadata instanceof ExtendedServiceReferenceMetadata) {
+                        proxyClass = (((ExtendedServiceReferenceMetadata) metadata).getProxyMethod() & ExtendedServiceReferenceMetadata.PROXY_METHOD_CLASSES) != 0;
+                    }
+                    List<Class> classes = loadAllClasses(this.metadata.getInterfaceNames());
+                    if (!proxyClass) {
+                        for (Class cl : classes) {
+                            if (!cl.isInterface()) {
+                                throw new ComponentDefinitionException("A class " + cl.getName() + " was found in the interfaces list, but class proxying is not allowed by default. The ext:proxy-method='class' attribute needs to be added to this service reference.");
+                            }
+                        }
+                    }
+                    try {
+                        proxyFactory = new CgLibProxyFactory();
+                    } catch (Throwable t) {
+                        if (proxyClass) {
+                            throw new ComponentDefinitionException("Class proxying has been enabled but cglib can not be used", t);
+                        }
+                        proxyFactory = new JdkProxyFactory();
                     }
                 }
-                for (Class p = root; p != Object.class; p = p.getSuperclass()) {
-                    if (p == clazz) {
-                        continue;
-                    }
-                }
-                throw new ComponentDefinitionException("Classes " + root.getClass().getName() + " and " + clazz.getName() + " are not in the same hierarchy");
             }
         }
-        return root;
-    }
-
-    protected Object createProxy(Dispatcher dispatcher, Iterable<String> interfaces) throws Exception {
-        // TODO: we only use cglib for this small piece of code, we might want to use asm directly to
-        //       lower the number of dependencies / reduce size of jars
-        //       or have an optional import an asm / cglib and use JDK proxies if not present
-        //       also, check what the spec will say about that (optional imports could be fine if
-        //       the spec does not mandate support for classes proxying
-        // TODO: the spec mandates interfaces now, which means JDK proxies can be used
-        //       proxying non final classes is an implementation specific enhancement and should be triggered
-        //       by a custom attribute on the xml
-        // TODO: cglib is faster, but it should now be optional
-        // TODO: do we need to proxy equals/toString/hashCode ?
-        Enhancer e = new Enhancer();
-        e.setClassLoader(proxyClassLoader);
-        e.setSuperclass(getTargetClass(interfaces));
-        e.setInterfaces(toClassArray(getInterfaces(interfaces)));
-        e.setInterceptDuringConstruction(false);
-        e.setCallback(dispatcher);
-        e.setUseFactory(false);
-        return e.create();
+        return proxyFactory;
     }
 
     public void serviceChanged(ServiceEvent event) {
@@ -472,6 +448,84 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         }
         sb.append(")");
         return sb.toString();
+    }
+
+    private static Class[] getInterfaces(Class[] classes) {
+        List<Class> interfaces = new ArrayList<Class>();
+        for (Class clazz : classes) {
+            if (clazz.isInterface()) {
+                interfaces.add(clazz);
+            }
+        }
+        return toClassArray(interfaces);
+    }
+
+    private static Class[] toClassArray(List<Class> classes) {
+        return classes.toArray(new Class [classes.size()]);
+    }
+
+    public static interface ProxyFactory {
+
+        public Object createProxy(ClassLoader classLoader, Class[] classes, Callable<Object> dispatcher);
+
+    }
+
+    public static class JdkProxyFactory implements ProxyFactory {
+
+        public Object createProxy(final ClassLoader classLoader, final Class[] classes, final Callable<Object> dispatcher) {
+            return Proxy.newProxyInstance(classLoader, getInterfaces(classes), new InvocationHandler() {
+                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                    return method.invoke(dispatcher.call(), args);
+                }
+            });
+        }
+
+    }
+
+    public static class CgLibProxyFactory implements ProxyFactory {
+
+        public Object createProxy(final ClassLoader classLoader, final Class[] classes, final Callable<Object> dispatcher) {
+            Enhancer e = new Enhancer();
+            e.setClassLoader(classLoader);
+            e.setSuperclass(getTargetClass(classes));
+            e.setInterfaces(getInterfaces(classes));
+            e.setInterceptDuringConstruction(false);
+            e.setCallback(new Dispatcher() {
+                public Object loadObject() throws Exception {
+                    return dispatcher.call();
+                }
+            });
+            e.setUseFactory(false);
+            return e.create();
+        }
+
+        protected Class getTargetClass(Class[] interfaceNames) {
+            // Only allow class proxying if specifically asked to
+            Class root = Object.class;
+            for (Class clazz : interfaceNames) {
+                if (!clazz.isInterface()) {
+                    if (root == Object.class) {
+                        root = clazz;
+                        continue;
+                    }
+                    // Check that all classes are in the same hierarchy
+                    for (Class p = clazz; p != Object.class; p = p.getSuperclass()) {
+                        if (p == root) {
+                            root = clazz;
+                            continue;
+                        }
+                    }
+                    for (Class p = root; p != Object.class; p = p.getSuperclass()) {
+                        if (p == clazz) {
+                            continue;
+                        }
+                    }
+                    throw new ComponentDefinitionException("Classes " + root.getClass().getName() + " and " + clazz.getName() + " are not in the same hierarchy");
+                }
+            }
+            return root;
+        }
+
     }
 
 }

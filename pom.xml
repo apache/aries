@@ -78,15 +78,12 @@
                 <artifactId>junit</artifactId>
                 <version>4.5</version>
             </dependency>
+            <!-- Use an OSGi enabled cglib version, so that BND can find the version information
+                 and we can use it in integration tests -->
             <dependency>
-                <groupId>cglib</groupId>
-                <artifactId>cglib</artifactId>
-                <version>2.2</version>
-            </dependency>
-            <dependency>
-                <groupId>asm</groupId>
-                <artifactId>asm-all</artifactId>
-                <version>3.1</version>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
+                <version>2.1_3_2</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

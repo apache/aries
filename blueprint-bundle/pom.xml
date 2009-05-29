@@ -50,6 +50,7 @@
                         <Import-Package>
                             org.apache.geronimo.blueprint*;version="${pom.version}",
                             org.osgi.service.blueprint*;version="1.0",
+                            net.sf.cglib*;resolution:=optional,
                             *
                         </Import-Package>
                         <Export-Package>
@@ -67,6 +68,7 @@
                             org.apache.geronimo.blueprint.namespace,
                             org.apache.geronimo.blueprint.reflect,
                             org.apache.geronimo.blueprint.utils,
+                            <!--
                             org.objectweb.asm,
                             org.objectweb.asm.commons,
                             org.objectweb.asm.signature,
@@ -75,6 +77,7 @@
                             net.sf.cglib.core,
                             net.sf.cglib.proxy,
                             net.sf.cglib.reflect,
+                            -->
                         </Private-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_failok>true</_failok>
@@ -94,14 +97,17 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
+                                    <!--
                                     <include>asm:asm-all</include>
                                     <include>cglib:cglib</include>
+                                    -->
                                     <include>org.apache.geronimo:blueprint-api</include>
                                     <include>org.apache.geronimo:blueprint-core</include>
                                     <include>org.apache.geronimo:blueprint-cm</include>
                                 </includes>
                             </artifactSet>
                             <filters>
+                                <!--
                                 <filter>
                                     <artifact>asm:asm-all</artifact>
                                     <excludes>
@@ -114,6 +120,7 @@
                                         <exclude>net/**</exclude>
                                     </excludes>
                                 </filter>
+                                -->
                                 <filter>
                                     <artifact>org.apache.geronimo:blueprint-api</artifact>
                                     <excludes>

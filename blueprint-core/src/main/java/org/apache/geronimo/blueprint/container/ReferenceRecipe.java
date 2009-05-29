@@ -19,6 +19,7 @@
 package org.apache.geronimo.blueprint.container;
 
 import java.lang.reflect.Type;
+import java.util.concurrent.Callable;
 
 import net.sf.cglib.proxy.Dispatcher;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
@@ -169,9 +170,9 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
         }
     }
 
-    public class ServiceDispatcher implements Dispatcher {
+    public class ServiceDispatcher implements Callable<Object> {
 
-        public Object loadObject() throws Exception {
+        public Object call() throws Exception {
             return getService();
         }
 

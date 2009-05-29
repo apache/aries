@@ -920,6 +920,9 @@ public class Parser {
         
         ComponentMetadata r = references;
         
+        // Parse custom attributes
+        r = handleCustomAttributes(element.getAttributes(), r);
+
         // Parse custom elements;
         r = handleCustomElements(element, r);
         
