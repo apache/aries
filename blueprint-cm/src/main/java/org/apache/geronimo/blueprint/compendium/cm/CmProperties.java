@@ -146,9 +146,8 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
                 
         LOGGER.debug("Service properties initialized for service={} / pid={}, {}", new Object[] {serviceId, persistentId, props});
         
-        services.add(service);
-        
         synchronized (lock) {
+            services.add(service);
             if (properties != null) {
                 JavaUtils.copy(props, properties);
             }
