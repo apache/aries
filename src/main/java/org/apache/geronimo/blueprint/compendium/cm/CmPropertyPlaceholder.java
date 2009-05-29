@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.geronimo.blueprint.beans.AbstractPropertyPlaceholder;
 import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
 import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.osgi.service.cm.Configuration;
@@ -111,8 +112,7 @@ public class CmPropertyPlaceholder extends AbstractPropertyPlaceholder {
             if (v != null) {
                 LOGGER.debug("Retrieved value from defaults {}", v);
             } else {
-                // TODO: throw better exception?
-                throw new RuntimeException("Property not found: " + val);
+                throw new ComponentDefinitionException("Property not found: " + val);
             }
         }
         return v != null ? v.toString() : null;
