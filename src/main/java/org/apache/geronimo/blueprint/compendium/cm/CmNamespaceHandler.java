@@ -109,7 +109,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         return getClass().getResource("blueprint-cm.xsd");
     }
 
-    public ComponentMetadata parse(Element element, ParserContext context) {
+    public Metadata parse(Element element, ParserContext context) {
         LOGGER.debug("Parsing element {" + element.getNamespaceURI() + "}" + element.getLocalName());
         ComponentDefinitionRegistry registry = context.getComponentDefinitionRegistry();
         createConfigAdminProxy(context, registry);
@@ -459,7 +459,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     private String generateId(ParserContext context) {
         String id;
         do {
-            id = "#cm-" + ++idCounter;
+            id = ".cm-" + ++idCounter;
         } while (context.getComponentDefinitionRegistry().containsComponentDefinition(id));
         return id;
     }
