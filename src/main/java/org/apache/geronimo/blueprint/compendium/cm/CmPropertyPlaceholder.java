@@ -22,12 +22,9 @@ import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Map;
 
-import org.apache.geronimo.blueprint.beans.AbstractPropertyPlaceholder;
-import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
+import org.apache.geronimo.blueprint.ext.AbstractPropertyPlaceholder;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
-import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
