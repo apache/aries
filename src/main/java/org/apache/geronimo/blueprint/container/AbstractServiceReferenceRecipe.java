@@ -294,34 +294,16 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             }
             int index = 0;
             if (length > 1) { /* if more than one service, select highest ranking */
-                int rankings[] = new int[length];
-                int count = 0;
                 int maxRanking = Integer.MIN_VALUE;
+                long minId = Long.MAX_VALUE;
                 for (int i = 0; i < length; i++) {
                     Object property = references.get(i).getProperty(Constants.SERVICE_RANKING);
                     int ranking = (property instanceof Integer) ? (Integer) property : 0;
-                    rankings[i] = ranking;
-                    if (ranking > maxRanking) {
+                    long id = (Long) references.get(i).getProperty(Constants.SERVICE_ID);
+                    if ((ranking > maxRanking) || (ranking == maxRanking && id < minId)) {
                         index = i;
                         maxRanking = ranking;
-                        count = 1;
-                    } else {
-                        if (ranking == maxRanking) {
-                            count++;
-                        }
-                    }
-                }
-                // TODO: we could use a one pass search ...
-                if (count > 1) { /* if still more than one service, select lowest id */
-                    long minId = Long.MAX_VALUE;
-                    for (int i = 0; i < length; i++) {
-                        if (rankings[i] == maxRanking) {
-                            long id = (Long) references.get(i).getProperty(Constants.SERVICE_ID);
-                            if (id < minId) {
-                                index = i;
-                                minId = id;
-                            }
-                        }
+                        minId = id;
                     }
                 }
             }
