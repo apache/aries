@@ -220,7 +220,7 @@ public class ParserTest extends AbstractBlueprintTest {
             return getClass().getResource("/cache.xsd");
         }
 
-        public ComponentMetadata parse(Element element, ParserContext context) {
+        public Metadata parse(Element element, ParserContext context) {
             String comp = (context.getEnclosingComponent() == null) ? null : context.getEnclosingComponent().getId();
             //System.out.println("parse: " + element.getLocalName() + " " + comp);
             

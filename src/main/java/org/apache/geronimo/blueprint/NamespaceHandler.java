@@ -22,12 +22,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
 
 public interface NamespaceHandler  {
     
     URL getSchemaLocation(String namespace);
     
-    ComponentMetadata parse(Element element, ParserContext context);
+    Metadata parse(Element element, ParserContext context);
     
     ComponentMetadata decorate(Node node, ComponentMetadata component, ParserContext context);
              
