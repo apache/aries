@@ -154,6 +154,8 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
                     }
                 } else {
                     dispatcher = new ServiceDispatcher(reference);
+                    // TODO: it seems we need to make this greedy-proxying stuff an implementation specific
+                    // TODO: feature which could be activated by a custom attribute on the xml
                     dispatcher.proxy = createProxy(dispatcher, Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS)));
                     synchronized (collection) {
                         collection.addDispatcher(dispatcher);

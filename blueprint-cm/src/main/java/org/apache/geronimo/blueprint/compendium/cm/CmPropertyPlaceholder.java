@@ -82,6 +82,8 @@ public class CmPropertyPlaceholder extends AbstractPropertyPlaceholder {
 
     @Override
     protected Metadata processValueMetadata(ValueMetadata metadata) {
+        // TODO: we need to wrap the old metadata so that multiple placeholders can work together
+        // TODO: move this code in the parent class
         return new LateBindingValueMetadata(metadata.getStringValue(), metadata.getTypeName());
     }
 
