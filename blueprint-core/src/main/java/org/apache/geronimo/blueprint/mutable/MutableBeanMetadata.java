@@ -52,7 +52,7 @@ public interface MutableBeanMetadata extends ExtendedBeanMetadata, MutableCompon
 
     void removeProperty(BeanProperty property);
 
-    void setLazyInit(boolean lazyInit);
+    void setInitialization(int initialization);
 
     void setFactoryMethodName(String factoryMethodName);
 

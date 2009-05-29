@@ -81,11 +81,11 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
             } else if (metadata.getOrderingBasis() != 0) {
                 comparator = new NaturalOrderComparator();
             }
-            boolean orderReferences = metadata.getOrderingBasis() == RefCollectionMetadata.ORDERING_BASIS_SERVICE_REFERENCE;
+            boolean orderReferences = metadata.getOrderingBasis() == RefCollectionMetadata.USE_SERVICE_REFERENCE;
             Boolean memberReferences;
-            if (metadata.getMemberType() == RefCollectionMetadata.MEMBER_TYPE_SERVICE_REFERENCE) {
+            if (metadata.getMemberType() == RefCollectionMetadata.USE_SERVICE_REFERENCE) {
                 memberReferences = true;
-            } else if (metadata.getMemberType() == RefCollectionMetadata.MEMBER_TYPE_SERVICE_INSTANCE) {
+            } else if (metadata.getMemberType() == RefCollectionMetadata.USE_SERVICE_OBJECT) {
                 memberReferences = false;
             } else {
                 memberReferences = null;
