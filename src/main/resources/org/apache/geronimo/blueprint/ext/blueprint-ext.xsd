@@ -29,7 +29,7 @@
 
     <!-- property placeholder -->
 
-    <xsd:element name="system-property-placeholder" type="TpropertyPlaceholder"/>
+    <xsd:element name="property-placeholder" type="TpropertyPlaceholder"/>
 
     <xsd:complexType name="TpropertyPlaceholder">
         <xsd:complexContent>
@@ -37,10 +37,21 @@
                 <xsd:sequence>
                     <!-- nested properties declaration -->
                     <xsd:element name="default-properties" type="TdefaultProperties" minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="location" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
                 </xsd:sequence>
                 <xsd:attribute name="placeholder-prefix" type="xsd:string" use="optional" default="${"/>
                 <xsd:attribute name="placeholder-suffix" type="xsd:string" use="optional" default="}"/>
                 <xsd:attribute name="defaults-ref" type="bp:Tidref" use="optional"/>
+                <xsd:attribute name="ignore-missing-locations" type="xsd:boolean" use="optional" default="false"/>
+                <xsd:attribute name="system-properties" use="optional" default="fallback">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:NMTOKEN">
+                            <xsd:enumeration value="never"/>
+                            <xsd:enumeration value="fallback"/>
+                            <xsd:enumeration value="override"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:attribute>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
