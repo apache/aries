@@ -29,6 +29,7 @@ import org.w3c.dom.NodeList;
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.NamespaceHandler;
 import org.apache.geronimo.blueprint.ParserContext;
+import org.apache.geronimo.blueprint.ext.PlaceholdersUtils;
 import org.apache.geronimo.blueprint.container.Parser;
 import org.apache.geronimo.blueprint.container.ParserContextImpl;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
@@ -180,39 +181,11 @@ public class CmNamespaceHandler implements NamespaceHandler {
             }
         }
         
-        validatePlaceholder(metadata, context.getComponentDefinitionRegistry());
+        PlaceholdersUtils.validatePlaceholder(metadata, context.getComponentDefinitionRegistry());
         
         return metadata;
     }
 
-    private void validatePlaceholder(MutableBeanMetadata metadata, ComponentDefinitionRegistry registry) {
-        String prefix = getPlaceholderProperty(metadata, "placeholderPrefix");
-        String suffix = getPlaceholderProperty(metadata, "placeholderSuffix");
-        for (String id : registry.getComponentDefinitionNames()) {
-            ComponentMetadata component = registry.getComponentDefinition(id);
-            if (component instanceof BeanMetadata) {
-                BeanMetadata bean = (BeanMetadata) component;
-                if (bean.getRuntimeClass() == CmPropertyPlaceholder.class) {
-                    String otherPrefix = getPlaceholderProperty(bean, "placeholderPrefix");
-                    String otherSuffix = getPlaceholderProperty(bean, "placeholderSuffix");
-                    if (prefix.equals(otherPrefix) && suffix.equals(otherSuffix)) {
-                        throw new ComponentDefinitionException("Multiple placeholders with the same prefix and suffix are not allowed");
-                    }
-                }
-            }
-        }
-    }
-    
-    private String getPlaceholderProperty(BeanMetadata bean, String name) {
-        for (BeanProperty property : bean.getProperties()) {
-            if (name.equals(property.getName())) {
-                ValueMetadata value = (ValueMetadata) property.getValue();
-                return value.getStringValue();
-            }
-        }
-        return null;
-    }
-    
     private Metadata parseDefaultProperties(ParserContext context, MutableBeanMetadata enclosingComponent, Element element) {
         MutableMapMetadata props = context.createMetadata(MutableMapMetadata.class);
         NodeList nl = element.getChildNodes();

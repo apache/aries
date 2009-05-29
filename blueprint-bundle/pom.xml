@@ -53,11 +53,11 @@
                             *
                         </Import-Package>
                         <Export-Package>
-                            =org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.geronimo.blueprint,org.apache.geronimo.blueprint.beans,org.apache.geronimo.blueprint.mutable";version="1.0",
+                            =org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.geronimo.blueprint,org.apache.geronimo.blueprint.ext,org.apache.geronimo.blueprint.mutable";version="1.0",
                             org.osgi.service.blueprint.container;version="1.0",
                             org.osgi.service.blueprint.reflect;version="1.0",
                             org.apache.geronimo.blueprint;version="${pom.version}",
-                            org.apache.geronimo.blueprint.beans;version="${pom.version}",
+                            org.apache.geronimo.blueprint.ext;version="${pom.version}",
                             org.apache.geronimo.blueprint.mutable;version="${pom.version}"
                         </Export-Package>
                         <Private-Package>

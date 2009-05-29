@@ -254,18 +254,14 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             }
                         };
                         timeoutFuture = executors.schedule(r, timeout, TimeUnit.MILLISECONDS);
-                        if (checkAllSatisfiables() || !waitForDependencies) {
-                            state = State.InitialReferencesSatisfied;
-                        } else {
-                            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), getMissingDependencies()));
-                            state = State.WaitForInitialReferences;
-                        }
+                        state = State.WaitForInitialReferences;
                         break;
                     case WaitForInitialReferences:
                         if (checkAllSatisfiables()) {
                             state = State.InitialReferencesSatisfied;
                             break;
                         } else {
+                            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), getMissingDependencies()));
                             return;
                         }
                     case InitialReferencesSatisfied:
@@ -283,10 +279,9 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         satisfiables = null;
                         trackServiceReferences();
                         // Check references
-                        if (checkAllSatisfiables() || !waitForDependencies) {
+                        if (!waitForDependencies) {
                             state = State.Create;
                         } else {
-                            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), getMissingDependencies()));
                             state = State.WaitForInitialReferences2;
                         }
                         break;
@@ -295,6 +290,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             state = State.Create;
                             break;
                         } else {
+                            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), getMissingDependencies()));
                             return;
                         }
                     case Create:

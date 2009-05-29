@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.beans;
+package org.apache.geronimo.blueprint.ext;
 
 import java.util.ArrayList;
 import java.util.List;
