@@ -55,6 +55,7 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
 
     private ExtendedBlueprintContainer blueprintContainer;
     private ConfigurationAdmin configAdmin;
+    private ManagedObjectManager managedObjectManager;
     private String persistentId;
     private String updateStrategy;
     private String updateMethod;
@@ -80,6 +81,14 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
         this.configAdmin = configAdmin;
     }
 
+    public void setManagedObjectManager(ManagedObjectManager managedObjectManager) {
+        this.managedObjectManager = managedObjectManager;
+    }
+    
+    public ManagedObjectManager getManagedObjectManager() {
+        return managedObjectManager;
+    }
+    
     public Bundle getBundle() {
         return blueprintContainer.getBundleContext().getBundle();
     }
@@ -126,7 +135,7 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
         props.put(Constants.BUNDLE_VERSION, bundle.getHeaders().get(Constants.BUNDLE_VERSION));
                 
         synchronized (lock) {
-            ManagedObjectManager.register(this, props);
+            managedObjectManager.register(this, props);
             Configuration config = CmUtils.getConfiguration(configAdmin, persistentId);
             if (config != null) {
                 properties = config.getProperties();
@@ -135,7 +144,7 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
     }
 
     public void destroy() {
-        ManagedObjectManager.unregister(this);
+        managedObjectManager.unregister(this);
     }
 
     public void updated(Dictionary props) {
