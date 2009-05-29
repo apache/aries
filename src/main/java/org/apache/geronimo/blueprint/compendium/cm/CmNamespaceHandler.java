@@ -99,6 +99,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
     public static final String AUTO_EXPORT_DEFAULT = AUTO_EXPORT_DISABLED;
     public static final String RANKING_DEFAULT = "0";
 
+    private static final String MANAGED_OBJECT_MANAGER_NAME = "org.apache.geronimo.managedObjectManager";
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(CmNamespaceHandler.class);
 
     private int idCounter;
@@ -111,6 +113,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         LOGGER.debug("Parsing element {" + element.getNamespaceURI() + "}" + element.getLocalName());
         ComponentDefinitionRegistry registry = context.getComponentDefinitionRegistry();
         createConfigAdminProxy(context, registry);
+        registerManagedObjectManager(context, registry);
         if (nodeNameEquals(element, PROPERTY_PLACEHOLDER_ELEMENT)) {
             return parsePropertyPlaceholder(context, element);
         } else if (nodeNameEquals(element, MANAGED_SERVICE_FACTORY_ELEMENT)) {
@@ -124,6 +127,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         LOGGER.debug("Decorating node {" + node.getNamespaceURI() + "}" + node.getLocalName());
         ComponentDefinitionRegistry registry = context.getComponentDefinitionRegistry();
         createConfigAdminProxy(context, registry);
+        registerManagedObjectManager(context, registry);
         if (node instanceof Element) {
             if (nodeNameEquals(node, MANAGED_PROPERTIES_ELEMENT)) {
                 return decorateManagedProperties(context, (Element) node, component);
@@ -328,6 +332,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         }
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
         metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
+        metadata.addProperty("managedObjectManager", createRef(context, MANAGED_OBJECT_MANAGER_NAME));
         metadata.addProperty("persistentId", createValue(context, persistentId));
         if (element.hasAttribute(UPDATE_ATTRIBUTE)) {
             metadata.addProperty("update", createValue(context, element.getAttribute(UPDATE_ATTRIBUTE)));
@@ -356,6 +361,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         }
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
         metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
+        metadata.addProperty("managedObjectManager", createRef(context, MANAGED_OBJECT_MANAGER_NAME));
         metadata.addProperty("persistentId", createValue(context, persistentId));
         if (element.hasAttribute(UPDATE_STRATEGY_ATTRIBUTE)) {
             metadata.addProperty("updateStrategy", createValue(context, element.getAttribute(UPDATE_STRATEGY_ATTRIBUTE)));
@@ -384,7 +390,17 @@ public class CmNamespaceHandler implements NamespaceHandler {
             registry.registerComponentDefinition(reference);
         }
     }
-
+    
+    private void registerManagedObjectManager(ParserContext context, ComponentDefinitionRegistry registry) {
+        if (registry.getComponentDefinition(MANAGED_OBJECT_MANAGER_NAME) == null) {
+            MutableBeanMetadata beanMetadata = context.createMetadata(MutableBeanMetadata.class);
+            beanMetadata.setScope(BeanMetadata.SCOPE_SINGLETON);
+            beanMetadata.setId(MANAGED_OBJECT_MANAGER_NAME);
+            beanMetadata.setRuntimeClass(ManagedObjectManager.class);            
+            registry.registerComponentDefinition(beanMetadata);
+        }
+    }
+    
     private static ValueMetadata createValue(ParserContext context, String value) {
         return createValue(context, value, null);
     }

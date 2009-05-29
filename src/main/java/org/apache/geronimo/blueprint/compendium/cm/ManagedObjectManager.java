@@ -19,12 +19,12 @@
 package org.apache.geronimo.blueprint.compendium.cm;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
@@ -39,10 +39,10 @@ public class ManagedObjectManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ManagedObjectManager.class);
 
-    private static HashMap<Key, ConfigurationWatcher> map = new HashMap<Key, ConfigurationWatcher>();
+    private HashMap<String, ConfigurationWatcher> map = new HashMap<String, ConfigurationWatcher>();
                
-    public static synchronized void register(ManagedObject cm, Properties props) {
-        Key key = new Key(cm);
+    public synchronized void register(ManagedObject cm, Properties props) {
+        String key = cm.getPersistentId();
         ConfigurationWatcher reg = map.get(key);
         if (reg == null) {
             reg = new ConfigurationWatcher(); 
@@ -53,8 +53,8 @@ public class ManagedObjectManager {
         reg.add(cm);
     }
 
-    public static synchronized void unregister(ManagedObject cm) {
-        Key key = new Key(cm);
+    public synchronized void unregister(ManagedObject cm) {
+        String key = cm.getPersistentId();
         ConfigurationWatcher reg = map.get(key);
         if (reg != null) {
             reg.remove(cm);
@@ -68,14 +68,16 @@ public class ManagedObjectManager {
     private static class ConfigurationWatcher implements ManagedService {
 
         private ServiceRegistration registration;
-        private List<ManagedObject> list = new ArrayList<ManagedObject>();
+        private List<ManagedObject> list = Collections.synchronizedList(new ArrayList<ManagedObject>());
         
         public ConfigurationWatcher() {
         }
         
         public void updated(Dictionary props) throws ConfigurationException {
-            for (ManagedObject cm : list) {
-                cm.updated(props);
+            synchronized (list) {
+                for (ManagedObject cm : list) {
+                    cm.updated(props);
+                }
             }
         }
         
@@ -99,53 +101,5 @@ public class ManagedObjectManager {
             return list.isEmpty();
         }
     }
-    
-    private static class Key {
         
-        private String persistanceId;
-        private Bundle bundle;
-        
-        public Key(ManagedObject cm) {
-            this.persistanceId = cm.getPersistentId();
-            this.bundle = cm.getBundle();
-        }
-
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((bundle == null) ? 0 : bundle.hashCode());
-            result = prime * result + ((persistanceId == null) ? 0 : persistanceId.hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            Key other = (Key) obj;
-            if (bundle == null) {
-                if (other.bundle != null) {
-                    return false;
-                }
-            } else if (!bundle.equals(other.bundle)) {
-                return false;
-            }
-            if (persistanceId == null) {
-                if (other.persistanceId != null) {
-                    return false;
-                }
-            } else if (!persistanceId.equals(other.persistanceId)) {
-                return false;
-            }
-            return true;
-        }
-        
-    }
 }
