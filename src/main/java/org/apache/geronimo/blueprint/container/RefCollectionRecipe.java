@@ -30,9 +30,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.RandomAccess;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import net.sf.cglib.proxy.Dispatcher;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
+import org.apache.geronimo.blueprint.ExtendedRefCollectionMetadata;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.apache.geronimo.blueprint.utils.DynamicCollection;
@@ -154,9 +156,14 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
                     }
                 } else {
                     dispatcher = new ServiceDispatcher(reference);
-                    // TODO: it seems we need to make this greedy-proxying stuff an implementation specific
-                    // TODO: feature which could be activated by a custom attribute on the xml
-                    dispatcher.proxy = createProxy(dispatcher, Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS)));
+                    List<String> interfaces = metadata.getInterfaceNames(); 
+                    if (metadata instanceof ExtendedRefCollectionMetadata) {
+                        boolean greedy = (((ExtendedRefCollectionMetadata) metadata).getProxyMethod() & ExtendedRefCollectionMetadata.PROXY_METHOD_GREEDY) != 0;
+                        if (greedy) {
+                            interfaces = Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS));
+                        }
+                    }
+                    dispatcher.proxy = createProxy(dispatcher, interfaces);
                     synchronized (collection) {
                         collection.addDispatcher(dispatcher);
                     }
@@ -199,7 +206,7 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
      * The ServiceDispatcher is used when creating the cglib proxy.
      * Thic class is responsible for getting the actual service that will be used.
      */
-    public class ServiceDispatcher implements Dispatcher {
+    public class ServiceDispatcher implements Callable<Object> {
 
         public ServiceReference reference;
         public Object service;
@@ -226,7 +233,7 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
             }
         }
 
-        public synchronized Object loadObject() throws Exception {
+        public synchronized Object call() throws Exception {
             if (reference == null) {
                 throw new ServiceUnavailableException("Service is unavailable", null, null);
             }

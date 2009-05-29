@@ -41,6 +41,7 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
     protected String componentName;
     protected String filter;
     protected Collection<Listener> serviceListeners;
+    protected int proxyMethod;
 
     public ServiceReferenceMetadataImpl() {
     }
@@ -131,4 +132,13 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
             this.serviceListeners.remove(listener);
         }
     }
+
+    public int getProxyMethod() {
+        return proxyMethod;
+    }
+
+    public void setProxyMethod(int proxyMethod) {
+        this.proxyMethod = proxyMethod;
+    }
+
 }

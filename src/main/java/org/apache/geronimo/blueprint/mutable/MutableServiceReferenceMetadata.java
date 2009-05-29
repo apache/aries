@@ -21,6 +21,7 @@ package org.apache.geronimo.blueprint.mutable;
 import org.osgi.service.blueprint.reflect.Listener;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
+import org.apache.geronimo.blueprint.ExtendedServiceReferenceMetadata;
 
 /**
  * A mutable version of the <code>ServiceReferenceMetadata</code> that allows modifications.
@@ -28,7 +29,7 @@ import org.osgi.service.blueprint.reflect.Target;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
-public interface MutableServiceReferenceMetadata extends ServiceReferenceMetadata, MutableComponentMetadata {
+public interface MutableServiceReferenceMetadata extends ExtendedServiceReferenceMetadata, MutableComponentMetadata {
 
     void setAvailability(int availability);
 
@@ -45,5 +46,7 @@ public interface MutableServiceReferenceMetadata extends ServiceReferenceMetadat
                                 String unbindMethodName);
 
     void removeServiceListener(Listener listener);
+
+    void setProxyMethod(int proxyMethod);
 
 }

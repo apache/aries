@@ -45,15 +45,31 @@
         </xsd:complexContent>
     </xsd:complexType>
 
-
-    <!-- #### is this the correct type here?  This is defining placeholder properties,
-         so should this be a restricted set of value types or should this be expanded to
-         all of the elements you can inject into a bean property? -->
     <xsd:complexType name="TdefaultProperties">
         <xsd:sequence minOccurs="0" maxOccurs="unbounded">
             <xsd:element name="property" type="bp:Tproperty"/>
         </xsd:sequence>
     </xsd:complexType>
 
+    <!-- proxy method -->
+
+    <xsd:attribute name="proxy-method" default="default">
+        <xsd:simpleType>
+            <xsd:restriction>
+                <xsd:simpleType>
+                    <xsd:list>
+                        <xsd:simpleType>
+                            <xsd:restriction base="xsd:NMTOKEN">
+                                <xsd:enumeration value="default"/>
+                                <xsd:enumeration value="classes"/>
+                                <xsd:enumeration value="greedy"/>
+                            </xsd:restriction>
+                        </xsd:simpleType>
+                    </xsd:list>
+                </xsd:simpleType>
+                <xsd:minLength value="1"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+    </xsd:attribute>
 
 </xsd:schema>

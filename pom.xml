@@ -42,12 +42,9 @@
           <artifactId>org.osgi.compendium</artifactId>
       </dependency>
       <dependency>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>asm</groupId>
-          <artifactId>asm-all</artifactId>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
+          <optional>true</optional>
       </dependency>
       <dependency>
           <groupId>org.slf4j</groupId>

@@ -24,6 +24,7 @@ import java.util.List;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Attr;
 
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -33,9 +34,12 @@ import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.IdRefMetadata;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
+import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.apache.geronimo.blueprint.ParserContext;
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
+import org.apache.geronimo.blueprint.ExtendedRefCollectionMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableComponentMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
@@ -43,6 +47,7 @@ import org.apache.geronimo.blueprint.mutable.MutableRefMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableIdRefMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableCollectionMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableServiceReferenceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +72,11 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
     public static final String PLACEHOLDER_SUFFIX_ATTRIBUTE = "placeholder-suffix";
     public static final String DEFAULTS_REF_ATTRIBUTE = "defaults-ref";
 
+    public static final String PROXY_METHOD_ATTRIBUTE = "proxy-method";
+    public static final String PROXY_METHOD_DEFAULT = "default";
+    public static final String PROXY_METHOD_CLASSES = "classes";
+    public static final String PROXY_METHOD_GREEDY = "greedy";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtNamespaceHandler.class);
 
     private int idCounter;
@@ -77,7 +87,6 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
 
     public Metadata parse(Element element, ParserContext context) {
         LOGGER.debug("Parsing element {" + element.getNamespaceURI() + "}" + element.getLocalName());
-        ComponentDefinitionRegistry registry = context.getComponentDefinitionRegistry();
         if (nodeNameEquals(element, SYSTEM_PROPERTY_PLACEHOLDER_ELEMENT)) {
             return parseSystemPropertyPlaceholder(context, element);
         } else {
@@ -86,7 +95,39 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
     }
 
     public ComponentMetadata decorate(Node node, ComponentMetadata component, ParserContext context) {
-        throw new ComponentDefinitionException("Illegal use of blueprint ext namespace");
+        if (node instanceof Attr && nodeNameEquals(node, PROXY_METHOD_ATTRIBUTE)) {
+            return decorateProxyMethod(node, component, context);
+        } else {
+            throw new ComponentDefinitionException("Unsupported node: " + node.getNodeName());
+        }
+    }
+
+    private ComponentMetadata decorateProxyMethod(Node node, ComponentMetadata component, ParserContext context) {
+        if (!(component instanceof ServiceReferenceMetadata)) {
+            throw new ComponentDefinitionException("Attribute " + node.getNodeName() + " can only be used on a <reference>, <ref-list> or <ref-set> element");
+        }
+        if (!(component instanceof MutableServiceReferenceMetadata)) {
+            throw new ComponentDefinitionException("Expected an instance of MutableServiceReferenceMetadata");
+        }
+        int method = 0;
+        String value = ((Attr) node).getValue();
+        String[] flags = value.trim().split(" ");
+        for (String flag : flags) {
+            if (PROXY_METHOD_DEFAULT.equals(flag)) {
+                method += ExtendedRefCollectionMetadata.PROXY_METHOD_DEFAULT;
+            } else if (PROXY_METHOD_CLASSES.equals(flag)) {
+                method += ExtendedRefCollectionMetadata.PROXY_METHOD_CLASSES;
+            } else if (PROXY_METHOD_GREEDY.equals(flag)) {
+                method += ExtendedRefCollectionMetadata.PROXY_METHOD_GREEDY;
+            } else {
+                throw new ComponentDefinitionException("Unknown proxy method: " + flag);
+            }
+        }
+        if ((method & ExtendedRefCollectionMetadata.PROXY_METHOD_GREEDY) != 0 && !(component instanceof RefCollectionMetadata)) {
+            throw new ComponentDefinitionException("Greedy proxying is only available for <ref-list> and <ref-set> elements");
+        }
+        ((MutableServiceReferenceMetadata) component).setProxyMethod(method);
+        return component;
     }
 
     private Metadata parseSystemPropertyPlaceholder(ParserContext context, Element element) {
