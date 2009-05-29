@@ -51,6 +51,8 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     private boolean processor;
 
     public BeanMetadataImpl() {
+        initialization = INITIALIZATION_EAGER;
+        scope = SCOPE_SINGLETON;
     }
 
     public BeanMetadataImpl(BeanMetadata source) {

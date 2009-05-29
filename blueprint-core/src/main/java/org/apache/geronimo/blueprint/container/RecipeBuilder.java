@@ -229,9 +229,10 @@ public class RecipeBuilder {
     }
 
     private Recipe createRecipe(RegistrationListener listener) throws Exception {
-        BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, ServiceRecipe.Listener.class);
+        BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, ServiceListener.class);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
-        recipe.setProperty("metadata", listener);
+        recipe.setProperty("registerMethod", listener.getRegistrationMethodName());
+        recipe.setProperty("unregisterMethod", listener.getUnregistrationMethodName());
         return recipe;
     }
 

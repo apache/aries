@@ -784,7 +784,7 @@ public class Parser {
         return map;
     }
     
-    private RegistrationListener parseRegistrationListener(Element element, ComponentMetadata enclosingComponent) {
+    public RegistrationListener parseRegistrationListener(Element element, ComponentMetadata enclosingComponent) {
         RegistrationListenerImpl listener = new RegistrationListenerImpl();
         Metadata listenerComponent = null;
         // Parse attributes

@@ -1,6 +1,21 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.geronimo.blueprint.container;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -10,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ServiceProcessor;
@@ -35,7 +49,6 @@ import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
-import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +73,7 @@ public class ServiceRecipe extends AbstractRecipe {
     private Map properties;
     private ServiceRegistration registration;
     private Map registrationProperties;
-    private List<Listener> listeners;
+    private List<ServiceListener> listeners;
     private Object service;
     private boolean bundleScope;
 
@@ -164,8 +177,8 @@ public class ServiceRecipe extends AbstractRecipe {
             registration.unregister();
             if (listeners != null) {
                 LOGGER.debug("Calling listeners for service unregistration");
-                for (Listener listener : listeners) {
-                    listener.unregister(this);
+                for (ServiceListener listener : listeners) {
+                    listener.unregister(getService(), registrationProperties);
                 }
             }
             LOGGER.debug("Service {} unregistered", service);
@@ -180,26 +193,24 @@ public class ServiceRecipe extends AbstractRecipe {
     public Object getService(Bundle bundle, ServiceRegistration registration) {
         LOGGER.debug("Retrieving service for bundle {} and service registration {}", bundle, registration);
         // Create initial service
-        if (this.service == null) {
-            synchronized (this) {
-                if (this.service == null) {
-                    bundleScope = isBundleScope(metadata.getServiceComponent());
-                    LOGGER.debug("Creating service instance (bundle scope = {})", bundleScope);
-                    this.service = createInstance(false);
-                    LOGGER.debug("Service created: {}", this.service);
-                    // When the service is first requested, we need to create listeners and call them
-                    if (listeners == null) {
-                        LOGGER.debug("Creating listeners");
-                        if (listenersRecipe != null) {
-                            listeners = (List) createSimpleRecipe(listenersRecipe);
-                        } else {
-                            listeners = Collections.emptyList();
-                        }
-                        LOGGER.debug("Listeners created: {}", listeners);
-                        LOGGER.debug("Calling listeners for service registration");
-                        for (Listener listener : listeners) {
-                            listener.register(this);
-                        }
+        synchronized (this) {
+            if (this.service == null) {
+                bundleScope = isBundleScope(metadata.getServiceComponent());
+                LOGGER.debug("Creating service instance (bundle scope = {})", bundleScope);
+                this.service = createInstance(false);
+                LOGGER.debug("Service created: {}", this.service);
+                // When the service is first requested, we need to create listeners and call them
+                if (listeners == null) {
+                    LOGGER.debug("Creating listeners");
+                    if (listenersRecipe != null) {
+                        listeners = (List) createSimpleRecipe(listenersRecipe);
+                    } else {
+                        listeners = Collections.emptyList();
+                    }
+                    LOGGER.debug("Listeners created: {}", listeners);
+                    LOGGER.debug("Calling listeners for service registration");
+                    for (ServiceListener listener : listeners) {
+                        listener.register(service, registrationProperties);
                     }
                 }
             }
@@ -359,69 +370,6 @@ public class ServiceRecipe extends AbstractRecipe {
             JavaUtils.copy(table, properties);
             setProperties(table);
         }        
-    }
-    
-    public static class Listener {
-
-        private Object listener;
-        private RegistrationListener metadata;
-
-        private List<Method> registerMethods;
-        private List<Method> unregisterMethods;
-        private boolean initialized = false;
-
-        public void setListener(Object listener) {
-            this.listener = listener;
-        }
-
-        public void setMetadata(RegistrationListener metadata) {
-            this.metadata = metadata;
-        }
-
-        public void register(ServiceRecipe recipe) {
-            init(recipe);
-            invokeMethod(registerMethods, recipe);
-        }
-
-        public void unregister(ServiceRecipe recipe) {
-            invokeMethod(unregisterMethods, recipe);
-        }
-
-        private synchronized void init(ServiceRecipe recipe) {
-            if (initialized) {
-                return;
-            }
-            Object service = recipe.getService();
-            Class[] paramTypes = new Class[] { service.getClass(), Map.class };
-            Class listenerClass = listener.getClass();
-
-            registerMethods = ReflectionUtils.findCompatibleMethods(listenerClass, metadata.getRegistrationMethodName(), paramTypes);
-            if (registerMethods.size() == 0) {
-                throw new ComponentDefinitionException("No matching methods found for listener registration method: " + metadata.getRegistrationMethodName());
-            }
-            unregisterMethods = ReflectionUtils.findCompatibleMethods(listenerClass, metadata.getUnregistrationMethodName(), paramTypes);
-            if (unregisterMethods.size() == 0) {
-                throw new ComponentDefinitionException("No matching methods found for listener unregistration method: " + metadata.getUnregistrationMethodName());
-            }
-            initialized = true;
-        }
-
-        private void invokeMethod(List<Method> methods, ServiceRecipe recipe) {
-            if (methods == null || methods.isEmpty()) {
-                return;
-            }
-            Object service = recipe.getService();
-            Map properties = recipe.registrationProperties;
-            Object[] args = new Object[] { service, properties };
-            for (Method method : methods) {
-                try {
-                    method.invoke(listener, args);
-                } catch (Exception e) {
-                    LOGGER.info("Error calling listener method " + method, e);
-                }
-            }
-        }
-
     }
 
 }
