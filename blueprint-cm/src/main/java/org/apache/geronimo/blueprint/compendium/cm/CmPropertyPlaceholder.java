@@ -80,13 +80,6 @@ public class CmPropertyPlaceholder extends AbstractPropertyPlaceholder {
         this.defaultProperties = defaultProperties;
     }
 
-    @Override
-    protected Metadata processValueMetadata(ValueMetadata metadata) {
-        // TODO: we need to wrap the old metadata so that multiple placeholders can work together
-        // TODO: move this code in the parent class
-        return new LateBindingValueMetadata(metadata.getStringValue(), metadata.getTypeName());
-    }
-
     protected String getProperty(String val) {
         LOGGER.debug("Retrieving property value {} from configuration with pid {}", val, persistentId);
         Configuration config = null;
@@ -118,39 +111,6 @@ public class CmPropertyPlaceholder extends AbstractPropertyPlaceholder {
             }
         }
         return v != null ? v.toString() : null;
-    }
-
-    public class LateBindingValueMetadata implements MutableValueMetadata {
-
-        private String stringValue;
-        private String typeName;
-        private boolean retrieved;
-        private String retrievedValue;
-
-        public LateBindingValueMetadata(String stringValue, String typeName) {
-            this.stringValue = stringValue;
-            this.typeName = typeName;
-        }
-
-        public String getStringValue() {
-            if (!retrieved) {
-                retrieved = true;
-                retrievedValue = processString(stringValue);
-            }
-            return retrievedValue;
-        }
-
-        public void setStringValue(String stringValue) {
-            this.stringValue = stringValue;
-        }
-
-        public String getTypeName() {
-            return typeName;
-        }
-
-        public void setTypeName(String typeName) {
-            this.typeName = typeName;
-        }
     }
 
 }
