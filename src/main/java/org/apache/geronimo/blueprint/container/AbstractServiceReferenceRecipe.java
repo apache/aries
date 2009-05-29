@@ -217,6 +217,11 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         //       or have an optional import an asm / cglib and use JDK proxies if not present
         //       also, check what the spec will say about that (optional imports could be fine if
         //       the spec does not mandate support for classes proxying
+        // TODO: the spec mandates interfaces now, which means JDK proxies can be used
+        //       proxying non final classes is an implementation specific enhancement and should be triggered
+        //       by a custom attribute on the xml
+        // TODO: cglib is faster, but it should now be optional
+        // TODO: do we need to proxy equals/toString/hashCode ?
         Enhancer e = new Enhancer();
         e.setClassLoader(proxyClassLoader);
         e.setSuperclass(getTargetClass(interfaces));
