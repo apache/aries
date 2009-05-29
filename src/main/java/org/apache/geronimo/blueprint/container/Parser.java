@@ -131,7 +131,7 @@ public class Parser {
     public static final String ENTRY_ELEMENT = "entry";
     public static final String KEY_ELEMENT = "key";
     public static final String COMPARATOR_ELEMENT = "comparator";
-    public static final String DEFAULT_LAZY_INIT_ATTRIBUTE = "default-lazy-init";
+    public static final String DEFAULT_INITIALIZATION_ATTRIBUTE = "initialization";
     public static final String DEFAULT_TIMEOUT_ATTRIBUTE = "default-timeout";
     public static final String DEFAULT_AVAILABILITY_ATTRIBUTE = "default-availability";
     public static final String NAME_ATTRIBUTE = "name";
@@ -166,7 +166,7 @@ public class Parser {
     public static final String SCOPE_ATTRIBUTE = "scope";
     public static final String INIT_METHOD_ATTRIBUTE = "init-method";
     public static final String DESTROY_METHOD_ATTRIBUTE = "destroy-method";
-    public static final String LAZY_INIT_ATTRIBUTE = "lazy-init";
+    public static final String INITIALIZATION_ATTRIBUTE = "initialization";
     public static final String FACTORY_COMPONENT_ATTRIBUTE = "factory-component";
     public static final String FACTORY_METHOD_ATTRIBUTE = "factory-method";
 
@@ -188,7 +188,9 @@ public class Parser {
     public static final String MEMBER_TYPE_SERVICE_REFERENCE = "service-reference";
     public static final String ORDERING_BASIS_SERVICES = "service";
     public static final String ORDERING_BASIS_SERVICE_REFERENCES = "service-reference";
-    public static final String LAZY_INIT_DEFAULT = BOOLEAN_FALSE;
+    public static final String INITIALIZATION_EAGER = "eager";
+    public static final String INITIALIZATION_LAZY = "lazy";
+    public static final String INITIALIZATION_DEFAULT = INITIALIZATION_EAGER;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
 
@@ -203,7 +205,7 @@ public class Parser {
     private int idCounter;
     private String defaultTimeout;
     private String defaultAvailability;
-    private String defaultLazyInit;
+    private String defaultInitialization;
     private Set<URI> namespaces;
     private boolean validation;
     private boolean validated;
@@ -319,15 +321,15 @@ public class Parser {
     private void loadComponents(Document doc) {
         defaultTimeout = TIMEOUT_DEFAULT;
         defaultAvailability = AVAILABILITY_DEFAULT;
-        defaultLazyInit = LAZY_INIT_DEFAULT;
+        defaultInitialization = INITIALIZATION_DEFAULT;
         Element root = doc.getDocumentElement();
         if (!isBlueprintNamespace(root.getNamespaceURI()) ||
                 !nodeNameEquals(root, BLUEPRINT_ELEMENT)) {
             throw new ComponentDefinitionException("Root element must be {" + BLUEPRINT_NAMESPACE + "}" + BLUEPRINT_ELEMENT + " element");
         }
         // Parse global attributes
-        if (root.hasAttribute(DEFAULT_LAZY_INIT_ATTRIBUTE)) {
-            defaultLazyInit = root.getAttribute(DEFAULT_LAZY_INIT_ATTRIBUTE);
+        if (root.hasAttribute(DEFAULT_INITIALIZATION_ATTRIBUTE)) {
+            defaultInitialization = root.getAttribute(DEFAULT_INITIALIZATION_ATTRIBUTE);
         }
         if (root.hasAttribute(DEFAULT_TIMEOUT_ATTRIBUTE)) {
             defaultTimeout = root.getAttribute(DEFAULT_TIMEOUT_ATTRIBUTE);
@@ -477,18 +479,13 @@ public class Parser {
         } else {
             metadata.setScope(BeanMetadata.SCOPE_PROTOTYPE);
         }
-        String lazy = element.hasAttribute(LAZY_INIT_ATTRIBUTE) ? element.getAttribute(LAZY_INIT_ATTRIBUTE) : defaultLazyInit;
-        if (BOOLEAN_DEFAULT.equals(lazy)) {
-            if (BOOLEAN_DEFAULT.equals(defaultLazyInit)) {
-                lazy = BOOLEAN_FALSE;
-            }
-        }
-        if (BOOLEAN_TRUE.equals(lazy)) {
-            metadata.setLazyInit(true);
-        } else if (BOOLEAN_FALSE.equals(lazy)) {
-            metadata.setLazyInit(false);
+        String initialization = element.hasAttribute(INITIALIZATION_ATTRIBUTE) ? element.getAttribute(INITIALIZATION_ATTRIBUTE) : defaultInitialization;
+        if (INITIALIZATION_EAGER.equals(initialization)) {
+            metadata.setInitialization(BeanMetadata.INITIALIZATION_EAGER);
+        } else if (INITIALIZATION_LAZY.equals(initialization)) {
+            metadata.setInitialization(BeanMetadata.INITIALIZATION_LAZY);
         } else {
-            throw new ComponentDefinitionException("Attribute " + LAZY_INIT_ATTRIBUTE + " must be equals to " + BOOLEAN_DEFAULT + ", " + BOOLEAN_TRUE + " or " + BOOLEAN_FALSE);
+            throw new ComponentDefinitionException("Attribute " + INITIALIZATION_ATTRIBUTE + " must be equals to " + INITIALIZATION_EAGER + " or " + INITIALIZATION_LAZY);
         }
         if (element.hasAttribute(DEPENDS_ON_ATTRIBUTE)) {
             metadata.setExplicitDependencies(parseList(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
@@ -888,9 +885,9 @@ public class Parser {
         if (element.hasAttribute(MEMBER_TYPE_ATTRIBUTE)) {
             String memberType = element.getAttribute(MEMBER_TYPE_ATTRIBUTE);
             if (MEMBER_TYPE_SERVICES.equals(memberType)) {
-                references.setMemberType(RefCollectionMetadata.MEMBER_TYPE_SERVICE_INSTANCE);
+                references.setMemberType(RefCollectionMetadata.USE_SERVICE_OBJECT);
             } else if (MEMBER_TYPE_SERVICE_REFERENCE.equals(memberType)) {
-                references.setMemberType(RefCollectionMetadata.MEMBER_TYPE_SERVICE_REFERENCE);
+                references.setMemberType(RefCollectionMetadata.USE_SERVICE_REFERENCE);
             }
 //        } else {
 //            references.setMemberType(RefCollectionMetadata.MEMBER_TYPE_SERVICE_INSTANCE);
@@ -898,9 +895,9 @@ public class Parser {
         if (element.hasAttribute(ORDERING_BASIS_ATTRIBUTE)) {
             String ordering = element.getAttribute(ORDERING_BASIS_ATTRIBUTE);
             if (ORDERING_BASIS_SERVICES.equals(ordering)) {
-                references.setOrderingBasis(RefCollectionMetadata.ORDERING_BASIS_SERVICE);
+                references.setOrderingBasis(RefCollectionMetadata.USE_SERVICE_OBJECT);
             } else if (ORDERING_BASIS_SERVICE_REFERENCES.equals(ordering)) {
-                references.setOrderingBasis(RefCollectionMetadata.ORDERING_BASIS_SERVICE_REFERENCE);
+                references.setOrderingBasis(RefCollectionMetadata.USE_SERVICE_REFERENCE);
             }
         }
         parseReference(element, references);
@@ -1250,7 +1247,7 @@ public class Parser {
     }
 
     private static List<String> parseList(String list) {
-        String[] items = list.split(",");
+        String[] items = list.split(" ");
         List<String> set = new ArrayList<String>();
         for (String item : items) {
             item = item.trim();

@@ -42,7 +42,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     private String destroyMethodName;
     private List<BeanArgument> arguments;
     private List<BeanProperty> properties;
-    private boolean lazyInit;
+    private int initialization;
     private String factoryMethodName;
     private Target factoryComponent;
     private String scope;
@@ -64,7 +64,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         for (BeanProperty property : source.getProperties()) {
             addProperty(new BeanPropertyImpl(property));
         }
-        this.lazyInit = source.isLazyInit();
+        this.initialization = source.getInitialization();
         this.factoryMethodName = source.getFactoryMethodName();
         this.factoryComponent = MetadataUtil.cloneTarget(source.getFactoryComponent());
         this.scope = source.getScope();
@@ -158,12 +158,12 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         }
     }
 
-    public boolean isLazyInit() {
-        return this.lazyInit;
+    public int getInitialization() {
+        return initialization;
     }
 
-    public void setLazyInit(boolean lazyInit) {
-        this.lazyInit = lazyInit;
+    public void setInitialization(int initialization) {
+        this.initialization = initialization;
     }
 
     public String getFactoryMethodName() {
@@ -240,7 +240,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
                 ", destroyMethodName='" + destroyMethodName + '\'' +
                 ", arguments=" + arguments +
                 ", properties=" + properties +
-                ", lazyInit=" + lazyInit +
+                ", initialization=" + initialization +
                 ", factoryMethodName='" + factoryMethodName + '\'' +
                 ", factoryComponent=" + factoryComponent +
                 ", scope='" + scope + '\'' +

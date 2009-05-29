@@ -468,7 +468,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             if (component instanceof BeanMetadata) {
                 BeanMetadata local = (BeanMetadata) component;
                 String scope = local.getScope();
-                if (!local.isLazyInit() && BeanMetadata.SCOPE_SINGLETON.equals(scope)) {
+                if (local.getInitialization() == BeanMetadata.INITIALIZATION_EAGER && BeanMetadata.SCOPE_SINGLETON.equals(scope)) {
                     components.add(name);
                 }
             } else {
