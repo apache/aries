@@ -159,6 +159,19 @@ public class BeanRecipe extends AbstractRecipe {
         }
     }
 
+    @Override
+    protected Class loadClass(String className) {
+        if (type instanceof Class) {
+            try {
+                return ((Class) type).getClassLoader().loadClass(className);
+            } catch (ClassNotFoundException e) {
+                throw new ComponentDefinitionException("Unable to load class " + className + " from recipe " + this, e);
+            }
+        } else {
+            return super.loadClass(className);
+        }
+    }
+
     private Object getInstance() throws ComponentDefinitionException {
         Object instance;
         
