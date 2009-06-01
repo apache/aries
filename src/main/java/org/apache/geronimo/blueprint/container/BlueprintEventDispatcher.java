@@ -79,7 +79,7 @@ public class BlueprintEventDispatcher implements BlueprintListener, EventConstan
     protected void sendInitialEvents(BlueprintListener listener) {
         if (states != null) {
             for (Map.Entry<Bundle, BlueprintEvent> entry : states.entrySet()) {
-                listener.blueprintEvent(entry.getValue());
+                listener.blueprintEvent(new BlueprintEvent(entry.getValue(), true));
             }
         }
     }
