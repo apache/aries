@@ -77,6 +77,7 @@ import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -267,17 +268,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                     case InitialReferencesSatisfied:
                         processTypeConverters();
                         processProcessors();
-                        // Update repository with recipes processed by the processors
-                        untrackServiceReferences();
-                        Repository repository = instantiator.getRepository();
-                        Repository tmpRepo = new RecipeBuilder(this).createRepository();
-                        for (String name : tmpRepo.getNames()) {
-                            if (repository.getInstance(name) == null) {
-                                repository.putRecipe(name, tmpRepo.getRecipe(name));
-                            }
-                        }
-                        satisfiables = null;
-                        trackServiceReferences();
                         // Check references
                         if (!waitForDependencies) {
                             state = State.Create;
@@ -366,6 +356,17 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             if (ComponentDefinitionRegistryProcessor.class.isAssignableFrom(clazz)) {
                 Object obj = instantiator.create(bean.getId());
                 ((ComponentDefinitionRegistryProcessor) obj).process(componentDefinitionRegistry);
+                // Update repository with recipes processed by the processors
+                untrackServiceReferences();
+                Repository repository = instantiator.getRepository();
+                Repository tmpRepo = new RecipeBuilder(this).createRepository();
+                for (String name : tmpRepo.getNames()) {
+                    if (repository.getInstance(name) == null) {
+                        repository.putRecipe(name, tmpRepo.getRecipe(name));
+                    }
+                }
+                satisfiables = null;
+                trackServiceReferences();
             } else if (Processor.class.isAssignableFrom(clazz)) {
                 Object obj = instantiator.create(bean.getId());
                 this.processors.add((Processor) obj);
@@ -471,8 +472,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                 if (local.getInitialization() == BeanMetadata.INITIALIZATION_EAGER && BeanMetadata.SCOPE_SINGLETON.equals(scope)) {
                     components.add(name);
                 }
-            } else {
-                if (component instanceof ServiceMetadata) {
+            } else if (component instanceof ServiceMetadata) {
+                components.add(name);
+            } else if (component instanceof ServiceReferenceMetadata) {
+                if (!((ServiceReferenceMetadata) component).getServiceListeners().isEmpty()) {
                     components.add(name);
                 }
             }
