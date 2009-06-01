@@ -24,20 +24,26 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO: javadoc
+ * Utility class to parse a standard OSGi header with paths.
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev$, $Date$
  */
 public class HeaderParser  {
-   
+
+    /**
+     * Parse a given OSGi header into a list of paths
+     *
+     * @param header the OSGi header to parse
+     * @return the list of paths extracted from this header
+     */
     public static List<PathElement> parseHeader(String header) {
         List<PathElement> elements = new ArrayList<PathElement>();
         String[] clauses = header.split(",");
         for (String clause : clauses) {
             String[] tokens = clause.split(";");
             if (tokens.length < 1) {
-                throw new RuntimeException("Invalid header clause: " + clause);
+                throw new IllegalArgumentException("Invalid header clause: " + clause);
             }
             PathElement elem = new PathElement(tokens[0].trim());
             elements.add(elem);

@@ -41,7 +41,7 @@ import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
 import org.osgi.service.blueprint.container.Converter;
 
 /**
- * TODO: javadoc
+ * Utility class for conversions.
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 767120 $, $Date: 2009-04-21 13:53:32 +0200 (Tue, 21 Apr 2009) $
@@ -50,11 +50,25 @@ public final class ConversionUtils {
 
     private ConversionUtils() { }
 
+    /**
+     * Objects implementing this interface will bypass the default conversion rules
+     * and be called directly to transform into the expected type.
+     */
     public static interface Convertible {
 
         Object convert(Type type) throws Exception;
     }
 
+    /**
+     * Convert an object.  This method will convert parameterized collections
+     * and arrays.
+     *
+     * @param obj the object to convert
+     * @param type the type to convert to
+     * @param converter the converter to apply
+     * @return the converted object
+     * @throws Exception if the object can not be converted
+     */
     public static Object convert(Object obj, Type type, Converter converter) throws Exception {
         // First convert service proxies
         if (obj instanceof Convertible) {
