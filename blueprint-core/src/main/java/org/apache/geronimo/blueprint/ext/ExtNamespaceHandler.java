@@ -146,6 +146,7 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
         metadata.setId(getId(context, element));
         metadata.setScope(BeanMetadata.SCOPE_SINGLETON);
         metadata.setRuntimeClass(PropertyPlaceholder.class);
+        metadata.setInitMethodName("init");
         String prefix = element.hasAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
                                     ? element.getAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
                                     : "${";

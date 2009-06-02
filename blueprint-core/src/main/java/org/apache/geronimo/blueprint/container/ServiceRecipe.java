@@ -195,23 +195,28 @@ public class ServiceRecipe extends AbstractRecipe {
         // Create initial service
         synchronized (this) {
             if (this.service == null) {
-                bundleScope = isBundleScope(metadata.getServiceComponent());
-                LOGGER.debug("Creating service instance (bundle scope = {})", bundleScope);
-                this.service = createInstance(false);
-                LOGGER.debug("Service created: {}", this.service);
-                // When the service is first requested, we need to create listeners and call them
-                if (listeners == null) {
-                    LOGGER.debug("Creating listeners");
-                    if (listenersRecipe != null) {
-                        listeners = (List) createSimpleRecipe(listenersRecipe);
-                    } else {
-                        listeners = Collections.emptyList();
+                try {
+                    bundleScope = isBundleScope(metadata.getServiceComponent());
+                    LOGGER.debug("Creating service instance (bundle scope = {})", bundleScope);
+                    this.service = createInstance(false);
+                    LOGGER.debug("Service created: {}", this.service);
+                    // When the service is first requested, we need to create listeners and call them
+                    if (listeners == null) {
+                        LOGGER.debug("Creating listeners");
+                        if (listenersRecipe != null) {
+                            listeners = (List) createSimpleRecipe(listenersRecipe);
+                        } else {
+                            listeners = Collections.emptyList();
+                        }
+                        LOGGER.debug("Listeners created: {}", listeners);
+                        LOGGER.debug("Calling listeners for service registration");
+                        for (ServiceListener listener : listeners) {
+                            listener.register(service, registrationProperties);
+                        }
                     }
-                    LOGGER.debug("Listeners created: {}", listeners);
-                    LOGGER.debug("Calling listeners for service registration");
-                    for (ServiceListener listener : listeners) {
-                        listener.register(service, registrationProperties);
-                    }
+                } catch (RuntimeException e) {
+                    LOGGER.error("Error retrieving service from " + this, e);
+                    throw e;
                 }
             }
         }

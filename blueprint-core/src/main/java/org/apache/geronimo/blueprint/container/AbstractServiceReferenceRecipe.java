@@ -354,7 +354,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                     unbindMethodsTwoArgs.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, unbindName, new Class[] { clazz, Map.class }));
                 }
                 if (unbindMethodsOneArg.size() + unbindMethodsTwoArgs.size() == 0) {
-                    throw new ComponentDefinitionException("No matching methods found for listener bind method: " + bindName);
+                    throw new ComponentDefinitionException("No matching methods found for listener unbind method: " + unbindName);
                 }
             }
         }
