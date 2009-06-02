@@ -83,6 +83,8 @@
         </xsd:simpleType>
     </xsd:attribute>
 
+    <!-- role -->
+
     <xsd:attribute name="role">
         <xsd:simpleType>
             <xsd:restriction>
@@ -95,6 +97,20 @@
                         </xsd:simpleType>
                     </xsd:list>
                 </xsd:simpleType>
+            </xsd:restriction>
+        </xsd:simpleType>
+    </xsd:attribute>
+
+    <!-- CM property placeholder extenstion -->
+
+    <xsd:element name="location" type="xsd:string"/>
+    <xsd:attribute name="ignore-missing-locations" type="xsd:boolean" default="false"/>
+    <xsd:attribute name="system-properties" default="fallback">
+        <xsd:simpleType>
+            <xsd:restriction base="xsd:NMTOKEN">
+                <xsd:enumeration value="never"/>
+                <xsd:enumeration value="fallback"/>
+                <xsd:enumeration value="override"/>
             </xsd:restriction>
         </xsd:simpleType>
     </xsd:attribute>

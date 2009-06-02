@@ -30,6 +30,7 @@ import org.apache.geronimo.blueprint.container.Parser;
 import org.apache.geronimo.blueprint.container.ParserContextImpl;
 import org.apache.geronimo.blueprint.container.ServiceListener;
 import org.apache.geronimo.blueprint.ext.PlaceholdersUtils;
+import org.apache.geronimo.blueprint.ext.ExtNamespaceHandler;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableCollectionMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableComponentMetadata;
@@ -57,6 +58,9 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Comment;
+import org.w3c.dom.EntityReference;
 
 /**
  * Namespace handler for the Config Admin service.
@@ -171,7 +175,19 @@ public class CmNamespaceHandler implements NamespaceHandler {
         if (defaultsRef != null) {
             metadata.addProperty("defaultProperties", createRef(context, defaultsRef));
         }
+        String ignoreMissingLocations = element.hasAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE, ExtNamespaceHandler.IGNORE_MISSING_LOCATIONS_ATTRIBUTE)
+                ? element.getAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE, ExtNamespaceHandler.IGNORE_MISSING_LOCATIONS_ATTRIBUTE) : null;
+        if (ignoreMissingLocations != null) {
+            metadata.addProperty("ignoreMissingLocations", createValue(context, ignoreMissingLocations));
+        }
+        String systemProperties = element.hasAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE, ExtNamespaceHandler.SYSTEM_PROPERTIES_ATTRIBUTE)
+                ? element.getAttributeNS(ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE, ExtNamespaceHandler.SYSTEM_PROPERTIES_ATTRIBUTE) : null;
+        if (systemProperties == null) {
+            systemProperties = ExtNamespaceHandler.SYSTEM_PROPERTIES_NEVER;
+        }
+        metadata.addProperty("systemProperties", createValue(context, systemProperties));
         // Parse elements
+        List<String> locations = new ArrayList<String>();
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
@@ -185,10 +201,17 @@ public class CmNamespaceHandler implements NamespaceHandler {
                         Metadata props = parseDefaultProperties(context, metadata, e);
                         metadata.addProperty("defaultProperties", props);
                     }
+                } else if (ExtNamespaceHandler.BLUEPRINT_EXT_NAMESPACE.equals(e.getNamespaceURI())) {
+                    if (nodeNameEquals(e, ExtNamespaceHandler.LOCATION_ELEMENT)) {
+                        locations.add(getTextValue(e));
+                    }
                 }
             }
         }
-        
+        if (!locations.isEmpty()) {
+            metadata.addProperty("locations", createList(context, locations));
+        }
+
         PlaceholdersUtils.validatePlaceholder(metadata, context.getComponentDefinitionRegistry());
         
         return metadata;
@@ -426,6 +449,18 @@ public class CmNamespaceHandler implements NamespaceHandler {
             m.addValue(createValue(context, v, String.class.getName()));
         }
         return m;
+    }
+
+    private static String getTextValue(Element element) {
+        StringBuffer value = new StringBuffer();
+        NodeList nl = element.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node item = nl.item(i);
+            if ((item instanceof CharacterData && !(item instanceof Comment)) || item instanceof EntityReference) {
+                value.append(item.getNodeValue());
+            }
+        }
+        return value.toString();
     }
 
     private static boolean nodeNameEquals(Node node, String name) {
