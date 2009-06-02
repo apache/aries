@@ -20,7 +20,8 @@
     </ext:property-placeholder>
 
     <cm:managed-service-factory id="managed-service-factory" factory-pid="blueprint-sample-managed-service-factory"
-            interface="org.apache.geronimo.blueprint.sample.Foo">
+            interface="org.apache.geronimo.blueprint.sample.Foo"
+            ext:system-properties="fallback">
         <service-properties>
             <entry key="key1" value="value1"/>
         </service-properties>
