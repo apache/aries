@@ -131,7 +131,7 @@ public class Parser {
     public static final String ENTRY_ELEMENT = "entry";
     public static final String KEY_ELEMENT = "key";
     public static final String COMPARATOR_ELEMENT = "comparator";
-    public static final String DEFAULT_INITIALIZATION_ATTRIBUTE = "initialization";
+    public static final String DEFAULT_INITIALIZATION_ATTRIBUTE = "default-initialization";
     public static final String DEFAULT_TIMEOUT_ATTRIBUTE = "default-timeout";
     public static final String DEFAULT_AVAILABILITY_ATTRIBUTE = "default-availability";
     public static final String NAME_ATTRIBUTE = "name";
