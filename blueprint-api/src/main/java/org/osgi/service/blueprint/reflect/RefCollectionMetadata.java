@@ -20,7 +20,7 @@ public interface RefCollectionMetadata extends ServiceReferenceMetadata {
 
     static final int USE_SERVICE_OBJECT = 1;
 
-    static final int USE_SERVICE_REFERENCE = 1;
+    static final int USE_SERVICE_REFERENCE = 2;
 
     Class getCollectionType();
 
