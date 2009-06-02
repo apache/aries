@@ -21,7 +21,6 @@ package org.apache.geronimo.blueprint.container;
 import java.lang.reflect.Type;
 import java.util.concurrent.Callable;
 
-import net.sf.cglib.proxy.Dispatcher;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
@@ -46,7 +45,6 @@ import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
 
     private final ReferenceMetadata metadata;
-    private Class proxyClass;
     private Object proxy;
 
     private volatile ServiceReference trackedServiceReference;
@@ -66,7 +64,6 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
         try {
             // Create the proxy
             proxy = createProxy(new ServiceDispatcher(), this.metadata.getInterfaceNames());
-            proxyClass = proxy.getClass();
 
             // Add partially created proxy to the context
             addObject(proxy, true);
@@ -146,9 +143,9 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             }
             if (trackedServiceReference == null) {
                 if (isStarted()) {
-                    throw new ServiceUnavailableException("Timeout expired when waiting for OSGi service", proxyClass.getSuperclass(), getOsgiFilter());
+                    throw new ServiceUnavailableException("Timeout expired when waiting for OSGi service", getOsgiFilter());
                 } else {
-                    throw new ServiceUnavailableException("Service tracker is stopped", proxyClass.getSuperclass(), getOsgiFilter());
+                    throw new ServiceUnavailableException("Service tracker is stopped", getOsgiFilter());
                 }
             }
             if (trackedService == null) {

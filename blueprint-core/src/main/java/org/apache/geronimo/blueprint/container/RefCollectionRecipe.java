@@ -32,7 +32,6 @@ import java.util.RandomAccess;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import net.sf.cglib.proxy.Dispatcher;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ExtendedRefCollectionMetadata;
 import org.apache.geronimo.blueprint.di.Recipe;
@@ -235,7 +234,7 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
 
         public synchronized Object call() throws Exception {
             if (reference == null) {
-                throw new ServiceUnavailableException("Service is unavailable", null, null);
+                throw new ServiceUnavailableException("Service is unavailable", null);
             }
             if (service == null) {
                 service = reference.getBundle().getBundleContext().getService(reference);
