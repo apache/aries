@@ -83,4 +83,20 @@
         </xsd:simpleType>
     </xsd:attribute>
 
+    <xsd:attribute name="role">
+        <xsd:simpleType>
+            <xsd:restriction>
+                <xsd:simpleType>
+                    <xsd:list>
+                        <xsd:simpleType>
+                            <xsd:restriction base="xsd:NMTOKEN">
+                                <xsd:enumeration value="processor"/>
+                            </xsd:restriction>
+                        </xsd:simpleType>
+                    </xsd:list>
+                </xsd:simpleType>
+            </xsd:restriction>
+        </xsd:simpleType>
+    </xsd:attribute>
+
 </xsd:schema>

@@ -21,14 +21,11 @@ package org.apache.geronimo.blueprint;
 /**
  * TODO: javadoc
  *
- * TODO: processors have to be advertized as being processors. currently
- * TODO: it can only be done by using a custom namespace and setting the
- * TODO: ExtendedBeanMetadata#isProcessor() flag
- * TODO: we need a namespace extension to add an attribute to the <bp:bean/>
- * TODO: element such as <bp:bean gbp:processor="true" ...
- * TODO: but we'll see later with the spec when it evolves to better support
- * TODO: namespaces
- *
+ * Processors must be advertized as being such.  This can be done by using
+ * the custom attribtue defined in the extension schema.
+ * <pre>
+ *    &lt;bp:bean ext:role="processor" ...&gt;
+ * </pre>
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
