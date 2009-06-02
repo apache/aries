@@ -87,6 +87,9 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
     public static final String PROXY_METHOD_CLASSES = "classes";
     public static final String PROXY_METHOD_GREEDY = "greedy";
 
+    public static final String ROLE_ATTRIBUTE = "role";
+    public static final String ROLE_PROCESSOR = "processor";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtNamespaceHandler.class);
 
     private int idCounter;
@@ -107,9 +110,32 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
     public ComponentMetadata decorate(Node node, ComponentMetadata component, ParserContext context) {
         if (node instanceof Attr && nodeNameEquals(node, PROXY_METHOD_ATTRIBUTE)) {
             return decorateProxyMethod(node, component, context);
+        } else if (node instanceof Attr && nodeNameEquals(node, ROLE_ATTRIBUTE)) {
+            return decorateRole(node, component, context);
         } else {
             throw new ComponentDefinitionException("Unsupported node: " + node.getNodeName());
         }
+    }
+
+    private ComponentMetadata decorateRole(Node node, ComponentMetadata component, ParserContext context) {
+        if (!(component instanceof BeanMetadata)) {
+            throw new ComponentDefinitionException("Attribute " + node.getNodeName() + " can only be used on a <bean> element");
+        }
+        if (!(component instanceof MutableBeanMetadata)) {
+            throw new ComponentDefinitionException("Expected an instance of MutableBeanMetadata");
+        }
+        boolean processor = false;
+        String value = ((Attr) node).getValue();
+        String[] flags = value.trim().split(" ");
+        for (String flag : flags) {
+            if (ROLE_PROCESSOR.equals(flag)) {
+                processor = true;
+            } else {
+                throw new ComponentDefinitionException("Unknown proxy method: " + flag);
+            }
+        }
+        ((MutableBeanMetadata) component).setProcessor(processor);
+        return component;
     }
 
     private ComponentMetadata decorateProxyMethod(Node node, ComponentMetadata component, ParserContext context) {
