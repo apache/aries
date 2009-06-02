@@ -95,7 +95,7 @@ public abstract class AbstractRecipe implements Recipe {
         try {
             return ExecutionContext.getContext().loadClass(className);
         } catch (ClassNotFoundException e) {
-            throw new ComponentDefinitionException(e);
+            throw new ComponentDefinitionException("Unable to load class " + className + " from recipe " + this, e);
         }
     }
 
