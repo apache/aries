@@ -23,6 +23,7 @@ import java.util.Dictionary;
 import java.util.Map;
 
 import org.apache.geronimo.blueprint.ext.AbstractPropertyPlaceholder;
+import org.apache.geronimo.blueprint.ext.PropertyPlaceholder;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.cm.Configuration;
@@ -33,20 +34,16 @@ import org.slf4j.LoggerFactory;
 /**
  * TODO: javadoc
  *
- * TODO: make CmPropertyPlaceholder extends PropertyPlaceholder and add some custom attributes / elements to
- *   define those in the schema
- *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
-public class CmPropertyPlaceholder extends AbstractPropertyPlaceholder {
+public class CmPropertyPlaceholder extends PropertyPlaceholder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CmPropertyPlaceholder.class);
 
     private BlueprintContainer blueprintContainer;
     private ConfigurationAdmin configAdmin; 
     private String persistentId;
-    private Map defaultProperties;
 
     public BlueprintContainer getBlueprintContainer() {
         return blueprintContainer;
@@ -72,14 +69,6 @@ public class CmPropertyPlaceholder extends AbstractPropertyPlaceholder {
         this.persistentId = persistentId;
     }
 
-    public Map getDefaultProperties() {
-        return defaultProperties;
-    }
-
-    public void setDefaultProperties(Map defaultProperties) {
-        this.defaultProperties = defaultProperties;
-    }
-
     protected String getProperty(String val) {
         LOGGER.debug("Retrieving property value {} from configuration with pid {}", val, persistentId);
         Configuration config = null;
@@ -102,13 +91,8 @@ public class CmPropertyPlaceholder extends AbstractPropertyPlaceholder {
                 LOGGER.debug("No dictionary available from configuration");
             }
         }
-        if (v == null && defaultProperties != null) {
-            v = defaultProperties.get(val);           
-            if (v != null) {
-                LOGGER.debug("Retrieved value from defaults {}", v);
-            } else {
-                throw new ComponentDefinitionException("Property not found: " + val);
-            }
+        if (v == null) {
+            v = super.getProperty(val);
         }
         return v != null ? v.toString() : null;
     }
