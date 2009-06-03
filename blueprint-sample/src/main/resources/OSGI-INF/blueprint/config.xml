@@ -80,9 +80,6 @@
     
     <bean id="fooRegistrationListener" class="org.apache.geronimo.blueprint.sample.FooRegistrationListener"/>
 
-    <reference id="ref" interface="org.apache.geronimo.blueprint.sample.Foo">
-    </reference>
-
     <reference id="ref2" interface="org.apache.geronimo.blueprint.sample.InterfaceA" timeout="100">
         <listener bind-method="bind" unbind-method="unbind" ref="bindingListener" />
     </reference>
