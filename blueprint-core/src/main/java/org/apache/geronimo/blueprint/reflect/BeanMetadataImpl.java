@@ -51,7 +51,6 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     private boolean processor;
 
     public BeanMetadataImpl() {
-        initialization = INITIALIZATION_EAGER;
         scope = SCOPE_SINGLETON;
     }
 
@@ -158,14 +157,6 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         if (this.properties != null) {
             this.properties.remove(property);
         }
-    }
-
-    public int getInitialization() {
-        return initialization;
-    }
-
-    public void setInitialization(int initialization) {
-        this.initialization = initialization;
     }
 
     public String getFactoryMethodName() {

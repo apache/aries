@@ -26,10 +26,6 @@ public interface BeanMetadata extends Target, ComponentMetadata {
 
     static final String SCOPE_BUNDLE = "bundle";
 
-    static final int INITIALIZATION_EAGER = 1;
-
-    static final int INITIALIZATION_LAZY = 2;
-
     String getClassName();
 
     String getInitMethodName();
@@ -39,8 +35,6 @@ public interface BeanMetadata extends Target, ComponentMetadata {
     List<BeanArgument> getArguments();
 
     List<BeanProperty> getProperties();
-
-    int getInitialization();
 
     String getFactoryMethodName();
     

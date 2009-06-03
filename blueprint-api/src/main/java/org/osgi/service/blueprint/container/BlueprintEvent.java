@@ -27,7 +27,7 @@ import org.osgi.framework.Bundle;
  *
  * <p>
  * In addition, when a listener is registered, the blueprint extender
- * will synchronously send to this listener the last event for each blueprint bundle managed
+ * will send to this listener the last event for each blueprint bundle managed
  * by this extender.  This replay of events is designed so that the new listener can
  * be informed of the state of each managed bundle.  Events sent during this replay will
  * have the {@link #replay} flag set. The blueprint extender must ensure that this replay phase

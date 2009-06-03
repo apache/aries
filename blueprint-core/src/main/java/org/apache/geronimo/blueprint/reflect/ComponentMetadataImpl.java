@@ -30,6 +30,7 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
 public class ComponentMetadataImpl implements MutableComponentMetadata {
 
     protected String id;
+    protected int initialization = INITIALIZATION_EAGER;
 
     protected ComponentMetadataImpl() {
     }
@@ -46,4 +47,11 @@ public class ComponentMetadataImpl implements MutableComponentMetadata {
         this.id = id;
     }
 
+    public int getInitialization() {
+        return initialization;
+    }
+
+    public void setInitialization(int initialization) {
+        this.initialization = initialization;
+    }
 }

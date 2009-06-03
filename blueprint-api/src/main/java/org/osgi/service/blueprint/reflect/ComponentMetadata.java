@@ -18,6 +18,12 @@ package org.osgi.service.blueprint.reflect;
 
 public interface ComponentMetadata extends NonNullMetadata {
 
+    static final int INITIALIZATION_EAGER = 1;
+
+    static final int INITIALIZATION_LAZY = 2;
+
     String getId();
+
+    int getInitialization();
 
 }

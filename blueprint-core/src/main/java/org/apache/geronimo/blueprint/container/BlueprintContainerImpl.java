@@ -466,18 +466,14 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         List<String> components = new ArrayList<String>();
         for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
             ComponentMetadata component = componentDefinitionRegistry.getComponentDefinition(name);
+            boolean eager = component.getInitialization() == ComponentMetadata.INITIALIZATION_EAGER;
             if (component instanceof BeanMetadata) {
                 BeanMetadata local = (BeanMetadata) component;
                 String scope = local.getScope();
-                if (local.getInitialization() == BeanMetadata.INITIALIZATION_EAGER && BeanMetadata.SCOPE_SINGLETON.equals(scope)) {
-                    components.add(name);
-                }
-            } else if (component instanceof ServiceMetadata) {
+                eager &= BeanMetadata.SCOPE_SINGLETON.equals(scope);
+            }
+            if (eager) {
                 components.add(name);
-            } else if (component instanceof ServiceReferenceMetadata) {
-                if (!((ServiceReferenceMetadata) component).getServiceListeners().isEmpty()) {
-                    components.add(name);
-                }
             }
         }
         LOGGER.debug("Instantiating components: {}", components);
