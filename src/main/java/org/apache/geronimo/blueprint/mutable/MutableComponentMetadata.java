@@ -30,4 +30,6 @@ public interface MutableComponentMetadata extends ComponentMetadata {
 
     void setId(String id);
 
+    void setInitialization(int initialization);
+
 }

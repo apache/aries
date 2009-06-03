@@ -481,9 +481,9 @@ public class Parser {
         }
         String initialization = element.hasAttribute(INITIALIZATION_ATTRIBUTE) ? element.getAttribute(INITIALIZATION_ATTRIBUTE) : defaultInitialization;
         if (INITIALIZATION_EAGER.equals(initialization)) {
-            metadata.setInitialization(BeanMetadata.INITIALIZATION_EAGER);
+            metadata.setInitialization(ComponentMetadata.INITIALIZATION_EAGER);
         } else if (INITIALIZATION_LAZY.equals(initialization)) {
-            metadata.setInitialization(BeanMetadata.INITIALIZATION_LAZY);
+            metadata.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
         } else {
             throw new ComponentDefinitionException("Attribute " + INITIALIZATION_ATTRIBUTE + " must be equals to " + INITIALIZATION_EAGER + " or " + INITIALIZATION_LAZY);
         }
@@ -559,6 +559,14 @@ public class Parser {
         boolean hasInterfaceNameAttribute = false;
         if (topElement) {
             service.setId(getId(element));
+        }
+        String initialization = element.hasAttribute(INITIALIZATION_ATTRIBUTE) ? element.getAttribute(INITIALIZATION_ATTRIBUTE) : defaultInitialization;
+        if (INITIALIZATION_EAGER.equals(initialization)) {
+            service.setInitialization(ComponentMetadata.INITIALIZATION_EAGER);
+        } else if (INITIALIZATION_LAZY.equals(initialization)) {
+            service.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
+        } else {
+            throw new ComponentDefinitionException("Attribute " + INITIALIZATION_ATTRIBUTE + " must be equals to " + INITIALIZATION_EAGER + " or " + INITIALIZATION_LAZY);
         }
         if (element.hasAttribute(INTERFACE_ATTRIBUTE)) {
             service.setInterfaceNames(Collections.singletonList(element.getAttribute(INTERFACE_ATTRIBUTE)));
@@ -976,6 +984,14 @@ public class Parser {
 
     private void parseReference(Element element, ServiceReferenceMetadataImpl reference) {
         // Parse attributes
+        String initialization = element.hasAttribute(INITIALIZATION_ATTRIBUTE) ? element.getAttribute(INITIALIZATION_ATTRIBUTE) : defaultInitialization;
+        if (INITIALIZATION_EAGER.equals(initialization)) {
+            reference.setInitialization(ComponentMetadata.INITIALIZATION_EAGER);
+        } else if (INITIALIZATION_LAZY.equals(initialization)) {
+            reference.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
+        } else {
+            throw new ComponentDefinitionException("Attribute " + INITIALIZATION_ATTRIBUTE + " must be equals to " + INITIALIZATION_EAGER + " or " + INITIALIZATION_LAZY);
+        }
         if (element.hasAttribute(INTERFACE_ATTRIBUTE)) {
             reference.setInterfaceNames(Collections.singletonList(element.getAttribute(INTERFACE_ATTRIBUTE)));
         }
