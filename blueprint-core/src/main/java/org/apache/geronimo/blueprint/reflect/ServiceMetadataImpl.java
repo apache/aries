@@ -62,7 +62,7 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
         for (RegistrationListener listener : source.getRegistrationListeners()) {
             addRegistrationListener(new RegistrationListenerImpl(listener));
         }
-        this.explicitDependencies = new ArrayList<String>(source.getExplicitDependencies());
+        this.explicitDependencies = new ArrayList<String>(source.getDependsOn());
     }
 
     public Target getServiceComponent() {
@@ -176,7 +176,7 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
         }
     }
 
-    public List<String> getExplicitDependencies() {
+    public List<String> getDependsOn() {
         if (this.explicitDependencies == null) {
             return Collections.emptyList();
         } else {

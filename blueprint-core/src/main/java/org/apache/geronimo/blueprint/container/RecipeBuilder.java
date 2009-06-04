@@ -156,7 +156,7 @@ public class RecipeBuilder {
             }
         }
         List<Recipe> deps = new ArrayList<Recipe>();
-        for (String name : serviceExport.getExplicitDependencies()) {
+        for (String name : serviceExport.getDependsOn()) {
             deps.add(new RefRecipe(getName(null), name));
         }
         ServiceRecipe recipe = new ServiceRecipe(getName(serviceExport.getId()),

@@ -82,20 +82,18 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
                 comparator = new NaturalOrderComparator();
             }
             boolean orderReferences = metadata.getOrderingBasis() == RefCollectionMetadata.USE_SERVICE_REFERENCE;
+            boolean allowDuplicates;
             if (metadata.getCollectionType() == List.class) {
-                if (comparator != null) {
-                    storage = new DynamicCollection<ServiceDispatcher>(true, new DispatcherComparator(comparator, orderReferences));
-                } else {
-                    storage = new DynamicCollection<ServiceDispatcher>(true, null);
-                }
+                allowDuplicates = true;
             } else if (metadata.getCollectionType() == Set.class) {
-                if (comparator != null) {
-                    storage = new DynamicCollection<ServiceDispatcher>(false, new DispatcherComparator(comparator, orderReferences));
-                } else {
-                    storage = new DynamicCollection<ServiceDispatcher>(false, null);
-                }
+                allowDuplicates = false;
             } else {
                 throw new IllegalArgumentException("Unsupported collection type " + metadata.getCollectionType().getName());
+            }
+            if (comparator != null) {
+                storage = new DynamicCollection<ServiceDispatcher>(allowDuplicates, new DispatcherComparator(comparator, orderReferences));
+            } else {
+                storage = new DynamicCollection<ServiceDispatcher>(allowDuplicates, null);
             }
 
             // Handle initial references
@@ -157,7 +155,10 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
                         }
                     }
                     dispatcher.proxy = createProxy(dispatcher, interfaces);
-                    storage.add(dispatcher);
+                    if (!storage.add(dispatcher)) {
+                        dispatcher.destroy();
+                        return;
+                    }
                 }
                 if (listeners != null) {
                     for (Listener listener : listeners) {
@@ -185,11 +186,9 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
                         }
                     }
                 }
-                for (ManagedCollection collection : collections) {
-                    collection.removeDispatcher(dispatcher);
-                }
+                storage.remove(dispatcher);
+                dispatcher.destroy();
             }
-            dispatcher.destroy();
         }
     }
 
@@ -424,11 +423,6 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
 
         public ManagedList(boolean references, DynamicCollection<ServiceDispatcher> dispatchers) {
             super(references, dispatchers);
-        }
-
-        @Override
-        public int size() {
-            return dispatchers.size();
         }
 
         public Object get(int index) {
