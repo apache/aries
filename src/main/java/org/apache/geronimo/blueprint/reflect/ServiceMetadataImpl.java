@@ -188,14 +188,14 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
         this.explicitDependencies = explicitDependencies;
     }
 
-    public void addExplicitDependency(String explicitDependency) {
+    public void addDependsOn(String explicitDependency) {
         if (this.explicitDependencies == null) {
             this.explicitDependencies = new ArrayList<String>();
         }
         this.explicitDependencies.add(explicitDependency);
     }
 
-    public void removeExplicitDependency(String dependency) {
+    public void removeDependsOn(String dependency) {
         if (this.explicitDependencies != null) {
             this.explicitDependencies.remove(dependency);
         }

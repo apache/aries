@@ -18,6 +18,10 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
+import java.util.List;
+import java.util.Collections;
+import java.util.ArrayList;
+
 import org.apache.geronimo.blueprint.mutable.MutableComponentMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
@@ -31,6 +35,7 @@ public class ComponentMetadataImpl implements MutableComponentMetadata {
 
     protected String id;
     protected int initialization = INITIALIZATION_EAGER;
+    protected List<String> dependsOn;
 
     protected ComponentMetadataImpl() {
     }
@@ -53,5 +58,30 @@ public class ComponentMetadataImpl implements MutableComponentMetadata {
 
     public void setInitialization(int initialization) {
         this.initialization = initialization;
+    }
+
+    public List<String> getDependsOn() {
+        if (this.dependsOn == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(this.dependsOn);
+        }
+    }
+
+    public void setDependsOn(List<String> dependsOn) {
+        this.dependsOn = dependsOn != null ? new ArrayList<String>(dependsOn) : null;
+    }
+
+    public void addDependsOn(String explicitDependency) {
+        if (this.dependsOn == null) {
+            this.dependsOn = new ArrayList<String>();
+        }
+        this.dependsOn.add(explicitDependency);
+    }
+
+    public void removeDependsOn(String dependency) {
+        if (this.dependsOn != null) {
+            this.dependsOn.remove(dependency);
+        }
     }
 }

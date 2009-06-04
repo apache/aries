@@ -32,8 +32,6 @@ import org.osgi.service.blueprint.reflect.Target;
  */
 public interface MutableBeanMetadata extends ExtendedBeanMetadata, MutableComponentMetadata {
 
-    void setId(String id);
-
     void setClassName(String className);
 
     void setInitMethodName(String initMethodName);
@@ -57,10 +55,6 @@ public interface MutableBeanMetadata extends ExtendedBeanMetadata, MutableCompon
     void setFactoryComponent(Target factoryComponent);
 
     void setScope(String scope);
-
-    void addExplicitDependency(String dependency);
-
-    void removeExplicitDependency(String dependency);
 
     void setRuntimeClass(Class runtimeClass);
 

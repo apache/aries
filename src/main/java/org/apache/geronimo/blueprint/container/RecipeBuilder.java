@@ -189,7 +189,7 @@ public class RecipeBuilder {
                 beanMetadata.getRuntimeClass() != null ? beanMetadata.getRuntimeClass() : beanMetadata.getClassName());
         // Create refs for explicit dependencies
         List<Recipe> deps = new ArrayList<Recipe>();
-        for (String name : beanMetadata.getExplicitDependencies()) {
+        for (String name : beanMetadata.getDependsOn()) {
             deps.add(new RefRecipe(getName(null), name));
         }
         recipe.setExplicitDependencies(deps);
