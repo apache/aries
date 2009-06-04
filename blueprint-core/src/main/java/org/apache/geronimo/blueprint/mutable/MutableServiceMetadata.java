@@ -33,8 +33,6 @@ import org.osgi.service.blueprint.reflect.Target;
  */
 public interface MutableServiceMetadata extends ServiceMetadata, MutableComponentMetadata {
 
-    void setId(String id);
-
     void setServiceComponent(Target serviceComponent);
 
     void addInterfaceName(String interfaceName);
@@ -58,9 +56,5 @@ public interface MutableServiceMetadata extends ServiceMetadata, MutableComponen
                                                  String unregistrationMethodName);
 
     void removeRegistrationListener(RegistrationListener listener);
-
-    void addExplicitDependency(String dependency);
-
-    void removeExplicitDependency(String dependency);
 
 }

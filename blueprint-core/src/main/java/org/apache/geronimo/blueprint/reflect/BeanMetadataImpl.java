@@ -47,7 +47,6 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     private Target factoryComponent;
     private String scope;
     private Class runtimeClass;
-    private List<String> explicitDependencies;
     private boolean processor;
 
     public BeanMetadataImpl() {
@@ -70,7 +69,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         this.factoryComponent = MetadataUtil.cloneTarget(source.getFactoryComponent());
         this.scope = source.getScope();
         this.runtimeClass = source.getRuntimeClass();
-        this.explicitDependencies = new ArrayList<String>(source.getExplicitDependencies());
+        this.dependsOn = new ArrayList<String>(source.getDependsOn());
     }
 
     public String getClassName() {
@@ -191,31 +190,6 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         this.runtimeClass = runtimeClass;
     }
 
-    public List<String> getExplicitDependencies() {
-        if (this.explicitDependencies == null) {
-            return Collections.emptyList();
-        } else {
-            return Collections.unmodifiableList(this.explicitDependencies);
-        }
-    }
-
-    public void setExplicitDependencies(List<String> explicitDependencies) {
-        this.explicitDependencies = explicitDependencies != null ? new ArrayList<String>(explicitDependencies) : null;
-    }
-
-    public void addExplicitDependency(String explicitDependency) {
-        if (this.explicitDependencies == null) {
-            this.explicitDependencies = new ArrayList<String>();
-        }
-        this.explicitDependencies.add(explicitDependency);
-    }
-
-    public void removeExplicitDependency(String dependency) {
-        if (this.explicitDependencies != null) {
-            this.explicitDependencies.remove(dependency);
-        }
-    }
-
     public boolean isProcessor() {
         return processor;
     }
@@ -238,7 +212,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
                 ", factoryComponent=" + factoryComponent +
                 ", scope='" + scope + '\'' +
                 ", runtimeClass=" + runtimeClass +
-                ", explicitDependencies=" + explicitDependencies +
+                ", explicitDependencies=" + dependsOn +
                 ']';
     }
 }

@@ -55,7 +55,7 @@ public class ParserTest extends AbstractBlueprintTest {
         assertEquals("pojoA", component.getId());
         assertTrue(component instanceof BeanMetadata);
         BeanMetadata local = (BeanMetadata) component;
-        List<String> deps = local.getExplicitDependencies();
+        List<String> deps = local.getDependsOn();
         assertNotNull(deps);
         assertEquals(2, deps.size());
         assertTrue(deps.contains("pojoB"));

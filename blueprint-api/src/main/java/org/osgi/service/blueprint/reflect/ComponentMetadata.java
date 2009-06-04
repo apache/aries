@@ -16,6 +16,8 @@
  */
 package org.osgi.service.blueprint.reflect;
 
+import java.util.List;
+
 public interface ComponentMetadata extends NonNullMetadata {
 
     static final int INITIALIZATION_EAGER = 1;
@@ -25,5 +27,7 @@ public interface ComponentMetadata extends NonNullMetadata {
     String getId();
 
     int getInitialization();
+
+    List<String> getDependsOn();
 
 }

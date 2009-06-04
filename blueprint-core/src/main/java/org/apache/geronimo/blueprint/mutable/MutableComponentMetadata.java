@@ -18,6 +18,8 @@
  */
 package org.apache.geronimo.blueprint.mutable;
 
+import java.util.List;
+
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
 /**
@@ -31,5 +33,11 @@ public interface MutableComponentMetadata extends ComponentMetadata {
     void setId(String id);
 
     void setInitialization(int initialization);
+
+    void setDependsOn(List<String> dependsOn);
+
+    void addDependsOn(String dependency);
+
+    void removeDependsOn(String dependency);
 
 }

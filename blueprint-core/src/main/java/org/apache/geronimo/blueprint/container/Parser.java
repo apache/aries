@@ -97,6 +97,8 @@ import org.xml.sax.InputSource;
 /**
  * TODO: javadoc
  *
+ * TODO: parse compliance attribute on <blueprint>
+ *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
@@ -486,7 +488,7 @@ public class Parser {
             throw new ComponentDefinitionException("Attribute " + INITIALIZATION_ATTRIBUTE + " must be equals to " + INITIALIZATION_EAGER + " or " + INITIALIZATION_LAZY);
         }
         if (element.hasAttribute(DEPENDS_ON_ATTRIBUTE)) {
-            metadata.setExplicitDependencies(parseList(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
+            metadata.setDependsOn(parseList(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
         }
         if (element.hasAttribute(INIT_METHOD_ATTRIBUTE)) {
             metadata.setInitMethodName(element.getAttribute(INIT_METHOD_ATTRIBUTE));
@@ -574,7 +576,7 @@ public class Parser {
             service.setServiceComponent(new RefMetadataImpl(element.getAttribute(REF_ATTRIBUTE)));
         }
         if (element.hasAttribute(DEPENDS_ON_ATTRIBUTE)) {
-            service.setExplicitDependencies(parseList(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
+            service.setDependsOn(parseList(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
         }
         String autoExport = element.hasAttribute(AUTO_EXPORT_ATTRIBUTE) ? element.getAttribute(AUTO_EXPORT_ATTRIBUTE) : AUTO_EXPORT_DEFAULT;
         if (AUTO_EXPORT_DISABLED.equals(autoExport)) {
@@ -996,6 +998,9 @@ public class Parser {
             reference.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
         } else {
             throw new ComponentDefinitionException("Attribute " + INITIALIZATION_ATTRIBUTE + " must be equals to " + INITIALIZATION_EAGER + " or " + INITIALIZATION_LAZY);
+        }
+        if (element.hasAttribute(DEPENDS_ON_ATTRIBUTE)) {
+            reference.setDependsOn(parseList(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
         }
         if (element.hasAttribute(INTERFACE_ATTRIBUTE)) {
             reference.setInterfaceNames(Collections.singletonList(element.getAttribute(INTERFACE_ATTRIBUTE)));
