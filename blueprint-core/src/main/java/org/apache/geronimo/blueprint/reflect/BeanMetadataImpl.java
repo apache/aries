@@ -202,17 +202,17 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     public String toString() {
         return "BeanMetadata[" +
                 "id='" + id + '\'' +
+                ", initialization=" + initialization +
+                ", dependsOn=" + dependsOn +
                 ", className='" + className + '\'' +
                 ", initMethodName='" + initMethodName + '\'' +
                 ", destroyMethodName='" + destroyMethodName + '\'' +
                 ", arguments=" + arguments +
                 ", properties=" + properties +
-                ", initialization=" + initialization +
                 ", factoryMethodName='" + factoryMethodName + '\'' +
                 ", factoryComponent=" + factoryComponent +
                 ", scope='" + scope + '\'' +
                 ", runtimeClass=" + runtimeClass +
-                ", explicitDependencies=" + dependsOn +
                 ']';
     }
 }

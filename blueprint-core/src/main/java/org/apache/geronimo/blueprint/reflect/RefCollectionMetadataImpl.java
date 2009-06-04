@@ -81,7 +81,10 @@ public class RefCollectionMetadataImpl extends ServiceReferenceMetadataImpl impl
     @Override
     public String toString() {
         return "RefCollectionMetadata[" +
-                "availability=" + availability +
+                "id='" + id + '\'' +
+                ", initialization=" + initialization +
+                ", dependsOn=" + dependsOn +
+                ", availability=" + availability +
                 ", interfaceNames=" + interfaceNames +
                 ", componentName='" + componentName + '\'' +
                 ", filter='" + filter + '\'' +
