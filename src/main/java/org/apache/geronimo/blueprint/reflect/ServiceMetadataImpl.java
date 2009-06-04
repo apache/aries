@@ -45,7 +45,6 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
     private List<MapEntry> serviceProperties;
     private int ranking;
     private Collection<RegistrationListener> registrationListeners;
-    private List<String> explicitDependencies;
 
     public ServiceMetadataImpl() {
     }
@@ -62,7 +61,6 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
         for (RegistrationListener listener : source.getRegistrationListeners()) {
             addRegistrationListener(new RegistrationListenerImpl(listener));
         }
-        this.explicitDependencies = new ArrayList<String>(source.getDependsOn());
     }
 
     public Target getServiceComponent() {
@@ -176,42 +174,18 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
         }
     }
 
-    public List<String> getDependsOn() {
-        if (this.explicitDependencies == null) {
-            return Collections.emptyList();
-        } else {
-            return this.explicitDependencies;
-        }
-    }
-
-    public void setExplicitDependencies(List<String> explicitDependencies) {
-        this.explicitDependencies = explicitDependencies;
-    }
-
-    public void addDependsOn(String explicitDependency) {
-        if (this.explicitDependencies == null) {
-            this.explicitDependencies = new ArrayList<String>();
-        }
-        this.explicitDependencies.add(explicitDependency);
-    }
-
-    public void removeDependsOn(String dependency) {
-        if (this.explicitDependencies != null) {
-            this.explicitDependencies.remove(dependency);
-        }
-    }
-
     @Override
     public String toString() {
         return "ServiceMetadata[" +
                 "id='" + id + '\'' +
+                ", initialization=" + initialization +
+                ", dependsOn=" + dependsOn +
                 ", exportedComponent=" + serviceComponent +
                 ", interfaceNames=" + interfaceNames +
                 ", autoExportMode=" + autoExportMode +
                 ", serviceProperties=" + serviceProperties +
                 ", ranking=" + ranking +
                 ", registrationListeners=" + registrationListeners +
-                ", explicitDependencies=" + explicitDependencies +
                 ']';
     }
 }

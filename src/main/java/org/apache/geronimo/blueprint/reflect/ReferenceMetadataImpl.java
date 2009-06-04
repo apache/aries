@@ -50,7 +50,10 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
     @Override
     public String toString() {
         return "ReferenceMetadata[" +
-                "availability=" + availability +
+                "id='" + id + '\'' +
+                ", initialization=" + initialization +
+                ", dependsOn=" + dependsOn +
+                ", availability=" + availability +
                 ", interfaceNames=" + interfaceNames +
                 ", componentName='" + componentName + '\'' +
                 ", filter='" + filter + '\'' +

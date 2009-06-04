@@ -42,6 +42,8 @@ public class ComponentMetadataImpl implements MutableComponentMetadata {
     
     protected ComponentMetadataImpl(ComponentMetadata source) {
         id = source.getId();
+        initialization = source.getInitialization();
+        dependsOn = new ArrayList<String>(source.getDependsOn());
     }
     
     public String getId() {
