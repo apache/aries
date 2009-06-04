@@ -44,6 +44,4 @@ public interface BeanMetadata extends Target, ComponentMetadata {
 
     Class getRuntimeClass();
 
-    List<String> getExplicitDependencies();
-
 }
