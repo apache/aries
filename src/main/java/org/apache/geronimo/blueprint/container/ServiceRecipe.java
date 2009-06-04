@@ -148,8 +148,8 @@ public class ServiceRecipe extends AbstractRecipe {
         registration = blueprintContainer.getBundleContext().registerService(classArray, new TriggerServiceFactory(), props);
         registrationProperties = props;
 
-        LOGGER.debug("Trigger service {} registered with interfaces {} and properties {}",
-                     new Object[] { this, classes, props });
+        LOGGER.debug("Service {} registered with interfaces {} and properties {}",
+                     new Object[] { name, classes, props });
     }
 
     public synchronized boolean isRegistered() {
@@ -176,16 +176,19 @@ public class ServiceRecipe extends AbstractRecipe {
 
     public synchronized void unregister() {
         if (registration != null) {
+            // This method needs to allow reentrance, so if we need to make sure the registration is
+            // set to null before actually unregistering the service
+            ServiceRegistration reg = registration;
+            registration = null;
             // TODO: shouldn't listeners be called before unregistering the service?
-            registration.unregister();
+            reg.unregister();
             if (listeners != null) {
                 LOGGER.debug("Calling listeners for service unregistration");
                 for (ServiceListener listener : listeners) {
                     listener.unregister(getService(), registrationProperties);
                 }
             }
-            LOGGER.debug("Service {} unregistered", service);
-            registration = null;
+            LOGGER.debug("Service {} unregistered", name);
         }
     }
     
