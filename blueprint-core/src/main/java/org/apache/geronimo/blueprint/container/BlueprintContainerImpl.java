@@ -126,6 +126,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private boolean xmlValidation = true;
     private ScheduledFuture timeoutFuture;
     private final AtomicBoolean scheduled = new AtomicBoolean();
+    private final AtomicBoolean running = new AtomicBoolean();
 
     public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<URL> urls) {
         this.bundleContext = bundleContext;
@@ -195,7 +196,15 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     public void run() {
         scheduled.set(false);
         synchronized (scheduled) {
-            doRun();
+            synchronized (running) {
+                running.set(true);
+                try {
+                    doRun();
+                } finally {
+                    running.set(false);
+                    running.notifyAll();
+                }
+            }
         }
     }
 
@@ -258,7 +267,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         state = State.WaitForInitialReferences;
                         break;
                     case WaitForInitialReferences:
-                        if (checkAllSatisfiables()) {
+                        if (!waitForDependencies || checkAllSatisfiables()) {
                             state = State.InitialReferencesSatisfied;
                             break;
                         } else {
@@ -268,15 +277,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                     case InitialReferencesSatisfied:
                         processTypeConverters();
                         processProcessors();
-                        // Check references
-                        if (!waitForDependencies) {
-                            state = State.Create;
-                        } else {
-                            state = State.WaitForInitialReferences2;
-                        }
+                        state = State.WaitForInitialReferences2;
                         break;
                     case WaitForInitialReferences2:
-                        if (checkAllSatisfiables()) {
+                        if (!waitForDependencies || checkAllSatisfiables()) {
                             state = State.Create;
                             break;
                         } else {
@@ -523,12 +527,16 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private String[] getMissingDependencies() {
         List<String> missing = new ArrayList<String>();
         Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
+        Set<SatisfiableRecipe> recipes = new HashSet<SatisfiableRecipe>();
         for (String name : dependencies.keySet()) {
             for (SatisfiableRecipe recipe : dependencies.get(name)) {
                 if (!recipe.isSatisfied()) {
-                    missing.add(recipe.getOsgiFilter());
+                    recipes.add(recipe);
                 }
             }
+        }
+        for (SatisfiableRecipe recipe : recipes) {
+            missing.add(recipe.getOsgiFilter());
         }
         return missing.toArray(new String[missing.size()]);
     }
@@ -651,6 +659,17 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         handlers.removeListener(this);
         unregisterServices();
         untrackServiceReferences();
+
+        synchronized (running) {
+            while (running.get()) {
+                try {
+                    running.wait();
+                } catch (InterruptedException e) {
+                    // Ignore
+                }
+            }
+        }
+
         destroyComponents();
         
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYED, getBundleContext().getBundle(), getExtenderBundle()));

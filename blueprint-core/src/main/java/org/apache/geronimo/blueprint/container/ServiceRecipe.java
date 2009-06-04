@@ -56,6 +56,9 @@ import org.slf4j.LoggerFactory;
 /**
  * A <code>Recipe</code> to export services into the OSGi registry.
  *
+ * TODO: refactor the bundle scope stuff
+ * TODO: if the bean is a prototype or a ServiceFactory, a null service should be sent to listeners
+ *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 776360 $, $Date: 2009-05-19 17:40:47 +0200 (Tue, 19 May 2009) $
  */

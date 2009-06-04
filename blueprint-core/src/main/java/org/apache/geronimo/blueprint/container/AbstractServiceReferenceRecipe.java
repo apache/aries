@@ -150,7 +150,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return filter;
     }
 
-    private void createListeners() {
+    protected void createListeners() {
         try {
             if (listenersRecipe != null) {
                 listeners = (List<Listener>) listenersRecipe.create();
@@ -268,10 +268,6 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     @Override
     public void postCreate() {
-        // Create the listeners and initialize them
-        createListeners();
-        // Retrack to inform listeners
-        retrack();
     }
 
     protected abstract void track(ServiceReference reference);

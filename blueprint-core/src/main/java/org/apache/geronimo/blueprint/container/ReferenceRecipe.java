@@ -69,6 +69,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             addObject(proxy, true);
 
             // Handle initial references
+            createListeners();
             retrack();
 
             // Return a ServiceProxy that can injection of references or proxies can be done correctly
