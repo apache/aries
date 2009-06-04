@@ -186,10 +186,8 @@ public class Parser {
     public static final String AVAILABILITY_OPTIONAL = "optional";
     public static final String AVAILABILITY_DEFAULT = AVAILABILITY_MANDATORY;
     public static final String TIMEOUT_DEFAULT = "300000";
-    public static final String MEMBER_TYPE_SERVICES = "service-instance";
-    public static final String MEMBER_TYPE_SERVICE_REFERENCE = "service-reference";
-    public static final String ORDERING_BASIS_SERVICES = "service";
-    public static final String ORDERING_BASIS_SERVICE_REFERENCES = "service-reference";
+    public static final String USE_SERVICE_OBJECT = "service-object";
+    public static final String USE_SERVICE_REFERENCE = "service-reference";
     public static final String INITIALIZATION_EAGER = "eager";
     public static final String INITIALIZATION_LAZY = "lazy";
     public static final String INITIALIZATION_DEFAULT = INITIALIZATION_EAGER;
@@ -892,19 +890,17 @@ public class Parser {
         }
         if (element.hasAttribute(MEMBER_TYPE_ATTRIBUTE)) {
             String memberType = element.getAttribute(MEMBER_TYPE_ATTRIBUTE);
-            if (MEMBER_TYPE_SERVICES.equals(memberType)) {
+            if (USE_SERVICE_OBJECT.equals(memberType)) {
                 references.setMemberType(RefCollectionMetadata.USE_SERVICE_OBJECT);
-            } else if (MEMBER_TYPE_SERVICE_REFERENCE.equals(memberType)) {
+            } else if (USE_SERVICE_REFERENCE.equals(memberType)) {
                 references.setMemberType(RefCollectionMetadata.USE_SERVICE_REFERENCE);
             }
-//        } else {
-//            references.setMemberType(RefCollectionMetadata.MEMBER_TYPE_SERVICE_INSTANCE);
         }
         if (element.hasAttribute(ORDERING_BASIS_ATTRIBUTE)) {
             String ordering = element.getAttribute(ORDERING_BASIS_ATTRIBUTE);
-            if (ORDERING_BASIS_SERVICES.equals(ordering)) {
+            if (USE_SERVICE_OBJECT.equals(ordering)) {
                 references.setOrderingBasis(RefCollectionMetadata.USE_SERVICE_OBJECT);
-            } else if (ORDERING_BASIS_SERVICE_REFERENCES.equals(ordering)) {
+            } else if (USE_SERVICE_REFERENCE.equals(ordering)) {
                 references.setOrderingBasis(RefCollectionMetadata.USE_SERVICE_REFERENCE);
             }
         }
