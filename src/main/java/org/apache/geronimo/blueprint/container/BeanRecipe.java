@@ -496,9 +496,9 @@ public class BeanRecipe extends AbstractRecipe {
         getDestroyMethod(obj);
         
         // Add partially created object to the container
-        if (initMethod == null) {
+//        if (initMethod == null) {
             addObject(obj, true);
-        }
+//        }
 
         // inject properties
         setProperties(obj);

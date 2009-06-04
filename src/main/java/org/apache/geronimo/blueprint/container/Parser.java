@@ -416,8 +416,6 @@ public class Parser {
         } else if (nodeNameEquals(element, BEAN_ELEMENT)) {
             ComponentMetadata component = parseBeanMetadata(element, true);
             registry.registerComponentDefinition(component);
-        } else if (nodeNameEquals(element, REF_ELEMENT)) {
-            // TODO: what about those top-level refs elements
         } else if (nodeNameEquals(element, SERVICE_ELEMENT)) {
             ComponentMetadata service = parseService(element, true);
             registry.registerComponentDefinition(service);
@@ -936,6 +934,13 @@ public class Parser {
 
     private void parseComparator(Element element, RefCollectionMetadataImpl references) {
         Metadata comparator = references.getComparator();
+        // Parse attribute
+        if (element.hasAttribute(REF_ATTRIBUTE)) {
+            if (comparator != null) {
+                throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
+            }
+            comparator = new RefMetadataImpl(element.getAttribute(REF_ATTRIBUTE));
+        }
         // Parse elements
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {

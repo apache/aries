@@ -244,19 +244,23 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
             this.index = index;
         }
 
-        protected synchronized void removedIndex(int index) {
-            if (index < this.index || (index == this.index && (hasNextCalled || hasPreviousCalled))) {
-                this.index--;
+        protected void removedIndex(int index) {
+            synchronized (lock) {
+                if (index < this.index || (index == this.index && (hasNextCalled || hasPreviousCalled))) {
+                    this.index--;
+                }
             }
         }
 
-        protected synchronized void addedIndex(int index) {
-            if (index < this.index || (index == this.index && (next != null || previous != null))) {
-                this.index++;
+        protected void addedIndex(int index) {
+            synchronized (lock) {
+                if (index < this.index || (index == this.index && (next != null || previous != null))) {
+                    this.index++;
+                }
             }
         }
 
-        public synchronized boolean hasNext() {
+        public boolean hasNext() {
             synchronized (lock) {
                 hasPreviousCalled = false;
                 hasNextCalled = true;
@@ -265,7 +269,7 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
             }
         }
 
-        public synchronized boolean hasPrevious() {
+        public boolean hasPrevious() {
             synchronized (lock) {
                 hasPreviousCalled = true;
                 hasNextCalled = false;
@@ -274,52 +278,60 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
             }
         }
 
-        public synchronized E next() {
-            try {
-                if (!hasNextCalled) {
-                    hasNext();
+        public E next() {
+            synchronized (lock) {
+                try {
+                    if (!hasNextCalled) {
+                        hasNext();
+                    }
+                    last = next;
+                    if (next != null) {
+                        ++index;
+                        return next;
+                    } else {
+                        throw new NoSuchElementException();
+                    }
+                } finally {
+                    hasPreviousCalled = false;
+                    hasNextCalled = false;
+                    next = null;
+                    previous = null;
                 }
-                last = next;
-                if (next != null) {
-                    ++index;
-                    return next;
-                } else {
-                    throw new NoSuchElementException();
-                }
-            } finally {
-                hasPreviousCalled = false;
-                hasNextCalled = false;
-                next = null;
-                previous = null;
             }
         }
 
-        public synchronized E previous() {
-            try {
-                if (!hasPreviousCalled) {
-                    hasPrevious();
+        public E previous() {
+            synchronized (lock) {
+                try {
+                    if (!hasPreviousCalled) {
+                        hasPrevious();
+                    }
+                    last = previous;
+                    if (previous != null) {
+                        --index;
+                        return previous;
+                    } else {
+                        throw new NoSuchElementException();
+                    }
+                } finally {
+                    hasPreviousCalled = false;
+                    hasNextCalled = false;
+                    next = null;
+                    previous = null;
                 }
-                last = previous;
-                if (previous != null) {
-                    --index;
-                    return previous;
-                } else {
-                    throw new NoSuchElementException();
-                }
-            } finally {
-                hasPreviousCalled = false;
-                hasNextCalled = false;
-                next = null;
-                previous = null;
             }
         }
 
-        public synchronized int nextIndex() {
-            return index;
+        public int nextIndex() {
+            synchronized (lock) {
+                return index;
+            }
         }
 
-        public synchronized int previousIndex() {
-            return index - 1;
+        public int previousIndex() {
+            synchronized (lock) {
+                return index - 1;
+            }
         }
 
         public void set(E o) {
@@ -330,7 +342,7 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
             throw new UnsupportedOperationException();
         }
 
-        public synchronized void remove() {
+        public void remove() {
             throw new UnsupportedOperationException();
         }
 

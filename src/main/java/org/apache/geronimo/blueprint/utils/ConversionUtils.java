@@ -33,6 +33,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -74,10 +75,11 @@ public final class ConversionUtils {
         if (obj instanceof Convertible) {
             return ((Convertible) obj).convert(type);
         }
+        Class cl = toClass(type);
         // Handle arrays, collections and generics
         if (obj == null) {
             return null;
-        } else if (type instanceof GenericArrayType || (type instanceof Class && ((Class) type).isArray())) {
+        } else if (cl.isArray()) {
             if (obj instanceof Collection) {
                 obj = ((Collection) obj).toArray();
             }
@@ -86,7 +88,7 @@ public final class ConversionUtils {
             }
             Type componentType = type instanceof GenericArrayType
                                         ? ((GenericArrayType) type).getGenericComponentType()
-                                        : ((Class) type).getComponentType();
+                                        : cl.getComponentType();
             Object array = Array.newInstance(toClass(componentType), Array.getLength(obj));
             for (int i = 0; i < Array.getLength(obj); i++) {
                 try {
@@ -97,32 +99,39 @@ public final class ConversionUtils {
             }
             return array;
         // TODO: removing the second part of the test will allow conversion between collections, is this desired?
-        } else if (type instanceof ParameterizedType /*&& toClass(type).isInstance(obj)*/) {
-            Class cl = toClass(type);
-            if (Map.class.isAssignableFrom(cl) && obj instanceof Map) {
-                Type keyType = Object.class;
-                Type valueType = Object.class;
-                Type[] typeParameters = getTypeParameters(Map.class, type);
-                if (typeParameters != null && typeParameters.length == 2) {
-                    keyType = typeParameters[0];
-                    valueType = typeParameters[1];
+        } else if (Map.class.isAssignableFrom(cl) && obj instanceof Map) {
+            Type keyType = Object.class;
+            Type valueType = Object.class;
+            Type[] typeParameters = getTypeParameters(Map.class, type);
+            if (typeParameters != null && typeParameters.length == 2) {
+                keyType = typeParameters[0];
+                valueType = typeParameters[1];
+            }
+            Map newMap = (Map) getMap(cl).newInstance();
+            for (Map.Entry e : ((Map<Object,Object>) obj).entrySet()) {
+                try {
+                    newMap.put(convert(e.getKey(), keyType, converter), convert(e.getValue(), valueType, converter));
+                } catch (Exception t) {
+                    throw new Exception("Unable to convert from " + obj + " to " + type + "(error converting map entry)", t);
                 }
-                Map newMap = (Map) getMap(cl).newInstance();
-                for (Map.Entry e : ((Map<Object,Object>) obj).entrySet()) {
+            }
+            return newMap;
+        } else if (Collection.class.isAssignableFrom(cl) && (obj instanceof Collection || obj.getClass().isArray())) {
+            Type valueType = Object.class;
+            Type[] typeParameters = getTypeParameters(Collection.class, type);
+            if (typeParameters != null && typeParameters.length == 1) {
+                valueType = typeParameters[0];
+            }
+            Collection newCol = (Collection) getCollection(cl).newInstance();
+            if (obj.getClass().isArray()) {
+                for (int i = 0; i < Array.getLength(obj); i++) {
                     try {
-                        newMap.put(convert(e.getKey(), keyType, converter), convert(e.getValue(), valueType, converter));
+                        newCol.add(convert(Array.get(obj, i), valueType, converter));
                     } catch (Exception t) {
-                        throw new Exception("Unable to convert from " + obj + " to " + type + "(error converting map entry)", t);
+                        throw new Exception("Unable to convert from " + obj + " to " + type + "(error converting array element)", t);
                     }
                 }
-                return newMap;
-            } else if (Collection.class.isAssignableFrom(cl) && obj instanceof Collection) {
-                Type valueType = Object.class;
-                Type[] typeParameters = getTypeParameters(Collection.class, type);
-                if (typeParameters != null && typeParameters.length == 1) {
-                    valueType = typeParameters[0];
-                }
-                Collection newCol = (Collection) getCollection(cl).newInstance();
+            } else {
                 for (Object item : (Collection) obj) {
                     try {
                         newCol.add(convert(item, valueType, converter));
@@ -130,8 +139,8 @@ public final class ConversionUtils {
                         throw new Exception("Unable to convert from " + obj + " to " + type + "(error converting collection entry)", t);
                     }
                 }
-                return newCol;
             }
+            return newCol;
         }
         return converter.convert(obj, toClass(type));
     }
