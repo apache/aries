@@ -446,20 +446,22 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             for (String name : dependencies.keySet()) {
                 ComponentMetadata metadata = componentDefinitionRegistry.getComponentDefinition(name);
                 if (metadata instanceof ServiceMetadata) {
-                    boolean satisfied = true;
-                    for (SatisfiableRecipe recipe : dependencies.get(name)) {
-                        if (!recipe.isSatisfied()) {
-                            satisfied = false;
-                            break;
-                        }
-                    }
                     ServiceRecipe reg = (ServiceRecipe) instantiator.getRepository().getRecipe(name);
-                    if (satisfied && !reg.isRegistered()) {
-                        LOGGER.debug("Registering service {} due to satisfied references", name);
-                        reg.register();
-                    } else if (!satisfied && reg.isRegistered()) {
-                        LOGGER.debug("Unregistering service {} due to unsatisfied references", name);
-                        reg.unregister();
+                    synchronized (reg) {
+                        boolean satisfied = true;
+                        for (SatisfiableRecipe recipe : dependencies.get(name)) {
+                            if (!recipe.isSatisfied()) {
+                                satisfied = false;
+                                break;
+                            }
+                        }
+                        if (satisfied && !reg.isRegistered()) {
+                            LOGGER.debug("Registering service {} due to satisfied references", name);
+                            reg.register();
+                        } else if (!satisfied && reg.isRegistered()) {
+                            LOGGER.debug("Unregistering service {} due to unsatisfied references", name);
+                            reg.unregister();
+                        }
                     }
                 }
             }
