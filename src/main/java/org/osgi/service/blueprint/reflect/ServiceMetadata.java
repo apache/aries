@@ -41,6 +41,4 @@ public interface ServiceMetadata extends ComponentMetadata, Target {
     
     Collection<RegistrationListener> getRegistrationListeners();
 
-    List<String> getExplicitDependencies();
-    
 }
