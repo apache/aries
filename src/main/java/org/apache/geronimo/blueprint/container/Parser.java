@@ -464,26 +464,25 @@ public class Parser {
         BeanMetadataImpl metadata = new BeanMetadataImpl();
         if (topElement) {
             metadata.setId(getId(element));
-        }
-        if (element.hasAttribute(CLASS_ATTRIBUTE)) {
-            metadata.setClassName(element.getAttribute(CLASS_ATTRIBUTE));
-        }
-        if (topElement) {
             if (element.hasAttribute(SCOPE_ATTRIBUTE)) {
                 metadata.setScope(element.getAttribute(SCOPE_ATTRIBUTE));
             } else {
                 metadata.setScope(BeanMetadata.SCOPE_SINGLETON);
             }
+            String initialization = element.hasAttribute(INITIALIZATION_ATTRIBUTE) ? element.getAttribute(INITIALIZATION_ATTRIBUTE) : defaultInitialization;
+            if (INITIALIZATION_EAGER.equals(initialization)) {
+                metadata.setInitialization(ComponentMetadata.INITIALIZATION_EAGER);
+            } else if (INITIALIZATION_LAZY.equals(initialization)) {
+                metadata.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
+            } else {
+                throw new ComponentDefinitionException("Attribute " + INITIALIZATION_ATTRIBUTE + " must be equals to " + INITIALIZATION_EAGER + " or " + INITIALIZATION_LAZY);
+            }
         } else {
             metadata.setScope(BeanMetadata.SCOPE_PROTOTYPE);
-        }
-        String initialization = element.hasAttribute(INITIALIZATION_ATTRIBUTE) ? element.getAttribute(INITIALIZATION_ATTRIBUTE) : defaultInitialization;
-        if (INITIALIZATION_EAGER.equals(initialization)) {
-            metadata.setInitialization(ComponentMetadata.INITIALIZATION_EAGER);
-        } else if (INITIALIZATION_LAZY.equals(initialization)) {
             metadata.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
-        } else {
-            throw new ComponentDefinitionException("Attribute " + INITIALIZATION_ATTRIBUTE + " must be equals to " + INITIALIZATION_EAGER + " or " + INITIALIZATION_LAZY);
+        }
+        if (element.hasAttribute(CLASS_ATTRIBUTE)) {
+            metadata.setClassName(element.getAttribute(CLASS_ATTRIBUTE));
         }
         if (element.hasAttribute(DEPENDS_ON_ATTRIBUTE)) {
             metadata.setDependsOn(parseList(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
@@ -557,14 +556,16 @@ public class Parser {
         boolean hasInterfaceNameAttribute = false;
         if (topElement) {
             service.setId(getId(element));
-        }
-        String initialization = element.hasAttribute(INITIALIZATION_ATTRIBUTE) ? element.getAttribute(INITIALIZATION_ATTRIBUTE) : defaultInitialization;
-        if (INITIALIZATION_EAGER.equals(initialization)) {
-            service.setInitialization(ComponentMetadata.INITIALIZATION_EAGER);
-        } else if (INITIALIZATION_LAZY.equals(initialization)) {
-            service.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
+            String initialization = element.hasAttribute(INITIALIZATION_ATTRIBUTE) ? element.getAttribute(INITIALIZATION_ATTRIBUTE) : defaultInitialization;
+            if (INITIALIZATION_EAGER.equals(initialization)) {
+                service.setInitialization(ComponentMetadata.INITIALIZATION_EAGER);
+            } else if (INITIALIZATION_LAZY.equals(initialization)) {
+                service.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
+            } else {
+                throw new ComponentDefinitionException("Attribute " + INITIALIZATION_ATTRIBUTE + " must be equals to " + INITIALIZATION_EAGER + " or " + INITIALIZATION_LAZY);
+            }
         } else {
-            throw new ComponentDefinitionException("Attribute " + INITIALIZATION_ATTRIBUTE + " must be equals to " + INITIALIZATION_EAGER + " or " + INITIALIZATION_LAZY);
+            service.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
         }
         if (element.hasAttribute(INTERFACE_ATTRIBUTE)) {
             service.setInterfaceNames(Collections.singletonList(element.getAttribute(INTERFACE_ATTRIBUTE)));
@@ -859,7 +860,7 @@ public class Parser {
         if (topElement) {
             reference.setId(getId(element));
         }
-        parseReference(element, reference);
+        parseReference(element, reference, topElement);
         String timeout = element.hasAttribute(TIMEOUT_ATTRIBUTE) ? element.getAttribute(TIMEOUT_ATTRIBUTE) : this.defaultTimeout;
         try {
             reference.setTimeout(Long.parseLong(timeout));
@@ -904,7 +905,7 @@ public class Parser {
                 references.setOrderingBasis(RefCollectionMetadata.USE_SERVICE_REFERENCE);
             }
         }
-        parseReference(element, references);
+        parseReference(element, references, topElement);
         // Parse elements
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
@@ -985,15 +986,19 @@ public class Parser {
         references.setComparator((Target) comparator);
     }
 
-    private void parseReference(Element element, ServiceReferenceMetadataImpl reference) {
+    private void parseReference(Element element, ServiceReferenceMetadataImpl reference, boolean topElement) {
         // Parse attributes
-        String initialization = element.hasAttribute(INITIALIZATION_ATTRIBUTE) ? element.getAttribute(INITIALIZATION_ATTRIBUTE) : defaultInitialization;
-        if (INITIALIZATION_EAGER.equals(initialization)) {
-            reference.setInitialization(ComponentMetadata.INITIALIZATION_EAGER);
-        } else if (INITIALIZATION_LAZY.equals(initialization)) {
-            reference.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
+        if (topElement) {
+            String initialization = element.hasAttribute(INITIALIZATION_ATTRIBUTE) ? element.getAttribute(INITIALIZATION_ATTRIBUTE) : defaultInitialization;
+            if (INITIALIZATION_EAGER.equals(initialization)) {
+                reference.setInitialization(ComponentMetadata.INITIALIZATION_EAGER);
+            } else if (INITIALIZATION_LAZY.equals(initialization)) {
+                reference.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
+            } else {
+                throw new ComponentDefinitionException("Attribute " + INITIALIZATION_ATTRIBUTE + " must be equals to " + INITIALIZATION_EAGER + " or " + INITIALIZATION_LAZY);
+            }
         } else {
-            throw new ComponentDefinitionException("Attribute " + INITIALIZATION_ATTRIBUTE + " must be equals to " + INITIALIZATION_EAGER + " or " + INITIALIZATION_LAZY);
+            reference.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
         }
         if (element.hasAttribute(DEPENDS_ON_ATTRIBUTE)) {
             reference.setDependsOn(parseList(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
