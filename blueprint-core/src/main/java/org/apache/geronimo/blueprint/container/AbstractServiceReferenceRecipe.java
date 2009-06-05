@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe implements ServiceListener, SatisfiableRecipe {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RefCollectionRecipe.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RefListRecipe.class);
 
     protected final ExtendedBlueprintContainer blueprintContainer;
     protected final ServiceReferenceMetadata metadata;

@@ -32,7 +32,7 @@ public class DynamicCollectionTest extends TestCase {
     protected DynamicCollection<Object> collection;
 
     protected void setUp() {
-        collection = new DynamicCollection<Object>(true, null);
+        collection = new DynamicCollection<Object>();
     }
 
     public void testAddRemove() throws Exception {

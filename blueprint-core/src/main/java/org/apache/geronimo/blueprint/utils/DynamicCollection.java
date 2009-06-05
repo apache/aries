@@ -22,8 +22,6 @@ import java.lang.ref.WeakReference;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -40,15 +38,11 @@ import java.util.NoSuchElementException;
  */
 public class DynamicCollection<E> extends AbstractCollection<E> {
 
-    protected final boolean allowDuplicates;
-    protected final Comparator comparator;
     protected final Object lock = new Object();
     protected final List<E> storage;
     protected final List<WeakReference<DynamicIterator>> iterators;
 
-    public DynamicCollection(boolean allowDuplicates, Comparator comparator) {
-        this.allowDuplicates = allowDuplicates;
-        this.comparator = comparator;
+    public DynamicCollection() {
         this.storage = new ArrayList<E>();
         this.iterators = new ArrayList<WeakReference<DynamicIterator>>();
     }
@@ -116,37 +110,11 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
             throw new NullPointerException();
         }
         synchronized (lock) {
-            if (comparator != null) {
-                if (allowDuplicates) {
-                    int index = Collections.binarySearch(storage, o, comparator);
-                    if (index < 0) {
-                        index = -index - 1;
-                    } else {
-                        index = index + 1;
-                    }
-                    internalAdd(index, o);
-                    return true;
-                } else {
-                    int index = Collections.binarySearch(storage, o, comparator);
-                    if (index < 0) {
-                        internalAdd(-index - 1, o);
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
+            if (!storage.contains(o)) {
+                internalAdd(storage.size(), o);
+                return true;
             } else {
-                if (allowDuplicates) {
-                    internalAdd(storage.size(), o);
-                    return true;
-                } else {
-                    if (!storage.contains(o)) {
-                        internalAdd(storage.size(), o);
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
+                return false;
             }
         }
     }

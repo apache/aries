@@ -14,20 +14,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.osgi.service.blueprint.reflect;
+package org.apache.geronimo.blueprint;
 
-public interface RefCollectionMetadata extends ServiceReferenceMetadata {
+import org.osgi.service.blueprint.reflect.RefListMetadata;
 
-    static final int USE_SERVICE_OBJECT = 1;
+/**
+ * TODO: javadoc
+ *
+ * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
+ * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
+ */
+public interface ExtendedRefListMetadata extends RefListMetadata, ExtendedServiceReferenceMetadata {
 
-    static final int USE_SERVICE_REFERENCE = 2;
-
-    Class getCollectionType();
-
-    Target getComparator();
-
-    int getOrderingBasis();
-
-    int getMemberType();
+    int PROXY_METHOD_GREEDY = 2;
 
 }

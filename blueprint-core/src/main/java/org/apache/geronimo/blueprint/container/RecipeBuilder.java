@@ -52,7 +52,7 @@ import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.NullMetadata;
 import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
+import org.osgi.service.blueprint.reflect.RefListMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
@@ -106,14 +106,14 @@ public class RecipeBuilder {
             return createServiceRecipe((ServiceMetadata) component);
         } else if (component instanceof ReferenceMetadata) {
             return createReferenceRecipe((ReferenceMetadata) component);
-        } else if (component instanceof RefCollectionMetadata) {
-            return createRefCollectionRecipe((RefCollectionMetadata) component);
+        } else if (component instanceof RefListMetadata) {
+            return createRefCollectionRecipe((RefListMetadata) component);
         } else {
             throw new IllegalStateException("Unsupported component type " + component.getClass());
         }
     }
 
-    private Recipe createRefCollectionRecipe(RefCollectionMetadata metadata) throws Exception {
+    private Recipe createRefCollectionRecipe(RefListMetadata metadata) throws Exception {
         CollectionRecipe listenersRecipe = null;
         if (metadata.getServiceListeners() != null) {
             listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class);
@@ -121,15 +121,10 @@ public class RecipeBuilder {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
-        Recipe comparatorRecipe = null;
-        if (metadata.getComparator() != null) {
-            comparatorRecipe = getValue(metadata.getComparator(), Comparator.class);
-        }
-        RefCollectionRecipe recipe = new RefCollectionRecipe(getName(metadata.getId()),
-                                                             blueprintContainer,
-                                                             metadata,
-                                                             listenersRecipe,
-                                                             comparatorRecipe);
+        RefListRecipe recipe = new RefListRecipe(getName(metadata.getId()),
+                                                 blueprintContainer,
+                                                 metadata,
+                                                 listenersRecipe);
         return recipe;
     }
 

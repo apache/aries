@@ -33,10 +33,9 @@ import org.apache.geronimo.blueprint.mutable.MutableListener;
 import org.apache.geronimo.blueprint.mutable.MutableMapEntry;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.mutable.MutablePropsMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableRefCollectionMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableRefListMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableRegistrationListener;
 import org.apache.geronimo.blueprint.mutable.MutableServiceMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -48,7 +47,7 @@ import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.NonNullMetadata;
 import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
+import org.osgi.service.blueprint.reflect.RefListMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
@@ -92,8 +91,8 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     protected Metadata processMetadata(Metadata metadata) {
         if (metadata instanceof BeanMetadata) {
             return processBeanMetadata((BeanMetadata) metadata);
-        } else if (metadata instanceof RefCollectionMetadata) {
-            return processRefCollectionMetadata((RefCollectionMetadata) metadata);
+        } else if (metadata instanceof RefListMetadata) {
+            return processRefCollectionMetadata((RefListMetadata) metadata);
         } else if (metadata instanceof ReferenceMetadata) {
             return processReferenceMetadata((ReferenceMetadata) metadata);
         } else if (metadata instanceof ServiceMetadata) {
@@ -144,11 +143,10 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
         return component;
     }
 
-    protected Metadata processRefCollectionMetadata(RefCollectionMetadata component) {
+    protected Metadata processRefCollectionMetadata(RefListMetadata component) {
         for (Listener listener : component.getServiceListeners()) {
             ((MutableListener) listener).setListenerComponent((Target) processMetadata(listener.getListenerComponent()));
         }
-        ((MutableRefCollectionMetadata) component).setComparator((Target) processMetadata(component.getComparator()));
         return component;
     }
 

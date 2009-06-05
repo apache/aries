@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
-import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.IdRefMetadata;
@@ -32,7 +31,7 @@ import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.NullMetadata;
 import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
+import org.osgi.service.blueprint.reflect.RefListMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
@@ -76,8 +75,8 @@ public class MetadataUtil {
         else if (source instanceof BeanMetadata) {
             return new BeanMetadataImpl((BeanMetadata)source);
         }
-        else if (source instanceof RefCollectionMetadata) {
-            return new RefCollectionMetadataImpl((RefCollectionMetadata)source);
+        else if (source instanceof RefListMetadata) {
+            return new RefListMetadataImpl((RefListMetadata)source);
         }
         else if (source instanceof ServiceMetadata) {
             return new ServiceMetadataImpl((ServiceMetadata)source);
@@ -139,8 +138,8 @@ public class MetadataUtil {
             return type.cast(new ValueMetadataImpl());
         } else if (BeanMetadata.class.isAssignableFrom(type)) {
             return type.cast(new BeanMetadataImpl());
-        } else if (RefCollectionMetadata.class.isAssignableFrom(type)) {
-            return type.cast(new RefCollectionMetadataImpl());
+        } else if (RefListMetadata.class.isAssignableFrom(type)) {
+            return type.cast(new RefListMetadataImpl());
         } else if (ServiceMetadata.class.isAssignableFrom(type)) {
             return type.cast(new ServiceMetadataImpl());
         } else if (ReferenceMetadata.class.isAssignableFrom(type)) {

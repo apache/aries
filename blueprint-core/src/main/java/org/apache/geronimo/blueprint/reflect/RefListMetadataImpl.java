@@ -18,8 +18,8 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.apache.geronimo.blueprint.mutable.MutableRefCollectionMetadata;
-import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableRefListMetadata;
+import org.osgi.service.blueprint.reflect.RefListMetadata;
 import org.osgi.service.blueprint.reflect.Target;
 
 /**
@@ -28,46 +28,16 @@ import org.osgi.service.blueprint.reflect.Target;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class RefCollectionMetadataImpl extends ServiceReferenceMetadataImpl implements MutableRefCollectionMetadata {
+public class RefListMetadataImpl extends ServiceReferenceMetadataImpl implements MutableRefListMetadata {
 
-    private Class collectionType;
-    private Target comparator;
-    private int orderingBasis;
     private int memberType;
 
-    public RefCollectionMetadataImpl() {
+    public RefListMetadataImpl() {
     }
     
-    public RefCollectionMetadataImpl(RefCollectionMetadata source) {
+    public RefListMetadataImpl(RefListMetadata source) {
         super(source);
-        collectionType = source.getCollectionType();
-        comparator = MetadataUtil.cloneTarget(source.getComparator());
-        orderingBasis = source.getOrderingBasis();
         memberType = source.getMemberType();
-    }
-
-    public Class getCollectionType() {
-        return collectionType;
-    }
-
-    public void setCollectionType(Class collectionType) {
-        this.collectionType = collectionType;
-    }
-
-    public Target getComparator() {
-        return comparator;
-    }
-
-    public void setComparator(Target comparator) {
-        this.comparator = comparator;
-    }
-
-    public int getOrderingBasis() {
-        return orderingBasis;
-    }
-
-    public void setOrderingBasis(int orderingComparisonBasis) {
-        this.orderingBasis = orderingComparisonBasis;
     }
 
     public int getMemberType() {
@@ -89,9 +59,6 @@ public class RefCollectionMetadataImpl extends ServiceReferenceMetadataImpl impl
                 ", componentName='" + componentName + '\'' +
                 ", filter='" + filter + '\'' +
                 ", serviceListeners=" + serviceListeners +
-                ", collectionType=" + collectionType +
-                ", comparator=" + comparator +
-                ", orderingBasis=" + orderingBasis +
                 ", memberType=" + memberType +
                 ']';
     }

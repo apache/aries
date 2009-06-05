@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
-import org.apache.geronimo.blueprint.ExtendedRefCollectionMetadata;
+import org.apache.geronimo.blueprint.ExtendedRefListMetadata;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.apache.geronimo.blueprint.utils.DynamicCollection;
@@ -42,7 +42,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
-import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
+import org.osgi.service.blueprint.reflect.RefListMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,49 +52,28 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
+public class RefListRecipe extends AbstractServiceReferenceRecipe {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RefCollectionRecipe.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RefListRecipe.class);
 
-    private final RefCollectionMetadata metadata;
-    private final Recipe comparatorRecipe;
+    private final RefListMetadata metadata;
     private final List<ManagedCollection> collections = new ArrayList<ManagedCollection>();
     private DynamicCollection<ServiceDispatcher> storage;
     private final List<ServiceDispatcher> unboundDispatchers = new ArrayList<ServiceDispatcher>();
 
-    public RefCollectionRecipe(String name,
-                               ExtendedBlueprintContainer blueprintContainer,
-                               RefCollectionMetadata metadata,
-                               Recipe listenersRecipe,
-                               Recipe comparatorRecipe) {
+    public RefListRecipe(String name,
+                         ExtendedBlueprintContainer blueprintContainer,
+                         RefListMetadata metadata,
+                         Recipe listenersRecipe) {
         super(name, blueprintContainer, metadata, listenersRecipe);
         this.metadata = metadata;
-        this.comparatorRecipe = comparatorRecipe;
     }
 
     @Override
     protected Object internalCreate() throws ComponentDefinitionException {
         Comparator comparator = null;
         try {
-            if (comparatorRecipe != null) {
-                comparator = (Comparator) comparatorRecipe.create();
-            } else if (metadata.getOrderingBasis() != 0) {
-                comparator = new NaturalOrderComparator();
-            }
-            boolean orderReferences = metadata.getOrderingBasis() == RefCollectionMetadata.USE_SERVICE_REFERENCE;
-            boolean allowDuplicates;
-            if (metadata.getCollectionType() == List.class) {
-                allowDuplicates = true;
-            } else if (metadata.getCollectionType() == Set.class) {
-                allowDuplicates = false;
-            } else {
-                throw new IllegalArgumentException("Unsupported collection type " + metadata.getCollectionType().getName());
-            }
-            if (comparator != null) {
-                storage = new DynamicCollection<ServiceDispatcher>(allowDuplicates, new DispatcherComparator(comparator, orderReferences));
-            } else {
-                storage = new DynamicCollection<ServiceDispatcher>(allowDuplicates, null);
-            }
+            storage = new DynamicCollection<ServiceDispatcher>();
 
             // Handle initial references
             createListeners();
@@ -148,8 +127,8 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
                 } else {
                     dispatcher = new ServiceDispatcher(reference);
                     List<String> interfaces = metadata.getInterfaceNames();
-                    if (metadata instanceof ExtendedRefCollectionMetadata) {
-                        boolean greedy = (((ExtendedRefCollectionMetadata) metadata).getProxyMethod() & ExtendedRefCollectionMetadata.PROXY_METHOD_GREEDY) != 0;
+                    if (metadata instanceof ExtendedRefListMetadata) {
+                        boolean greedy = (((ExtendedRefListMetadata) metadata).getProxyMethod() & ExtendedRefListMetadata.PROXY_METHOD_GREEDY) != 0;
                         if (greedy) {
                             interfaces = Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS));
                         }
@@ -207,12 +186,7 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
                 return col;
             }
         }
-        ManagedCollection collection;
-        if (metadata.getCollectionType() == List.class) {
-            collection = new ManagedList(useReferences, storage);
-        } else {
-            collection = new ManagedSet(useReferences, storage);
-        }
+        ManagedCollection collection = new ManagedCollection(useReferences, storage);
         collections.add(collection);
         return collection;
     }
@@ -305,8 +279,8 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
 
         public Object convert(Type type) {
             LOGGER.debug("Converting ManagedCollection to {}", type);
-            if (!TypeUtils.toClass(type).isAssignableFrom(metadata.getCollectionType())) {
-                throw new ComponentDefinitionException("<ref-list/> and <ref-set/> can only be converted respectively to a List or Set, not " + type);
+            if (!TypeUtils.toClass(type).isAssignableFrom(List.class)) {
+                throw new ComponentDefinitionException("<ref-list/> can only be converted to a List, not " + type);
             }
             boolean useRef = false;
             if (type instanceof ParameterizedType) {
@@ -315,10 +289,10 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
                     useRef = (args[0] == ServiceReference.class);
                 }
             }
-            boolean references;   // TODO
-            if (metadata.getMemberType() == RefCollectionMetadata.USE_SERVICE_REFERENCE) {
+            boolean references;
+            if (metadata.getMemberType() == RefListMetadata.USE_SERVICE_REFERENCE) {
                 references = true;
-            } else if (metadata.getMemberType() == RefCollectionMetadata.USE_SERVICE_OBJECT) {
+            } else if (metadata.getMemberType() == RefListMetadata.USE_SERVICE_OBJECT) {
                 references = false;
             } else {
                 references = useRef;
@@ -331,10 +305,8 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
 
     /**
      * Base class for managed collections.
-     * This class implemenents the Convertible interface to detect if the collection need
-     * to use ServiceReference or proxies.
      */
-    public static class ManagedCollection extends AbstractCollection {
+    public static class ManagedCollection extends AbstractCollection implements List, RandomAccess {
 
         protected final DynamicCollection<ServiceDispatcher> dispatchers;
         protected boolean references;
@@ -358,7 +330,7 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
         }
 
         public Iterator iterator() {
-            return new ManagedIterator(dispatchers.iterator());
+            return new ManagedListIterator(dispatchers.iterator());
         }
 
         public int size() {
@@ -393,36 +365,6 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
         @Override
         public boolean removeAll(Collection c) {
             throw new UnsupportedOperationException("This collection is read only");
-        }
-
-        public class ManagedIterator implements Iterator {
-
-            private final Iterator<ServiceDispatcher> iterator;
-
-            public ManagedIterator(Iterator<ServiceDispatcher> iterator) {
-                this.iterator = iterator;
-            }
-
-            public boolean hasNext() {
-                return iterator.hasNext();
-            }
-
-            public Object next() {
-                return references ? iterator.next().reference : iterator.next().proxy;
-            }
-
-            public void remove() {
-                throw new UnsupportedOperationException("This collection is read only");
-            }
-        }
-
-    }
-
-
-    public static class ManagedList extends ManagedCollection implements List, RandomAccess {
-
-        public ManagedList(boolean references, DynamicCollection<ServiceDispatcher> dispatchers) {
-            super(references, dispatchers);
         }
 
         public Object get(int index) {
@@ -530,12 +472,5 @@ public class RefCollectionRecipe extends AbstractServiceReferenceRecipe {
 
     }
 
-    public static class ManagedSet extends ManagedCollection implements Set {
-
-        public ManagedSet(boolean references, DynamicCollection<ServiceDispatcher> dispatchers) {
-            super(references, dispatchers);
-        }
-        
-    }
 
 }
