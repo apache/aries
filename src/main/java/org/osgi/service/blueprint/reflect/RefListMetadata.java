@@ -16,17 +16,11 @@
  */
 package org.osgi.service.blueprint.reflect;
 
-public interface RefCollectionMetadata extends ServiceReferenceMetadata {
+public interface RefListMetadata extends ServiceReferenceMetadata {
 
     static final int USE_SERVICE_OBJECT = 1;
 
     static final int USE_SERVICE_REFERENCE = 2;
-
-    Class getCollectionType();
-
-    Target getComparator();
-
-    int getOrderingBasis();
 
     int getMemberType();
 
