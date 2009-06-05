@@ -36,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
@@ -71,13 +70,12 @@ import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
+import org.osgi.service.blueprint.reflect.RefListMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -616,9 +614,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             for (Listener l : ((ServiceReferenceMetadata) component).getServiceListeners()) {
                 getMetadata(clazz, l.getListenerComponent(), metadatas);
             }
-        }
-        if (component instanceof RefCollectionMetadata) {
-            getMetadata(clazz, ((RefCollectionMetadata) component).getComparator(), metadatas);
         }
         if (component instanceof ServiceMetadata) {
             getMetadata(clazz, ((ServiceMetadata) component).getServiceComponent(), metadatas);

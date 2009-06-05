@@ -18,9 +18,8 @@
  */
 package org.apache.geronimo.blueprint.mutable;
 
-import org.osgi.service.blueprint.reflect.RefCollectionMetadata;
 import org.osgi.service.blueprint.reflect.Target;
-import org.apache.geronimo.blueprint.ExtendedRefCollectionMetadata;
+import org.apache.geronimo.blueprint.ExtendedRefListMetadata;
 
 /**
  * A mutable version of the <code>RefCollectionMetadata</code> that allows modifications.
@@ -28,13 +27,7 @@ import org.apache.geronimo.blueprint.ExtendedRefCollectionMetadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
-public interface MutableRefCollectionMetadata extends ExtendedRefCollectionMetadata, MutableServiceReferenceMetadata {
-
-    void setCollectionType(Class collectionType);
-
-    void setComparator(Target comparator);
-
-    void setOrderingBasis(int orderingBasis);
+public interface MutableRefListMetadata extends ExtendedRefListMetadata, MutableServiceReferenceMetadata {
 
     void setMemberType(int memberType);
 
