@@ -23,10 +23,11 @@ Installing and running the blueprint-sample bundle:
   a) install file:///<m2_repo>/org/apache/geronimo/blueprint-bundle/1.0.0-SNAPSHOT/blueprint-bundle-1.0.0-SNAPSHOT.jar
   b) install file:///<m2_repo>/org/apache/geronimo/blueprint-sample/1.0.0-SNAPSHOT/blueprint-sample-1.0.0-SNAPSHOT.jar
 
-5) Start the extender and sample bundles:
+5) Start the ConfigurationAdmin, extender and sample bundles:
 
-  a) start <bundle id for blueprint-bundle>
-  b) start <bundle id for blueprint-sample>
+  a) start <bundle id for config admin>
+  b) start <bundle id for blueprint-bundle>
+  c) start <bundle id for blueprint-sample>
 
 
 Installing and running the Web Console and Jetty:
