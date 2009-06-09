@@ -33,7 +33,6 @@ import org.apache.geronimo.blueprint.mutable.MutableListener;
 import org.apache.geronimo.blueprint.mutable.MutableMapEntry;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.mutable.MutablePropsMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableRefListMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableRegistrationListener;
 import org.apache.geronimo.blueprint.mutable.MutableServiceMetadata;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;

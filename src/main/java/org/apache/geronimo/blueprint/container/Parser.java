@@ -23,11 +23,11 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Collection;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -74,6 +74,7 @@ import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.IdRefMetadata;
 import org.osgi.service.blueprint.reflect.Listener;
 import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.MapMetadata;
@@ -82,14 +83,13 @@ import org.osgi.service.blueprint.reflect.NonNullMetadata;
 import org.osgi.service.blueprint.reflect.NullMetadata;
 import org.osgi.service.blueprint.reflect.PropsMetadata;
 import org.osgi.service.blueprint.reflect.RefListMetadata;
+import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
-import org.osgi.service.blueprint.reflect.IdRefMetadata;
-import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -791,8 +791,19 @@ public class Parser {
         if (element.hasAttribute(REF_ATTRIBUTE)) {
             listenerComponent = new RefMetadataImpl(element.getAttribute(REF_ATTRIBUTE));
         }
-        String registrationMethod = element.getAttribute(REGISTRATION_METHOD_ATTRIBUTE);
-        String unregistrationMethod = element.getAttribute(UNREGISTRATION_METHOD_ATTRIBUTE);
+        String registrationMethod = null;
+        if (element.hasAttribute(REGISTRATION_METHOD_ATTRIBUTE)) {
+            registrationMethod = element.getAttribute(REGISTRATION_METHOD_ATTRIBUTE);
+            listener.setRegistrationMethodName(registrationMethod);
+        }
+        String unregistrationMethod = null;
+        if (element.hasAttribute(UNREGISTRATION_METHOD_ATTRIBUTE)) {
+            unregistrationMethod = element.getAttribute(UNREGISTRATION_METHOD_ATTRIBUTE);
+            listener.setUnregistrationMethodName(unregistrationMethod);
+        }
+        if (registrationMethod == null && unregistrationMethod == null) {
+            throw new ComponentDefinitionException("One of " + REGISTRATION_METHOD_ATTRIBUTE + " or " + UNREGISTRATION_METHOD_ATTRIBUTE + " must be set");
+        }
         // Parse elements
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
@@ -837,14 +848,6 @@ public class Parser {
             throw new ComponentDefinitionException("One of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element must be set");
         }
         listener.setListenerComponent((Target) listenerComponent);
-        if (registrationMethod == null || registrationMethod.length() == 0) {
-            throw new ComponentDefinitionException("Attribute " + REGISTRATION_METHOD_ATTRIBUTE + " must be set");
-        }
-        listener.setRegistrationMethodName(registrationMethod);
-        if (unregistrationMethod == null || unregistrationMethod.length() == 0) {
-            throw new ComponentDefinitionException("Attribute " + UNREGISTRATION_METHOD_ATTRIBUTE + " must be set");
-        }
-        listener.setUnregistrationMethodName(unregistrationMethod);
         return listener;
     }
 
@@ -959,8 +962,19 @@ public class Parser {
         if (element.hasAttribute(REF_ATTRIBUTE)) {
             listenerComponent = new RefMetadataImpl(element.getAttribute(REF_ATTRIBUTE));
         }
-        listener.setBindMethodName(element.getAttribute(BIND_METHOD_ATTRIBUTE));
-        listener.setUnbindMethodName(element.getAttribute(UNBIND_METHOD_ATTRIBUTE));
+        String bindMethodName = null;
+        String unbindMethodName = null;
+        if (element.hasAttribute(BIND_METHOD_ATTRIBUTE)) {
+            bindMethodName = element.getAttribute(BIND_METHOD_ATTRIBUTE);
+            listener.setBindMethodName(bindMethodName);
+        }
+        if (element.hasAttribute(UNBIND_METHOD_ATTRIBUTE)) {
+            unbindMethodName = element.getAttribute(UNBIND_METHOD_ATTRIBUTE);
+            listener.setUnbindMethodName(unbindMethodName);
+        }
+        if (bindMethodName == null && unbindMethodName == null) {
+            throw new ComponentDefinitionException("One of " + BIND_METHOD_ATTRIBUTE + " or " + UNBIND_METHOD_ATTRIBUTE + " must be set");
+        }
         // Parse elements
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {

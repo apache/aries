@@ -18,10 +18,9 @@
  */
 package org.apache.geronimo.blueprint.mutable;
 
-import org.osgi.service.blueprint.reflect.Listener;
-import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
-import org.osgi.service.blueprint.reflect.Target;
 import org.apache.geronimo.blueprint.ExtendedServiceReferenceMetadata;
+import org.osgi.service.blueprint.reflect.Listener;
+import org.osgi.service.blueprint.reflect.Target;
 
 /**
  * A mutable version of the <code>ServiceReferenceMetadata</code> that allows modifications.

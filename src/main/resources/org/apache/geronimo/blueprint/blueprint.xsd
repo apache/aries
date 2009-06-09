@@ -131,8 +131,8 @@
                 <xsd:documentation>
                   <![CDATA[
                   Specifies the default initialization setting that will be defined
-                  for <bean> components.  If not specified, the global
-                  default is "eager".  Individual <bean> components may
+                  for components.  If not specified, the global
+                  default is "eager".  Individual components may
                   override the default
                   ]]>
                 </xsd:documentation>

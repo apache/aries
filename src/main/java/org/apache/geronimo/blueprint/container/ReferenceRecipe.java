@@ -19,6 +19,7 @@
 package org.apache.geronimo.blueprint.container;
 
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
@@ -54,26 +55,36 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     public ReferenceRecipe(String name,
                            ExtendedBlueprintContainer blueprintContainer,
                            ReferenceMetadata metadata,
-                           Recipe listenersRecipe) {
-        super(name, blueprintContainer, metadata, listenersRecipe);
+                           Recipe listenersRecipe,
+                           List<Recipe> explicitDependencies) {
+        super(name, blueprintContainer, metadata, listenersRecipe, explicitDependencies);
         this.metadata = metadata;
     }
 
     @Override
     protected Object internalCreate() throws ComponentDefinitionException {
         try {
+            if (explicitDependencies != null) {
+                for (Recipe recipe : explicitDependencies) {
+                    recipe.create();
+                }
+            }
             // Create the proxy
             proxy = createProxy(new ServiceDispatcher(), this.metadata.getInterfaceNames());
 
             // Add partially created proxy to the context
-            addObject(proxy, true);
+            ServiceProxyWrapper wrapper = new ServiceProxyWrapper();
+
+            addObject(wrapper, true);
 
             // Handle initial references
             createListeners();
             retrack();
 
             // Return a ServiceProxy that can injection of references or proxies can be done correctly
-            return new ServiceProxyWrapper();
+            return wrapper;
+        } catch (ComponentDefinitionException e) {
+            throw e;
         } catch (Throwable t) {
             throw new ComponentDefinitionException(t);
         }

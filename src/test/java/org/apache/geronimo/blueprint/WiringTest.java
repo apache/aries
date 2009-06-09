@@ -46,9 +46,7 @@ public class WiringTest extends AbstractBlueprintTest {
 
     public void testWiring() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
-        RecipeBuilder i = new RecipeBuilder(new TestBlueprintContainer(registry));
-        Repository repository = i.createRepository();
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new TestBlueprintContainer(registry), repository);
+        BlueprintObjectInstantiator graph = new TestBlueprintContainer(registry).getInstantiator();
         
         Object obj1 = graph.create("pojoA");
         assertNotNull(obj1);
@@ -128,17 +126,15 @@ public class WiringTest extends AbstractBlueprintTest {
         
         assertTrue(obj4 != graph.create("pojoC"));
         
-        repository.destroy();       
+        graph.getRepository().destroy();
         
         // test destroy-method
         assertEquals(true, pojob.getDestroyCalled());
     }
     
     public void testCompoundProperties() throws Exception {
-        ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
-        RecipeBuilder i = new RecipeBuilder(new TestBlueprintContainer(registry));
-        Repository repository = i.createRepository();
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new TestBlueprintContainer(registry), repository);
+        ComponentDefinitionRegistryImpl registry = parse("/test-wiring-on.xml");
+        BlueprintObjectInstantiator graph = new TestBlueprintContainer(registry).getInstantiator();
         
         Object obj5 = graph.create("compound");
         assertNotNull(obj5);
@@ -173,9 +169,7 @@ public class WiringTest extends AbstractBlueprintTest {
         CallbackTracker.clear();
 
         ComponentDefinitionRegistryImpl registry = parse("/test-depends-on.xml");
-        RecipeBuilder i = new RecipeBuilder(new TestBlueprintContainer(registry));
-        Repository repository = i.createRepository();
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new TestBlueprintContainer(registry), repository);
+        BlueprintObjectInstantiator graph = new TestBlueprintContainer(registry).getInstantiator();
         Map instances = graph.createAll("c", "d", "e");
         
         List<Callback> callback = CallbackTracker.getCallbacks();
@@ -184,7 +178,7 @@ public class WiringTest extends AbstractBlueprintTest {
         checkInitCallback(instances.get("c"), callback.get(1));
         checkInitCallback(instances.get("e"), callback.get(2));
                 
-        repository.destroy();
+        graph.getRepository().destroy();
         
         assertEquals(6, callback.size());
         checkDestroyCallback(instances.get("e"), callback.get(3));
@@ -204,9 +198,7 @@ public class WiringTest extends AbstractBlueprintTest {
     
     public void testConstructor() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-constructor.xml");
-        RecipeBuilder i = new RecipeBuilder(new TestBlueprintContainer(registry));
-        Repository repository = i.createRepository();
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new TestBlueprintContainer(registry), repository);
+        BlueprintObjectInstantiator graph = new TestBlueprintContainer(registry).getInstantiator();
 
         Object obj1 = graph.create("pojoA");
         assertNotNull(obj1);
@@ -296,10 +288,8 @@ public class WiringTest extends AbstractBlueprintTest {
 
     public void testGenerics() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics.xml");
-        RecipeBuilder i = new RecipeBuilder(new TestBlueprintContainer(registry));
-        Repository repository = i.createRepository();
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new TestBlueprintContainer(registry), repository);
-        
+        BlueprintObjectInstantiator graph = new TestBlueprintContainer(registry).getInstantiator();
+
         List<Integer> expectedList = new ArrayList<Integer>();
         expectedList.add(new Integer(10));
         expectedList.add(new Integer(20));
@@ -347,9 +337,7 @@ public class WiringTest extends AbstractBlueprintTest {
     
     public void testCircular() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-circular.xml");
-        RecipeBuilder i = new RecipeBuilder(new TestBlueprintContainer(registry));
-        Repository repository = i.createRepository();
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(new TestBlueprintContainer(registry), repository);
+        BlueprintObjectInstantiator graph = new TestBlueprintContainer(registry).getInstantiator();
 
         // this should pass (we allow circular dependencies for components without init method)
         Object obj1 = graph.create("a");
