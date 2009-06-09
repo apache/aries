@@ -38,9 +38,13 @@ public abstract class ExecutionContext {
 
     public static ExecutionContext setContext(ExecutionContext newContext) {
         ExecutionContext oldContext = context.get();
-        context.set(newContext);
+        if (oldContext == null || newContext == null || oldContext.getContextKey() != newContext.getContextKey()) {
+            context.set(newContext);
+        }
         return oldContext;
     }
+
+    public abstract Object getContextKey();
 
     /**
      * Adds a recipe to the top of the execution stack.  If the recipe is already on

@@ -19,11 +19,10 @@
 package org.apache.geronimo.blueprint.namespace;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.LinkedHashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;

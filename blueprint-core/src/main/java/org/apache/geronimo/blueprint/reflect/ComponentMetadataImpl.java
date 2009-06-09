@@ -18,9 +18,9 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import java.util.List;
-import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.geronimo.blueprint.mutable.MutableComponentMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;

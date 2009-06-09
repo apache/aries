@@ -30,9 +30,6 @@ import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ServiceProcessor;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.CollectionRecipe;
-import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
-import org.apache.geronimo.blueprint.di.DefaultRepository;
-import org.apache.geronimo.blueprint.di.ExecutionContext;
 import org.apache.geronimo.blueprint.di.MapRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.di.RefRecipe;
@@ -56,9 +53,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A <code>Recipe</code> to export services into the OSGi registry.
  *
- * TODO: refactor the bundle scope stuff
- * TODO: if the bean is a prototype or a ServiceFactory, a null service should be sent to listeners
- *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 776360 $, $Date: 2009-05-19 17:40:47 +0200 (Tue, 19 May 2009) $
  */
@@ -74,11 +68,12 @@ public class ServiceRecipe extends AbstractRecipe {
     private List<Recipe> explicitDependencies;
 
     private Map properties;
+    private boolean registered;
     private ServiceRegistration registration;
     private Map registrationProperties;
     private List<ServiceListener> listeners;
     private Object service;
-    private boolean bundleScope;
+    private boolean prototypeService;
 
     public ServiceRecipe(String name,
                          ExtendedBlueprintContainer blueprintContainer,
@@ -121,39 +116,44 @@ public class ServiceRecipe extends AbstractRecipe {
                 recipe.create();
             }
         }
-        return new ServiceRegistrationProxy();
+        ServiceRegistrationProxy proxy = new ServiceRegistrationProxy();
+        addObject(proxy, true);
+        getService();
+        return proxy;
     }
 
     public synchronized void register() {
-        if (registration != null) {
-            return;
-        }
-        
-        Hashtable props = new Hashtable();
-        if (properties == null) {
-            properties = (Map) createSimpleRecipe(propertiesRecipe);
-        }
-        props.putAll(properties);
-        props.put(Constants.SERVICE_RANKING, metadata.getRanking());
-        String componentName = getComponentName();
-        if (componentName != null) {
-            props.put(BlueprintConstants.COMPONENT_NAME_PROPERTY, componentName);
-        }
-        for (ServiceProcessor processor : blueprintContainer.getProcessors(ServiceProcessor.class)) {
-            processor.updateProperties(new PropertiesUpdater(), props);
-        }
-        
-        Set<String> classes = getClasses();
-        String[] classArray = classes.toArray(new String[classes.size()]);
-        registration = blueprintContainer.getBundleContext().registerService(classArray, new TriggerServiceFactory(), props);
-        registrationProperties = props;
+        if (!isRegistered()) {
+            registered = true;
+            Hashtable props = new Hashtable();
+            if (properties == null) {
+                properties = (Map) createSimpleRecipe(propertiesRecipe);
+            }
+            props.putAll(properties);
+            props.put(Constants.SERVICE_RANKING, metadata.getRanking());
+            String componentName = getComponentName();
+            if (componentName != null) {
+                props.put(BlueprintConstants.COMPONENT_NAME_PROPERTY, componentName);
+            } else {
+                props.remove(BlueprintConstants.COMPONENT_NAME_PROPERTY);
+            }
+            for (ServiceProcessor processor : blueprintContainer.getProcessors(ServiceProcessor.class)) {
+                processor.updateProperties(new PropertiesUpdater(), props);
+            }
 
-        LOGGER.debug("Service {} registered with interfaces {} and properties {}",
-                     new Object[] { name, classes, props });
+            Set<String> classes = getClasses();
+            String[] classArray = classes.toArray(new String[classes.size()]);
+
+            LOGGER.debug("Registering service {} with interfaces {} and properties {}",
+                         new Object[] { name, classes, props });
+
+            registration = blueprintContainer.getBundleContext().registerService(classArray, new TriggerServiceFactory(), props);
+            registrationProperties = props;
+        }
     }
 
     public synchronized boolean isRegistered() {
-        return registration != null;
+        return registered;
     }
 
     public synchronized ServiceReference getReference() {
@@ -175,20 +175,23 @@ public class ServiceRecipe extends AbstractRecipe {
 
 
     public synchronized void unregister() {
-        if (registration != null) {
+        if (isRegistered()) {
+            registered = false;
+            LOGGER.debug("Unregistering service {}", name);
             // This method needs to allow reentrance, so if we need to make sure the registration is
             // set to null before actually unregistering the service
             ServiceRegistration reg = registration;
-            registration = null;
-            // TODO: shouldn't listeners be called before unregistering the service?
-            reg.unregister();
             if (listeners != null) {
                 LOGGER.debug("Calling listeners for service unregistration");
                 for (ServiceListener listener : listeners) {
-                    listener.unregister(getService(), registrationProperties);
+                    listener.unregister(prototypeService || service instanceof ServiceFactory ? null : service, registrationProperties);
                 }
             }
-            LOGGER.debug("Service {} unregistered", name);
+            reg.unregister();
+            // We need to do this hack in order to support reantrancy
+            if (registration == reg) {
+                registration = null;
+            }
         }
     }
     
@@ -202,9 +205,9 @@ public class ServiceRecipe extends AbstractRecipe {
         synchronized (this) {
             if (this.service == null) {
                 try {
-                    bundleScope = isBundleScope(metadata.getServiceComponent());
-                    LOGGER.debug("Creating service instance (bundle scope = {})", bundleScope);
-                    this.service = createInstance(false);
+                    prototypeService = isPrototypeService(metadata.getServiceComponent());
+                    LOGGER.debug("Creating service instance");
+                    this.service = createInstance();
                     LOGGER.debug("Service created: {}", this.service);
                     // When the service is first requested, we need to create listeners and call them
                     if (listeners == null) {
@@ -217,7 +220,8 @@ public class ServiceRecipe extends AbstractRecipe {
                         LOGGER.debug("Listeners created: {}", listeners);
                         LOGGER.debug("Calling listeners for service registration");
                         for (ServiceListener listener : listeners) {
-                            listener.register(service, registrationProperties);
+                            listener.register(prototypeService || service instanceof ServiceFactory ? null : service,
+                                              registrationProperties);
                         }
                     }
                 } catch (RuntimeException e) {
@@ -229,8 +233,8 @@ public class ServiceRecipe extends AbstractRecipe {
         Object service = this.service;
         if (service instanceof ServiceFactory) {
             service = ((ServiceFactory) service).getService(bundle, registration);
-        } else if (bundleScope) {
-            service = createInstance(true);
+        } else {
+            service = createInstance();
             LOGGER.debug("Created service instance for bundle: " + bundle + " " + service.hashCode());
         }
         if (service == null) {
@@ -240,7 +244,10 @@ public class ServiceRecipe extends AbstractRecipe {
     }
 
     public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
-        if (bundleScope) {
+        if (this.service instanceof ServiceFactory) {
+            ((ServiceFactory) this.service).ungetService(bundle, registration, service);
+        }
+        if (prototypeService) {
             destroyInstance(service);
             LOGGER.debug("Destroyed service instance for bundle: " + bundle);
         }
@@ -266,22 +273,8 @@ public class ServiceRecipe extends AbstractRecipe {
         return classes;
     }
 
-    private Object createInstance(boolean scoped) {
-        if (scoped) {
-            Recipe recipe = serviceRecipe;
-            Repository repo = blueprintContainer.getRepository();
-            if (recipe instanceof RefRecipe) {
-                recipe = repo.getRecipe(((RefRecipe) recipe).getIdRef());
-            }
-            DefaultRepository repository = new DefaultRepository((DefaultRepository) repo);
-            if (repository.getRecipe(recipe.getName()) != recipe) {
-                repository.putRecipe(recipe.getName(), recipe);
-            }
-            BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(blueprintContainer, repository);
-            return graph.create(recipe.getName());
-        } else {
-            return createSimpleRecipe(serviceRecipe);
-        }
+    private Object createInstance() {
+        return createSimpleRecipe(serviceRecipe);
     }
 
     private Object createSimpleRecipe(Recipe recipe) {
@@ -303,7 +296,7 @@ public class ServiceRecipe extends AbstractRecipe {
         ((BeanRecipe) recipe).destroyInstance(instance);
     }
 
-    private boolean isBundleScope(Metadata value) {
+    private boolean isPrototypeService(Metadata value) {
         ComponentMetadata metadata = null;
         if (value instanceof RefMetadata) {
             RefMetadata ref = (RefMetadata) value;
@@ -313,22 +306,7 @@ public class ServiceRecipe extends AbstractRecipe {
         }
         if (metadata instanceof BeanMetadata) {
             BeanMetadata bean = (BeanMetadata) metadata;
-            Class clazz = bean.getRuntimeClass();
-            // Try to get the class from the className attribute
-            if (clazz == null && bean.getClassName() != null) {
-                ExecutionContext oldContext = ExecutionContext.setContext(new DefaultExecutionContext(blueprintContainer, blueprintContainer.getRepository()));
-                try {
-                    clazz = loadClass(bean.getClassName());
-                } finally {
-                    ExecutionContext.setContext(oldContext);
-                }
-            }
-            // TODO: if clazz == null, we must be using a factory, just ignore it for now
-            if (clazz != null && ServiceFactory.class.isAssignableFrom(clazz)) {
-                return false;
-            } else {
-                return BeanMetadata.SCOPE_BUNDLE.equals(bean.getScope());
-            }
+            return BeanMetadata.SCOPE_PROTOTYPE.equals(bean.getScope());
         } else {
             return false;
         }
@@ -366,7 +344,7 @@ public class ServiceRecipe extends AbstractRecipe {
         }
 
         public void unregister() {
-            ServiceRecipe.this.unregister();
+            throw new UnsupportedOperationException();
         }
     }
 

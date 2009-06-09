@@ -18,16 +18,15 @@
  */
 package org.apache.geronimo.blueprint.ext;
 
-import java.util.Map;
-import java.util.List;
-import java.util.Properties;
-import java.net.URL;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
  * Property placeholder that looks for properties in the System properties.

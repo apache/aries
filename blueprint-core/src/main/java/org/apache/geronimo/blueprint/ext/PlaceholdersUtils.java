@@ -18,13 +18,13 @@
  */
 package org.apache.geronimo.blueprint.ext;
 
-import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
-import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
  * Utility for placeholders parsing / validation

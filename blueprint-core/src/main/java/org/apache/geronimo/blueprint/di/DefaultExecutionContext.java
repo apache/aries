@@ -58,6 +58,10 @@ public class DefaultExecutionContext extends ExecutionContext {
         this.repository = repository;
     }
 
+    public Object getContextKey() {
+        return this.blueprintContainer;
+    }
+
     public void push(Recipe recipe) {
         if (stack.contains(recipe)) {
             ArrayList<Recipe> circularity = new ArrayList<Recipe>(stack.subList(stack.indexOf(recipe), stack.size()));

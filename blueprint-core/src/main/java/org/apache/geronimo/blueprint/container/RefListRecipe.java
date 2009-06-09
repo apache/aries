@@ -24,12 +24,10 @@ import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.RandomAccess;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
@@ -58,28 +56,32 @@ public class RefListRecipe extends AbstractServiceReferenceRecipe {
 
     private final RefListMetadata metadata;
     private final List<ManagedCollection> collections = new ArrayList<ManagedCollection>();
-    private DynamicCollection<ServiceDispatcher> storage;
+    private final DynamicCollection<ServiceDispatcher> storage = new DynamicCollection<ServiceDispatcher>();
     private final List<ServiceDispatcher> unboundDispatchers = new ArrayList<ServiceDispatcher>();
 
     public RefListRecipe(String name,
                          ExtendedBlueprintContainer blueprintContainer,
                          RefListMetadata metadata,
-                         Recipe listenersRecipe) {
-        super(name, blueprintContainer, metadata, listenersRecipe);
+                         Recipe listenersRecipe,
+                         List<Recipe> explicitDependencies) {
+        super(name, blueprintContainer, metadata, listenersRecipe, explicitDependencies);
         this.metadata = metadata;
     }
 
     @Override
     protected Object internalCreate() throws ComponentDefinitionException {
-        Comparator comparator = null;
         try {
-            storage = new DynamicCollection<ServiceDispatcher>();
-
+            if (explicitDependencies != null) {
+                for (Recipe recipe : explicitDependencies) {
+                    recipe.create();
+                }
+            }
+            ProvidedObject object = new ProvidedObject();
+            addObject(object, true);
             // Handle initial references
             createListeners();
             retrack();
-
-            return new ProvidedObject();
+            return object;
         } catch (ComponentDefinitionException t) {
             throw t;
         } catch (Throwable t) {
@@ -222,55 +224,6 @@ public class RefListRecipe extends AbstractServiceReferenceRecipe {
                 service = reference.getBundle().getBundleContext().getService(reference);
             }
             return service;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ServiceDispatcher that = (ServiceDispatcher) o;
-            if (this.proxy != null ? !this.proxy.equals(that.proxy) : that.proxy != null) return false;
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            return proxy != null ? proxy.hashCode() : 0;
-        }
-    }
-
-    /**
-     * A natural order comparator working on objects implementing Comparable
-     * and simply delegating to Comparable.compareTo()
-     */
-    public static class NaturalOrderComparator implements Comparator<Comparable> {
-
-        public int compare(Comparable o1, Comparable o2) {
-            return o1.compareTo(o2);
-        }
-
-    }
-
-    /**
-     * A comparator to order ServiceDispatchers, sorting on references or proxies
-     * depending of the configuration of the <ref-list/> or <ref-set/>
-     */
-    public static class DispatcherComparator implements Comparator<ServiceDispatcher> {
-
-        private final Comparator comparator;
-        private final boolean orderingReferences;
-
-        public DispatcherComparator(Comparator comparator, boolean orderingReferences) {
-            this.comparator = comparator;
-            this.orderingReferences = orderingReferences;
-        }
-
-        public int compare(ServiceDispatcher d1, ServiceDispatcher d2) {
-            return comparator.compare(getOrdering(d1), getOrdering(d2));
-        }
-
-        protected Object getOrdering(ServiceDispatcher d) {
-            return orderingReferences ? d.reference : d.proxy;
         }
 
     }

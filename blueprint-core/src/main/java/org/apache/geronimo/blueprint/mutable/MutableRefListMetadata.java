@@ -18,7 +18,6 @@
  */
 package org.apache.geronimo.blueprint.mutable;
 
-import org.osgi.service.blueprint.reflect.Target;
 import org.apache.geronimo.blueprint.ExtendedRefListMetadata;
 
 /**

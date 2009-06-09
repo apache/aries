@@ -20,7 +20,6 @@ package org.apache.geronimo.blueprint.container;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -121,10 +120,15 @@ public class RecipeBuilder {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
+        List<Recipe> deps = new ArrayList<Recipe>();
+        for (String name : metadata.getDependsOn()) {
+            deps.add(new RefRecipe(getName(null), name));
+        }
         RefListRecipe recipe = new RefListRecipe(getName(metadata.getId()),
                                                  blueprintContainer,
                                                  metadata,
-                                                 listenersRecipe);
+                                                 listenersRecipe,
+                                                 deps);
         return recipe;
     }
 
@@ -136,10 +140,15 @@ public class RecipeBuilder {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
+        List<Recipe> deps = new ArrayList<Recipe>();
+        for (String name : metadata.getDependsOn()) {
+            deps.add(new RefRecipe(getName(null), name));
+        }
         ReferenceRecipe recipe = new ReferenceRecipe(getName(metadata.getId()),
                                                      blueprintContainer,
                                                      metadata,
-                                                     listenersRecipe);
+                                                     listenersRecipe,
+                                                     deps);
         return recipe;
     }
 
@@ -226,8 +235,12 @@ public class RecipeBuilder {
     private Recipe createRecipe(RegistrationListener listener) throws Exception {
         BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, ServiceListener.class);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
-        recipe.setProperty("registerMethod", listener.getRegistrationMethodName());
-        recipe.setProperty("unregisterMethod", listener.getUnregistrationMethodName());
+        if (listener.getRegistrationMethodName() != null) {
+            recipe.setProperty("registerMethod", listener.getRegistrationMethodName());
+        }
+        if (listener.getUnregistrationMethodName() != null) {
+            recipe.setProperty("unregisterMethod", listener.getUnregistrationMethodName());
+        }
         return recipe;
     }
 

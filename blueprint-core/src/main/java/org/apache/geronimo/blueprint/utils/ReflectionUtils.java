@@ -83,7 +83,7 @@ public class ReflectionUtils {
             if (name.equals(method.getName()) && Void.TYPE.equals(method.getReturnType()) && methodParams.length == paramTypes.length) {
                 boolean assignable = true;
                 for (int i = 0; i < paramTypes.length && assignable; i++) {
-                    assignable = methodParams[i].isAssignableFrom(paramTypes[i]);
+                    assignable &= paramTypes[i] == null || methodParams[i].isAssignableFrom(paramTypes[i]);
                 }
                 if (assignable) {
                     methods.add(method);

@@ -62,16 +62,20 @@ public class ServiceListener {
         if (initialized) {
             return;
         }
-        Class[] paramTypes = new Class[] { service.getClass(), Map.class };
+        Class[] paramTypes = new Class[] { service != null ? service.getClass() : null, Map.class };
         Class listenerClass = listener.getClass();
 
-        registerMethods = ReflectionUtils.findCompatibleMethods(listenerClass, registerMethod, paramTypes);
-        if (registerMethods.size() == 0) {
-            throw new ComponentDefinitionException("No matching methods found for listener registration method: " + registerMethod);
+        if (registerMethod != null) {
+            registerMethods = ReflectionUtils.findCompatibleMethods(listenerClass, registerMethod, paramTypes);
+            if (registerMethods.size() == 0) {
+                throw new ComponentDefinitionException("No matching methods found for listener registration method: " + registerMethod);
+            }
         }
-        unregisterMethods = ReflectionUtils.findCompatibleMethods(listenerClass, unregisterMethod, paramTypes);
-        if (unregisterMethods.size() == 0) {
-            throw new ComponentDefinitionException("No matching methods found for listener unregistration method: " + unregisterMethod);
+        if (unregisterMethod != null) {
+            unregisterMethods = ReflectionUtils.findCompatibleMethods(listenerClass, unregisterMethod, paramTypes);
+            if (unregisterMethods.size() == 0) {
+                throw new ComponentDefinitionException("No matching methods found for listener unregistration method: " + unregisterMethod);
+            }
         }
         initialized = true;
     }

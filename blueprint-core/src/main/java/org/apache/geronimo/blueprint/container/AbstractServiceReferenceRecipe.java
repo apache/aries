@@ -18,19 +18,20 @@
  */
 package org.apache.geronimo.blueprint.container;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.sf.cglib.proxy.Dispatcher;
 import net.sf.cglib.proxy.Enhancer;
@@ -67,6 +68,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected final ExtendedBlueprintContainer blueprintContainer;
     protected final ServiceReferenceMetadata metadata;
     protected final Recipe listenersRecipe;
+    protected final List<Recipe> explicitDependencies;
     protected final ClassLoader proxyClassLoader;
     protected final boolean optional;
     /** The OSGi filter for tracking references */
@@ -83,12 +85,14 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected AbstractServiceReferenceRecipe(String name,
                                              ExtendedBlueprintContainer blueprintContainer,
                                              ServiceReferenceMetadata metadata,
-                                             Recipe listenersRecipe) {
+                                             Recipe listenersRecipe,
+                                             List<Recipe> explicitDependencies) {
         super(name);
         this.prototype = false;
         this.blueprintContainer = blueprintContainer;
         this.metadata = metadata;
         this.listenersRecipe = listenersRecipe;
+        this.explicitDependencies = explicitDependencies;
         // Create a ClassLoader delegating to the bundle, but also being able to see our bundle classes
         // so that the created proxy can access cglib classes.
         this.proxyClassLoader = new BundleDelegatingClassLoader(blueprintContainer.getBundleContext().getBundle(),
@@ -125,7 +129,11 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         if (started.compareAndSet(true, false)) {
             synchronized (references) {
                 blueprintContainer.getBundleContext().removeServiceListener(this);
-                references.clear();
+                for (Iterator<ServiceReference> it = references.iterator(); it.hasNext();) {
+                    ServiceReference ref = it.next();
+                    it.remove();
+                    untrack(ref);
+                }
                 satisfied.set(false);
             }
         }
@@ -144,6 +152,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         List<Recipe> recipes = super.getNestedRecipes();
         if (listenersRecipe != null) {
             recipes.add(listenersRecipe);
+        }
+        if (explicitDependencies != null) {
+            recipes.addAll(explicitDependencies);
         }
         return recipes;
     }

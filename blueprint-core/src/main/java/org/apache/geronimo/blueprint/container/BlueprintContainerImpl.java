@@ -70,7 +70,6 @@ import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.RefListMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
@@ -246,7 +245,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         break;
                     }
                     case Populated:
-                        instantiator = new BlueprintObjectInstantiator(this, new RecipeBuilder(this).createRepository());
+                        getInstantiator();
                         trackServiceReferences();
                         Runnable r = new Runnable() {
                             public void run() {
@@ -288,7 +287,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                     case Create:
                         timeoutFuture.cancel(false);
                         registerServices();
-                        instantiateEagerSingletonBeans();
+                        instantiateEagerComponents();
 
                         // Register the BlueprintContainer in the OSGi registry
                         if (registration == null) {
@@ -318,6 +317,13 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName(), t);
             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundleContext().getBundle(), getExtenderBundle(), t));
         }
+    }
+
+    protected BlueprintObjectInstantiator getInstantiator() throws Exception {
+        if (instantiator == null) {
+            instantiator = new BlueprintObjectInstantiator(this, new RecipeBuilder(this).createRepository());
+        }
+        return instantiator;
     }
 
     private void processTypeConverters() throws Exception {
@@ -437,9 +443,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     public void notifySatisfaction(SatisfiableRecipe satisfiable) {
         LOGGER.debug("Notified satisfaction {} in bundle {}: {}",
                 new Object[] { satisfiable.getName(), bundleContext.getBundle().getSymbolicName(), satisfiable.isSatisfied() });
-        if (state == State.WaitForInitialReferences) {
-            schedule();
-        } else if (state == State.Created) {
+        if (state == State.Create || state == State.Created ) {
             Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
             for (String name : dependencies.keySet()) {
                 ComponentMetadata metadata = componentDefinitionRegistry.getComponentDefinition(name);
@@ -463,10 +467,12 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                     }
                 }
             }
+        } else {
+            schedule();
         }
     }
 
-    private void instantiateEagerSingletonBeans() {
+    private void instantiateEagerComponents() {
         List<String> components = new ArrayList<String>();
         for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
             ComponentMetadata component = componentDefinitionRegistry.getComponentDefinition(name);

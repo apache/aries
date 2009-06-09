@@ -110,12 +110,8 @@ public class DynamicCollection<E> extends AbstractCollection<E> {
             throw new NullPointerException();
         }
         synchronized (lock) {
-            if (!storage.contains(o)) {
-                internalAdd(storage.size(), o);
-                return true;
-            } else {
-                return false;
-            }
+            internalAdd(storage.size(), o);
+            return true;
         }
     }
 

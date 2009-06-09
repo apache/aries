@@ -20,7 +20,6 @@ package org.apache.geronimo.blueprint.reflect;
 
 import org.apache.geronimo.blueprint.mutable.MutableRefListMetadata;
 import org.osgi.service.blueprint.reflect.RefListMetadata;
-import org.osgi.service.blueprint.reflect.Target;
 
 /**
  * Implementation of RefCollectionMetadata 
