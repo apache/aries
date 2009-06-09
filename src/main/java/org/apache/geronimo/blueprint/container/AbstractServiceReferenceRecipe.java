@@ -80,7 +80,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     private final AtomicBoolean started = new AtomicBoolean();
     private final AtomicBoolean satisfied = new AtomicBoolean();
     private SatisfactionListener satisfactionListener;
-    private ProxyFactory proxyFactory;
+    private volatile ProxyFactory proxyFactory;
 
     protected AbstractServiceReferenceRecipe(String name,
                                              ExtendedBlueprintContainer blueprintContainer,
@@ -95,6 +95,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         this.explicitDependencies = explicitDependencies;
         // Create a ClassLoader delegating to the bundle, but also being able to see our bundle classes
         // so that the created proxy can access cglib classes.
+        // TODO: use a doPrivileged block 
         this.proxyClassLoader = new BundleDelegatingClassLoader(blueprintContainer.getBundleContext().getBundle(),
                                                                 getClass().getClassLoader());
         
@@ -191,31 +192,27 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return getProxyFactory().createProxy(proxyClassLoader, toClassArray(loadAllClasses(interfaces)), dispatcher);
     }
 
-    protected ProxyFactory getProxyFactory() throws ClassNotFoundException {
+    protected synchronized ProxyFactory getProxyFactory() throws ClassNotFoundException {
         if (proxyFactory == null) {
-            synchronized (this) {
-                if (proxyFactory == null) {
-                    boolean proxyClass = false;
-                    if (metadata instanceof ExtendedServiceReferenceMetadata) {
-                        proxyClass = (((ExtendedServiceReferenceMetadata) metadata).getProxyMethod() & ExtendedServiceReferenceMetadata.PROXY_METHOD_CLASSES) != 0;
-                    }
-                    List<Class> classes = loadAllClasses(this.metadata.getInterfaceNames());
-                    if (!proxyClass) {
-                        for (Class cl : classes) {
-                            if (!cl.isInterface()) {
-                                throw new ComponentDefinitionException("A class " + cl.getName() + " was found in the interfaces list, but class proxying is not allowed by default. The ext:proxy-method='class' attribute needs to be added to this service reference.");
-                            }
-                        }
-                    }
-                    try {
-                        proxyFactory = new CgLibProxyFactory();
-                    } catch (Throwable t) {
-                        if (proxyClass) {
-                            throw new ComponentDefinitionException("Class proxying has been enabled but cglib can not be used", t);
-                        }
-                        proxyFactory = new JdkProxyFactory();
+            boolean proxyClass = false;
+            if (metadata instanceof ExtendedServiceReferenceMetadata) {
+                proxyClass = (((ExtendedServiceReferenceMetadata) metadata).getProxyMethod() & ExtendedServiceReferenceMetadata.PROXY_METHOD_CLASSES) != 0;
+            }
+            List<Class> classes = loadAllClasses(this.metadata.getInterfaceNames());
+            if (!proxyClass) {
+                for (Class cl : classes) {
+                    if (!cl.isInterface()) {
+                        throw new ComponentDefinitionException("A class " + cl.getName() + " was found in the interfaces list, but class proxying is not allowed by default. The ext:proxy-method='class' attribute needs to be added to this service reference.");
                     }
                 }
+            }
+            try {
+                proxyFactory = new CgLibProxyFactory();
+            } catch (Throwable t) {
+                if (proxyClass) {
+                    throw new ComponentDefinitionException("Class proxying has been enabled but cglib can not be used", t);
+                }
+                proxyFactory = new JdkProxyFactory();
             }
         }
         return proxyFactory;

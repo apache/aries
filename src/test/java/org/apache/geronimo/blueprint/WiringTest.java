@@ -133,7 +133,7 @@ public class WiringTest extends AbstractBlueprintTest {
     }
     
     public void testCompoundProperties() throws Exception {
-        ComponentDefinitionRegistryImpl registry = parse("/test-wiring-on.xml");
+        ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
         BlueprintObjectInstantiator graph = new TestBlueprintContainer(registry).getInstantiator();
         
         Object obj5 = graph.create("compound");

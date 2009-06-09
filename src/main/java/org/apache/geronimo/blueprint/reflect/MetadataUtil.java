@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.io.Serializable;
 
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -184,7 +185,7 @@ public class MetadataUtil {
         return arguments;
     }
     
-    private static class BeanArgumentComparator implements Comparator<BeanArgument> {
+    private static class BeanArgumentComparator implements Comparator<BeanArgument>, Serializable {
         public int compare(BeanArgument object1, BeanArgument object2) {
             return object1.getIndex() - object2.getIndex();
         }        

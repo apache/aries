@@ -197,7 +197,7 @@ public class RefListRecipe extends AbstractServiceReferenceRecipe {
      * The ServiceDispatcher is used when creating the cglib proxy.
      * Thic class is responsible for getting the actual service that will be used.
      */
-    public class ServiceDispatcher implements Callable<Object> {
+    public static class ServiceDispatcher implements Callable<Object> {
 
         public ServiceReference reference;
         public Object service;

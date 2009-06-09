@@ -49,7 +49,7 @@ public class BundleDelegatingClassLoader extends ClassLoader {
     }
 
     protected URL findResource(String name) {
-        URL resource = findResource(name);
+        URL resource = bundle.getResource(name);
         if (classLoader != null && resource == null) {
             resource = classLoader.getResource(name);
         }
