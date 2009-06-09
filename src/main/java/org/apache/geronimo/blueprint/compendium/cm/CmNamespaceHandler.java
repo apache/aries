@@ -380,11 +380,14 @@ public class CmNamespaceHandler implements NamespaceHandler {
         metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
         metadata.addProperty("managedObjectManager", createRef(context, MANAGED_OBJECT_MANAGER_NAME));
         metadata.addProperty("persistentId", createValue(context, persistentId));
-        if (element.hasAttribute(UPDATE_STRATEGY_ATTRIBUTE)) {
-            metadata.addProperty("updateStrategy", createValue(context, element.getAttribute(UPDATE_STRATEGY_ATTRIBUTE)));
+        String updateStrategy = element.getAttribute(UPDATE_STRATEGY_ATTRIBUTE);
+        if (updateStrategy != null) {
+            metadata.addProperty("updateStrategy", createValue(context, updateStrategy));
         }
         if (element.hasAttribute(UPDATE_METHOD_ATTRIBUTE)) {
             metadata.addProperty("updateMethod", createValue(context, element.getAttribute(UPDATE_METHOD_ATTRIBUTE)));
+        } else if ("component-managed".equals(updateStrategy)) {
+            throw new ComponentDefinitionException(UPDATE_METHOD_ATTRIBUTE + " attribute must be set when " + UPDATE_STRATEGY_ATTRIBUTE + " is set to 'component-managed'");
         }
         metadata.addProperty("beanName", createIdRef(context, component.getId()));
         context.getComponentDefinitionRegistry().registerComponentDefinition(metadata);
