@@ -404,8 +404,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private void trackServiceReferences() {
         Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
         Set<String> satisfiables = new HashSet<String>();
-        for (String name : dependencies.keySet()) {
-            for (SatisfiableRecipe satisfiable : dependencies.get(name)) {
+        for (List<SatisfiableRecipe> recipes : dependencies.values()) {
+            for (SatisfiableRecipe satisfiable : recipes) {
                 if (satisfiables.add(satisfiable.getName())) {
                     satisfiable.start(this);
                 }
@@ -418,8 +418,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
         if (dependencies != null) {
             Set<String> satisfiables = new HashSet<String>();
-            for (String name : dependencies.keySet()) {
-                for (SatisfiableRecipe satisfiable : dependencies.get(name)) {
+            for (List<SatisfiableRecipe> recipes : dependencies.values()) {
+                for (SatisfiableRecipe satisfiable : recipes) {
                     if (satisfiables.add(satisfiable.getName())) {
                         satisfiable.stop();
                     }
@@ -430,8 +430,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
     private boolean checkAllSatisfiables() {
         Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
-        for (String name : dependencies.keySet()) {
-            for (SatisfiableRecipe recipe : dependencies.get(name)) {
+        for (List<SatisfiableRecipe> recipes : dependencies.values()) {
+            for (SatisfiableRecipe recipe : recipes) {
                 if (!recipe.isSatisfied()) {
                     return false;
                 }
@@ -445,13 +445,14 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                 new Object[] { satisfiable.getName(), bundleContext.getBundle().getSymbolicName(), satisfiable.isSatisfied() });
         if (state == State.Create || state == State.Created ) {
             Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
-            for (String name : dependencies.keySet()) {
+            for (Map.Entry<String, List<SatisfiableRecipe>> entry : dependencies.entrySet()) {
+                String name = entry.getKey();
                 ComponentMetadata metadata = componentDefinitionRegistry.getComponentDefinition(name);
                 if (metadata instanceof ServiceMetadata) {
                     ServiceRecipe reg = (ServiceRecipe) instantiator.getRepository().getRecipe(name);
                     synchronized (reg) {
                         boolean satisfied = true;
-                        for (SatisfiableRecipe recipe : dependencies.get(name)) {
+                        for (SatisfiableRecipe recipe : entry.getValue()) {
                             if (!recipe.isSatisfied()) {
                                 satisfied = false;
                                 break;
@@ -534,8 +535,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         List<String> missing = new ArrayList<String>();
         Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
         Set<SatisfiableRecipe> recipes = new HashSet<SatisfiableRecipe>();
-        for (String name : dependencies.keySet()) {
-            for (SatisfiableRecipe recipe : dependencies.get(name)) {
+        for (List<SatisfiableRecipe> deps : dependencies.values()) {
+            for (SatisfiableRecipe recipe : deps) {
                 if (!recipe.isSatisfied()) {
                     recipes.add(recipe);
                 }

@@ -272,7 +272,7 @@ public class CmManagedServiceFactory {
         Method method = null;        
         if (componentDestroyMethod != null && componentDestroyMethod.length() > 0) {
             List<Method> methods = ReflectionUtils.findCompatibleMethods(clazz, componentDestroyMethod, new Class [] { int.class });
-            if (methods != null & !methods.isEmpty()) {
+            if (methods != null && !methods.isEmpty()) {
                 method = methods.get(0);
             }
         }
