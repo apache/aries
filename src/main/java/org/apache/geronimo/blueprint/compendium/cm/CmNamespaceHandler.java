@@ -280,11 +280,11 @@ public class CmNamespaceHandler implements NamespaceHandler {
             if (node instanceof Element) {
                 Element e = (Element) node;
                 if (isBlueprintNamespace(e.getNamespaceURI())) {
-                    if (nodeNameEquals(e, Parser.INTERFACES_ELEMENT)) {
+                    if (nodeNameEquals(e, INTERFACES_ELEMENT)) {
                         if (interfaces != null) {
                             throw new ComponentDefinitionException("Only one of " + Parser.INTERFACE_ATTRIBUTE + " attribute or " + INTERFACES_ELEMENT + " element must be used");
                         }
-                        interfaces = parser.parseInterfaceNames(e);
+                        interfaces = parseInterfaceNames(e);
                         factoryMetadata.addProperty("interfaces", createList(context, interfaces));                    
                     } else if (nodeNameEquals(e, Parser.SERVICE_PROPERTIES_ELEMENT)) { 
                         MapMetadata map = parser.parseServiceProperties(e, factoryMetadata);
@@ -404,7 +404,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         if (registry.getComponentDefinition(CONFIG_ADMIN_REFERENCE_NAME) == null) {
             MutableReferenceMetadata reference = context.createMetadata(MutableReferenceMetadata.class);
             reference.setId(CONFIG_ADMIN_REFERENCE_NAME);
-            reference.addInterfaceName(ConfigurationAdmin.class.getName());
+            reference.setInterfaceName(ConfigurationAdmin.class.getName());
             reference.setAvailability(ReferenceMetadata.AVAILABILITY_MANDATORY);
             reference.setTimeout(300000);
             registry.registerComponentDefinition(reference);
@@ -501,6 +501,27 @@ public class CmNamespaceHandler implements NamespaceHandler {
             return ((ParserContextImpl) ctx).getParser();
         }
         throw new RuntimeException("Unable to get parser");
+    }
+
+    public List<String> parseInterfaceNames(Element element) {
+        List<String> interfaceNames = new ArrayList<String>();
+        NodeList nl = element.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node node = nl.item(i);
+            if (node instanceof Element) {
+                Element e = (Element) node;
+                if (nodeNameEquals(e, VALUE_ELEMENT)) {
+                    String v = getTextValue(e).trim();
+                    if (interfaceNames.contains(v)) {
+                        throw new ComponentDefinitionException("The element " + INTERFACES_ELEMENT + " should not contain the same interface twice");
+                    }
+                    interfaceNames.add(getTextValue(e));
+                } else {
+                    throw new ComponentDefinitionException("Unsupported element " + e.getNodeName() + " inside an " + INTERFACES_ELEMENT + " element");
+                }
+            }
+        }
+        return interfaceNames;
     }
 
 }
