@@ -27,7 +27,7 @@ public interface ServiceReferenceMetadata extends ComponentMetadata {
     
     int getAvailability();
 
-    List<String> getInterfaceNames();
+    String getInterfaceName();
 
     String getComponentName();
     

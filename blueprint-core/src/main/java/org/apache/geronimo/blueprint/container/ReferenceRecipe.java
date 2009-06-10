@@ -20,6 +20,7 @@ package org.apache.geronimo.blueprint.container;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Collections;
 import java.util.concurrent.Callable;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
@@ -70,7 +71,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                 }
             }
             // Create the proxy
-            proxy = createProxy(new ServiceDispatcher(), this.metadata.getInterfaceNames());
+            proxy = createProxy(new ServiceDispatcher(), Collections.singletonList(this.metadata.getInterfaceName()));
 
             // Add partially created proxy to the context
             ServiceProxyWrapper wrapper = new ServiceProxyWrapper();

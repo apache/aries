@@ -56,7 +56,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Abstract class for service reference recipes.
  *
- * TODO: handle dependsOn on references
+ * TODO: if we have a single interface (which is the standard behavior), then we should be able to get rid of
+ *       the proxyClassloader and just use this interface classloader to define the proxy
  *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
@@ -98,7 +99,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         // TODO: use a doPrivileged block 
         this.proxyClassLoader = new BundleDelegatingClassLoader(blueprintContainer.getBundleContext().getBundle(),
                                                                 getClass().getClassLoader());
-        
+
         this.optional = (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL);
         this.filter = createOsgiFilter(metadata);
     }
@@ -169,7 +170,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             if (listenersRecipe != null) {
                 listeners = (List<Listener>) listenersRecipe.create();
                 for (Listener listener : listeners) {
-                    listener.init(loadAllClasses(metadata.getInterfaceNames()));
+                    listener.init(loadAllClasses(Collections.singletonList(metadata.getInterfaceName())));
                 }
             } else {
                 listeners = Collections.emptyList();
@@ -198,7 +199,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             if (metadata instanceof ExtendedServiceReferenceMetadata) {
                 proxyClass = (((ExtendedServiceReferenceMetadata) metadata).getProxyMethod() & ExtendedServiceReferenceMetadata.PROXY_METHOD_CLASSES) != 0;
             }
-            List<Class> classes = loadAllClasses(this.metadata.getInterfaceNames());
+            List<Class> classes = loadAllClasses(Collections.singletonList(this.metadata.getInterfaceName()));
             if (!proxyClass) {
                 for (Class cl : classes) {
                     if (!cl.isInterface()) {
@@ -415,7 +416,8 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             members.add(flt);
         }
         // Handle interfaces
-        Set<String> interfaces = new HashSet<String>(metadata.getInterfaceNames());
+        Set<String> interfaces = new HashSet<String>();
+        interfaces.add(metadata.getInterfaceName());
         if (!interfaces.isEmpty()) {
             for (String itf : interfaces) {
                 members.add("(" + Constants.OBJECTCLASS + "=" + itf + ")");
