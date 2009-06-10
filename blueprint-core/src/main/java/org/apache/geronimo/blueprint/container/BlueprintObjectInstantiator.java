@@ -50,7 +50,7 @@ public class BlueprintObjectInstantiator  {
         checkReferences();
     }
     
-    public  Repository getRepository() {
+    public Repository getRepository() {
         return repository;
     }
     
