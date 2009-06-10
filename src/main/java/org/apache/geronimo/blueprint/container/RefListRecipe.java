@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.RandomAccess;
+import java.util.Collections;
 import java.util.concurrent.Callable;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
@@ -128,7 +129,7 @@ public class RefListRecipe extends AbstractServiceReferenceRecipe {
                     }
                 } else {
                     dispatcher = new ServiceDispatcher(reference);
-                    List<String> interfaces = metadata.getInterfaceNames();
+                    List<String> interfaces = Collections.singletonList(metadata.getInterfaceName());
                     if (metadata instanceof ExtendedRefListMetadata) {
                         boolean greedy = (((ExtendedRefListMetadata) metadata).getProxyMethod() & ExtendedRefListMetadata.PROXY_METHOD_GREEDY) != 0;
                         if (greedy) {

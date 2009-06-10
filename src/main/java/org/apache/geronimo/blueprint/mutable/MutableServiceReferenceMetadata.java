@@ -32,9 +32,7 @@ public interface MutableServiceReferenceMetadata extends ExtendedServiceReferenc
 
     void setAvailability(int availability);
 
-    void addInterfaceName(String interfaceName);
-
-    void removeInterfaceName(String interfaceName);
+    void setInterfaceName(String interfaceName);
 
     void setComponentName(String componentName);
 

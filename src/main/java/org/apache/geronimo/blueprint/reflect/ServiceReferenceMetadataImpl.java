@@ -37,7 +37,7 @@ import org.osgi.service.blueprint.reflect.Target;
 public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl implements MutableServiceReferenceMetadata {
 
     protected int availability;
-    protected List<String> interfaceNames;
+    protected String interfaceName;
     protected String componentName;
     protected String filter;
     protected Collection<Listener> serviceListeners;
@@ -49,7 +49,7 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
     public ServiceReferenceMetadataImpl(ServiceReferenceMetadata source) {
         super(source);
         this.availability = source.getAvailability();
-        this.interfaceNames = new ArrayList<String>(source.getInterfaceNames());
+        this.interfaceName = source.getInterfaceName();
         this.componentName = source.getComponentName();
         this.filter = source.getFilter();
         for (Listener listener : source.getServiceListeners()) {
@@ -65,25 +65,12 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
         this.availability = availability;
     }
 
-    public List<String> getInterfaceNames() {
-        return interfaceNames;
+    public String getInterfaceName() {
+        return interfaceName;
     }
 
-    public void setInterfaceNames(List<String> interfaceNames) {
-        this.interfaceNames = interfaceNames != null ? new ArrayList<String>(interfaceNames) : null;
-    }
-
-    public void addInterfaceName(String interfaceName) {
-        if (this.interfaceNames == null) {
-            this.interfaceNames = new ArrayList<String>();
-        }
-        this.interfaceNames.add(interfaceName);
-    }
-
-    public void removeInterfaceName(String interfaceName) {
-        if (this.interfaceNames != null) {
-            this.interfaceNames.remove(interfaceName);
-        }
+    public void setInterfaceName(String interfaceName) {
+        this.interfaceName = interfaceName;
     }
 
     public String getComponentName() {
