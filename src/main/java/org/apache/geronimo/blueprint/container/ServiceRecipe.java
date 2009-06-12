@@ -119,7 +119,7 @@ public class ServiceRecipe extends AbstractRecipe {
         }
         ServiceRegistrationProxy proxy = new ServiceRegistrationProxy();
         addObject(proxy, true);
-        getService();
+        internalGetService();
         return proxy;
     }
 
@@ -196,50 +196,66 @@ public class ServiceRecipe extends AbstractRecipe {
         }
     }
     
-    public Object getService() {
-        return getService(blueprintContainer.getBundleContext().getBundle(), null);
+    protected Object internalGetService() {
+        return internalGetService(blueprintContainer.getBundleContext().getBundle(), null);
+    }
+
+    /**
+     * Create the service object.
+     * We need to synchronize the access to the repository,
+     * but not on this ServiceRecipe instance to avoid deadlock.
+     * When using internalCreate(), no other lock but the on the repository
+     * should be held.
+     *
+     * @param bundle
+     * @param registration
+     * @return
+     */
+    private Object internalGetService(Bundle bundle, ServiceRegistration registration) {
+        synchronized (blueprintContainer.getRepository()) {
+            LOGGER.debug("Retrieving service for bundle {} and service registration {}", bundle, registration);
+            // Create initial service
+            if (this.service == null) {
+                try {
+                    LOGGER.debug("Creating service instance");
+                    this.service = createInstance();
+                    LOGGER.debug("Service created: {}", this.service);
+                    // When the service is first requested, we need to create listeners and call them
+                    if (listeners == null) {
+                        LOGGER.debug("Creating listeners");
+                        if (listenersRecipe != null) {
+                            listeners = (List) createRecipe(listenersRecipe);
+                        } else {
+                            listeners = Collections.emptyList();
+                        }
+                        LOGGER.debug("Listeners created: {}", listeners);
+                        LOGGER.debug("Calling listeners for service registration");
+                        for (ServiceListener listener : listeners) {
+                            listener.register(prototypeService || service instanceof ServiceFactory ? null : service,
+                                              registrationProperties);
+                        }
+                    }
+                } catch (RuntimeException e) {
+                    LOGGER.error("Error retrieving service from " + this, e);
+                    throw e;
+                }
+            }
+            Object service = this.service;
+            if (service instanceof ServiceFactory) {
+                service = ((ServiceFactory) service).getService(bundle, registration);
+            } else if (prototypeService && bundle != blueprintContainer.getBundleContext().getBundle()) {
+                service = createInstance();
+                LOGGER.debug("Created service instance for bundle: " + bundle + " " + service.hashCode());
+            }
+            if (service == null) {
+                throw new IllegalStateException("service is null");
+            }
+            return service;
+        }
     }
 
     public synchronized Object getService(Bundle bundle, ServiceRegistration registration) {
-        LOGGER.debug("Retrieving service for bundle {} and service registration {}", bundle, registration);
-        // Create initial service
-        if (this.service == null) {
-            try {
-                LOGGER.debug("Creating service instance");
-                this.service = createInstance();
-                LOGGER.debug("Service created: {}", this.service);
-                // When the service is first requested, we need to create listeners and call them
-                if (listeners == null) {
-                    LOGGER.debug("Creating listeners");
-                    if (listenersRecipe != null) {
-                        listeners = (List) createRecipe(listenersRecipe);
-                    } else {
-                        listeners = Collections.emptyList();
-                    }
-                    LOGGER.debug("Listeners created: {}", listeners);
-                    LOGGER.debug("Calling listeners for service registration");
-                    for (ServiceListener listener : listeners) {
-                        listener.register(prototypeService || service instanceof ServiceFactory ? null : service,
-                                          registrationProperties);
-                    }
-                }
-            } catch (RuntimeException e) {
-                LOGGER.error("Error retrieving service from " + this, e);
-                throw e;
-            }
-        }
-        Object service = this.service;
-        if (service instanceof ServiceFactory) {
-            service = ((ServiceFactory) service).getService(bundle, registration);
-        } else {
-            // TODO: this looks a bit wrong, as we will create two instances for a prototype for the first bundle
-            service = createInstance();
-            LOGGER.debug("Created service instance for bundle: " + bundle + " " + service.hashCode());
-        }
-        if (service == null) {
-            throw new IllegalStateException("service is null");
-        }
-        return service;
+        return internalGetService(bundle, registration);
     }
 
     public synchronized void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
@@ -256,14 +272,14 @@ public class ServiceRecipe extends AbstractRecipe {
         Set<String> classes;
         switch (metadata.getAutoExportMode()) {
             case ServiceMetadata.AUTO_EXPORT_INTERFACES:
-                classes = ReflectionUtils.getImplementedInterfaces(new HashSet<String>(), getService().getClass());
+                classes = ReflectionUtils.getImplementedInterfaces(new HashSet<String>(), internalGetService().getClass());
                 break;
             case ServiceMetadata.AUTO_EXPORT_CLASS_HIERARCHY:
-                classes = ReflectionUtils.getSuperClasses(new HashSet<String>(), getService().getClass());
+                classes = ReflectionUtils.getSuperClasses(new HashSet<String>(), internalGetService().getClass());
                 break;
             case ServiceMetadata.AUTO_EXPORT_ALL_CLASSES:
-                classes = ReflectionUtils.getSuperClasses(new HashSet<String>(), getService().getClass());
-                classes = ReflectionUtils.getImplementedInterfaces(classes, getService().getClass());
+                classes = ReflectionUtils.getSuperClasses(new HashSet<String>(), internalGetService().getClass());
+                classes = ReflectionUtils.getImplementedInterfaces(classes, internalGetService().getClass());
                 break;
             default:
                 classes = new HashSet<String>(metadata.getInterfaceNames());
@@ -279,11 +295,14 @@ public class ServiceRecipe extends AbstractRecipe {
     private Object createRecipe(Recipe recipe) {
         String name = recipe.getName();
         Repository repo = blueprintContainer.getRepository();
-        if (repo.getRecipe(name) != recipe) {
-            repo.putRecipe(name, recipe);
+        synchronized (repo) {
+            if (repo.getRecipe(name) != recipe) {
+                repo.putRecipe(name, recipe);
+            }
+            // TODO: the instantiator should be retrieved from the blueprint container instead of creating a new one
+            BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(blueprintContainer, repo);
+            return graph.create(name);
         }
-        BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(blueprintContainer, repo);
-        return graph.create(name);
     }
 
     private void destroyInstance(Object instance) {

@@ -38,6 +38,9 @@ import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
 
 /**
+ * TODO: consider deleting this class and merging it into the Repository as they are tied together
+ * this would allow making the repository thread safe
+ *
  */
 public class BlueprintObjectInstantiator  {
 
@@ -111,9 +114,11 @@ public class BlueprintObjectInstantiator  {
         ExecutionContext oldContext = ExecutionContext.setContext(new DefaultExecutionContext(blueprintContainer, repository));
         try {
             Set<Recipe> recipes = new HashSet<Recipe>();
-            Set<String> topLevel = names != null && names.length > 0 ? new HashSet<String>(Arrays.asList(names)) : repository.getNames();
-            for (String name : topLevel) {
-                internalGetAllRecipes(recipes, repository.getRecipe(name));
+            synchronized (repository) {
+                Set<String> topLevel = names != null && names.length > 0 ? new HashSet<String>(Arrays.asList(names)) : repository.getNames();
+                for (String name : topLevel) {
+                    internalGetAllRecipes(recipes, repository.getRecipe(name));
+                }
             }
             return recipes;
         } finally {
