@@ -32,6 +32,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -96,7 +97,6 @@ public final class ConversionUtils {
                 }
             }
             return array;
-        // TODO: removing the second part of the test will allow conversion between collections, is this desired?
         } else if (Map.class.isAssignableFrom(cl) && obj instanceof Map) {
             Type keyType = Object.class;
             Type valueType = Object.class;
