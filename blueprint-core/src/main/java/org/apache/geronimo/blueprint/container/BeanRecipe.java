@@ -207,7 +207,7 @@ public class BeanRecipe extends AbstractRecipe {
             } else if (matches.size() == 0) {
                 throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + factoryObj.getClass() + " for arguments " + args + " when instanciating bean " + getName());
             } else {
-                throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + factoryObj.getClass() + " for arguments " + args + " when instanciating bean " + getName());
+                throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + factoryObj.getClass() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
             }
         } else if (factoryMethod != null) {
             // Map of matching methods
@@ -222,7 +222,7 @@ public class BeanRecipe extends AbstractRecipe {
             } else if (matches.size() == 0) {
                 throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
             } else {
-                throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
+                throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + getType() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
             }
         } else {
             if (getType() == null) {
@@ -240,7 +240,7 @@ public class BeanRecipe extends AbstractRecipe {
             } else if (matches.size() == 0) {
                 throw new ComponentDefinitionException("Unable to find a matching constructor on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
             } else {
-                throw new ComponentDefinitionException("Multiple matching constructors found on class " + getType() + " for arguments " + args + " when instanciating bean " + getName());
+                throw new ComponentDefinitionException("Multiple matching constructors found on class " + getType() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
             }
         }
         
