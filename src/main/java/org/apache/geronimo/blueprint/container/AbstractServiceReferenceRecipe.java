@@ -96,7 +96,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         this.explicitDependencies = explicitDependencies;
         // Create a ClassLoader delegating to the bundle, but also being able to see our bundle classes
         // so that the created proxy can access cglib classes.
-        // TODO: use a doPrivileged block 
+        // TODO: use a doPrivileged block
+        // TODO: we should be able to get rid of this classloader when using JDK 1.4 proxies with a single interface
+        //         (the case defined by the spec) and use the interface classloader instead
         this.proxyClassLoader = new BundleDelegatingClassLoader(blueprintContainer.getBundleContext().getBundle(),
                                                                 getClass().getClassLoader());
 
