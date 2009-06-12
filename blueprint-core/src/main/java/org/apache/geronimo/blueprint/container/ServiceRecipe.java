@@ -93,8 +93,7 @@ public class ServiceRecipe extends AbstractRecipe {
         this.prototypeService = isPrototypeService(metadata.getServiceComponent());
     }
 
-    @Override
-    public List<Recipe> getNestedRecipes() {
+    public List<Recipe> getDependencies() {
         List<Recipe> recipes = new ArrayList<Recipe>();
         if (serviceRecipe != null) {
             recipes.add(serviceRecipe);

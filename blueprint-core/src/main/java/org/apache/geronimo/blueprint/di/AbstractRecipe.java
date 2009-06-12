@@ -73,9 +73,6 @@ public abstract class AbstractRecipe implements Recipe {
 
     protected abstract Object internalCreate() throws ComponentDefinitionException;
 
-    public void postCreate() {
-    }
-
     protected void addObject(Object obj, boolean partial) {
         if (prototype) {
             return;
@@ -83,10 +80,6 @@ public abstract class AbstractRecipe implements Recipe {
         ExecutionContext.getContext().addObject(name, obj, partial);
     }
     
-    public List<Recipe> getNestedRecipes() {
-        return new ArrayList<Recipe>();
-    }
-
     protected Object convert(Object obj, Type type) throws Exception {
         return ExecutionContext.getContext().convert(obj, type);
     }
@@ -99,8 +92,7 @@ public abstract class AbstractRecipe implements Recipe {
         }
     }
 
-    public Destroyable getDestroyable(Object instance) {
-        return null;
+    public void destroy(Object instance) {
     }
 
     public String toString() {

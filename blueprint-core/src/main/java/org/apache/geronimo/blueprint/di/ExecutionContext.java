@@ -87,8 +87,6 @@ public abstract class ExecutionContext {
     
     public abstract Object getPartialObject(String name);
 
-    public abstract List<Recipe> getCreatedRecipes();
-
     public abstract Object convert(Object value, Type type) throws Exception;
 
     public abstract Class loadClass(String className) throws ClassNotFoundException;

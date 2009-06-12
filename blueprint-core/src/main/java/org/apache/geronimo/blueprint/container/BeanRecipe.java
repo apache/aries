@@ -33,7 +33,6 @@ import java.util.Map;
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
-import org.apache.geronimo.blueprint.di.Destroyable;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import static org.apache.geronimo.blueprint.utils.ReflectionUtils.getRealCause;
@@ -129,8 +128,7 @@ public class BeanRecipe extends AbstractRecipe {
         this.explicitDependencies = explicitDependencies;
     }
 
-    @Override
-    public List<Recipe> getNestedRecipes() {
+    public List<Recipe> getDependencies() {
         List<Recipe> recipes = new ArrayList<Recipe>();
         for (Object o : properties.values()) {
             if (o instanceof Recipe) {
@@ -538,12 +536,14 @@ public class BeanRecipe extends AbstractRecipe {
     }
 
     @Override
-    public Destroyable getDestroyable(Object instance) {
+    public void destroy(Object instance) {
         Method method = getDestroyMethod(instance);
         if (method != null) {
-            return new DestroyCallback(method, instance);
-        } else {
-            return null;
+            try {
+                method.invoke(instance);
+            } catch (Throwable e) {
+                LOGGER.info("Error destroying bean " + getName(), getRealCause(e));
+            }
         }
     }
 
@@ -707,23 +707,4 @@ public class BeanRecipe extends AbstractRecipe {
 
     }
 
-    private class DestroyCallback implements Destroyable {
-
-        private Method method;
-        private Object instance;
-
-        public DestroyCallback(Method method, Object instance) {
-            this.method = method;
-            this.instance = instance;
-        }
-
-        public void destroy() {
-            try {
-                method.invoke(instance);
-            } catch (Exception e) {
-                LOGGER.info("Error destroying bean " + getName(), getRealCause(e));
-            }
-        }
-
-    }
 }

@@ -151,9 +151,8 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return satisfied.get();
     }
 
-    @Override
-    public List<Recipe> getNestedRecipes() {
-        List<Recipe> recipes = super.getNestedRecipes();
+    public List<Recipe> getDependencies() {
+        List<Recipe> recipes = new ArrayList<Recipe>();
         if (listenersRecipe != null) {
             recipes.add(listenersRecipe);
         }
@@ -277,10 +276,6 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             LOGGER.debug("Service reference with filter {} satisfied {}", getOsgiFilter(), this.satisfied);
             this.satisfactionListener.notifySatisfaction(this);
         }
-    }
-
-    @Override
-    public void postCreate() {
     }
 
     protected abstract void track(ServiceReference reference);
