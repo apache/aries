@@ -31,8 +31,10 @@ public interface Recipe {
 
     List<Recipe> getNestedRecipes();
 
+    // TODO: replace with destroy(Object instance)
     Destroyable getDestroyable(Object instance);
 
+    // TODO: Remove this method
     void postCreate();
 
 }
