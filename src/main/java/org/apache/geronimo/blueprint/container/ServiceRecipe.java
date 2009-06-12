@@ -90,6 +90,7 @@ public class ServiceRecipe extends AbstractRecipe {
         this.listenersRecipe = listenersRecipe;
         this.propertiesRecipe = propertiesRecipe;
         this.explicitDependencies = explicitDependencies;
+        this.prototypeService = isPrototypeService(metadata.getServiceComponent());
     }
 
     @Override
@@ -127,7 +128,7 @@ public class ServiceRecipe extends AbstractRecipe {
             registered = true;
             Hashtable props = new Hashtable();
             if (properties == null) {
-                properties = (Map) createSimpleRecipe(propertiesRecipe);
+                properties = (Map) createRecipe(propertiesRecipe);
             }
             props.putAll(properties);
             props.put(Constants.SERVICE_RANKING, metadata.getRanking());
@@ -204,7 +205,6 @@ public class ServiceRecipe extends AbstractRecipe {
         // Create initial service
         if (this.service == null) {
             try {
-                prototypeService = isPrototypeService(metadata.getServiceComponent());
                 LOGGER.debug("Creating service instance");
                 this.service = createInstance();
                 LOGGER.debug("Service created: {}", this.service);
@@ -212,7 +212,7 @@ public class ServiceRecipe extends AbstractRecipe {
                 if (listeners == null) {
                     LOGGER.debug("Creating listeners");
                     if (listenersRecipe != null) {
-                        listeners = (List) createSimpleRecipe(listenersRecipe);
+                        listeners = (List) createRecipe(listenersRecipe);
                     } else {
                         listeners = Collections.emptyList();
                     }
@@ -232,6 +232,7 @@ public class ServiceRecipe extends AbstractRecipe {
         if (service instanceof ServiceFactory) {
             service = ((ServiceFactory) service).getService(bundle, registration);
         } else {
+            // TODO: this looks a bit wrong, as we will create two instances for a prototype for the first bundle
             service = createInstance();
             LOGGER.debug("Created service instance for bundle: " + bundle + " " + service.hashCode());
         }
@@ -272,10 +273,10 @@ public class ServiceRecipe extends AbstractRecipe {
     }
 
     private Object createInstance() {
-        return createSimpleRecipe(serviceRecipe);
+        return createRecipe(serviceRecipe);
     }
 
-    private Object createSimpleRecipe(Recipe recipe) {
+    private Object createRecipe(Recipe recipe) {
         String name = recipe.getName();
         Repository repo = blueprintContainer.getRepository();
         if (repo.getRecipe(name) != recipe) {
