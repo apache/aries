@@ -37,6 +37,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.framework.Constants;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.slf4j.Logger;
@@ -71,9 +72,15 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
 
         Bundle[] bundles = context.getBundles();
         for (Bundle b : bundles) {
-            // TODO: need to check lazy bundles in STARTING state
+            // If the bundle is active, check it
             if (b.getState() == Bundle.ACTIVE) {
                 checkBundle(b);
+            // Also check bundles in the starting state with a lazy activation policy
+            } else if (b.getState() == Bundle.STARTING) {
+                String activationPolicyHeader = (String) b.getHeaders().get(Constants.BUNDLE_ACTIVATIONPOLICY);
+                if (activationPolicyHeader != null && activationPolicyHeader.startsWith(Constants.ACTIVATION_LAZY)) {
+                    checkBundle(b);
+                }
             }
         }
         LOGGER.debug("Blueprint extender started");
@@ -123,8 +130,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         LOGGER.debug("Scanning bundle {} for blueprint application", bundle.getSymbolicName());
         try {
             List<URL> urls = new ArrayList<URL>();
-            Dictionary headers = bundle.getHeaders();
-            String blueprintHeader = (String) headers.get(BlueprintConstants.BUNDLE_BLUEPRINT_HEADER);
+            String blueprintHeader = (String) bundle.getHeaders().get(BlueprintConstants.BUNDLE_BLUEPRINT_HEADER);
             if (blueprintHeader == null) {
                 blueprintHeader = "OSGI-INF/blueprint/";
             }
