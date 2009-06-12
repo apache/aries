@@ -41,7 +41,7 @@ public class IdRefRecipe extends AbstractRecipe {
         return idRef;
     }
 
-    public List<Recipe> getNestedRecipes() {
+    public List<Recipe> getDependencies() {
         Recipe recipe = ExecutionContext.getContext().getRecipe(idRef);
         if (recipe != null) {
             return Collections.singletonList(recipe);

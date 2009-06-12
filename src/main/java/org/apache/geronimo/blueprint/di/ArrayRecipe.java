@@ -36,7 +36,7 @@ public class ArrayRecipe extends AbstractRecipe {
         this.list = new ArrayList<Recipe>();
     }
 
-    public List<Recipe> getNestedRecipes() {
+    public List<Recipe> getDependencies() {
         List<Recipe> nestedRecipes = new ArrayList<Recipe>(list.size());
         for (Recipe recipe : list) {
             if (recipe != null) {

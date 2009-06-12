@@ -19,6 +19,8 @@
 package org.apache.geronimo.blueprint.di;
 
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Collections;
 
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
@@ -40,6 +42,10 @@ public class ValueRecipe extends AbstractRecipe {
         super(name);
         this.value = value;
         this.type = type;
+    }
+
+    public List<Recipe> getDependencies() {
+        return Collections.emptyList();
     }
 
     @Override

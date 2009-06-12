@@ -40,7 +40,7 @@ public class RefRecipe extends AbstractRecipe {
         this.idRef = name;
     }
 
-    public List<Recipe> getNestedRecipes() {
+    public List<Recipe> getDependencies() {
         Recipe recipe = ExecutionContext.getContext().getRecipe(idRef);
         if (recipe != null) {
             return Collections.singletonList(recipe);

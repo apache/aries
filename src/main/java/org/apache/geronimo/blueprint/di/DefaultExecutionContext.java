@@ -41,8 +41,6 @@ public class DefaultExecutionContext extends ExecutionContext {
      */
     private Map<String, Object> partialObjects = new HashMap<String, Object>();
 
-    private List<Recipe> createdRecipes = new ArrayList<Recipe>();
-    
     /**
      * Before each recipe is executed it is pushed on the stack.  The
      * stack is used to detect circular dependencies and so a recipe can
@@ -80,7 +78,6 @@ public class DefaultExecutionContext extends ExecutionContext {
             throw new CircularDependencyException(circularity);
         }
         stack.add(recipe);
-        createdRecipes.add(recipe);
     }
 
     public Recipe pop() {
@@ -123,10 +120,6 @@ public class DefaultExecutionContext extends ExecutionContext {
             obj = repository.getInstance(name);
         }
         return obj;
-    }
-
-    public List<Recipe> getCreatedRecipes() {
-        return createdRecipes;
     }
 
     public Recipe getRecipe(String name) {

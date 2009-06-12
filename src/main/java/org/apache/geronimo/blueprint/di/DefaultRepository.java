@@ -24,6 +24,9 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.Collections;
 
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.slf4j.Logger;
@@ -39,20 +42,17 @@ public class DefaultRepository implements Repository {
     private Map<String, Object> defaults;
     private Map<String, Recipe> recipes;
     private Map<String, Object> instances;
-    private List<Destroyable> destroyList;
 
     public DefaultRepository() {
-        recipes = new TreeMap<String, Recipe>();
-        defaults = new TreeMap<String, Object>();
-        instances = new TreeMap<String, Object>();
-        destroyList = new ArrayList<Destroyable>();
+        recipes = new HashMap<String, Recipe>();
+        defaults = new HashMap<String, Object>();
+        instances = new LinkedHashMap<String, Object>();
     }
     
     public DefaultRepository(DefaultRepository source) {
-        recipes = new TreeMap<String, Recipe>(source.recipes);
-        defaults = new TreeMap<String, Object>();
-        instances = new TreeMap<String, Object>(source.instances);
-        destroyList = new ArrayList<Destroyable>();
+        recipes = new HashMap<String, Recipe>(source.recipes);
+        defaults = new HashMap<String, Object>();
+        instances = new LinkedHashMap<String, Object>(source.instances);
     }
 
     public void set(String name, Object instance) {
@@ -106,28 +106,19 @@ public class DefaultRepository implements Repository {
         if (instances.get(name) != null) {
             throw new ComponentDefinitionException("Name " + name + " is already registered to instance " + instances.get(name));
         }
-        Recipe recipe = recipes.get(name);
-        if (recipe != null) {
-            Destroyable destroy = recipe.getDestroyable(instance);
-            if (destroy != null) {
-                destroyList.add(destroy);
-            }
-        }
         instances.put(name, instance);
     }
 
     public void destroy() {
         // destroy objects in reverse creation order
-        ListIterator<Destroyable> reverse = destroyList.listIterator(destroyList.size());
-        while (reverse.hasPrevious()) {
-            Destroyable d = reverse.previous();
-            try {
-                d.destroy();
-            } catch (Exception e) {
-                LOGGER.info("Error destroying bean " + d, e);
+        List<Map.Entry<String, Object>> entries = new ArrayList<Map.Entry<String, Object>>(instances.entrySet());
+        Collections.reverse(entries);
+        for (Map.Entry<String, Object> entry : entries) {
+            Recipe recipe = recipes.get(entry.getKey());
+            if (recipe != null) {
+                recipe.destroy(entry.getValue());
             }
         }
-        destroyList.clear();
         instances.clear();
     }
     

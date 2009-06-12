@@ -21,20 +21,39 @@ import java.util.List;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
+ * The <code>Recipe</code> interface abstracts the creation of objects
+ *
  * @version $Rev: 6680 $ $Date: 2005-12-24T04:38:27.427468Z $
  */
 public interface Recipe {
 
+    /**
+     * Get the unique name for this recipe.
+     *
+     * @return the unique name for this recipe.
+     */
     String getName();
 
+    /**
+     * Get the list of nested recipes, i.e. its dependencies.
+     *
+     * @return a list of dependencies
+     */
+    List<Recipe> getDependencies();
+
+    /**
+     * Create an instance for this recipe.
+     *
+     * @return a new instance for this recipe
+     * @throws ComponentDefinitionException
+     */
     Object create() throws ComponentDefinitionException;
 
-    List<Recipe> getNestedRecipes();
-
-    // TODO: replace with destroy(Object instance)
-    Destroyable getDestroyable(Object instance);
-
-    // TODO: Remove this method
-    void postCreate();
+    /**
+     * Destroy an instance created by this recipe
+     *
+     * @param instance the instance to be destroyed
+     */
+    void destroy(Object instance);
 
 }

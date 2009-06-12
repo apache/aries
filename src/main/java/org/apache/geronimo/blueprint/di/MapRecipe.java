@@ -42,7 +42,7 @@ public class MapRecipe extends AbstractRecipe {
         this.entries = new ArrayList<Recipe[]>();
     }
 
-    public List<Recipe> getNestedRecipes() {
+    public List<Recipe> getDependencies() {
         List<Recipe> nestedRecipes = new ArrayList<Recipe>(entries.size() * 2);
         for (Recipe[] entry : entries) {
             nestedRecipes.add(entry[0]);
@@ -99,7 +99,7 @@ public class MapRecipe extends AbstractRecipe {
         }
     }
 
-   public static class DummyDictionaryAsMap extends AbstractMap {
+    public static class DummyDictionaryAsMap extends AbstractMap {
 
         private final Dictionary dictionary;
 

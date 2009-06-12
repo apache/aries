@@ -81,18 +81,6 @@ public class BlueprintObjectInstantiator  {
                     throw new ComponentDefinitionException("Unable to convert instance " + name, e);
                 }
                 instances.put(name, obj);
-                Set<Recipe> processed = new HashSet<Recipe>();
-                boolean modified;
-                do {
-                    modified = false;
-                    List<Recipe> recipes = new ArrayList<Recipe>(ExecutionContext.getContext().getCreatedRecipes());
-                    for (Recipe recipe : recipes) {
-                        if (processed.add(recipe)) {
-                            recipe.postCreate();
-                            modified = true;
-                        }
-                    }
-                } while (modified);
             } finally {
                 ExecutionContext.setContext(oldContext);
             }
@@ -132,7 +120,7 @@ public class BlueprintObjectInstantiator  {
     private void internalGetAllRecipes(Set<Recipe> recipes, Recipe r) {
         if (r != null) {
             if (recipes.add(r)) {
-                for (Recipe c : r.getNestedRecipes()) {
+                for (Recipe c : r.getDependencies()) {
                     internalGetAllRecipes(recipes, c);
                 }
             }
