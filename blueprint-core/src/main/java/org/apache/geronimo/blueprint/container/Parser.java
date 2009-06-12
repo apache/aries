@@ -125,6 +125,7 @@ public class Parser {
     public static final String SERVICE_ELEMENT = "service";
     public static final String REFERENCE_ELEMENT = "reference";
     public static final String REFLIST_ELEMENT = "ref-list";
+    public static final String INTERFACES_ELEMENT = "interfaces";
     public static final String LISTENER_ELEMENT = "listener";
     public static final String SERVICE_PROPERTIES_ELEMENT = "service-properties";
     public static final String REGISTRATION_LISTENER_ELEMENT = "registration-listener";
@@ -594,7 +595,12 @@ public class Parser {
             if (node instanceof Element) {
                 Element e = (Element) node;
                 if (isBlueprintNamespace(e.getNamespaceURI())) {
-                    if (nodeNameEquals(e, SERVICE_PROPERTIES_ELEMENT)) {
+                    if (nodeNameEquals(e, INTERFACES_ELEMENT)) {
+                        if (hasInterfaceNameAttribute) {
+                            throw new ComponentDefinitionException("Only one of " + INTERFACE_ATTRIBUTE + " attribute or " + INTERFACES_ELEMENT + " element must be used");
+                        }
+                        service.setInterfaceNames(parseInterfaceNames(e));
+                    } else if (nodeNameEquals(e, SERVICE_PROPERTIES_ELEMENT)) {
                         List<MapEntry> entries = parseServiceProperties(e, service).getEntries();
                         service.setServiceProperties(entries); 
                     } else if (nodeNameEquals(e, REGISTRATION_LISTENER_ELEMENT)) {
@@ -1009,6 +1015,27 @@ public class Parser {
         }
         listener.setListenerComponent((Target) listenerComponent);
         return listener;
+    }
+
+    public List<String> parseInterfaceNames(Element element) {
+        List<String> interfaceNames = new ArrayList<String>();
+        NodeList nl = element.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node node = nl.item(i);
+            if (node instanceof Element) {
+                Element e = (Element) node;
+                if (nodeNameEquals(e, VALUE_ELEMENT)) {
+                    String v = getTextValue(e).trim();
+                    if (interfaceNames.contains(v)) {
+                        throw new ComponentDefinitionException("The element " + INTERFACES_ELEMENT + " should not contain the same interface twice");
+                    }
+                    interfaceNames.add(getTextValue(e));
+                } else {
+                    throw new ComponentDefinitionException("Unsupported element " + e.getNodeName() + " inside an " + INTERFACES_ELEMENT + " element");
+                }
+            }
+        }
+        return interfaceNames;
     }
 
     private Metadata parseArgumentOrPropertyValue(Element element, ComponentMetadata enclosingComponent) {
