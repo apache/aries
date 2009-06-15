@@ -59,8 +59,16 @@ public class BlueprintEventDispatcher implements BlueprintListener, EventConstan
     public BlueprintEventDispatcher(final BundleContext bundleContext) {
         this.states = new ConcurrentHashMap<Bundle, BlueprintEvent>();
         this.executor = Executors.newSingleThreadExecutor();
-        this.eventAdminServiceTracker = new ServiceTracker(bundleContext, EventAdmin.class.getName(), null);
-        this.eventAdminServiceTracker.open();
+        ServiceTracker eaTracker = null;
+        try {
+            eaTracker = new ServiceTracker(bundleContext, EventAdmin.class.getName(), null);
+        } catch (NoClassDefFoundError e) {
+            // Ignore, if the EventAdmin package is not available, just don't use it
+        }
+        this.eventAdminServiceTracker = eaTracker;
+        if (this.eventAdminServiceTracker != null) {
+            this.eventAdminServiceTracker.open();
+        }
         this.containerListenerTracker = new ServiceTracker(bundleContext, BlueprintListener.class.getName(), new ServiceTrackerCustomizer() {
             public Object addingService(ServiceReference reference) {
                 BlueprintListener listener = (BlueprintListener) bundleContext.getService(reference);
@@ -92,7 +100,9 @@ public class BlueprintEventDispatcher implements BlueprintListener, EventConstan
         executor.submit(new Runnable() {
             public void run() {
                 callListeners(event);
-                sendEventAdmin(event);
+                if (BlueprintEventDispatcher.this.eventAdminServiceTracker instanceof BlueprintListener) {
+                    ((BlueprintListener) BlueprintEventDispatcher.this.eventAdminServiceTracker).blueprintEvent(event);
+                }
             }
         });
     }
@@ -134,79 +144,85 @@ public class BlueprintEventDispatcher implements BlueprintListener, EventConstan
         }
     }
 
-    private void sendEventAdmin(BlueprintEvent event) {
-        EventAdmin eventAdmin = getEventAdmin();
-        if (eventAdmin == null) {
-            return;
-        }
-
-        Dictionary<String,Object> props = new Hashtable<String,Object>();
-        props.put(EventConstants.TYPE, event.getType());
-        props.put(EventConstants.EVENT, event);
-        props.put(EventConstants.TIMESTAMP, event.getTimestamp());
-        props.put(EventConstants.BUNDLE, event.getBundle());
-        props.put(EventConstants.BUNDLE_SYMBOLICNAME, event.getBundle().getSymbolicName());
-        props.put(EventConstants.BUNDLE_ID, event.getBundle().getBundleId());
-        Version version = getBundleVersion(event.getBundle());
-        if (version != null) {
-            props.put(EventConstants.BUNDLE_VERSION, version);
-        }
-        props.put(EventConstants.EXTENDER_BUNDLE, event.getExtenderBundle());
-        props.put(EventConstants.EXTENDER_BUNDLE_ID, event.getExtenderBundle().getBundleId());
-        props.put(EventConstants.EXTENDER_BUNDLE_SYMBOLICNAME, event.getExtenderBundle().getSymbolicName());
-        version = getBundleVersion(event.getExtenderBundle());
-        if (version != null) {
-            props.put(EventConstants.EXTENDER_BUNDLE_VERSION, version);
-        }
-
-        if (event.getException() != null) {
-            props.put(EventConstants.EXCEPTION, event.getException());
-        }
-        if (event.getDependencies() != null) {
-            props.put(EventConstants.DEPENDENCIES, event.getDependencies());
-        }
-        String topic;
-        switch (event.getType()) {
-            case BlueprintEvent.CREATING:
-                topic = EventConstants.TOPIC_CREATING;
-                break;
-            case BlueprintEvent.CREATED:
-                topic = EventConstants.TOPIC_CREATED;
-                break;
-            case BlueprintEvent.DESTROYING:
-                topic = EventConstants.TOPIC_DESTROYING;
-                break;
-            case BlueprintEvent.DESTROYED:
-                topic = EventConstants.TOPIC_DESTROYED;
-                break;
-            case BlueprintEvent.FAILURE:
-                topic = EventConstants.TOPIC_FAILURE;
-                break;
-            case BlueprintEvent.GRACE_PERIOD:
-                topic = EventConstants.TOPIC_GRACE_PERIOD;
-                break;
-            case BlueprintEvent.WAITING:
-                topic = EventConstants.TOPIC_WAITING;
-                break;
-            default:
-                throw new IllegalStateException("Unknown blueprint event type: " + event.getType());
-        }
-        eventAdmin.postEvent(new Event(topic, props));
-    }
-
     private static Version getBundleVersion(Bundle bundle) {
         Dictionary headers = bundle.getHeaders();
         String version = (String)headers.get(Constants.BUNDLE_VERSION);
         return (version != null) ? Version.parseVersion(version) : null;
     }
     
-    private EventAdmin getEventAdmin() {
-        return (EventAdmin)this.eventAdminServiceTracker.getService();
-    }
-
     public void destroy() {
         this.executor.shutdown();
-        this.eventAdminServiceTracker.close();
+        if (this.eventAdminServiceTracker != null) {
+            this.eventAdminServiceTracker.close();
+        }
         this.containerListenerTracker.close();
+    }
+
+    static class EvenAdminDispatcher extends ServiceTracker implements BlueprintListener {
+
+        EvenAdminDispatcher(BundleContext context) {
+            super(context, EventAdmin.class.getName(), null);
+        }
+
+        public void blueprintEvent(BlueprintEvent event) {
+            EventAdmin eventAdmin = (EventAdmin) getService();
+            if (eventAdmin == null) {
+                return;
+            }
+
+            Dictionary<String,Object> props = new Hashtable<String,Object>();
+            props.put(EventConstants.TYPE, event.getType());
+            props.put(EventConstants.EVENT, event);
+            props.put(EventConstants.TIMESTAMP, event.getTimestamp());
+            props.put(EventConstants.BUNDLE, event.getBundle());
+            props.put(EventConstants.BUNDLE_SYMBOLICNAME, event.getBundle().getSymbolicName());
+            props.put(EventConstants.BUNDLE_ID, event.getBundle().getBundleId());
+            Version version = getBundleVersion(event.getBundle());
+            if (version != null) {
+                props.put(EventConstants.BUNDLE_VERSION, version);
+            }
+            props.put(EventConstants.EXTENDER_BUNDLE, event.getExtenderBundle());
+            props.put(EventConstants.EXTENDER_BUNDLE_ID, event.getExtenderBundle().getBundleId());
+            props.put(EventConstants.EXTENDER_BUNDLE_SYMBOLICNAME, event.getExtenderBundle().getSymbolicName());
+            version = getBundleVersion(event.getExtenderBundle());
+            if (version != null) {
+                props.put(EventConstants.EXTENDER_BUNDLE_VERSION, version);
+            }
+
+            if (event.getException() != null) {
+                props.put(EventConstants.EXCEPTION, event.getException());
+            }
+            if (event.getDependencies() != null) {
+                props.put(EventConstants.DEPENDENCIES, event.getDependencies());
+            }
+            String topic;
+            switch (event.getType()) {
+                case BlueprintEvent.CREATING:
+                    topic = EventConstants.TOPIC_CREATING;
+                    break;
+                case BlueprintEvent.CREATED:
+                    topic = EventConstants.TOPIC_CREATED;
+                    break;
+                case BlueprintEvent.DESTROYING:
+                    topic = EventConstants.TOPIC_DESTROYING;
+                    break;
+                case BlueprintEvent.DESTROYED:
+                    topic = EventConstants.TOPIC_DESTROYED;
+                    break;
+                case BlueprintEvent.FAILURE:
+                    topic = EventConstants.TOPIC_FAILURE;
+                    break;
+                case BlueprintEvent.GRACE_PERIOD:
+                    topic = EventConstants.TOPIC_GRACE_PERIOD;
+                    break;
+                case BlueprintEvent.WAITING:
+                    topic = EventConstants.TOPIC_WAITING;
+                    break;
+                default:
+                    throw new IllegalStateException("Unknown blueprint event type: " + event.getType());
+            }
+            eventAdmin.postEvent(new Event(topic, props));
+        }
+
     }
 }
