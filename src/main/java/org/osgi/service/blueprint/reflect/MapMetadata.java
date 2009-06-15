@@ -1,29 +1,47 @@
-/**
- *  Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements.  See the NOTICE file distributed with
- *  this work for additional information regarding copyright ownership.
- *  The ASF licenses this file to You under the Apache License, Version 2.0
- *  (the "License"); you may not use this file except in compliance with
- *  the License.  You may obtain a copy of the License at
+/*
+ * Copyright (c) OSGi Alliance (2008, 2009). All Rights Reserved.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.osgi.service.blueprint.reflect;
 
 import java.util.List;
 
+/**
+ * A map-based value. This represented as a collection of entries (as it is done in the schema).
+ *
+ * A map is defined in the <code>map</code> element.
+ *
+ */
 public interface MapMetadata extends NonNullMetadata {
-    
-    String getKeyTypeName();
-    
-    String getValueTypeName();
+	/**
+	 * The key-type specified for map keys, or null if none given
+	 *
+	 * Defined in the <code>key-type</code> attribute.
+	 * ### should we have getRuntimeKeyType?
+	 */
+	String getKeyTypeName();
 
-    List<MapEntry> getEntries();
+    /**
+     * The value-type specified for the array
+     *
+	 * ### should we have getRuntimeValueType?
+     * The <code>value-type</code> attribute.
+     */
+	String getValueTypeName();
 
+    /**
+     * The of Metadata objects that describe the value.
+     */
+	List<MapEntry> getEntries();
 }
