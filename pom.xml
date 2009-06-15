@@ -50,6 +50,7 @@
                         <Import-Package>
                             org.apache.geronimo.blueprint*;version="${pom.version}",
                             org.osgi.service.blueprint*;version="1.0",
+                            org.osgi.service.event*;resolution:=optional,
                             net.sf.cglib*;resolution:=optional,
                             *
                         </Import-Package>
