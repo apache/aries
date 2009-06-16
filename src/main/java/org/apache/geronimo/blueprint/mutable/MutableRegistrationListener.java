@@ -31,8 +31,8 @@ public interface MutableRegistrationListener extends RegistrationListener {
 
     void setListenerComponent(Target listenerComponent);
 
-    void setRegistrationMethodName(String registrationMethodName);
+    void setRegistrationMethod(String registrationMethodName);
 
-    void setUnregistrationMethodName(String unregistrationMethodName);
+    void setUnregistrationMethod(String unregistrationMethodName);
 
 }

@@ -61,7 +61,7 @@ public class BlueprintEventDispatcher implements BlueprintListener, EventConstan
         this.executor = Executors.newSingleThreadExecutor();
         ServiceTracker eaTracker = null;
         try {
-            eaTracker = new ServiceTracker(bundleContext, EventAdmin.class.getName(), null);
+            eaTracker = new EvenAdminDispatcher(bundleContext);
         } catch (NoClassDefFoundError e) {
             // Ignore, if the EventAdmin package is not available, just don't use it
         }

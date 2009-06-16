@@ -65,7 +65,7 @@ import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.Listener;
+import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
@@ -85,8 +85,6 @@ import org.slf4j.LoggerFactory;
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
 public class BlueprintContainerImpl implements ExtendedBlueprintContainer, NamespaceHandlerRegistry.Listener, Runnable, SatisfiableRecipe.SatisfactionListener {
-
-    public static final boolean BEHAVIOR_TCK_INJECTION = true;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContainerImpl.class);
 
@@ -135,6 +133,11 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
         this.processors = new ArrayList<Processor>();
+    }
+
+    public int getCompliance() {
+        // TODO
+        return 0;
     }
 
     public Bundle getExtenderBundle() {
@@ -618,7 +621,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             }
         }
         if (component instanceof ServiceReferenceMetadata) {
-            for (Listener l : ((ServiceReferenceMetadata) component).getServiceListeners()) {
+            for (ReferenceListener l : ((ServiceReferenceMetadata) component).getReferenceListeners()) {
                 getMetadata(clazz, l.getListenerComponent(), metadatas);
             }
         }

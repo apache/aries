@@ -21,10 +21,9 @@ package org.apache.geronimo.blueprint.reflect;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.geronimo.blueprint.mutable.MutableServiceReferenceMetadata;
-import org.osgi.service.blueprint.reflect.Listener;
+import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
 
@@ -40,7 +39,7 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
     protected String interfaceName;
     protected String componentName;
     protected String filter;
-    protected Collection<Listener> serviceListeners;
+    protected Collection<ReferenceListener> referenceListeners;
     protected int proxyMethod;
 
     public ServiceReferenceMetadataImpl() {
@@ -52,8 +51,8 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
         this.interfaceName = source.getInterfaceName();
         this.componentName = source.getComponentName();
         this.filter = source.getFilter();
-        for (Listener listener : source.getServiceListeners()) {
-            addServiceListener(new ListenerImpl(listener));
+        for (ReferenceListener listener : source.getReferenceListeners()) {
+            addServiceListener(new ReferenceListenerImpl(listener));
         }
     }
 
@@ -89,34 +88,34 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
         this.filter = filter;
     }
 
-    public Collection<Listener> getServiceListeners() {
-        if (this.serviceListeners == null) {
+    public Collection<ReferenceListener> getReferenceListeners() {
+        if (this.referenceListeners == null) {
             return Collections.emptyList();
         } else {
-            return Collections.unmodifiableCollection(this.serviceListeners);
+            return Collections.unmodifiableCollection(this.referenceListeners);
         }
     }
 
-    public void setServiceListeners(Collection<Listener> listeners) {
-        this.serviceListeners = listeners != null ? new ArrayList<Listener>(listeners) : null;
+    public void setReferenceListeners(Collection<ReferenceListener> listeners) {
+        this.referenceListeners = listeners != null ? new ArrayList<ReferenceListener>(listeners) : null;
     }
 
-    public void addServiceListener(Listener bindingListenerMetadata) {
-        if (this.serviceListeners == null) {
-            this.serviceListeners = new ArrayList<Listener>();
+    public void addServiceListener(ReferenceListener bindingListenerMetadata) {
+        if (this.referenceListeners == null) {
+            this.referenceListeners = new ArrayList<ReferenceListener>();
         }
-        this.serviceListeners.add(bindingListenerMetadata);
+        this.referenceListeners.add(bindingListenerMetadata);
     }
 
-    public Listener addServiceListener(Target listenerComponent, String bindMethodName, String unbindMethodName) {
-        Listener listener = new ListenerImpl(listenerComponent, bindMethodName, unbindMethodName);
+    public ReferenceListener addServiceListener(Target listenerComponent, String bindMethodName, String unbindMethodName) {
+        ReferenceListener listener = new ReferenceListenerImpl(listenerComponent, bindMethodName, unbindMethodName);
         addServiceListener(listener);
         return listener;
     }
 
-    public void removeServiceListener(Listener listener) {
-        if (this.serviceListeners != null) {
-            this.serviceListeners.remove(listener);
+    public void removeReferenceListener(ReferenceListener listener) {
+        if (this.referenceListeners != null) {
+            this.referenceListeners.remove(listener);
         }
     }
 

@@ -269,7 +269,7 @@ public class ServiceRecipe extends AbstractRecipe {
 
     private Set<String> getClasses() {
         Set<String> classes;
-        switch (metadata.getAutoExportMode()) {
+        switch (metadata.getAutoExport()) {
             case ServiceMetadata.AUTO_EXPORT_INTERFACES:
                 classes = ReflectionUtils.getImplementedInterfaces(new HashSet<String>(), internalGetService().getClass());
                 break;

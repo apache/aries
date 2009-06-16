@@ -56,7 +56,7 @@ import org.apache.geronimo.blueprint.reflect.BeanMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.BeanPropertyImpl;
 import org.apache.geronimo.blueprint.reflect.CollectionMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.IdRefMetadataImpl;
-import org.apache.geronimo.blueprint.reflect.ListenerImpl;
+import org.apache.geronimo.blueprint.reflect.ReferenceListenerImpl;
 import org.apache.geronimo.blueprint.reflect.MapEntryImpl;
 import org.apache.geronimo.blueprint.reflect.MapMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.MetadataUtil;
@@ -75,7 +75,7 @@ import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.IdRefMetadata;
-import org.osgi.service.blueprint.reflect.Listener;
+import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
@@ -126,7 +126,7 @@ public class Parser {
     public static final String REFERENCE_ELEMENT = "reference";
     public static final String REFLIST_ELEMENT = "ref-list";
     public static final String INTERFACES_ELEMENT = "interfaces";
-    public static final String LISTENER_ELEMENT = "listener";
+    public static final String REFERENCE_LISTENER_ELEMENT = "reference-listener";
     public static final String SERVICE_PROPERTIES_ELEMENT = "service-properties";
     public static final String REGISTRATION_LISTENER_ELEMENT = "registration-listener";
     public static final String ENTRY_ELEMENT = "entry";
@@ -481,24 +481,24 @@ public class Parser {
             metadata.setDependsOn(parseList(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
         }
         if (element.hasAttribute(INIT_METHOD_ATTRIBUTE)) {
-            metadata.setInitMethodName(element.getAttribute(INIT_METHOD_ATTRIBUTE));
+            metadata.setInitMethod(element.getAttribute(INIT_METHOD_ATTRIBUTE));
         }
         if (element.hasAttribute(DESTROY_METHOD_ATTRIBUTE)) {
-            metadata.setDestroyMethodName(element.getAttribute(DESTROY_METHOD_ATTRIBUTE));
+            metadata.setDestroyMethod(element.getAttribute(DESTROY_METHOD_ATTRIBUTE));
         }
         if (element.hasAttribute(FACTORY_REF_ATTRIBUTE)) {
             metadata.setFactoryComponent(new RefMetadataImpl(element.getAttribute(FACTORY_REF_ATTRIBUTE)));
         }
         if (element.hasAttribute(FACTORY_METHOD_ATTRIBUTE)) {
             String factoryMethod = element.getAttribute(FACTORY_METHOD_ATTRIBUTE);
-            metadata.setFactoryMethodName(factoryMethod);
+            metadata.setFactoryMethod(factoryMethod);
         }
 
         // Do some validation
         if (metadata.getClassName() == null && metadata.getFactoryComponent() == null) {
             throw new ComponentDefinitionException("Bean class or factory-ref must be specified");
         }
-        if (metadata.getFactoryComponent() != null && metadata.getFactoryMethodName() == null) {
+        if (metadata.getFactoryComponent() != null && metadata.getFactoryMethod() == null) {
             throw new ComponentDefinitionException("factory-method is required when factory-component is set");
         }
 
@@ -572,13 +572,13 @@ public class Parser {
         }
         String autoExport = element.hasAttribute(AUTO_EXPORT_ATTRIBUTE) ? element.getAttribute(AUTO_EXPORT_ATTRIBUTE) : AUTO_EXPORT_DEFAULT;
         if (AUTO_EXPORT_DISABLED.equals(autoExport)) {
-            service.setAutoExportMode(ServiceMetadata.AUTO_EXPORT_DISABLED);
+            service.setAutoExport(ServiceMetadata.AUTO_EXPORT_DISABLED);
         } else if (AUTO_EXPORT_INTERFACES.equals(autoExport)) {
-            service.setAutoExportMode(ServiceMetadata.AUTO_EXPORT_INTERFACES);
+            service.setAutoExport(ServiceMetadata.AUTO_EXPORT_INTERFACES);
         } else if (AUTO_EXPORT_CLASS_HIERARCHY.equals(autoExport)) {
-            service.setAutoExportMode(ServiceMetadata.AUTO_EXPORT_CLASS_HIERARCHY);
+            service.setAutoExport(ServiceMetadata.AUTO_EXPORT_CLASS_HIERARCHY);
         } else if (AUTO_EXPORT_ALL.equals(autoExport)) {
-            service.setAutoExportMode(ServiceMetadata.AUTO_EXPORT_ALL_CLASSES);
+            service.setAutoExport(ServiceMetadata.AUTO_EXPORT_ALL_CLASSES);
         } else {
             throw new ComponentDefinitionException("Illegal value (" + autoExport + ") for " + AUTO_EXPORT_ATTRIBUTE + " attribute");
         }
@@ -626,6 +626,10 @@ public class Parser {
         // Check service
         if (service.getServiceComponent() == null) {
             throw new ComponentDefinitionException("One of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element or " + REF_ELEMENT + " element must be set");
+        }
+        // Check interface
+        if (service.getAutoExport() == ServiceMetadata.AUTO_EXPORT_DISABLED && service.getInterfaceNames().isEmpty()) {
+            throw new ComponentDefinitionException(INTERFACE_ATTRIBUTE + " attribute or " + INTERFACES_ELEMENT + " element must be set when " + AUTO_EXPORT_ATTRIBUTE + " is set to " + AUTO_EXPORT_DISABLED);
         }
         
         ComponentMetadata s = service;
@@ -794,12 +798,12 @@ public class Parser {
         String registrationMethod = null;
         if (element.hasAttribute(REGISTRATION_METHOD_ATTRIBUTE)) {
             registrationMethod = element.getAttribute(REGISTRATION_METHOD_ATTRIBUTE);
-            listener.setRegistrationMethodName(registrationMethod);
+            listener.setRegistrationMethod(registrationMethod);
         }
         String unregistrationMethod = null;
         if (element.hasAttribute(UNREGISTRATION_METHOD_ATTRIBUTE)) {
             unregistrationMethod = element.getAttribute(UNREGISTRATION_METHOD_ATTRIBUTE);
-            listener.setUnregistrationMethodName(unregistrationMethod);
+            listener.setUnregistrationMethod(unregistrationMethod);
         }
         if (registrationMethod == null && unregistrationMethod == null) {
             throw new ComponentDefinitionException("One of " + REGISTRATION_METHOD_ATTRIBUTE + " or " + UNREGISTRATION_METHOD_ATTRIBUTE + " must be set");
@@ -942,7 +946,7 @@ public class Parser {
             if (node instanceof Element) {
                 Element e = (Element) node;
                 if (isBlueprintNamespace(e.getNamespaceURI())) {
-                    if (nodeNameEquals(e, LISTENER_ELEMENT)) {
+                    if (nodeNameEquals(e, REFERENCE_LISTENER_ELEMENT)) {
                         reference.addServiceListener(parseServiceListener(e, reference));
                     }
                 }
@@ -950,8 +954,8 @@ public class Parser {
         }
     }
 
-    private Listener parseServiceListener(Element element, ComponentMetadata enclosingComponent) {
-        ListenerImpl listener = new ListenerImpl();
+    private ReferenceListener parseServiceListener(Element element, ComponentMetadata enclosingComponent) {
+        ReferenceListenerImpl listener = new ReferenceListenerImpl();
         Metadata listenerComponent = null;
         // Parse attributes
         if (element.hasAttribute(REF_ATTRIBUTE)) {
@@ -961,11 +965,11 @@ public class Parser {
         String unbindMethodName = null;
         if (element.hasAttribute(BIND_METHOD_ATTRIBUTE)) {
             bindMethodName = element.getAttribute(BIND_METHOD_ATTRIBUTE);
-            listener.setBindMethodName(bindMethodName);
+            listener.setBindMethod(bindMethodName);
         }
         if (element.hasAttribute(UNBIND_METHOD_ATTRIBUTE)) {
             unbindMethodName = element.getAttribute(UNBIND_METHOD_ATTRIBUTE);
-            listener.setUnbindMethodName(unbindMethodName);
+            listener.setUnbindMethod(unbindMethodName);
         }
         if (bindMethodName == null && unbindMethodName == null) {
             throw new ComponentDefinitionException("One of " + BIND_METHOD_ATTRIBUTE + " or " + UNBIND_METHOD_ATTRIBUTE + " must be set");

@@ -57,7 +57,7 @@ public class RefListMetadataImpl extends ServiceReferenceMetadataImpl implements
                 ", interfaceName='" + interfaceName + '\'' +
                 ", componentName='" + componentName + '\'' +
                 ", filter='" + filter + '\'' +
-                ", serviceListeners=" + serviceListeners +
+                ", serviceListeners=" + referenceListeners +
                 ", memberType=" + memberType +
                 ']';
     }

@@ -18,8 +18,8 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.apache.geronimo.blueprint.mutable.MutableListener;
-import org.osgi.service.blueprint.reflect.Listener;
+import org.apache.geronimo.blueprint.mutable.MutableReferenceListener;
+import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.Target;
 
 /**
@@ -28,25 +28,25 @@ import org.osgi.service.blueprint.reflect.Target;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ListenerImpl implements MutableListener {
+public class ReferenceListenerImpl implements MutableReferenceListener {
 
     private Target listenerComponent;
-    private String bindMethodName;
-    private String unbindMethodName;
+    private String bindMethod;
+    private String unbindMethod;
 
-    public ListenerImpl() {
+    public ReferenceListenerImpl() {
     }
 
-    public ListenerImpl(Target listenerComponent, String bindMethodName, String unbindMethodName) {
+    public ReferenceListenerImpl(Target listenerComponent, String bindMethod, String unbindMethod) {
         this.listenerComponent = listenerComponent;
-        this.bindMethodName = bindMethodName;
-        this.unbindMethodName = unbindMethodName;
+        this.bindMethod = bindMethod;
+        this.unbindMethod = unbindMethod;
     }
 
-    public ListenerImpl(Listener source) {
+    public ReferenceListenerImpl(ReferenceListener source) {
         this.listenerComponent = MetadataUtil.cloneTarget(source.getListenerComponent());
-        this.bindMethodName = source.getBindMethodName();
-        this.unbindMethodName = source.getUnbindMethodName();
+        this.bindMethod = source.getBindMethod();
+        this.unbindMethod = source.getUnbindMethod();
     }
 
     public Target getListenerComponent() {
@@ -57,28 +57,28 @@ public class ListenerImpl implements MutableListener {
         this.listenerComponent = listenerComponent;
     }
 
-    public String getBindMethodName() {
-        return this.bindMethodName;
+    public String getBindMethod() {
+        return this.bindMethod;
     }
 
-    public void setBindMethodName(String bindMethodName) {
-        this.bindMethodName = bindMethodName;
+    public void setBindMethod(String bindMethodName) {
+        this.bindMethod = bindMethodName;
     }
 
-    public String getUnbindMethodName() {
-        return this.unbindMethodName;
+    public String getUnbindMethod() {
+        return this.unbindMethod;
     }
 
-    public void setUnbindMethodName(String unbindMethodName) {
-        this.unbindMethodName = unbindMethodName;
+    public void setUnbindMethod(String unbindMethodName) {
+        this.unbindMethod = unbindMethodName;
     }
 
     @Override
     public String toString() {
         return "Listener[" +
                 "listenerComponent=" + listenerComponent +
-                ", bindMethodName='" + bindMethodName + '\'' +
-                ", unbindMethodName='" + unbindMethodName + '\'' +
+                ", bindMethodName='" + bindMethod + '\'' +
+                ", unbindMethodName='" + unbindMethod + '\'' +
                 ']';
     }
 }

@@ -19,7 +19,7 @@
 package org.apache.geronimo.blueprint.mutable;
 
 import org.apache.geronimo.blueprint.ExtendedServiceReferenceMetadata;
-import org.osgi.service.blueprint.reflect.Listener;
+import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.Target;
 
 /**
@@ -36,13 +36,13 @@ public interface MutableServiceReferenceMetadata extends ExtendedServiceReferenc
 
     void setComponentName(String componentName);
 
-    void addServiceListener(Listener listener);
+    void addServiceListener(ReferenceListener listener);
 
-    Listener addServiceListener(Target listenerComponent,
+    ReferenceListener addServiceListener(Target listenerComponent,
                                 String bindMethodName,
                                 String unbindMethodName);
 
-    void removeServiceListener(Listener listener);
+    void removeReferenceListener(ReferenceListener listener);
 
     void setProxyMethod(int proxyMethod);
 

@@ -33,8 +33,12 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Arrays;
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.BlockingQueue;
 
 import static org.apache.geronimo.blueprint.utils.TypeUtils.getTypeParameters;
 import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
@@ -164,6 +168,8 @@ public final class ConversionUtils {
             return LinkedHashSet.class;
         } else if (List.class.isAssignableFrom(type)) {
             return ArrayList.class;
+        } else if (Queue.class.isAssignableFrom(type)) {
+            return LinkedList.class;
         } else {
             return ArrayList.class;
         }

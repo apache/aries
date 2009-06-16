@@ -159,15 +159,12 @@ public class BeanRecipe extends AbstractRecipe {
 
     @Override
     protected Class loadClass(String className) {
-        if (type instanceof Class) {
-            try {
-                return ((Class) type).getClassLoader().loadClass(className);
-            } catch (ClassNotFoundException e) {
-                throw new ComponentDefinitionException("Unable to load class " + className + " from recipe " + this, e);
-            }
-        } else {
-            return super.loadClass(className);
-        }
+        return toClass(loadType(className, type instanceof Class ? ((Class) type).getClassLoader() : null));
+    }
+
+    @Override
+    protected Type loadType(String className) {
+        return loadType(className, type instanceof Class ? ((Class) type).getClassLoader() : null);
     }
 
     private Object getInstance() throws ComponentDefinitionException {
@@ -260,45 +257,29 @@ public class BeanRecipe extends AbstractRecipe {
                 it.remove();
             }
         }
-        // Find a direct match with no conversion
-        if (BlueprintContainerImpl.BEHAVIOR_TCK_INJECTION && matches.size() != 1) {
+        // Find a direct match with assignment
+        if (matches.size() != 1) {
             Map<Method, List<Object>> nmatches = new HashMap<Method, List<Object>>();
-            int bestExactMatch = -1;
             for (Method mth : methods) {
                 boolean found = true;
-                int exactMatch = 0;
                 List<Object> match = new ArrayList<Object>();
                 for (int i = 0; i < args.size(); i++) {
-                    if (types.get(i) != null) {
-                        if (!mth.getParameterTypes()[i].isAssignableFrom(types.get(i))) {
-                            found = false;
-                            break;
-                        }
-                        if (mth.getParameterTypes()[i] == types.get(i)) {
-                            exactMatch++;
-                        }
-                    } else {
-                        if (!mth.getParameterTypes()[i].isInstance(args.get(i))) {
-                            found = false;
-                            break;
-                        }
-                        if (args.get(i) != null && mth.getParameterTypes()[i] == args.get(i).getClass()) {
-                            exactMatch++;
-                        }
+                    if (types.get(i) != null && types.get(i) != mth.getParameterTypes()[i]) {
+                        found = false;
+                        break;
+                    }
+                    if (!mth.getParameterTypes()[i].isInstance(args.get(i))) {
+                        found = false;
+                        break;
                     }
                     try {
-                        Object val = convert(args.get(i), mth.getGenericParameterTypes()[i]);
-                        match.add(val);
+                        match.add(convert(args.get(i), mth.getGenericParameterTypes()[i]));
                     } catch (Throwable t) {
                         found = false;
                         break;
                     }
                 }
-                if (found && exactMatch >= bestExactMatch) {
-                    if (exactMatch > bestExactMatch) {
-                        bestExactMatch = exactMatch;
-                        nmatches.clear();
-                    }
+                if (found) {
                     nmatches.put(mth, match);
                 }
             }
@@ -306,7 +287,7 @@ public class BeanRecipe extends AbstractRecipe {
                 matches = nmatches;
             }
         }
-        // Find a direct match
+        // Find a direct match with conversion
         if (matches.size() != 1) {
             Map<Method, List<Object>> nmatches = new HashMap<Method, List<Object>>();
             for (Method mth : methods) {
@@ -333,11 +314,25 @@ public class BeanRecipe extends AbstractRecipe {
                 matches = nmatches;
             }
         }
-        // Start reordering
+        // Start reordering with assignment
         if (matches.size() != 1 && reorderArguments && args.size() > 1) {
             Map<Method, List<Object>> nmatches = new HashMap<Method, List<Object>>();
             for (Method mth : methods) {
-                ArgumentMatcher matcher = new ArgumentMatcher(mth.getGenericParameterTypes());
+                ArgumentMatcher matcher = new ArgumentMatcher(mth.getGenericParameterTypes(), false);
+                List<Object> match = matcher.match(args, types);
+                if (match != null) {
+                    nmatches.put(mth, match);
+                }
+            }
+            if (nmatches.size() > 0) {
+                matches = nmatches;
+            }
+        }
+        // Start reordering with conversion
+        if (matches.size() != 1 && reorderArguments && args.size() > 1) {
+            Map<Method, List<Object>> nmatches = new HashMap<Method, List<Object>>();
+            for (Method mth : methods) {
+                ArgumentMatcher matcher = new ArgumentMatcher(mth.getGenericParameterTypes(), true);
                 List<Object> match = matcher.match(args, types);
                 if (match != null) {
                     nmatches.put(mth, match);
@@ -360,45 +355,29 @@ public class BeanRecipe extends AbstractRecipe {
                 it.remove();
             }
         }
-        // Find a direct match with no conversion
-        if (BlueprintContainerImpl.BEHAVIOR_TCK_INJECTION && matches.size() != 1) {
+        // Find a direct match with assignment
+        if (matches.size() != 1) {
             Map<Constructor, List<Object>> nmatches = new HashMap<Constructor, List<Object>>();
-            int bestExactMatch = -1;
             for (Constructor cns : constructors) {
                 boolean found = true;
-                int exactMatch = 0;
                 List<Object> match = new ArrayList<Object>();
                 for (int i = 0; i < args.size(); i++) {
-                    if (types.get(i) != null) {
-                        if (!toClass(cns.getParameterTypes()[i]).isAssignableFrom(types.get(i))) {
-                            found = false;
-                            break;
-                        }
-                        if (cns.getParameterTypes()[i] == types.get(i)) {
-                            exactMatch++;
-                        }
-                    } else {
-                        if (!cns.getParameterTypes()[i].isInstance(args.get(i))) {
-                            found = false;
-                            break;
-                        }
-                        if (args.get(i) != null && cns.getParameterTypes()[i] == args.get(i).getClass()) {
-                            exactMatch++;
-                        }
+                    if (types.get(i) != null && types.get(i) != cns.getParameterTypes()[i]) {
+                        found = false;
+                        break;
+                    }
+                    if (!cns.getParameterTypes()[i].isInstance(args.get(i))) {
+                        found = false;
+                        break;
                     }
                     try {
-                        Object val = convert(args.get(i), cns.getGenericParameterTypes()[i]);
-                        match.add(val);
+                        match.add(convert(args.get(i), cns.getGenericParameterTypes()[i]));
                     } catch (Throwable t) {
                         found = false;
                         break;
                     }
                 }
-                if (found && exactMatch >= bestExactMatch) {
-                    if (exactMatch > bestExactMatch) {
-                        bestExactMatch = exactMatch;
-                        nmatches.clear();
-                    }
+                if (found) {
                     nmatches.put(cns, match);
                 }
             }
@@ -406,7 +385,7 @@ public class BeanRecipe extends AbstractRecipe {
                 matches = nmatches;
             }
         }
-        // Find a direct match
+        // Find a direct match with conversion
         if (matches.size() != 1) {
             Map<Constructor, List<Object>> nmatches = new HashMap<Constructor, List<Object>>();
             for (Constructor cns : constructors) {
@@ -433,11 +412,25 @@ public class BeanRecipe extends AbstractRecipe {
                 matches = nmatches;
             }
         }
-        // Start reordering
+        // Start reordering with assignment
         if (matches.size() != 1 && reorderArguments && arguments.size() > 1) {
             Map<Constructor, List<Object>> nmatches = new HashMap<Constructor, List<Object>>();
             for (Constructor cns : constructors) {
-                ArgumentMatcher matcher = new ArgumentMatcher(cns.getGenericParameterTypes());
+                ArgumentMatcher matcher = new ArgumentMatcher(cns.getGenericParameterTypes(), false);
+                List<Object> match = matcher.match(args, types);
+                if (match != null) {
+                    nmatches.put(cns, match);
+                }
+            }
+            if (nmatches.size() > 0) {
+                matches = nmatches;
+            }
+        }
+        // Start reordering with conversion
+        if (matches.size() != 1 && reorderArguments && arguments.size() > 1) {
+            Map<Constructor, List<Object>> nmatches = new HashMap<Constructor, List<Object>>();
+            for (Constructor cns : constructors) {
+                ArgumentMatcher matcher = new ArgumentMatcher(cns.getGenericParameterTypes(), true);
                 List<Object> match = matcher.match(args, types);
                 if (match != null) {
                     nmatches.put(cns, match);
@@ -632,12 +625,14 @@ public class BeanRecipe extends AbstractRecipe {
     private class ArgumentMatcher {
 
         private List<TypeEntry> entries;
+        private boolean convert;
 
-        public ArgumentMatcher(Type[] types) {
+        public ArgumentMatcher(Type[] types, boolean convert) {
             entries = new ArrayList<TypeEntry>();
             for (Type type : types) {
                 entries.add(new TypeEntry(type));
             }
+            this.convert = convert;
         }
 
         public List<Object> match(List<Object> arguments, List<Class> forcedTypes) {
@@ -681,6 +676,9 @@ public class BeanRecipe extends AbstractRecipe {
                         continue;
                     }
                 } else if (arg != null) {
+                    if (!convert && !toClass(entry.type).isInstance(arg)) {
+                        continue;
+                    }
                     try {
                         val = convert(arg, entry.type);
                     } catch (Throwable t) {

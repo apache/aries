@@ -34,9 +34,9 @@ public interface MutableBeanMetadata extends ExtendedBeanMetadata, MutableCompon
 
     void setClassName(String className);
 
-    void setInitMethodName(String initMethodName);
+    void setInitMethod(String initMethodName);
 
-    void setDestroyMethodName(String destroyMethodName);
+    void setDestroyMethod(String destroyMethodName);
 
     void addArgument(BeanArgument argument);
 
@@ -50,7 +50,7 @@ public interface MutableBeanMetadata extends ExtendedBeanMetadata, MutableCompon
 
     void removeProperty(BeanProperty property);
 
-    void setFactoryMethodName(String factoryMethodName);
+    void setFactoryMethod(String factoryMethodName);
 
     void setFactoryComponent(Target factoryComponent);
 

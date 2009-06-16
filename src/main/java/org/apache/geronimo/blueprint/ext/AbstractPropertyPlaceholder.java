@@ -29,7 +29,7 @@ import org.apache.geronimo.blueprint.mutable.MutableBeanArgument;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableBeanProperty;
 import org.apache.geronimo.blueprint.mutable.MutableCollectionMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableListener;
+import org.apache.geronimo.blueprint.mutable.MutableReferenceListener;
 import org.apache.geronimo.blueprint.mutable.MutableMapEntry;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.mutable.MutablePropsMetadata;
@@ -40,7 +40,7 @@ import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
-import org.osgi.service.blueprint.reflect.Listener;
+import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
@@ -136,15 +136,15 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     }
 
     protected Metadata processReferenceMetadata(ReferenceMetadata component) {
-        for (Listener listener : component.getServiceListeners()) {
-            ((MutableListener) listener).setListenerComponent((Target) processMetadata(listener.getListenerComponent()));
+        for (ReferenceListener listener : component.getReferenceListeners()) {
+            ((MutableReferenceListener) listener).setListenerComponent((Target) processMetadata(listener.getListenerComponent()));
         }
         return component;
     }
 
     protected Metadata processRefCollectionMetadata(RefListMetadata component) {
-        for (Listener listener : component.getServiceListeners()) {
-            ((MutableListener) listener).setListenerComponent((Target) processMetadata(listener.getListenerComponent()));
+        for (ReferenceListener listener : component.getReferenceListeners()) {
+            ((MutableReferenceListener) listener).setListenerComponent((Target) processMetadata(listener.getListenerComponent()));
         }
         return component;
     }

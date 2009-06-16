@@ -31,22 +31,22 @@ import org.osgi.service.blueprint.reflect.Target;
 public class RegistrationListenerImpl implements MutableRegistrationListener {
 
     private Target listenerComponent;
-    private String registrationMethodName;
-    private String unregistrationMethodName;
+    private String registrationMethod;
+    private String unregistrationMethod;
 
     public RegistrationListenerImpl() {
     }
 
-    public RegistrationListenerImpl(Target listenerComponent, String registrationMethodName, String unregistrationMethodName) {
+    public RegistrationListenerImpl(Target listenerComponent, String registrationMethod, String unregistrationMethod) {
         this.listenerComponent = listenerComponent;
-        this.registrationMethodName = registrationMethodName;
-        this.unregistrationMethodName = unregistrationMethodName;
+        this.registrationMethod = registrationMethod;
+        this.unregistrationMethod = unregistrationMethod;
     }
 
     public RegistrationListenerImpl(RegistrationListener source) {
         listenerComponent = MetadataUtil.cloneTarget(source.getListenerComponent());
-        registrationMethodName = source.getRegistrationMethodName();
-        unregistrationMethodName = source.getUnregistrationMethodName();
+        registrationMethod = source.getRegistrationMethod();
+        unregistrationMethod = source.getUnregistrationMethod();
     }
 
     public Target getListenerComponent() {
@@ -57,28 +57,28 @@ public class RegistrationListenerImpl implements MutableRegistrationListener {
         this.listenerComponent = listenerComponent;
     }
 
-    public String getRegistrationMethodName() {
-        return registrationMethodName;
+    public String getRegistrationMethod() {
+        return registrationMethod;
     }
 
-    public void setRegistrationMethodName(String registrationMethodName) {
-        this.registrationMethodName = registrationMethodName;
+    public void setRegistrationMethod(String registrationMethod) {
+        this.registrationMethod = registrationMethod;
     }
 
-    public String getUnregistrationMethodName() {
-        return unregistrationMethodName;
+    public String getUnregistrationMethod() {
+        return unregistrationMethod;
     }
 
-    public void setUnregistrationMethodName(String unregistrationMethodName) {
-        this.unregistrationMethodName = unregistrationMethodName;
+    public void setUnregistrationMethod(String unregistrationMethod) {
+        this.unregistrationMethod = unregistrationMethod;
     }
 
     @Override
     public String toString() {
         return "RegistrationListener[" +
                 "listenerComponent=" + listenerComponent +
-                ", registrationMethodName='" + registrationMethodName + '\'' +
-                ", unregistrationMethodName='" + unregistrationMethodName + '\'' +
+                ", registrationMethodName='" + registrationMethod + '\'' +
+                ", unregistrationMethodName='" + unregistrationMethod + '\'' +
                 ']';
     }
 }

@@ -17,10 +17,12 @@
 package org.apache.geronimo.blueprint.di;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
 
 /**
  * @version $Rev$ $Date$
@@ -47,11 +49,11 @@ public class ArrayRecipe extends AbstractRecipe {
     }
 
     protected Object internalCreate() throws ComponentDefinitionException {
-        Class type;
+        Type type;
         if (this.type instanceof Class) {
             type = (Class) this.type;
         } else if (this.type instanceof String) {
-            type = loadClass((String) this.type);
+            type = loadType((String) this.type);
         } else {
             type = Object.class;
         }
@@ -59,9 +61,9 @@ public class ArrayRecipe extends AbstractRecipe {
         // create array instance
         Object array;
         try {
-            array = Array.newInstance(type, list.size());
+            array = Array.newInstance(toClass(type), list.size());
         } catch (Exception e) {
-            throw new ComponentDefinitionException("Error while creating array instance: " + type.getName());
+            throw new ComponentDefinitionException("Error while creating array instance: " + toClass(type));
         }
 
         int index = 0;

@@ -136,6 +136,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
             }
             List<PathElement> paths = HeaderParser.parseHeader(blueprintHeader);
             for (PathElement path : paths) {
+                // TODO: support OSGI-INF/blueprint/*.xml
                 if (path.getName().endsWith("/")) {
                     Enumeration e = bundle.findEntries(path.getName(), "*.xml", false);
                     while (e != null && e.hasMoreElements()) {
