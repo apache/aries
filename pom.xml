@@ -83,12 +83,15 @@
             <artifactId>pax-url-mvn</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- Frameworks -->
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.main</artifactId>
-            <version>1.6.0</version>
-            <scope>test</scope>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -100,6 +103,10 @@
         <repository>
             <id>ops4j.snapshots</id>
             <url>http://repository.ops4j.org/mvn-snapshots</url>
+        </repository>
+        <repository>
+            <id>servicemix-repo</id>
+            <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
         </repository>
     </repositories>
     <pluginRepositories>

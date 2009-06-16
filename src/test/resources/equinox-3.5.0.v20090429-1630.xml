@@ -1,0 +1,6 @@
+<platform>
+
+  <name>Equinox 3.5.0-v20090429-1630</name>
+  <system>mvn:org.eclipse/osgi/3.5.0-v20090429-1630</system>
+
+</platform>

@@ -131,7 +131,9 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
 
 //            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
-//            felix().snapshotVersion(),
+                rawPaxRunnerOption("", ""),
+
+            felix().snapshotVersion(),
             equinox().snapshotVersion()
         );
 

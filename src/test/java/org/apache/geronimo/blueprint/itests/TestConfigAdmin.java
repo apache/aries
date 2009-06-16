@@ -186,7 +186,7 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
 
 //            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
-//            felix().snapshotVersion(),
+            felix().snapshotVersion(),
             equinox().snapshotVersion()
         );
 
