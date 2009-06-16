@@ -39,7 +39,7 @@ public interface MutableServiceMetadata extends ServiceMetadata, MutableComponen
 
     void removeInterfaceName(String interfaceName);
 
-    void setAutoExportMode(int autoExportMode);
+    void setAutoExport(int autoExportMode);
 
     void addServiceProperty(MapEntry serviceProperty);
 

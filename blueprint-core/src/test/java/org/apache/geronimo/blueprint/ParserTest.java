@@ -114,8 +114,8 @@ public class ParserTest extends AbstractBlueprintTest {
         assertTrue(param.getValue() instanceof RefMetadata);
         assertEquals("pojoB", ((RefMetadata) param.getValue()).getComponentId());
         
-        assertEquals(null, local.getInitMethodName());
-        assertEquals(null, local.getDestroyMethodName());
+        assertEquals(null, local.getInitMethod());
+        assertEquals(null, local.getDestroyMethod());
                 
         // test pojoB
         ComponentMetadata pojoB = registry.getComponentDefinition("pojoB");
@@ -123,8 +123,8 @@ public class ParserTest extends AbstractBlueprintTest {
         assertEquals("pojoB", pojoB.getId());
         assertTrue(pojoB instanceof BeanMetadata);
         BeanMetadata pojoBLocal = (BeanMetadata) pojoB;
-        assertEquals("initPojo", pojoBLocal.getInitMethodName());
-//        assertEquals("", pojoBLocal.getDestroyMethodName());
+        assertEquals("initPojo", pojoBLocal.getInitMethod());
+//        assertEquals("", pojoBLocal.getDestroyMethod());
         
         params = pojoBLocal.getArguments();
         assertNotNull(params);

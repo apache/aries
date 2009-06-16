@@ -45,7 +45,7 @@ import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.IdRefMetadata;
-import org.osgi.service.blueprint.reflect.Listener;
+import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
@@ -114,9 +114,9 @@ public class RecipeBuilder {
 
     private Recipe createRefCollectionRecipe(RefListMetadata metadata) throws Exception {
         CollectionRecipe listenersRecipe = null;
-        if (metadata.getServiceListeners() != null) {
+        if (metadata.getReferenceListeners() != null) {
             listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class);
-            for (Listener listener : metadata.getServiceListeners()) {
+            for (ReferenceListener listener : metadata.getReferenceListeners()) {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
@@ -134,9 +134,9 @@ public class RecipeBuilder {
 
     private ReferenceRecipe createReferenceRecipe(ReferenceMetadata metadata) throws Exception {
         CollectionRecipe listenersRecipe = null;
-        if (metadata.getServiceListeners() != null) {
+        if (metadata.getReferenceListeners() != null) {
             listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class);
-            for (Listener listener : metadata.getServiceListeners()) {
+            for (ReferenceListener listener : metadata.getReferenceListeners()) {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
@@ -200,8 +200,8 @@ public class RecipeBuilder {
         if (!BeanMetadata.SCOPE_PROTOTYPE.equals(beanMetadata.getScope())) {
             recipe.setPrototype(false);
         }
-        recipe.setInitMethod(beanMetadata.getInitMethodName());
-        recipe.setDestroyMethod(beanMetadata.getDestroyMethodName());
+        recipe.setInitMethod(beanMetadata.getInitMethod());
+        recipe.setDestroyMethod(beanMetadata.getDestroyMethod());
         List<BeanArgument> beanArguments = beanMetadata.getArguments();
         if (beanArguments != null && !beanArguments.isEmpty()) {
             boolean hasIndex = (beanArguments.get(0).getIndex() >= 0);
@@ -221,7 +221,7 @@ public class RecipeBuilder {
             recipe.setArgTypes(argTypes);
             recipe.setReorderArguments(!hasIndex);
         }
-        recipe.setFactoryMethod(beanMetadata.getFactoryMethodName());
+        recipe.setFactoryMethod(beanMetadata.getFactoryMethod());
         if (beanMetadata.getFactoryComponent() != null) {
             recipe.setFactoryComponent(getValue(beanMetadata.getFactoryComponent(), null));
         }
@@ -235,16 +235,16 @@ public class RecipeBuilder {
     private Recipe createRecipe(RegistrationListener listener) throws Exception {
         BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, ServiceListener.class);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
-        if (listener.getRegistrationMethodName() != null) {
-            recipe.setProperty("registerMethod", listener.getRegistrationMethodName());
+        if (listener.getRegistrationMethod() != null) {
+            recipe.setProperty("registerMethod", listener.getRegistrationMethod());
         }
-        if (listener.getUnregistrationMethodName() != null) {
-            recipe.setProperty("unregisterMethod", listener.getUnregistrationMethodName());
+        if (listener.getUnregistrationMethod() != null) {
+            recipe.setProperty("unregisterMethod", listener.getUnregistrationMethod());
         }
         return recipe;
     }
 
-    private Recipe createRecipe(Listener listener) throws Exception {
+    private Recipe createRecipe(ReferenceListener listener) throws Exception {
         BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, AbstractServiceReferenceRecipe.Listener.class);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         recipe.setProperty("metadata", listener);

@@ -81,13 +81,13 @@
     <bean id="fooRegistrationListener" class="org.apache.geronimo.blueprint.sample.FooRegistrationListener"/>
 
     <reference id="ref2" interface="org.apache.geronimo.blueprint.sample.InterfaceA" timeout="100">
-        <listener bind-method="bind" unbind-method="unbind" ref="bindingListener" />
+        <reference-listener bind-method="bind" unbind-method="unbind" ref="bindingListener" />
     </reference>
 
     <bean id="bindingListener" class="org.apache.geronimo.blueprint.sample.BindingListener"/>
 
     <ref-list id="ref-list" interface="org.apache.geronimo.blueprint.sample.InterfaceA">
-        <listener bind-method="bind" unbind-method="unbind" ref="listBindingListener" />
+        <reference-listener bind-method="bind" unbind-method="unbind" ref="listBindingListener" />
     </ref-list>
 
     <bean id="listBindingListener" class="org.apache.geronimo.blueprint.sample.BindingListener"/>
@@ -95,9 +95,10 @@
     <bean id="circularReference" class="org.apache.geronimo.blueprint.sample.BindingListener" init-method="init">
         <property name="list">
             <ref-list interface="org.apache.geronimo.blueprint.sample.InterfaceA" availability="optional">
-                <listener bind-method="bind" unbind-method="unbind" ref="circularReference"/>
+                <reference-listener bind-method="bind" unbind-method="unbind" ref="circularReference"/>
             </ref-list>
         </property>
     </bean>
+
 </blueprint>
 

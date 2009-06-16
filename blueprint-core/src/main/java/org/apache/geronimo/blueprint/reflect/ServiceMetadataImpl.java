@@ -41,7 +41,7 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
 
     private Target serviceComponent;
     private List<String> interfaceNames;
-    private int autoExportMode;
+    private int autoExport;
     private List<MapEntry> serviceProperties;
     private int ranking;
     private Collection<RegistrationListener> registrationListeners;
@@ -53,7 +53,7 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
         super(source);
         this.serviceComponent = MetadataUtil.cloneTarget(source.getServiceComponent());
         this.interfaceNames = new ArrayList<String>(source.getInterfaceNames());
-        this.autoExportMode = source.getAutoExportMode();
+        this.autoExport = source.getAutoExport();
         for (MapEntry serviceProperty : source.getServiceProperties()) {
             addServiceProperty(new MapEntryImpl(serviceProperty));
         }
@@ -96,12 +96,12 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
         }
     }
 
-    public int getAutoExportMode() {
-        return this.autoExportMode;
+    public int getAutoExport() {
+        return this.autoExport;
     }
 
-    public void setAutoExportMode(int autoExportMode) {
-        this.autoExportMode = autoExportMode;
+    public void setAutoExport(int autoExport) {
+        this.autoExport = autoExport;
     }
 
     public List<MapEntry> getServiceProperties() {
@@ -182,7 +182,7 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
                 ", dependsOn=" + dependsOn +
                 ", exportedComponent=" + serviceComponent +
                 ", interfaceNames=" + interfaceNames +
-                ", autoExportMode=" + autoExportMode +
+                ", autoExportMode=" + autoExport +
                 ", serviceProperties=" + serviceProperties +
                 ", ranking=" + ranking +
                 ", registrationListeners=" + registrationListeners +

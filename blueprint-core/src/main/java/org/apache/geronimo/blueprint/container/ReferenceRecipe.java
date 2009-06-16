@@ -110,11 +110,23 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     }
 
     protected void track(ServiceReference ref) {
-        retrack();
+        // TODO: make this behavior configurable through a custom attribute
+        // TODO:      policy = sticky | replace
+        synchronized (monitor) {
+            if (trackedServiceReference != null) {
+                retrack();
+            }
+        }
     }
 
     protected void untrack(ServiceReference ref) {
-        retrack();
+        // TODO: make this behavior configurable through a custom attribute
+        // TODO:      policy = sticky | replace
+        synchronized (monitor) {
+            if (trackedServiceReference == ref) {
+                retrack();
+            }
+        }
     }
 
     private void bind(ServiceReference ref) {

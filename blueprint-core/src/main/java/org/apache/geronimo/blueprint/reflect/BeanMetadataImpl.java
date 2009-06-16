@@ -38,12 +38,12 @@ import org.osgi.service.blueprint.reflect.Target;
 public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBeanMetadata {
 
     private String className;
-    private String initMethodName;
-    private String destroyMethodName;
+    private String initMethod;
+    private String destroyMethod;
     private List<BeanArgument> arguments;
     private List<BeanProperty> properties;
     private int initialization;
-    private String factoryMethodName;
+    private String factoryMethod;
     private Target factoryComponent;
     private String scope;
     private Class runtimeClass;
@@ -56,8 +56,8 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     public BeanMetadataImpl(BeanMetadata source) {
         super(source);
         this.className = source.getClassName();
-        this.initMethodName = source.getInitMethodName();
-        this.destroyMethodName = source.getDestroyMethodName();
+        this.initMethod = source.getInitMethod();
+        this.destroyMethod = source.getDestroyMethod();
         for (BeanArgument argument : source.getArguments()) {
             addArgument(new BeanArgumentImpl(argument));
         }
@@ -65,7 +65,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
             addProperty(new BeanPropertyImpl(property));
         }
         this.initialization = source.getInitialization();
-        this.factoryMethodName = source.getFactoryMethodName();
+        this.factoryMethod = source.getFactoryMethod();
         this.factoryComponent = MetadataUtil.cloneTarget(source.getFactoryComponent());
         this.scope = source.getScope();
         this.runtimeClass = source.getRuntimeClass();
@@ -80,20 +80,20 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         this.className = className;
     }
 
-    public String getInitMethodName() {
-        return initMethodName;
+    public String getInitMethod() {
+        return initMethod;
     }
 
-    public void setInitMethodName(String initMethodName) {
-        this.initMethodName = initMethodName;
+    public void setInitMethod(String initMethodName) {
+        this.initMethod = initMethodName;
     }
 
-    public String getDestroyMethodName() {
-        return destroyMethodName;
+    public String getDestroyMethod() {
+        return destroyMethod;
     }
 
-    public void setDestroyMethodName(String destroyMethodName) {
-        this.destroyMethodName = destroyMethodName;
+    public void setDestroyMethod(String destroyMethodName) {
+        this.destroyMethod = destroyMethodName;
     }
 
     public List<BeanArgument> getArguments() {
@@ -158,12 +158,12 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         }
     }
 
-    public String getFactoryMethodName() {
-        return this.factoryMethodName;
+    public String getFactoryMethod() {
+        return this.factoryMethod;
     }
 
-    public void setFactoryMethodName(String factoryMethodName) {
-        this.factoryMethodName = factoryMethodName;
+    public void setFactoryMethod(String factoryMethodName) {
+        this.factoryMethod = factoryMethodName;
     }
 
     public Target getFactoryComponent() {
@@ -205,11 +205,11 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
                 ", initialization=" + initialization +
                 ", dependsOn=" + dependsOn +
                 ", className='" + className + '\'' +
-                ", initMethodName='" + initMethodName + '\'' +
-                ", destroyMethodName='" + destroyMethodName + '\'' +
+                ", initMethodName='" + initMethod + '\'' +
+                ", destroyMethodName='" + destroyMethod + '\'' +
                 ", arguments=" + arguments +
                 ", properties=" + properties +
-                ", factoryMethodName='" + factoryMethodName + '\'' +
+                ", factoryMethodName='" + factoryMethod + '\'' +
                 ", factoryComponent=" + factoryComponent +
                 ", scope='" + scope + '\'' +
                 ", runtimeClass=" + runtimeClass +

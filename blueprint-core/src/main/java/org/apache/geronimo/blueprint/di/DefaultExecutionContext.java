@@ -130,32 +130,7 @@ public class DefaultExecutionContext extends ExecutionContext {
         return ConversionUtils.convert(value, type, blueprintContainer.getConverter());
     }
 
-    private static Map<String, Class> primitiveClasses = new HashMap<String, Class>();
-
-    static {
-        primitiveClasses.put("int", int.class);
-        primitiveClasses.put("short", short.class);
-        primitiveClasses.put("long", long.class);
-        primitiveClasses.put("byte", byte.class);
-        primitiveClasses.put("char", char.class);
-        primitiveClasses.put("float", float.class);
-        primitiveClasses.put("double", double.class);
-        primitiveClasses.put("boolean", boolean.class);
-    }
-
     public Class loadClass(String typeName) throws ClassNotFoundException {
-        if (typeName == null) {
-            return null;
-        }
-        Class clazz = primitiveClasses.get(typeName);
-        if (clazz == null && typeName.startsWith("java.")) {
-            // We can bypass classes starting with "java." because they are always delegated
-            // to the system bundle, so we'll end up with the same class in all cases 
-            clazz = getClass().getClassLoader().loadClass(typeName);
-        }
-        if (clazz == null) {
-            clazz = blueprintContainer.loadClass(typeName);
-        }
-        return clazz;
+        return blueprintContainer.loadClass(typeName);
     }
 }

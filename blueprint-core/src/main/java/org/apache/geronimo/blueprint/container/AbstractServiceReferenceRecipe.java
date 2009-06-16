@@ -50,6 +50,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -322,7 +323,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         /* Inject by ObjectRecipe */
         private Object listener;
         /* Inject by ObjectRecipe */
-        private org.osgi.service.blueprint.reflect.Listener metadata;
+        private ReferenceListener metadata;
 
         private Set<Method> bindMethodsOneArg = new HashSet<Method>();
         private Set<Method> bindMethodsTwoArgs = new HashSet<Method>();
@@ -333,7 +334,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             this.listener = listener;
         }
 
-        public void setMetadata(org.osgi.service.blueprint.reflect.Listener metadata) {
+        public void setMetadata(ReferenceListener metadata) {
             this.metadata = metadata;
         }
 
@@ -341,7 +342,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             Set<Class> clazzes = new HashSet<Class>(classes);
             clazzes.add(Object.class);
             Class listenerClass = listener.getClass();
-            String bindName = metadata.getBindMethodName();
+            String bindName = metadata.getBindMethod();
             if (bindName != null) {
                 bindMethodsOneArg.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, bindName, new Class[] { ServiceReference.class }));
                 for (Class clazz : clazzes) {
@@ -351,7 +352,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                     throw new ComponentDefinitionException("No matching methods found for listener bind method: " + bindName);
                 }
             }
-            String unbindName = metadata.getUnbindMethodName();
+            String unbindName = metadata.getUnbindMethod();
             if (unbindName != null) {
                 unbindMethodsOneArg.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, unbindName, new Class[] { ServiceReference.class }));
                 for (Class clazz : clazzes) {

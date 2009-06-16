@@ -243,8 +243,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
         factoryMetadata.addProperty("id", createValue(context, factoryMetadata.getId()));
         factoryMetadata.setScope(BeanMetadata.SCOPE_SINGLETON);
         factoryMetadata.setRuntimeClass(CmManagedServiceFactory.class);
-        factoryMetadata.setInitMethodName("init");
-        factoryMetadata.setDestroyMethodName("destroy");
+        factoryMetadata.setInitMethod("init");
+        factoryMetadata.setDestroyMethod("destroy");
         factoryMetadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
         factoryMetadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
         factoryMetadata.addProperty("factoryPid", createValue(context, element.getAttribute(FACTORY_PID_ATTRIBUTE)));
@@ -299,10 +299,10 @@ public class CmNamespaceHandler implements NamespaceHandler {
                         managedComponent.setScope(BeanMetadata.SCOPE_PROTOTYPE);
                         // destroy-method on managed-component has different signature than on regular beans
                         // so we'll handle it differently
-                        String destroyMethod = managedComponent.getDestroyMethodName();
+                        String destroyMethod = managedComponent.getDestroyMethod();
                         if (destroyMethod != null) {
                             factoryMetadata.addProperty("componentDestroyMethod", createValue(context, destroyMethod));
-                            managedComponent.setDestroyMethodName(null);
+                            managedComponent.setDestroyMethod(null);
                         }
                         context.getComponentDefinitionRegistry().registerComponentDefinition(managedComponent);
                         factoryMetadata.addProperty("managedComponentName", createIdRef(context, managedComponent.getId()));
@@ -317,8 +317,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
             MutableBeanMetadata bean = context.createMetadata(MutableBeanMetadata.class);
             bean.setRuntimeClass(ServiceListener.class);
             bean.addProperty("listener", listener.getListenerComponent());
-            bean.addProperty("registerMethod", createValue(context, listener.getRegistrationMethodName()));
-            bean.addProperty("unregisterMethod", createValue(context, listener.getUnregistrationMethodName()));
+            bean.addProperty("registerMethod", createValue(context, listener.getRegistrationMethod()));
+            bean.addProperty("unregisterMethod", createValue(context, listener.getUnregistrationMethod()));
             listenerCollection.addValue(bean);
         }
         factoryMetadata.addProperty("listeners", listenerCollection);
@@ -329,7 +329,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         mapMetadata.setScope(BeanMetadata.SCOPE_SINGLETON);
         mapMetadata.setId(id);
         mapMetadata.setFactoryComponent(createRef(context, factoryMetadata.getId()));
-        mapMetadata.setFactoryMethodName("getServiceMap");
+        mapMetadata.setFactoryMethod("getServiceMap");
         return mapMetadata;
     }
 
@@ -344,8 +344,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
         // and the configuration object will come from the factory. So we only really need to register
         // ManagedService if the persistentId is not an empty string.
         if (persistentId.length() > 0) {
-            metadata.setInitMethodName("init");
-            metadata.setDestroyMethodName("destroy");
+            metadata.setInitMethod("init");
+            metadata.setDestroyMethod("destroy");
         }
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
         metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
@@ -373,8 +373,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
         // and the configuration object will come from the factory. So we only really need to register
         // ManagedService if the persistentId is not an empty string.
         if (persistentId.length() > 0) {
-            metadata.setInitMethodName("init");
-            metadata.setDestroyMethodName("destroy");
+            metadata.setInitMethod("init");
+            metadata.setDestroyMethod("destroy");
         }
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
         metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
