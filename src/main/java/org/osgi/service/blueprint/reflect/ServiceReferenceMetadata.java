@@ -16,7 +16,6 @@
 package org.osgi.service.blueprint.reflect;
 
 import java.util.Collection;
-import java.util.List;
 
 
 /**
@@ -83,6 +82,6 @@ public interface ServiceReferenceMetadata extends ComponentMetadata {
 	 *
 	 * @return an immutable collection of registered ListenerMetadata
 	 */
-	Collection<Listener> getServiceListeners();
+	Collection<ReferenceListener> getReferenceListeners();
 
 }
