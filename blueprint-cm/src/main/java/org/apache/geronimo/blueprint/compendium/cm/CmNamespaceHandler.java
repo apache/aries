@@ -104,8 +104,6 @@ public class CmNamespaceHandler implements NamespaceHandler {
     public static final String INTERFACE_ATTRIBUTE = "interface";
     public static final String UPDATE_ATTRIBUTE = "update";
 
-    public static final String CONFIG_ADMIN_REFERENCE_NAME = "blueprint.configadmin";
-
     public static final String AUTO_EXPORT_DISABLED = "disabled";
     public static final String AUTO_EXPORT_INTERFACES = "interfaces";
     public static final String AUTO_EXPORT_CLASS_HIERARCHY = "class-hierarchy";
@@ -117,7 +115,27 @@ public class CmNamespaceHandler implements NamespaceHandler {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(CmNamespaceHandler.class);
 
+    // This property is static but it should be ok since there will be only a single instance
+    // of this class for the bundle
+    private static ConfigurationAdmin configAdmin;
+
     private int idCounter;
+
+    public int getIdCounter() {
+        return idCounter;
+    }
+
+    public void setIdCounter(int idCounter) {
+        this.idCounter = idCounter;
+    }
+
+    public static ConfigurationAdmin getConfigAdmin() {
+        return configAdmin;
+    }
+
+    public void setConfigAdmin(ConfigurationAdmin configAdmin) {
+        this.configAdmin = configAdmin;
+    }
 
     public URL getSchemaLocation(String namespace) {
         return getClass().getResource("blueprint-cm.xsd");
@@ -126,7 +144,6 @@ public class CmNamespaceHandler implements NamespaceHandler {
     public Metadata parse(Element element, ParserContext context) {
         LOGGER.debug("Parsing element {" + element.getNamespaceURI() + "}" + element.getLocalName());
         ComponentDefinitionRegistry registry = context.getComponentDefinitionRegistry();
-        createConfigAdminProxy(context, registry);
         registerManagedObjectManager(context, registry);
         if (nodeNameEquals(element, PROPERTY_PLACEHOLDER_ELEMENT)) {
             return parsePropertyPlaceholder(context, element);
@@ -140,7 +157,6 @@ public class CmNamespaceHandler implements NamespaceHandler {
     public ComponentMetadata decorate(Node node, ComponentMetadata component, ParserContext context) {
         LOGGER.debug("Decorating node {" + node.getNamespaceURI() + "}" + node.getLocalName());
         ComponentDefinitionRegistry registry = context.getComponentDefinitionRegistry();
-        createConfigAdminProxy(context, registry);
         registerManagedObjectManager(context, registry);
         if (node instanceof Element) {
             if (nodeNameEquals(node, MANAGED_PROPERTIES_ELEMENT)) {
@@ -162,7 +178,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         metadata.setScope(BeanMetadata.SCOPE_SINGLETON);
         metadata.setRuntimeClass(CmPropertyPlaceholder.class);
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
-        metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
+        metadata.addProperty("configAdmin", createConfigAdminProxy(context));
         metadata.addProperty("persistentId", createValue(context, element.getAttribute(PERSISTENT_ID_ATTRIBUTE)));
         String prefix = element.hasAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
                                     ? element.getAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
@@ -246,7 +262,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         factoryMetadata.setRuntimeClass(CmManagedServiceFactory.class);
         factoryMetadata.setInitMethod("init");
         factoryMetadata.setDestroyMethod("destroy");
-        factoryMetadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
+        factoryMetadata.addProperty("configAdmin", createConfigAdminProxy(context));
         factoryMetadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
         factoryMetadata.addProperty("factoryPid", createValue(context, element.getAttribute(FACTORY_PID_ATTRIBUTE)));
         String autoExport = element.hasAttribute(AUTO_EXPORT_ATTRIBUTE) ? element.getAttribute(AUTO_EXPORT_ATTRIBUTE) : AUTO_EXPORT_DEFAULT;
@@ -349,7 +365,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
             metadata.setDestroyMethod("destroy");
         }
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
-        metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
+        metadata.addProperty("configAdmin", createConfigAdminProxy(context));
         metadata.addProperty("managedObjectManager", createRef(context, MANAGED_OBJECT_MANAGER_NAME));
         metadata.addProperty("persistentId", createValue(context, persistentId));
         if (element.hasAttribute(UPDATE_ATTRIBUTE)) {
@@ -378,7 +394,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
             metadata.setDestroyMethod("destroy");
         }
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
-        metadata.addProperty("configAdmin", createRef(context, CONFIG_ADMIN_REFERENCE_NAME));
+        metadata.addProperty("configAdmin", createConfigAdminProxy(context));
         metadata.addProperty("managedObjectManager", createRef(context, MANAGED_OBJECT_MANAGER_NAME));
         metadata.addProperty("persistentId", createValue(context, persistentId));
         String updateStrategy = element.getAttribute(UPDATE_STRATEGY_ATTRIBUTE);
@@ -399,17 +415,16 @@ public class CmNamespaceHandler implements NamespaceHandler {
      * Create a reference to the ConfigurationAdmin service if not already done
      * and add it to the registry.
      *
-     * @param registry the registry to add the config admin reference to
+     * @param context the parser context
+     * @return a metadata pointing to the config admin
      */
-    private void createConfigAdminProxy(ParserContext context, ComponentDefinitionRegistry registry) {
-        if (registry.getComponentDefinition(CONFIG_ADMIN_REFERENCE_NAME) == null) {
-            MutableReferenceMetadata reference = context.createMetadata(MutableReferenceMetadata.class);
-            reference.setId(CONFIG_ADMIN_REFERENCE_NAME);
-            reference.setInterface(ConfigurationAdmin.class.getName());
-            reference.setAvailability(ReferenceMetadata.AVAILABILITY_MANDATORY);
-            reference.setTimeout(300000);
-            registry.registerComponentDefinition(reference);
-        }
+    private Metadata createConfigAdminProxy(ParserContext context) {
+        MutableBeanMetadata bean = context.createMetadata(MutableBeanMetadata.class);
+        bean.setRuntimeClass(CmNamespaceHandler.class);
+        bean.setFactoryMethod("getConfigAdmin");
+        bean.setInitialization(MutableBeanMetadata.INITIALIZATION_LAZY);
+        bean.setScope(MutableBeanMetadata.SCOPE_PROTOTYPE);
+        return bean;
     }
 
     private void registerManagedObjectManager(ParserContext context, ComponentDefinitionRegistry registry) {
