@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
@@ -147,14 +149,19 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
         managedObjectManager.unregister(this);
     }
 
-    public void updated(Dictionary props) {
+    public void updated(final Dictionary props) {
         LOGGER.debug("Configuration updated for bean={} / pid={}", beanName, persistentId);
-        synchronized (lock) {
-            this.properties = props;
-            for (Object bean : beans) {
-                inject(bean, false);
+        // Run in a separate thread to avoid re-entrance
+        new Thread() {
+            public void run() {
+                synchronized (lock) {
+                    properties = props;
+                    for (Object bean : beans) {
+                        inject(bean, false);
+                    }
+                }
             }
-        }
+        }.start();
     }
 
     public Object beforeInit(Object bean, String beanName) {

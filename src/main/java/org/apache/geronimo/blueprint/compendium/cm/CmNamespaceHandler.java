@@ -23,14 +23,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Element;
+import org.w3c.dom.EntityReference;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.NamespaceHandler;
 import org.apache.geronimo.blueprint.ParserContext;
 import org.apache.geronimo.blueprint.container.Parser;
 import org.apache.geronimo.blueprint.container.ParserContextImpl;
 import org.apache.geronimo.blueprint.container.ServiceListener;
-import org.apache.geronimo.blueprint.ext.PlaceholdersUtils;
 import org.apache.geronimo.blueprint.ext.ExtNamespaceHandler;
+import org.apache.geronimo.blueprint.ext.PlaceholdersUtils;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableCollectionMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableComponentMetadata;
@@ -55,12 +62,6 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.CharacterData;
-import org.w3c.dom.Comment;
-import org.w3c.dom.EntityReference;
 
 /**
  * Namespace handler for the Config Admin service.
@@ -117,7 +118,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(CmNamespaceHandler.class);
 
     private int idCounter;
-    
+
     public URL getSchemaLocation(String namespace) {
         return getClass().getResource("blueprint-cm.xsd");
     }
@@ -404,13 +405,13 @@ public class CmNamespaceHandler implements NamespaceHandler {
         if (registry.getComponentDefinition(CONFIG_ADMIN_REFERENCE_NAME) == null) {
             MutableReferenceMetadata reference = context.createMetadata(MutableReferenceMetadata.class);
             reference.setId(CONFIG_ADMIN_REFERENCE_NAME);
-            reference.setInterfaceName(ConfigurationAdmin.class.getName());
+            reference.setInterface(ConfigurationAdmin.class.getName());
             reference.setAvailability(ReferenceMetadata.AVAILABILITY_MANDATORY);
             reference.setTimeout(300000);
             registry.registerComponentDefinition(reference);
         }
     }
-    
+
     private void registerManagedObjectManager(ParserContext context, ComponentDefinitionRegistry registry) {
         if (registry.getComponentDefinition(MANAGED_OBJECT_MANAGER_NAME) == null) {
             MutableBeanMetadata beanMetadata = context.createMetadata(MutableBeanMetadata.class);
@@ -428,7 +429,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     private static ValueMetadata createValue(ParserContext context, String value, String type) {
         MutableValueMetadata m = context.createMetadata(MutableValueMetadata.class);
         m.setStringValue(value);
-        m.setTypeName(type);
+        m.setType(type);
         return m;
     }
 
@@ -447,7 +448,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     private static CollectionMetadata createList(ParserContext context, List<String> list) {
         MutableCollectionMetadata m = context.createMetadata(MutableCollectionMetadata.class);
         m.setCollectionClass(List.class);
-        m.setValueTypeName(String.class.getName());
+        m.setValueType(String.class.getName());
         for (String v : list) {
             m.addValue(createValue(context, v, String.class.getName()));
         }
