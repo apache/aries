@@ -172,7 +172,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             if (listenersRecipe != null) {
                 listeners = (List<Listener>) listenersRecipe.create();
                 for (Listener listener : listeners) {
-                    listener.init(loadAllClasses(Collections.singletonList(metadata.getInterfaceName())));
+                    listener.init(loadAllClasses(Collections.singletonList(metadata.getInterface())));
                 }
             } else {
                 listeners = Collections.emptyList();
@@ -201,7 +201,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             if (metadata instanceof ExtendedServiceReferenceMetadata) {
                 proxyClass = (((ExtendedServiceReferenceMetadata) metadata).getProxyMethod() & ExtendedServiceReferenceMetadata.PROXY_METHOD_CLASSES) != 0;
             }
-            List<Class> classes = loadAllClasses(Collections.singletonList(this.metadata.getInterfaceName()));
+            List<Class> classes = loadAllClasses(Collections.singletonList(this.metadata.getInterface()));
             if (!proxyClass) {
                 for (Class cl : classes) {
                     if (!cl.isInterface()) {
@@ -415,7 +415,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         }
         // Handle interfaces
         Set<String> interfaces = new HashSet<String>();
-        interfaces.add(metadata.getInterfaceName());
+        interfaces.add(metadata.getInterface());
         if (!interfaces.isEmpty()) {
             for (String itf : interfaces) {
                 members.add("(" + Constants.OBJECTCLASS + "=" + itf + ")");

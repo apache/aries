@@ -18,6 +18,11 @@
 package org.apache.geronimo.blueprint.di;
 
 import java.util.Set;
+import java.util.Map;
+import java.util.Collection;
+import java.util.List;
+
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 public interface Repository {
 
@@ -27,17 +32,44 @@ public interface Repository {
      */
     Set<String> getNames();
 
+    /**
+     * Return the singleton instance for the given name.
+     * This method will not create the object if it has been created yet.
+     *
+     * @param name
+     * @return the instance or <code>null</code>
+     */
     Object getInstance(String name);
 
+    /**
+     * Return the recipe for the given name.
+     *
+     * @param name
+     * @return the recipe or <code>null</code>
+     */
     Recipe getRecipe(String name);
 
+    /**
+     * Return the environment object for a given name.
+     *
+     * @param name
+     * @return the environment object or <code>null</code>
+     */
     Object getDefault(String name);
-
-    void putInstance(String name, Object instance);
 
     void putRecipe(String name, Recipe recipe);
 
     void putDefault(String name, Object instance);
+
+    Object create(String name) throws ComponentDefinitionException;
+
+    Map<String,Object> createAll(String... names) throws ComponentDefinitionException;
+
+    Map<String, Object> createAll(Collection<String> names) throws ComponentDefinitionException;
+
+    <T> List<T> getAllRecipes(Class<T> clazz, String... names);
+
+    Set<Recipe> getAllRecipes(String... names);
 
     void destroy();
 

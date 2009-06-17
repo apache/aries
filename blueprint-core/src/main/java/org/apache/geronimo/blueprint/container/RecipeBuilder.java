@@ -30,7 +30,7 @@ import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.ArrayRecipe;
 import org.apache.geronimo.blueprint.di.CollectionRecipe;
-import org.apache.geronimo.blueprint.di.DefaultRepository;
+import org.apache.geronimo.blueprint.container.BlueprintRepository;
 import org.apache.geronimo.blueprint.di.IdRefRecipe;
 import org.apache.geronimo.blueprint.di.MapRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
@@ -86,8 +86,8 @@ public class RecipeBuilder {
         }
     }
     
-    public Repository createRepository() throws Exception {
-        Repository repository = new DefaultRepository();
+    public BlueprintRepository createRepository() {
+        BlueprintRepository repository = new BlueprintRepository(blueprintContainer);
         addBuiltinComponents(repository);
         // Create component recipes
         for (String name : registry.getComponentDefinitionNames()) {
@@ -95,10 +95,11 @@ public class RecipeBuilder {
             Recipe recipe = createRecipe(component);
             repository.putRecipe(recipe.getName(), recipe);
         }
+        repository.checkReferences();
         return repository;
     }
 
-    public Recipe createRecipe(ComponentMetadata component) throws Exception {
+    public Recipe createRecipe(ComponentMetadata component) {
         if (component instanceof BeanMetadata) {
             return createBeanRecipe((BeanMetadata) component);
         } else if (component instanceof ServiceMetadata) {
@@ -112,7 +113,7 @@ public class RecipeBuilder {
         }
     }
 
-    private Recipe createRefCollectionRecipe(RefListMetadata metadata) throws Exception {
+    private Recipe createRefCollectionRecipe(RefListMetadata metadata) {
         CollectionRecipe listenersRecipe = null;
         if (metadata.getReferenceListeners() != null) {
             listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class);
@@ -132,7 +133,7 @@ public class RecipeBuilder {
         return recipe;
     }
 
-    private ReferenceRecipe createReferenceRecipe(ReferenceMetadata metadata) throws Exception {
+    private ReferenceRecipe createReferenceRecipe(ReferenceMetadata metadata) {
         CollectionRecipe listenersRecipe = null;
         if (metadata.getReferenceListeners() != null) {
             listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class);
@@ -152,7 +153,7 @@ public class RecipeBuilder {
         return recipe;
     }
 
-    private Recipe createServiceRecipe(ServiceMetadata serviceExport) throws Exception {
+    private Recipe createServiceRecipe(ServiceMetadata serviceExport) {
         CollectionRecipe listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class);
         if (serviceExport.getRegistrationListeners() != null) {
             for (RegistrationListener listener : serviceExport.getRegistrationListeners()) {
@@ -173,7 +174,7 @@ public class RecipeBuilder {
         return recipe;
     }
 
-    protected MapRecipe getServicePropertiesRecipe(ServiceMetadata metadata) throws Exception {
+    protected MapRecipe getServicePropertiesRecipe(ServiceMetadata metadata) {
         List<MapEntry> properties = metadata.getServiceProperties();
         if (properties != null) {
             MutableMapMetadata map = MetadataUtil.createMetadata(MutableMapMetadata.class);
@@ -186,7 +187,7 @@ public class RecipeBuilder {
         }
     }
     
-    private BeanRecipe createBeanRecipe(BeanMetadata beanMetadata) throws Exception {
+    private BeanRecipe createBeanRecipe(BeanMetadata beanMetadata) {
         BeanRecipe recipe = new BeanRecipe(
                 getName(beanMetadata.getId()),
                 blueprintContainer,
@@ -232,7 +233,7 @@ public class RecipeBuilder {
         return recipe;
     }
 
-    private Recipe createRecipe(RegistrationListener listener) throws Exception {
+    private Recipe createRecipe(RegistrationListener listener) {
         BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, ServiceListener.class);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         if (listener.getRegistrationMethod() != null) {
@@ -244,21 +245,21 @@ public class RecipeBuilder {
         return recipe;
     }
 
-    private Recipe createRecipe(ReferenceListener listener) throws Exception {
+    private Recipe createRecipe(ReferenceListener listener) {
         BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, AbstractServiceReferenceRecipe.Listener.class);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         recipe.setProperty("metadata", listener);
         return recipe;
     }
 
-    private Recipe getValue(Metadata v, Object groupingType) throws Exception {
+    private Recipe getValue(Metadata v, Object groupingType) {
         if (v instanceof NullMetadata) {
             return null;
         } else if (v instanceof ComponentMetadata) {
             return createRecipe((ComponentMetadata) v);
         } else if (v instanceof ValueMetadata) {
             ValueMetadata stringValue = (ValueMetadata) v;
-            Object type = stringValue.getTypeName();
+            Object type = stringValue.getType();
             type = (type == null) ? groupingType : type;
             ValueRecipe vr = new ValueRecipe(getName(null), stringValue, type);
             return vr;
@@ -270,7 +271,7 @@ public class RecipeBuilder {
         } else if (v instanceof CollectionMetadata) {
             CollectionMetadata collectionMetadata = (CollectionMetadata) v;
             Class cl = collectionMetadata.getCollectionClass();
-            Object type = collectionMetadata.getValueTypeName();
+            Object type = collectionMetadata.getValueType();
             if (cl == Object[].class) {
                 ArrayRecipe ar = new ArrayRecipe(getName(null), type);
                 for (Metadata lv : collectionMetadata.getValues()) {
@@ -305,9 +306,9 @@ public class RecipeBuilder {
         }
     }
 
-    private MapRecipe createMapRecipe(MapMetadata mapValue) throws Exception {
-        String keyType = mapValue.getKeyTypeName();
-        String valueType = mapValue.getValueTypeName();
+    private MapRecipe createMapRecipe(MapMetadata mapValue) {
+        String keyType = mapValue.getKeyType();
+        String valueType = mapValue.getValueType();
         MapRecipe mr = new MapRecipe(getName(null), HashMap.class);
         for (MapEntry entry : mapValue.getEntries()) {
             Recipe key = getValue(entry.getKey(), keyType);

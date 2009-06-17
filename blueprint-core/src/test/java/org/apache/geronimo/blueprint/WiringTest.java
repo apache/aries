@@ -28,9 +28,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.geronimo.blueprint.CallbackTracker.Callback;
-import org.apache.geronimo.blueprint.container.BlueprintObjectInstantiator;
-import org.apache.geronimo.blueprint.di.DefaultRepository;
-import org.apache.geronimo.blueprint.container.RecipeBuilder;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.pojos.BeanD;
 import org.apache.geronimo.blueprint.pojos.Multiple;
@@ -46,16 +43,16 @@ public class WiringTest extends AbstractBlueprintTest {
 
     public void testWiring() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
-        BlueprintObjectInstantiator graph = new TestBlueprintContainer(registry).getInstantiator();
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
         
-        Object obj1 = graph.create("pojoA");
+        Object obj1 = repository.create("pojoA");
         assertNotNull(obj1);
         assertTrue(obj1 instanceof PojoA);
         PojoA pojoa = (PojoA) obj1;
         // test singleton scope
-        assertTrue(obj1 == graph.create("pojoA"));
+        assertTrue(obj1 == repository.create("pojoA"));
         
-        Object obj2 = graph.create("pojoB");
+        Object obj2 = repository.create("pojoB");
         assertNotNull(obj2);
         assertTrue(obj2 instanceof PojoB);
         PojoB pojob = (PojoB) obj2;
@@ -116,17 +113,17 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals(true, pojob.getInitCalled());
         
         // test service
-        Object obj3 = graph.create("service1");
+        Object obj3 = repository.create("service1");
         assertNotNull(obj3);
         assertTrue(obj3 instanceof ServiceRegistration);    
         
         // tests 'prototype' scope
-        Object obj4 = graph.create("pojoC");
+        Object obj4 = repository.create("pojoC");
         assertNotNull(obj4);
         
-        assertTrue(obj4 != graph.create("pojoC"));
+        assertTrue(obj4 != repository.create("pojoC"));
         
-        graph.getRepository().destroy();
+        repository.destroy();
         
         // test destroy-method
         assertEquals(true, pojob.getDestroyCalled());
@@ -134,16 +131,16 @@ public class WiringTest extends AbstractBlueprintTest {
     
     public void testCompoundProperties() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
-        BlueprintObjectInstantiator graph = new TestBlueprintContainer(registry).getInstantiator();
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
         
-        Object obj5 = graph.create("compound");
+        Object obj5 = repository.create("compound");
         assertNotNull(obj5);
         assertTrue(obj5 instanceof PojoB);
         PojoB pojob = (PojoB) obj5;
     
         assertEquals("hello bean property", pojob.getBean().getName());
 
-        Object obj = graph.create("goodIdRef");
+        Object obj = repository.create("goodIdRef");
         assertNotNull(obj);
         assertTrue(obj instanceof BeanD);
         BeanD bean = (BeanD) obj;
@@ -153,11 +150,9 @@ public class WiringTest extends AbstractBlueprintTest {
 
     public void testIdRefs() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-bad-id-ref.xml");
-        RecipeBuilder i = new RecipeBuilder(new TestBlueprintContainer(registry));
-        Repository repository = i.createRepository();
 
         try {
-            new BlueprintObjectInstantiator(new TestBlueprintContainer(registry), repository);
+            new TestBlueprintContainer(registry).getRepository();
             fail("Did not throw exception");
         } catch (RuntimeException e) {
             // we expect exception
@@ -169,8 +164,8 @@ public class WiringTest extends AbstractBlueprintTest {
         CallbackTracker.clear();
 
         ComponentDefinitionRegistryImpl registry = parse("/test-depends-on.xml");
-        BlueprintObjectInstantiator graph = new TestBlueprintContainer(registry).getInstantiator();
-        Map instances = graph.createAll("c", "d", "e");
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
+        Map instances = repository.createAll("c", "d", "e");
         
         List<Callback> callback = CallbackTracker.getCallbacks();
         assertEquals(3, callback.size());
@@ -178,7 +173,7 @@ public class WiringTest extends AbstractBlueprintTest {
         checkInitCallback(instances.get("c"), callback.get(1));
         checkInitCallback(instances.get("e"), callback.get(2));
                 
-        graph.getRepository().destroy();
+        repository.destroy();
         
         assertEquals(6, callback.size());
         checkDestroyCallback(instances.get("e"), callback.get(3));
@@ -198,35 +193,35 @@ public class WiringTest extends AbstractBlueprintTest {
     
     public void testConstructor() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-constructor.xml");
-        BlueprintObjectInstantiator graph = new TestBlueprintContainer(registry).getInstantiator();
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
 
-        Object obj1 = graph.create("pojoA");
+        Object obj1 = repository.create("pojoA");
         assertNotNull(obj1);
         assertTrue(obj1 instanceof PojoA);
         PojoA pojoa = (PojoA) obj1;
         
-        Object obj2 = graph.create("pojoB");
+        Object obj2 = repository.create("pojoB");
         testPojoB(obj2, URI.create("urn:myuri"), 10);
         
         assertEquals(obj2, pojoa.getPojob());
         assertEquals(new BigInteger("10"), pojoa.getNumber());
         
-        Object obj3 = graph.create("pojoC");
+        Object obj3 = repository.create("pojoC");
         testPojoB(obj3, URI.create("urn:myuri-static"), 15);
         
-        Object obj4 = graph.create("pojoD");
+        Object obj4 = repository.create("pojoD");
         testPojoB(obj4, URI.create("urn:myuri-static"), 15);
         
-        Object obj5 = graph.create("pojoE");
+        Object obj5 = repository.create("pojoE");
         testPojoB(obj5, URI.create("urn:myuri-dynamic"), 20);
         
-        Object obj6 = graph.create("multipleInt");
+        Object obj6 = repository.create("multipleInt");
         testMultiple(obj6, null, 123, null);
         
-        Object obj7 = graph.create("multipleInteger");
+        Object obj7 = repository.create("multipleInteger");
         testMultiple(obj7, null, -1, new Integer(123));
         
-        Object obj8 = graph.create("multipleString");
+        Object obj8 = repository.create("multipleString");
         testMultiple(obj8, "123", -1, null);
 
         // TODO: check the below tests when the incoherence between TCK / spec is solved
@@ -237,28 +232,28 @@ public class WiringTest extends AbstractBlueprintTest {
 //            // we expect exception
 //        }
         
-        Object obj10 = graph.create("multipleFactory1");
+        Object obj10 = repository.create("multipleFactory1");
         testMultiple(obj10, null, 1234, null);
 
-        Object obj11 = graph.create("multipleFactory2");
+        Object obj11 = repository.create("multipleFactory2");
         testMultiple(obj11, "helloCreate-boolean", -1, null);        
         
         try {
-            graph.create("multipleFactoryNull");
+            repository.create("multipleFactoryNull");
             fail("Did not throw exception");
         } catch (RuntimeException e) {
             // we expect exception 
             // TODO: check the exception string?
         }
         
-        Object obj12 = graph.create("multipleFactoryTypedNull");
+        Object obj12 = repository.create("multipleFactoryTypedNull");
         testMultiple(obj12, "hello-boolean", -1, null);
 
         // TODO: check the below tests when the incoherence between TCK / spec is solved
 //        Object obj13 = graph.create("mapConstruction");
 //        Object obj14 = graph.create("propsConstruction");
 
-        BeanF obj15 = (BeanF) graph.create("booleanWrapped");
+        BeanF obj15 = (BeanF) repository.create("booleanWrapped");
         assertNotNull(obj15.getWrapped());
         assertEquals(false, (boolean) obj15.getWrapped());
         assertNull(obj15.getPrim());
@@ -288,7 +283,7 @@ public class WiringTest extends AbstractBlueprintTest {
 
     public void testGenerics() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics.xml");
-        BlueprintObjectInstantiator graph = new TestBlueprintContainer(registry).getInstantiator();
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
 
         List<Integer> expectedList = new ArrayList<Integer>();
         expectedList.add(new Integer(10));
@@ -308,7 +303,7 @@ public class WiringTest extends AbstractBlueprintTest {
         Object obj;
         PojoGenerics pojo;
         
-        obj = graph.create("method");
+        obj = repository.create("method");
         assertTrue(obj instanceof PojoGenerics);
         pojo = (PojoGenerics) obj;
         
@@ -316,19 +311,19 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals(expectedSet, pojo.getSet());
         assertEquals(expectedMap, pojo.getMap());
         
-        obj = graph.create("constructorList");
+        obj = repository.create("constructorList");
         assertTrue(obj instanceof PojoGenerics);
         pojo = (PojoGenerics) obj;
         
         assertEquals(expectedList, pojo.getList());
         
-        obj = graph.create("constructorSet");
+        obj = repository.create("constructorSet");
         assertTrue(obj instanceof PojoGenerics);
         pojo = (PojoGenerics) obj;
         
         assertEquals(expectedSet, pojo.getSet());
         
-        obj = graph.create("constructorMap");
+        obj = repository.create("constructorMap");
         assertTrue(obj instanceof PojoGenerics);
         pojo = (PojoGenerics) obj;
         
@@ -337,10 +332,10 @@ public class WiringTest extends AbstractBlueprintTest {
     
     public void testCircular() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-circular.xml");
-        BlueprintObjectInstantiator graph = new TestBlueprintContainer(registry).getInstantiator();
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
 
         // this should pass (we allow circular dependencies for components without init method)
-        Object obj1 = graph.create("a");
+        Object obj1 = repository.create("a");
         
 //        // this should fail (we do not allow circular dependencies for components with init method)
 //        try {
@@ -351,11 +346,11 @@ public class WiringTest extends AbstractBlueprintTest {
 //        }
         
         // test service and listener circular dependencies
-        Object obj2 = graph.create("service");
+        Object obj2 = repository.create("service");
         assertNotNull(obj2);
         assertTrue(obj2 instanceof ServiceRegistration);
         
-        Object obj3 = graph.create("listener");
+        Object obj3 = repository.create("listener");
         assertNotNull(obj3);
         assertTrue(obj3 instanceof PojoListener);
         

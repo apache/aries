@@ -208,7 +208,9 @@
         <module>blueprint-cm</module>
         <module>blueprint-bundle</module>
         <module>blueprint-sample</module>
+        <!--
         <module>blueprint-itests</module>
+        -->
     </modules>
 
 </project>

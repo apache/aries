@@ -35,5 +35,5 @@ public interface ValueMetadata extends NonNullMetadata {
 	 *
 	 * Defined in the <code>type</code> attribute.
 	 */
-	String getTypeName();
+	String getType();
 }

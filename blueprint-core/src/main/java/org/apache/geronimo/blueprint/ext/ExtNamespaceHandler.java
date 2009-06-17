@@ -269,7 +269,7 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
     private static ValueMetadata createValue(ParserContext context, String value, String type) {
         MutableValueMetadata m = context.createMetadata(MutableValueMetadata.class);
         m.setStringValue(value);
-        m.setTypeName(type);
+        m.setType(type);
         return m;
     }
 
@@ -288,7 +288,7 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
     private static CollectionMetadata createList(ParserContext context, List<String> list) {
         MutableCollectionMetadata m = context.createMetadata(MutableCollectionMetadata.class);
         m.setCollectionClass(List.class);
-        m.setValueTypeName(String.class.getName());
+        m.setValueType(String.class.getName());
         for (String v : list) {
             m.addValue(createValue(context, v, String.class.getName()));
         }

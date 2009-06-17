@@ -30,7 +30,7 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
 public class ValueMetadataImpl implements MutableValueMetadata {
 
     private String stringValue;
-    private String typeName;
+    private String type;
 
     public ValueMetadataImpl() {
     }
@@ -39,14 +39,14 @@ public class ValueMetadataImpl implements MutableValueMetadata {
         this.stringValue = stringValue;
     }
 
-    public ValueMetadataImpl(String stringValue, String typeName) {
+    public ValueMetadataImpl(String stringValue, String type) {
         this.stringValue = stringValue;
-        this.typeName = typeName;
+        this.type = type;
     }
 
     public ValueMetadataImpl(ValueMetadata source) {
         this.stringValue = source.getStringValue();
-        this.typeName = source.getTypeName();
+        this.type = source.getType();
     }
 
     public String getStringValue() {
@@ -57,19 +57,19 @@ public class ValueMetadataImpl implements MutableValueMetadata {
         this.stringValue = stringValue;
     }
 
-    public String getTypeName() {
-        return typeName;
+    public String getType() {
+        return type;
     }
 
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
+    public void setType(String typeName) {
+        this.type = typeName;
     }
 
     @Override
     public String toString() {
         return "ValueMetadata[" +
                 "stringValue='" + stringValue + '\'' +
-                ", typeName='" + typeName + '\'' +
+                ", type='" + type + '\'' +
                 ']';
     }
 }

@@ -42,7 +42,7 @@ public class IdRefRecipe extends AbstractRecipe {
     }
 
     public List<Recipe> getDependencies() {
-        Recipe recipe = ExecutionContext.getContext().getRecipe(idRef);
+        Recipe recipe = ExecutionContext.Holder.getContext().getRecipe(idRef);
         if (recipe != null) {
             return Collections.singletonList(recipe);
         } else {
@@ -51,7 +51,7 @@ public class IdRefRecipe extends AbstractRecipe {
     }
 
     protected Object internalCreate() throws ComponentDefinitionException {
-        ExecutionContext context = ExecutionContext.getContext();
+        ExecutionContext context = ExecutionContext.Holder.getContext();
         if (!context.containsObject(idRef)) {
             throw new NoSuchComponentException(idRef);
         }

@@ -35,9 +35,9 @@ public interface MutableServiceMetadata extends ServiceMetadata, MutableComponen
 
     void setServiceComponent(Target serviceComponent);
 
-    void addInterfaceName(String interfaceName);
+    void addInterface(String interfaceName);
 
-    void removeInterfaceName(String interfaceName);
+    void removeInterface(String interfaceName);
 
     void setAutoExport(int autoExportMode);
 

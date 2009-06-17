@@ -129,7 +129,7 @@ public class RefListRecipe extends AbstractServiceReferenceRecipe {
                     }
                 } else {
                     dispatcher = new ServiceDispatcher(reference);
-                    List<String> interfaces = Collections.singletonList(metadata.getInterfaceName());
+                    List<String> interfaces = Collections.singletonList(metadata.getInterface());
                     if (metadata instanceof ExtendedRefListMetadata) {
                         boolean greedy = (((ExtendedRefListMetadata) metadata).getProxyMethod() & ExtendedRefListMetadata.PROXY_METHOD_GREEDY) != 0;
                         if (greedy) {

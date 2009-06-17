@@ -20,31 +20,37 @@ package org.apache.geronimo.blueprint.di;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public abstract class ExecutionContext {
+public interface ExecutionContext {
 
-    private static final ThreadLocal<ExecutionContext> context = new ThreadLocal<ExecutionContext>();
+    public static final class Holder {
 
-    public static boolean isContextSet() {
-        return context.get() != null;
-    }
+        private static final ThreadLocal<ExecutionContext> context = new ThreadLocal<ExecutionContext>();
 
-    public static ExecutionContext getContext() {
-        ExecutionContext executionContext = context.get();
-        if (executionContext == null) {
-            throw new IllegalStateException("Execution container has not been set");
+        private Holder() {
         }
-        return executionContext;
-    }
 
-    public static ExecutionContext setContext(ExecutionContext newContext) {
-        ExecutionContext oldContext = context.get();
-        if (oldContext == null || newContext == null || oldContext.getContextKey() != newContext.getContextKey()) {
+        public static ExecutionContext getContext() {
+            ExecutionContext executionContext = context.get();
+            if (executionContext == null) {
+                throw new IllegalStateException("Execution container has not been set");
+            }
+            return executionContext;
+        }
+
+        public static ExecutionContext setContext(ExecutionContext newContext) {
+            ExecutionContext oldContext = context.get();
             context.set(newContext);
+            return oldContext;
         }
-        return oldContext;
+
     }
 
-    public abstract Object getContextKey();
+    /**
+     * Lock that should be used to synchronized creation of singletons
+     * 
+     * @return
+     */
+    public Object getInstanceLock();
 
     /**
      * Adds a recipe to the top of the execution stack.  If the recipe is already on

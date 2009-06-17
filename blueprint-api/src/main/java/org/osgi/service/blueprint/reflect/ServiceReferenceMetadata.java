@@ -51,7 +51,7 @@ public interface ServiceReferenceMetadata extends ComponentMetadata {
 	 *
 	 * @return the String name of the requested service interface
 	 */
-	String getInterfaceName();
+	String getInterface();
 
 	/**
 	 * The value of the component-name attribute, if specified. This specifies

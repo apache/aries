@@ -71,7 +71,7 @@ public class ParserTest extends AbstractBlueprintTest {
         assertNotNull(param.getValue());
         assertTrue(param.getValue() instanceof ValueMetadata);
         assertEquals("val0", ((ValueMetadata) param.getValue()).getStringValue());
-        assertNull(((ValueMetadata) param.getValue()).getTypeName());
+        assertNull(((ValueMetadata) param.getValue()).getType());
         param = params.get(1);
         assertNotNull(param);
         assertEquals(-1, param.getIndex());
@@ -92,7 +92,7 @@ public class ParserTest extends AbstractBlueprintTest {
         assertNotNull(param.getValue());
         assertTrue(param.getValue() instanceof ValueMetadata);
         assertEquals("val3", ((ValueMetadata) param.getValue()).getStringValue());
-        assertNull(((ValueMetadata) param.getValue()).getTypeName());
+        assertNull(((ValueMetadata) param.getValue()).getType());
         param = params.get(4);
         assertNotNull(param);
         assertEquals(-1, param.getIndex());
@@ -100,7 +100,7 @@ public class ParserTest extends AbstractBlueprintTest {
         assertNotNull(param.getValue());
         assertTrue(param.getValue() instanceof CollectionMetadata);
         CollectionMetadata array = (CollectionMetadata) param.getValue();
-        assertNull(array.getValueTypeName());
+        assertNull(array.getValueType());
         assertNotNull(array.getValues());
         assertEquals(3, array.getValues().size());
         assertTrue(array.getValues().get(0) instanceof ValueMetadata);
