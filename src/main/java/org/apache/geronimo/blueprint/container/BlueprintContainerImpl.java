@@ -118,6 +118,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private long timeout = 5 * 60 * 1000;
     private boolean waitForDependencies = true;
     private boolean xmlValidation = true;
+    private int compliance = COMPLIANCE_STRICT;
     private ScheduledFuture timeoutFuture;
     private final AtomicBoolean scheduled = new AtomicBoolean();
     private final AtomicBoolean running = new AtomicBoolean();
@@ -136,8 +137,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
 
     public int getCompliance() {
-        // TODO
-        return COMPLIANCE_STRICT;
+        return compliance;
     }
 
     public Bundle getExtenderBundle() {
@@ -244,6 +244,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             return;
                         }
                         parser.populate(handlers, componentDefinitionRegistry);
+                        compliance = parser.getCompliance();
                         state = State.Populated;
                         break;
                     }
