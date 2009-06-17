@@ -19,7 +19,6 @@
 package org.apache.geronimo.blueprint;
 
 import org.apache.geronimo.blueprint.container.BlueprintContainerImpl;
-import org.apache.geronimo.blueprint.container.BlueprintObjectInstantiator;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 
 public class TestBlueprintContainer extends BlueprintContainerImpl {
@@ -41,8 +40,4 @@ public class TestBlueprintContainer extends BlueprintContainerImpl {
         return registry;
     }
 
-    public BlueprintObjectInstantiator getInstantiator() throws Exception {
-        return super.getInstantiator();
-    }
-    
 }

@@ -71,7 +71,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                 }
             }
             // Create the proxy
-            proxy = createProxy(new ServiceDispatcher(), Collections.singletonList(this.metadata.getInterfaceName()));
+            proxy = createProxy(new ServiceDispatcher(), Collections.singletonList(this.metadata.getInterface()));
 
             // Add partially created proxy to the context
             ServiceProxyWrapper wrapper = new ServiceProxyWrapper();
@@ -156,6 +156,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                 blueprintContainer.getBundleContext().ungetService(trackedServiceReference);
                 trackedServiceReference = null;
                 trackedService = null;
+                monitor.notifyAll();
             }
         }
     }

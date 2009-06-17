@@ -236,8 +236,8 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
             return retrievedValue;
         }
 
-        public String getTypeName() {
-            return metadata.getTypeName();
+        public String getType() {
+            return metadata.getType();
         }
 
     }

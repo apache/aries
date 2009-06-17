@@ -31,9 +31,9 @@ import org.osgi.service.blueprint.reflect.NonNullMetadata;
  */
 public interface MutableMapMetadata extends MapMetadata {
 
-    void setKeyTypeName(String keyTypeName);
+    void setKeyType(String keyType);
 
-    void setValueTypeName(String valueTypeName);
+    void setValueType(String valueType);
 
     void addEntry(MapEntry entry);
 

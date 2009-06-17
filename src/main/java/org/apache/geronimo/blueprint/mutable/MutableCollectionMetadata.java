@@ -31,7 +31,7 @@ public interface MutableCollectionMetadata extends CollectionMetadata {
 
     void setCollectionClass(Class clazz);
 
-    void setValueTypeName(String valueTypeName);
+    void setValueType(String valueType);
 
     void addValue(Metadata value);
 

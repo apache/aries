@@ -25,9 +25,12 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collection;
 
 import org.osgi.framework.Bundle;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.apache.geronimo.blueprint.di.ExecutionContext;
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 
 /**
  * @version $Rev: 6687 $ $Date: 2005-12-28T21:08:56.733437Z $
@@ -198,6 +201,8 @@ public final class TypeUtils {
             return ((Bundle) loader).loadClass(type);
         } else if (loader instanceof ExecutionContext) {
             return ((ExecutionContext) loader).loadClass(type);
+        } else if (loader instanceof ExtendedBlueprintContainer) {
+            return ((ExtendedBlueprintContainer) loader).loadClass(type); 
         } else {
             throw new IllegalArgumentException("Unsupported loader: " + loader);
         }
@@ -266,4 +271,5 @@ public final class TypeUtils {
             return type.toString();
         }
     }
+
 }

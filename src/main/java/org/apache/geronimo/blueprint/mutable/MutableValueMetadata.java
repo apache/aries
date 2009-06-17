@@ -30,6 +30,6 @@ public interface MutableValueMetadata extends ValueMetadata {
 
     void setStringValue(String stringValue);
 
-    void setTypeName(String typeName);
+    void setType(String type);
 
 }

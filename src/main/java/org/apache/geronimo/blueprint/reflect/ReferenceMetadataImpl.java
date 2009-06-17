@@ -54,10 +54,10 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
                 ", initialization=" + initialization +
                 ", dependsOn=" + dependsOn +
                 ", availability=" + availability +
-                ", interfaceName='" + interfaceName + '\'' +
+                ", interface='" + interfaceName + '\'' +
                 ", componentName='" + componentName + '\'' +
                 ", filter='" + filter + '\'' +
-                ", serviceListeners=" + referenceListeners +
+                ", referenceListeners=" + referenceListeners +
                 ", timeout=" + timeout +
                 ']';
     }

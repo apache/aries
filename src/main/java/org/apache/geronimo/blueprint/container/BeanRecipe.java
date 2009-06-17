@@ -37,6 +37,7 @@ import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import static org.apache.geronimo.blueprint.utils.ReflectionUtils.getRealCause;
 import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
+import static org.apache.geronimo.blueprint.utils.TypeUtils.isInstance;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -264,11 +265,11 @@ public class BeanRecipe extends AbstractRecipe {
                 boolean found = true;
                 List<Object> match = new ArrayList<Object>();
                 for (int i = 0; i < args.size(); i++) {
-                    if (types.get(i) != null && types.get(i) != mth.getParameterTypes()[i]) {
+                    if (types.get(i) != null && !mth.getParameterTypes()[i].equals(types.get(i))) {
                         found = false;
                         break;
                     }
-                    if (!mth.getParameterTypes()[i].isInstance(args.get(i))) {
+                    if (!isInstance(mth.getParameterTypes()[i], args.get(i))) {
                         found = false;
                         break;
                     }
@@ -294,7 +295,7 @@ public class BeanRecipe extends AbstractRecipe {
                 boolean found = true;
                 List<Object> match = new ArrayList<Object>();
                 for (int i = 0; i < args.size(); i++) {
-                    if (types.get(i) != null && types.get(i) != mth.getParameterTypes()[i]) {
+                    if (types.get(i) != null && !mth.getParameterTypes()[i].equals(types.get(i))) {
                         found = false;
                         break;
                     }
@@ -362,11 +363,11 @@ public class BeanRecipe extends AbstractRecipe {
                 boolean found = true;
                 List<Object> match = new ArrayList<Object>();
                 for (int i = 0; i < args.size(); i++) {
-                    if (types.get(i) != null && types.get(i) != cns.getParameterTypes()[i]) {
+                    if (types.get(i) != null && !cns.getParameterTypes()[i].equals(types.get(i))) {
                         found = false;
                         break;
                     }
-                    if (!cns.getParameterTypes()[i].isInstance(args.get(i))) {
+                    if (!isInstance(cns.getParameterTypes()[i], args.get(i))) {
                         found = false;
                         break;
                     }
@@ -392,7 +393,7 @@ public class BeanRecipe extends AbstractRecipe {
                 boolean found = true;
                 List<Object> match = new ArrayList<Object>();
                 for (int i = 0; i < args.size(); i++) {
-                    if (types.get(i) != null && types.get(i) != cns.getParameterTypes()[i]) {
+                    if (types.get(i) != null && !cns.getParameterTypes()[i].equals(types.get(i))) {
                         found = false;
                         break;
                     }
@@ -676,13 +677,17 @@ public class BeanRecipe extends AbstractRecipe {
                         continue;
                     }
                 } else if (arg != null) {
-                    if (!convert && !toClass(entry.type).isInstance(arg)) {
-                        continue;
-                    }
-                    try {
-                        val = convert(arg, entry.type);
-                    } catch (Throwable t) {
-                        continue;
+                    if (convert) {
+                        try {
+                            // TODO: call canConvert instead of convert()
+                            val = convert(arg, entry.type);
+                        } catch (Throwable t) {
+                            continue;
+                        }
+                    } else {
+                        if (!isInstance(entry.type, arg)) {
+                            continue;
+                        }
                     }
                 }
                 entry.argument = val;

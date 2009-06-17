@@ -36,41 +36,41 @@ import org.osgi.service.blueprint.reflect.NonNullMetadata;
  */
 public class MapMetadataImpl implements MutableMapMetadata {
 
-    private String keyTypeName;
-    private String valueTypeName;
+    private String keyType;
+    private String valueType;
     private List<MapEntry> entries;
 
     public MapMetadataImpl() {
     }
 
-    public MapMetadataImpl(String keyTypeName, String valueTypeName, List<MapEntry> entries) {
-        this.keyTypeName = keyTypeName;
-        this.valueTypeName = valueTypeName;
+    public MapMetadataImpl(String keyType, String valueType, List<MapEntry> entries) {
+        this.keyType = keyType;
+        this.valueType = valueType;
         this.entries = entries;
     }
 
     public MapMetadataImpl(MapMetadata source) {
-        this.valueTypeName = source.getValueTypeName();
-        this.keyTypeName = source.getKeyTypeName();
+        this.valueType = source.getValueType();
+        this.keyType = source.getKeyType();
         for (MapEntry entry : source.getEntries()) {
             addEntry(new MapEntryImpl(entry));
         }
     }
 
-    public String getKeyTypeName() {
-        return this.keyTypeName;
+    public String getKeyType() {
+        return this.keyType;
     }
 
-    public void setKeyTypeName(String keyTypeName) {
-        this.keyTypeName = keyTypeName;
+    public void setKeyType(String keyTypeName) {
+        this.keyType = keyTypeName;
     }
 
-    public String getValueTypeName() {
-        return this.valueTypeName;
+    public String getValueType() {
+        return this.valueType;
     }
 
-    public void setValueTypeName(String valueTypeName) {
-        this.valueTypeName = valueTypeName;
+    public void setValueType(String valueTypeName) {
+        this.valueType = valueTypeName;
     }
 
     public List<MapEntry> getEntries() {
@@ -107,8 +107,8 @@ public class MapMetadataImpl implements MutableMapMetadata {
     @Override
     public String toString() {
         return "MapMetadata[" +
-                "keyTypeName='" + keyTypeName + '\'' +
-                ", valueTypeName='" + valueTypeName + '\'' +
+                "keyType='" + keyType + '\'' +
+                ", valueType='" + valueType + '\'' +
                 ", entries=" + entries +
                 ']';
     }

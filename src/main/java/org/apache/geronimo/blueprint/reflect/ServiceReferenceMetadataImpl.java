@@ -48,7 +48,7 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
     public ServiceReferenceMetadataImpl(ServiceReferenceMetadata source) {
         super(source);
         this.availability = source.getAvailability();
-        this.interfaceName = source.getInterfaceName();
+        this.interfaceName = source.getInterface();
         this.componentName = source.getComponentName();
         this.filter = source.getFilter();
         for (ReferenceListener listener : source.getReferenceListeners()) {
@@ -64,11 +64,11 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
         this.availability = availability;
     }
 
-    public String getInterfaceName() {
+    public String getInterface() {
         return interfaceName;
     }
 
-    public void setInterfaceName(String interfaceName) {
+    public void setInterface(String interfaceName) {
         this.interfaceName = interfaceName;
     }
 

@@ -628,7 +628,7 @@ public class Parser {
             throw new ComponentDefinitionException("One of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element or " + REF_ELEMENT + " element must be set");
         }
         // Check interface
-        if (service.getAutoExport() == ServiceMetadata.AUTO_EXPORT_DISABLED && service.getInterfaceNames().isEmpty()) {
+        if (service.getAutoExport() == ServiceMetadata.AUTO_EXPORT_DISABLED && service.getInterfaces().isEmpty()) {
             throw new ComponentDefinitionException(INTERFACE_ATTRIBUTE + " attribute or " + INTERFACES_ELEMENT + " element must be set when " + AUTO_EXPORT_ATTRIBUTE + " is set to " + AUTO_EXPORT_DISABLED);
         }
         
@@ -923,7 +923,7 @@ public class Parser {
             reference.setDependsOn(parseList(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
         }
         if (element.hasAttribute(INTERFACE_ATTRIBUTE)) {
-            reference.setInterfaceName(element.getAttribute(INTERFACE_ATTRIBUTE));
+            reference.setInterface(element.getAttribute(INTERFACE_ATTRIBUTE));
         }
         if (element.hasAttribute(FILTER_ATTRIBUTE)) {
             reference.setFilter(element.getAttribute(FILTER_ATTRIBUTE));

@@ -73,6 +73,7 @@ public class ServiceRecipe extends AbstractRecipe {
     private Map registrationProperties;
     private List<ServiceListener> listeners;
     private Object service;
+    private final Object serviceLock = new Object();
     private boolean prototypeService;
 
     public ServiceRecipe(String name,
@@ -211,8 +212,8 @@ public class ServiceRecipe extends AbstractRecipe {
      * @return
      */
     private Object internalGetService(Bundle bundle, ServiceRegistration registration) {
-        synchronized (blueprintContainer.getRepository()) {
-            LOGGER.debug("Retrieving service for bundle {} and service registration {}", bundle, registration);
+        LOGGER.debug("Retrieving service for bundle {} and service registration {}", bundle, registration);
+        synchronized (serviceLock) {
             // Create initial service
             if (this.service == null) {
                 try {
@@ -239,18 +240,18 @@ public class ServiceRecipe extends AbstractRecipe {
                     throw e;
                 }
             }
-            Object service = this.service;
-            if (service instanceof ServiceFactory) {
-                service = ((ServiceFactory) service).getService(bundle, registration);
-            } else if (prototypeService && bundle != blueprintContainer.getBundleContext().getBundle()) {
-                service = createInstance();
-                LOGGER.debug("Created service instance for bundle: " + bundle + " " + service.hashCode());
-            }
-            if (service == null) {
-                throw new IllegalStateException("service is null");
-            }
-            return service;
         }
+        Object service = this.service;
+        if (service instanceof ServiceFactory) {
+            service = ((ServiceFactory) service).getService(bundle, registration);
+        } else if (prototypeService && bundle != blueprintContainer.getBundleContext().getBundle()) {
+            service = createInstance();
+            LOGGER.debug("Created service instance for bundle: " + bundle + " " + service.hashCode());
+        }
+        if (service == null) {
+            throw new IllegalStateException("service is null");
+        }
+        return service;
     }
 
     public synchronized Object getService(Bundle bundle, ServiceRegistration registration) {
@@ -281,7 +282,7 @@ public class ServiceRecipe extends AbstractRecipe {
                 classes = ReflectionUtils.getImplementedInterfaces(classes, internalGetService().getClass());
                 break;
             default:
-                classes = new HashSet<String>(metadata.getInterfaceNames());
+                classes = new HashSet<String>(metadata.getInterfaces());
                 break;
         }
         return classes;
@@ -294,14 +295,10 @@ public class ServiceRecipe extends AbstractRecipe {
     private Object createRecipe(Recipe recipe) {
         String name = recipe.getName();
         Repository repo = blueprintContainer.getRepository();
-        synchronized (repo) {
-            if (repo.getRecipe(name) != recipe) {
-                repo.putRecipe(name, recipe);
-            }
-            // TODO: the instantiator should be retrieved from the blueprint container instead of creating a new one
-            BlueprintObjectInstantiator graph = new BlueprintObjectInstantiator(blueprintContainer, repo);
-            return graph.create(name);
+        if (repo.getRecipe(name) != recipe) {
+            repo.putRecipe(name, recipe);
         }
+        return repo.create(name);
     }
 
     private void destroyInstance(Object instance) {

@@ -52,7 +52,7 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
     public ServiceMetadataImpl(ServiceMetadata source) {
         super(source);
         this.serviceComponent = MetadataUtil.cloneTarget(source.getServiceComponent());
-        this.interfaceNames = new ArrayList<String>(source.getInterfaceNames());
+        this.interfaceNames = new ArrayList<String>(source.getInterfaces());
         this.autoExport = source.getAutoExport();
         for (MapEntry serviceProperty : source.getServiceProperties()) {
             addServiceProperty(new MapEntryImpl(serviceProperty));
@@ -71,7 +71,7 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
         this.serviceComponent = exportedComponent;
     }
 
-    public List<String> getInterfaceNames() {
+    public List<String> getInterfaces() {
         if (this.interfaceNames == null) {
             return Collections.emptyList();
         } else {
@@ -83,14 +83,14 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
         this.interfaceNames = interfaceNames != null ? new ArrayList<String>(interfaceNames) : null;
     }
 
-    public void addInterfaceName(String interfaceName) {
+    public void addInterface(String interfaceName) {
         if (this.interfaceNames == null) {
             this.interfaceNames = new ArrayList<String>();
         }
         this.interfaceNames.add(interfaceName);
     }
 
-    public void removeInterfaceName(String interfaceName) {
+    public void removeInterface(String interfaceName) {
         if (this.interfaceNames != null) {
             this.interfaceNames.remove(interfaceName);
         }
@@ -181,7 +181,7 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
                 ", initialization=" + initialization +
                 ", dependsOn=" + dependsOn +
                 ", exportedComponent=" + serviceComponent +
-                ", interfaceNames=" + interfaceNames +
+                ", interfaces=" + interfaceNames +
                 ", autoExportMode=" + autoExport +
                 ", serviceProperties=" + serviceProperties +
                 ", ranking=" + ranking +

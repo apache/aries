@@ -51,26 +51,28 @@ public abstract class AbstractRecipe implements Recipe {
 
     public final Object create() throws ComponentDefinitionException {
         // Ensure a container has been set
-        ExecutionContext context = ExecutionContext.getContext();
+        ExecutionContext context = ExecutionContext.Holder.getContext();
 
-        // if this recipe has already been executed in this container, return the currently registered value
-        Object obj = context.getPartialObject(name);
-        if (obj != null) {
-            return obj;
-        }
+        synchronized (context.getInstanceLock()) {
+            // if this recipe has already been executed in this container, return the currently registered value
+            Object obj = context.getPartialObject(name);
+            if (obj != null) {
+                return obj;
+            }
 
-        // execute the recipe
-        context.push(this);
-        try {
-            obj = internalCreate();
-            addObject(obj, false);
-            return obj;
-        } finally {
-            Recipe popped = context.pop();
-            if (popped != this) {
-                //noinspection ThrowFromFinallyBlock
-                throw new IllegalStateException("Internal Error: recipe stack is corrupt:" +
-                        " Expected " + this + " to be popped of the stack but " + popped + " was");
+            // execute the recipe
+            context.push(this);
+            try {
+                obj = internalCreate();
+                addObject(obj, false);
+                return obj;
+            } finally {
+                Recipe popped = context.pop();
+                if (popped != this) {
+                    //noinspection ThrowFromFinallyBlock
+                    throw new IllegalStateException("Internal Error: recipe stack is corrupt:" +
+                            " Expected " + this + " to be popped of the stack but was " + popped);
+                }
             }
         }
     }
@@ -81,11 +83,11 @@ public abstract class AbstractRecipe implements Recipe {
         if (prototype) {
             return;
         }
-        ExecutionContext.getContext().addObject(name, obj, partial);
+        ExecutionContext.Holder.getContext().addObject(name, obj, partial);
     }
     
     protected Object convert(Object obj, Type type) throws Exception {
-        return ExecutionContext.getContext().convert(obj, type);
+        return ExecutionContext.Holder.getContext().convert(obj, type);
     }
 
     protected Class loadClass(String className) {
@@ -101,7 +103,7 @@ public abstract class AbstractRecipe implements Recipe {
             return null;
         }
         try {
-            return TypeUtils.parseJavaType(typeName, fromClassLoader != null ? fromClassLoader : ExecutionContext.getContext());
+            return TypeUtils.parseJavaType(typeName, fromClassLoader != null ? fromClassLoader : ExecutionContext.Holder.getContext());
         } catch (ClassNotFoundException e) {
             throw new ComponentDefinitionException("Unable to load class " + typeName + " from recipe " + this, e);
         }

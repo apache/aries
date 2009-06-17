@@ -42,8 +42,6 @@ import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.NamespaceHandler;
 import org.apache.geronimo.blueprint.Processor;
-import org.apache.geronimo.blueprint.di.DefaultExecutionContext;
-import org.apache.geronimo.blueprint.di.ExecutionContext;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
@@ -112,9 +110,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private State state = State.Unknown;
     private boolean destroyed;
     private Parser parser;
-    private BlueprintObjectInstantiator instantiator;
+    private BlueprintRepository repository;
     private ServiceRegistration registration;
     private List<Processor> processors;
+    private final Object satisfiablesLock = new Object();
     private Map<String, List<SatisfiableRecipe>> satisfiables;
     private long timeout = 5 * 60 * 1000;
     private boolean waitForDependencies = true;
@@ -122,6 +121,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private ScheduledFuture timeoutFuture;
     private final AtomicBoolean scheduled = new AtomicBoolean();
     private final AtomicBoolean running = new AtomicBoolean();
+    private List<ServiceRecipe> services;
 
     public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<URL> urls) {
         this.bundleContext = bundleContext;
@@ -137,7 +137,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
     public int getCompliance() {
         // TODO
-        return 0;
+        return COMPLIANCE_STRICT;
     }
 
     public Bundle getExtenderBundle() {
@@ -248,7 +248,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         break;
                     }
                     case Populated:
-                        getInstantiator();
+                        getRepository();
                         trackServiceReferences();
                         Runnable r = new Runnable() {
                             public void run() {
@@ -322,11 +322,11 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         }
     }
 
-    protected BlueprintObjectInstantiator getInstantiator() throws Exception {
-        if (instantiator == null) {
-            instantiator = new BlueprintObjectInstantiator(this, new RecipeBuilder(this).createRepository());
+    public BlueprintRepository getRepository() {
+        if (repository == null) {
+            repository = new RecipeBuilder(this).createRepository();
         }
-        return instantiator;
+        return repository;
     }
 
     private void processTypeConverters() throws Exception {
@@ -341,7 +341,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             }
         }
 
-        Map<String, Object> objects = instantiator.createAll(typeConverters.toArray(new String[typeConverters.size()]));
+        Map<String, Object> objects = repository.createAll(typeConverters);
         for (Object obj : objects.values()) {
             if (obj instanceof Converter) {
                 converter.registerConverter((Converter) obj);
@@ -365,43 +365,47 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                 continue;
             }
             if (ComponentDefinitionRegistryProcessor.class.isAssignableFrom(clazz)) {
-                Object obj = instantiator.create(bean.getId());
+                Object obj = repository.create(bean.getId());
                 ((ComponentDefinitionRegistryProcessor) obj).process(componentDefinitionRegistry);
-                // Update repository with recipes processed by the processors
-                untrackServiceReferences();
-                Repository repository = instantiator.getRepository();
-                Repository tmpRepo = new RecipeBuilder(this).createRepository();
-                for (String name : tmpRepo.getNames()) {
-                    if (repository.getInstance(name) == null) {
-                        repository.putRecipe(name, tmpRepo.getRecipe(name));
+            } else if (Processor.class.isAssignableFrom(clazz)) {
+                Object obj = repository.create(bean.getId());
+                this.processors.add((Processor) obj);
+            } else {
+                continue;
+            }
+            // Update repository with recipes processed by the processors
+            untrackServiceReferences();
+            Repository tmpRepo = new RecipeBuilder(this).createRepository();
+            for (String name : tmpRepo.getNames()) {
+                if (repository.getInstance(name) == null) {
+                    Recipe r = tmpRepo.getRecipe(name);
+                    if (r != null) {
+                        repository.putRecipe(name, r);
                     }
                 }
-                satisfiables = null;
-                trackServiceReferences();
-            } else if (Processor.class.isAssignableFrom(clazz)) {
-                Object obj = instantiator.create(bean.getId());
-                this.processors.add((Processor) obj);
             }
+            getSatisfiableDependenciesMap(true);
+            trackServiceReferences();
         }
     }
 
     private Map<String, List<SatisfiableRecipe>> getSatisfiableDependenciesMap() {
-        if (satisfiables == null && instantiator != null) {
-            ExecutionContext oldContext = ExecutionContext.setContext(new DefaultExecutionContext(this, instantiator.getRepository()));
-            try {
+        return getSatisfiableDependenciesMap(false);
+    }
+
+    private Map<String, List<SatisfiableRecipe>> getSatisfiableDependenciesMap(boolean recompute) {
+        synchronized (satisfiablesLock) {
+            if ((recompute || satisfiables == null) && repository != null) {
                 satisfiables = new HashMap<String, List<SatisfiableRecipe>>();
-                for (Recipe r : instantiator.getAllRecipes()) {
-                    List<SatisfiableRecipe> recipes = instantiator.getAllRecipes(SatisfiableRecipe.class, r.getName());
+                for (Recipe r : repository.getAllRecipes()) {
+                    List<SatisfiableRecipe> recipes = repository.getAllRecipes(SatisfiableRecipe.class, r.getName());
                     if (!recipes.isEmpty()) {
                         satisfiables.put(r.getName(), recipes);
                     }
                 }
-                return satisfiables;
-            } finally {
-                ExecutionContext.setContext(oldContext);
             }
+            return satisfiables;
         }
-        return satisfiables;
     }
 
     private void trackServiceReferences() {
@@ -452,7 +456,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                 String name = entry.getKey();
                 ComponentMetadata metadata = componentDefinitionRegistry.getComponentDefinition(name);
                 if (metadata instanceof ServiceMetadata) {
-                    ServiceRecipe reg = (ServiceRecipe) instantiator.getRepository().getRecipe(name);
+                    ServiceRecipe reg = (ServiceRecipe) repository.getRecipe(name);
                     synchronized (reg) {
                         boolean satisfied = true;
                         for (SatisfiableRecipe recipe : entry.getValue()) {
@@ -492,7 +496,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         }
         LOGGER.debug("Instantiating components: {}", components);
         try {
-            instantiator.createAll(components);
+            repository.createAll(components);
         } catch (ComponentDefinitionException e) {
             throw e;
         } catch (Throwable t) {
@@ -501,8 +505,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
 
     private void registerServices() {
-        List<ServiceRecipe> recipes = instantiator.getAllRecipes(ServiceRecipe.class);
-        for (ServiceRecipe r : recipes) {
+        services = repository.getAllRecipes(ServiceRecipe.class);
+        for (ServiceRecipe r : services) {
             List<SatisfiableRecipe> dependencies = getSatisfiableDependenciesMap().get(r.getName());
             boolean satisfied = true;
             if (dependencies != null) {
@@ -520,17 +524,20 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
 
     private void unregisterServices() {
-        if (instantiator != null) {
-            List<ServiceRecipe> recipes = instantiator.getAllRecipes(ServiceRecipe.class);
-            for (ServiceRecipe r : recipes) {
-                r.unregister();
+        if (repository != null) {
+            List<ServiceRecipe> recipes = this.services;
+            this.services = null;
+            if (recipes != null) {
+                for (ServiceRecipe r : recipes) {
+                    r.unregister();
+                }
             }
         }
     }
 
     private void destroyComponents() {
-        if (instantiator != null) {
-            instantiator.getRepository().destroy();
+        if (repository != null) {
+            repository.destroy();
         }
     }
 
@@ -556,12 +563,12 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
     
     public Object getComponentInstance(String id) throws NoSuchComponentException {
-        if (instantiator == null) {
+        if (repository == null) {
             throw new NoSuchComponentException(id);
         }
         try {
             LOGGER.debug("Instantiating component {}", id);
-            return instantiator.create(id);
+            return repository.create(id);
         } catch (ComponentDefinitionException e) {
             throw e;
         } catch (Throwable t) {
@@ -637,10 +644,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         }
     }
 
-    public Repository getRepository() {
-        return instantiator.getRepository();
-    }
-    
     public Converter getConverter() {
         return converter;
     }

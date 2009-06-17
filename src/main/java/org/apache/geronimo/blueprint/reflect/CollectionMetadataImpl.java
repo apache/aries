@@ -35,21 +35,21 @@ import org.osgi.service.blueprint.reflect.Metadata;
 public class CollectionMetadataImpl implements MutableCollectionMetadata {
 
     private Class collectionClass;
-    private String valueTypeName;
+    private String valueType;
     private List<Metadata> values;
 
     public CollectionMetadataImpl() {
     }
 
-    public CollectionMetadataImpl(Class collectionClass, String valueTypeName, List<Metadata> values) {
+    public CollectionMetadataImpl(Class collectionClass, String valueType, List<Metadata> values) {
         this.collectionClass = collectionClass;
-        this.valueTypeName = valueTypeName;
+        this.valueType = valueType;
         this.values = values;
     }
     
     public CollectionMetadataImpl(CollectionMetadata source) {
         this.collectionClass = source.getCollectionClass();
-        this.valueTypeName = source.getValueTypeName();
+        this.valueType = source.getValueType();
         for (Metadata value : source.getValues()) {
             addValue(MetadataUtil.cloneMetadata(value));
         }
@@ -63,12 +63,12 @@ public class CollectionMetadataImpl implements MutableCollectionMetadata {
         this.collectionClass = collectionClass;
     }
 
-    public String getValueTypeName() {
-        return valueTypeName;
+    public String getValueType() {
+        return valueType;
     }
 
-    public void setValueTypeName(String valueTypeName) {
-        this.valueTypeName = valueTypeName;
+    public void setValueType(String valueType) {
+        this.valueType = valueType;
     }
 
     public List<Metadata> getValues() {
@@ -100,7 +100,7 @@ public class CollectionMetadataImpl implements MutableCollectionMetadata {
     public String toString() {
         return "CollectionMetadata[" +
                 "collectionClass=" + collectionClass +
-                ", valueTypeName='" + valueTypeName + '\'' +
+                ", valueType='" + valueType + '\'' +
                 ", values=" + values +
                 ']';
     }
