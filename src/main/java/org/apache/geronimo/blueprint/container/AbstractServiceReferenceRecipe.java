@@ -324,10 +324,12 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         /* Inject by ObjectRecipe */
         private ReferenceListener metadata;
 
-        private Set<Method> bindMethodsOneArg = new HashSet<Method>();
-        private Set<Method> bindMethodsTwoArgs = new HashSet<Method>();
-        private Set<Method> unbindMethodsOneArg = new HashSet<Method>();
-        private Set<Method> unbindMethodsTwoArgs = new HashSet<Method>();
+        private Set<Method> bindMethodsReference = new HashSet<Method>();
+        private Set<Method> bindMethodsObjectProp = new HashSet<Method>();
+        private Set<Method> bindMethodsObject = new HashSet<Method>();
+        private Set<Method> unbindMethodsReference = new HashSet<Method>();
+        private Set<Method> unbindMethodsObject = new HashSet<Method>();
+        private Set<Method> unbindMethodsObjectProp = new HashSet<Method>();
 
         public void setListener(Object listener) {
             this.listener = listener;
@@ -343,44 +345,53 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             Class listenerClass = listener.getClass();
             String bindName = metadata.getBindMethod();
             if (bindName != null) {
-                bindMethodsOneArg.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, bindName, new Class[] { ServiceReference.class }));
+                bindMethodsReference.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, bindName, new Class[] { ServiceReference.class }));
                 for (Class clazz : clazzes) {
-                    bindMethodsTwoArgs.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, bindName, new Class[] { clazz, Map.class }));
+                    bindMethodsObject.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, bindName, new Class[] { clazz }));
+                    bindMethodsObjectProp.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, bindName, new Class[] { clazz, Map.class }));
                 }
-                if (bindMethodsOneArg.size() + bindMethodsTwoArgs.size() == 0) {
+                if (bindMethodsReference.size() + bindMethodsObject.size() + bindMethodsObjectProp.size() == 0) {
                     throw new ComponentDefinitionException("No matching methods found for listener bind method: " + bindName);
                 }
             }
             String unbindName = metadata.getUnbindMethod();
             if (unbindName != null) {
-                unbindMethodsOneArg.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, unbindName, new Class[] { ServiceReference.class }));
+                unbindMethodsReference.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, unbindName, new Class[] { ServiceReference.class }));
                 for (Class clazz : clazzes) {
-                    unbindMethodsTwoArgs.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, unbindName, new Class[] { clazz, Map.class }));
+                    unbindMethodsObject.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, unbindName, new Class[] { clazz }));
+                    unbindMethodsObjectProp.addAll(ReflectionUtils.findCompatibleMethods(listenerClass, unbindName, new Class[] { clazz, Map.class }));
                 }
-                if (unbindMethodsOneArg.size() + unbindMethodsTwoArgs.size() == 0) {
+                if (unbindMethodsReference.size() + unbindMethodsObject.size() + unbindMethodsObjectProp.size() == 0) {
                     throw new ComponentDefinitionException("No matching methods found for listener unbind method: " + unbindName);
                 }
             }
         }
 
         public void bind(ServiceReference reference, Object service) {
-            invokeMethods(bindMethodsOneArg, bindMethodsTwoArgs, reference, service);
+            invokeMethods(bindMethodsReference, bindMethodsObject, bindMethodsObjectProp, reference, service);
         }
 
         public void unbind(ServiceReference reference, Object service) {
-            invokeMethods(unbindMethodsOneArg, unbindMethodsTwoArgs, reference, service);
+            invokeMethods(unbindMethodsReference, unbindMethodsObject, unbindMethodsObjectProp, reference, service);
         }
 
-        private void invokeMethods(Set<Method> oneArgMethods, Set<Method> twoArgsMethods, ServiceReference reference, Object service) {
-            for (Method method : oneArgMethods) {
+        private void invokeMethods(Set<Method> referenceMethods, Set<Method> objectMethods, Set<Method> objectPropMethods, ServiceReference reference, Object service) {
+            for (Method method : referenceMethods) {
                 try {
                     method.invoke(listener, reference);
                 } catch (Exception e) {
                     LOGGER.info("Error calling listener method " + method, e);
                 }
             }
+            for (Method method : objectMethods) {
+                try {
+                    method.invoke(listener, service);
+                } catch (Exception e) {
+                    LOGGER.info("Error calling listener method " + method, e);
+                }
+            }
             Map<String, Object> props = null;
-            for (Method method : twoArgsMethods) {
+            for (Method method : objectPropMethods) {
                 if (props == null) {
                     props = new HashMap<String, Object>();
                     for (String name : reference.getPropertyKeys()) {
