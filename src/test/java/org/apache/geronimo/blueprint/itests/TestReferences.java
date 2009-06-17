@@ -148,8 +148,8 @@ public class TestReferences extends AbstractIntegrationTest {
 
 //            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
-            customFramework( "file:target/test-classes/felix-1.9.0-SNAPSHOT.xml" ),
-            customFramework( "file:target/test-classes/equinox-3.5.0-v20090429-1630.xml" )
+            customFramework( "file:" + System.getProperty("basedir") + "/target/test-classes/felix-1.9.0-SNAPSHOT.xml" ),
+            customFramework( "file:" + System.getProperty("basedir") + "/target/test-classes/equinox-3.5.0.v20090429-1630.xml" )
         );
         return options;
     }
