@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe implements ServiceListener, SatisfiableRecipe {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RefListRecipe.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceReferenceRecipe.class);
 
     protected final ExtendedBlueprintContainer blueprintContainer;
     protected final ServiceReferenceMetadata metadata;
@@ -185,7 +185,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected List<Class> loadAllClasses(Iterable<String> interfaceNames) throws ClassNotFoundException {
         List<Class> classes = new ArrayList<Class>();
         for (String name : interfaceNames) {
-            Class clazz = proxyClassLoader.loadClass(name);
+            Class clazz = loadClass(name);
             classes.add(clazz);
         }
         return classes;
@@ -238,13 +238,11 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
 
     private void serviceAdded(ServiceReference ref) {
+        LOGGER.debug("Tracking reference {} for OSGi service {}", ref, getOsgiFilter());
         boolean added;
         boolean satisfied;
         synchronized (references) {
-            added = !references.contains(ref);
-            if (added) {
-                references.add(ref);
-            }
+            added = references.add(ref);
             satisfied = optional || !references.isEmpty();
         }
         if (added) {
@@ -254,10 +252,11 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
 
     private void serviceModified(ServiceReference ref) {
-        track(ref);
+        serviceAdded(ref);
     }
 
     private void serviceRemoved(ServiceReference ref) {
+        LOGGER.debug("Untracking reference {} for OSGi service {}", ref, getOsgiFilter());
         boolean removed;
         boolean satisfied;
         synchronized (references) {

@@ -32,6 +32,8 @@ import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A recipe to create an unary OSGi service reference.
@@ -45,6 +47,8 @@ import org.osgi.service.blueprint.reflect.ReferenceMetadata;
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
 public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReferenceRecipe.class);
 
     private final ReferenceMetadata metadata;
     private Object proxy;
@@ -113,7 +117,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
         // TODO: make this behavior configurable through a custom attribute
         // TODO:      policy = sticky | replace
         synchronized (monitor) {
-            if (trackedServiceReference != null) {
+            if (trackedServiceReference == null) {
                 retrack();
             }
         }
@@ -169,9 +173,10 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             }
             if (trackedServiceReference == null) {
                 if (isStarted()) {
+                    LOGGER.info("Timeout expired when waiting for OSGi service {}", getOsgiFilter());
                     throw new ServiceUnavailableException("Timeout expired when waiting for OSGi service", getOsgiFilter());
                 } else {
-                    throw new ServiceUnavailableException("Service tracker is stopped", getOsgiFilter());
+                    throw new ServiceUnavailableException("The Blueprint container is being or has been destroyed", getOsgiFilter());
                 }
             }
             if (trackedService == null) {
