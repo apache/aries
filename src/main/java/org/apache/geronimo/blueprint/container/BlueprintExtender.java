@@ -142,16 +142,15 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 } else {
                     int pos = name.lastIndexOf('/');
                     if (pos < 0) {
-                        URL url = bundle.getEntry(name);
-                        if (url != null) {
-                            urls.add(url);
-                        } else {
-                            throw new IllegalArgumentException("Unable to find bundle entry for config file " + name);
-                        }
+                        addEntry(bundle, name, urls);
                     } else {
                         String baseName = name.substring(0, pos + 1);
                         String filePattern = name.substring(pos + 1);
-                        addEntries(bundle, baseName, filePattern, urls);
+                        if (hasWildcards(filePattern)) {
+                            addEntries(bundle, baseName, filePattern, urls);
+                        } else {
+                            addEntry(bundle, name, urls);
+                        }
                     }
                 }
             }
@@ -188,6 +187,19 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
             compatible = true;
         }
         return compatible;
+    }
+    
+    private boolean hasWildcards(String path) {
+        return path.indexOf("*") >= 0; 
+    }
+    
+    private void addEntry(Bundle bundle, String path, List<URL> urls) {
+        URL url = bundle.getEntry(path);
+        if (url != null) {
+            urls.add(url);
+        } else {
+            throw new IllegalArgumentException("Unable to find bundle entry for config file " + path);
+        }
     }
     
     private void addEntries(Bundle bundle, String path, String filePattern, List<URL> urls) {
