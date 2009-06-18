@@ -360,21 +360,20 @@ public class Parser {
             }
         }
 
-        /*
-        TODO: uncomment this part as the <blueprint/> element can have custom attributes
         // Parse custom attributes
         NamedNodeMap attributes = root.getAttributes();
         if (attributes != null) {
             for (int i = 0; i < attributes.getLength(); i++) {
                 Node node = attributes.item(i);
-                if (node instanceof Attr && 
-                    node.getNamespaceURI() != null && 
-                    !isBlueprintNamespace(node.getNamespaceURI())) {
+                if (node instanceof Attr
+                        && node.getNamespaceURI() != null
+                        && !isBlueprintNamespace(node.getNamespaceURI())
+                        && !XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(node.getNamespaceURI())
+                        && XMLConstants.XMLNS_ATTRIBUTE.equals(node.getNodeName())) {
                     decorateCustomNode(node, null);
                 }
             }
         }
-        */
 
         // Parse elements
         NodeList nl = root.getChildNodes();
