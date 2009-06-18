@@ -39,6 +39,9 @@ public class HeaderParser  {
      */
     public static List<PathElement> parseHeader(String header) {
         List<PathElement> elements = new ArrayList<PathElement>();
+        if (header == null || header.trim().length() == 0) {
+            return elements;
+        }
         String[] clauses = header.split(",");
         for (String clause : clauses) {
             String[] tokens = clause.split(";");

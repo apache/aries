@@ -133,27 +133,30 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
             String blueprintHeader = (String) bundle.getHeaders().get(BlueprintConstants.BUNDLE_BLUEPRINT_HEADER);
             if (blueprintHeader == null) {
                 blueprintHeader = "OSGI-INF/blueprint/";
-            }
+            } 
             List<PathElement> paths = HeaderParser.parseHeader(blueprintHeader);
             for (PathElement path : paths) {
                 String name = path.getName();
                 if (name.endsWith("/")) {
-                    addEntries(bundle, name, "*.xml", urls);
+                    addEntries(bundle, name, "*.xml", false, urls);
                 } else {
+                    String baseName;
+                    String filePattern;
                     int pos = name.lastIndexOf('/');
                     if (pos < 0) {
-                        addEntry(bundle, name, urls);
+                        baseName = "/";
+                        filePattern = name;
                     } else {
-                        String baseName = name.substring(0, pos + 1);
-                        String filePattern = name.substring(pos + 1);
-                        if (hasWildcards(filePattern)) {
-                            addEntries(bundle, baseName, filePattern, urls);
-                        } else {
-                            addEntry(bundle, name, urls);
-                        }
+                        baseName = name.substring(0, pos + 1);
+                        filePattern = name.substring(pos + 1);
                     }
+                    if (hasWildcards(filePattern)) {
+                        addEntries(bundle, baseName, filePattern, true, urls);
+                    } else {
+                        addEntry(bundle, name, urls);
+                    }                    
                 }
-            }
+            }            
             if (!urls.isEmpty()) {
                 LOGGER.debug("Found blueprint application in bundle {} with urls: {}", bundle.getSymbolicName(), urls);
                 // Check compatibility
@@ -198,15 +201,25 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         if (url != null) {
             urls.add(url);
         } else {
-            throw new IllegalArgumentException("Unable to find bundle entry for config file " + path);
+            throw new IllegalArgumentException("Unable to find configuration file for " + path);
         }
     }
     
-    private void addEntries(Bundle bundle, String path, String filePattern, List<URL> urls) {
+    private void addEntries(Bundle bundle, String path, String filePattern, boolean mustMatch, List<URL> urls) {
+        boolean added = false;
         Enumeration e = bundle.findEntries(path, filePattern, false);
         while (e != null && e.hasMoreElements()) {
             URL u = (URL) e.nextElement();
             urls.add(u);
+            added = true;
+        }
+        if (!added && mustMatch) {
+            String query = path;
+            if (!path.endsWith("/")) {
+                query += "/";
+            }
+            query += filePattern;
+            throw new IllegalArgumentException("Unable to find any configuration files for " + query);
         }
     }
 }
