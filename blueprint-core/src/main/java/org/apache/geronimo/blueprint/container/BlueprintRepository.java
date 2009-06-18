@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.LinkedHashMap;
-import java.util.HashMap;
 import java.util.Collections;
 import java.util.Collection;
 import java.util.Arrays;
@@ -42,7 +41,6 @@ import org.apache.geronimo.blueprint.di.ExecutionContext;
 import org.apache.geronimo.blueprint.di.RefRecipe;
 import org.apache.geronimo.blueprint.di.IdRefRecipe;
 import org.apache.geronimo.blueprint.di.CircularDependencyException;
-import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 
 /**
@@ -144,7 +142,7 @@ public class BlueprintRepository implements Repository, ExecutionContext {
                 Object obj = createInstance(name);
                 try {
                     // Make sure to go through the conversion step in case we have a Convertible object
-                    obj = ConversionUtils.convert(obj, Object.class, blueprintContainer.getConverter());
+                    obj = convert(obj, Object.class);
                 } catch (Exception e) {
                     throw new ComponentDefinitionException("Unable to convert instance " + name, e);
                 }
@@ -315,7 +313,7 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     }
 
     public Object convert(Object value, Type type) throws Exception {
-        return ConversionUtils.convert(value, type, blueprintContainer.getConverter());
+        return blueprintContainer.getConverter().convert(value, type);
     }
 
     public Class loadClass(String typeName) throws ClassNotFoundException {

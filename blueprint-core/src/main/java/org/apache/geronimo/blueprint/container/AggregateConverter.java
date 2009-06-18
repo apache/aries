@@ -20,15 +20,22 @@ import java.io.ByteArrayInputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Collection;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
+import org.apache.geronimo.blueprint.di.MapRecipe;
+import org.apache.geronimo.blueprint.di.CollectionRecipe;
 import static org.apache.geronimo.blueprint.utils.ReflectionUtils.getRealCause;
 import org.apache.geronimo.blueprint.utils.TypeUtils;
+import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
 import org.osgi.service.blueprint.container.Converter;
 
 /**
@@ -81,17 +88,33 @@ public class AggregateConverter implements Converter {
     }
 
     public Object convert(Object fromValue, Object toType) throws Exception {
+        // Discard null values
         if (fromValue == null) {
             return null;
         }
         Type type = (Type) toType;
-        if (TypeUtils.isInstance(type, fromValue)) {
+        // First convert service proxies
+        if (fromValue instanceof Convertible) {
+            return ((Convertible) fromValue).convert(type);
+        }
+        // If the object is an instance of the type, just return it
+        // We need to pass through for arrays / maps / collections because of genenrics
+        if (TypeUtils.isInstance(type, fromValue)
+                && !toClass(type).isArray()
+                && !Map.class.isAssignableFrom(toClass(type))
+                && !Collection.class.isAssignableFrom(toClass(type))) {
             return fromValue;
         }
-        Object value = doConvert(fromValue, type);        
+        Object value = convertWithConverters(fromValue, type);
         if (value == null) {
             if (fromValue instanceof String && toType instanceof Class) {
-                return convertString((String) fromValue, (Class) type);
+                return convertFromString((String) fromValue, (Class) type, blueprintContainer);
+            } else if (toClass(type).isArray()) {
+                return convertArray(fromValue, type);
+            } else if (Map.class.isAssignableFrom(toClass(type))) {
+                return convertMap(fromValue, type);
+            } else if (Collection.class.isAssignableFrom(toClass(type))) {
+                return convertCollection(fromValue, type);
             } else {
                 throw new Exception("Unable to convert value " + fromValue + " to type " + type);
             }
@@ -100,7 +123,7 @@ public class AggregateConverter implements Converter {
         }
     }
 
-    private Object doConvert(Object source, Type type) throws Exception {
+    private Object convertWithConverters(Object source, Type type) throws Exception {
         Object value = null;
         for (Converter converter : converters) {
             if (converter.canConvert(source, type)) {
@@ -113,20 +136,14 @@ public class AggregateConverter implements Converter {
         return value;
     }
 
-    private Object convertString(String value, Class toType) throws Exception {
-        if (Class.class == toType) {
+    public static Object convertFromString(String value, Class toType, Object loader) throws Exception {
+        if (Class.class == toType || Type.class == toType) {
             try {
-                return blueprintContainer.loadClass(value);
+                return TypeUtils.parseJavaType(value, loader);
             } catch (ClassNotFoundException e) {
                 throw new Exception("Unable to convert", e);
             }
-        } else {
-            return defaultConversion(value, toType);
-        }
-    }
-
-    public static Object defaultConversion(String value, Class toType) throws Exception {
-        if (Locale.class == toType) {
+        } else if (Locale.class == toType) {
             String[] tokens = value.split("_");
             if (tokens.length == 1) {
                 return new Locale(tokens[0]);
@@ -167,7 +184,7 @@ public class AggregateConverter implements Converter {
                 int code = Integer.parseInt(value.substring(2), 16);
                 return (char)code;
             } else if (value.length() == 1) {
-                return Character.valueOf(value.charAt(0));
+                return value.charAt(0);
             } else {
                 throw new Exception("Invalid value for character type: " + value);
             }
@@ -197,4 +214,79 @@ public class AggregateConverter implements Converter {
         }
     }
 
+    private Object convertCollection(Object obj, Type type) throws Exception {
+        Type valueType = Object.class;
+        Type[] typeParameters = TypeUtils.getTypeParameters(Collection.class, type);
+        if (typeParameters != null && typeParameters.length == 1) {
+            valueType = typeParameters[0];
+        }
+        Collection newCol = (Collection) CollectionRecipe.getCollection(toClass(type)).newInstance();
+        if (obj.getClass().isArray()) {
+            for (int i = 0; i < Array.getLength(obj); i++) {
+                try {
+                    newCol.add(convert(Array.get(obj, i), valueType));
+                } catch (Exception t) {
+                    throw new Exception("Unable to convert from " + obj + " to " + type + "(error converting array element)", t);
+                }
+            }
+        } else {
+            for (Object item : (Collection) obj) {
+                try {
+                    newCol.add(convert(item, valueType));
+                } catch (Exception t) {
+                    throw new Exception("Unable to convert from " + obj + " to " + type + "(error converting collection entry)", t);
+                }
+            }
+        }
+        return newCol;
+    }
+
+    private Object convertMap(Object obj, Type type) throws Exception {
+        Type keyType = Object.class;
+        Type valueType = Object.class;
+        Type[] typeParameters = TypeUtils.getTypeParameters(Map.class, type);
+        if (typeParameters != null && typeParameters.length == 2) {
+            keyType = typeParameters[0];
+            valueType = typeParameters[1];
+        }
+        Map newMap = (Map) MapRecipe.getMap(toClass(type)).newInstance();
+        for (Map.Entry e : ((Map<Object,Object>) obj).entrySet()) {
+            try {
+                newMap.put(convert(e.getKey(), keyType), convert(e.getValue(), valueType));
+            } catch (Exception t) {
+                throw new Exception("Unable to convert from " + obj + " to " + type + "(error converting map entry)", t);
+            }
+        }
+        return newMap;
+    }
+
+    private Object convertArray(Object obj, Type type) throws Exception {
+        if (obj instanceof Collection) {
+            obj = ((Collection) obj).toArray();
+        }
+        if (!obj.getClass().isArray()) {
+            throw new Exception("Unable to convert from " + obj + " to " + type);
+        }
+        Type componentType = type instanceof GenericArrayType
+                                    ? ((GenericArrayType) type).getGenericComponentType()
+                                    : toClass(type).getComponentType();
+        Object array = Array.newInstance(TypeUtils.toClass(componentType), Array.getLength(obj));
+        for (int i = 0; i < Array.getLength(obj); i++) {
+            try {
+                Array.set(array, i, convert(Array.get(obj, i), componentType));
+            } catch (Exception t) {
+                throw new Exception("Unable to convert from " + obj + " to " + type + "(error converting array element)", t);
+            }
+        }
+        return array;
+    }
+
+    /**
+     * Objects implementing this interface will bypass the default conversion rules
+     * and be called directly to transform into the expected type.
+     */
+    public static interface Convertible {
+
+        Object convert(Type type) throws Exception;
+    }
 }

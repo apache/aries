@@ -90,6 +90,7 @@ public final class TypeUtils {
     }
 
     public static boolean isAssignable(Type expectedType, Type actualType) {
+        // TODO: check parameterized Collection / Maps / Arrays ?
         Class expectedClass = toClass(expectedType);
         Class actualClass = toClass(actualType);
         return expectedClass.isAssignableFrom(actualClass);
@@ -171,6 +172,7 @@ public final class TypeUtils {
     }
 
     public static Type parseJavaType(String type, Object loader) throws ClassNotFoundException {
+        // TODO: support wilcards for generics
         type = type.trim();
         // Check if this is an array
         if (type.endsWith("[]")) {

@@ -25,7 +25,6 @@ import java.util.concurrent.Callable;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.Recipe;
-import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintEvent;
@@ -206,7 +205,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
 
     }
 
-    public class ServiceProxyWrapper implements ConversionUtils.Convertible {
+    public class ServiceProxyWrapper implements AggregateConverter.Convertible {
 
         public Object convert(Type type) throws Exception {
             if (type == ServiceReference.class) {
