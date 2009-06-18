@@ -25,11 +25,11 @@ import org.osgi.service.blueprint.container.Converter;
 
 public class ConverterB implements Converter {
 
-    public boolean canConvert(Object fromValue, Class toType) {
+    public boolean canConvert(Object fromValue, Object toType) {
         return fromValue instanceof String && toType == URI.class;
     }
 
-    public Object convert(Object source, Class toType) throws Exception {
+    public Object convert(Object source, Object toType) throws Exception {
         if (source instanceof String) {
             return new URI((String) source);
         }

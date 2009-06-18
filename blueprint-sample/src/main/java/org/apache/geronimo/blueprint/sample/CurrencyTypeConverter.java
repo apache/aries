@@ -22,11 +22,11 @@ import org.osgi.service.blueprint.container.Converter;
 
 public class CurrencyTypeConverter implements Converter {
 
-    public boolean canConvert(Object fromValue, Class toType) {
-        return Currency.class.isAssignableFrom(toType);
+    public boolean canConvert(Object fromValue, Object toType) {
+        return Currency.class.isAssignableFrom((Class) toType);
     }
 
-    public Object convert(Object source, Class toType) throws Exception {
+    public Object convert(Object source, Object toType) throws Exception {
         return Currency.getInstance(source.toString());
     }
 

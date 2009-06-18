@@ -144,7 +144,7 @@ public final class ConversionUtils {
             }
             return newCol;
         }
-        return converter.convert(obj, toClass(type));
+        return converter.convert(obj, type);
     }
 
     public static Class getMap(Class type) {
