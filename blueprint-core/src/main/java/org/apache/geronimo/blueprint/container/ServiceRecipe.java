@@ -213,7 +213,7 @@ public class ServiceRecipe extends AbstractRecipe {
      */
     private Object internalGetService(Bundle bundle, ServiceRegistration registration) {
         LOGGER.debug("Retrieving service for bundle {} and service registration {}", bundle, registration);
-        synchronized (serviceLock) {
+        synchronized (blueprintContainer.getRepository().getInstanceLock()) {
             // Create initial service
             if (this.service == null) {
                 try {

@@ -73,4 +73,10 @@ public interface Repository {
 
     void destroy();
 
+    /**
+     * Lock that should be used to synchronized creation of singletons
+     *
+     * @return
+     */
+    public Object getInstanceLock();
 }
