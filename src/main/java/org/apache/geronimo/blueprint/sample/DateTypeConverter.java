@@ -30,12 +30,12 @@ public class DateTypeConverter implements Converter {
         dateFormat = new SimpleDateFormat(format);
     }
     
-    public Object convert(Object source, Class toType) throws Exception {
+    public Object convert(Object source, Object toType) throws Exception {
         return dateFormat.parse(source.toString());
     }
 
-    public boolean canConvert(Object fromValue, Class toType) {
-        return Date.class.isAssignableFrom(toType);
+    public boolean canConvert(Object fromValue, Object toType) {
+        return Date.class.isAssignableFrom((Class) toType);
     }
 
 }
