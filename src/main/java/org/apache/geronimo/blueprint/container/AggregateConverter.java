@@ -19,6 +19,7 @@ package org.apache.geronimo.blueprint.container;
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -60,15 +61,16 @@ public class AggregateConverter implements Converter {
         converters.remove(converter);
     }
 
-    public boolean canConvert(Object fromValue, Class toType) {
+    public boolean canConvert(Object fromValue, Object toType) {
         if (fromValue == null) {
             return true;
         }
-        if (TypeUtils.isInstance(toType, fromValue)) {
+        Type type = (Type) toType;
+        if (TypeUtils.isInstance(type, fromValue)) {
             return true;
         }
         for (Converter converter : converters) {
-            if (converter.canConvert(fromValue, toType)) {
+            if (converter.canConvert(fromValue, type)) {
                 return true;
             }
         }
@@ -78,26 +80,27 @@ public class AggregateConverter implements Converter {
         return false;
     }
 
-    public Object convert(Object fromValue, Class toType) throws Exception {
+    public Object convert(Object fromValue, Object toType) throws Exception {
         if (fromValue == null) {
             return null;
         }
-        if (TypeUtils.isInstance(toType, fromValue)) {
+        Type type = (Type) toType;
+        if (TypeUtils.isInstance(type, fromValue)) {
             return fromValue;
         }
-        Object value = doConvert(fromValue, toType);        
+        Object value = doConvert(fromValue, type);        
         if (value == null) {
-            if (fromValue instanceof String) {
-                return convertString((String) fromValue, toType);
+            if (fromValue instanceof String && toType instanceof Class) {
+                return convertString((String) fromValue, (Class) type);
             } else {
-                throw new Exception("Unable to convert value " + fromValue + " to type: " + toType.getName());
+                throw new Exception("Unable to convert value " + fromValue + " to type " + type);
             }
         } else {
             return value;
         }
     }
 
-    private Object doConvert(Object source, Class type) throws Exception {
+    private Object doConvert(Object source, Type type) throws Exception {
         Object value = null;
         for (Converter converter : converters) {
             if (converter.canConvert(source, type)) {

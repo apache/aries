@@ -165,28 +165,28 @@ public class AggregateConverterTest extends TestCase {
     private interface AsianRegion extends Region {}
     
     private static class RegionConverter implements Converter {
-        public boolean canConvert(Object fromValue, Class toType) {
+        public boolean canConvert(Object fromValue, Object toType) {
             return Region.class == toType;
         }
-        public Object convert(Object source, Class toType) throws Exception {
+        public Object convert(Object source, Object toType) throws Exception {
             return new Region() {} ;
         }
     }
     
     private static class EuRegionConverter implements Converter {
-        public boolean canConvert(Object fromValue, Class toType) {
-            return toType.isAssignableFrom(EuRegion.class);
+        public boolean canConvert(Object fromValue, Object toType) {
+            return ((Class) toType).isAssignableFrom(EuRegion.class);
         }
-        public Object convert(Object source, Class toType) throws Exception {
+        public Object convert(Object source, Object toType) throws Exception {
             return new EuRegion() {} ;
         }
     }
     
     private static class AsianRegionConverter implements Converter {
-        public boolean canConvert(Object fromValue, Class toType) {
-            return toType.isAssignableFrom(AsianRegion.class);
+        public boolean canConvert(Object fromValue, Object toType) {
+            return ((Class) toType).isAssignableFrom(AsianRegion.class);
         }
-        public Object convert(Object source, Class toType) throws Exception {
+        public Object convert(Object source, Object toType) throws Exception {
             return new AsianRegion() {} ;
         }
     }
