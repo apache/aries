@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.lang.reflect.Type;
 
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
@@ -69,6 +70,11 @@ public class BlueprintRepository implements Repository, ExecutionContext {
      * Contains object instances
      */
     private final Map<String, Object> instances = new ConcurrentHashMap<String, Object>();
+
+    /**
+     * Keep track of creation order
+     */
+    private final List<String> creationOrder = new CopyOnWriteArrayList<String>();
 
     /**
      * Lock for object instance creation
@@ -232,15 +238,16 @@ public class BlueprintRepository implements Repository, ExecutionContext {
 
     public void destroy() {
         // destroy objects in reverse creation order
-        List<Map.Entry<String, Object>> entries = new ArrayList<Map.Entry<String, Object>>(instances.entrySet());
-        Collections.reverse(entries);
-        for (Map.Entry<String, Object> entry : entries) {
-            Recipe recipe = recipes.get(entry.getKey());
+        List<String> order = new ArrayList<String>(creationOrder);
+        Collections.reverse(order);
+        for (String name : order) {
+            Recipe recipe = recipes.get(name);
             if (recipe != null) {
-                recipe.destroy(entry.getValue());
+                recipe.destroy(instances.get(name));
             }
         }
         instances.clear();
+        creationOrder.clear();
     }
 
     public Object getInstanceLock() {
@@ -300,6 +307,7 @@ public class BlueprintRepository implements Repository, ExecutionContext {
                 throw new ComponentDefinitionException("Name " + name + " is already registered to instance " + instances.get(name));
             }
             instances.put(name, object);
+            creationOrder.add(name); 
             partialObjects.remove(name);
         }
     }
