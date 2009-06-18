@@ -21,6 +21,7 @@ package org.apache.geronimo.blueprint.container;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,8 +41,11 @@ import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ExtendedServiceReferenceMetadata;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
+import org.apache.geronimo.blueprint.di.ExecutionContext;
 import org.apache.geronimo.blueprint.utils.BundleDelegatingClassLoader;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
+import org.apache.geronimo.blueprint.utils.TypeUtils;
+import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -190,6 +194,22 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         }
         return classes;
     }
+
+    protected Type loadType(String typeName, ClassLoader fromClassLoader) {
+        if (typeName == null) {
+            return null;
+        }
+        try {
+            // this method is overriden to use the blueprint container directly
+            // because proxies can be created outside of the recipe creation which
+            // would lead to an exception because the context is not set
+            // TODO: consider having the context as a property on the recipe rather than a thread local
+            return TypeUtils.parseJavaType(typeName, fromClassLoader != null ? fromClassLoader : blueprintContainer);
+        } catch (ClassNotFoundException e) {
+            throw new ComponentDefinitionException("Unable to load class " + typeName + " from recipe " + this, e);
+        }
+    }
+
 
     protected Object createProxy(final Callable<Object> dispatcher, Iterable<String> interfaces) throws Exception {
         return getProxyFactory().createProxy(proxyClassLoader, toClassArray(loadAllClasses(interfaces)), dispatcher);
