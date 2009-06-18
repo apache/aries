@@ -34,7 +34,6 @@ import java.util.concurrent.Callable;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ExtendedRefListMetadata;
 import org.apache.geronimo.blueprint.di.Recipe;
-import org.apache.geronimo.blueprint.utils.ConversionUtils;
 import org.apache.geronimo.blueprint.utils.DynamicCollection;
 import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.osgi.framework.Constants;
@@ -229,7 +228,7 @@ public class RefListRecipe extends AbstractServiceReferenceRecipe {
 
     }
 
-    public class ProvidedObject implements ConversionUtils.Convertible {
+    public class ProvidedObject implements AggregateConverter.Convertible {
 
         public Object convert(Type type) {
             LOGGER.debug("Converting ManagedCollection to {}", type);
