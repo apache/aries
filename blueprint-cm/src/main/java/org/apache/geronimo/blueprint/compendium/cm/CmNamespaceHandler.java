@@ -44,7 +44,6 @@ import org.apache.geronimo.blueprint.mutable.MutableComponentMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableIdRefMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableRefMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -55,7 +54,6 @@ import org.osgi.service.blueprint.reflect.IdRefMetadata;
 import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
@@ -422,7 +420,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         MutableBeanMetadata bean = context.createMetadata(MutableBeanMetadata.class);
         bean.setRuntimeClass(CmNamespaceHandler.class);
         bean.setFactoryMethod("getConfigAdmin");
-        bean.setInitialization(MutableBeanMetadata.INITIALIZATION_LAZY);
+        bean.setInitialization(MutableBeanMetadata.ACTIVATION_LAZY);
         bean.setScope(MutableBeanMetadata.SCOPE_PROTOTYPE);
         return bean;
     }

@@ -18,8 +18,8 @@
  */
 package org.apache.geronimo.blueprint.reflect;
 
-import org.apache.geronimo.blueprint.mutable.MutableRefListMetadata;
-import org.osgi.service.blueprint.reflect.RefListMetadata;
+import org.apache.geronimo.blueprint.mutable.MutableReferenceListMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
 
 /**
  * Implementation of RefCollectionMetadata 
@@ -27,14 +27,14 @@ import org.osgi.service.blueprint.reflect.RefListMetadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class RefListMetadataImpl extends ServiceReferenceMetadataImpl implements MutableRefListMetadata {
+public class ReferenceListMetadataImpl extends ServiceReferenceMetadataImpl implements MutableReferenceListMetadata {
 
     private int memberType;
 
-    public RefListMetadataImpl() {
+    public ReferenceListMetadataImpl() {
     }
     
-    public RefListMetadataImpl(RefListMetadata source) {
+    public ReferenceListMetadataImpl(ReferenceListMetadata source) {
         super(source);
         memberType = source.getMemberType();
     }

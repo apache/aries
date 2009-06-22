@@ -32,7 +32,7 @@ import java.util.RandomAccess;
 import java.util.concurrent.Callable;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
-import org.apache.geronimo.blueprint.ExtendedRefListMetadata;
+import org.apache.geronimo.blueprint.ExtendedReferenceListMetadata;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.DynamicCollection;
 import org.osgi.framework.Constants;
@@ -40,7 +40,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.CollapsedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
-import org.osgi.service.blueprint.reflect.RefListMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,14 +54,14 @@ public class RefListRecipe extends AbstractServiceReferenceRecipe {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RefListRecipe.class);
 
-    private final RefListMetadata metadata;
+    private final ReferenceListMetadata metadata;
     private final List<ManagedCollection> collections = new ArrayList<ManagedCollection>();
     private final DynamicCollection<ServiceDispatcher> storage = new DynamicCollection<ServiceDispatcher>();
     private final List<ServiceDispatcher> unboundDispatchers = new ArrayList<ServiceDispatcher>();
 
     public RefListRecipe(String name,
                          ExtendedBlueprintContainer blueprintContainer,
-                         RefListMetadata metadata,
+                         ReferenceListMetadata metadata,
                          Recipe listenersRecipe,
                          List<Recipe> explicitDependencies) {
         super(name, blueprintContainer, metadata, listenersRecipe, explicitDependencies);
@@ -129,8 +129,8 @@ public class RefListRecipe extends AbstractServiceReferenceRecipe {
                 } else {
                     dispatcher = new ServiceDispatcher(reference);
                     List<String> interfaces = Collections.singletonList(metadata.getInterface());
-                    if (metadata instanceof ExtendedRefListMetadata) {
-                        boolean greedy = (((ExtendedRefListMetadata) metadata).getProxyMethod() & ExtendedRefListMetadata.PROXY_METHOD_GREEDY) != 0;
+                    if (metadata instanceof ExtendedReferenceListMetadata) {
+                        boolean greedy = (((ExtendedReferenceListMetadata) metadata).getProxyMethod() & ExtendedReferenceListMetadata.PROXY_METHOD_GREEDY) != 0;
                         if (greedy) {
                             interfaces = Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS));
                         }
@@ -243,9 +243,9 @@ public class RefListRecipe extends AbstractServiceReferenceRecipe {
                 }
             }
             boolean references;
-            if (metadata.getMemberType() == RefListMetadata.USE_SERVICE_REFERENCE) {
+            if (metadata.getMemberType() == ReferenceListMetadata.USE_SERVICE_REFERENCE) {
                 references = true;
-            } else if (metadata.getMemberType() == RefListMetadata.USE_SERVICE_OBJECT) {
+            } else if (metadata.getMemberType() == ReferenceListMetadata.USE_SERVICE_OBJECT) {
                 references = false;
             } else {
                 references = useRef;

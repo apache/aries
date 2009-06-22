@@ -21,7 +21,7 @@ package org.osgi.service.blueprint.reflect;
  * <code>ref-set</code> element.
  *
  */
-public interface RefListMetadata extends ServiceReferenceMetadata {
+public interface ReferenceListMetadata extends ServiceReferenceMetadata {
 
 	/**
 	 * Use the service objects to compare or include in the collection

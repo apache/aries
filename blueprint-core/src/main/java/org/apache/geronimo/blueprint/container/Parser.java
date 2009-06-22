@@ -60,7 +60,7 @@ import org.apache.geronimo.blueprint.reflect.MapEntryImpl;
 import org.apache.geronimo.blueprint.reflect.MapMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 import org.apache.geronimo.blueprint.reflect.PropsMetadataImpl;
-import org.apache.geronimo.blueprint.reflect.RefListMetadataImpl;
+import org.apache.geronimo.blueprint.reflect.ReferenceListMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.RefMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ReferenceListenerImpl;
 import org.apache.geronimo.blueprint.reflect.ReferenceMetadataImpl;
@@ -82,7 +82,7 @@ import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.NonNullMetadata;
 import org.osgi.service.blueprint.reflect.NullMetadata;
 import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.RefListMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
@@ -123,7 +123,7 @@ public class Parser {
     public static final String VALUE_ELEMENT = "value";
     public static final String SERVICE_ELEMENT = "service";
     public static final String REFERENCE_ELEMENT = "reference";
-    public static final String REFLIST_ELEMENT = "ref-list";
+    public static final String REFERENCE_LIST_ELEMENT = "reference-list";
     public static final String INTERFACES_ELEMENT = "interfaces";
     public static final String REFERENCE_LISTENER_ELEMENT = "reference-listener";
     public static final String SERVICE_PROPERTIES_ELEMENT = "service-properties";
@@ -163,7 +163,7 @@ public class Parser {
     public static final String SCOPE_ATTRIBUTE = "scope";
     public static final String INIT_METHOD_ATTRIBUTE = "init-method";
     public static final String DESTROY_METHOD_ATTRIBUTE = "destroy-method";
-    public static final String INITIALIZATION_ATTRIBUTE = "initialization";
+    public static final String ACTIVATION_ATTRIBUTE = "activation";
     public static final String FACTORY_REF_ATTRIBUTE = "factory-ref";
     public static final String FACTORY_METHOD_ATTRIBUTE = "factory-method";
 
@@ -183,14 +183,10 @@ public class Parser {
     public static final String TIMEOUT_DEFAULT = "300000";
     public static final String USE_SERVICE_OBJECT = "service-object";
     public static final String USE_SERVICE_REFERENCE = "service-reference";
-    public static final String INITIALIZATION_EAGER = "eager";
-    public static final String INITIALIZATION_LAZY = "lazy";
-    public static final String INITIALIZATION_DEFAULT = INITIALIZATION_EAGER;
+    public static final String ACTIVATION_EAGER = "eager";
+    public static final String ACTIVATION_LAZY = "lazy";
+    public static final String ACTIVATION_DEFAULT = ACTIVATION_EAGER;
     
-    public static final String COMPLIANCE_ATTRIBUTE = "compliance";
-    public static final String COMPLIANCE_STRICT = "strict";
-    public static final String COMPLIANCE_LOOSE = "loose"; 
-
     private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
 
     private static DocumentBuilderFactory documentBuilderFactory;
@@ -205,7 +201,6 @@ public class Parser {
     private String defaultTimeout;
     private String defaultAvailability;
     private String defaultInitialization;
-    private int compliance = BlueprintContainer.COMPLIANCE_STRICT;
     private Set<URI> namespaces;
     private boolean validation;
     private boolean validated;
@@ -239,17 +234,6 @@ public class Parser {
         this.documents = documents;
     }
 
-    public int getCompliance() {
-        return this.compliance;
-    }
-    
-    private void setCompliance(int compliance) {
-        // If one config specifies loose compliance, we stick with it 
-        if (this.compliance != BlueprintContainer.COMPLIANCE_LOOSE) {
-            this.compliance = compliance;
-        }
-    }
-    
     public Set<URI> getNamespaces() {
         if (this.namespaces == null) {
             if (documents == null) {
@@ -332,7 +316,7 @@ public class Parser {
     private void loadComponents(Document doc) {
         defaultTimeout = TIMEOUT_DEFAULT;
         defaultAvailability = AVAILABILITY_DEFAULT;
-        defaultInitialization = INITIALIZATION_DEFAULT;
+        defaultInitialization = ACTIVATION_DEFAULT;
         Element root = doc.getDocumentElement();
         if (!isBlueprintNamespace(root.getNamespaceURI()) ||
                 !nodeNameEquals(root, BLUEPRINT_ELEMENT)) {
@@ -349,17 +333,6 @@ public class Parser {
             defaultAvailability = root.getAttribute(DEFAULT_AVAILABILITY_ATTRIBUTE);
         }
         
-        if (root.hasAttribute(COMPLIANCE_ATTRIBUTE)) {
-            String attribute = root.getAttribute(COMPLIANCE_ATTRIBUTE);
-            if (COMPLIANCE_STRICT.equals(attribute)) {
-                setCompliance(BlueprintContainer.COMPLIANCE_STRICT);            
-            } else if (COMPLIANCE_LOOSE.equals(attribute)) {
-                setCompliance(BlueprintContainer.COMPLIANCE_LOOSE);            
-            } else {
-                throw new ComponentDefinitionException("Attribute " + COMPLIANCE_ATTRIBUTE + " must be equal to " + COMPLIANCE_STRICT + " or " + COMPLIANCE_LOOSE);
-            }
-        }
-
         // Parse custom attributes
         NamedNodeMap attributes = root.getAttributes();
         if (attributes != null) {
@@ -416,7 +389,7 @@ public class Parser {
             return type.cast(parseProps(element));
         } else if (ReferenceMetadata.class.isAssignableFrom(type)) {
             return type.cast(parseReference(element, enclosingComponent == null));
-        } else if (RefListMetadata.class.isAssignableFrom(type)) {
+        } else if (ReferenceListMetadata.class.isAssignableFrom(type)) {
             return type.cast(parseRefList(element, enclosingComponent == null));
         } else if (IdRefMetadata.class.isAssignableFrom(type)) {
             return type.cast(parseIdRef(element));
@@ -443,7 +416,7 @@ public class Parser {
         } else if (nodeNameEquals(element, REFERENCE_ELEMENT)) {
             ComponentMetadata reference = parseReference(element, true);
             registry.registerComponentDefinition(reference);
-        } else if (nodeNameEquals(element, REFLIST_ELEMENT) ) {
+        } else if (nodeNameEquals(element, REFERENCE_LIST_ELEMENT) ) {
             ComponentMetadata references = parseRefList(element, true);
             registry.registerComponentDefinition(references);
         } else {
@@ -490,7 +463,7 @@ public class Parser {
             metadata.setInitialization(parseInitialization(element));
         } else {
             metadata.setScope(BeanMetadata.SCOPE_PROTOTYPE);
-            metadata.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
+            metadata.setInitialization(ComponentMetadata.ACTIVATION_LAZY);
         }
         if (element.hasAttribute(CLASS_ATTRIBUTE)) {
             metadata.setClassName(element.getAttribute(CLASS_ATTRIBUTE));
@@ -569,7 +542,7 @@ public class Parser {
             service.setId(getId(element));
             service.setInitialization(parseInitialization(element));
         } else {
-            service.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
+            service.setInitialization(ComponentMetadata.ACTIVATION_LAZY);
         }
         if (element.hasAttribute(INTERFACE_ATTRIBUTE)) {
             service.setInterfaceNames(Collections.singletonList(element.getAttribute(INTERFACE_ATTRIBUTE)));
@@ -891,16 +864,16 @@ public class Parser {
     }
 
     private ComponentMetadata parseRefList(Element element, boolean topElement) {
-        RefListMetadataImpl references = new RefListMetadataImpl();
+        ReferenceListMetadataImpl references = new ReferenceListMetadataImpl();
         if (topElement) {
             references.setId(getId(element));
         }
         if (element.hasAttribute(MEMBER_TYPE_ATTRIBUTE)) {
             String memberType = element.getAttribute(MEMBER_TYPE_ATTRIBUTE);
             if (USE_SERVICE_OBJECT.equals(memberType)) {
-                references.setMemberType(RefListMetadata.USE_SERVICE_OBJECT);
+                references.setMemberType(ReferenceListMetadata.USE_SERVICE_OBJECT);
             } else if (USE_SERVICE_REFERENCE.equals(memberType)) {
-                references.setMemberType(RefListMetadata.USE_SERVICE_REFERENCE);
+                references.setMemberType(ReferenceListMetadata.USE_SERVICE_REFERENCE);
             }
         }
         parseReference(element, references, topElement);
@@ -921,7 +894,7 @@ public class Parser {
         if (topElement) {
             reference.setInitialization(parseInitialization(element));
         } else {
-            reference.setInitialization(ComponentMetadata.INITIALIZATION_LAZY);
+            reference.setInitialization(ComponentMetadata.ACTIVATION_LAZY);
         }
         if (element.hasAttribute(DEPENDS_ON_ATTRIBUTE)) {
             reference.setDependsOn(parseList(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
@@ -1077,7 +1050,7 @@ public class Parser {
                 return parseReference(element, false);
             } else if (nodeNameEquals(element, SERVICE_ELEMENT)) {
                 return parseService(element, false);
-            } else if (nodeNameEquals(element, REFLIST_ELEMENT) ) {
+            } else if (nodeNameEquals(element, REFERENCE_LIST_ELEMENT) ) {
                 return parseRefList(element, false);
             } else if (nodeNameEquals(element, NULL_ELEMENT) && allowNull) {
                 return NullMetadata.NULL;
@@ -1129,13 +1102,13 @@ public class Parser {
     }
 
     private int parseInitialization(Element element) {
-        String initialization = element.hasAttribute(INITIALIZATION_ATTRIBUTE) ? element.getAttribute(INITIALIZATION_ATTRIBUTE) : defaultInitialization;
-        if (INITIALIZATION_EAGER.equals(initialization)) {
-            return ComponentMetadata.INITIALIZATION_EAGER;
-        } else if (INITIALIZATION_LAZY.equals(initialization)) {
-            return ComponentMetadata.INITIALIZATION_LAZY;
+        String initialization = element.hasAttribute(ACTIVATION_ATTRIBUTE) ? element.getAttribute(ACTIVATION_ATTRIBUTE) : defaultInitialization;
+        if (ACTIVATION_EAGER.equals(initialization)) {
+            return ComponentMetadata.ACTIVATION_EAGER;
+        } else if (ACTIVATION_LAZY.equals(initialization)) {
+            return ComponentMetadata.ACTIVATION_LAZY;
         } else {
-            throw new ComponentDefinitionException("Attribute " + INITIALIZATION_ATTRIBUTE + " must be equal to " + INITIALIZATION_EAGER + " or " + INITIALIZATION_LAZY);
+            throw new ComponentDefinitionException("Attribute " + ACTIVATION_ATTRIBUTE + " must be equal to " + ACTIVATION_EAGER + " or " + ACTIVATION_LAZY);
         }
     }
     
