@@ -23,14 +23,12 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.Map;
 import java.util.HashMap;
-import java.util.Collection;
+import java.util.Map;
 
-import org.osgi.framework.Bundle;
-import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.apache.geronimo.blueprint.di.ExecutionContext;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
+import org.apache.geronimo.blueprint.di.ExecutionContext;
+import org.osgi.framework.Bundle;
 
 /**
  * @version $Rev: 6687 $ $Date: 2005-12-28T21:08:56.733437Z $
@@ -89,13 +87,6 @@ public final class TypeUtils {
         return instance == null || type.isInstance(instance);
     }
 
-    public static boolean isAssignable(Type expectedType, Type actualType) {
-        // TODO: check parameterized Collection / Maps / Arrays ?
-        Class expectedClass = toClass(expectedType);
-        Class actualClass = toClass(actualType);
-        return expectedClass.isAssignableFrom(actualClass);
-    }
-
     public static Class toClass(Type type) {
         // GenericArrayType, ParameterizedType, TypeVariable<D>, WildcardType
         if (type instanceof Class) {
@@ -110,167 +101,6 @@ public final class TypeUtils {
             return toClass(parameterizedType.getRawType());
         } else {
             return Object.class;
-        }
-    }
-
-    public static Type[] getTypeParameters(Class desiredType, Type type) {
-        if (type instanceof Class) {
-            Class rawClass = (Class) type;
-
-            // if this is the collection class we're done
-            if (desiredType.equals(type)) {
-                return null;
-            }
-
-            for (Type intf : rawClass.getGenericInterfaces()) {
-                Type[] collectionType = getTypeParameters(desiredType, intf);
-                if (collectionType != null) {
-                    return collectionType;
-                }
-            }
-
-            Type[] collectionType = getTypeParameters(desiredType, rawClass.getGenericSuperclass());
-            return collectionType;
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
-
-            Type rawType = parameterizedType.getRawType();
-            if (desiredType.equals(rawType)) {
-                Type[] argument = parameterizedType.getActualTypeArguments();
-                return argument;
-            }
-            Type[] collectionTypes = getTypeParameters(desiredType,rawType);
-            if (collectionTypes != null) {
-                for (int i = 0; i < collectionTypes.length; i++) {
-                    if (collectionTypes[i] instanceof TypeVariable) {
-                        TypeVariable typeVariable = (TypeVariable) collectionTypes[i];
-                        TypeVariable[] rawTypeParams = ((Class) rawType).getTypeParameters();
-                        for (int j = 0; j < rawTypeParams.length; j++) {
-                            if (typeVariable.getName().equals(rawTypeParams[j].getName())) {
-                                collectionTypes[i] = parameterizedType.getActualTypeArguments()[j];
-                            }
-                        }
-                    }
-                }
-            }
-            return collectionTypes;
-        }
-        return null;
-    }
-
-    private static Map<String, Class> primitiveClasses = new HashMap<String, Class>();
-
-    static {
-        primitiveClasses.put("int", int.class);
-        primitiveClasses.put("short", short.class);
-        primitiveClasses.put("long", long.class);
-        primitiveClasses.put("byte", byte.class);
-        primitiveClasses.put("char", char.class);
-        primitiveClasses.put("float", float.class);
-        primitiveClasses.put("double", double.class);
-        primitiveClasses.put("boolean", boolean.class);
-    }
-
-    public static Type parseJavaType(String type, Object loader) throws ClassNotFoundException {
-        // TODO: support wilcards for generics
-        type = type.trim();
-        // Check if this is an array
-        if (type.endsWith("[]")) {
-            return new GenericArrayTypeImpl(parseJavaType(type.substring(0, type.length() - 2), loader));
-        }
-        // Check if this is a generic
-        int genericIndex = type.indexOf('<');
-        if (genericIndex > 0) {
-            if (!type.endsWith(">")) {
-                throw new IllegalArgumentException("Can not load type: " + type);
-            }
-            Type base = parseJavaType(type.substring(0, genericIndex), loader);
-            String[] params = type.substring(genericIndex + 1, type.length() - 1).split(",");
-            Type[] types = new Type[params.length];
-            for (int i = 0; i < params.length; i++) {
-                types[i] = parseJavaType(params[i], loader);
-            }
-            return new ParameterizedTypeImpl(base, types);
-        }
-        // Primitive
-        if (primitiveClasses.containsKey(type)) {
-            return primitiveClasses.get(type);
-        }
-        // Class
-        if (loader instanceof ClassLoader) {
-            return ((ClassLoader) loader).loadClass(type);
-        } else if (loader instanceof Bundle) {
-            return ((Bundle) loader).loadClass(type);
-        } else if (loader instanceof ExecutionContext) {
-            return ((ExecutionContext) loader).loadClass(type);
-        } else if (loader instanceof ExtendedBlueprintContainer) {
-            return ((ExtendedBlueprintContainer) loader).loadClass(type); 
-        } else {
-            throw new IllegalArgumentException("Unsupported loader: " + loader);
-        }
-    }
-
-    private static class ParameterizedTypeImpl implements ParameterizedType {
-
-        private final Type base;
-        private final Type[] params;
-
-        private ParameterizedTypeImpl(Type base, Type[] params) {
-            this.base = base;
-            this.params = params;
-        }
-
-        public Type[] getActualTypeArguments() {
-            return params;
-        }
-
-        public Type getRawType() {
-            return base;
-        }
-
-        public Type getOwnerType() {
-            return null;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append(getDescription(base));
-            sb.append("<");
-            for (int i = 0; i < params.length; i++) {
-                if (i > 0) {
-                    sb.append(",");
-                }
-                sb.append(getDescription(params[i]));
-            }
-            sb.append(">");
-            return sb.toString();
-        }
-    }
-
-    private static class GenericArrayTypeImpl implements GenericArrayType {
-
-        private final Type genericComponentType;
-
-        private GenericArrayTypeImpl(Type genericComponentType) {
-            this.genericComponentType = genericComponentType;
-        }
-
-        public Type getGenericComponentType() {
-            return genericComponentType;
-        }
-
-        @Override
-        public String toString() {
-            return getDescription(genericComponentType) + "[]";
-        }
-    }
-
-    private static String getDescription(Type type) {
-        if (type instanceof Class) {
-            return ((Class) type).getName();
-        } else {
-            return type.toString();
         }
     }
 

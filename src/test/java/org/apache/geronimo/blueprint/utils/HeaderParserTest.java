@@ -21,9 +21,7 @@ package org.apache.geronimo.blueprint.utils;
 import java.util.List;
 
 import junit.framework.TestCase;
-
 import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
-import org.apache.geronimo.blueprint.utils.HeaderParser;
 
 public class HeaderParserTest extends TestCase {
 

@@ -18,14 +18,10 @@
 package org.apache.geronimo.blueprint.di;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
+import org.apache.geronimo.blueprint.container.GenericType;
+import org.osgi.service.blueprint.container.CollapsedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
-import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
-import org.apache.geronimo.blueprint.utils.TypeUtils;
 
 public abstract class AbstractRecipe implements Recipe {
 
@@ -86,24 +82,29 @@ public abstract class AbstractRecipe implements Recipe {
         ExecutionContext.Holder.getContext().addObject(name, obj, partial);
     }
     
-    protected Object convert(Object obj, Type type) throws Exception {
+    protected Object convert(Object obj, CollapsedType type) throws Exception {
         return ExecutionContext.Holder.getContext().convert(obj, type);
     }
 
-    protected Class loadClass(String className) {
-        return toClass(loadType(className, null));
+    protected Object convert(Object obj, Type type) throws Exception {
+        return ExecutionContext.Holder.getContext().convert(obj, new GenericType(type));
     }
 
-    protected Type loadType(String typeName) {
+    protected Class loadClass(String className) {
+        CollapsedType t = loadType(className, null);
+        return t != null ? t.getRawClass() : null;
+    }
+
+    protected CollapsedType loadType(String typeName) {
         return loadType(typeName, null);
     }
 
-    protected Type loadType(String typeName, ClassLoader fromClassLoader) {
+    protected CollapsedType loadType(String typeName, ClassLoader fromClassLoader) {
         if (typeName == null) {
             return null;
         }
         try {
-            return TypeUtils.parseJavaType(typeName, fromClassLoader != null ? fromClassLoader : ExecutionContext.Holder.getContext());
+            return GenericType.parse(typeName, fromClassLoader != null ? fromClassLoader : ExecutionContext.Holder.getContext());
         } catch (ClassNotFoundException e) {
             throw new ComponentDefinitionException("Unable to load class " + typeName + " from recipe " + this, e);
         }

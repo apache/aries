@@ -36,8 +36,8 @@ import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import static org.apache.geronimo.blueprint.utils.ReflectionUtils.getRealCause;
-import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
 import static org.apache.geronimo.blueprint.utils.TypeUtils.isInstance;
+import org.osgi.service.blueprint.container.CollapsedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,11 +160,13 @@ public class BeanRecipe extends AbstractRecipe {
 
     @Override
     protected Class loadClass(String className) {
-        return toClass(loadType(className, type instanceof Class ? ((Class) type).getClassLoader() : null));
+        ClassLoader loader = type instanceof Class ? ((Class) type).getClassLoader() : null;
+        CollapsedType t = loadType(className, loader);
+        return t != null ? t.getRawClass() : null;
     }
 
     @Override
-    protected Type loadType(String className) {
+    protected CollapsedType loadType(String className) {
         return loadType(className, type instanceof Class ? ((Class) type).getClassLoader() : null);
     }
 

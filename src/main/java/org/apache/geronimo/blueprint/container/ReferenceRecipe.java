@@ -18,16 +18,15 @@
  */
 package org.apache.geronimo.blueprint.container;
 
-import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.Recipe;
-import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintEvent;
+import org.osgi.service.blueprint.container.CollapsedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
@@ -207,10 +206,10 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
 
     public class ServiceProxyWrapper implements AggregateConverter.Convertible {
 
-        public Object convert(Type type) throws Exception {
-            if (type == ServiceReference.class) {
+        public Object convert(CollapsedType type) throws Exception {
+            if (type.getRawClass() == ServiceReference.class) {
                 return getServiceReference();
-            } else if (TypeUtils.toClass(type).isInstance(proxy)) {
+            } else if (type.getRawClass().isInstance(proxy)) {
                 return proxy;
             } else {
                 throw new ComponentDefinitionException("Unable to convert to " + type);

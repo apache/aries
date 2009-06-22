@@ -17,25 +17,26 @@
 package org.apache.geronimo.blueprint.container;
 
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
-import java.util.Collection;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
-import org.apache.geronimo.blueprint.di.MapRecipe;
 import org.apache.geronimo.blueprint.di.CollectionRecipe;
+import org.apache.geronimo.blueprint.di.MapRecipe;
 import static org.apache.geronimo.blueprint.utils.ReflectionUtils.getRealCause;
-import org.apache.geronimo.blueprint.utils.TypeUtils;
-import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
+import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.container.CollapsedType;
 import org.osgi.service.blueprint.container.Converter;
 
 /**
@@ -53,6 +54,15 @@ import org.osgi.service.blueprint.container.Converter;
  */
 public class AggregateConverter implements Converter {
 
+    /**
+     * Objects implementing this interface will bypass the default conversion rules
+     * and be called directly to transform into the expected type.
+     */
+    public static interface Convertible {
+
+        Object convert(CollapsedType type) throws Exception;
+    }
+
     private ExtendedBlueprintContainer blueprintContainer;
     private List<Converter> converters = new ArrayList<Converter>();
 
@@ -68,47 +78,42 @@ public class AggregateConverter implements Converter {
         converters.remove(converter);
     }
 
-    public boolean canConvert(Object fromValue, Object toType) {
+    public boolean canConvert(Object fromValue, CollapsedType toType) {
         if (fromValue == null) {
             return true;
         }
-        Type type = (Type) toType;
-        if (TypeUtils.isInstance(type, fromValue)) {
+        if (isAssignable(fromValue, toType)) {
             return true;
         }
         for (Converter converter : converters) {
-            if (converter.canConvert(fromValue, type)) {
+            if (converter.canConvert(fromValue, toType)) {
                 return true;
             }
         }
+        // TODO
         if (fromValue instanceof String) {
-
+            //
         }
         return false;
     }
 
-    public Object convert(Object fromValue, Object toType) throws Exception {
+    public Object convert(Object fromValue, CollapsedType type) throws Exception {
         // Discard null values
         if (fromValue == null) {
             return null;
         }
-        Type type = (Type) toType;
         // First convert service proxies
         if (fromValue instanceof Convertible) {
             return ((Convertible) fromValue).convert(type);
         }
         // If the object is an instance of the type, just return it
-        // We need to pass through for arrays / maps / collections because of genenrics
-        if (TypeUtils.isInstance(type, fromValue)
-                && !toClass(type).isArray()
-                && !Map.class.isAssignableFrom(toClass(type))
-                && !Collection.class.isAssignableFrom(toClass(type))) {
+        if (isAssignable(fromValue, type)) {
             return fromValue;
         }
         Object value = convertWithConverters(fromValue, type);
         if (value == null) {
-            if (fromValue instanceof String && toType instanceof Class) {
-                return convertFromString((String) fromValue, (Class) type, blueprintContainer);
+            if (fromValue instanceof String) {
+                return convertFromString((String) fromValue, toClass(type), blueprintContainer);
             } else if (toClass(type).isArray()) {
                 return convertArray(fromValue, type);
             } else if (Map.class.isAssignableFrom(toClass(type))) {
@@ -118,12 +123,11 @@ public class AggregateConverter implements Converter {
             } else {
                 throw new Exception("Unable to convert value " + fromValue + " to type " + type);
             }
-        } else {
-            return value;
         }
+        return value;
     }
 
-    private Object convertWithConverters(Object source, Type type) throws Exception {
+    private Object convertWithConverters(Object source, CollapsedType type) throws Exception {
         Object value = null;
         for (Converter converter : converters) {
             if (converter.canConvert(source, type)) {
@@ -136,10 +140,16 @@ public class AggregateConverter implements Converter {
         return value;
     }
 
-    public static Object convertFromString(String value, Class toType, Object loader) throws Exception {
-        if (Class.class == toType || Type.class == toType) {
+    public Object convertFromString(String value, Class toType, Object loader) throws Exception {
+        if (CollapsedType.class == toType && blueprintContainer.getCompliance() == BlueprintContainer.COMPLIANCE_LOOSE) {
             try {
-                return TypeUtils.parseJavaType(value, loader);
+                return GenericType.parse(value, loader);
+            } catch (ClassNotFoundException e) {
+                throw new Exception("Unable to convert", e);
+            }
+        } else if (Class.class == toType) {
+            try {
+                return GenericType.parse(value, loader).getRawClass();
             } catch (ClassNotFoundException e) {
                 throw new Exception("Unable to convert", e);
             }
@@ -214,12 +224,8 @@ public class AggregateConverter implements Converter {
         }
     }
 
-    private Object convertCollection(Object obj, Type type) throws Exception {
-        Type valueType = Object.class;
-        Type[] typeParameters = TypeUtils.getTypeParameters(Collection.class, type);
-        if (typeParameters != null && typeParameters.length == 1) {
-            valueType = typeParameters[0];
-        }
+    private Object convertCollection(Object obj, CollapsedType type) throws Exception {
+        CollapsedType valueType = type.getActualTypeArgument(0);
         Collection newCol = (Collection) CollectionRecipe.getCollection(toClass(type)).newInstance();
         if (obj.getClass().isArray()) {
             for (int i = 0; i < Array.getLength(obj); i++) {
@@ -241,14 +247,9 @@ public class AggregateConverter implements Converter {
         return newCol;
     }
 
-    private Object convertMap(Object obj, Type type) throws Exception {
-        Type keyType = Object.class;
-        Type valueType = Object.class;
-        Type[] typeParameters = TypeUtils.getTypeParameters(Map.class, type);
-        if (typeParameters != null && typeParameters.length == 2) {
-            keyType = typeParameters[0];
-            valueType = typeParameters[1];
-        }
+    private Object convertMap(Object obj, CollapsedType type) throws Exception {
+        CollapsedType keyType = type.getActualTypeArgument(0);
+        CollapsedType valueType = type.getActualTypeArgument(1);
         Map newMap = (Map) MapRecipe.getMap(toClass(type)).newInstance();
         for (Map.Entry e : ((Map<Object,Object>) obj).entrySet()) {
             try {
@@ -260,17 +261,15 @@ public class AggregateConverter implements Converter {
         return newMap;
     }
 
-    private Object convertArray(Object obj, Type type) throws Exception {
+    private Object convertArray(Object obj, CollapsedType type) throws Exception {
         if (obj instanceof Collection) {
             obj = ((Collection) obj).toArray();
         }
         if (!obj.getClass().isArray()) {
             throw new Exception("Unable to convert from " + obj + " to " + type);
         }
-        Type componentType = type instanceof GenericArrayType
-                                    ? ((GenericArrayType) type).getGenericComponentType()
-                                    : toClass(type).getComponentType();
-        Object array = Array.newInstance(TypeUtils.toClass(componentType), Array.getLength(obj));
+        CollapsedType componentType = type.getActualTypeArgument(0);
+        Object array = Array.newInstance(toClass(componentType), Array.getLength(obj));
         for (int i = 0; i < Array.getLength(obj); i++) {
             try {
                 Array.set(array, i, convert(Array.get(obj, i), componentType));
@@ -281,12 +280,67 @@ public class AggregateConverter implements Converter {
         return array;
     }
 
-    /**
-     * Objects implementing this interface will bypass the default conversion rules
-     * and be called directly to transform into the expected type.
-     */
-    public static interface Convertible {
-
-        Object convert(Type type) throws Exception;
+    // TODO need to do proper disambiguation
+    private <T> Constructor<T> getDisambiguatedConstructor(Class<T> t, Class<?> s) {
+        for (Constructor<T> c : t.getConstructors()) {
+            if (c.getParameterTypes().length == 1
+                    && c.getParameterTypes()[0] == s) {
+                return c;
+            }
+        }
+        for (Constructor<T> c : t.getConstructors()) {
+            if (c.getParameterTypes().length == 1
+                    && c.getParameterTypes()[0].isAssignableFrom(s)) {
+                return c;
+            }
+        }
+        return null;
     }
+
+    private Collection<?> getAsCollection(Object s) {
+        if (s.getClass().isArray())
+            return Arrays.asList((Object[]) s);
+        else if (Collection.class.isAssignableFrom(s.getClass()))
+            return (Collection<?>) s;
+        else
+            return null;
+    }
+
+    private boolean isAssignable(Object source, CollapsedType target) {
+        return target.size() == 0
+                && unwrap(target.getRawClass()).isAssignableFrom(unwrap(source.getClass()));
+    }
+
+    private static Class unwrap(Class c) {
+        Class u = primitives.get(c);
+        return u != null ? u : c;
+    }
+
+    private static final Map<Class, Class> primitives;
+    static {
+        primitives = new HashMap<Class, Class>();
+        primitives.put(byte.class, Byte.class);
+        primitives.put(short.class, Short.class);
+        primitives.put(char.class, Character.class);
+        primitives.put(int.class, Integer.class);
+        primitives.put(long.class, Long.class);
+        primitives.put(float.class, Float.class);
+        primitives.put(double.class, Double.class);
+        primitives.put(boolean.class, Boolean.class);
+    }
+
+    public Object convert(Object source, Type target) throws Exception {
+        return convert( source, new GenericType(target));
+    }
+
+
+    private Class<?> loadClass(String s) throws Exception {
+
+        return blueprintContainer.loadClass(s);
+    }
+
+    private Class toClass(CollapsedType type) {
+        return type.getRawClass();
+    }
+
 }

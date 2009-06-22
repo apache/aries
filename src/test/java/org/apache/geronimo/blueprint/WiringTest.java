@@ -28,15 +28,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.geronimo.blueprint.CallbackTracker.Callback;
+import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.pojos.BeanD;
+import org.apache.geronimo.blueprint.pojos.BeanF;
 import org.apache.geronimo.blueprint.pojos.Multiple;
 import org.apache.geronimo.blueprint.pojos.PojoA;
 import org.apache.geronimo.blueprint.pojos.PojoB;
 import org.apache.geronimo.blueprint.pojos.PojoGenerics;
 import org.apache.geronimo.blueprint.pojos.PojoListener;
-import org.apache.geronimo.blueprint.pojos.BeanF;
-import org.apache.geronimo.blueprint.di.Repository;
 import org.osgi.framework.ServiceRegistration;
 
 public class WiringTest extends AbstractBlueprintTest {
