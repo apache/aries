@@ -18,13 +18,13 @@ package org.apache.geronimo.blueprint.di;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.Set;
-import java.util.LinkedHashSet;
-import java.util.Queue;
-import java.util.LinkedList;
 
 import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;

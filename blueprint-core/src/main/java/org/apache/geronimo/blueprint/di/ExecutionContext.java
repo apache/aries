@@ -17,8 +17,7 @@
  */
 package org.apache.geronimo.blueprint.di;
 
-import java.lang.reflect.Type;
-import java.util.List;
+import org.osgi.service.blueprint.container.CollapsedType;
 
 public interface ExecutionContext {
 
@@ -93,7 +92,7 @@ public interface ExecutionContext {
     
     public abstract Object getPartialObject(String name);
 
-    public abstract Object convert(Object value, Type type) throws Exception;
+    public abstract Object convert(Object value, CollapsedType type) throws Exception;
 
     public abstract Class loadClass(String className) throws ClassNotFoundException;
 

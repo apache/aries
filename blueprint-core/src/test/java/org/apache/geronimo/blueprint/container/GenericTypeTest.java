@@ -16,24 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.pojos;
+package org.apache.geronimo.blueprint.container;
 
-import java.net.URI;
+import java.lang.reflect.Type;
 
-import org.osgi.service.blueprint.container.CollapsedType;
-import org.osgi.service.blueprint.container.Converter;
+import junit.framework.TestCase;
+import org.apache.geronimo.blueprint.utils.TypeUtils;
 
-public class ConverterB implements Converter {
+public class GenericTypeTest extends TestCase {
 
-    public boolean canConvert(Object fromValue, CollapsedType toType) {
-        return fromValue instanceof String && toType.getRawClass() == URI.class;
-    }
+    public void testParseTypes() throws ClassNotFoundException {
+        GenericType type = GenericType.parse("java.util.List<java.lang.String[]>", getClass().getClassLoader());
+        System.out.println(type);
 
-    public Object convert(Object source, CollapsedType toType) throws Exception {
-        if (source instanceof String) {
-            return new URI((String) source);
-        }
-        throw new Exception("Unable to convert from " + (source != null ? source.getClass().getName() : "<null>") + " to " + URI.class.getName());
+        type = GenericType.parse("java.util.Map<int, java.util.List<java.lang.Integer>[]>", getClass().getClassLoader());
+        System.out.println(type);
+
+        Type t = TypeUtils.parseJavaType("java.util.List<java.lang.Integer>[]", getClass().getClassLoader());
+        type = new GenericType(t);
+        System.out.println(type.toString());
     }
 
 }

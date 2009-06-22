@@ -24,20 +24,20 @@ import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.RandomAccess;
-import java.util.Collections;
 import java.util.concurrent.Callable;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ExtendedRefListMetadata;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.DynamicCollection;
-import org.apache.geronimo.blueprint.utils.TypeUtils;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.blueprint.container.CollapsedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.osgi.service.blueprint.reflect.RefListMetadata;
@@ -230,9 +230,9 @@ public class RefListRecipe extends AbstractServiceReferenceRecipe {
 
     public class ProvidedObject implements AggregateConverter.Convertible {
 
-        public Object convert(Type type) {
+        public Object convert(CollapsedType type) {
             LOGGER.debug("Converting ManagedCollection to {}", type);
-            if (!TypeUtils.toClass(type).isAssignableFrom(List.class)) {
+            if (!type.getRawClass().isAssignableFrom(List.class)) {
                 throw new ComponentDefinitionException("<ref-list/> can only be converted to a List, not " + type);
             }
             boolean useRef = false;

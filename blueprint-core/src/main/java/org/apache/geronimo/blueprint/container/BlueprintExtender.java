@@ -20,7 +20,6 @@ package org.apache.geronimo.blueprint.container;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -36,8 +35,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
-import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.framework.Constants;
+import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.slf4j.Logger;

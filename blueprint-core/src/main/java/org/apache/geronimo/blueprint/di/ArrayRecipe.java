@@ -21,8 +21,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.CollapsedType;
 
 /**
  * @version $Rev$ $Date$
@@ -49,21 +50,21 @@ public class ArrayRecipe extends AbstractRecipe {
     }
 
     protected Object internalCreate() throws ComponentDefinitionException {
-        Type type;
+        CollapsedType type;
         if (this.type instanceof Class) {
-            type = (Class) this.type;
+            type = new CollapsedType((Class) this.type);
         } else if (this.type instanceof String) {
             type = loadType((String) this.type);
         } else {
-            type = Object.class;
+            type = new CollapsedType(Object.class);
         }
 
         // create array instance
         Object array;
         try {
-            array = Array.newInstance(toClass(type), list.size());
+            array = Array.newInstance(type.getRawClass(), list.size());
         } catch (Exception e) {
-            throw new ComponentDefinitionException("Error while creating array instance: " + toClass(type));
+            throw new ComponentDefinitionException("Error while creating array instance: " + type);
         }
 
         int index = 0;

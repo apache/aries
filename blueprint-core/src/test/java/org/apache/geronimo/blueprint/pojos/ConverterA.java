@@ -20,15 +20,16 @@ package org.apache.geronimo.blueprint.pojos;
 
 import java.io.File;
 
+import org.osgi.service.blueprint.container.CollapsedType;
 import org.osgi.service.blueprint.container.Converter;
 
 public class ConverterA implements Converter {
 
-    public boolean canConvert(Object fromValue, Object toType) {
-        return fromValue instanceof String && toType == File.class;
+    public boolean canConvert(Object fromValue, CollapsedType toType) {
+        return fromValue instanceof String && toType.getRawClass() == File.class;
     }
 
-    public Object convert(Object source, Object toType) throws Exception {
+    public Object convert(Object source, CollapsedType toType) throws Exception {
         if (source instanceof String) {
             return new File((String) source);
         }

@@ -42,6 +42,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.blueprint.container.CollapsedType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -235,7 +236,7 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
                             Class methodParameterType = method.getParameterTypes()[0];
                             Object propertyValue;
                             try {
-                                propertyValue = blueprintContainer.getConverter().convert(val, methodParameterType);
+                                propertyValue = blueprintContainer.getConverter().convert(val, new CollapsedType(methodParameterType));
                             } catch (Throwable t) {
                                 LOGGER.debug("Unable to convert value for setter: " + method, t);
                                 continue;

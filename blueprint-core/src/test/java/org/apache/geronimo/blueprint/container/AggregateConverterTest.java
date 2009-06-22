@@ -18,21 +18,23 @@
  */
 package org.apache.geronimo.blueprint.container;
 
+import java.io.ByteArrayOutputStream;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
-import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import java.io.ByteArrayOutputStream;
 
 import junit.framework.TestCase;
-
 import org.apache.geronimo.blueprint.TestBlueprintContainer;
+import org.osgi.service.blueprint.container.CollapsedType;
 import org.osgi.service.blueprint.container.Converter;
 
 public class AggregateConverterTest extends TestCase {
 
-    private Converter service;
+    private AggregateConverter service;
 
     protected void setUp() {
         service = new AggregateConverter(new TestBlueprintContainer(null));
@@ -132,6 +134,27 @@ public class AggregateConverterTest extends TestCase {
     public void testConvertClass() throws Exception {
         assertEquals(this, service.convert(this, AggregateConverterTest.class));
         assertEquals(AggregateConverterTest.class, service.convert(this.getClass().getName(), Class.class));
+        assertEquals(int[].class, service.convert("int[]", Class.class));
+    }
+
+    public void testConvertArray() throws Exception {
+        Object obj = service.convert(Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4)),
+                                     GenericType.parse("java.util.List<java.lang.Integer>[]", getClass().getClassLoader()));
+        assertNotNull(obj);
+        assertTrue(obj.getClass().isArray());
+        Object[] o = (Object[]) obj;
+        assertEquals(2, o.length);
+        assertNotNull(o[0]);
+        assertTrue(o[0] instanceof List);
+        assertEquals(2, ((List) o[0]).size());
+        assertEquals(1, ((List) o[0]).get(0));
+        assertEquals(2, ((List) o[0]).get(1));
+        assertNotNull(o[0]);
+        assertTrue(o[1] instanceof List);
+        assertEquals(2, ((List) o[1]).size());
+        assertEquals(3, ((List) o[1]).get(0));
+        assertEquals(4, ((List) o[1]).get(1));
+        //assertEquals((Object) new int[] { 1, 2 }, (Object) service.convert(Arrays.asList(1, 2), int[].class));
     }
     
     public void testCustom() throws Exception {
@@ -165,28 +188,28 @@ public class AggregateConverterTest extends TestCase {
     private interface AsianRegion extends Region {}
     
     private static class RegionConverter implements Converter {
-        public boolean canConvert(Object fromValue, Object toType) {
-            return Region.class == toType;
+        public boolean canConvert(Object fromValue, CollapsedType toType) {
+            return Region.class == toType.getRawClass();
         }
-        public Object convert(Object source, Object toType) throws Exception {
+        public Object convert(Object source, CollapsedType toType) throws Exception {
             return new Region() {} ;
         }
     }
     
     private static class EuRegionConverter implements Converter {
-        public boolean canConvert(Object fromValue, Object toType) {
-            return ((Class) toType).isAssignableFrom(EuRegion.class);
+        public boolean canConvert(Object fromValue, CollapsedType toType) {
+            return toType.getRawClass().isAssignableFrom(EuRegion.class);
         }
-        public Object convert(Object source, Object toType) throws Exception {
+        public Object convert(Object source, CollapsedType toType) throws Exception {
             return new EuRegion() {} ;
         }
     }
     
     private static class AsianRegionConverter implements Converter {
-        public boolean canConvert(Object fromValue, Object toType) {
-            return ((Class) toType).isAssignableFrom(AsianRegion.class);
+        public boolean canConvert(Object fromValue, CollapsedType toType) {
+            return toType.getRawClass().isAssignableFrom(AsianRegion.class);
         }
-        public Object convert(Object source, Object toType) throws Exception {
+        public Object convert(Object source, CollapsedType toType) throws Exception {
             return new AsianRegion() {} ;
         }
     }

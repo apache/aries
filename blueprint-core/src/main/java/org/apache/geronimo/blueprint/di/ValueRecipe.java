@@ -19,8 +19,8 @@
 package org.apache.geronimo.blueprint.di;
 
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.ValueMetadata;

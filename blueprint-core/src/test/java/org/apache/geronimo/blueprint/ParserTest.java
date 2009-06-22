@@ -26,11 +26,8 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import org.apache.geronimo.blueprint.reflect.BeanMetadataImpl;
-import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
-import org.apache.geronimo.blueprint.NamespaceHandler;
-import org.apache.geronimo.blueprint.ParserContext;
 import org.apache.geronimo.blueprint.container.NamespaceHandlerRegistry;
+import org.apache.geronimo.blueprint.reflect.BeanMetadataImpl;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -46,6 +43,11 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
  * TODO: Dependency#setMethod 
  */
 public class ParserTest extends AbstractBlueprintTest {
+
+    public void test() {
+        Integer[] oo = new Integer[1];
+        Object[] ii = oo;
+    }
 
     public void testParseComponent() throws Exception {
         ComponentDefinitionRegistry registry = parse("/test-simple-component.xml");
