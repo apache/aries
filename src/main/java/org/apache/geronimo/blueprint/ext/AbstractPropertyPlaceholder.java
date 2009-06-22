@@ -45,7 +45,7 @@ import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.NonNullMetadata;
 import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.RefListMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
@@ -90,8 +90,8 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     protected Metadata processMetadata(Metadata metadata) {
         if (metadata instanceof BeanMetadata) {
             return processBeanMetadata((BeanMetadata) metadata);
-        } else if (metadata instanceof RefListMetadata) {
-            return processRefCollectionMetadata((RefListMetadata) metadata);
+        } else if (metadata instanceof ReferenceListMetadata) {
+            return processRefCollectionMetadata((ReferenceListMetadata) metadata);
         } else if (metadata instanceof ReferenceMetadata) {
             return processReferenceMetadata((ReferenceMetadata) metadata);
         } else if (metadata instanceof ServiceMetadata) {
@@ -142,7 +142,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
         return component;
     }
 
-    protected Metadata processRefCollectionMetadata(RefListMetadata component) {
+    protected Metadata processRefCollectionMetadata(ReferenceListMetadata component) {
         for (ReferenceListener listener : component.getReferenceListeners()) {
             ((MutableReferenceListener) listener).setListenerComponent((Target) processMetadata(listener.getListenerComponent()));
         }

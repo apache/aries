@@ -185,6 +185,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             LOGGER.debug("Xml-validation directive: " + xmlValidationDirective);
             xmlValidation = Boolean.parseBoolean(xmlValidationDirective);
         }
+
+        // TODO: load compliant
     }
     
     public void schedule() {
@@ -244,7 +246,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             return;
                         }
                         parser.populate(handlers, componentDefinitionRegistry);
-                        compliance = parser.getCompliance();
                         state = State.Populated;
                         break;
                     }
@@ -485,7 +486,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         List<String> components = new ArrayList<String>();
         for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
             ComponentMetadata component = componentDefinitionRegistry.getComponentDefinition(name);
-            boolean eager = component.getInitialization() == ComponentMetadata.INITIALIZATION_EAGER;
+            boolean eager = component.getActivation() == ComponentMetadata.ACTIVATION_EAGER;
             if (component instanceof BeanMetadata) {
                 BeanMetadata local = (BeanMetadata) component;
                 String scope = local.getScope();

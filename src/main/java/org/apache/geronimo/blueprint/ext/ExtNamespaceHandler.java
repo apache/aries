@@ -30,7 +30,7 @@ import org.w3c.dom.EntityReference;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import org.apache.geronimo.blueprint.ExtendedRefListMetadata;
+import org.apache.geronimo.blueprint.ExtendedReferenceListMetadata;
 import org.apache.geronimo.blueprint.ParserContext;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableCollectionMetadata;
@@ -47,7 +47,7 @@ import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.IdRefMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.RefListMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
@@ -150,16 +150,16 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
         String[] flags = value.trim().split(" ");
         for (String flag : flags) {
             if (PROXY_METHOD_DEFAULT.equals(flag)) {
-                method += ExtendedRefListMetadata.PROXY_METHOD_DEFAULT;
+                method += ExtendedReferenceListMetadata.PROXY_METHOD_DEFAULT;
             } else if (PROXY_METHOD_CLASSES.equals(flag)) {
-                method += ExtendedRefListMetadata.PROXY_METHOD_CLASSES;
+                method += ExtendedReferenceListMetadata.PROXY_METHOD_CLASSES;
             } else if (PROXY_METHOD_GREEDY.equals(flag)) {
-                method += ExtendedRefListMetadata.PROXY_METHOD_GREEDY;
+                method += ExtendedReferenceListMetadata.PROXY_METHOD_GREEDY;
             } else {
                 throw new ComponentDefinitionException("Unknown proxy method: " + flag);
             }
         }
-        if ((method & ExtendedRefListMetadata.PROXY_METHOD_GREEDY) != 0 && !(component instanceof RefListMetadata)) {
+        if ((method & ExtendedReferenceListMetadata.PROXY_METHOD_GREEDY) != 0 && !(component instanceof ReferenceListMetadata)) {
             throw new ComponentDefinitionException("Greedy proxying is only available for <ref-list> and <ref-set> elements");
         }
         ((MutableServiceReferenceMetadata) component).setProxyMethod(method);

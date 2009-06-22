@@ -64,7 +64,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         for (BeanProperty property : source.getProperties()) {
             addProperty(new BeanPropertyImpl(property));
         }
-        this.initialization = source.getInitialization();
+        this.initialization = source.getActivation();
         this.factoryMethod = source.getFactoryMethod();
         this.factoryComponent = MetadataUtil.cloneTarget(source.getFactoryComponent());
         this.scope = source.getScope();

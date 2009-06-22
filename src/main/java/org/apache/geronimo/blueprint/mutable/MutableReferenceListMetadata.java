@@ -18,7 +18,7 @@
  */
 package org.apache.geronimo.blueprint.mutable;
 
-import org.apache.geronimo.blueprint.ExtendedRefListMetadata;
+import org.apache.geronimo.blueprint.ExtendedReferenceListMetadata;
 
 /**
  * A mutable version of the <code>RefCollectionMetadata</code> that allows modifications.
@@ -26,7 +26,7 @@ import org.apache.geronimo.blueprint.ExtendedRefListMetadata;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
-public interface MutableRefListMetadata extends ExtendedRefListMetadata, MutableServiceReferenceMetadata {
+public interface MutableReferenceListMetadata extends ExtendedReferenceListMetadata, MutableServiceReferenceMetadata {
 
     void setMemberType(int memberType);
 

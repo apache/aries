@@ -49,7 +49,7 @@ import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.NullMetadata;
 import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.RefListMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
@@ -105,14 +105,14 @@ public class RecipeBuilder {
             return createServiceRecipe((ServiceMetadata) component);
         } else if (component instanceof ReferenceMetadata) {
             return createReferenceRecipe((ReferenceMetadata) component);
-        } else if (component instanceof RefListMetadata) {
-            return createRefCollectionRecipe((RefListMetadata) component);
+        } else if (component instanceof ReferenceListMetadata) {
+            return createRefCollectionRecipe((ReferenceListMetadata) component);
         } else {
             throw new IllegalStateException("Unsupported component type " + component.getClass());
         }
     }
 
-    private Recipe createRefCollectionRecipe(RefListMetadata metadata) {
+    private Recipe createRefCollectionRecipe(ReferenceListMetadata metadata) {
         CollectionRecipe listenersRecipe = null;
         if (metadata.getReferenceListeners() != null) {
             listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class);
