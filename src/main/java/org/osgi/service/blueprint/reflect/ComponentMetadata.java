@@ -29,14 +29,14 @@ public interface ComponentMetadata extends NonNullMetadata {
 	/**
 	 * The component will be eagerly instanciated
 	 */
-	static final int INITIALIZATION_EAGER = 1;
+	static final int ACTIVATION_EAGER = 1;
 
 	/**
  	 * The component will be lazily instanciated
  	 */
-	static final int INITIALIZATION_LAZY = 2;
+	static final int ACTIVATION_LAZY = 2;
 
-	/**
+    /**
 	 * The id of the component.
 	 *
 	 * ### renamed to getId
@@ -53,10 +53,10 @@ public interface ComponentMetadata extends NonNullMetadata {
  	 * if not set.
  	 *
  	 * @return the initialization method
- 	 * @see #INITIALIZATION_EAGER
- 	 * @see #INITIALIZATION_LAZY
+ 	 * @see #ACTIVATION_EAGER
+ 	 * @see #ACTIVATION_LAZY
  	 */
-	int getInitialization();
+	int getActivation();
 
     /**
      * The names of any components listed in a "depends-on" attribute for this
