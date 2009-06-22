@@ -17,33 +17,38 @@ package org.osgi.service.blueprint.container;
 
 /**
  * Provides access to the type conversions (both predefined and user registered)
- * that are defined for the blueprint container.
+ * that are defined for the Blueprint Container.
  */
 public interface Converter {
 
 	/**
-	 * Check if the converter is able to convert the given value to the specified
-	 * type.
-	 * 
-	 * @param fromValue the object to be converted
-     * @param toType the type that the instance is to be converted to.
-     *        This will be either a Class object or a Type object.	 
-	 * @return <code>true</code> if the conversion is possible, <code>false</code> otherwise.
+	 * Check if the converter is able to convert the given value to the
+	 * specified type.
+	 *
+	 * @param s
+	 *            The source object to convert from
+	 * @param T
+	 *            The target type
+	 *
+	 * @return <code>true</code> if the conversion is possible,
+	 *         <code>false</code> otherwise.
 	 */
-	boolean canConvert(Object fromValue, Object toType);
+	boolean canConvert(Object s, CollapsedType T);
 
 	/**
-	 * Convert an object to an instance of the given class, using the built-in and 
-	 * user-registered type converters as necessary.
-	 * 
-	 * @param fromValue the object to be converted
-	 * @param toType the type that the instance is to be converted to.
-	 *        This will be either a Class object or a Type object.
+	 * Convert an object to an instance of the given class, using the built-in
+	 * and user-registered type converters as necessary.
+	 *
+	 * @param s
+	 *            The source object to convert from
+	 * @param T
+	 *            The target type
 	 * @return an instance of the class 'toType'
-	 * @throws Exception if the conversion cannot succeed. This exception is
-	 * checked because callers should expect that not all source objects
-	 * can be successfully converted.
+	 * @throws Exception
+	 *             if the conversion cannot succeed. This exception is checked
+	 *             because callers should expect that not all source objects can
+	 *             be successfully converted.
 	 */
-	Object convert(Object fromValue, Object toType) throws Exception;
-	
+	Object convert(Object s, CollapsedType T) throws Exception;
+
 }
