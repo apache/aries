@@ -47,7 +47,7 @@ public class GenericType extends CollapsedType {
         // Check if this is an array
         if (type.endsWith("[]")) {
             GenericType t = parse(type.substring(0, type.length() - 2), loader);
-            return new GenericType(Array.newInstance(t.getRawClass(), 0).getClass(), t.parameters);
+            return new GenericType(Array.newInstance(t.getRawClass(), 0).getClass(), t);
         }
         // Check if this is a generic
         int genericIndex = type.indexOf('<');
@@ -97,13 +97,12 @@ public class GenericType extends CollapsedType {
     @Override
     public String toString() {
         Class cl = getRawClass();
-        StringBuilder sb = new StringBuilder();
         if (cl.isArray()) {
-            sb.append(cl.getComponentType().getName());
-        } else {
-            sb.append(cl.getName());
+            return parameters[0].toString() + "[]";
         }
         if (parameters.length > 0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(cl.getName());    
             sb.append("<");
             for (int i = 0; i < parameters.length; i++) {
                 if (i > 0) {
@@ -111,17 +110,21 @@ public class GenericType extends CollapsedType {
                 }
                 sb.append(parameters[i].toString());
             }
-            sb.append(">");            
-        }        
-        if (cl.isArray()) {
-            sb.append("[]");
+            sb.append(">");   
+            return sb.toString();
         }
-        return sb.toString();
+        return cl.getName();
     }
 
     static GenericType[] parametersOf(Type type ) {
-		if ( type instanceof Class )
-			return EMPTY;
+		if ( type instanceof Class ) {
+		    Class clazz = (Class) type;
+		    if (clazz.isArray()) {
+		        return new GenericType[] { new GenericType(clazz.getComponentType()) };
+		    } else {
+		        return EMPTY;
+		    }
+		}
         if ( type instanceof ParameterizedType ) {
             ParameterizedType pt = (ParameterizedType) type;
             Type [] parameters = pt.getActualTypeArguments();

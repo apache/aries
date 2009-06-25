@@ -36,18 +36,23 @@ public class GenericTypeTest extends TestCase {
         
         GenericType type = parse("java.util.List<java.lang.String[]>");
         assertEquals(List.class, type.getRawClass());
+        assertEquals(1, type.size());
         assertEquals(String[].class, type.getActualTypeArgument(0).getRawClass());
-        assertEquals(0, type.getActualTypeArgument(0).size());
+        assertEquals(1, type.getActualTypeArgument(0).size());
+        assertEquals(String.class, type.getActualTypeArgument(0).getActualTypeArgument(0).getRawClass());
 
         type = parse("java.util.Map<int,java.util.List<java.lang.Integer>[]>");
         assertEquals(Map.class, type.getRawClass());
+        assertEquals(2, type.size());
         assertEquals(int.class, type.getActualTypeArgument(0).getRawClass());
         assertEquals(List[].class, type.getActualTypeArgument(1).getRawClass());
-        assertEquals(Integer.class, type.getActualTypeArgument(1).getActualTypeArgument(0).getRawClass());
+        assertEquals(1, type.getActualTypeArgument(1).size());
+        assertEquals(Integer.class, type.getActualTypeArgument(1).getActualTypeArgument(0).getActualTypeArgument(0).getRawClass());
 
         type = parse("java.util.List<java.lang.Integer>[]");
         assertEquals(List[].class, type.getRawClass());
-        assertEquals(Integer.class, type.getActualTypeArgument(0).getRawClass());
+        assertEquals(1, type.size());
+        assertEquals(Integer.class, type.getActualTypeArgument(0).getActualTypeArgument(0).getRawClass());
     }
 
     public void testBasic() throws Exception {        
