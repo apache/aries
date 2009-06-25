@@ -18,10 +18,7 @@
  */
 package org.apache.geronimo.blueprint.container;
 
-import java.lang.reflect.Type;
-
 import junit.framework.TestCase;
-import org.apache.geronimo.blueprint.utils.TypeUtils;
 
 public class GenericTypeTest extends TestCase {
 
@@ -32,8 +29,7 @@ public class GenericTypeTest extends TestCase {
         type = GenericType.parse("java.util.Map<int, java.util.List<java.lang.Integer>[]>", getClass().getClassLoader());
         System.out.println(type);
 
-        Type t = TypeUtils.parseJavaType("java.util.List<java.lang.Integer>[]", getClass().getClassLoader());
-        type = new GenericType(t);
+        type = GenericType.parse("java.util.List<java.lang.Integer>[]", getClass().getClassLoader());
         System.out.println(type.toString());
     }
 
