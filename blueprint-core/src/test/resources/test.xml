@@ -42,6 +42,6 @@
 
     <bean id="listenerA" class="org.apache.geronimo.blueprint.pojos.ListenerA"/>
 
-    <ref-list availability="optional" member-type="service-object"/>
+    <reference-list availability="optional" member-type="service-object"/>
 
 </blueprint>
