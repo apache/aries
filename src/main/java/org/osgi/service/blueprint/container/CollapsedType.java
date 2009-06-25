@@ -104,5 +104,9 @@ public class CollapsedType {
     public int size() {
         return 0;
     }
+    
+    public String toString() {
+        return clazz.toString();
+    }
 
 }
