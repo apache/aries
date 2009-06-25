@@ -460,10 +460,10 @@ public class Parser {
             } else {
                 metadata.setScope(BeanMetadata.SCOPE_SINGLETON);
             }
-            metadata.setInitialization(parseInitialization(element));
+            metadata.setActivation(parseActivation(element));
         } else {
             metadata.setScope(BeanMetadata.SCOPE_PROTOTYPE);
-            metadata.setInitialization(ComponentMetadata.ACTIVATION_LAZY);
+            metadata.setActivation(ComponentMetadata.ACTIVATION_LAZY);
         }
         if (element.hasAttribute(CLASS_ATTRIBUTE)) {
             metadata.setClassName(element.getAttribute(CLASS_ATTRIBUTE));
@@ -540,9 +540,9 @@ public class Parser {
         boolean hasInterfaceNameAttribute = false;
         if (topElement) {
             service.setId(getId(element));
-            service.setInitialization(parseInitialization(element));
+            service.setActivation(parseActivation(element));
         } else {
-            service.setInitialization(ComponentMetadata.ACTIVATION_LAZY);
+            service.setActivation(ComponentMetadata.ACTIVATION_LAZY);
         }
         if (element.hasAttribute(INTERFACE_ATTRIBUTE)) {
             service.setInterfaceNames(Collections.singletonList(element.getAttribute(INTERFACE_ATTRIBUTE)));
@@ -892,9 +892,9 @@ public class Parser {
     private void parseReference(Element element, ServiceReferenceMetadataImpl reference, boolean topElement) {
         // Parse attributes
         if (topElement) {
-            reference.setInitialization(parseInitialization(element));
+            reference.setActivation(parseActivation(element));
         } else {
-            reference.setInitialization(ComponentMetadata.ACTIVATION_LAZY);
+            reference.setActivation(ComponentMetadata.ACTIVATION_LAZY);
         }
         if (element.hasAttribute(DEPENDS_ON_ATTRIBUTE)) {
             reference.setDependsOn(parseList(element.getAttribute(DEPENDS_ON_ATTRIBUTE)));
@@ -1101,7 +1101,7 @@ public class Parser {
         return new IdRefMetadataImpl(component);
     }
 
-    private int parseInitialization(Element element) {
+    private int parseActivation(Element element) {
         String initialization = element.hasAttribute(ACTIVATION_ATTRIBUTE) ? element.getAttribute(ACTIVATION_ATTRIBUTE) : defaultInitialization;
         if (ACTIVATION_EAGER.equals(initialization)) {
             return ComponentMetadata.ACTIVATION_EAGER;

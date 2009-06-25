@@ -178,7 +178,7 @@ public class ServiceMetadataImpl extends ComponentMetadataImpl implements Mutabl
     public String toString() {
         return "ServiceMetadata[" +
                 "id='" + id + '\'' +
-                ", initialization=" + initialization +
+                ", activation=" + activation +
                 ", dependsOn=" + dependsOn +
                 ", exportedComponent=" + serviceComponent +
                 ", interfaces=" + interfaceNames +

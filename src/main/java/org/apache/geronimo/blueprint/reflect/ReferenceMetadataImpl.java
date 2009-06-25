@@ -51,7 +51,7 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
     public String toString() {
         return "ReferenceMetadata[" +
                 "id='" + id + '\'' +
-                ", initialization=" + initialization +
+                ", activation=" + activation +
                 ", dependsOn=" + dependsOn +
                 ", availability=" + availability +
                 ", interface='" + interfaceName + '\'' +

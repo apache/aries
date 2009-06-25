@@ -51,7 +51,7 @@ public class ReferenceListMetadataImpl extends ServiceReferenceMetadataImpl impl
     public String toString() {
         return "RefCollectionMetadata[" +
                 "id='" + id + '\'' +
-                ", initialization=" + initialization +
+                ", activation=" + activation +
                 ", dependsOn=" + dependsOn +
                 ", availability=" + availability +
                 ", interface='" + interfaceName + '\'' +
