@@ -18,19 +18,42 @@
  */
 package org.apache.geronimo.blueprint.container;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import junit.framework.TestCase;
 
 public class GenericTypeTest extends TestCase {
 
-    public void testParseTypes() throws ClassNotFoundException {
-        GenericType type = GenericType.parse("java.util.List<java.lang.String[]>", getClass().getClassLoader());
-        System.out.println(type);
+    private GenericType parse(String expression) throws Exception {
+        GenericType type = GenericType.parse(expression, getClass().getClassLoader());
+        assertEquals(expression, type.toString());
+        return type;
+    }
+    
+    public void testParseTypes() throws Exception {
+        
+        GenericType type = parse("java.util.List<java.lang.String[]>");
+        assertEquals(List.class, type.getRawClass());
+        assertEquals(String[].class, type.getActualTypeArgument(0).getRawClass());
+        assertEquals(0, type.getActualTypeArgument(0).size());
 
-        type = GenericType.parse("java.util.Map<int, java.util.List<java.lang.Integer>[]>", getClass().getClassLoader());
-        System.out.println(type);
+        type = parse("java.util.Map<int,java.util.List<java.lang.Integer>[]>");
+        assertEquals(Map.class, type.getRawClass());
+        assertEquals(int.class, type.getActualTypeArgument(0).getRawClass());
+        assertEquals(List[].class, type.getActualTypeArgument(1).getRawClass());
+        assertEquals(Integer.class, type.getActualTypeArgument(1).getActualTypeArgument(0).getRawClass());
 
-        type = GenericType.parse("java.util.List<java.lang.Integer>[]", getClass().getClassLoader());
-        System.out.println(type.toString());
+        type = parse("java.util.List<java.lang.Integer>[]");
+        assertEquals(List[].class, type.getRawClass());
+        assertEquals(Integer.class, type.getActualTypeArgument(0).getRawClass());
     }
 
+    public void testBasic() throws Exception {        
+        GenericType type = new GenericType(int[].class);
+        assertEquals("int[]", type.toString());
+        assertEquals(int[].class, type.getRawClass());
+        assertEquals(0, type.getActualTypeArgument(0).size());
+    }
 }

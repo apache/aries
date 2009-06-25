@@ -47,7 +47,7 @@ public class GenericType extends CollapsedType {
         // Check if this is an array
         if (type.endsWith("[]")) {
             GenericType t = parse(type.substring(0, type.length() - 2), loader);
-            return new GenericType(Array.newInstance(t.getRawClass(), 0).getClass(), t);
+            return new GenericType(Array.newInstance(t.getRawClass(), 0).getClass(), t.parameters);
         }
         // Check if this is a generic
         int genericIndex = type.indexOf('<');
@@ -97,12 +97,13 @@ public class GenericType extends CollapsedType {
     @Override
     public String toString() {
         Class cl = getRawClass();
+        StringBuilder sb = new StringBuilder();
         if (cl.isArray()) {
-            return parameters[0].toString() + "[]";
+            sb.append(cl.getComponentType().getName());
+        } else {
+            sb.append(cl.getName());
         }
         if (parameters.length > 0) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(cl.getName());
             sb.append("<");
             for (int i = 0; i < parameters.length; i++) {
                 if (i > 0) {
@@ -110,10 +111,12 @@ public class GenericType extends CollapsedType {
                 }
                 sb.append(parameters[i].toString());
             }
-            sb.append(">");
-            return sb.toString();
+            sb.append(">");            
+        }        
+        if (cl.isArray()) {
+            sb.append("[]");
         }
-        return cl.getName();
+        return sb.toString();
     }
 
     static GenericType[] parametersOf(Type type ) {
