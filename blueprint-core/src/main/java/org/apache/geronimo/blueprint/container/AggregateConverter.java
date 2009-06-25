@@ -268,8 +268,8 @@ public class AggregateConverter implements Converter {
         if (!obj.getClass().isArray()) {
             throw new Exception("Unable to convert from " + obj + " to " + type);
         }
-        Class componentType = type.getRawClass().getComponentType();
-        Object array = Array.newInstance(componentType, Array.getLength(obj));
+        CollapsedType componentType = type.getActualTypeArgument(0);
+        Object array = Array.newInstance(toClass(componentType), Array.getLength(obj));
         for (int i = 0; i < Array.getLength(obj); i++) {
             try {
                 Array.set(array, i, convert(Array.get(obj, i), componentType));
