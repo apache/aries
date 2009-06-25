@@ -420,7 +420,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         MutableBeanMetadata bean = context.createMetadata(MutableBeanMetadata.class);
         bean.setRuntimeClass(CmNamespaceHandler.class);
         bean.setFactoryMethod("getConfigAdmin");
-        bean.setInitialization(MutableBeanMetadata.ACTIVATION_LAZY);
+        bean.setActivation(MutableBeanMetadata.ACTIVATION_LAZY);
         bean.setScope(MutableBeanMetadata.SCOPE_PROTOTYPE);
         return bean;
     }

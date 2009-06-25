@@ -34,7 +34,7 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
 public class ComponentMetadataImpl implements MutableComponentMetadata {
 
     protected String id;
-    protected int initialization = ACTIVATION_EAGER;
+    protected int activation = ACTIVATION_EAGER;
     protected List<String> dependsOn;
 
     protected ComponentMetadataImpl() {
@@ -42,7 +42,7 @@ public class ComponentMetadataImpl implements MutableComponentMetadata {
     
     protected ComponentMetadataImpl(ComponentMetadata source) {
         id = source.getId();
-        initialization = source.getActivation();
+        activation = source.getActivation();
         dependsOn = new ArrayList<String>(source.getDependsOn());
     }
     
@@ -55,11 +55,11 @@ public class ComponentMetadataImpl implements MutableComponentMetadata {
     }
 
     public int getActivation() {
-        return initialization;
+        return activation;
     }
 
-    public void setInitialization(int initialization) {
-        this.initialization = initialization;
+    public void setActivation(int activation) {
+        this.activation = activation;
     }
 
     public List<String> getDependsOn() {

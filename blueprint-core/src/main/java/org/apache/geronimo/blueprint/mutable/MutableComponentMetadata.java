@@ -32,7 +32,7 @@ public interface MutableComponentMetadata extends ComponentMetadata {
 
     void setId(String id);
 
-    void setInitialization(int initialization);
+    void setActivation(int activation);
 
     void setDependsOn(List<String> dependsOn);
 
