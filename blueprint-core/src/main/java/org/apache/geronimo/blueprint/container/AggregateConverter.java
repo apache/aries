@@ -141,7 +141,7 @@ public class AggregateConverter implements Converter {
     }
 
     public Object convertFromString(String value, Class toType, Object loader) throws Exception {
-        if (ReifiedType.class == toType && blueprintContainer.getCompliance() == BlueprintContainer.COMPLIANCE_LOOSE) {
+        if (ReifiedType.class == toType) {
             try {
                 return GenericType.parse(value, loader);
             } catch (ClassNotFoundException e) {

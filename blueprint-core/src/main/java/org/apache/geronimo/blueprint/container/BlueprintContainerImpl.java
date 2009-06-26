@@ -351,14 +351,19 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         for (BeanMetadata bean : getMetadata(BeanMetadata.class)) {
             if (bean instanceof ExtendedBeanMetadata && !((ExtendedBeanMetadata) bean).isProcessor()) {
                 continue;
-            }
-            Class clazz = bean.getRuntimeClass();
+            }     
+            
+            Class clazz = null;
+            if (bean instanceof ExtendedBeanMetadata) {
+                clazz = ((ExtendedBeanMetadata) bean).getRuntimeClass();
+            }            
             if (clazz == null && bean.getClassName() != null) {
                 clazz = loadClass(bean.getClassName());
             }
             if (clazz == null) {
                 continue;
             }
+
             if (ComponentDefinitionRegistryProcessor.class.isAssignableFrom(clazz)) {
                 Object obj = repository.create(bean.getId());
                 ((ComponentDefinitionRegistryProcessor) obj).process(componentDefinitionRegistry);

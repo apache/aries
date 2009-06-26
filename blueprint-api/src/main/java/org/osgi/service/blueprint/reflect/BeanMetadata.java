@@ -117,13 +117,4 @@ public interface BeanMetadata extends Target, ComponentMetadata {
 	 */
 	String getScope();
 
-	/**
-	 * Provide an actual class, this overrides the class name if set. This is
-	 * useful for Namespace Handler services that do not want to force the
-	 * Blueprint bundle to import implementation classes.
-	 *
-	 * @return Return the class to use in runtime or <code>null</code>.
-	 */
-
-	Class<?> getRuntimeClass();
 }
