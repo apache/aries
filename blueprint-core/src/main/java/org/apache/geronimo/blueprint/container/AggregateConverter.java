@@ -36,7 +36,7 @@ import org.apache.geronimo.blueprint.di.CollectionRecipe;
 import org.apache.geronimo.blueprint.di.MapRecipe;
 import static org.apache.geronimo.blueprint.utils.ReflectionUtils.getRealCause;
 import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.osgi.service.blueprint.container.CollapsedType;
+import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.Converter;
 
 /**
@@ -60,7 +60,7 @@ public class AggregateConverter implements Converter {
      */
     public static interface Convertible {
 
-        Object convert(CollapsedType type) throws Exception;
+        Object convert(ReifiedType type) throws Exception;
     }
 
     private ExtendedBlueprintContainer blueprintContainer;
@@ -78,7 +78,7 @@ public class AggregateConverter implements Converter {
         converters.remove(converter);
     }
 
-    public boolean canConvert(Object fromValue, CollapsedType toType) {
+    public boolean canConvert(Object fromValue, ReifiedType toType) {
         if (fromValue == null) {
             return true;
         }
@@ -97,7 +97,7 @@ public class AggregateConverter implements Converter {
         return false;
     }
 
-    public Object convert(Object fromValue, CollapsedType type) throws Exception {
+    public Object convert(Object fromValue, ReifiedType type) throws Exception {
         // Discard null values
         if (fromValue == null) {
             return null;
@@ -127,7 +127,7 @@ public class AggregateConverter implements Converter {
         return value;
     }
 
-    private Object convertWithConverters(Object source, CollapsedType type) throws Exception {
+    private Object convertWithConverters(Object source, ReifiedType type) throws Exception {
         Object value = null;
         for (Converter converter : converters) {
             if (converter.canConvert(source, type)) {
@@ -141,7 +141,7 @@ public class AggregateConverter implements Converter {
     }
 
     public Object convertFromString(String value, Class toType, Object loader) throws Exception {
-        if (CollapsedType.class == toType && blueprintContainer.getCompliance() == BlueprintContainer.COMPLIANCE_LOOSE) {
+        if (ReifiedType.class == toType && blueprintContainer.getCompliance() == BlueprintContainer.COMPLIANCE_LOOSE) {
             try {
                 return GenericType.parse(value, loader);
             } catch (ClassNotFoundException e) {
@@ -224,8 +224,8 @@ public class AggregateConverter implements Converter {
         }
     }
 
-    private Object convertCollection(Object obj, CollapsedType type) throws Exception {
-        CollapsedType valueType = type.getActualTypeArgument(0);
+    private Object convertCollection(Object obj, ReifiedType type) throws Exception {
+        ReifiedType valueType = type.getActualTypeArgument(0);
         Collection newCol = (Collection) CollectionRecipe.getCollection(toClass(type)).newInstance();
         if (obj.getClass().isArray()) {
             for (int i = 0; i < Array.getLength(obj); i++) {
@@ -247,9 +247,9 @@ public class AggregateConverter implements Converter {
         return newCol;
     }
 
-    private Object convertMap(Object obj, CollapsedType type) throws Exception {
-        CollapsedType keyType = type.getActualTypeArgument(0);
-        CollapsedType valueType = type.getActualTypeArgument(1);
+    private Object convertMap(Object obj, ReifiedType type) throws Exception {
+        ReifiedType keyType = type.getActualTypeArgument(0);
+        ReifiedType valueType = type.getActualTypeArgument(1);
         Map newMap = (Map) MapRecipe.getMap(toClass(type)).newInstance();
         for (Map.Entry e : ((Map<Object,Object>) obj).entrySet()) {
             try {
@@ -261,14 +261,14 @@ public class AggregateConverter implements Converter {
         return newMap;
     }
 
-    private Object convertArray(Object obj, CollapsedType type) throws Exception {
+    private Object convertArray(Object obj, ReifiedType type) throws Exception {
         if (obj instanceof Collection) {
             obj = ((Collection) obj).toArray();
         }
         if (!obj.getClass().isArray()) {
             throw new Exception("Unable to convert from " + obj + " to " + type);
         }
-        CollapsedType componentType = type.getActualTypeArgument(0);
+        ReifiedType componentType = type.getActualTypeArgument(0);
         Object array = Array.newInstance(toClass(componentType), Array.getLength(obj));
         for (int i = 0; i < Array.getLength(obj); i++) {
             try {
@@ -306,7 +306,7 @@ public class AggregateConverter implements Converter {
             return null;
     }
 
-    private boolean isAssignable(Object source, CollapsedType target) {
+    private boolean isAssignable(Object source, ReifiedType target) {
         return target.size() == 0
                 && unwrap(target.getRawClass()).isAssignableFrom(unwrap(source.getClass()));
     }
@@ -339,7 +339,7 @@ public class AggregateConverter implements Converter {
         return blueprintContainer.loadClass(s);
     }
 
-    private Class toClass(CollapsedType type) {
+    private Class toClass(ReifiedType type) {
         return type.getRawClass();
     }
 

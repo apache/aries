@@ -37,7 +37,7 @@ import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.DynamicCollection;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.container.CollapsedType;
+import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
@@ -230,7 +230,7 @@ public class RefListRecipe extends AbstractServiceReferenceRecipe {
 
     public class ProvidedObject implements AggregateConverter.Convertible {
 
-        public Object convert(CollapsedType type) {
+        public Object convert(ReifiedType type) {
             LOGGER.debug("Converting ManagedCollection to {}", type);
             if (!type.getRawClass().isAssignableFrom(List.class)) {
                 throw new ComponentDefinitionException("<ref-list/> can only be converted to a List, not " + type);

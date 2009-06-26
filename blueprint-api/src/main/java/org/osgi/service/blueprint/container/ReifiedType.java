@@ -32,8 +32,8 @@ package org.osgi.service.blueprint.container;
  *@Immutable
  */
 
-public class CollapsedType {
-	final static CollapsedType ALL = new CollapsedType(Object.class);
+public class ReifiedType {
+	final static ReifiedType ALL = new ReifiedType(Object.class);
 
 	private final Class clazz;
 
@@ -44,7 +44,7 @@ public class CollapsedType {
 	 * @param clazz
 	 *            The class that is the collapsed type.
 	 */
-	public CollapsedType(Class clazz) {
+	public ReifiedType(Class clazz) {
 		this.clazz = clazz;
 	}
 
@@ -92,21 +92,18 @@ public class CollapsedType {
 	 *            The index of the type argument
 	 * @return A Collapsed Type that represents a type argument. If
 	 */
-	public CollapsedType getActualTypeArgument(int i) {
+	public ReifiedType getActualTypeArgument(int i) {
 		return ALL;
 	}
 
-    /**
-     * Number of type arguments.
-     *
-     * @return number of type arguments
-     */
-    public int size() {
-        return 0;
-    }
-    
-    public String toString() {
-        return clazz.toString();
-    }
-
+	/**
+	 * Return the number of type arguments.
+	 *
+	 * This method should be overridden by a subclass for Java 5 types.
+	 *
+	 * @return 0, subclasses must override this
+	 */
+	public int size() {
+		return 0;
+	}
 }

@@ -17,13 +17,11 @@
 package org.apache.geronimo.blueprint.di;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.geronimo.blueprint.utils.TypeUtils.toClass;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
-import org.osgi.service.blueprint.container.CollapsedType;
+import org.osgi.service.blueprint.container.ReifiedType;
 
 /**
  * @version $Rev$ $Date$
@@ -50,13 +48,13 @@ public class ArrayRecipe extends AbstractRecipe {
     }
 
     protected Object internalCreate() throws ComponentDefinitionException {
-        CollapsedType type;
+        ReifiedType type;
         if (this.type instanceof Class) {
-            type = new CollapsedType((Class) this.type);
+            type = new ReifiedType((Class) this.type);
         } else if (this.type instanceof String) {
             type = loadType((String) this.type);
         } else {
-            type = new CollapsedType(Object.class);
+            type = new ReifiedType(Object.class);
         }
 
         // create array instance

@@ -20,7 +20,7 @@ package org.apache.geronimo.blueprint.di;
 import java.lang.reflect.Type;
 
 import org.apache.geronimo.blueprint.container.GenericType;
-import org.osgi.service.blueprint.container.CollapsedType;
+import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 public abstract class AbstractRecipe implements Recipe {
@@ -82,7 +82,7 @@ public abstract class AbstractRecipe implements Recipe {
         ExecutionContext.Holder.getContext().addObject(name, obj, partial);
     }
     
-    protected Object convert(Object obj, CollapsedType type) throws Exception {
+    protected Object convert(Object obj, ReifiedType type) throws Exception {
         return ExecutionContext.Holder.getContext().convert(obj, type);
     }
 
@@ -91,15 +91,15 @@ public abstract class AbstractRecipe implements Recipe {
     }
 
     protected Class loadClass(String className) {
-        CollapsedType t = loadType(className, null);
+        ReifiedType t = loadType(className, null);
         return t != null ? t.getRawClass() : null;
     }
 
-    protected CollapsedType loadType(String typeName) {
+    protected ReifiedType loadType(String typeName) {
         return loadType(typeName, null);
     }
 
-    protected CollapsedType loadType(String typeName, ClassLoader fromClassLoader) {
+    protected ReifiedType loadType(String typeName, ClassLoader fromClassLoader) {
         if (typeName == null) {
             return null;
         }

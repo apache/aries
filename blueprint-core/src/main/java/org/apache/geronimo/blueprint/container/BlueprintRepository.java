@@ -38,7 +38,7 @@ import org.apache.geronimo.blueprint.di.IdRefRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.di.RefRecipe;
 import org.apache.geronimo.blueprint.di.Repository;
-import org.osgi.service.blueprint.container.CollapsedType;
+import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
 import org.slf4j.Logger;
@@ -148,7 +148,7 @@ public class BlueprintRepository implements Repository, ExecutionContext {
                 Object obj = createInstance(name);
                 try {
                     // Make sure to go through the conversion step in case we have a Convertible object
-                    obj = convert(obj, new CollapsedType(Object.class));
+                    obj = convert(obj, new ReifiedType(Object.class));
                 } catch (Exception e) {
                     throw new ComponentDefinitionException("Unable to convert instance " + name, e);
                 }
@@ -320,7 +320,7 @@ public class BlueprintRepository implements Repository, ExecutionContext {
         return obj;
     }
 
-    public Object convert(Object value, CollapsedType type) throws Exception {
+    public Object convert(Object value, ReifiedType type) throws Exception {
         return blueprintContainer.getConverter().convert(value, type);
     }
 

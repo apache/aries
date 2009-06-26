@@ -29,7 +29,7 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 import org.apache.geronimo.blueprint.TestBlueprintContainer;
-import org.osgi.service.blueprint.container.CollapsedType;
+import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.Converter;
 
 public class AggregateConverterTest extends TestCase {
@@ -188,28 +188,28 @@ public class AggregateConverterTest extends TestCase {
     private interface AsianRegion extends Region {}
     
     private static class RegionConverter implements Converter {
-        public boolean canConvert(Object fromValue, CollapsedType toType) {
+        public boolean canConvert(Object fromValue, ReifiedType toType) {
             return Region.class == toType.getRawClass();
         }
-        public Object convert(Object source, CollapsedType toType) throws Exception {
+        public Object convert(Object source, ReifiedType toType) throws Exception {
             return new Region() {} ;
         }
     }
     
     private static class EuRegionConverter implements Converter {
-        public boolean canConvert(Object fromValue, CollapsedType toType) {
+        public boolean canConvert(Object fromValue, ReifiedType toType) {
             return toType.getRawClass().isAssignableFrom(EuRegion.class);
         }
-        public Object convert(Object source, CollapsedType toType) throws Exception {
+        public Object convert(Object source, ReifiedType toType) throws Exception {
             return new EuRegion() {} ;
         }
     }
     
     private static class AsianRegionConverter implements Converter {
-        public boolean canConvert(Object fromValue, CollapsedType toType) {
+        public boolean canConvert(Object fromValue, ReifiedType toType) {
             return toType.getRawClass().isAssignableFrom(AsianRegion.class);
         }
-        public Object convert(Object source, CollapsedType toType) throws Exception {
+        public Object convert(Object source, ReifiedType toType) throws Exception {
             return new AsianRegion() {} ;
         }
     }

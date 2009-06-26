@@ -26,7 +26,7 @@ import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintEvent;
-import org.osgi.service.blueprint.container.CollapsedType;
+import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
@@ -206,7 +206,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
 
     public class ServiceProxyWrapper implements AggregateConverter.Convertible {
 
-        public Object convert(CollapsedType type) throws Exception {
+        public Object convert(ReifiedType type) throws Exception {
             if (type.getRawClass() == ServiceReference.class) {
                 return getServiceReference();
             } else if (type.getRawClass().isInstance(proxy)) {
