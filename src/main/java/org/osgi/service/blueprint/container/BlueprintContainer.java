@@ -46,16 +46,6 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
 public interface BlueprintContainer {
 
 	/**
-	 * The container will apply strict compliance rules
-	 */
-	static final int COMPLIANCE_STRICT = 1;
-
-	/**
-	 * The container will use loose compliance rules
-	 */
-	static final int COMPLIANCE_LOOSE = 2;
-
-	/**
 	 * The set of component names recognized by the blueprint context.
 	 *
 	 * @return an immutable set (of Strings) containing the names of all of the
@@ -136,15 +126,4 @@ public interface BlueprintContainer {
 	 */
 	BundleContext getBundleContext();
 
-	/**
-	 * Returns the compliance rule in effect for the target BlueprintContainer.
-	 * COMPLIANCE_LOOSE is returned if any configuration file for the container
-	 * specifies loose compliance.
-	 *
-	 * @return The value COMPLIANCE_STRICT if strict compliance (the default) is
-	 *         used for all configuration files, or the value COMPLIANCE_LOOSE
-	 *         if loose complance is specified in any of the configuration
-	 *         files.
-	 */
-	int getCompliance();
 }
