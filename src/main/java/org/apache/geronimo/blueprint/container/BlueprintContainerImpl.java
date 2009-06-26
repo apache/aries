@@ -118,7 +118,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private long timeout = 5 * 60 * 1000;
     private boolean waitForDependencies = true;
     private boolean xmlValidation = true;
-    private int compliance = COMPLIANCE_STRICT;
     private ScheduledFuture timeoutFuture;
     private final AtomicBoolean scheduled = new AtomicBoolean();
     private final AtomicBoolean running = new AtomicBoolean();
@@ -134,10 +133,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
         this.processors = new ArrayList<Processor>();
-    }
-
-    public int getCompliance() {
-        return compliance;
     }
 
     public Bundle getExtenderBundle() {
@@ -185,8 +180,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             LOGGER.debug("Xml-validation directive: " + xmlValidationDirective);
             xmlValidation = Boolean.parseBoolean(xmlValidationDirective);
         }
-
-        // TODO: load compliant
     }
     
     public void schedule() {
