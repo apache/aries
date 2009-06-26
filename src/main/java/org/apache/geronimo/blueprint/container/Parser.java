@@ -130,7 +130,7 @@ public class Parser {
     public static final String REGISTRATION_LISTENER_ELEMENT = "registration-listener";
     public static final String ENTRY_ELEMENT = "entry";
     public static final String KEY_ELEMENT = "key";
-    public static final String DEFAULT_INITIALIZATION_ATTRIBUTE = "default-initialization";
+    public static final String DEFAULT_ACTIVATION_ATTRIBUTE = "default-activation";
     public static final String DEFAULT_TIMEOUT_ATTRIBUTE = "default-timeout";
     public static final String DEFAULT_AVAILABILITY_ATTRIBUTE = "default-availability";
     public static final String NAME_ATTRIBUTE = "name";
@@ -200,7 +200,7 @@ public class Parser {
     private int idCounter;
     private String defaultTimeout;
     private String defaultAvailability;
-    private String defaultInitialization;
+    private String defaultActivation;
     private Set<URI> namespaces;
     private boolean validation;
     private boolean validated;
@@ -316,15 +316,15 @@ public class Parser {
     private void loadComponents(Document doc) {
         defaultTimeout = TIMEOUT_DEFAULT;
         defaultAvailability = AVAILABILITY_DEFAULT;
-        defaultInitialization = ACTIVATION_DEFAULT;
+        defaultActivation = ACTIVATION_DEFAULT;
         Element root = doc.getDocumentElement();
         if (!isBlueprintNamespace(root.getNamespaceURI()) ||
                 !nodeNameEquals(root, BLUEPRINT_ELEMENT)) {
             throw new ComponentDefinitionException("Root element must be {" + BLUEPRINT_NAMESPACE + "}" + BLUEPRINT_ELEMENT + " element");
         }
         // Parse global attributes
-        if (root.hasAttribute(DEFAULT_INITIALIZATION_ATTRIBUTE)) {
-            defaultInitialization = root.getAttribute(DEFAULT_INITIALIZATION_ATTRIBUTE);
+        if (root.hasAttribute(DEFAULT_ACTIVATION_ATTRIBUTE)) {
+            defaultActivation = root.getAttribute(DEFAULT_ACTIVATION_ATTRIBUTE);
         }
         if (root.hasAttribute(DEFAULT_TIMEOUT_ATTRIBUTE)) {
             defaultTimeout = root.getAttribute(DEFAULT_TIMEOUT_ATTRIBUTE);
@@ -1102,7 +1102,7 @@ public class Parser {
     }
 
     private int parseActivation(Element element) {
-        String initialization = element.hasAttribute(ACTIVATION_ATTRIBUTE) ? element.getAttribute(ACTIVATION_ATTRIBUTE) : defaultInitialization;
+        String initialization = element.hasAttribute(ACTIVATION_ATTRIBUTE) ? element.getAttribute(ACTIVATION_ATTRIBUTE) : defaultActivation;
         if (ACTIVATION_EAGER.equals(initialization)) {
             return ComponentMetadata.ACTIVATION_EAGER;
         } else if (ACTIVATION_LAZY.equals(initialization)) {
