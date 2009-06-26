@@ -280,32 +280,6 @@ public class AggregateConverter implements Converter {
         return array;
     }
 
-    // TODO need to do proper disambiguation
-    private <T> Constructor<T> getDisambiguatedConstructor(Class<T> t, Class<?> s) {
-        for (Constructor<T> c : t.getConstructors()) {
-            if (c.getParameterTypes().length == 1
-                    && c.getParameterTypes()[0] == s) {
-                return c;
-            }
-        }
-        for (Constructor<T> c : t.getConstructors()) {
-            if (c.getParameterTypes().length == 1
-                    && c.getParameterTypes()[0].isAssignableFrom(s)) {
-                return c;
-            }
-        }
-        return null;
-    }
-
-    private Collection<?> getAsCollection(Object s) {
-        if (s.getClass().isArray())
-            return Arrays.asList((Object[]) s);
-        else if (Collection.class.isAssignableFrom(s.getClass()))
-            return (Collection<?>) s;
-        else
-            return null;
-    }
-
     private boolean isAssignable(Object source, ReifiedType target) {
         return target.size() == 0
                 && unwrap(target.getRawClass()).isAssignableFrom(unwrap(source.getClass()));
@@ -331,12 +305,6 @@ public class AggregateConverter implements Converter {
 
     public Object convert(Object source, Type target) throws Exception {
         return convert( source, new GenericType(target));
-    }
-
-
-    private Class<?> loadClass(String s) throws Exception {
-
-        return blueprintContainer.loadClass(s);
     }
 
     private Class toClass(ReifiedType type) {

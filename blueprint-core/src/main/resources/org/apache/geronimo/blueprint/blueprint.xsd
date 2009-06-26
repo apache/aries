@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
     /*
-    * $Revision: 7441 $
+    * $Revision$
     *
     * Copyright (c) OSGi Alliance (2008, 2009). All Rights Reserved.
     *
@@ -293,7 +293,7 @@
                 <xsd:attribute name="activation" use="prohibited"/>
                 <xsd:attribute name="class" type="Tclass" />
                 <xsd:attribute name="init-method" type="Tmethod" />
-                <xsd:attribute name="destroy-method" type="Tmethod"/>
+                <xsd:attribute name="destroy-method" use="prohibited"/>
                 <xsd:attribute name="factory-method" type="Tmethod" />
                 <xsd:attribute name="factory-ref" type="Tidref" />
                 <xsd:attribute name="scope" fixed="prototype" type="Tscope"/>
