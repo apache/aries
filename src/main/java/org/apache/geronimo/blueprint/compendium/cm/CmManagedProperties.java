@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.geronimo.blueprint.BeanProcessor;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
@@ -42,7 +40,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.osgi.service.blueprint.container.CollapsedType;
+import org.osgi.service.blueprint.container.ReifiedType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -236,7 +234,7 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
                             Class methodParameterType = method.getParameterTypes()[0];
                             Object propertyValue;
                             try {
-                                propertyValue = blueprintContainer.getConverter().convert(val, new CollapsedType(methodParameterType));
+                                propertyValue = blueprintContainer.getConverter().convert(val, new ReifiedType(methodParameterType));
                             } catch (Throwable t) {
                                 LOGGER.debug("Unable to convert value for setter: " + method, t);
                                 continue;
