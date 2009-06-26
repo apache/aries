@@ -47,7 +47,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.container.CollapsedType;
+import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
@@ -192,7 +192,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return classes;
     }
 
-    protected CollapsedType loadType(String typeName, ClassLoader fromClassLoader) {
+    protected ReifiedType loadType(String typeName, ClassLoader fromClassLoader) {
         if (typeName == null) {
             return null;
         }

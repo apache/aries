@@ -29,14 +29,14 @@ import java.util.Map;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.ExecutionContext;
 import org.osgi.framework.Bundle;
-import org.osgi.service.blueprint.container.CollapsedType;
+import org.osgi.service.blueprint.container.ReifiedType;
 
 /**
  * XXXX: Currently, in case of arrays getActualTypeArgument(0) returns something similar to what
  * Class.getComponentType() does for arrays.  I don't think this is quite right since getActualTypeArgument()
  * should return the given parameterized type not the component type. Need to check this behavior with the spec.
  */
-public class GenericType extends CollapsedType {
+public class GenericType extends ReifiedType {
 
 	private static final GenericType[] EMPTY = new GenericType[0];
 
@@ -104,7 +104,7 @@ public class GenericType extends CollapsedType {
     }
 
     @Override
-    public CollapsedType getActualTypeArgument(int i) {
+    public ReifiedType getActualTypeArgument(int i) {
         if (parameters.length == 0) {
             return super.getActualTypeArgument(i);
         }
