@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.osgi.service.blueprint.container.Converter;
-import org.osgi.service.blueprint.container.CollapsedType;
+import org.osgi.service.blueprint.container.ReifiedType;
 
 public class DateTypeConverter implements Converter {
 
@@ -31,11 +31,11 @@ public class DateTypeConverter implements Converter {
         dateFormat = new SimpleDateFormat(format);
     }
     
-    public Object convert(Object source, CollapsedType toType) throws Exception {
+    public Object convert(Object source, ReifiedType toType) throws Exception {
         return dateFormat.parse(source.toString());
     }
 
-    public boolean canConvert(Object fromValue, CollapsedType toType) {
+    public boolean canConvert(Object fromValue, ReifiedType toType) {
         return Date.class.isAssignableFrom(toType.getRawClass());
     }
 
