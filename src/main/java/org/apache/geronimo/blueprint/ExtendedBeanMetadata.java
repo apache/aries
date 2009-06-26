@@ -30,5 +30,15 @@ import org.osgi.service.blueprint.reflect.BeanMetadata;
 public interface ExtendedBeanMetadata extends BeanMetadata {
 
     boolean isProcessor();
+    
+    /**
+     * Provide an actual class, this overrides the class name if set. This is
+     * useful for Namespace Handler services that do not want to force the
+     * Blueprint bundle to import implementation classes.
+     *
+     * @return Return the class to use in runtime or <code>null</code>.
+     */
+    
+    Class<?> getRuntimeClass();
 
 }

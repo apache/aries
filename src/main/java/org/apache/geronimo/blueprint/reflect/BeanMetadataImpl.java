@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -68,10 +69,12 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         this.factoryMethod = source.getFactoryMethod();
         this.factoryComponent = MetadataUtil.cloneTarget(source.getFactoryComponent());
         this.scope = source.getScope();
-        this.runtimeClass = source.getRuntimeClass();
         this.dependsOn = new ArrayList<String>(source.getDependsOn());
+        if (source instanceof ExtendedBeanMetadata) {
+            this.runtimeClass = ((ExtendedBeanMetadata) source).getRuntimeClass();
+        }
     }
-
+    
     public String getClassName() {
         return className;
     }

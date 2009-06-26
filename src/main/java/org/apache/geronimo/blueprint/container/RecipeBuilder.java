@@ -27,6 +27,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
+import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.ArrayRecipe;
 import org.apache.geronimo.blueprint.di.CollectionRecipe;
@@ -186,11 +187,21 @@ public class RecipeBuilder {
         }
     }
     
+    private Object getBeanClass(BeanMetadata beanMetadata) {
+        if (beanMetadata instanceof ExtendedBeanMetadata) {
+            ExtendedBeanMetadata extBeanMetadata = (ExtendedBeanMetadata) beanMetadata;
+            if (extBeanMetadata.getRuntimeClass() != null) {
+                return extBeanMetadata.getRuntimeClass();
+            }
+        }
+        return beanMetadata.getClassName();        
+    }
+    
     private BeanRecipe createBeanRecipe(BeanMetadata beanMetadata) {
         BeanRecipe recipe = new BeanRecipe(
                 getName(beanMetadata.getId()),
                 blueprintContainer,
-                beanMetadata.getRuntimeClass() != null ? beanMetadata.getRuntimeClass() : beanMetadata.getClassName());
+                getBeanClass(beanMetadata));
         // Create refs for explicit dependencies
         List<Recipe> deps = new ArrayList<Recipe>();
         for (String name : beanMetadata.getDependsOn()) {

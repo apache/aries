@@ -19,6 +19,7 @@
 package org.apache.geronimo.blueprint.ext;
 
 import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
+import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
 import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -39,8 +40,8 @@ public class PlaceholdersUtils {
         String suffix = getPlaceholderProperty(metadata, "placeholderSuffix");
         for (String id : registry.getComponentDefinitionNames()) {
             ComponentMetadata component = registry.getComponentDefinition(id);
-            if (component instanceof BeanMetadata) {
-                BeanMetadata bean = (BeanMetadata) component;
+            if (component instanceof ExtendedBeanMetadata) {
+                ExtendedBeanMetadata bean = (ExtendedBeanMetadata) component;
                 if (bean.getRuntimeClass() != null && AbstractPropertyPlaceholder.class.isAssignableFrom(bean.getRuntimeClass())) {
                     String otherPrefix = getPlaceholderProperty(bean, "placeholderPrefix");
                     String otherSuffix = getPlaceholderProperty(bean, "placeholderSuffix");
