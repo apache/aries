@@ -51,7 +51,7 @@
         <property name="b" value="${key.b}" />
         <property name="bar" ref="bar" />
         <property name="currency">
-              <value>PLN</value>
+            <value>PLN</value>
         </property>
         <property name="date">
               <value>2009.04.17</value>
@@ -86,17 +86,17 @@
 
     <bean id="bindingListener" class="org.apache.geronimo.blueprint.sample.BindingListener"/>
 
-    <ref-list id="ref-list" interface="org.apache.geronimo.blueprint.sample.InterfaceA">
+    <reference-list id="ref-list" interface="org.apache.geronimo.blueprint.sample.InterfaceA">
         <reference-listener bind-method="bind" unbind-method="unbind" ref="listBindingListener" />
-    </ref-list>
+    </reference-list>
 
     <bean id="listBindingListener" class="org.apache.geronimo.blueprint.sample.BindingListener"/>
 
     <bean id="circularReference" class="org.apache.geronimo.blueprint.sample.BindingListener" init-method="init">
         <property name="list">
-            <ref-list interface="org.apache.geronimo.blueprint.sample.InterfaceA" availability="optional">
+            <reference-list interface="org.apache.geronimo.blueprint.sample.InterfaceA" availability="optional">
                 <reference-listener bind-method="bind" unbind-method="unbind" ref="circularReference"/>
-            </ref-list>
+            </reference-list>
         </property>
     </bean>
 
