@@ -22,48 +22,50 @@ import org.osgi.framework.ServiceException;
  * a backing service is not available.
  */
 public class ServiceUnavailableException extends ServiceException {
+	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The filter string associated with the exception.
+	 */
 	private final String filter;
 
-
-    /**
-     * Creates a <code>ServiceUnavaiableException</code> with the specified message.
-     *
-     * @param message The associated message.
-     * @param filterExpression
-     *                The filter expression used for the service lookup.
-     */
-	public ServiceUnavailableException(
-           String message,
-           String filterExpression) {
-		super(message, UNREGISTERED);
-		this.filter = filterExpression;
-	}
-
-
 	/**
-	 * Creates a <code>ServiceUnavaiableException</code> with the specified message and
-	 * exception cause.
-	 *
-	 * @param message The associated message.
-     * @param filterExpression
-     *                The filter expression used for the service lookup.
-	 * @param cause The cause of this exception.
+	 * Creates a Service Unavailable Exception with the specified message.
+	 * 
+	 * @param message
+	 *            The associated message.
+	 * @param filter
+	 *            The filter used for the service lookup.
 	 */
-	public ServiceUnavailableException(
-           String message,
-           String filterExpression,
-           Throwable cause) {
-		super(message, UNREGISTERED, cause);
-		this.filter = filterExpression;
+	public ServiceUnavailableException(String message, String filter) {
+		super(message, UNREGISTERED);
+		this.filter = filter;
 	}
 
 	/**
-	 * The filter expression that a service would have needed to satisfy in order
-	 * for the invocation to proceed.
+	 * Creates a Service Unavailable Exception with the specified message and
+	 * exception cause.
+	 * 
+	 * @param message
+	 *            The associated message.
+	 * @param filter
+	 *            The filter used for the service lookup.
+	 * @param cause
+	 *            The cause of this exception.
+	 */
+	public ServiceUnavailableException(String message, String filter,
+			Throwable cause) {
+		super(message, UNREGISTERED, cause);
+		this.filter = filter;
+	}
+
+	/**
+	 * Returns the filter expression that a service would have needed to satisfy
+	 * in order for the invocation to proceed.
+	 * 
+	 * @return The failing filter.
 	 */
 	public String getFilter() {
 		return this.filter;
 	}
 }
-

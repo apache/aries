@@ -18,24 +18,19 @@ package org.osgi.service.blueprint.reflect;
 import java.util.List;
 
 /**
- * A java.util.Properties based value. The properties are defined as string to
- * string. This means that the actual value can be returned.
- *
- * ### I do not like it that you loose the original order. And potential errors
- * (like duplicate keys). I think this one should just go away. The
- * CollectionMetadata has a collection type so the instantiation can ensure
- *
+ * A <code>java.util.Properties</code> based value. The properties are
+ * defined as string to string. This means that the actual value can be
+ * returned.
+ * 
  * Defined in the <code>props</code> element.
- *
+ * 
  */
 public interface PropsMetadata extends NonNullMetadata {
 
 	/**
-	 * This is the same as getValuesMetadata but more type safe.
-	 *
-	 * Defined in <code>prop</code> sub elements.
-	 *
-	 * @return
+	 * Defined in <code>prop</code> elements for an Object Value.
+	 * 
+	 * @return list of <code>MapEntry</code> objects, never <code>null</code>
 	 */
 	List<MapEntry> getEntries();
 }

@@ -46,13 +46,11 @@ public interface BeanArgument {
 	 * The (zero-based) index into the parameter list of the method or
 	 * constructor to be invoked for this parameter. This is determined either
 	 * by explicitly specifying the index attribute in the component
-	 * declaration, or by declaration order of constructor-arg elements if the
-	 * index was not explicitly set.
+	 * declaration.  If not explicitly set, this will return -1.
 	 *
 	 * This is the <code>index</code> attribute.
 	 *
-	 *
-	 * @return the zero-based parameter index
+	 * @return the zero-based parameter index, or -1 if the argument position was not set.
 	 */
 	int getIndex();
 }

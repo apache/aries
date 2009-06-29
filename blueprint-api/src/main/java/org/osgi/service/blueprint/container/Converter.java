@@ -24,12 +24,12 @@ public interface Converter {
 	/**
 	 * Check if the converter is able to convert the given value to the
 	 * specified type.
-	 *
+	 * 
 	 * @param s
 	 *            The source object to convert from
 	 * @param T
 	 *            The target type
-	 *
+	 * 
 	 * @return <code>true</code> if the conversion is possible,
 	 *         <code>false</code> otherwise.
 	 */
@@ -38,7 +38,7 @@ public interface Converter {
 	/**
 	 * Convert an object to an instance of the given class, using the built-in
 	 * and user-registered type converters as necessary.
-	 *
+	 * 
 	 * @param s
 	 *            The source object to convert from
 	 * @param T

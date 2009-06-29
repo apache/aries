@@ -44,7 +44,6 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
  * @see org.osgi.framework.Constants
  */
 public interface BlueprintContainer {
-
 	/**
 	 * The set of component names recognized by the blueprint context.
 	 *
@@ -57,7 +56,7 @@ public interface BlueprintContainer {
 	 * Get the component instance for a given named component. If the component
 	 * has not yet been instantiated, calling this operation will cause the
 	 * component instance to be created and initialized. If the component has a
-	 * prototype scope then each call to getComponent will return a new
+	 * prototype scope then each call to getComponentInstance will return a new
 	 * component instance. If the component has a bundle scope then the
 	 * component instance returned will be the instance for the caller's bundle
 	 * (and that instance will be instantiated if it has not already been
@@ -105,8 +104,8 @@ public interface BlueprintContainer {
 	 * Returns all ComponentMetadata instances of the given type. The supported
 	 * Metadata types are ComponentMetadata (which returns the Metadata for all
 	 * defined component types), BeanMetadata, ServiceReferenceMetadata (which
-	 * returns both ReferenceMetadata and RefListMetadata instances),
-	 * ReferenceMetadata, RefListMetadata, and ServiceMetadata. The collection
+	 * returns both ReferenceMetadata and ReferenceListMetadata instances),
+	 * ReferenceMetadata, ReferenceListMetadata, and ServiceMetadata. The collection
 	 * will include all Metadata instances of the requested type, including
 	 * components that are declared as inline values.
 	 *
@@ -125,5 +124,4 @@ public interface BlueprintContainer {
 	 * @return the blueprint context's bundle context
 	 */
 	BundleContext getBundleContext();
-
 }
