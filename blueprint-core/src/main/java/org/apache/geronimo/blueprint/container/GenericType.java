@@ -120,7 +120,11 @@ public class GenericType extends ReifiedType {
     public String toString() {
         Class cl = getRawClass();
         if (cl.isArray()) {
-            return parameters[0].toString() + "[]";
+            if (parameters.length > 0) {
+                return parameters[0].toString() + "[]";
+            } else {
+                return cl.getComponentType().getName() + "[]";
+            }
         }
         if (parameters.length > 0) {
             StringBuilder sb = new StringBuilder();
@@ -142,7 +146,12 @@ public class GenericType extends ReifiedType {
 		if ( type instanceof Class ) {
 		    Class clazz = (Class) type;
 		    if (clazz.isArray()) {
-		        return new GenericType[] { new GenericType(clazz.getComponentType()) };
+                GenericType t = new GenericType(clazz.getComponentType());
+                if (t.size() > 0) {
+		            return new GenericType[] { t };
+                } else {
+                    return EMPTY;
+                }
 		    } else {
 		        return EMPTY;
 		    }

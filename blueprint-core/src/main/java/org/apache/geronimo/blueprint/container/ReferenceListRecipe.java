@@ -50,16 +50,16 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class RefListRecipe extends AbstractServiceReferenceRecipe {
+public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RefListRecipe.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReferenceListRecipe.class);
 
     private final ReferenceListMetadata metadata;
     private final List<ManagedCollection> collections = new ArrayList<ManagedCollection>();
     private final DynamicCollection<ServiceDispatcher> storage = new DynamicCollection<ServiceDispatcher>();
     private final List<ServiceDispatcher> unboundDispatchers = new ArrayList<ServiceDispatcher>();
 
-    public RefListRecipe(String name,
+    public ReferenceListRecipe(String name,
                          ExtendedBlueprintContainer blueprintContainer,
                          ReferenceListMetadata metadata,
                          Recipe listenersRecipe,
@@ -258,6 +258,10 @@ public class RefListRecipe extends AbstractServiceReferenceRecipe {
 
     /**
      * Base class for managed collections.
+     *
+     * TODO: list iterators should not be supported
+     * TODO: rework the iteration so that if hasNext() has returned false, it will always return false
+     * TODO: implement subList()
      */
     public static class ManagedCollection extends AbstractCollection implements List, RandomAccess {
 

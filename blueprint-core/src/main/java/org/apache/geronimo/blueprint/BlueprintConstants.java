@@ -24,7 +24,7 @@ public interface BlueprintConstants  {
     
     public static final String TIMEOUT_DIRECTIVE = "blueprint.timeout";
     
-    public static final String WAIT_FOR_DEPENDENCIES_DIRECTIVE = "blueprint.wait-for-dependencies";
+    public static final String GRACE_PERIOD = "blueprint.graceperiod";
     
     public static final String BUNDLE_VERSION = "bundle.version";
     

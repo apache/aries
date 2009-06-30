@@ -150,7 +150,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                         filePattern = name.substring(pos + 1);
                     }
                     if (hasWildcards(filePattern)) {
-                        addEntries(bundle, baseName, filePattern, true, urls);
+                        addEntries(bundle, baseName, filePattern, false, urls);
                     } else {
                         addEntry(bundle, name, urls);
                     }                    

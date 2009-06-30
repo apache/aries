@@ -82,7 +82,6 @@ public class RecipeBuilder {
             repository.putDefault("blueprintBundle", blueprintContainer.getBundleContext().getBundle());
             repository.putDefault("blueprintBundleContext", blueprintContainer.getBundleContext());
             repository.putDefault("blueprintConverter", blueprintContainer.getConverter());
-            repository.putDefault("blueprintExtenderBundle", blueprintContainer.getExtenderBundle());
         }
     }
     
@@ -125,7 +124,7 @@ public class RecipeBuilder {
         for (String name : metadata.getDependsOn()) {
             deps.add(new RefRecipe(getName(null), name));
         }
-        RefListRecipe recipe = new RefListRecipe(getName(metadata.getId()),
+        ReferenceListRecipe recipe = new ReferenceListRecipe(getName(metadata.getId()),
                                                  blueprintContainer,
                                                  metadata,
                                                  listenersRecipe,

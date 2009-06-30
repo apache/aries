@@ -61,6 +61,8 @@ import org.slf4j.LoggerFactory;
  * TODO: if we have a single interface (which is the standard behavior), then we should be able to get rid of
  *       the proxyClassloader and just use this interface classloader to define the proxy
  *
+ * TODO: it is allowed to have no interface defined at all, which should result in an empty proxy
+ *
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
@@ -78,6 +80,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected final String filter;
     /** The list of listeners for this reference.  This list will be lazy created */
     protected List<Listener> listeners;
+    protected boolean listenersCreated = true;
 
     private final List<ServiceReference> references = new ArrayList<ServiceReference>();
     private final AtomicBoolean started = new AtomicBoolean();
@@ -411,8 +414,10 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             for (Method method : objectPropMethods) {
                 if (props == null) {
                     props = new HashMap<String, Object>();
-                    for (String name : reference.getPropertyKeys()) {
-                        props.put(name, reference.getProperty(name));
+                    if (reference == null) {
+                        for (String name : reference.getPropertyKeys()) {
+                            props.put(name, reference.getProperty(name));
+                        }
                     }
                 }
                 try {

@@ -29,6 +29,7 @@ import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
 import org.apache.geronimo.blueprint.ComponentNameAlreadyInUseException;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Target;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
  * ComponentDefinitionRegistry implementation.
@@ -67,6 +68,12 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
         if (id == null) {
             // TODO: should we generate a unique name?
             throw new IllegalArgumentException("Component must have a valid id");
+        }
+        if (id.equals("blueprintContainer") || id.equals("blueprintBundle")
+                || id.equals("blueprintBundleContext") || id.equals("blueprintConverter")) {
+            throw new ComponentDefinitionException("Can not override an environment manager (" + id + ")");
+        } else if (id.startsWith("blueprint")) {
+            // TODO: log a warning
         }
         // TODO: perform other validation: scope, class/runtimeClass/factoryMethod, etc...
         if (components.containsKey(id)) {

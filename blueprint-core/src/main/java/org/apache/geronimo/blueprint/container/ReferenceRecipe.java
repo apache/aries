@@ -143,6 +143,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                 for (Listener listener : listeners) {
                     listener.bind(trackedServiceReference, proxy);
                 }
+                listenersCreated = false;
             }
         }
     }
@@ -154,11 +155,19 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                     for (Listener listener : listeners) {
                         listener.unbind(trackedServiceReference, proxy);
                     }
+                    listenersCreated = false;
                 }
                 blueprintContainer.getBundleContext().ungetService(trackedServiceReference);
                 trackedServiceReference = null;
                 trackedService = null;
                 monitor.notifyAll();
+            } else if (listenersCreated) {
+                if (listeners != null) {
+                    for (Listener listener : listeners) {
+                        listener.unbind(null, null);
+                    }
+                    listenersCreated = false;
+                }
             }
         }
     }

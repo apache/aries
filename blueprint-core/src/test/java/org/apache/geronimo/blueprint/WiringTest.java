@@ -37,6 +37,8 @@ import org.apache.geronimo.blueprint.pojos.PojoA;
 import org.apache.geronimo.blueprint.pojos.PojoB;
 import org.apache.geronimo.blueprint.pojos.PojoGenerics;
 import org.apache.geronimo.blueprint.pojos.PojoListener;
+import org.apache.geronimo.blueprint.container.AggregateConverter;
+import org.apache.geronimo.blueprint.container.GenericType;
 import org.osgi.framework.ServiceRegistration;
 
 public class WiringTest extends AbstractBlueprintTest {
