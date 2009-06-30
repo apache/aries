@@ -73,7 +73,6 @@ public class ServiceRecipe extends AbstractRecipe {
     private Map registrationProperties;
     private List<ServiceListener> listeners;
     private Object service;
-    private final Object serviceLock = new Object();
     private boolean prototypeService;
 
     public ServiceRecipe(String name,
@@ -229,10 +228,18 @@ public class ServiceRecipe extends AbstractRecipe {
                             listeners = Collections.emptyList();
                         }
                         LOGGER.debug("Listeners created: {}", listeners);
-                        LOGGER.debug("Calling listeners for service registration");
-                        for (ServiceListener listener : listeners) {
-                            listener.register(prototypeService || service instanceof ServiceFactory ? null : service,
-                                              registrationProperties);
+                        if (registered) { // Do not call isRegistered() because of the synchronization
+                            LOGGER.debug("Calling listeners for initial service registration");
+                            for (ServiceListener listener : listeners) {
+                                listener.register(prototypeService || service instanceof ServiceFactory ? null : service,
+                                                  registrationProperties);
+                            }
+                        } else {
+                            LOGGER.debug("Calling listeners for initial service unregistration");
+                            for (ServiceListener listener : listeners) {
+                                listener.unregister(prototypeService || service instanceof ServiceFactory ? null : service,
+                                                  registrationProperties);
+                            }
                         }
                     }
                 } catch (RuntimeException e) {

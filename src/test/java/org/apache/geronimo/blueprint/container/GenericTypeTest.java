@@ -21,6 +21,7 @@ package org.apache.geronimo.blueprint.container;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.net.URI;
 
 import junit.framework.TestCase;
 
@@ -32,6 +33,14 @@ public class GenericTypeTest extends TestCase {
         return type;
     }
     
+    public void testArrays() {
+        assertTrue(AggregateConverter.isAssignable(new Object[0], new GenericType(Object[].class)));
+        assertFalse(AggregateConverter.isAssignable(new Object[0], new GenericType(String[].class)));
+        assertTrue(AggregateConverter.isAssignable(new String[0], new GenericType(String[].class)));
+        assertFalse(AggregateConverter.isAssignable(new String[0], new GenericType(URI[].class)));
+        assertTrue(AggregateConverter.isAssignable(new String[0], new GenericType(Object[].class)));
+    }
+
     public void testParseTypes() throws Exception {
         
         GenericType type = parse("java.util.List<java.lang.String[]>");

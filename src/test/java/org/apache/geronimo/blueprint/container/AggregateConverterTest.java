@@ -40,6 +40,11 @@ public class AggregateConverterTest extends TestCase {
         service = new AggregateConverter(new TestBlueprintContainer(null));
     }
 
+    public void testConvertNumbers() throws Exception {
+        assertEquals(1, service.convert(1.46f, int.class));
+        assertEquals(1.0d, service.convert(1, double.class));
+    }
+
     public void testConvertSimpleTypes() throws Exception {
         assertEquals(123, service.convert("123", int.class));
         assertEquals(123, service.convert("123", Integer.class));

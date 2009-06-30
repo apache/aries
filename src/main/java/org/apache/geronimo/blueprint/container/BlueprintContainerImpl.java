@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.LinkedHashSet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -169,10 +170,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             timeout = Integer.parseInt(timeoutDirective);
         }
 
-        String waitForDependenciesDirective = paths.get(0).getDirective(BlueprintConstants.WAIT_FOR_DEPENDENCIES_DIRECTIVE);
-        if (waitForDependenciesDirective != null) {
-            LOGGER.debug("Wait-for-dependencies directive: " + waitForDependenciesDirective);
-            waitForDependencies = Boolean.parseBoolean(waitForDependenciesDirective);
+        String graceperiod = paths.get(0).getDirective(BlueprintConstants.GRACE_PERIOD);
+        if (graceperiod != null) {
+            LOGGER.debug("Grace-period directive: " + graceperiod);
+            waitForDependencies = Boolean.parseBoolean(graceperiod);
         }
 
         String xmlValidationDirective = paths.get(0).getDirective(BlueprintConstants.XML_VALIDATION);
@@ -559,7 +560,13 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     }
     
     public Set<String> getComponentIds() {
-        return componentDefinitionRegistry.getComponentDefinitionNames();
+        Set<String> set = new LinkedHashSet<String>();
+        set.addAll(componentDefinitionRegistry.getComponentDefinitionNames());
+        set.add("blueprintContainer");
+        set.add("blueprintBundle");
+        set.add("blueprintBundleContext");
+        set.add("blueprintConverter");
+        return set;
     }
     
     public Object getComponentInstance(String id) throws NoSuchComponentException {
@@ -569,6 +576,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         try {
             LOGGER.debug("Instantiating component {}", id);
             return repository.create(id);
+        } catch (NoSuchComponentException e) {
+            throw e;
         } catch (ComponentDefinitionException e) {
             throw e;
         } catch (Throwable t) {

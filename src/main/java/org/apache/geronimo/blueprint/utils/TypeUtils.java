@@ -16,19 +16,8 @@
  */
 package org.apache.geronimo.blueprint.utils;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
-import org.apache.geronimo.blueprint.di.ExecutionContext;
-import org.osgi.framework.Bundle;
 
 /**
  * @version $Rev: 6687 $ $Date: 2005-12-28T21:08:56.733437Z $
@@ -52,56 +41,6 @@ public final class TypeUtils {
             }
         }
         return false;
-    }
-
-    public static boolean isInstance(Type t, Object instance) {
-        Class type = toClass(t);
-        if (type.isPrimitive()) {
-            // for primitives the insance can't be null
-            if (instance == null) {
-                return false;
-            }
-
-            // verify instance is the correct wrapper type
-            if (type.equals(boolean.class)) {
-                return instance instanceof Boolean;
-            } else if (type.equals(char.class)) {
-                return instance instanceof Character;
-            } else if (type.equals(byte.class)) {
-                return instance instanceof Byte;
-            } else if (type.equals(short.class)) {
-                return instance instanceof Short;
-            } else if (type.equals(int.class)) {
-                return instance instanceof Integer;
-            } else if (type.equals(long.class)) {
-                return instance instanceof Long;
-            } else if (type.equals(float.class)) {
-                return instance instanceof Float;
-            } else if (type.equals(double.class)) {
-                return instance instanceof Double;
-            } else {
-                throw new AssertionError("Invalid primitve type: " + type);
-            }
-        }
-
-        return instance == null || type.isInstance(instance);
-    }
-
-    public static Class toClass(Type type) {
-        // GenericArrayType, ParameterizedType, TypeVariable<D>, WildcardType
-        if (type instanceof Class) {
-            Class clazz = (Class) type;
-            return clazz;
-        } else if (type instanceof GenericArrayType) {
-            GenericArrayType arrayType = (GenericArrayType) type;
-            Class componentType = toClass(arrayType.getGenericComponentType());
-            return Array.newInstance(componentType, 0).getClass();
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
-            return toClass(parameterizedType.getRawType());
-        } else {
-            return Object.class;
-        }
     }
 
 }

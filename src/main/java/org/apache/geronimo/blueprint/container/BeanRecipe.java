@@ -36,7 +36,6 @@ import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import static org.apache.geronimo.blueprint.utils.ReflectionUtils.getRealCause;
-import static org.apache.geronimo.blueprint.utils.TypeUtils.isInstance;
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.slf4j.Logger;
@@ -175,7 +174,7 @@ public class BeanRecipe extends AbstractRecipe {
         
         // Instanciate arguments
         List<Object> args = new ArrayList<Object>();
-        List<Class> argTypes = new ArrayList<Class>();
+        List<ReifiedType> argTypes = new ArrayList<ReifiedType>();
         if (arguments != null) {
             for (int i = 0; i < arguments.size(); i++) {
                 Object arg = arguments.get(i);
@@ -185,7 +184,7 @@ public class BeanRecipe extends AbstractRecipe {
                     args.add(arg);
                 }
                 if (this.argTypes != null) {
-                    argTypes.add(this.argTypes.get(i) != null ? loadClass(this.argTypes.get(i)) : null);
+                    argTypes.add(this.argTypes.get(i) != null ? loadType(this.argTypes.get(i)) : null);
                 }
             }
         }
@@ -245,7 +244,7 @@ public class BeanRecipe extends AbstractRecipe {
         return instance;
     }
 
-    private Map<Method, List<Object>> findMatchingMethods(Class type, String name, boolean instance, List<Object> args, List<Class> types) {
+    private Map<Method, List<Object>> findMatchingMethods(Class type, String name, boolean instance, List<Object> args, List<ReifiedType> types) {
         Map<Method, List<Object>> matches = new HashMap<Method, List<Object>>();
         // Get constructors
         List<Method> methods = new ArrayList<Method>(Arrays.asList(type.getMethods()));
@@ -267,11 +266,12 @@ public class BeanRecipe extends AbstractRecipe {
                 boolean found = true;
                 List<Object> match = new ArrayList<Object>();
                 for (int i = 0; i < args.size(); i++) {
-                    if (types.get(i) != null && !mth.getParameterTypes()[i].equals(types.get(i))) {
+                    ReifiedType argType = new GenericType(mth.getGenericParameterTypes()[i]);
+                    if (types.get(i) != null && !argType.getRawClass().equals(types.get(i).getRawClass())) {
                         found = false;
                         break;
                     }
-                    if (!isInstance(mth.getParameterTypes()[i], args.get(i))) {
+                    if (!AggregateConverter.isAssignable(args.get(i), argType)) {
                         found = false;
                         break;
                     }
@@ -297,12 +297,13 @@ public class BeanRecipe extends AbstractRecipe {
                 boolean found = true;
                 List<Object> match = new ArrayList<Object>();
                 for (int i = 0; i < args.size(); i++) {
-                    if (types.get(i) != null && !mth.getParameterTypes()[i].equals(types.get(i))) {
+                    ReifiedType argType = new GenericType(mth.getGenericParameterTypes()[i]);
+                    if (types.get(i) != null && !argType.getRawClass().equals(types.get(i).getRawClass())) {
                         found = false;
                         break;
                     }
                     try {
-                        Object val = convert(args.get(i), mth.getGenericParameterTypes()[i]);
+                        Object val = convert(args.get(i), argType);
                         match.add(val);
                     } catch (Throwable t) {
                         found = false;
@@ -348,7 +349,7 @@ public class BeanRecipe extends AbstractRecipe {
         return matches;
     }
 
-    private Map<Constructor, List<Object>> findMatchingConstructors(Class type, List<Object> args, List<Class> types) {
+    private Map<Constructor, List<Object>> findMatchingConstructors(Class type, List<Object> args, List<ReifiedType> types) {
         Map<Constructor, List<Object>> matches = new HashMap<Constructor, List<Object>>();
         // Get constructors
         List<Constructor> constructors = new ArrayList<Constructor>(Arrays.asList(type.getConstructors()));
@@ -365,11 +366,12 @@ public class BeanRecipe extends AbstractRecipe {
                 boolean found = true;
                 List<Object> match = new ArrayList<Object>();
                 for (int i = 0; i < args.size(); i++) {
-                    if (types.get(i) != null && !cns.getParameterTypes()[i].equals(types.get(i))) {
+                    ReifiedType argType = new GenericType(cns.getGenericParameterTypes()[i]);
+                    if (types.get(i) != null && !argType.getRawClass().equals(types.get(i).getRawClass())) {
                         found = false;
                         break;
                     }
-                    if (!isInstance(cns.getParameterTypes()[i], args.get(i))) {
+                    if (!AggregateConverter.isAssignable(args.get(i), argType)) {
                         found = false;
                         break;
                     }
@@ -395,12 +397,13 @@ public class BeanRecipe extends AbstractRecipe {
                 boolean found = true;
                 List<Object> match = new ArrayList<Object>();
                 for (int i = 0; i < args.size(); i++) {
-                    if (types.get(i) != null && !cns.getParameterTypes()[i].equals(types.get(i))) {
+                    ReifiedType argType = new GenericType(cns.getGenericParameterTypes()[i]);
+                    if (types.get(i) != null && !argType.getRawClass().equals(types.get(i).getRawClass())) {
                         found = false;
                         break;
                     }
                     try {
-                        Object val = convert(args.get(i), cns.getGenericParameterTypes()[i]);
+                        Object val = convert(args.get(i), argType);
                         match.add(val);
                     } catch (Throwable t) {
                         found = false;
@@ -633,12 +636,12 @@ public class BeanRecipe extends AbstractRecipe {
         public ArgumentMatcher(Type[] types, boolean convert) {
             entries = new ArrayList<TypeEntry>();
             for (Type type : types) {
-                entries.add(new TypeEntry(type));
+                entries.add(new TypeEntry(new GenericType(type)));
             }
             this.convert = convert;
         }
 
-        public List<Object> match(List<Object> arguments, List<Class> forcedTypes) {
+        public List<Object> match(List<Object> arguments, List<ReifiedType> forcedTypes) {
             if (find(arguments, forcedTypes)) {
                 return getArguments();
             }
@@ -657,7 +660,7 @@ public class BeanRecipe extends AbstractRecipe {
             return list;
         }
 
-        private boolean find(List<Object> arguments, List<Class> forcedTypes) {
+        private boolean find(List<Object> arguments, List<ReifiedType> forcedTypes) {
             if (entries.size() == arguments.size()) {
                 boolean matched = true;
                 for (int i = 0; i < arguments.size() && matched; i++) {
@@ -668,7 +671,7 @@ public class BeanRecipe extends AbstractRecipe {
             return false;
         }
 
-        private boolean find(Object arg, Class forcedType) {
+        private boolean find(Object arg, ReifiedType forcedType) {
             for (TypeEntry entry : entries) {
                 Object val = arg;
                 if (entry.argument != UNMATCHED) {
@@ -687,7 +690,7 @@ public class BeanRecipe extends AbstractRecipe {
                             continue;
                         }
                     } else {
-                        if (!isInstance(entry.type, arg)) {
+                        if (!AggregateConverter.isAssignable(arg, entry.type)) {
                             continue;
                         }
                     }
@@ -702,10 +705,10 @@ public class BeanRecipe extends AbstractRecipe {
 
     private static class TypeEntry {
 
-        private final Type type;
+        private final ReifiedType type;
         private Object argument;
 
-        public TypeEntry(Type type) {
+        public TypeEntry(ReifiedType type) {
             this.type = type;
             this.argument = UNMATCHED;
         }
