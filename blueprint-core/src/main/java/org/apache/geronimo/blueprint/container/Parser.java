@@ -452,10 +452,20 @@ public class Parser {
             metadata.setId(getId(element));
             if (element.hasAttribute(SCOPE_ATTRIBUTE)) {
                 metadata.setScope(element.getAttribute(SCOPE_ATTRIBUTE));
+                if (metadata.getScope().equals(BeanMetadata.SCOPE_PROTOTYPE)) {
+                    if (element.hasAttribute(ACTIVATION_ATTRIBUTE)) {
+                        if (element.getAttribute(ACTIVATION_ATTRIBUTE).equals(ACTIVATION_EAGER)) {
+                            throw new ComponentDefinitionException("A <bean> with a prototype scope can not have an eager activation");
+                        }
+                    }
+                    metadata.setActivation(ComponentMetadata.ACTIVATION_LAZY);
+                } else {
+                    metadata.setActivation(parseActivation(element));
+                }
             } else {
                 metadata.setScope(BeanMetadata.SCOPE_SINGLETON);
+                metadata.setActivation(parseActivation(element));
             }
-            metadata.setActivation(parseActivation(element));
         } else {
             metadata.setScope(BeanMetadata.SCOPE_PROTOTYPE);
             metadata.setActivation(ComponentMetadata.ACTIVATION_LAZY);
