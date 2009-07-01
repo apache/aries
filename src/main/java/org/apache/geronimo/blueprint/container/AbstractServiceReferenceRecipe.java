@@ -419,7 +419,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             for (Method method : objectPropMethods) {
                 if (props == null) {
                     props = new HashMap<String, Object>();
-                    if (reference == null) {
+                    if (reference != null) {
                         for (String name : reference.getPropertyKeys()) {
                             props.put(name, reference.getProperty(name));
                         }
