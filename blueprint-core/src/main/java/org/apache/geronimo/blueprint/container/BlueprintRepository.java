@@ -38,6 +38,7 @@ import org.apache.geronimo.blueprint.di.IdRefRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.di.RefRecipe;
 import org.apache.geronimo.blueprint.di.Repository;
+import org.apache.geronimo.blueprint.di.CollectionRecipe;
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
@@ -55,11 +56,6 @@ public class BlueprintRepository implements Repository, ExecutionContext {
      * The blueprint container
      */
     private final ExtendedBlueprintContainer blueprintContainer;
-
-    /**
-     * Contains environment objects
-     */
-    private final Map<String, Object> defaults = new ConcurrentHashMap<String, Object>();
 
     /**
      * Contains object recipes
@@ -104,24 +100,11 @@ public class BlueprintRepository implements Repository, ExecutionContext {
         return recipes.get(name);
     }
 
-    public Object getDefault(String name) {
-        return defaults.get(name);
-    }
-
     public Set<String> getNames() {
         Set<String> names = new HashSet<String>();
         names.addAll(recipes.keySet());
         names.addAll(instances.keySet());
-        names.addAll(defaults.keySet());
         return names;
-    }
-
-    public void putDefault(String name, Object instance) {
-        if (instance != null) {
-            defaults.put(name, instance);
-        } else {
-            defaults.remove(name);
-        }
     }
 
     public void putRecipe(String name, Recipe recipe) {
@@ -214,24 +197,62 @@ public class BlueprintRepository implements Repository, ExecutionContext {
             }
         }
         if (instance == null) {
-            instance = getDefault(name);
-        }
-        if (instance == null) {
             throw new NoSuchComponentException(name);
         }
         return instance;
     }
 
-    public void checkReferences() {
+    public void validate() {
         for (Recipe recipe : getAllRecipes()) {
+            // Check that references are satisfied
             String ref = null;
             if (recipe instanceof RefRecipe) {
                 ref = ((RefRecipe) recipe).getIdRef();
             } else if (recipe instanceof IdRefRecipe) {
                 ref = ((IdRefRecipe) recipe).getIdRef();
             }
-            if (ref != null && getRecipe(ref) == null && getDefault(ref) == null) {
+            if (ref != null && getRecipe(ref) == null) {
                 throw new ComponentDefinitionException("Unresolved ref/idref to component: " + ref);
+            }
+            // Check service
+            if (recipe instanceof ServiceRecipe) {
+                Recipe r = ((ServiceRecipe) recipe).getServiceRecipe();
+                if (r instanceof RefRecipe) {
+                    r = getRecipe(((RefRecipe) r).getIdRef());
+                }
+                if (r instanceof ServiceRecipe) {
+                    throw new ComponentDefinitionException("The target for a <service> element must not be <service> element");
+                }
+                if (r instanceof ReferenceListRecipe) {
+                    throw new ComponentDefinitionException("The target for a <service> element must not be <reference-list> element");
+                }
+                CollectionRecipe listeners = ((ServiceRecipe) recipe).getListenersRecipe();
+                for (Recipe l : listeners.getDependencies()) {
+                    if (l instanceof RefRecipe) {
+                        l = getRecipe(((RefRecipe) l).getIdRef());
+                    }
+                    if (l instanceof ServiceRecipe) {
+                        throw new ComponentDefinitionException("The target for a <registration-listener> element must not be <service> element");
+                    }
+                    if (l instanceof ReferenceListRecipe) {
+                        throw new ComponentDefinitionException("The target for a <registration-listener> element must not be <reference-list> element");
+                    }
+                }
+            }
+            // Check references
+            if (recipe instanceof AbstractServiceReferenceRecipe) {
+                CollectionRecipe listeners = ((AbstractServiceReferenceRecipe) recipe).getListenersRecipe();
+                for (Recipe l : listeners.getDependencies()) {
+                    if (l instanceof RefRecipe) {
+                        l = getRecipe(((RefRecipe) l).getIdRef());
+                    }
+                    if (l instanceof ServiceRecipe) {
+                        throw new ComponentDefinitionException("The target for a <reference-listener> element must not be <service> element");
+                    }
+                    if (l instanceof ReferenceListRecipe) {
+                        throw new ComponentDefinitionException("The target for a <reference-listener> element must not be <reference-list> element");
+                    }
+                }
             }
         }
     }
@@ -284,17 +305,13 @@ public class BlueprintRepository implements Repository, ExecutionContext {
 
     public boolean containsObject(String name) {
         return getInstance(name) != null
-                || getRecipe(name) != null
-                || getDefault(name) != null;
+                || getRecipe(name) != null;
     }
 
     public Object getObject(String name) {
         Object object = getInstance(name);
         if (object == null) {
             object = getRecipe(name);
-        }
-        if (object == null) {
-            object = getDefault(name);
         }
         return object;
     }

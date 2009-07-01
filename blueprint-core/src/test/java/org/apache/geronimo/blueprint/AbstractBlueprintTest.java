@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 import org.apache.geronimo.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.geronimo.blueprint.container.Parser;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.geronimo.blueprint.reflect.EnvironmentMetadataImpl;
 
 public abstract class AbstractBlueprintTest extends TestCase {
 

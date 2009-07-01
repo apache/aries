@@ -20,6 +20,7 @@ package org.apache.geronimo.blueprint;
 
 import org.apache.geronimo.blueprint.container.BlueprintContainerImpl;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.geronimo.blueprint.reflect.EnvironmentMetadataImpl;
 
 public class TestBlueprintContainer extends BlueprintContainerImpl {
 
@@ -28,6 +29,12 @@ public class TestBlueprintContainer extends BlueprintContainerImpl {
     public TestBlueprintContainer(ComponentDefinitionRegistryImpl registry) {
         super(new TestBundleContext(), null, null, null, null, null);
         this.registry = registry;
+        if (registry != null) {
+            registry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintContainer", this));
+            registry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintBundle", getBundleContext().getBundle()));
+            registry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintBundleContext", getBundleContext()));
+            registry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintConverter", getConverter()));
+        }
     }
 
     @Override

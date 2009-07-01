@@ -43,6 +43,7 @@ import org.apache.geronimo.blueprint.ExtendedBeanMetadata;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.NamespaceHandler;
 import org.apache.geronimo.blueprint.Processor;
+import org.apache.geronimo.blueprint.reflect.EnvironmentMetadataImpl;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
@@ -239,6 +240,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), missing.toArray(new String[missing.size()])));
                             return;
                         }
+                        componentDefinitionRegistry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintContainer", this));
+                        componentDefinitionRegistry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintBundle", bundleContext.getBundle()));
+                        componentDefinitionRegistry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintBundleContext", bundleContext));
+                        componentDefinitionRegistry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintConverter", converter));
                         parser.populate(handlers, componentDefinitionRegistry);
                         state = State.Populated;
                         break;

@@ -35,10 +35,11 @@ import org.apache.geronimo.blueprint.di.IdRefRecipe;
 import org.apache.geronimo.blueprint.di.MapRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.di.RefRecipe;
-import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.di.ValueRecipe;
+import org.apache.geronimo.blueprint.di.EnvironmentRecipe;
 import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
 import org.apache.geronimo.blueprint.reflect.MetadataUtil;
+import org.apache.geronimo.blueprint.reflect.EnvironmentMetadataImpl;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -76,25 +77,15 @@ public class RecipeBuilder {
         this.registry = blueprintContainer.getComponentDefinitionRegistry();
     }
     
-    private void addBuiltinComponents(Repository repository) {
-        if (blueprintContainer != null) {
-            repository.putDefault("blueprintContainer", blueprintContainer);
-            repository.putDefault("blueprintBundle", blueprintContainer.getBundleContext().getBundle());
-            repository.putDefault("blueprintBundleContext", blueprintContainer.getBundleContext());
-            repository.putDefault("blueprintConverter", blueprintContainer.getConverter());
-        }
-    }
-    
     public BlueprintRepository createRepository() {
         BlueprintRepository repository = new BlueprintRepository(blueprintContainer);
-        addBuiltinComponents(repository);
         // Create component recipes
         for (String name : registry.getComponentDefinitionNames()) {
             ComponentMetadata component = registry.getComponentDefinition(name);
             Recipe recipe = createRecipe(component);
             repository.putRecipe(recipe.getName(), recipe);
         }
-        repository.checkReferences();
+        repository.validate();
         return repository;
     }
 
@@ -106,13 +97,20 @@ public class RecipeBuilder {
         } else if (component instanceof ReferenceMetadata) {
             return createReferenceRecipe((ReferenceMetadata) component);
         } else if (component instanceof ReferenceListMetadata) {
-            return createRefCollectionRecipe((ReferenceListMetadata) component);
+            return createReferenceListRecipe((ReferenceListMetadata) component);
+        } else if (component instanceof EnvironmentMetadataImpl) {
+            return createEnvironmentRecipe((EnvironmentMetadataImpl) component);
         } else {
             throw new IllegalStateException("Unsupported component type " + component.getClass());
         }
     }
 
-    private Recipe createRefCollectionRecipe(ReferenceListMetadata metadata) {
+    private Recipe createEnvironmentRecipe(EnvironmentMetadataImpl environmentMetadata) {
+        return new EnvironmentRecipe(environmentMetadata.getId(), environmentMetadata.getObject());
+    }
+
+
+    private Recipe createReferenceListRecipe(ReferenceListMetadata metadata) {
         CollectionRecipe listenersRecipe = null;
         if (metadata.getReferenceListeners() != null) {
             listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class);

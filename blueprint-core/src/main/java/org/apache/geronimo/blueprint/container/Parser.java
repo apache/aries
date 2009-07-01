@@ -136,7 +136,6 @@ public class Parser {
     public static final String NAME_ATTRIBUTE = "name";
     public static final String ID_ATTRIBUTE = "id";
     public static final String CLASS_ATTRIBUTE = "class";
-    public static final String PARENT_ATTRIBUTE = "parent";
     public static final String INDEX_ATTRIBUTE = "index";
     public static final String TYPE_ATTRIBUTE = "type";
     public static final String VALUE_ATTRIBUTE = "value";
@@ -166,10 +165,6 @@ public class Parser {
     public static final String ACTIVATION_ATTRIBUTE = "activation";
     public static final String FACTORY_REF_ATTRIBUTE = "factory-ref";
     public static final String FACTORY_METHOD_ATTRIBUTE = "factory-method";
-
-    public static final String BOOLEAN_DEFAULT = "default";
-    public static final String BOOLEAN_TRUE = "true";
-    public static final String BOOLEAN_FALSE = "false";
 
     public static final String AUTO_EXPORT_DISABLED = "disabled";
     public static final String AUTO_EXPORT_INTERFACES = "interfaces";
@@ -491,6 +486,9 @@ public class Parser {
         }
         if (metadata.getFactoryComponent() != null && metadata.getFactoryMethod() == null) {
             throw new ComponentDefinitionException("factory-method is required when factory-component is set");
+        }
+        if (metadata.getScope().equals(BeanMetadata.SCOPE_PROTOTYPE) && metadata.getDestroyMethod() != null) {
+            throw new ComponentDefinitionException("destroy-method must not be set for a <bean> with a prototype scope");
         }
 
         // Parse elements
