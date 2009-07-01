@@ -182,10 +182,15 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     private boolean isCompatible(Bundle bundle) {
         // Check compatibility
         boolean compatible;
-        try {
-            Class clazz = bundle.getBundleContext().getBundle().loadClass(BlueprintContainer.class.getName());
-            compatible = (clazz == BlueprintContainer.class);
-        } catch (ClassNotFoundException e) {
+        if (bundle.getState() == Bundle.ACTIVE) {
+            try {
+                Class clazz = bundle.getBundleContext().getBundle().loadClass(BlueprintContainer.class.getName());
+                compatible = (clazz == BlueprintContainer.class);
+            } catch (ClassNotFoundException e) {
+                compatible = true;
+            }
+        } else {
+            // for lazy bundle, we can't load the class, so just assume it's ok
             compatible = true;
         }
         return compatible;

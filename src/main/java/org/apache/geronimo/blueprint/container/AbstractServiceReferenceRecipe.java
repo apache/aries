@@ -40,6 +40,7 @@ import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ExtendedServiceReferenceMetadata;
 import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
+import org.apache.geronimo.blueprint.di.CollectionRecipe;
 import org.apache.geronimo.blueprint.utils.BundleDelegatingClassLoader;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Constants;
@@ -72,7 +73,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     protected final ExtendedBlueprintContainer blueprintContainer;
     protected final ServiceReferenceMetadata metadata;
-    protected final Recipe listenersRecipe;
+    protected final CollectionRecipe listenersRecipe;
     protected final List<Recipe> explicitDependencies;
     protected final ClassLoader proxyClassLoader;
     protected final boolean optional;
@@ -91,7 +92,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected AbstractServiceReferenceRecipe(String name,
                                              ExtendedBlueprintContainer blueprintContainer,
                                              ServiceReferenceMetadata metadata,
-                                             Recipe listenersRecipe,
+                                             CollectionRecipe listenersRecipe,
                                              List<Recipe> explicitDependencies) {
         super(name);
         this.prototype = false;
@@ -109,6 +110,10 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
         this.optional = (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL);
         this.filter = createOsgiFilter(metadata);
+    }
+
+    public CollectionRecipe getListenersRecipe() {
+        return listenersRecipe;
     }
 
     public void start(SatisfactionListener listener) {

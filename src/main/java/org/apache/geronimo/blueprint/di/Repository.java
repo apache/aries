@@ -49,17 +49,7 @@ public interface Repository {
      */
     Recipe getRecipe(String name);
 
-    /**
-     * Return the environment object for a given name.
-     *
-     * @param name
-     * @return the environment object or <code>null</code>
-     */
-    Object getDefault(String name);
-
     void putRecipe(String name, Recipe recipe);
-
-    void putDefault(String name, Object instance);
 
     Object create(String name) throws ComponentDefinitionException;
 

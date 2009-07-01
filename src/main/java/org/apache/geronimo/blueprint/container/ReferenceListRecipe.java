@@ -34,6 +34,7 @@ import java.util.concurrent.Callable;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.ExtendedReferenceListMetadata;
 import org.apache.geronimo.blueprint.di.Recipe;
+import org.apache.geronimo.blueprint.di.CollectionRecipe;
 import org.apache.geronimo.blueprint.utils.DynamicCollection;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -62,7 +63,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
     public ReferenceListRecipe(String name,
                          ExtendedBlueprintContainer blueprintContainer,
                          ReferenceListMetadata metadata,
-                         Recipe listenersRecipe,
+                         CollectionRecipe listenersRecipe,
                          List<Recipe> explicitDependencies) {
         super(name, blueprintContainer, metadata, listenersRecipe, explicitDependencies);
         this.metadata = metadata;

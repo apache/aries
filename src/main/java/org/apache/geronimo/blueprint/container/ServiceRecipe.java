@@ -93,6 +93,14 @@ public class ServiceRecipe extends AbstractRecipe {
         this.prototypeService = isPrototypeService(metadata.getServiceComponent());
     }
 
+    public Recipe getServiceRecipe() {
+        return serviceRecipe;
+    }
+
+    public CollectionRecipe getListenersRecipe() {
+        return listenersRecipe;
+    }
+
     public List<Recipe> getDependencies() {
         List<Recipe> recipes = new ArrayList<Recipe>();
         if (serviceRecipe != null) {

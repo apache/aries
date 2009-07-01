@@ -24,6 +24,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.Recipe;
+import org.apache.geronimo.blueprint.di.CollectionRecipe;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.container.ReifiedType;
@@ -58,7 +59,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     public ReferenceRecipe(String name,
                            ExtendedBlueprintContainer blueprintContainer,
                            ReferenceMetadata metadata,
-                           Recipe listenersRecipe,
+                           CollectionRecipe listenersRecipe,
                            List<Recipe> explicitDependencies) {
         super(name, blueprintContainer, metadata, listenersRecipe, explicitDependencies);
         this.metadata = metadata;
