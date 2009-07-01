@@ -266,6 +266,17 @@ public class ServiceRecipe extends AbstractRecipe {
         if (service == null) {
             throw new IllegalStateException("service is null");
         }
+        // Check if the service actually implement all the requested interfaces
+        if (metadata.getAutoExport() == ServiceMetadata.AUTO_EXPORT_DISABLED) {
+            Set<String> allClasses = new HashSet<String>();
+            ReflectionUtils.getSuperClasses(allClasses, service.getClass());
+            ReflectionUtils.getImplementedInterfaces(allClasses, service.getClass());
+            Set<String> classes = getClasses();
+            classes.removeAll(allClasses);
+            if (!classes.isEmpty()) {
+                throw new ComponentDefinitionException("The service implementation does not implement the required interfaces: " + classes);
+            }
+        }
         return service;
     }
 

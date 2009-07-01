@@ -227,30 +227,36 @@ public class BlueprintRepository implements Repository, ExecutionContext {
                     throw new ComponentDefinitionException("The target for a <service> element must not be <reference-list> element");
                 }
                 CollectionRecipe listeners = ((ServiceRecipe) recipe).getListenersRecipe();
-                for (Recipe l : listeners.getDependencies()) {
-                    if (l instanceof RefRecipe) {
-                        l = getRecipe(((RefRecipe) l).getIdRef());
-                    }
-                    if (l instanceof ServiceRecipe) {
-                        throw new ComponentDefinitionException("The target for a <registration-listener> element must not be <service> element");
-                    }
-                    if (l instanceof ReferenceListRecipe) {
-                        throw new ComponentDefinitionException("The target for a <registration-listener> element must not be <reference-list> element");
+                for (Recipe lr : listeners.getDependencies()) {
+                    // The listener recipe is a bean recipe with the listener being set in a property
+                    for (Recipe l : lr.getDependencies()) {
+                        if (l instanceof RefRecipe) {
+                            l = getRecipe(((RefRecipe) l).getIdRef());
+                        }
+                        if (l instanceof ServiceRecipe) {
+                            throw new ComponentDefinitionException("The target for a <registration-listener> element must not be <service> element");
+                        }
+                        if (l instanceof ReferenceListRecipe) {
+                            throw new ComponentDefinitionException("The target for a <registration-listener> element must not be <reference-list> element");
+                        }
                     }
                 }
             }
             // Check references
             if (recipe instanceof AbstractServiceReferenceRecipe) {
                 CollectionRecipe listeners = ((AbstractServiceReferenceRecipe) recipe).getListenersRecipe();
-                for (Recipe l : listeners.getDependencies()) {
-                    if (l instanceof RefRecipe) {
-                        l = getRecipe(((RefRecipe) l).getIdRef());
-                    }
-                    if (l instanceof ServiceRecipe) {
-                        throw new ComponentDefinitionException("The target for a <reference-listener> element must not be <service> element");
-                    }
-                    if (l instanceof ReferenceListRecipe) {
-                        throw new ComponentDefinitionException("The target for a <reference-listener> element must not be <reference-list> element");
+                for (Recipe lr : listeners.getDependencies()) {
+                    // The listener recipe is a bean recipe with the listener being set in a property
+                    for (Recipe l : lr.getDependencies()) {
+                        if (l instanceof RefRecipe) {
+                            l = getRecipe(((RefRecipe) l).getIdRef());
+                        }
+                        if (l instanceof ServiceRecipe) {
+                            throw new ComponentDefinitionException("The target for a <reference-listener> element must not be <service> element");
+                        }
+                        if (l instanceof ReferenceListRecipe) {
+                            throw new ComponentDefinitionException("The target for a <reference-listener> element must not be <reference-list> element");
+                        }
                     }
                 }
             }

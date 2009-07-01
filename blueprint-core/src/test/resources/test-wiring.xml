@@ -7,8 +7,8 @@
                 <property name="bundle" ref="blueprintBundleContext" />
             </bean>
     </type-converters>
-    
-    <service id="service1" ref="pojoB" interface="foo">
+
+    <service id="service1" ref="pojoB" interface="org.apache.geronimo.blueprint.pojos.PojoB">
         <service-properties>
             <entry key="key1" value="value1"/>
             <entry key="key2" value="value2"/>

@@ -55,6 +55,7 @@ public class ServiceListener {
     }
 
     public void unregister(Object service, Map properties) {
+        init(service);
         invokeMethod(unregisterMethods, service, properties);
     }
 
