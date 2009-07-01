@@ -17,34 +17,34 @@ package org.osgi.service.blueprint.container;
 
 /**
  * Thrown when an attempt is made to lookup a component by id and no such
- * component exists in the blueprint container.
+ * component exists in the Blueprint Container.
  */
 public class NoSuchComponentException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * The name of the component request that generated the exception.
+	 * The id of the component request that generated the exception.
 	 */
-	private final String componentName;
+	private final String managerId;
 
 	/**
-	 * Create an exception for a single component name request.
+	 * Create an exception for a single manager id request.
 	 * 
-	 * @param componentName
-	 *            The name of the non-existent component.
+	 * @param id
+	 *            The id of the non-existent manager.
 	 */
-	public NoSuchComponentException(String componentName) {
-		this.componentName = componentName;
+	public NoSuchComponentException(String id) {
+		this.managerId = id;
 	}
 
 	/**
-	 * Returns the component name that generated the exception.
+	 * Returns the manager id that generated the Exception.
 	 * 
-	 * @return The String name of the component associated with an unresolved
+	 * @return The id of the component associated with an unresolved
 	 *         request.
 	 */
-	public String getComponentName() {
-		return this.componentName;
+	public String getComponentId() {
+		return this.managerId;
 	}
 
 	/**
@@ -53,8 +53,8 @@ public class NoSuchComponentException extends RuntimeException {
 	 * @return The descriptive message for the exception.
 	 */
 	public String getMessage() {
-		return "No component named '"
-				+ (this.componentName == null ? "<null>" : this.componentName)
+		return "No manager with id '"
+				+ (this.managerId == null ? "<null>" : this.managerId)
 				+ "' could be found";
 	}
 }

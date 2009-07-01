@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.geronimo.blueprint.di.Repository;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintListener;
 import org.osgi.service.blueprint.container.Converter;
@@ -31,6 +32,8 @@ import org.osgi.service.blueprint.container.Converter;
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
 public interface ExtendedBlueprintContainer extends BlueprintContainer {
+
+    BundleContext getBundleContext();
 
     Bundle getExtenderBundle();
 
