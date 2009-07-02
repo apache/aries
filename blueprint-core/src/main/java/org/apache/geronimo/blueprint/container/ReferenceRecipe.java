@@ -165,7 +165,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             } else if (listenersCreated) {
                 if (listeners != null) {
                     for (Listener listener : listeners) {
-                        listener.unbind(null, null);
+//                        listener.unbind(null, null);
                     }
                     listenersCreated = false;
                 }
