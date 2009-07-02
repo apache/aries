@@ -126,7 +126,7 @@ public class ServiceRecipe extends AbstractRecipe {
         }
         ServiceRegistrationProxy proxy = new ServiceRegistrationProxy();
         addObject(proxy, true);
-        internalGetService();
+        internalGetService(null, null); // null bundle means we don't want to retrieve the actual service when used with a ServiceFactory
         return proxy;
     }
 
@@ -192,7 +192,7 @@ public class ServiceRecipe extends AbstractRecipe {
             if (listeners != null) {
                 LOGGER.debug("Calling listeners for service unregistration");
                 for (ServiceListener listener : listeners) {
-                    listener.unregister(prototypeService || service instanceof ServiceFactory ? null : service, registrationProperties);
+                    listener.unregister(service instanceof ServiceFactory || !prototypeService ? service : null, registrationProperties);
                 }
             }
             reg.unregister();
@@ -239,14 +239,14 @@ public class ServiceRecipe extends AbstractRecipe {
                         if (registered) { // Do not call isRegistered() because of the synchronization
                             LOGGER.debug("Calling listeners for initial service registration");
                             for (ServiceListener listener : listeners) {
-                                listener.register(prototypeService || service instanceof ServiceFactory ? null : service,
+                                listener.register(service instanceof ServiceFactory || !prototypeService ? service : null,
                                                   registrationProperties);
                             }
                         } else {
                             LOGGER.debug("Calling listeners for initial service unregistration");
                             for (ServiceListener listener : listeners) {
-                                listener.unregister(prototypeService || service instanceof ServiceFactory ? null : service,
-                                                  registrationProperties);
+                                listener.unregister(service instanceof ServiceFactory || !prototypeService ? service : null,
+                                                    registrationProperties);
                             }
                         }
                     }
@@ -257,24 +257,26 @@ public class ServiceRecipe extends AbstractRecipe {
             }
         }
         Object service = this.service;
-        if (service instanceof ServiceFactory) {
-            service = ((ServiceFactory) service).getService(bundle, registration);
-        } else if (prototypeService && bundle != blueprintContainer.getBundleContext().getBundle()) {
-            service = createInstance();
-            LOGGER.debug("Created service instance for bundle: " + bundle + " " + service.hashCode());
-        }
-        if (service == null) {
-            throw new IllegalStateException("service is null");
-        }
-        // Check if the service actually implement all the requested interfaces
-        if (metadata.getAutoExport() == ServiceMetadata.AUTO_EXPORT_DISABLED) {
-            Set<String> allClasses = new HashSet<String>();
-            ReflectionUtils.getSuperClasses(allClasses, service.getClass());
-            ReflectionUtils.getImplementedInterfaces(allClasses, service.getClass());
-            Set<String> classes = getClasses();
-            classes.removeAll(allClasses);
-            if (!classes.isEmpty()) {
-                throw new ComponentDefinitionException("The service implementation does not implement the required interfaces: " + classes);
+        if (bundle != null) {
+            if (service instanceof ServiceFactory) {
+                service = ((ServiceFactory) service).getService(bundle, registration);
+            } else if (prototypeService && bundle != blueprintContainer.getBundleContext().getBundle()) {
+                service = createInstance();
+                LOGGER.debug("Created service instance for bundle: " + bundle + " " + service.hashCode());
+            }
+            if (service == null) {
+                throw new IllegalStateException("service is null");
+            }
+            // Check if the service actually implement all the requested interfaces
+            if (metadata.getAutoExport() == ServiceMetadata.AUTO_EXPORT_DISABLED) {
+                Set<String> allClasses = new HashSet<String>();
+                ReflectionUtils.getSuperClasses(allClasses, service.getClass());
+                ReflectionUtils.getImplementedInterfaces(allClasses, service.getClass());
+                Set<String> classes = getClasses();
+                classes.removeAll(allClasses);
+                if (!classes.isEmpty()) {
+                    throw new ComponentDefinitionException("The service implementation does not implement the required interfaces: " + classes);
+                }
             }
         }
         return service;

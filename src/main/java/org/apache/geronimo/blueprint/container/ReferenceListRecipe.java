@@ -198,7 +198,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
      * The ServiceDispatcher is used when creating the cglib proxy.
      * Thic class is responsible for getting the actual service that will be used.
      */
-    public static class ServiceDispatcher implements Callable<Object> {
+    public class ServiceDispatcher implements Callable<Object> {
 
         public ServiceReference reference;
         public Object service;
@@ -219,7 +219,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
 
         public synchronized Object call() throws Exception {
             if (reference == null) {
-                throw new ServiceUnavailableException("Service is unavailable", null);
+                throw new ServiceUnavailableException("Service is unavailable", getOsgiFilter());
             }
             if (service == null) {
                 service = reference.getBundle().getBundleContext().getService(reference);
