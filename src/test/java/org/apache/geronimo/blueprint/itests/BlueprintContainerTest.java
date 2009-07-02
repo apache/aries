@@ -37,6 +37,7 @@ import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.mavenConfiguration;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.ops4j.pax.exam.CoreOptions.customFramework;
 import org.ops4j.pax.exam.Option;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.profile;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.rawPaxRunnerOption;
@@ -127,14 +128,9 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.geronimo", "blueprint-bundle"),
             mavenBundle("org.apache.geronimo", "blueprint-sample").noStart(),
 
-            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+//            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
-//            customFramework( "file:" + System.getProperty("basedir") + "/target/test-classes/felix-1.9.0-SNAPSHOT.xml" ),
-//            customFramework( "file:" + System.getProperty("basedir") + "/target/test-classes/equinox-3.5.0.v20090429-1630.xml" ),
-                
-//                rawPaxRunnerOption("config", "file:" + System.getProperty("basedir") + "/target/test-classes/.runner.properties"),
-//                felix().snapshotVersion(),
-                equinox().snapshotVersion()
+            equinox().version("3.5.0")
         );
         return options;
     }
