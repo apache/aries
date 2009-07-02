@@ -235,6 +235,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 }
             }
             try {
+                // Try load load a cglib class (to make sure it's actually available
+                // then create the cglib factory
+                getClass().getClassLoader().loadClass("net.sf.cglib.proxy.Enhancer");
                 proxyFactory = new CgLibProxyFactory();
             } catch (Throwable t) {
                 if (proxyClass) {
