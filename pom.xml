@@ -98,22 +98,27 @@
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam</artifactId>
-                <version>0.6.1-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-junit</artifactId>
-                <version>0.6.1-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-container-default</artifactId>
-                <version>0.6.1-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-junit-extender-impl</artifactId>
-                <version>0.6.1-SNAPSHOT</version>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.runner</groupId>
+                <artifactId>pax-runner-no-jcl</artifactId>
+                <version>1.1.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
@@ -133,7 +138,7 @@
             <dependency>
                 <groupId>org.ops4j.pax.url</groupId>
                 <artifactId>pax-url-mvn</artifactId>
-                <version>0.5.2</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
@@ -208,9 +213,7 @@
         <module>blueprint-cm</module>
         <module>blueprint-bundle</module>
         <module>blueprint-sample</module>
-        <!--
         <module>blueprint-itests</module>
-        -->
     </modules>
 
 </project>

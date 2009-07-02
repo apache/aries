@@ -81,16 +81,17 @@ public class TestReferences extends AbstractIntegrationTest {
                 return "Good morning " + msg + "!";
             }
         }, props);
-        assertNotNull(listener.getA());
-        assertNotNull(listener.getReference());
-        assertEquals("Good morning world!", a.hello("world"));
 
-        reg2.unregister();
         assertNotNull(listener.getA());
         assertNotNull(listener.getReference());
         assertEquals("Hello world!", a.hello("world"));
 
         reg1.unregister();
+        assertNotNull(listener.getA());
+        assertNotNull(listener.getReference());
+        assertEquals("Good morning world!", a.hello("world"));
+
+        reg2.unregister();
         assertNull(listener.getA());
         assertNull(listener.getReference());
         try {
@@ -148,8 +149,7 @@ public class TestReferences extends AbstractIntegrationTest {
 
 //            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
-            customFramework( "file:" + System.getProperty("basedir") + "/target/test-classes/felix-1.9.0-SNAPSHOT.xml" ),
-            customFramework( "file:" + System.getProperty("basedir") + "/target/test-classes/equinox-3.5.0.v20090429-1630.xml" )
+            equinox().version("3.5.0")
         );
         return options;
     }
