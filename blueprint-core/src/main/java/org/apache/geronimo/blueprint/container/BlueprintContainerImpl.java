@@ -697,7 +697,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         destroyComponents();
         
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYED, getBundleContext().getBundle(), getExtenderBundle()));
-        LOGGER.debug("Module container destroyed: " + this.bundleContext);
+        LOGGER.debug("Blueprint container destroyed: " + this.bundleContext);
     }
 
     public void namespaceHandlerRegistered(URI uri) {
