@@ -257,6 +257,7 @@ public class ServiceRecipe extends AbstractRecipe {
             }
         }
         Object service = this.service;
+        // We need the real service ...
         if (bundle != null) {
             if (service instanceof ServiceFactory) {
                 service = ((ServiceFactory) service).getService(bundle, registration);
@@ -268,18 +269,29 @@ public class ServiceRecipe extends AbstractRecipe {
                 throw new IllegalStateException("service is null");
             }
             // Check if the service actually implement all the requested interfaces
-            if (metadata.getAutoExport() == ServiceMetadata.AUTO_EXPORT_DISABLED) {
-                Set<String> allClasses = new HashSet<String>();
-                ReflectionUtils.getSuperClasses(allClasses, service.getClass());
-                ReflectionUtils.getImplementedInterfaces(allClasses, service.getClass());
-                Set<String> classes = getClasses();
-                classes.removeAll(allClasses);
-                if (!classes.isEmpty()) {
-                    throw new ComponentDefinitionException("The service implementation does not implement the required interfaces: " + classes);
-                }
-            }
+            validateClasses(service);
+        // We're not really interested in the service, but perform some sanity checks nonetheless
+        } else {
+             if (!(service instanceof ServiceFactory)) {
+                 // Check if the service actually implement all the requested interfaces
+                 validateClasses(service);
+             }
         }
         return service;
+    }
+
+    private void validateClasses(Object service) {
+        // Check if the service actually implement all the requested interfaces
+        if (metadata.getAutoExport() == ServiceMetadata.AUTO_EXPORT_DISABLED) {
+            Set<String> allClasses = new HashSet<String>();
+            ReflectionUtils.getSuperClasses(allClasses, service.getClass());
+            ReflectionUtils.getImplementedInterfaces(allClasses, service.getClass());
+            Set<String> classes = getClasses();
+            classes.removeAll(allClasses);
+            if (!classes.isEmpty()) {
+                throw new ComponentDefinitionException("The service implementation does not implement the required interfaces: " + classes);
+            }
+        }
     }
 
     public synchronized Object getService(Bundle bundle, ServiceRegistration registration) {
