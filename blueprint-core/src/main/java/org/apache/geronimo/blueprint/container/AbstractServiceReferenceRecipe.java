@@ -143,6 +143,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         if (started.compareAndSet(true, false)) {
             synchronized (references) {
                 blueprintContainer.getBundleContext().removeServiceListener(this);
+                doStop();
                 for (Iterator<ServiceReference> it = references.iterator(); it.hasNext();) {
                     ServiceReference ref = it.next();
                     it.remove();
@@ -151,6 +152,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 satisfied.set(false);
             }
         }
+    }
+
+    protected void doStop() {
     }
 
     protected boolean isStarted() {

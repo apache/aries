@@ -94,9 +94,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
         }
     }
 
-    @Override
-    public void stop() {
-        super.stop();
+    protected void doStop() {
         synchronized (monitor) {
             unbind();
             monitor.notifyAll();
@@ -133,6 +131,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     }
 
     private void bind(ServiceReference ref) {
+        LOGGER.debug("Binding reference {} to {}", getName(), ref);
         synchronized (monitor) {
             if (trackedServiceReference != null) {
                 blueprintContainer.getBundleContext().ungetService(trackedServiceReference);
@@ -150,6 +149,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     }
 
     private void unbind() {
+        LOGGER.debug("Unbinding reference {}", getName());
         synchronized (monitor) {
             if (trackedServiceReference != null) {
                 if (listeners != null) {
