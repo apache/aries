@@ -24,6 +24,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -37,6 +38,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
 import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.slf4j.Logger;
@@ -88,19 +90,56 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
 
     public void stop(BundleContext context) {
         LOGGER.debug("Stopping blueprint extender...");
-        // TODO: we should order the blueprint container destruction wrt service exports / dependencies
-        // TODO: also if a blueprint bundle is being stopped at the same time (this could happen if the framework
-        // TODO: is shut down, we should not wait for the blueprint container to be destroyed if it is already being
-        // TODO: destroyed by the extender
-        List<Bundle> bundles = new ArrayList<Bundle>(containers.keySet());
-        for (Bundle bundle : bundles) {
+        context.removeBundleListener(this);
+        // Orderly shutdown of containers
+        while (!containers.isEmpty()) {
+            Bundle bundle = getBundleToDestroy();
             destroyContext(bundle);
         }
-        context.removeBundleListener(this);
         this.eventDispatcher.destroy();
         this.handlers.destroy();
         executors.shutdown();
         LOGGER.debug("Blueprint extender stopped");
+    }
+
+    private Bundle getBundleToDestroy() {
+        Bundle bundleToDestroy = null;
+        for (Bundle bundle : containers.keySet()) {
+            ServiceReference[] references = bundle.getRegisteredServices();
+            int usage = 0;
+            if (references != null) {
+                for (ServiceReference reference : references) {
+                    Bundle[] usingBundles = reference.getUsingBundles();
+                    if (usingBundles != null) {
+                        usage += usingBundles.length;
+                    }
+                }
+            }
+            LOGGER.debug("Usage for bundle {} is {}", bundle, usage);
+            if (usage == 0) {
+                if (bundleToDestroy == null) {
+                    LOGGER.debug("Currently selecting bundle {} for destroy (first bundle with no usage)", bundle);
+                    bundleToDestroy = bundle;
+                } else if (bundle.getLastModified() > bundleToDestroy.getLastModified()) {
+                    LOGGER.debug("Currently selecting bundle {} for destroy (it has been installed more recently)", bundle);
+                    bundleToDestroy = bundle;
+                }
+            }
+        }
+        if (bundleToDestroy == null) {
+            ServiceReference ref = null;
+            for (Bundle bundle : containers.keySet()) {
+                ServiceReference[] references = bundle.getRegisteredServices();
+                for (ServiceReference reference : references) {
+                    if (ref == null || reference.compareTo(ref) > 0) {
+                        LOGGER.debug("Currently selecting bundle {} for destroy (with reference {})", bundle, reference);
+                        ref = reference;
+                    }
+                }
+            }
+            bundleToDestroy = ref.getBundle();
+        }
+        return bundleToDestroy;
     }
 
     public void bundleChanged(BundleEvent event) {
