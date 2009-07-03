@@ -263,7 +263,7 @@ public class ServiceRecipe extends AbstractRecipe {
                 service = ((ServiceFactory) service).getService(bundle, registration);
             } else if (prototypeService && bundle != blueprintContainer.getBundleContext().getBundle()) {
                 service = createInstance();
-                LOGGER.debug("Created service instance for bundle: " + bundle + " " + service.hashCode());
+                LOGGER.debug("Created service instance for bundle: {} {}", bundle, service.hashCode());
             }
             if (service == null) {
                 throw new IllegalStateException("service is null");
@@ -304,7 +304,7 @@ public class ServiceRecipe extends AbstractRecipe {
         }
         if (prototypeService) {
             destroyInstance(service);
-            LOGGER.debug("Destroyed service instance for bundle: " + bundle);
+            LOGGER.debug("Destroyed service instance for bundle: {}", bundle);
         }
     }
 

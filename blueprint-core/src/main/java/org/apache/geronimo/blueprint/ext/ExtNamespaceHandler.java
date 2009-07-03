@@ -99,7 +99,7 @@ public class ExtNamespaceHandler implements org.apache.geronimo.blueprint.Namesp
     }
 
     public Metadata parse(Element element, ParserContext context) {
-        LOGGER.debug("Parsing element {" + element.getNamespaceURI() + "}" + element.getLocalName());
+        LOGGER.debug("Parsing element {{}}{}", element.getNamespaceURI(), element.getLocalName());
         if (nodeNameEquals(element, PROPERTY_PLACEHOLDER_ELEMENT)) {
             return parsePropertyPlaceholder(context, element);
         } else {

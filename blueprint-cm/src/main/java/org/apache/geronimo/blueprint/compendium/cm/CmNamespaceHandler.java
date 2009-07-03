@@ -140,7 +140,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     public Metadata parse(Element element, ParserContext context) {
-        LOGGER.debug("Parsing element {" + element.getNamespaceURI() + "}" + element.getLocalName());
+        LOGGER.debug("Parsing element {{}}{}", element.getNamespaceURI(), element.getLocalName());
         ComponentDefinitionRegistry registry = context.getComponentDefinitionRegistry();
         registerManagedObjectManager(context, registry);
         if (nodeNameEquals(element, PROPERTY_PLACEHOLDER_ELEMENT)) {
@@ -153,7 +153,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     public ComponentMetadata decorate(Node node, ComponentMetadata component, ParserContext context) {
-        LOGGER.debug("Decorating node {" + node.getNamespaceURI() + "}" + node.getLocalName());
+        LOGGER.debug("Decorating node {{}}{}", node.getNamespaceURI(), node.getLocalName());
         ComponentDefinitionRegistry registry = context.getComponentDefinitionRegistry();
         registerManagedObjectManager(context, registry);
         if (node instanceof Element) {
