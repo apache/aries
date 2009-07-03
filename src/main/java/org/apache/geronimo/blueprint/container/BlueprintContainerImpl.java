@@ -167,19 +167,19 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
 
         String timeoutDirective = paths.get(0).getDirective(BlueprintConstants.TIMEOUT_DIRECTIVE);
         if (timeoutDirective != null) {
-            LOGGER.debug("Timeout directive: " + timeoutDirective);
+            LOGGER.debug("Timeout directive: {}", timeoutDirective);
             timeout = Integer.parseInt(timeoutDirective);
         }
 
         String graceperiod = paths.get(0).getDirective(BlueprintConstants.GRACE_PERIOD);
         if (graceperiod != null) {
-            LOGGER.debug("Grace-period directive: " + graceperiod);
+            LOGGER.debug("Grace-period directive: {}", graceperiod);
             waitForDependencies = Boolean.parseBoolean(graceperiod);
         }
 
         String xmlValidationDirective = paths.get(0).getDirective(BlueprintConstants.XML_VALIDATION);
         if (xmlValidationDirective != null) {
-            LOGGER.debug("Xml-validation directive: " + xmlValidationDirective);
+            LOGGER.debug("Xml-validation directive: {}", xmlValidationDirective);
             xmlValidation = Boolean.parseBoolean(xmlValidationDirective);
         }
     }
@@ -697,7 +697,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         destroyComponents();
         
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYED, getBundleContext().getBundle(), getExtenderBundle()));
-        LOGGER.debug("Blueprint container destroyed: " + this.bundleContext);
+        LOGGER.debug("Blueprint container destroyed: {}", this.bundleContext);
     }
 
     public void namespaceHandlerRegistered(URI uri) {

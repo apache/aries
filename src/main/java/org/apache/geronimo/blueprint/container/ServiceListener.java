@@ -71,12 +71,14 @@ public class ServiceListener {
             if (registerMethods.size() == 0) {
                 throw new ComponentDefinitionException("No matching methods found for listener registration method: " + registerMethod);
             }
+            LOGGER.debug("Found register methods: {}", registerMethods);
         }
         if (unregisterMethod != null) {
             unregisterMethods = ReflectionUtils.findCompatibleMethods(listenerClass, unregisterMethod, paramTypes);
             if (unregisterMethods.size() == 0) {
                 throw new ComponentDefinitionException("No matching methods found for listener unregistration method: " + unregisterMethod);
             }
+            LOGGER.debug("Found unregister methods: {}", unregisterMethods);
         }
         initialized = true;
     }
