@@ -430,14 +430,26 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private void untrackServiceReferences() {
         Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
         if (dependencies != null) {
-            Set<String> satisfiables = new HashSet<String>();
+            Set<String> stopped = new HashSet<String>();
             for (List<SatisfiableRecipe> recipes : dependencies.values()) {
                 for (SatisfiableRecipe satisfiable : recipes) {
-                    if (satisfiables.add(satisfiable.getName())) {
-                        satisfiable.stop();
+                    untrackServiceReference(satisfiable, stopped, dependencies);
+                }
+            }
+        }
+    }
+
+    private void untrackServiceReference(SatisfiableRecipe recipe, Set<String> stopped, Map<String, List<SatisfiableRecipe>> dependencies) {
+        if (stopped.add(recipe.getName())) {
+            for (Map.Entry<String, List<SatisfiableRecipe>> entry : dependencies.entrySet()) {
+                if (entry.getValue().contains(recipe)) {
+                    Recipe r = getRepository().getRecipe(entry.getKey());
+                    if (r instanceof SatisfiableRecipe) {
+                        untrackServiceReference((SatisfiableRecipe) r, stopped, dependencies);
                     }
                 }
             }
+            recipe.stop();
         }
     }
 

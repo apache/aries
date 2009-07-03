@@ -90,16 +90,6 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
         }
     }
 
-    public void stop() {
-        super.stop();
-        if (storage != null) {
-            List<ServiceDispatcher> dispatchers = new ArrayList<ServiceDispatcher>(storage);
-            for (ServiceDispatcher dispatcher : dispatchers) {
-                untrack(dispatcher.reference);
-            }
-        }
-    }
-
     protected void retrack() {
         List<ServiceReference> refs = getServiceReferences();
         if (refs != null) {
