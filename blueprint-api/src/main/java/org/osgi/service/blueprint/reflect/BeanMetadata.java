@@ -20,6 +20,8 @@ import java.util.List;
 /**
  * Metadata for a Bean Manager.
  * 
+ * @ThreadSafe
+ * @version $Revision$
  */
 public interface BeanMetadata extends Target, ComponentMetadata {
 
@@ -71,13 +73,14 @@ public interface BeanMetadata extends Target, ComponentMetadata {
 	 * 
 	 * Specified in all the child
 	 * <code>argument<code> elements. The return is a list of {@link BeanArgument} objects.
-	 *
-	 * @return The arguments Metadata for the factory method or constructor, can be empty if no arguments are specified
+	 * 
+	 * @return List of Bean Arguments for the factory method or constructor, can
+	 *         be empty if no arguments are specified
 	 */
 	List<BeanArgument> getArguments();
 
 	/**
-	 * The property injection Metadata for this component.
+	 * The property injection {@link BeanProperty} Metadata for this bean.
 	 * 
 	 * Specified in all the child <code>property</code> elements.
 	 * 
@@ -101,7 +104,8 @@ public interface BeanMetadata extends Target, ComponentMetadata {
 	 * The component instance on which to invoke the factory method (if
 	 * specified).
 	 * 
-	 * The component is defined in the <code>factory-component</code>.
+	 * The to be used component instance is referred to by the
+	 * <code>factory-component</code>.
 	 * 
 	 * When a factory method and factory ref has been specified for this
 	 * component, this operation returns the Metadata specifying the manager on
@@ -109,12 +113,13 @@ public interface BeanMetadata extends Target, ComponentMetadata {
 	 * factory component has been specified this operation will return
 	 * <code>null</code>.
 	 * 
-	 * A return value of <code>null with a <code>non-null</code> factory method indicates that the
-	 * factory method should be invoked as a static method on the given
-	 * class itself. For a <code>non-null</code> return value, the Metadata returned
-	 * will be a {@link Target} instance.
+	 * A return value of <code>null with a <code>non-null</code> factory method
+	 * indicates that the factory method should be invoked as a static method on
+	 * the given class itself. For a <code>non-null</code> return value, the
+	 * Metadata returned will be a {@link Target} instance.
 	 * 
-	 * @return A {@link Target} or <code>null</code> if no factory component was specified.
+	 * @return A {@link Target} or <code>null</code> if no factory component was
+	 *         specified.
 	 */
 	Target getFactoryComponent();
 

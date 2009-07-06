@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class BlueprintEventDispatcher implements BlueprintListener, EventConstants {
+public class BlueprintEventDispatcher implements BlueprintListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintEventDispatcher.class);
 
@@ -110,7 +110,7 @@ public class BlueprintEventDispatcher implements BlueprintListener, EventConstan
     private String toString(BlueprintEvent event) {
         return "BlueprintEvent[type=" + getEventType(event.getType())
                         + (event.getDependencies() != null ? ", dependencies=" + Arrays.asList(event.getDependencies()) : "")
-                        + (event.getException() != null ? ", exception=" + event.getException().getMessage() : "")
+                        + (event.getCause() != null ? ", exception=" + event.getCause().getMessage() : "")
                         + "]";
     }
 
@@ -189,8 +189,8 @@ public class BlueprintEventDispatcher implements BlueprintListener, EventConstan
                 props.put(EventConstants.EXTENDER_BUNDLE_VERSION, version);
             }
 
-            if (event.getException() != null) {
-                props.put(EventConstants.EXCEPTION, event.getException());
+            if (event.getCause() != null) {
+                props.put(EventConstants.CAUSE, event.getCause());
             }
             if (event.getDependencies() != null) {
                 props.put(EventConstants.DEPENDENCIES, event.getDependencies());

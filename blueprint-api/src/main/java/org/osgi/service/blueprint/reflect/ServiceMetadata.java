@@ -19,8 +19,11 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Metadata representing a service to registered by the Blueprint Container.
+ * Metadata representing a service to registered by the Blueprint Container when
+ * enabled.
  * 
+ * @ThreadSafe
+ * @version $Revision$
  */
 public interface ServiceMetadata extends ComponentMetadata {
 
@@ -72,8 +75,8 @@ public interface ServiceMetadata extends ComponentMetadata {
 	 * Defined in the <code>interface</code> attribute or
 	 * <code>interfaces</code> element.
 	 * 
-	 * @return an immutable set of (<code>String</code>) interface names, or an
-	 *         empty set if using <code>auto-export</code> or not set.
+	 * @return an immutable set of (<code>String</code>) interface names, or
+	 *         an empty set if using <code>auto-export</code> or not set.
 	 */
 	List<String> getInterfaces();
 
@@ -94,7 +97,8 @@ public interface ServiceMetadata extends ComponentMetadata {
 	 * 
 	 * Defined in the <code>service-properties</code> element.
 	 * 
-	 * @return <code>List</code> containing {@link MapEntry} objects, can be empty.
+	 * @return <code>List</code> containing {@link MapEntry} objects, can be
+	 *         empty.
 	 */
 	List<MapEntry> getServiceProperties();
 
@@ -109,8 +113,8 @@ public interface ServiceMetadata extends ComponentMetadata {
 	int getRanking();
 
 	/**
-	 * The registration listeners to be notified when the
-	 * service is registered and unregistered with the framework.
+	 * The registration listeners to be notified when the service is registered
+	 * and unregistered with the framework.
 	 * 
 	 * Defined in the <code>registration-listener</code> elements.
 	 * 
