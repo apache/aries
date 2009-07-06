@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -185,7 +186,13 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             if (listenersRecipe != null) {
                 listeners = (List<Listener>) listenersRecipe.create();
                 for (Listener listener : listeners) {
-                    listener.init(loadAllClasses(Collections.singletonList(metadata.getInterface())));
+                    List<Class> cl = new ArrayList<Class>();
+                    if (metadata.getInterface() != null) {
+                        cl.addAll(loadAllClasses(Collections.singletonList(metadata.getInterface())));
+                    } else {
+                        cl.add(Object.class);
+                    }
+                    listener.init(cl);
                 }
             } else {
                 listeners = Collections.emptyList();
@@ -221,7 +228,11 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
 
     protected Object createProxy(final Callable<Object> dispatcher, Iterable<String> interfaces) throws Exception {
-        return getProxyFactory().createProxy(proxyClassLoader, toClassArray(loadAllClasses(interfaces)), dispatcher);
+        if (!interfaces.iterator().hasNext()) {
+            return new Object();
+        } else {
+            return getProxyFactory().createProxy(proxyClassLoader, toClassArray(loadAllClasses(interfaces)), dispatcher);
+        }
     }
 
     protected synchronized ProxyFactory getProxyFactory() throws ClassNotFoundException {
@@ -458,12 +469,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             members.add(flt);
         }
         // Handle interfaces
-        Set<String> interfaces = new HashSet<String>();
-        interfaces.add(metadata.getInterface());
-        if (!interfaces.isEmpty()) {
-            for (String itf : interfaces) {
-                members.add("(" + Constants.OBJECTCLASS + "=" + itf + ")");
-            }
+        String interfaceName = metadata.getInterface();
+        if (interfaceName != null && interfaceName.length() > 0) {
+            members.add("(" + Constants.OBJECTCLASS + "=" + interfaceName + ")");
         }
         // Handle component name
         String componentName = metadata.getComponentName();
@@ -473,6 +481,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         // Create filter
         if (members.isEmpty()) {
             throw new IllegalStateException("No constraints were specified on the service reference");
+        }
+        if (members.size() == 1) {
+            return members.get(0);
         }
         StringBuilder sb = new StringBuilder("(&");
         for (String member : members) {
