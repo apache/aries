@@ -35,6 +35,11 @@
             <groupId>org.apache.geronimo</groupId>
             <artifactId>blueprint-cm</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
