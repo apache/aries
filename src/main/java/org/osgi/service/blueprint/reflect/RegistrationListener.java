@@ -17,7 +17,11 @@ package org.osgi.service.blueprint.reflect;
 
 /**
  * Metadata for a registration listener interested in service registration and
- * unregistration events.
+ * unregistration events. Available from the
+ * {@link ServiceMetadata#getRegistrationListeners()} method.
+ * 
+ * @ThreadSafe
+ * @version $Revision$
  */
 public interface RegistrationListener {
 
@@ -27,7 +31,8 @@ public interface RegistrationListener {
 	 * directly or indirectly. The return type will be a {@link Target}
 	 * instance.
 	 * 
-	 * Defined in the <code>registration-listener</code> child element.
+	 * Defined in the <code>registration-listener</code> child element of the
+	 * <code>service</code> element.
 	 * 
 	 * @return The registration listener target.
 	 */
