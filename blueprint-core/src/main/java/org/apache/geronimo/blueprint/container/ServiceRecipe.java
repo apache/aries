@@ -24,6 +24,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.geronimo.blueprint.BlueprintConstants;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
@@ -60,20 +61,20 @@ public class ServiceRecipe extends AbstractRecipe {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRecipe.class);
 
-    private ExtendedBlueprintContainer blueprintContainer;
-    private ServiceMetadata metadata;
-    private Recipe serviceRecipe;
-    private CollectionRecipe listenersRecipe;
-    private MapRecipe propertiesRecipe;
-    private List<Recipe> explicitDependencies;
+    private final ExtendedBlueprintContainer blueprintContainer;
+    private final ServiceMetadata metadata;
+    private final Recipe serviceRecipe;
+    private final CollectionRecipe listenersRecipe;
+    private final MapRecipe propertiesRecipe;
+    private final List<Recipe> explicitDependencies;
+    private final boolean prototypeService;
 
     private Map properties;
-    private boolean registered;
-    private ServiceRegistration registration;
+    private final AtomicBoolean registered = new AtomicBoolean();
+    private volatile ServiceRegistration registration;
     private Map registrationProperties;
     private List<ServiceListener> listeners;
     private Object service;
-    private boolean prototypeService;
 
     public ServiceRecipe(String name,
                          ExtendedBlueprintContainer blueprintContainer,
@@ -130,9 +131,12 @@ public class ServiceRecipe extends AbstractRecipe {
         return proxy;
     }
 
-    public synchronized void register() {
-        if (!isRegistered()) {
-            registered = true;
+    public boolean isRegistered() {
+        return registered.get();
+    }
+
+    public void register() {
+        if (registered.compareAndSet(false, true)) {
             Hashtable props = new Hashtable();
             if (properties == null) {
                 properties = (Map) createRecipe(propertiesRecipe);
@@ -160,31 +164,8 @@ public class ServiceRecipe extends AbstractRecipe {
         }
     }
 
-    public synchronized boolean isRegistered() {
-        return registered;
-    }
-
-    public synchronized ServiceReference getReference() {
-        if (registration == null) {
-            throw new IllegalStateException("Service is not registered");
-        } else {
-            return registration.getReference();
-        }
-    }
-
-    public synchronized void setProperties(Dictionary props) {
-        if (registration == null) {
-            throw new IllegalStateException("Service is not registered");
-        } else {
-            registration.setProperties(props);
-            // TODO: set serviceProperties? convert somehow? should listeners be notified of this?
-        }
-    }
-
-
-    public synchronized void unregister() {
-        if (isRegistered()) {
-            registered = false;
+    public void unregister() {
+        if (registered.compareAndSet(true, false)) {
             LOGGER.debug("Unregistering service {}", name);
             // This method needs to allow reentrance, so if we need to make sure the registration is
             // set to null before actually unregistering the service
@@ -202,7 +183,25 @@ public class ServiceRecipe extends AbstractRecipe {
             }
         }
     }
-    
+
+    protected ServiceReference getReference() {
+        if (registration == null) {
+            throw new IllegalStateException("Service is not registered");
+        } else {
+            return registration.getReference();
+        }
+    }
+
+    protected void setProperties(Dictionary props) {
+        if (registration == null) {
+            throw new IllegalStateException("Service is not registered");
+        } else {
+            registration.setProperties(props);
+            // TODO: set serviceProperties? convert somehow? should listeners be notified of this?
+        }
+    }
+
+
     protected Object internalGetService() {
         return internalGetService(blueprintContainer.getBundleContext().getBundle(), null);
     }
@@ -236,7 +235,7 @@ public class ServiceRecipe extends AbstractRecipe {
                             listeners = Collections.emptyList();
                         }
                         LOGGER.debug("Listeners created: {}", listeners);
-                        if (registered) { // Do not call isRegistered() because of the synchronization
+                        if (registered.get()) {
                             LOGGER.debug("Calling listeners for initial service registration");
                             for (ServiceListener listener : listeners) {
                                 listener.register(service instanceof ServiceFactory || !prototypeService ? service : null,
@@ -409,9 +408,9 @@ public class ServiceRecipe extends AbstractRecipe {
         }
 
         public void updateProperties(Dictionary properties) {
-            Hashtable table = JavaUtils.getProperties(getReference());
+            Hashtable table = JavaUtils.getProperties(ServiceRecipe.this.getReference());
             JavaUtils.copy(table, properties);
-            setProperties(table);
+            ServiceRecipe.this.setProperties(table);
         }        
     }
 
