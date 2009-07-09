@@ -234,6 +234,7 @@ public class BlueprintEvent {
 		if (extenderBundle == null) {
 			throw new NullPointerException("extenderBundle must not be null");
 		}
+        /*
 		switch (type) {
 			case WAITING :
 			case GRACE_PERIOD :
@@ -254,6 +255,7 @@ public class BlueprintEvent {
 				}
 				break;
 		}
+		*/
 	}
 
 	/**
