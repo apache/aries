@@ -51,7 +51,7 @@ public class BlueprintEventDispatcher implements BlueprintListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintEventDispatcher.class);
 
-    private final ServiceTracker eventAdminServiceTracker;
+    private final BlueprintListener eventAdminListener;
     private final ServiceTracker containerListenerTracker;
     private final Map<Bundle, BlueprintEvent> states;
     private final ExecutorService executor;
@@ -59,16 +59,14 @@ public class BlueprintEventDispatcher implements BlueprintListener {
     public BlueprintEventDispatcher(final BundleContext bundleContext) {
         this.states = new ConcurrentHashMap<Bundle, BlueprintEvent>();
         this.executor = Executors.newSingleThreadExecutor();
-        ServiceTracker eaTracker = null;
+        BlueprintListener listener = null;
         try {
-            eaTracker = new EvenAdminDispatcher(bundleContext);
-        } catch (NoClassDefFoundError e) {
+            getClass().getClassLoader().loadClass("org.osgi.service.event.EventAdmin");
+            listener = new EventAdminListener(bundleContext);
+        } catch (Throwable t) {
             // Ignore, if the EventAdmin package is not available, just don't use it
         }
-        this.eventAdminServiceTracker = eaTracker;
-        if (this.eventAdminServiceTracker != null) {
-            this.eventAdminServiceTracker.open();
-        }
+        this.eventAdminListener = listener;
         this.containerListenerTracker = new ServiceTracker(bundleContext, BlueprintListener.class.getName(), new ServiceTrackerCustomizer() {
             public Object addingService(ServiceReference reference) {
                 BlueprintListener listener = (BlueprintListener) bundleContext.getService(reference);
@@ -100,8 +98,8 @@ public class BlueprintEventDispatcher implements BlueprintListener {
         executor.submit(new Runnable() {
             public void run() {
                 callListeners(event);
-                if (BlueprintEventDispatcher.this.eventAdminServiceTracker instanceof BlueprintListener) {
-                    ((BlueprintListener) BlueprintEventDispatcher.this.eventAdminServiceTracker).blueprintEvent(event);
+                if (eventAdminListener != null) {
+                    eventAdminListener.blueprintEvent(event);
                 }
             }
         });
@@ -152,20 +150,20 @@ public class BlueprintEventDispatcher implements BlueprintListener {
     
     public void destroy() {
         this.executor.shutdown();
-        if (this.eventAdminServiceTracker != null) {
-            this.eventAdminServiceTracker.close();
-        }
         this.containerListenerTracker.close();
     }
 
-    static class EvenAdminDispatcher extends ServiceTracker implements BlueprintListener {
+    static class EventAdminListener implements BlueprintListener {
 
-        EvenAdminDispatcher(BundleContext context) {
-            super(context, EventAdmin.class.getName(), null);
+        private ServiceTracker tracker;
+
+        public EventAdminListener(BundleContext context) {
+            tracker = new ServiceTracker(context, EventAdmin.class.getName(), null);
+            tracker.open();
         }
 
         public void blueprintEvent(BlueprintEvent event) {
-            EventAdmin eventAdmin = (EventAdmin) getService();
+            EventAdmin eventAdmin = (EventAdmin) tracker.getService();
             if (eventAdmin == null) {
                 return;
             }
@@ -225,4 +223,5 @@ public class BlueprintEventDispatcher implements BlueprintListener {
         }
 
     }
+
 }
