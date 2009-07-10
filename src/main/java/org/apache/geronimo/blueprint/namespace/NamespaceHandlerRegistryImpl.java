@@ -34,6 +34,8 @@ import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.HashSet;
 import java.io.IOException;
+import java.lang.ref.SoftReference;
+import java.lang.ref.Reference;
 
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -72,7 +74,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     private final Map<URI, NamespaceHandler> handlers;
     private final ServiceTracker tracker;
     private final Map<Listener, Boolean> listeners;
-    private final Map<Set<URI>, Schema> schemas = new LRUMap<Set<URI>, Schema>(10);
+    private final Map<Set<URI>, Reference<Schema>> schemas = new LRUMap<Set<URI>, Reference<Schema>>(10);
     private SchemaFactory schemaFactory;
 
     public NamespaceHandlerRegistryImpl(BundleContext bundleContext) {
@@ -222,7 +224,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         // they won't be used at all
         for (Set<URI> key : schemas.keySet()) {
             if (key.containsAll(namespaces)) {
-                schema = schemas.get(key);
+                schema = schemas.get(key).get();
                 break;
             }
         }
@@ -249,7 +251,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                     }
                 }
                 schema = getSchemaFactory().newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
-                schemas.put(namespaces, schema);
+                schemas.put(namespaces, new SoftReference<Schema>(schema));
             } finally {
                 for (StreamSource s : schemaSources) {
                     try {
@@ -280,7 +282,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         return schemaFactory;
     }
 
-    private static class LRUMap<K,V> extends AbstractMap<K,V> {
+    public static class LRUMap<K,V> extends AbstractMap<K,V> {
 
         private final int bound;
         private final LinkedList<Entry<K,V>> entries = new LinkedList<Entry<K,V>>();
