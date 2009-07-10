@@ -266,12 +266,16 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     }
 
     protected synchronized void removeSchemasFor(List<URI> namespaces) {
+        List<Set<URI>> keys = new ArrayList<Set<URI>>();
         for (URI ns : namespaces) {
             for (Set<URI> key : schemas.keySet()) {
                 if (key.contains(ns)) {
-                    schemas.remove(key);
+                    keys.add(key);
                 }
             }
+        }
+        for (Set<URI> key : keys) {
+            schemas.remove(key);
         }
     }
 
