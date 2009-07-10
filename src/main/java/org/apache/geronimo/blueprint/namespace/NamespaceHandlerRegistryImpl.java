@@ -19,6 +19,7 @@
 package org.apache.geronimo.blueprint.namespace;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,6 +27,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.AbstractMap;
+import java.util.LinkedList;
+import java.util.AbstractSet;
+import java.util.Iterator;
+import java.util.HashSet;
+import java.io.IOException;
+
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.Source;
+import javax.xml.XMLConstants;
 
 import org.apache.geronimo.blueprint.NamespaceHandler;
 import org.apache.geronimo.blueprint.container.NamespaceHandlerRegistry;
@@ -35,6 +49,7 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * Default implementation of the NamespaceHandlerRegistry.
@@ -47,6 +62,8 @@ import org.slf4j.LoggerFactory;
  */
 public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, ServiceTrackerCustomizer {
     
+    public static final URI BLUEPRINT_NAMESPACE = URI.create("http://www.osgi.org/xmlns/blueprint/v1.0.0");
+
     public static final String NAMESPACE = "osgi.service.blueprint.namespace";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NamespaceHandlerRegistryImpl.class);
@@ -55,6 +72,8 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     private final Map<URI, NamespaceHandler> handlers;
     private final ServiceTracker tracker;
     private final Map<Listener, Boolean> listeners;
+    private final Map<Set<URI>, Schema> schemas = new LRUMap<Set<URI>, Schema>(10);
+    private SchemaFactory schemaFactory;
 
     public NamespaceHandlerRegistryImpl(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
@@ -117,6 +136,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             handlers.remove(uri);
             callListeners(uri, false);
         }
+        removeSchemasFor(namespaces);
     }
 
     private void callListeners(URI uri, boolean registered) {
@@ -194,4 +214,149 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     public synchronized void removeListener(Listener listener) {
         listeners.remove(listener);
     }
+
+    public synchronized Schema getSchema(Set<URI> namespaces) throws IOException, SAXException {
+        Schema schema = null;
+        // Find a schema that can handle all the requested namespaces
+        // If it contains additional namespaces, it should not be a problem since
+        // they won't be used at all
+        for (Set<URI> key : schemas.keySet()) {
+            if (key.containsAll(namespaces)) {
+                schema = schemas.get(key);
+                break;
+            }
+        }
+        if (schema == null) {
+            List<StreamSource> schemaSources = new ArrayList<StreamSource>();
+            try {
+                schemaSources.add(new StreamSource(getClass().getResourceAsStream("/org/apache/geronimo/blueprint/blueprint.xsd")));
+                // Create a schema for all namespaces known at this point
+                // It will speed things as it can be reused for all other blueprint containers
+                namespaces = new HashSet<URI>(handlers.keySet());
+                namespaces.add(BLUEPRINT_NAMESPACE);
+                for (URI ns : namespaces) {
+                    if (!BLUEPRINT_NAMESPACE.equals(ns)) {
+                        NamespaceHandler handler = getNamespaceHandler(ns);
+                        if (handler == null) {
+                            throw new IllegalArgumentException("No namespace handler has been registered for " + ns);
+                        }
+                        URL url = handler.getSchemaLocation(ns.toString());
+                        if (url == null) {
+                            LOGGER.warn("No URL is defined for schema " + ns + ". This schema will not be validated");
+                        } else {
+                            schemaSources.add(new StreamSource(url.openStream()));
+                        }
+                    }
+                }
+                schema = getSchemaFactory().newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
+                schemas.put(namespaces, schema);
+            } finally {
+                for (StreamSource s : schemaSources) {
+                    try {
+                        s.getInputStream().close();
+                    } catch (IOException e) {
+                        // Ignore
+                    }
+                }
+            }
+        }
+        return schema;
+    }
+
+    protected synchronized void removeSchemasFor(List<URI> namespaces) {
+        for (URI ns : namespaces) {
+            for (Set<URI> key : schemas.keySet()) {
+                if (key.contains(ns)) {
+                    schemas.remove(key);
+                }
+            }
+        }
+    }
+
+    private SchemaFactory getSchemaFactory() {
+        if (schemaFactory == null) {
+            schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        }
+        return schemaFactory;
+    }
+
+    private static class LRUMap<K,V> extends AbstractMap<K,V> {
+
+        private final int bound;
+        private final LinkedList<Entry<K,V>> entries = new LinkedList<Entry<K,V>>();
+
+        private static class LRUEntry<K,V> implements Entry<K,V> {
+            private final K key;
+            private final V value;
+
+            private LRUEntry(K key, V value) {
+                this.key = key;
+                this.value = value;
+            }
+
+            public K getKey() {
+                return key;
+            }
+
+            public V getValue() {
+                return value;
+            }
+
+            public V setValue(V value) {
+                throw new UnsupportedOperationException();
+            }
+        }
+
+        private LRUMap(int bound) {
+            this.bound = bound;
+        }
+
+        public V get(Object key) {
+            if (key == null) {
+                throw new NullPointerException();
+            }
+            for (Entry<K,V> e : entries) {
+                if (e.getKey().equals(key)) {
+                    entries.remove(e);
+                    entries.addFirst(e);
+                    return e.getValue();
+                }
+            }
+            return null;
+        }
+
+        public V put(K key, V value) {
+            if (key == null) {
+                throw new NullPointerException();
+            }
+            V old = null;
+            for (Entry<K,V> e : entries) {
+                if (e.getKey().equals(key)) {
+                    entries.remove(e);
+                    old = e.getValue();
+                    break;
+                }
+            }
+            if (value != null) {
+                entries.addFirst(new LRUEntry<K,V>(key, value));
+                while (entries.size() > bound) {
+                    entries.removeLast();
+                }
+            }
+            return old;
+        }
+
+        public Set<Entry<K, V>> entrySet() {
+            return new AbstractSet<Entry<K,V>>() {
+                public Iterator<Entry<K, V>> iterator() {
+                    return entries.iterator();
+                }
+
+                public int size() {
+                    return entries.size();
+                }
+            };
+        }
+    }
+
 }

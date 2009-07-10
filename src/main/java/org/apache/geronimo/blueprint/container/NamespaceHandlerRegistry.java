@@ -19,8 +19,13 @@
 package org.apache.geronimo.blueprint.container;
 
 import java.net.URI;
+import java.util.Set;
+import java.io.IOException;
+
+import javax.xml.validation.Schema;
 
 import org.apache.geronimo.blueprint.NamespaceHandler;
+import org.xml.sax.SAXException;
 
 /**
  * Registry of NamespaceHandler.
@@ -51,6 +56,14 @@ public interface NamespaceHandlerRegistry {
      * @param listener the listener to unregister
      */
     void removeListener(Listener listener);
+
+    /**
+     * Obtain a schema to validate the XML for the given list of namespaces
+     *
+     * @param namespaces
+     * @return
+     */
+    Schema getSchema(Set<URI> namespaces) throws SAXException, IOException;
 
     /**
      * Destroy this registry

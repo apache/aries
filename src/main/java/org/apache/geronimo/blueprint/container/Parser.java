@@ -18,7 +18,6 @@
  */
 package org.apache.geronimo.blueprint.container;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
@@ -26,17 +25,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.w3c.dom.Attr;
@@ -60,15 +57,14 @@ import org.apache.geronimo.blueprint.reflect.MapEntryImpl;
 import org.apache.geronimo.blueprint.reflect.MapMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 import org.apache.geronimo.blueprint.reflect.PropsMetadataImpl;
-import org.apache.geronimo.blueprint.reflect.ReferenceListMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.RefMetadataImpl;
+import org.apache.geronimo.blueprint.reflect.ReferenceListMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ReferenceListenerImpl;
 import org.apache.geronimo.blueprint.reflect.ReferenceMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.RegistrationListenerImpl;
 import org.apache.geronimo.blueprint.reflect.ServiceMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ServiceReferenceMetadataImpl;
 import org.apache.geronimo.blueprint.reflect.ValueMetadataImpl;
-import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -82,8 +78,8 @@ import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.NonNullMetadata;
 import org.osgi.service.blueprint.reflect.NullMetadata;
 import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
@@ -185,7 +181,6 @@ public class Parser {
     private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
 
     private static DocumentBuilderFactory documentBuilderFactory;
-    private static SchemaFactory schemaFactory;
 
     private List<Document> documents;
     private ComponentDefinitionRegistry registry;
@@ -234,7 +229,7 @@ public class Parser {
             if (documents == null) {
                 throw new IllegalStateException("Documents should be parsed before retrieving required namespaces");
             }
-            Set<URI> namespaces = new HashSet<URI>();
+            Set<URI> namespaces = new LinkedHashSet<URI>();
             for (Document doc : documents) {
                 findNamespaces(namespaces, doc);
             }
@@ -246,7 +241,7 @@ public class Parser {
     private void findNamespaces(Set<URI> namespaces, Node node) {
         if (node instanceof Element || node instanceof Attr) {
             String ns = node.getNamespaceURI();
-            if (ns != null && !isBlueprintNamespace(ns)) {
+            if (ns != null) {
                 namespaces.add(URI.create(ns));
             }
         }
@@ -275,36 +270,15 @@ public class Parser {
     }
 
     private void validate() {
-        List<StreamSource> schemaSources = new ArrayList<StreamSource>();
+        // Use a LinkedHashSet to ensure that the blueprint schema is loaded first
         try {
-            schemaSources.add(new StreamSource(getClass().getResourceAsStream("/org/apache/geronimo/blueprint/blueprint.xsd")));
-            for (URI uri : getNamespaces()) {
-                NamespaceHandler handler = this.namespaceHandlerRegistry.getNamespaceHandler(uri);
-                if (handler == null) {
-                    throw new ComponentDefinitionException("Unsupported node namespace: " + uri);
-                }
-                URL url = handler.getSchemaLocation(uri.toString());
-                if (url != null) {
-                    schemaSources.add(new StreamSource(url.openStream()));
-                } else {
-                    LOGGER.warn("No URL is defined for schema " + uri + ". This schema will not be validated");
-                }
-            }
-            Schema schema = getSchemaFactory().newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
+            Schema schema = this.namespaceHandlerRegistry.getSchema(getNamespaces());
             Validator validator = schema.newValidator();
             for (Document doc : this.documents) {
                 validator.validate(new DOMSource(doc));
             }
         } catch (Exception e) {
             throw new ComponentDefinitionException("Unable to validate xml", e);
-        } finally {
-            for (StreamSource s : schemaSources) {
-                try {
-                    s.getInputStream().close();
-                } catch (IOException e) {
-                    // Ignore
-                }
-            }
         }
     }
 
@@ -1223,13 +1197,6 @@ public class Parser {
             documentBuilderFactory = dbf;
         }
         return documentBuilderFactory;
-    }
-
-    private static SchemaFactory getSchemaFactory() {
-        if (schemaFactory == null) {
-            schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        }
-        return schemaFactory;
     }
 
 }
