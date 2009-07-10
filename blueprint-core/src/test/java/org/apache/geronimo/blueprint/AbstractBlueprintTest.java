@@ -20,12 +20,17 @@ package org.apache.geronimo.blueprint;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.Set;
+import java.io.IOException;
+
+import javax.xml.validation.Schema;
 
 import junit.framework.TestCase;
 import org.apache.geronimo.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.geronimo.blueprint.container.Parser;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.reflect.EnvironmentMetadataImpl;
+import org.xml.sax.SAXException;
 
 public abstract class AbstractBlueprintTest extends TestCase {
 
@@ -41,6 +46,9 @@ public abstract class AbstractBlueprintTest extends TestCase {
             public void addListener(Listener listener) {
             }
             public void removeListener(Listener listener) {
+            }
+            public Schema getSchema(Set<URI> namespaces) throws SAXException, IOException {
+                return null;
             }
         };
         return parse(name, handlers);

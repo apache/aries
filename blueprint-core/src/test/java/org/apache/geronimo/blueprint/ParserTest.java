@@ -21,6 +21,10 @@ package org.apache.geronimo.blueprint;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
+import java.io.IOException;
+
+import javax.xml.validation.Schema;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -37,6 +41,7 @@ import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.NullMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
+import org.xml.sax.SAXException;
 
 /**
  * TODO: constructor injection
@@ -193,6 +198,10 @@ public class ParserTest extends AbstractBlueprintTest {
         }
 
         public void removeListener(Listener listener) {
+        }
+
+        public Schema getSchema(Set<URI> namespaces) throws SAXException, IOException {
+            return null;
         }
     }
     
