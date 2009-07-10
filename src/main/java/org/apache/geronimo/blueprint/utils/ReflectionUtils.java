@@ -39,6 +39,7 @@ import java.util.WeakHashMap;
  */
 public class ReflectionUtils {
 
+    // TODO: MLK: PropertyDescriptor holds a reference to Method which holds a reference to the Class itself
     private static Map<Class, PropertyDescriptor[]> beanInfos = Collections.synchronizedMap(new WeakHashMap<Class, PropertyDescriptor[]>());
 
     public static Set<String> getImplementedInterfaces(Set<String> classes, Class clazz) {
@@ -181,14 +182,14 @@ public class ReflectionUtils {
     public static class PropertyDescriptor {
         private String name;
         private Class type;
-        private SoftReference<Method> getter;
-        private SoftReference<Method> setter;
+        private Method getter;
+        private Method setter;
 
         public PropertyDescriptor(String name, Class type, Method getter, Method setter) {
             this.name = name;
             this.type = type;
-            this.getter = new SoftReference<Method>(getter);
-            this.setter = new SoftReference<Method>(setter);
+            this.getter = getter;
+            this.setter = setter;
         }
 
         public String getName() {
@@ -196,11 +197,11 @@ public class ReflectionUtils {
         }
 
         public Method getGetter() {
-            return getter.get();
+            return getter;
         }
 
         public Method getSetter() {
-            return setter.get();
+            return setter;
         }
     }
 

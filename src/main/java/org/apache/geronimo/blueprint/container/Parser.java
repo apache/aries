@@ -241,7 +241,7 @@ public class Parser {
     private void findNamespaces(Set<URI> namespaces, Node node) {
         if (node instanceof Element || node instanceof Attr) {
             String ns = node.getNamespaceURI();
-            if (ns != null) {
+            if (ns != null && !isBlueprintNamespace(ns)) {
                 namespaces.add(URI.create(ns));
             }
         }
