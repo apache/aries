@@ -22,6 +22,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +38,7 @@ import java.util.WeakHashMap;
  * @version $Rev$, $Date$
  */
 public class ReflectionUtils {
-           
+
     private static Map<Class, PropertyDescriptor[]> beanInfos = Collections.synchronizedMap(new WeakHashMap<Class, PropertyDescriptor[]>());
 
     public static Set<String> getImplementedInterfaces(Set<String> classes, Class clazz) {
@@ -153,6 +155,7 @@ public class ReflectionUtils {
             props.clear();
             for (int i = 0; i < pds.length - 1; i++) {
                 if (pds[i] != null) {
+                    pds[i].type = null;
                     props.add(pds[i]);
                 }
             }
@@ -178,30 +181,26 @@ public class ReflectionUtils {
     public static class PropertyDescriptor {
         private String name;
         private Class type;
-        private Method getter;
-        private Method setter;
+        private SoftReference<Method> getter;
+        private SoftReference<Method> setter;
 
         public PropertyDescriptor(String name, Class type, Method getter, Method setter) {
             this.name = name;
             this.type = type;
-            this.getter = getter;
-            this.setter = setter;
+            this.getter = new SoftReference<Method>(getter);
+            this.setter = new SoftReference<Method>(setter);
         }
 
         public String getName() {
             return name;
         }
 
-        public Type getType() {
-            return type;
-        }
-
         public Method getGetter() {
-            return getter;
+            return getter.get();
         }
 
         public Method getSetter() {
-            return setter;
+            return setter.get();
         }
     }
 
