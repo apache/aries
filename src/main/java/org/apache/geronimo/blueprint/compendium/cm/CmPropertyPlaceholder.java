@@ -44,6 +44,7 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder {
     private BlueprintContainer blueprintContainer;
     private ConfigurationAdmin configAdmin; 
     private String persistentId;
+    private transient Configuration config;
 
     public BlueprintContainer getBlueprintContainer() {
         return blueprintContainer;
@@ -71,12 +72,7 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder {
 
     protected String getProperty(String val) {
         LOGGER.debug("Retrieving property value {} from configuration with pid {}", val, persistentId);
-        Configuration config = null;
-        try {
-            config = CmUtils.getConfiguration(configAdmin, persistentId);
-        } catch (IOException e) {
-            // ignore
-        }
+        Configuration config = getConfig();
         Object v = null;
         if (config != null) {
             Dictionary props = config.getProperties();
@@ -95,6 +91,17 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder {
             v = super.getProperty(val);
         }
         return v != null ? v.toString() : null;
+    }
+
+    protected synchronized Configuration getConfig() {
+        if (config == null) {
+            try {
+                config = CmUtils.getConfiguration(configAdmin, persistentId);
+            } catch (IOException e) {
+                // ignore
+            }
+        }
+        return config;
     }
 
 }
