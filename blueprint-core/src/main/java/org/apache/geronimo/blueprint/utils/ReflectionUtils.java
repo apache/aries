@@ -18,6 +18,7 @@
  */
 package org.apache.geronimo.blueprint.utils;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -42,6 +43,23 @@ public class ReflectionUtils {
     // TODO: MLK: PropertyDescriptor holds a reference to Method which holds a reference to the Class itself
     private static Map<Class, PropertyDescriptor[]> beanInfos = Collections.synchronizedMap(new WeakHashMap<Class, PropertyDescriptor[]>());
 
+    public static boolean hasDefaultConstructor(Class type) {
+        if (!Modifier.isPublic(type.getModifiers())) {
+            return false;
+        }
+        if (Modifier.isAbstract(type.getModifiers())) {
+            return false;
+        }
+        Constructor[] constructors = type.getConstructors();
+        for (Constructor constructor : constructors) {
+            if (Modifier.isPublic(constructor.getModifiers()) &&
+                    constructor.getParameterTypes().length == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public static Set<String> getImplementedInterfaces(Set<String> classes, Class clazz) {
         if (clazz != null && clazz != Object.class) {
             for (Class itf : clazz.getInterfaces()) {
