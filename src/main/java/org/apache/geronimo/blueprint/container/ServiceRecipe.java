@@ -142,7 +142,11 @@ public class ServiceRecipe extends AbstractRecipe {
                 properties = (Map) createRecipe(propertiesRecipe);
             }
             props.putAll(properties);
-            props.put(Constants.SERVICE_RANKING, metadata.getRanking());
+            if (metadata.getRanking() == 0) {
+                props.remove(Constants.SERVICE_RANKING);
+            } else {
+                props.put(Constants.SERVICE_RANKING, metadata.getRanking());
+            }
             String componentName = getComponentName();
             if (componentName != null) {
                 props.put(BlueprintConstants.COMPONENT_NAME_PROPERTY, componentName);
