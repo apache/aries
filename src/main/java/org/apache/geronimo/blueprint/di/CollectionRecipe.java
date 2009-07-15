@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.geronimo.blueprint.utils.TypeUtils;
+import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
@@ -57,7 +57,7 @@ public class CollectionRecipe extends AbstractRecipe {
     protected Object internalCreate() throws ComponentDefinitionException {
         Class type = getCollection(typeClass);
 
-        if (!TypeUtils.hasDefaultConstructor(type)) {
+        if (!ReflectionUtils.hasDefaultConstructor(type)) {
             throw new ComponentDefinitionException("Type does not have a default constructor " + type.getName());
         }
 
@@ -94,7 +94,7 @@ public class CollectionRecipe extends AbstractRecipe {
     }
 
     public static Class getCollection(Class type) {
-        if (TypeUtils.hasDefaultConstructor(type)) {
+        if (ReflectionUtils.hasDefaultConstructor(type)) {
             return type;
         } else if (SortedSet.class.isAssignableFrom(type)) {
             return TreeSet.class;
