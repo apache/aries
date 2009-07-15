@@ -20,7 +20,10 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.Version;
 
 /**
  * @version $Rev$ $Date$
@@ -45,6 +48,12 @@ public final class JavaUtils {
             props.put(key, ref.getProperty(key));
         }
         return props;
+    }
+    
+    public static Version getBundleVersion(Bundle bundle) {
+        Dictionary headers = bundle.getHeaders();
+        String version = (String)headers.get(Constants.BUNDLE_VERSION);
+        return (version != null) ? Version.parseVersion(version) : null;
     }
     
 }
