@@ -49,6 +49,7 @@ import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.geronimo.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.geronimo.blueprint.utils.HeaderParser;
+import org.apache.geronimo.blueprint.utils.JavaUtils;
 import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -299,7 +300,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             props.put(BlueprintConstants.CONTAINER_SYMBOLIC_NAME_PROPERTY,
                                       bundleContext.getBundle().getSymbolicName());
                             props.put(BlueprintConstants.CONTAINER_VERSION_PROPERTY,
-                                      bundleContext.getBundle().getHeaders().get(Constants.BUNDLE_VERSION));
+                                      JavaUtils.getBundleVersion(bundleContext.getBundle()));
                             registration = bundleContext.registerService(BlueprintContainer.class.getName(), this, props);
                             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATED, getBundleContext().getBundle(), getExtenderBundle()));
                             state = State.Created;

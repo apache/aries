@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.geronimo.blueprint.utils.JavaUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -141,12 +142,6 @@ public class BlueprintEventDispatcher implements BlueprintListener {
             }
         }
     }
-
-    private static Version getBundleVersion(Bundle bundle) {
-        Dictionary headers = bundle.getHeaders();
-        String version = (String)headers.get(Constants.BUNDLE_VERSION);
-        return (version != null) ? Version.parseVersion(version) : null;
-    }
     
     public void destroy() {
         this.executor.shutdown();
@@ -175,14 +170,14 @@ public class BlueprintEventDispatcher implements BlueprintListener {
             props.put(EventConstants.BUNDLE, event.getBundle());
             props.put(EventConstants.BUNDLE_SYMBOLICNAME, event.getBundle().getSymbolicName());
             props.put(EventConstants.BUNDLE_ID, event.getBundle().getBundleId());
-            Version version = getBundleVersion(event.getBundle());
+            Version version = JavaUtils.getBundleVersion(event.getBundle());
             if (version != null) {
                 props.put(EventConstants.BUNDLE_VERSION, version);
             }
             props.put(EventConstants.EXTENDER_BUNDLE, event.getExtenderBundle());
             props.put(EventConstants.EXTENDER_BUNDLE_ID, event.getExtenderBundle().getBundleId());
             props.put(EventConstants.EXTENDER_BUNDLE_SYMBOLICNAME, event.getExtenderBundle().getSymbolicName());
-            version = getBundleVersion(event.getExtenderBundle());
+            version = JavaUtils.getBundleVersion(event.getExtenderBundle());
             if (version != null) {
                 props.put(EventConstants.EXTENDER_BUNDLE_VERSION, version);
             }
