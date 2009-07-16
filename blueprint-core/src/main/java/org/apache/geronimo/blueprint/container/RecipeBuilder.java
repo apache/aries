@@ -205,9 +205,7 @@ public class RecipeBuilder {
             deps.add(new RefRecipe(getName(null), name));
         }
         recipe.setExplicitDependencies(deps);
-        if (!BeanMetadata.SCOPE_PROTOTYPE.equals(beanMetadata.getScope())) {
-            recipe.setPrototype(false);
-        }
+        recipe.setPrototype(MetadataUtil.isPrototypeScope(beanMetadata));
         recipe.setInitMethod(beanMetadata.getInitMethod());
         recipe.setDestroyMethod(beanMetadata.getDestroyMethod());
         List<BeanArgument> beanArguments = beanMetadata.getArguments();

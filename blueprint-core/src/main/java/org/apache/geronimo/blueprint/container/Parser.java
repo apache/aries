@@ -437,11 +437,9 @@ public class Parser {
                     metadata.setActivation(parseActivation(element));
                 }
             } else {
-                metadata.setScope(BeanMetadata.SCOPE_SINGLETON);
                 metadata.setActivation(parseActivation(element));
             }
         } else {
-            metadata.setScope(BeanMetadata.SCOPE_PROTOTYPE);
             metadata.setActivation(ComponentMetadata.ACTIVATION_LAZY);
         }
         if (element.hasAttribute(CLASS_ATTRIBUTE)) {
@@ -471,7 +469,7 @@ public class Parser {
         if (metadata.getFactoryComponent() != null && metadata.getFactoryMethod() == null) {
             throw new ComponentDefinitionException("factory-method is required when factory-component is set");
         }
-        if (metadata.getScope().equals(BeanMetadata.SCOPE_PROTOTYPE) && metadata.getDestroyMethod() != null) {
+        if (MetadataUtil.isPrototypeScope(metadata) && metadata.getDestroyMethod() != null) {
             throw new ComponentDefinitionException("destroy-method must not be set for a <bean> with a prototype scope");
         }
 
