@@ -597,7 +597,10 @@ public class Parser {
         if (service.getAutoExport() == ServiceMetadata.AUTO_EXPORT_DISABLED && service.getInterfaces().isEmpty()) {
             throw new ComponentDefinitionException(INTERFACE_ATTRIBUTE + " attribute or " + INTERFACES_ELEMENT + " element must be set when " + AUTO_EXPORT_ATTRIBUTE + " is set to " + AUTO_EXPORT_DISABLED);
         }
-        
+        // Check for non-disabled auto-exports and interfaces
+        if (service.getAutoExport() != ServiceMetadata.AUTO_EXPORT_DISABLED && !service.getInterfaces().isEmpty()) {
+            throw new ComponentDefinitionException(INTERFACE_ATTRIBUTE + " attribute or  " + INTERFACES_ELEMENT + " element must not be set when " + AUTO_EXPORT_ATTRIBUTE + " is set to anything else than " + AUTO_EXPORT_DISABLED);
+        }
         ComponentMetadata s = service;
         
         // Parse custom attributes
