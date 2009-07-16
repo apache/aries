@@ -44,6 +44,7 @@ import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.NamespaceHandler;
 import org.apache.geronimo.blueprint.Processor;
 import org.apache.geronimo.blueprint.reflect.EnvironmentMetadataImpl;
+import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.di.Repository;
 import org.apache.geronimo.blueprint.namespace.ComponentDefinitionRegistryImpl;
@@ -506,8 +507,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             boolean eager = component.getActivation() == ComponentMetadata.ACTIVATION_EAGER;
             if (component instanceof BeanMetadata) {
                 BeanMetadata local = (BeanMetadata) component;
-                String scope = local.getScope();
-                eager &= BeanMetadata.SCOPE_SINGLETON.equals(scope);
+                eager &= MetadataUtil.isSingletonScope(local);
             }
             if (eager) {
                 components.add(name);

@@ -185,11 +185,21 @@ public class MetadataUtil {
         return arguments;
     }
     
+    public static boolean isPrototypeScope(BeanMetadata metadata) {
+        return (BeanMetadata.SCOPE_PROTOTYPE.equals(metadata.getScope()) || 
+                (metadata.getScope() == null && metadata.getId() == null));
+    }
+    
+    public static boolean isSingletonScope(BeanMetadata metadata) {
+        return (BeanMetadata.SCOPE_SINGLETON.equals(metadata.getScope())  ||
+                (metadata.getScope() == null && metadata.getId() != null));
+    }
+    
     private static class BeanArgumentComparator implements Comparator<BeanArgument>, Serializable {
         public int compare(BeanArgument object1, BeanArgument object2) {
             return object1.getIndex() - object2.getIndex();
         }        
     }
-        
+       
 }
 

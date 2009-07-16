@@ -35,6 +35,7 @@ import org.apache.geronimo.blueprint.di.MapRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
 import org.apache.geronimo.blueprint.di.RefRecipe;
 import org.apache.geronimo.blueprint.di.Repository;
+import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 import org.apache.geronimo.blueprint.utils.JavaUtils;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
@@ -363,7 +364,7 @@ public class ServiceRecipe extends AbstractRecipe {
         }
         if (metadata instanceof BeanMetadata) {
             BeanMetadata bean = (BeanMetadata) metadata;
-            return BeanMetadata.SCOPE_PROTOTYPE.equals(bean.getScope());
+            return MetadataUtil.isPrototypeScope(bean);
         } else {
             return false;
         }
