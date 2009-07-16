@@ -142,8 +142,8 @@ public class GenericType extends ReifiedType {
         return cl.getName();
     }
 
-    static GenericType[] parametersOf(Type type ) {
-		if ( type instanceof Class ) {
+    static GenericType[] parametersOf(Type type) {
+		if (type instanceof Class) {
 		    Class clazz = (Class) type;
 		    if (clazz.isArray()) {
                 GenericType t = new GenericType(clazz.getComponentType());
@@ -156,7 +156,7 @@ public class GenericType extends ReifiedType {
 		        return EMPTY;
 		    }
 		}
-        if ( type instanceof ParameterizedType ) {
+        if (type instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) type;
             Type [] parameters = pt.getActualTypeArguments();
             GenericType[] gts = new GenericType[parameters.length];
@@ -165,8 +165,26 @@ public class GenericType extends ReifiedType {
             }
             return gts;
         }
-        if ( type instanceof GenericArrayType ) {
+        if (type instanceof GenericArrayType) {
             return new GenericType[] { new GenericType(((GenericArrayType) type).getGenericComponentType()) };
+        }
+        if (type instanceof WildcardType) {
+            WildcardType wildcard = (WildcardType) type;
+            Type[] types = null;
+            if (wildcard.getLowerBounds() == null || wildcard.getLowerBounds().length == 0) {
+                types = wildcard.getUpperBounds();
+            } else {
+                types = wildcard.getLowerBounds();
+            }
+            GenericType[] gts = new GenericType[types.length];
+            for (int i = 0; i < gts.length; i++) {
+                gts[i] = new GenericType(types[i]);
+            }
+            return gts;
+        }
+        if (type instanceof TypeVariable) {
+            TypeVariable typeVariable = (TypeVariable) type;
+            return new GenericType[] { new GenericType(typeVariable.getBounds()[0]) };
         }
         throw new IllegalStateException();
 	}
