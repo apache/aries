@@ -18,13 +18,10 @@
  */
 package org.apache.geronimo.blueprint.container;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -229,17 +226,19 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
             if (!type.getRawClass().isAssignableFrom(List.class)) {
                 throw new ComponentDefinitionException("<ref-list/> can only be converted to a List, not " + type);
             }
+            int memberType = metadata.getMemberType();            
             boolean useRef = false;
-            if (type instanceof ParameterizedType) {
-                Type[] args = ((ParameterizedType) type).getActualTypeArguments();
-                if (args != null && args.length == 1) {
-                    useRef = (args[0] == ServiceReference.class);
+            if (type.size() == 1) {
+                useRef = (type.getActualTypeArgument(0).getRawClass() == ServiceReference.class);
+                if ( (useRef && memberType == ReferenceListMetadata.USE_SERVICE_OBJECT) ||
+                     (!useRef && memberType == ReferenceListMetadata.USE_SERVICE_REFERENCE)) {
+                    throw new ComponentDefinitionException("The memeber-type specified is incompatible with generic injection type");
                 }
             }
             boolean references;
-            if (metadata.getMemberType() == ReferenceListMetadata.USE_SERVICE_REFERENCE) {
+            if (memberType == ReferenceListMetadata.USE_SERVICE_REFERENCE) {                
                 references = true;
-            } else if (metadata.getMemberType() == ReferenceListMetadata.USE_SERVICE_OBJECT) {
+            } else if (memberType == ReferenceListMetadata.USE_SERVICE_OBJECT) {
                 references = false;
             } else {
                 references = useRef;
