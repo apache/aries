@@ -1002,26 +1002,46 @@ public class Parser {
     }
 
     private Metadata parseArgumentOrPropertyValue(Element element, ComponentMetadata enclosingComponent) {
-        // TODO: we should ensure there is only a single element or ref attribute defined here
+        Metadata [] values = new Metadata[3];
+        
         if (element.hasAttribute(REF_ATTRIBUTE)) {
-            return new RefMetadataImpl(element.getAttribute(REF_ATTRIBUTE));
-        } else if (element.hasAttribute(VALUE_ATTRIBUTE)) {
-            return new ValueMetadataImpl(element.getAttribute(VALUE_ATTRIBUTE));
-        } else {
-            NodeList nl = element.getChildNodes();
-            for (int i = 0; i < nl.getLength(); i++) {
-                Node node = nl.item(i);
-                if (node instanceof Element) {
-                    Element e = (Element) node;
-                    if (isBlueprintNamespace(node.getNamespaceURI()) && nodeNameEquals(node, DESCRIPTION_ELEMENT)) {
-                        // Ignore description elements
-                    } else {
-                        return parseValueGroup(e, enclosingComponent, true);
-                    }
+            values[0] = new RefMetadataImpl(element.getAttribute(REF_ATTRIBUTE));
+        } 
+        
+        if (element.hasAttribute(VALUE_ATTRIBUTE)) {
+            values[1] = new ValueMetadataImpl(element.getAttribute(VALUE_ATTRIBUTE));
+        } 
+        
+        NodeList nl = element.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node node = nl.item(i);
+            if (node instanceof Element) {
+                Element e = (Element) node;
+                if (isBlueprintNamespace(node.getNamespaceURI()) && nodeNameEquals(node, DESCRIPTION_ELEMENT)) {
+                    // Ignore description elements
+                } else {
+                    values[2] = parseValueGroup(e, enclosingComponent, true);                    
+                    break;
                 }
             }
         }
-        throw new ComponentDefinitionException("One of " + REF_ATTRIBUTE + " attribute, " + VALUE_ATTRIBUTE + " attribute or sub element must be set");
+        
+        Metadata value = null;
+        for (Metadata v : values) {
+            if (v != null) {
+                if (value == null) {
+                    value = v;
+                } else {
+                    throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + VALUE_ATTRIBUTE + " attribute or sub element must be set");
+                }
+            }
+        }
+
+        if (value == null) {
+            throw new ComponentDefinitionException("One of " + REF_ATTRIBUTE + " attribute, " + VALUE_ATTRIBUTE + " attribute or sub element must be set");
+        }
+        
+        return value;
     }
 
     private Metadata parseValueGroup(Element element, ComponentMetadata enclosingComponent, boolean allowNull) {
