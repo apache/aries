@@ -169,22 +169,10 @@ public class GenericType extends ReifiedType {
             return new GenericType[] { new GenericType(((GenericArrayType) type).getGenericComponentType()) };
         }
         if (type instanceof WildcardType) {
-            WildcardType wildcard = (WildcardType) type;
-            Type[] types = null;
-            if (wildcard.getLowerBounds() == null || wildcard.getLowerBounds().length == 0) {
-                types = wildcard.getUpperBounds();
-            } else {
-                types = wildcard.getLowerBounds();
-            }
-            GenericType[] gts = new GenericType[types.length];
-            for (int i = 0; i < gts.length; i++) {
-                gts[i] = new GenericType(types[i]);
-            }
-            return gts;
+            return EMPTY;
         }
         if (type instanceof TypeVariable) {
-            TypeVariable typeVariable = (TypeVariable) type;
-            return new GenericType[] { new GenericType(typeVariable.getBounds()[0]) };
+            return EMPTY;
         }
         throw new IllegalStateException();
 	}
