@@ -29,7 +29,7 @@ import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
  */
 public class ReferenceListMetadataImpl extends ServiceReferenceMetadataImpl implements MutableReferenceListMetadata {
 
-    private int memberType;
+    private int memberType = USE_SERVICE_OBJECT;
 
     public ReferenceListMetadataImpl() {
     }

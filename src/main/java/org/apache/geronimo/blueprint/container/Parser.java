@@ -858,6 +858,8 @@ public class Parser {
             } else if (USE_SERVICE_REFERENCE.equals(memberType)) {
                 references.setMemberType(ReferenceListMetadata.USE_SERVICE_REFERENCE);
             }
+        } else {
+            references.setMemberType(ReferenceListMetadata.USE_SERVICE_OBJECT);
         }
         parseReference(element, references, topElement);
 
