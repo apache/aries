@@ -18,6 +18,7 @@
  */
 package org.apache.geronimo.blueprint.container;
 
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -106,7 +107,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private final Bundle extenderBundle;
     private final BlueprintListener eventDispatcher;
     private final NamespaceHandlerRegistry handlers;
-    private final List<URL> urls;
+    private final List<Object> pathList;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
     private final AggregateConverter converter;
     private final ScheduledExecutorService executors;
@@ -127,12 +128,12 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private final AtomicBoolean running = new AtomicBoolean();
     private List<ServiceRecipe> services;
 
-    public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<URL> urls) {
+    public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<Object> pathList) {
         this.bundleContext = bundleContext;
         this.extenderBundle = extenderBundle;
         this.eventDispatcher = eventDispatcher;
         this.handlers = handlers;
-        this.urls = urls;
+        this.pathList = pathList;
         this.converter = new AggregateConverter(this);
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
@@ -223,7 +224,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATING, getBundleContext().getBundle(), getExtenderBundle()));
                         parser = new Parser();
                         parser.setValidation(xmlValidation);
-                        parser.parse(urls);
+                        parser.parse(getResources());
                         namespaces = parser.getNamespaces();
                         if (namespaces.size() > 0) {
                             handlers.addListener(this);
@@ -325,6 +326,25 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         }
     }
 
+    private List<URL> getResources() throws FileNotFoundException {
+        List<URL> resources = new ArrayList<URL>();
+        for (Object path : pathList) {
+            if (path instanceof URL) {
+                resources.add((URL) path);                
+            } else if (path instanceof String) {
+                URL url = bundleContext.getBundle().getEntry((String) path);
+                if (url == null) {
+                    throw new FileNotFoundException("Unable to find configuration file for " + path);
+                } else {
+                    resources.add(url);
+                }
+            } else {
+                throw new IllegalArgumentException("Unexpected path type: " + path.getClass());
+            }
+        }
+        return resources;
+    }
+    
     public BlueprintRepository getRepository() {
         if (repository == null) {
             repository = new RecipeBuilder(this).createRepository();
