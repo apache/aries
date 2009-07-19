@@ -24,7 +24,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Comparator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -167,7 +166,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     private void checkBundle(Bundle bundle) {
         LOGGER.debug("Scanning bundle {} for blueprint application", bundle.getSymbolicName());
         try {
-            List<URL> urls = new ArrayList<URL>();
+            List<Object> pathList = new ArrayList<Object>();
             String blueprintHeader = (String) bundle.getHeaders().get(BlueprintConstants.BUNDLE_BLUEPRINT_HEADER);
             if (blueprintHeader == null) {
                 blueprintHeader = "OSGI-INF/blueprint/";
@@ -176,7 +175,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
             for (PathElement path : paths) {
                 String name = path.getName();
                 if (name.endsWith("/")) {
-                    addEntries(bundle, name, "*.xml", false, urls);
+                    addEntries(bundle, name, "*.xml", pathList);
                 } else {
                     String baseName;
                     String filePattern;
@@ -189,21 +188,21 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                         filePattern = name.substring(pos + 1);
                     }
                     if (hasWildcards(filePattern)) {
-                        addEntries(bundle, baseName, filePattern, false, urls);
+                        addEntries(bundle, baseName, filePattern, pathList);
                     } else {
-                        addEntry(bundle, name, urls);
+                        addEntry(bundle, name, pathList);
                     }                    
                 }
             }            
-            if (!urls.isEmpty()) {
-                LOGGER.debug("Found blueprint application in bundle {} with urls: {}", bundle.getSymbolicName(), urls);
+            if (!pathList.isEmpty()) {
+                LOGGER.debug("Found blueprint application in bundle {} with paths: {}", bundle.getSymbolicName(), pathList);
                 // Check compatibility
                 // TODO: For lazy bundles, the class is either loaded from an imported package or not found, so it should
                 // not trigger the activation.  If it does, we need to use something else like package admin or
                 // ServiceReference, or just not do this check, which could be quite harmful.
                 boolean compatible = isCompatible(bundle);
                 if (compatible) {
-                    final BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle.getBundleContext(), context.getBundle(), eventDispatcher, handlers, executors, urls);
+                    final BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle.getBundleContext(), context.getBundle(), eventDispatcher, handlers, executors, pathList);
                     containers.put(bundle, blueprintContainer);
                     blueprintContainer.schedule();
                 } else {
@@ -239,30 +238,15 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         return path.indexOf("*") >= 0; 
     }
     
-    private void addEntry(Bundle bundle, String path, List<URL> urls) {
-        URL url = bundle.getEntry(path);
-        if (url != null) {
-            urls.add(url);
-        } else {
-            throw new IllegalArgumentException("Unable to find configuration file for " + path);
-        }
+    private void addEntry(Bundle bundle, String path, List<Object> pathList) {
+        pathList.add(path);
     }
     
-    private void addEntries(Bundle bundle, String path, String filePattern, boolean mustMatch, List<URL> urls) {
-        boolean added = false;
+    private void addEntries(Bundle bundle, String path, String filePattern, List<Object> pathList) {
         Enumeration e = bundle.findEntries(path, filePattern, false);
         while (e != null && e.hasMoreElements()) {
             URL u = (URL) e.nextElement();
-            urls.add(u);
-            added = true;
-        }
-        if (!added && mustMatch) {
-            String query = path;
-            if (!path.endsWith("/")) {
-                query += "/";
-            }
-            query += filePattern;
-            throw new IllegalArgumentException("Unable to find any configuration files for " + query);
+            pathList.add(u);
         }
     }
 }
