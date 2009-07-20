@@ -130,8 +130,10 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                     ServiceReference[] references = blueprintContainer.getBundleContext().getServiceReferences(null, getOsgiFilter());
                     if (references != null) {
                         for (ServiceReference reference : references) {
-                            serviceAdded(reference);
+                            this.references.add(reference);
+                            track(reference);
                         }
+                        satisfied.set(optional || !this.references.isEmpty());
                     }
                 }
             } catch (InvalidSyntaxException e) {
@@ -282,20 +284,16 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     private void serviceAdded(ServiceReference ref) {
         LOGGER.debug("Tracking reference {} for OSGi service {}", ref, getOsgiFilter());
-        boolean added;
-        boolean satisfied;
         synchronized (references) {
-            added = references.add(ref);
-            satisfied = optional || !references.isEmpty();
+            references.add(ref);
         }
-        if (added) {
-            track(ref);
-        }
-        setSatisfied(satisfied);
+        track(ref);
+        setSatisfied(true);
     }
 
     private void serviceModified(ServiceReference ref) {
-        serviceAdded(ref);
+        // ref must be in references and must be satisfied
+        track(ref);
     }
 
     private void serviceRemoved(ServiceReference ref) {
