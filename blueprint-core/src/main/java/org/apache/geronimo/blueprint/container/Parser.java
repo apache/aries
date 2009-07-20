@@ -345,7 +345,7 @@ public class Parser {
         } else if (BeanProperty.class.isAssignableFrom(type)) {
             return type.cast(parseBeanProperty(enclosingComponent, element));
         } else if (MapEntry.class.isAssignableFrom(type)) {
-            return type.cast(parseMapEntry(element, enclosingComponent));
+            return type.cast(parseMapEntry(element, enclosingComponent, null, null));
         } else if (MapMetadata.class.isAssignableFrom(type)) {
             return type.cast(parseMap(element, enclosingComponent));
         } else if (BeanMetadata.class.isAssignableFrom(type)) {
@@ -365,7 +365,7 @@ public class Parser {
         } else if (RefMetadata.class.isAssignableFrom(type)) {
             return type.cast(parseRef(element));
         } else if (ValueMetadata.class.isAssignableFrom(type)) {
-            return type.cast(parseValue(element));
+            return type.cast(parseValue(element, null));
         } else {
             throw new ComponentDefinitionException("Unknown type to parse element: " + type.getName());
         }
@@ -631,7 +631,7 @@ public class Parser {
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
             if (node instanceof Element) {
-                Metadata val = parseValueGroup((Element) node, enclosingComponent, true);
+                Metadata val = parseValueGroup((Element) node, enclosingComponent, valueType, true);
                 list.add(val);
             }
         }
@@ -681,14 +681,14 @@ public class Parser {
             if (node instanceof Element) {
                 Element e = (Element) node;
                 if (nodeNameEquals(e, ENTRY_ELEMENT)) {
-                    entries.add(parseMapEntry(e, enclosingComponent));
+                    entries.add(parseMapEntry(e, enclosingComponent, keyType, valueType));
                 }
             }
         }
         return new MapMetadataImpl(keyType, valueType, entries);
     }
 
-    private MapEntry parseMapEntry(Element element, ComponentMetadata enclosingComponent) {
+    private MapEntry parseMapEntry(Element element, ComponentMetadata enclosingComponent, String keyType, String valueType) {
         // Parse attributes
         String key = element.hasAttribute(KEY_ATTRIBUTE) ? element.getAttribute(KEY_ATTRIBUTE) : null;
         String keyRef = element.hasAttribute(KEY_REF_ATTRIBUTE) ? element.getAttribute(KEY_REF_ATTRIBUTE) : null;
@@ -703,9 +703,9 @@ public class Parser {
             if (node instanceof Element) {
                 Element e = (Element) node;
                 if (nodeNameEquals(e, KEY_ELEMENT)) {
-                    keyValue = parseMapKeyEntry(e, enclosingComponent);
+                    keyValue = parseMapKeyEntry(e, enclosingComponent, keyType);
                 } else {
-                    valValue = parseValueGroup(e, enclosingComponent, true);
+                    valValue = parseValueGroup(e, enclosingComponent, valueType, true);
                 }
             }
         }
@@ -713,7 +713,7 @@ public class Parser {
         if (keyValue != null && (key != null || keyRef != null) || (keyValue == null && key == null && keyRef == null)) {
             throw new ComponentDefinitionException("Only and only one of " + KEY_ATTRIBUTE + " attribute, " + KEY_REF_ATTRIBUTE + " attribute or " + KEY_ELEMENT + " element must be set");
         } else if (keyValue == null && key != null) {
-            keyValue = new ValueMetadataImpl(key);
+            keyValue = new ValueMetadataImpl(key, keyType);
         } else if (keyValue == null /*&& keyRef != null*/) {
             keyValue = new RefMetadataImpl(keyRef);
         }
@@ -721,14 +721,14 @@ public class Parser {
         if (valValue != null && (value != null || valueRef != null) || (valValue == null && value == null && valueRef == null)) {
             throw new ComponentDefinitionException("Only and only one of " + VALUE_ATTRIBUTE + " attribute, " + VALUE_REF_ATTRIBUTE + " attribute or sub element must be set");
         } else if (valValue == null && value != null) {
-            valValue = new ValueMetadataImpl(value);
+            valValue = new ValueMetadataImpl(value, valueType);
         } else if (valValue == null /*&& valueRef != null*/) {
             valValue = new RefMetadataImpl(valueRef);
         }
         return new MapEntryImpl(keyValue, valValue);
     }
 
-    private NonNullMetadata parseMapKeyEntry(Element element, ComponentMetadata enclosingComponent) {
+    private NonNullMetadata parseMapKeyEntry(Element element, ComponentMetadata enclosingComponent, String keyType) {
         NonNullMetadata keyValue = null;
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
@@ -738,7 +738,7 @@ public class Parser {
                 if (keyValue != null) {
                     // TODO: throw an exception
                 }
-                keyValue = (NonNullMetadata) parseValueGroup(e, enclosingComponent, false);
+                keyValue = (NonNullMetadata) parseValueGroup(e, enclosingComponent, keyType, false);
                 break;
             }
         }
@@ -1023,7 +1023,7 @@ public class Parser {
                 if (isBlueprintNamespace(node.getNamespaceURI()) && nodeNameEquals(node, DESCRIPTION_ELEMENT)) {
                     // Ignore description elements
                 } else {
-                    values[2] = parseValueGroup(e, enclosingComponent, true);                    
+                    values[2] = parseValueGroup(e, enclosingComponent, null, true);                    
                     break;
                 }
             }
@@ -1047,7 +1047,7 @@ public class Parser {
         return value;
     }
 
-    private Metadata parseValueGroup(Element element, ComponentMetadata enclosingComponent, boolean allowNull) {
+    private Metadata parseValueGroup(Element element, ComponentMetadata enclosingComponent, String collectionType, boolean allowNull) {
         if (isBlueprintNamespace(element.getNamespaceURI())) {
             if (nodeNameEquals(element, BEAN_ELEMENT)) {
                 return parseBeanMetadata(element, false);
@@ -1060,7 +1060,7 @@ public class Parser {
             } else if (nodeNameEquals(element, NULL_ELEMENT) && allowNull) {
                 return NullMetadata.NULL;
             } else if (nodeNameEquals(element, VALUE_ELEMENT)) {
-                return parseValue(element);
+                return parseValue(element, collectionType);
             } else if (nodeNameEquals(element, REF_ELEMENT)) {
                 return parseRef(element);
             } else if (nodeNameEquals(element, IDREF_ELEMENT)) {
@@ -1083,10 +1083,12 @@ public class Parser {
         }
     }
 
-    private ValueMetadata parseValue(Element element) {
+    private ValueMetadata parseValue(Element element, String collectionType) {
         String type = null;
         if (element.hasAttribute(TYPE_ATTRIBUTE)) {
             type = element.getAttribute(TYPE_ATTRIBUTE);
+        } else {
+            type = collectionType;
         }
         return new ValueMetadataImpl(getTextValue(element), type);
     }
