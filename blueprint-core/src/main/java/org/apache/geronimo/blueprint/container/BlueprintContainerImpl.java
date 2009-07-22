@@ -21,6 +21,14 @@ package org.apache.geronimo.blueprint.container;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URL;
+import java.security.AccessControlContext;
+import java.security.AccessController;
+import java.security.DomainCombiner;
+import java.security.Permission;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,6 +64,7 @@ import org.apache.geronimo.blueprint.utils.HeaderParser.PathElement;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
@@ -127,6 +136,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private final AtomicBoolean scheduled = new AtomicBoolean();
     private final AtomicBoolean running = new AtomicBoolean();
     private List<ServiceRecipe> services;
+    private AccessControlContext accessControlContext;
 
     public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<Object> pathList) {
         this.bundleContext = bundleContext;
@@ -138,14 +148,13 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executors;
         this.processors = new ArrayList<Processor>();
+        if (System.getSecurityManager() != null) {
+            this.accessControlContext = getAccessControlContext();
+        }
     }
 
     public Bundle getExtenderBundle() {
         return extenderBundle;
-    }
-
-    public Class loadClass(String name) throws ClassNotFoundException {
-        return bundleContext.getBundle().loadClass(name);
     }
 
     public <T extends Processor> List<T> getProcessors(Class<T> clazz) {
@@ -343,6 +352,65 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             }
         }
         return resources;
+    }
+    
+    public Class loadClass(final String name) throws ClassNotFoundException {
+        if (accessControlContext == null) {
+            return bundleContext.getBundle().loadClass(name);
+        } else {
+            try {
+                return AccessController.doPrivileged(new PrivilegedExceptionAction<Class>() {
+                    public Class run() throws Exception {
+                        return bundleContext.getBundle().loadClass(name);
+                    }            
+                }, accessControlContext);
+            } catch (PrivilegedActionException e) {
+                Exception cause = e.getException();
+                if (cause instanceof ClassNotFoundException) {
+                    throw (ClassNotFoundException) cause;
+                }
+                throw new IllegalStateException("Unexpected checked exception", cause);
+            }
+        }
+    }
+    
+    public ServiceRegistration registerService(final String[] classes, final Object service, final Dictionary properties) {
+        if (accessControlContext == null) {
+            return bundleContext.registerService(classes, service, properties);
+        } else {
+            return AccessController.doPrivileged(new PrivilegedAction<ServiceRegistration>() {
+                public ServiceRegistration run() {
+                    return bundleContext.registerService(classes, service, properties);
+                }            
+            }, accessControlContext);
+        }
+    }
+    
+    public Object getService(final ServiceReference reference) {
+        if (accessControlContext == null) {
+            return bundleContext.getService(reference);
+        } else {
+            return AccessController.doPrivileged(new PrivilegedAction<Object>() {
+                public Object run() {
+                    return bundleContext.getService(reference);
+                }            
+            }, accessControlContext);
+        }
+    }
+    
+    private AccessControlContext getAccessControlContext() {
+        return new AccessControlContext(AccessController.getContext(),
+                new DomainCombiner() {               
+                    public ProtectionDomain[] combine(ProtectionDomain[] arg0,
+                                                      ProtectionDomain[] arg1) {                    
+                        return new ProtectionDomain[] { new ProtectionDomain(null, null) {                        
+                            public boolean implies(Permission permission) {                                                           
+                                return bundleContext.getBundle().hasPermission(permission);
+                            }
+                        } 
+                    };
+                }
+        });
     }
     
     public BlueprintRepository getRepository() {

@@ -16,11 +16,14 @@
  */
 package org.apache.geronimo.blueprint;
 
+import java.util.Dictionary;
 import java.util.List;
 
 import org.apache.geronimo.blueprint.di.Repository;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintListener;
 import org.osgi.service.blueprint.container.Converter;
@@ -48,4 +51,9 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
     <T extends Processor> List<T> getProcessors(Class<T> type);
 
     Repository getRepository();
+    
+    ServiceRegistration registerService(String[] classes, Object service, Dictionary properties);
+    
+    Object getService(ServiceReference reference);
+        
 }

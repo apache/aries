@@ -161,7 +161,7 @@ public class ServiceRecipe extends AbstractRecipe {
             LOGGER.debug("Registering service {} with interfaces {} and properties {}",
                          new Object[] { name, classes, props });
 
-            registration = blueprintContainer.getBundleContext().registerService(classArray, new TriggerServiceFactory(), props);
+            registration = blueprintContainer.registerService(classArray, new TriggerServiceFactory(), props);
             registrationProperties = props;
         }
     }
@@ -178,7 +178,9 @@ public class ServiceRecipe extends AbstractRecipe {
                     listener.unregister(service instanceof ServiceFactory || !prototypeService ? service : null, registrationProperties);
                 }
             }
-            reg.unregister();
+            if (reg != null) {
+                reg.unregister();
+            }
             // We need to do this hack in order to support reantrancy
             if (registration == reg) {
                 registration = null;
