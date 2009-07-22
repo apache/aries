@@ -197,7 +197,7 @@ public class BeanRecipe extends AbstractRecipe {
             if (matches.size() == 1) {
                 try {
                     Map.Entry<Method, List<Object>> match = matches.entrySet().iterator().next();
-                    instance = match.getKey().invoke(factoryObj, match.getValue().toArray());
+                    instance = invoke(match.getKey(), factoryObj, match.getValue().toArray());
                 } catch (Throwable e) {
                     throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), getRealCause(e));
                 }
@@ -212,7 +212,7 @@ public class BeanRecipe extends AbstractRecipe {
             if (matches.size() == 1) {
                 try {
                     Map.Entry<Method, List<Object>> match = matches.entrySet().iterator().next();
-                    instance = match.getKey().invoke(null, match.getValue().toArray());
+                    instance = invoke(match.getKey(), null, match.getValue().toArray());
                 } catch (Throwable e) {
                     throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), getRealCause(e));
                 }
@@ -230,7 +230,7 @@ public class BeanRecipe extends AbstractRecipe {
             if (matches.size() == 1) {
                 try {
                     Map.Entry<Constructor, List<Object>> match = matches.entrySet().iterator().next();
-                    instance = match.getKey().newInstance(match.getValue().toArray());
+                    instance = newInstance(match.getKey(), match.getValue().toArray());
                 } catch (Throwable e) {
                     throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), getRealCause(e));
                 }
@@ -507,7 +507,7 @@ public class BeanRecipe extends AbstractRecipe {
         // call init method
         if (initMethod != null) {
             try {
-                initMethod.invoke(obj);
+                invoke(initMethod, obj, null);
             } catch (Throwable t) {
                 LOGGER.info("Error invoking init method", getRealCause(t));
                 throw new ComponentDefinitionException("Unable to intialize bean " + getName(), getRealCause(t));
@@ -524,7 +524,7 @@ public class BeanRecipe extends AbstractRecipe {
         try {
             Method method = getDestroyMethod(obj);
             if (method != null) {
-                method.invoke(obj);
+                invoke(method, obj, null);
             }
         } catch (Exception e) {
             LOGGER.info("Error invoking destroy method", getRealCause(e));
@@ -539,7 +539,7 @@ public class BeanRecipe extends AbstractRecipe {
         Method method = getDestroyMethod(instance);
         if (method != null) {
             try {
-                method.invoke(instance);
+                invoke(method, instance, null);
             } catch (Throwable e) {
                 LOGGER.info("Error destroying bean " + getName(), getRealCause(e));
             }
@@ -579,7 +579,7 @@ public class BeanRecipe extends AbstractRecipe {
             Method getter = getPropertyDescriptor(clazz, names[i]).getGetter();
             if (getter != null) {
                 try {
-                    instance = getter.invoke(instance);
+                    instance = invoke(getter, instance, null);
                     clazz = instance.getClass();
                 } catch (Exception e) {
                     throw new ComponentDefinitionException("Error getting property: " + names[i] + " on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName(), getRealCause(e));
@@ -608,7 +608,7 @@ public class BeanRecipe extends AbstractRecipe {
             }
             try {
                 // set value
-                setter.invoke(instance, propertyValue);
+                invoke(setter, instance, propertyValue);
             } catch (Exception e) {
                 throw new ComponentDefinitionException("Error setting property: " + setter, getRealCause(e));
             }
@@ -625,7 +625,15 @@ public class BeanRecipe extends AbstractRecipe {
         }
         throw new ComponentDefinitionException("Unable to find property descriptor " + name + " on class " + clazz.getName());
     }
-
+        
+    private Object invoke(Method method, Object instance, Object... args) throws Exception {
+        return ReflectionUtils.invoke(blueprintContainer.getAccessControlContext(), method, instance, args);        
+    }
+    
+    private Object newInstance(Constructor constructor, Object... args) throws Exception {
+        return ReflectionUtils.newInstance(blueprintContainer.getAccessControlContext(), constructor, args);         
+    }
+    
     private static Object UNMATCHED = new Object();
 
     private class ArgumentMatcher {

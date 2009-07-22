@@ -16,6 +16,7 @@
  */
 package org.apache.geronimo.blueprint;
 
+import java.security.AccessControlContext;
 import java.util.Dictionary;
 import java.util.List;
 
@@ -55,5 +56,7 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
     ServiceRegistration registerService(String[] classes, Object service, Dictionary properties);
     
     Object getService(ServiceReference reference);
+    
+    AccessControlContext getAccessControlContext();
         
 }

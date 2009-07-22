@@ -40,6 +40,8 @@ import java.math.BigDecimal;
 import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.di.CollectionRecipe;
 import org.apache.geronimo.blueprint.di.MapRecipe;
+import org.apache.geronimo.blueprint.utils.ReflectionUtils;
+
 import static org.apache.geronimo.blueprint.utils.ReflectionUtils.getRealCause;
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.Converter;
@@ -244,7 +246,7 @@ public class AggregateConverter implements Converter {
         }
     }
 
-    private static Object createObject(String value, Class type) throws Exception {
+    private Object createObject(String value, Class type) throws Exception {
         if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
             throw new Exception("Unable to convert value " + value + " to type " + type + ". Type " + type + " is an interface or an abstract class");
         }
@@ -255,15 +257,16 @@ public class AggregateConverter implements Converter {
             throw new RuntimeException("Unable to convert to " + type);
         }
         try {
-            return constructor.newInstance(value);
+            return ReflectionUtils.newInstance(blueprintContainer.getAccessControlContext(), constructor, value);
         } catch (Exception e) {
             throw new Exception("Unable to convert ", getRealCause(e));
         }
     }
-
+    
     private Object convertToCollection(Object obj, ReifiedType type) throws Exception {
         ReifiedType valueType = type.getActualTypeArgument(0);
-        Collection newCol = (Collection) CollectionRecipe.getCollection(toClass(type)).newInstance();
+        Collection newCol = (Collection) ReflectionUtils.newInstance(blueprintContainer.getAccessControlContext(), 
+                                                                     CollectionRecipe.getCollection(toClass(type)));
         if (obj.getClass().isArray()) {
             for (int i = 0; i < Array.getLength(obj); i++) {
                 try {
@@ -313,7 +316,8 @@ public class AggregateConverter implements Converter {
     private Object convertToMap(Object obj, ReifiedType type) throws Exception {
         ReifiedType keyType = type.getActualTypeArgument(0);
         ReifiedType valueType = type.getActualTypeArgument(1);
-        Map newMap = (Map) MapRecipe.getMap(toClass(type)).newInstance();
+        Map newMap = (Map) ReflectionUtils.newInstance(blueprintContainer.getAccessControlContext(), 
+                                                       MapRecipe.getMap(toClass(type)));
         if (obj instanceof Dictionary) {
             Dictionary dic = (Dictionary) obj;
             for (Enumeration keyEnum = dic.keys(); keyEnum.hasMoreElements();) {
@@ -370,7 +374,7 @@ public class AggregateConverter implements Converter {
         Class u = primitives.get(c);
         return u != null ? u : c;
     }
-
+    
     private static final Map<Class, Class> primitives;
     static {
         primitives = new HashMap<Class, Class>();
