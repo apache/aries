@@ -212,7 +212,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
                 throw new ServiceUnavailableException("Service is unavailable", getOsgiFilter());
             }
             if (service == null) {
-                service = reference.getBundle().getBundleContext().getService(reference);
+                service = blueprintContainer.getService(reference);
             }
             return service;
         }
