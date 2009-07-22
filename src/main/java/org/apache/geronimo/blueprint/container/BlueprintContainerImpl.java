@@ -149,7 +149,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         this.executors = executors;
         this.processors = new ArrayList<Processor>();
         if (System.getSecurityManager() != null) {
-            this.accessControlContext = getAccessControlContext();
+            this.accessControlContext = createAccessControlContext();
         }
     }
 
@@ -398,7 +398,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         }
     }
     
-    private AccessControlContext getAccessControlContext() {
+    private AccessControlContext createAccessControlContext() {
         return new AccessControlContext(AccessController.getContext(),
                 new DomainCombiner() {               
                     public ProtectionDomain[] combine(ProtectionDomain[] arg0,
@@ -411,6 +411,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                     };
                 }
         });
+    }
+    
+    public AccessControlContext getAccessControlContext() {
+        return accessControlContext;
     }
     
     public BlueprintRepository getRepository() {

@@ -25,6 +25,10 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
+import java.security.AccessControlContext;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -197,6 +201,54 @@ public class ReflectionUtils {
         return new String(chars);
     }
 
+    public static Object invoke(AccessControlContext acc, final Method method, final Object instance, final Object... args) throws Exception {
+        if (acc == null) {
+            return method.invoke(instance, args);
+        } else {
+            try {
+                return AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+                    public Object run() throws Exception {
+                        return method.invoke(instance, args);
+                    }            
+                }, acc);
+            } catch (PrivilegedActionException e) {
+                throw e.getException();
+            }
+        }
+    }
+    
+    public static Object newInstance(AccessControlContext acc, final Class clazz) throws Exception {
+        if (acc == null) {
+            return clazz.newInstance();
+        } else {
+            try {
+                return AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+                    public Object run() throws Exception {
+                        return clazz.newInstance();
+                    }            
+                }, acc);
+            } catch (PrivilegedActionException e) {
+                throw e.getException();
+            }
+        }
+    }
+    
+    public static Object newInstance(AccessControlContext acc, final Constructor constructor, final Object... args) throws Exception {
+        if (acc == null) {
+            return constructor.newInstance(args);
+        } else {
+            try {
+                return AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+                    public Object run() throws Exception {
+                        return constructor.newInstance(args);
+                    }            
+                }, acc);
+            } catch (PrivilegedActionException e) {
+                throw e.getException();
+            }
+        }
+    }
+    
     public static class PropertyDescriptor {
         private String name;
         private Class type;
