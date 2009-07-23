@@ -21,6 +21,10 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.security.AccessControlContext;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -85,18 +89,29 @@ public class AggregateConverter implements Converter {
         converters.remove(converter);
     }
 
-    public boolean canConvert(Object fromValue, ReifiedType toType) {
+    public boolean canConvert(final Object fromValue, final ReifiedType toType) {
         if (fromValue == null) {
             return true;
         }
         if (isAssignable(fromValue, toType)) {
             return true;
         }
-        for (Converter converter : converters) {
-            if (converter.canConvert(fromValue, toType)) {
-                return true;
-            }
+        
+        boolean canConvert = false;
+        AccessControlContext acc = blueprintContainer.getAccessControlContext();
+        if (acc == null) {
+            canConvert = canConvertWithConverters(fromValue, toType);
+        } else {
+            canConvert = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+                public Boolean run() {
+                    return canConvertWithConverters(fromValue, toType);
+                }            
+            }, acc);
         }
+        if (canConvert) {
+            return true;
+        }
+        
         // TODO
         if (fromValue instanceof String) {
             //
@@ -104,7 +119,7 @@ public class AggregateConverter implements Converter {
         return false;
     }
 
-    public Object convert(Object fromValue, ReifiedType type) throws Exception {
+    public Object convert(final Object fromValue, final ReifiedType type) throws Exception {
         // Discard null values
         if (fromValue == null) {
             return null;
@@ -117,7 +132,17 @@ public class AggregateConverter implements Converter {
         if (isAssignable(fromValue, type)) {
             return fromValue;
         }
-        Object value = convertWithConverters(fromValue, type);
+        Object value = null;
+        AccessControlContext acc = blueprintContainer.getAccessControlContext();
+        if (acc == null) {
+            value = convertWithConverters(fromValue, type);
+        } else {
+            value = AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+                public Object run() throws Exception {
+                    return convertWithConverters(fromValue, type);
+                }            
+            }, acc);
+        }
         if (value == null) {
             if (fromValue instanceof Number && Number.class.isAssignableFrom(unwrap(toClass(type)))) {
                 return convertToNumber((Number) fromValue, toClass(type));
@@ -138,6 +163,15 @@ public class AggregateConverter implements Converter {
         return value;
     }
 
+    private boolean canConvertWithConverters(Object source, ReifiedType type) {
+        for (Converter converter : converters) {
+            if (converter.canConvert(source, type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private Object convertWithConverters(Object source, ReifiedType type) throws Exception {
         Object value = null;
         for (Converter converter : converters) {
@@ -395,5 +429,5 @@ public class AggregateConverter implements Converter {
     private Class toClass(ReifiedType type) {
         return type.getRawClass();
     }
-
+    
 }
