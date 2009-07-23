@@ -142,6 +142,32 @@ public class GenericType extends ReifiedType {
         return cl.getName();
     }
 
+    public boolean equals(Object object) {
+        if (!(object instanceof GenericType)) {
+            return false;
+        }
+        GenericType other = (GenericType) object;
+        if (getRawClass() != other.getRawClass()) {
+            return false;
+        }
+        if (parameters == null) {
+            return (other.parameters == null);
+        } else {
+            if (other.parameters == null) {
+                return false;
+            }
+            if (parameters.length != other.parameters.length) {
+                return false;
+            }
+            for (int i = 0; i < parameters.length; i++) {
+                if (!parameters[i].equals(other.parameters[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    
     static GenericType[] parametersOf(Type type) {
 		if (type instanceof Class) {
 		    Class clazz = (Class) type;

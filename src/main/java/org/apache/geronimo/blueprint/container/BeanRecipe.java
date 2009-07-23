@@ -686,7 +686,7 @@ public class BeanRecipe extends AbstractRecipe {
                     continue;
                 }
                 if (forcedType != null) {
-                    if (forcedType != entry.type) {
+                    if (!forcedType.equals(entry.type)) {
                         continue;
                     }
                 } else if (arg != null) {
