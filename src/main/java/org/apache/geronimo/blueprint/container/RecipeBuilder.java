@@ -247,6 +247,7 @@ public class RecipeBuilder {
         if (listener.getUnregistrationMethod() != null) {
             recipe.setProperty("unregisterMethod", listener.getUnregistrationMethod());
         }
+        recipe.setProperty("blueprintContainer", blueprintContainer);
         return recipe;
     }
 
@@ -254,6 +255,7 @@ public class RecipeBuilder {
         BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, AbstractServiceReferenceRecipe.Listener.class);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         recipe.setProperty("metadata", listener);
+        recipe.setProperty("blueprintContainer", blueprintContainer);
         return recipe;
     }
 

@@ -360,10 +360,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
         private static final Logger LOGGER = LoggerFactory.getLogger(Listener.class);
 
-        /* Inject by ObjectRecipe */
         private Object listener;
-        /* Inject by ObjectRecipe */
         private ReferenceListener metadata;
+        private ExtendedBlueprintContainer blueprintContainer;
 
         private Set<Method> bindMethodsReference = new HashSet<Method>();
         private Set<Method> bindMethodsObjectProp = new HashSet<Method>();
@@ -380,6 +379,10 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             this.metadata = metadata;
         }
 
+        public void setBlueprintContainer(ExtendedBlueprintContainer blueprintContainer) {
+            this.blueprintContainer = blueprintContainer;
+        }
+        
         public void init(Collection<Class> classes) {
             Set<Class> clazzes = new HashSet<Class>(classes);
             clazzes.add(Object.class);
@@ -419,14 +422,16 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         private void invokeMethods(Set<Method> referenceMethods, Set<Method> objectMethods, Set<Method> objectPropMethods, ServiceReference reference, Object service) {
             for (Method method : referenceMethods) {
                 try {
-                    method.invoke(listener, reference);
+                    ReflectionUtils.invoke(blueprintContainer.getAccessControlContext(), 
+                                           method, listener, reference);
                 } catch (Exception e) {
                     LOGGER.info("Error calling listener method " + method, e);
                 }
             }
             for (Method method : objectMethods) {
                 try {
-                    method.invoke(listener, service);
+                    ReflectionUtils.invoke(blueprintContainer.getAccessControlContext(), 
+                                           method, listener, service);
                 } catch (Exception e) {
                     LOGGER.info("Error calling listener method " + method, e);
                 }
@@ -442,7 +447,8 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                     }
                 }
                 try {
-                    method.invoke(listener, service, props);
+                    ReflectionUtils.invoke(blueprintContainer.getAccessControlContext(), 
+                                           method, listener, service, props);
                 } catch (Exception e) {
                     LOGGER.info("Error calling listener method " + method, e);
                 }
