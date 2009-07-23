@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ public class ServiceListener {
     private Object listener;
     private String registerMethod;
     private String unregisterMethod;
+    private ExtendedBlueprintContainer blueprintContainer;
 
     private List<Method> registerMethods;
     private List<Method> unregisterMethods;
@@ -47,6 +49,10 @@ public class ServiceListener {
     
     public void setUnregisterMethod(String method) {
         this.unregisterMethod = method;
+    }
+    
+    public void setBlueprintContainer(ExtendedBlueprintContainer blueprintContainer) {
+        this.blueprintContainer = blueprintContainer;
     }
     
     public void register(Object service, Map properties) {
@@ -87,10 +93,10 @@ public class ServiceListener {
         if (methods == null || methods.isEmpty()) {
             return;
         }
-        Object[] args = new Object[] { service, properties };
         for (Method method : methods) {
             try {
-                method.invoke(listener, args);
+                ReflectionUtils.invoke(blueprintContainer.getAccessControlContext(), 
+                                       method, listener, service, properties);
             } catch (Exception e) {
                 LOGGER.info("Error calling listener method " + method, e);
             }
