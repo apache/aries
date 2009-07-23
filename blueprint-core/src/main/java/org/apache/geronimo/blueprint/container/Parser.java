@@ -571,25 +571,30 @@ public class Parser {
                         service.addRegistrationListener(parseRegistrationListener(e, service));
                     } else if (nodeNameEquals(e, BEAN_ELEMENT)) {
                         if (service.getServiceComponent() != null) {
-                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element or " + REF_ELEMENT + " element can be set");
+                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element, " + REFERENCE_ELEMENT + " element or " + REF_ELEMENT + " element can be set");
                         }
                         service.setServiceComponent((Target) parseBeanMetadata(e, false));
                     } else if (nodeNameEquals(e, REF_ELEMENT)) {
                         if (service.getServiceComponent() != null) {
-                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element or " + REF_ELEMENT + " element can be set");
+                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element, " + REFERENCE_ELEMENT + " element or " + REF_ELEMENT + " element can be set");
                         }
                         String component = e.getAttribute(COMPONENT_ID_ATTRIBUTE);
                         if (component == null || component.length() == 0) {
                             throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
                         }
-                        service.setServiceComponent(new RefMetadataImpl(component));
+                        service.setServiceComponent(new RefMetadataImpl(component));                   
+                    } else if (nodeNameEquals(e, REFERENCE_ELEMENT)) {
+                        if (service.getServiceComponent() != null) {
+                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element, " + REFERENCE_ELEMENT + " element or " + REF_ELEMENT + " element can be set");
+                        }
+                        service.setServiceComponent((Target) parseReference(e, false));
                     }
                 }
             }
         }
         // Check service
         if (service.getServiceComponent() == null) {
-            throw new ComponentDefinitionException("One of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element or " + REF_ELEMENT + " element must be set");
+            throw new ComponentDefinitionException("One of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element, " + REFERENCE_ELEMENT + " element or " + REF_ELEMENT + " element must be set");
         }
         // Check interface
         if (service.getAutoExport() == ServiceMetadata.AUTO_EXPORT_DISABLED && service.getInterfaces().isEmpty()) {
