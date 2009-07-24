@@ -592,6 +592,20 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         }
     }
 
+    public boolean isServiceEnabled(ServiceRecipe r) {
+        List<SatisfiableRecipe> dependencies = getSatisfiableDependenciesMap().get(r.getName());
+        boolean enabled = true;
+        if (dependencies != null) {
+            for (SatisfiableRecipe recipe : dependencies) {
+                if (!recipe.isSatisfied()) {
+                    enabled = false;
+                    break;
+                }
+            }
+        }
+        return enabled;
+    }
+
     private void instantiateEagerComponents() {
         List<String> components = new ArrayList<String>();
         for (String name : componentDefinitionRegistry.getComponentDefinitionNames()) {
@@ -619,16 +633,16 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         services = repository.getAllRecipes(ServiceRecipe.class);
         for (ServiceRecipe r : services) {
             List<SatisfiableRecipe> dependencies = getSatisfiableDependenciesMap().get(r.getName());
-            boolean satisfied = true;
+            boolean enabled = true;
             if (dependencies != null) {
                 for (SatisfiableRecipe recipe : dependencies) {
                     if (!recipe.isSatisfied()) {
-                        satisfied = false;
+                        enabled = false;
                         break;
                     }
                 }
             }
-            if (satisfied) {
+            if (r.isEager() && enabled) {
                 r.register();
             }
         }
