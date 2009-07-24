@@ -20,6 +20,8 @@ package org.apache.geronimo.blueprint.container;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -92,8 +94,9 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         context.removeBundleListener(this);
         // Orderly shutdown of containers
         while (!containers.isEmpty()) {
-            Bundle bundle = getBundleToDestroy();
-            destroyContext(bundle);
+            for (Bundle bundle : getBundlesToDestroy()) {
+                destroyContext(bundle);
+            }
         }
         this.eventDispatcher.destroy();
         this.handlers.destroy();
@@ -101,8 +104,8 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         LOGGER.debug("Blueprint extender stopped");
     }
 
-    private Bundle getBundleToDestroy() {
-        Bundle bundleToDestroy = null;
+    private List<Bundle> getBundlesToDestroy() {
+        List<Bundle> bundlesToDestroy = new ArrayList<Bundle>();
         for (Bundle bundle : containers.keySet()) {
             ServiceReference[] references = bundle.getRegisteredServices();
             int usage = 0;
@@ -116,29 +119,30 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
             }
             LOGGER.debug("Usage for bundle {} is {}", bundle, usage);
             if (usage == 0) {
-                if (bundleToDestroy == null) {
-                    LOGGER.debug("Currently selecting bundle {} for destroy (first bundle with no usage)", bundle);
-                    bundleToDestroy = bundle;
-                } else if (bundle.getLastModified() > bundleToDestroy.getLastModified()) {
-                    LOGGER.debug("Currently selecting bundle {} for destroy (it has been installed more recently)", bundle);
-                    bundleToDestroy = bundle;
-                }
+                LOGGER.debug("Currently selecting bundle {} for destroy", bundle);
+                bundlesToDestroy.add(bundle);
             }
         }
-        if (bundleToDestroy == null) {
+        if (!bundlesToDestroy.isEmpty()) {
+            Collections.sort(bundlesToDestroy, new Comparator<Bundle>() {
+                public int compare(Bundle b1, Bundle b2) {
+                    return (int) (b2.getLastModified() - b1.getLastModified());
+                }
+            });
+        } else {
             ServiceReference ref = null;
             for (Bundle bundle : containers.keySet()) {
                 ServiceReference[] references = bundle.getRegisteredServices();
                 for (ServiceReference reference : references) {
-                    if (ref == null || reference.compareTo(ref) > 0) {
+                    if (ref == null || reference.compareTo(ref) < 0) {
                         LOGGER.debug("Currently selecting bundle {} for destroy (with reference {})", bundle, reference);
                         ref = reference;
                     }
                 }
             }
-            bundleToDestroy = ref.getBundle();
+            bundlesToDestroy.add(ref.getBundle());
         }
-        return bundleToDestroy;
+        return bundlesToDestroy;
     }
 
     public void bundleChanged(BundleEvent event) {
