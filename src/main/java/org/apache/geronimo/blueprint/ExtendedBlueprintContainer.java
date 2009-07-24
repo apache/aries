@@ -20,6 +20,7 @@ import java.security.AccessControlContext;
 import java.util.Dictionary;
 import java.util.List;
 
+import org.apache.geronimo.blueprint.container.ServiceRecipe;
 import org.apache.geronimo.blueprint.di.Repository;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -59,4 +60,6 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
     
     AccessControlContext getAccessControlContext();
         
+    boolean isServiceEnabled(ServiceRecipe service);
+    
 }
