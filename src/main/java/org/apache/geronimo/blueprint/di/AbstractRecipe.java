@@ -18,6 +18,7 @@
 package org.apache.geronimo.blueprint.di;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 import org.apache.geronimo.blueprint.container.GenericType;
 import org.osgi.service.blueprint.container.ReifiedType;
@@ -53,6 +54,11 @@ public abstract class AbstractRecipe implements Recipe {
             // if this recipe has already been executed in this container, return the currently registered value
             Object obj = context.getPartialObject(name);
             if (obj != null) {
+                if (context.isCreateReentered()) {
+                    ArrayList<Recipe> circularity = new ArrayList<Recipe>();
+                    circularity.add(this);
+                    throw new CircularDependencyException("Dynamic cycle detected in recipe", circularity);
+                }
                 return obj;
             }
 
@@ -60,7 +66,11 @@ public abstract class AbstractRecipe implements Recipe {
             context.push(this);
             try {
                 obj = internalCreate();
-                addObject(obj, false);
+                if (prototype) {
+                    context.removePartialObject(name);
+                } else {
+                    context.addFullObject(name, obj);
+                }
                 return obj;
             } finally {
                 Recipe popped = context.pop();
@@ -75,11 +85,8 @@ public abstract class AbstractRecipe implements Recipe {
 
     protected abstract Object internalCreate() throws ComponentDefinitionException;
 
-    protected void addObject(Object obj, boolean partial) {
-        if (prototype) {
-            return;
-        }
-        ExecutionContext.Holder.getContext().addObject(name, obj, partial);
+    protected void addPartialObject(Object obj) {
+        ExecutionContext.Holder.getContext().addPartialObject(name, obj);
     }
     
     protected Object convert(Object obj, ReifiedType type) throws Exception {

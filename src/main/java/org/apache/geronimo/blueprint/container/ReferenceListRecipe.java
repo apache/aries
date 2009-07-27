@@ -75,7 +75,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
                 }
             }
             ProvidedObject object = new ProvidedObject();
-            addObject(object, true);
+            addPartialObject(object);
             // Handle initial references
             createListeners();
             retrack();

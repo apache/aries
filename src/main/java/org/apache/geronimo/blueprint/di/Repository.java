@@ -53,8 +53,6 @@ public interface Repository {
 
     Object create(String name) throws ComponentDefinitionException;
 
-    Map<String,Object> createAll(String... names) throws ComponentDefinitionException;
-
     Map<String, Object> createAll(Collection<String> names) throws ComponentDefinitionException;
 
     <T> List<T> getAllRecipes(Class<T> clazz, String... names);

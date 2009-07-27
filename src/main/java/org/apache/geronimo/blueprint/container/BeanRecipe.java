@@ -494,7 +494,7 @@ public class BeanRecipe extends AbstractRecipe {
         
         // Add partially created object to the container
 //        if (initMethod == null) {
-            addObject(obj, true);
+            addPartialObject(obj);
 //        }
 
         // inject properties
@@ -509,7 +509,6 @@ public class BeanRecipe extends AbstractRecipe {
             try {
                 invoke(initMethod, obj, null);
             } catch (Throwable t) {
-                LOGGER.info("Error invoking init method", getRealCause(t));
                 throw new ComponentDefinitionException("Unable to intialize bean " + getName(), getRealCause(t));
             }
         }

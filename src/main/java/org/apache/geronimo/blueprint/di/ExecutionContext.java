@@ -81,14 +81,11 @@ public interface ExecutionContext {
      */
     public abstract Object getObject(String name);
 
-    /**
-     * Add an object to the repository.
-     *
-     * @param name the unique name of the object instance
-     * @param object the object instance
-     * @throws org.osgi.service.blueprint.container.ComponentDefinitionException if another object instance is already registered with the name
-     */
-    public abstract void addObject(String name, Object object, boolean partialObject);
+    public abstract void addFullObject(String name, Object object);
+    
+    public abstract void addPartialObject(String name, Object object);
+    
+    public abstract Object removePartialObject(String name);
     
     public abstract Object getPartialObject(String name);
 
@@ -97,5 +94,7 @@ public interface ExecutionContext {
     public abstract Class loadClass(String className) throws ClassNotFoundException;
 
     public abstract Recipe getRecipe(String name);
+    
+    public abstract boolean isCreateReentered();
 }
 

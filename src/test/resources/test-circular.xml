@@ -36,6 +36,7 @@
     </bean>
     
     
+    
     <bean id="serviceBean" class="org.apache.geronimo.blueprint.pojos.PojoB">
         <property name="uri" value="urn:myuri" />
     </bean>
@@ -53,5 +54,34 @@
            registration-method="register"
            unregistration-method="unregister"/>
     </service>
+    
+    
+    
+    <bean id="circularPrototype" class="org.apache.geronimo.blueprint.pojos.PojoCircular" scope = "prototype">
+        <property name="circular" ref="circularPrototype"/>
+    </bean>
+    
+    <bean id="circularPrototypeDriver" class="org.apache.geronimo.blueprint.pojos.PojoCircular" scope = "prototype">
+        <property name="circular" ref="circularPrototypeDriver"/>
+    </bean>
+    
+    
+    
+    <bean id="recursiveConstructor" class="org.apache.geronimo.blueprint.pojos.PojoRecursive">
+        <argument ref="blueprintContainer"/>
+        <argument value="recursiveConstructor"/>
+        <argument value="1"/>
+    </bean>
+    
+    <bean id="recursiveSetter" class="org.apache.geronimo.blueprint.pojos.PojoRecursive">
+        <argument ref="blueprintContainer"/>
+        <argument value="recursiveSetter"/>
+        <property name="foo" value="1"/>
+    </bean>
+    
+    <bean id="recursiveInitMethod" class="org.apache.geronimo.blueprint.pojos.PojoRecursive" init-method = "init">
+        <argument ref="blueprintContainer"/>
+        <argument value="recursiveInitMethod"/>
+    </bean>
 
 </blueprint>
