@@ -642,7 +642,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                     }
                 }
             }
-            if (r.isEager() && enabled) {
+            if (/*r.isEager() &&*/ enabled) {
                 r.register();
             }
         }
