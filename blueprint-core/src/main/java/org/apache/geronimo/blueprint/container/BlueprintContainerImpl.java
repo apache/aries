@@ -312,7 +312,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                                       bundleContext.getBundle().getSymbolicName());
                             props.put(BlueprintConstants.CONTAINER_VERSION_PROPERTY,
                                       JavaUtils.getBundleVersion(bundleContext.getBundle()));
-                            registration = bundleContext.registerService(BlueprintContainer.class.getName(), this, props);
+                            registration = registerService(new String [] { BlueprintContainer.class.getName() }, this, props);
                             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATED, getBundleContext().getBundle(), getExtenderBundle()));
                             state = State.Created;
                         }
