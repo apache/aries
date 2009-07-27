@@ -84,7 +84,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             // Add partially created proxy to the context
             ServiceProxyWrapper wrapper = new ServiceProxyWrapper();
 
-            addObject(wrapper, true);
+            addPartialObject(wrapper);
 
             // Handle initial references
             createListeners();

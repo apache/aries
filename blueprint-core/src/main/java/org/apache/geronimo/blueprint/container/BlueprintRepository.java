@@ -87,6 +87,8 @@ public class BlueprintRepository implements Repository, ExecutionContext {
      * stack is used to detect circular dependencies.
      */
     private final LinkedList<Recipe> stack = new LinkedList<Recipe>();
+    
+    private int createReentered = 0;
 
     public BlueprintRepository(ExtendedBlueprintContainer container) {
         blueprintContainer = container;
@@ -115,20 +117,24 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     }
 
     public Object create(String name) throws ComponentDefinitionException {
-        Map<String, Object> instances = createAll(Arrays.asList(name));
+        return create(name, true);
+    }
+    
+    public Object create(String name, boolean allowReentry) throws ComponentDefinitionException {
+        Map<String, Object> instances = createAll(Arrays.asList(name), allowReentry);
         return instances.get(name);
     }
 
-    public Map<String, Object> createAll(String... names) throws ComponentDefinitionException {
-        return createAll(Arrays.asList(names));
-    }
-
     public Map<String, Object> createAll(Collection<String> names) throws ComponentDefinitionException {
+        return createAll(names, true);        
+    }
+    
+    public Map<String, Object> createAll(Collection<String> names, boolean allowReentry) throws ComponentDefinitionException {
         ExecutionContext oldContext = ExecutionContext.Holder.setContext(this);
         try {
             Map<String, Object> instances = new LinkedHashMap<String, Object>();
             for (String name : names) {
-                Object obj = createInstance(name);
+                Object obj = createInstance(name, allowReentry);
                 try {
                     // Make sure to go through the conversion step in case we have a Convertible object
                     obj = convert(obj, new ReifiedType(Object.class));
@@ -180,18 +186,27 @@ public class BlueprintRepository implements Repository, ExecutionContext {
         }
     }
 
-    private Object createInstance(String name) {
+    private Object createInstance(String name, boolean allowReentry) {
         // We need to synchronize recipe creation on the repository
         // so that we don't end up with multiple threads creating the
         // same instance at the same time.
         Object instance = getInstance(name);
         if (instance == null) {
             synchronized (instanceLock) {
-                instance = getInstance(name);
-                if (instance == null) {
-                    Recipe recipe = getRecipe(name);
-                    if (recipe != null) {
-                        instance = recipe.create();
+                try {
+                    if (!allowReentry) {
+                        createReentered++;               
+                    }
+                    instance = getInstance(name);
+                    if (instance == null) {
+                        Recipe recipe = getRecipe(name);
+                        if (recipe != null) {
+                            instance = recipe.create();
+                        }
+                    }
+                } finally {
+                    if (!allowReentry) {
+                        createReentered--;
                     }
                 }
             }
@@ -202,6 +217,10 @@ public class BlueprintRepository implements Repository, ExecutionContext {
         return instance;
     }
 
+    public boolean isCreateReentered() {
+        return createReentered >= 2;
+    }
+    
     public void validate() {
         for (Recipe recipe : getAllRecipes()) {
             // Check that references are satisfied
@@ -322,19 +341,23 @@ public class BlueprintRepository implements Repository, ExecutionContext {
         return object;
     }
 
-    public void addObject(String name, Object object, boolean partialObject) {
-        if (partialObject) {
-            partialObjects.put(name, object);
-        } else {
-            if (instances.get(name) != null) {
-                throw new ComponentDefinitionException("Name " + name + " is already registered to instance " + instances.get(name));
-            }
-            instances.put(name, object);
-            creationOrder.add(name); 
-            partialObjects.remove(name);
+    public void addFullObject(String name, Object object) {
+        if (instances.get(name) != null) {
+            throw new ComponentDefinitionException("Name " + name + " is already registered to instance " + instances.get(name));
         }
+        instances.put(name, object);
+        creationOrder.add(name); 
+        partialObjects.remove(name);
     }
-
+    
+    public void addPartialObject(String name, Object object) {
+        partialObjects.put(name, object);
+    }
+    
+    public Object removePartialObject(String name) {
+        return partialObjects.remove(name);
+    }
+    
     public Object getPartialObject(String name) {
         Object obj = partialObjects.get(name);
         if (obj == null) {

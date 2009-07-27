@@ -126,7 +126,7 @@ public class ServiceRecipe extends AbstractRecipe {
             }
         }
         ServiceRegistrationProxy proxy = new ServiceRegistrationProxy();
-        addObject(proxy, true);
+        addPartialObject(proxy);
         internalGetService(null, null); // null bundle means we don't want to retrieve the actual service when used with a ServiceFactory
         return proxy;
     }
