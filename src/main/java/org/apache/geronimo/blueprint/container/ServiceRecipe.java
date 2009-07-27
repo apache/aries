@@ -93,10 +93,6 @@ public class ServiceRecipe extends AbstractRecipe {
         this.explicitDependencies = explicitDependencies;
         this.prototypeService = isPrototypeService(metadata.getServiceComponent());
     }
-
-    public boolean isEager() {
-        return (metadata.getActivation() == ComponentMetadata.ACTIVATION_EAGER);
-    }
     
     public Recipe getServiceRecipe() {
         return serviceRecipe;
@@ -131,9 +127,6 @@ public class ServiceRecipe extends AbstractRecipe {
         }
         ServiceRegistrationProxy proxy = new ServiceRegistrationProxy();
         addObject(proxy, true);
-        //if (blueprintContainer.isServiceEnabled(this)) {
-            register();
-        //}
         internalGetService(null, null); // null bundle means we don't want to retrieve the actual service when used with a ServiceFactory
         return proxy;
     }

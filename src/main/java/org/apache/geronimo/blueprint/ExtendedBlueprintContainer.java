@@ -59,7 +59,5 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
     Object getService(ServiceReference reference);
     
     AccessControlContext getAccessControlContext();
-        
-    boolean isServiceEnabled(ServiceRecipe service);
-    
+            
 }
