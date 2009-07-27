@@ -131,9 +131,9 @@ public class ServiceRecipe extends AbstractRecipe {
         }
         ServiceRegistrationProxy proxy = new ServiceRegistrationProxy();
         addObject(proxy, true);
-        if (blueprintContainer.isServiceEnabled(this)) {
+        //if (blueprintContainer.isServiceEnabled(this)) {
             register();
-        }
+        //}
         internalGetService(null, null); // null bundle means we don't want to retrieve the actual service when used with a ServiceFactory
         return proxy;
     }
