@@ -102,6 +102,15 @@ public class ServiceRecipe extends AbstractRecipe {
         return listenersRecipe;
     }
 
+    @Override
+    public List<Recipe> getConstructorDependencies() {
+        List<Recipe> recipes = new ArrayList<Recipe>();
+        if (explicitDependencies != null) {
+            recipes.addAll(explicitDependencies);
+        }
+        return recipes;
+    }
+    
     public List<Recipe> getDependencies() {
         List<Recipe> recipes = new ArrayList<Recipe>();
         if (serviceRecipe != null) {
@@ -112,10 +121,8 @@ public class ServiceRecipe extends AbstractRecipe {
         }
         if (propertiesRecipe != null) {
             recipes.add(propertiesRecipe);
-        }
-        if (explicitDependencies != null) {
-            recipes.addAll(explicitDependencies);
-        }
+        }        
+        recipes.addAll(getConstructorDependencies());        
         return recipes;
     }
 

@@ -19,6 +19,8 @@ package org.apache.geronimo.blueprint.di;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.geronimo.blueprint.container.GenericType;
 import org.osgi.service.blueprint.container.ReifiedType;
@@ -28,6 +30,7 @@ public abstract class AbstractRecipe implements Recipe {
 
     protected final String name;
     protected boolean prototype = true;
+    private boolean creating = false;
 
     protected AbstractRecipe(String name) {
         if (name == null) throw new NullPointerException("name is null");
@@ -51,18 +54,19 @@ public abstract class AbstractRecipe implements Recipe {
         ExecutionContext context = ExecutionContext.Holder.getContext();
 
         synchronized (context.getInstanceLock()) {
+            if (creating && context.isCreateReentered()) {
+                ArrayList<Recipe> circularity = new ArrayList<Recipe>();
+                circularity.add(this);
+                throw new CircularDependencyException("Dynamic cycle detected in recipe", circularity);
+            }
             // if this recipe has already been executed in this container, return the currently registered value
             Object obj = context.getPartialObject(name);
             if (obj != null) {
-                if (context.isCreateReentered()) {
-                    ArrayList<Recipe> circularity = new ArrayList<Recipe>();
-                    circularity.add(this);
-                    throw new CircularDependencyException("Dynamic cycle detected in recipe", circularity);
-                }
                 return obj;
             }
 
             // execute the recipe
+            creating = true;
             context.push(this);
             try {
                 obj = internalCreate();
@@ -73,6 +77,7 @@ public abstract class AbstractRecipe implements Recipe {
                 }
                 return obj;
             } finally {
+                creating = false;
                 Recipe popped = context.pop();
                 if (popped != this) {
                     //noinspection ThrowFromFinallyBlock
@@ -120,6 +125,10 @@ public abstract class AbstractRecipe implements Recipe {
     public void destroy(Object instance) {
     }
 
+    public List<Recipe> getConstructorDependencies() {
+        return Collections.emptyList();
+    }
+    
     public String toString() {
         return getClass().getSimpleName() + "[" +
                 "name='" + name + '\'' +

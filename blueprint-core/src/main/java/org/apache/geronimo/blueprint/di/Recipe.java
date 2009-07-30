@@ -33,9 +33,19 @@ public interface Recipe {
      * @return the unique name for this recipe.
      */
     String getName();
+    
+    /**
+     * Get the list of constructor dependencies, i.e. explicit and
+     * argument dependencies. These dependencies must be satisfied
+     * before the an object can be created.
+     * 
+     * @return a list of constructor dependencies
+     */
+    List<Recipe> getConstructorDependencies();
 
     /**
-     * Get the list of nested recipes, i.e. its dependencies.
+     * Get the list of nested recipes, i.e. all dependencies including 
+     * constructor dependencies.
      *
      * @return a list of dependencies
      */

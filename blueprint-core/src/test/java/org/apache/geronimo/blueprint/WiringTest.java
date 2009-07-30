@@ -338,20 +338,11 @@ public class WiringTest extends AbstractBlueprintTest {
     }
     
     public void testCircular() throws Exception {
-        ComponentDefinitionRegistryImpl registry = parse("/test-circular.xml");
-        Repository repository = new TestBlueprintContainer(registry).getRepository();
+        BlueprintRepository repository = createBlueprintContainer().getRepository();
 
         // this should pass (we allow circular dependencies for components without init method)
         Object obj1 = repository.create("a");
-        
-//        // this should fail (we do not allow circular dependencies for components with init method)
-//        try {
-//            graph.create("c");
-//            fail("Test should have thrown an exception caused by the circular reference");
-//        } catch (Exception e) {
-//            // ok
-//        }
-        
+                
         // test service and listener circular dependencies
         Object obj2 = repository.create("service");
         assertNotNull(obj2);
@@ -365,8 +356,7 @@ public class WiringTest extends AbstractBlueprintTest {
     }
      
     public void testCircularPrototype() throws Exception {
-        ComponentDefinitionRegistryImpl registry = parse("/test-circular.xml");
-        BlueprintRepository repository = new TestBlueprintContainer(registry).getRepository();
+        BlueprintRepository repository = createBlueprintContainer().getRepository();
         
         PojoCircular driver1 = (PojoCircular) repository.create("circularPrototypeDriver");
         
@@ -385,8 +375,7 @@ public class WiringTest extends AbstractBlueprintTest {
     }
     
     public void testRecursive() throws Exception {
-        ComponentDefinitionRegistryImpl registry = parse("/test-circular.xml");
-        BlueprintRepository repository = new TestBlueprintContainer(registry).getRepository();
+        BlueprintRepository repository = createBlueprintContainer().getRepository();
         
         try {
             repository.create("recursiveConstructor", false);
@@ -424,4 +413,23 @@ public class WiringTest extends AbstractBlueprintTest {
             }
         }
     }
+    
+    public void testCircularBreaking() throws Exception {
+        BlueprintRepository repository;
+        
+        repository = createBlueprintContainer().getRepository();        
+        assertNotNull(repository.create("c1"));
+        
+        repository = createBlueprintContainer().getRepository();        
+        assertNotNull(repository.create("c2"));
+        
+        repository = createBlueprintContainer().getRepository();        
+        assertNotNull(repository.create("c3"));
+    }
+    
+    private TestBlueprintContainer createBlueprintContainer() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-circular.xml");
+        return new TestBlueprintContainer(registry);
+    }
+    
 }

@@ -55,7 +55,7 @@
            unregistration-method="unregister"/>
     </service>
     
-    
+    <!-- for prototype cycle tests -->
     
     <bean id="circularPrototype" class="org.apache.geronimo.blueprint.pojos.PojoCircular" scope = "prototype">
         <property name="circular" ref="circularPrototype"/>
@@ -64,9 +64,9 @@
     <bean id="circularPrototypeDriver" class="org.apache.geronimo.blueprint.pojos.PojoCircular" scope = "prototype">
         <property name="circular" ref="circularPrototypeDriver"/>
     </bean>
-    
-    
-    
+            
+     <!-- for dynamic cycle tests (blueprintContainer.getComponentInstance()) -->
+     
     <bean id="recursiveConstructor" class="org.apache.geronimo.blueprint.pojos.PojoRecursive">
         <argument ref="blueprintContainer"/>
         <argument value="recursiveConstructor"/>
@@ -84,4 +84,18 @@
         <argument value="recursiveInitMethod"/>
     </bean>
 
+    <!-- for breaking dependency cycle tests  -->
+
+    <bean id="c1" class="org.apache.geronimo.blueprint.pojos.PojoCircular">
+        <argument ref="c2"/>
+    </bean>
+    
+    <bean id="c2" class="org.apache.geronimo.blueprint.pojos.PojoCircular">
+        <argument ref="c3"/>
+    </bean>
+    
+    <bean id="c3" class="org.apache.geronimo.blueprint.pojos.PojoCircular">
+        <property name="circular" ref="c1"/>
+    </bean>
+    
 </blueprint>

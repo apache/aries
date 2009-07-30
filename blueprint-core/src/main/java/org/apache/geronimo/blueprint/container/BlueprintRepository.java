@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -116,13 +117,27 @@ public class BlueprintRepository implements Repository, ExecutionContext {
         recipes.put(name, recipe);
     }
 
+    private Object convert(String name, Object instance) throws ComponentDefinitionException {
+        try {
+            // Make sure to go through the conversion step in case we have a Convertible object
+            return convert(instance, new ReifiedType(Object.class));
+        } catch (Exception e) {
+            throw new ComponentDefinitionException("Unable to convert instance " + name, e);
+        }
+    }
+    
     public Object create(String name) throws ComponentDefinitionException {
         return create(name, true);
     }
     
     public Object create(String name, boolean allowReentry) throws ComponentDefinitionException {
-        Map<String, Object> instances = createAll(Arrays.asList(name), allowReentry);
-        return instances.get(name);
+        ExecutionContext oldContext = ExecutionContext.Holder.setContext(this);
+        try {
+            Object instance = createInstance(name, allowReentry);                       
+            return convert(name, instance);
+        } finally {
+            ExecutionContext.Holder.setContext(oldContext);
+        }
     }
 
     public Map<String, Object> createAll(Collection<String> names) throws ComponentDefinitionException {
@@ -132,16 +147,10 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     public Map<String, Object> createAll(Collection<String> names, boolean allowReentry) throws ComponentDefinitionException {
         ExecutionContext oldContext = ExecutionContext.Holder.setContext(this);
         try {
-            Map<String, Object> instances = new LinkedHashMap<String, Object>();
+            Map<String, Object> instances = createInstances(names, allowReentry);                       
             for (String name : names) {
-                Object obj = createInstance(name, allowReentry);
-                try {
-                    // Make sure to go through the conversion step in case we have a Convertible object
-                    obj = convert(obj, new ReifiedType(Object.class));
-                } catch (Exception e) {
-                    throw new ComponentDefinitionException("Unable to convert instance " + name, e);
-                }
-                instances.put(name, obj);
+                Object obj = instances.get(name);
+                instances.put(name, convert(name, obj));
             }
             return instances;
         } finally {
@@ -187,36 +196,46 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     }
 
     private Object createInstance(String name, boolean allowReentry) {
-        // We need to synchronize recipe creation on the repository
-        // so that we don't end up with multiple threads creating the
-        // same instance at the same time.
         Object instance = getInstance(name);
         if (instance == null) {
-            synchronized (instanceLock) {
-                try {
-                    if (!allowReentry) {
-                        createReentered++;               
-                    }
-                    instance = getInstance(name);
-                    if (instance == null) {
-                        Recipe recipe = getRecipe(name);
-                        if (recipe != null) {
-                            instance = recipe.create();
-                        }
-                    }
-                } finally {
-                    if (!allowReentry) {
-                        createReentered--;
-                    }
-                }
+            Map <String, Object> instances = createInstances(Arrays.asList(name), allowReentry);
+            instance = instances.get(name); 
+            if (instance == null) {
+                throw new NoSuchComponentException(name);
             }
-        }
-        if (instance == null) {
-            throw new NoSuchComponentException(name);
         }
         return instance;
     }
 
+    private Map<String, Object> createInstances(Collection<String> names, boolean allowReentry) {
+        // We need to synchronize recipe creation on the repository
+        // so that we don't end up with multiple threads creating the
+        // same instance at the same time.
+        synchronized (instanceLock) {
+            try {
+                if (!allowReentry) {
+                    createReentered++;
+                }
+                DependencyGraph graph = new DependencyGraph(this);
+                HashMap<String, Object> objects = new LinkedHashMap<String, Object>();
+                for (Map.Entry<String, Recipe> entry : graph.getSortedRecipes(names).entrySet()) {
+                    String name = entry.getKey();
+                    Object object = instances.get(name);
+                    if (object == null) {
+                        Recipe recipe = entry.getValue();
+                        object = recipe.create();
+                    }
+                    objects.put(name, object);
+                }
+                return objects;
+            } finally {
+                if (!allowReentry) {
+                    createReentered--;
+                }
+            }
+        }
+    }
+    
     public boolean isCreateReentered() {
         return createReentered >= 2;
     }

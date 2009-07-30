@@ -169,14 +169,21 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return satisfied.get();
     }
 
+    @Override
+    public List<Recipe> getConstructorDependencies() {
+        List<Recipe> recipes = new ArrayList<Recipe>();
+        if (explicitDependencies != null) {
+            recipes.addAll(explicitDependencies);
+        }
+        return recipes;
+    }
+    
     public List<Recipe> getDependencies() {
         List<Recipe> recipes = new ArrayList<Recipe>();
         if (listenersRecipe != null) {
             recipes.add(listenersRecipe);
         }
-        if (explicitDependencies != null) {
-            recipes.addAll(explicitDependencies);
-        }
+        recipes.addAll(getConstructorDependencies());
         return recipes;
     }
 
