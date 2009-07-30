@@ -22,6 +22,13 @@ public class PojoCircular {
 
     private PojoCircular circular;
 
+    public PojoCircular() {        
+    }
+    
+    public PojoCircular(PojoCircular circular) {
+        this.circular = circular;
+    }
+    
     public PojoCircular getCircular() {
         return circular;
     }

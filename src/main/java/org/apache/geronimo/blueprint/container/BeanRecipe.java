@@ -128,13 +128,11 @@ public class BeanRecipe extends AbstractRecipe {
         this.explicitDependencies = explicitDependencies;
     }
 
-    public List<Recipe> getDependencies() {
+    @Override
+    public List<Recipe> getConstructorDependencies() {
         List<Recipe> recipes = new ArrayList<Recipe>();
-        for (Object o : properties.values()) {
-            if (o instanceof Recipe) {
-                Recipe recipe = (Recipe) o;
-                recipes.add(recipe);
-            }
+        if (explicitDependencies != null) {
+            recipes.addAll(explicitDependencies);
         }
         if (arguments != null) {
             for (Object argument : arguments) {
@@ -143,9 +141,18 @@ public class BeanRecipe extends AbstractRecipe {
                 }
             }
         }
-        if (explicitDependencies != null) {
-            recipes.addAll(explicitDependencies);
+        return recipes;
+    }
+    
+    public List<Recipe> getDependencies() {
+        List<Recipe> recipes = new ArrayList<Recipe>();
+        for (Object o : properties.values()) {
+            if (o instanceof Recipe) {
+                Recipe recipe = (Recipe) o;
+                recipes.add(recipe);
+            }
         }
+        recipes.addAll(getConstructorDependencies());
         return recipes; 
     }
 

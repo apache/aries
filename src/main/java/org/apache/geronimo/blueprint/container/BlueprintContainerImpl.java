@@ -437,7 +437,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         }
 
         Map<String, Object> objects = repository.createAll(typeConverters);
-        for (Object obj : objects.values()) {
+        for (String name : typeConverters) {
+            Object obj = objects.get(name);
             if (obj instanceof Converter) {
                 converter.registerConverter((Converter) obj);
             } else {
