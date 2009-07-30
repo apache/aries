@@ -131,10 +131,11 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                     if (references != null) {
                         for (ServiceReference reference : references) {
                             this.references.add(reference);
-                            track(reference);
+                            track(reference);                           
                         }
                         satisfied.set(optional || !this.references.isEmpty());
                     }
+                    LOGGER.debug("Found initial references {} for OSGi service {}", references, getOsgiFilter());
                 }
             } catch (InvalidSyntaxException e) {
                 throw new ComponentDefinitionException(e);
