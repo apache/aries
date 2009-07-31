@@ -55,7 +55,7 @@ public abstract class AbstractRecipe implements Recipe {
 
         synchronized (context.getInstanceLock()) {
             if (creating && context.isCreateReentered()) {
-                ArrayList<Recipe> circularity = new ArrayList<Recipe>();
+                ArrayList<Recipe> circularity = new ArrayList<Recipe>(1);
                 circularity.add(this);
                 throw new CircularDependencyException("Dynamic cycle detected in recipe", circularity);
             }
