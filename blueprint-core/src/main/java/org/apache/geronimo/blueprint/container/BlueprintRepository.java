@@ -147,8 +147,8 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     public Map<String, Object> createAll(Collection<String> names, boolean allowReentry) throws ComponentDefinitionException {
         ExecutionContext oldContext = ExecutionContext.Holder.setContext(this);
         try {
-            Map<String, Object> instances = createInstances(names, allowReentry);                       
-            for (String name : names) {
+            Map<String, Object> instances = createInstances(names, allowReentry);
+            for (String name : instances.keySet()) {
                 Object obj = instances.get(name);
                 instances.put(name, convert(name, obj));
             }
