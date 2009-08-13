@@ -70,6 +70,7 @@ public class ServiceRecipe extends AbstractRecipe {
     private final List<Recipe> explicitDependencies;
     private final boolean prototypeService;
 
+    private Map properties;
     private final AtomicBoolean registered = new AtomicBoolean();
     private volatile ServiceRegistration registration;
     private Map registrationProperties;
@@ -145,7 +146,9 @@ public class ServiceRecipe extends AbstractRecipe {
     public void register() {
         if (registered.compareAndSet(false, true)) {
             Hashtable props = new Hashtable();
-            Map properties = (Map) createRecipe(propertiesRecipe);
+            if (properties == null) {
+                properties = (Map) createRecipe(propertiesRecipe);
+            }
             props.putAll(properties);
             if (metadata.getRanking() == 0) {
                 props.remove(Constants.SERVICE_RANKING);
