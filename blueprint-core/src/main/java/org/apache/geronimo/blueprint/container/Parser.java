@@ -686,7 +686,7 @@ public class Parser {
             if (node instanceof Element) {
                 Element e = (Element) node;
                 if (nodeNameEquals(e, ENTRY_ELEMENT)) {
-                    entries.add(parseMapEntry(e, enclosingComponent, keyType, valueType));
+                    entries.add(parseMapEntry(e, enclosingComponent, null, null));
                 }
             }
         }
