@@ -40,6 +40,7 @@ import org.apache.geronimo.blueprint.pojos.PojoB;
 import org.apache.geronimo.blueprint.pojos.PojoCircular;
 import org.apache.geronimo.blueprint.pojos.PojoGenerics;
 import org.apache.geronimo.blueprint.pojos.PojoListener;
+import org.apache.geronimo.blueprint.pojos.PojoRecursive;
 import org.apache.geronimo.blueprint.container.AggregateConverter;
 import org.apache.geronimo.blueprint.container.BlueprintRepository;
 import org.apache.geronimo.blueprint.container.GenericType;
@@ -358,27 +359,26 @@ public class WiringTest extends AbstractBlueprintTest {
     public void testCircularPrototype() throws Exception {
         BlueprintRepository repository = createBlueprintContainer().getRepository();
         
-        PojoCircular driver1 = (PojoCircular) repository.create("circularPrototypeDriver");
-        
-        assertTrue(driver1.getCircular() == driver1.getCircular().getCircular());
-        
-        PojoCircular driver2 = (PojoCircular) repository.create("circularPrototypeDriver");
-        
-        assertTrue(driver1 != driver2);
-        assertTrue(driver1.getCircular() != driver2.getCircular());
-        assertTrue(driver1.getCircular().getCircular() != driver2.getCircular().getCircular());
-        
-        PojoCircular prototype = (PojoCircular) repository.create("circularPrototype");
-        
-        assertTrue(prototype != driver1.getCircular());
-        assertTrue(prototype != driver2.getCircular());
+        try {
+            repository.create("circularPrototypeDriver");
+            fail("Did not throw exception");  
+        } catch (CircularDependencyException e) {
+            // that's what we expect
+        }
+
+        try {
+            repository.create("circularPrototype");
+            fail("Did not throw exception");  
+        } catch (CircularDependencyException e) {
+            // that's what we expect
+        }
     }
     
     public void testRecursive() throws Exception {
         BlueprintRepository repository = createBlueprintContainer().getRepository();
         
         try {
-            repository.create("recursiveConstructor", false);
+            repository.create("recursiveConstructor");
             fail("Did not throw exception");           
         } catch (ComponentDefinitionException e) {
             if (e.getCause() instanceof CircularDependencyException) {                          
@@ -389,29 +389,13 @@ public class WiringTest extends AbstractBlueprintTest {
             }
         }
         
-        try {
-            repository.create("recursiveSetter", false);
-            fail("Did not throw exception");           
-        } catch (ComponentDefinitionException e) {
-            if (e.getCause() instanceof CircularDependencyException) {                          
-                // that's what we expect
-            } else {
-                fail("Did not throw expected exception");
-                throw e;
-            }
-        }
+        PojoRecursive pojo;
         
-        try {
-            repository.create("recursiveInitMethod", false);
-            fail("Did not throw exception");
-        } catch (ComponentDefinitionException e) {
-            if (e.getCause() instanceof CircularDependencyException) {                          
-                // that's what we expect
-            } else {
-                fail("Did not throw expected exception");
-                throw e;
-            }
-        }
+        pojo = (PojoRecursive) repository.create("recursiveSetter");
+        assertNotNull(pojo);
+                           
+        pojo = (PojoRecursive) repository.create("recursiveInitMethod");
+        assertNotNull(pojo);
     }
     
     public void testCircularBreaking() throws Exception {
