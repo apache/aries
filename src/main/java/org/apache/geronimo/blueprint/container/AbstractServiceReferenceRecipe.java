@@ -82,7 +82,6 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected final String filter;
     /** The list of listeners for this reference.  This list will be lazy created */
     protected List<Listener> listeners;
-    protected boolean listenersCreated = true;
 
     private final List<ServiceReference> references = new ArrayList<ServiceReference>();
     private final AtomicBoolean started = new AtomicBoolean();
@@ -333,6 +332,34 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     protected abstract void retrack();
 
+    protected void updateListeners() {  
+        if (references.isEmpty()) {
+            unbind(null, null);
+        } else {
+            retrack();
+        }
+    }
+    
+    protected void bind(ServiceReference reference, Object service) {
+        if (listeners != null) {    
+            for (Listener listener : listeners) {
+                if (listener != null) {
+                    listener.bind(reference, service);
+                }
+            } 
+        }
+    }
+    
+    protected void unbind(ServiceReference reference, Object service) {
+        if (listeners != null) {    
+            for (Listener listener : listeners) {
+                if (listener != null) {
+                    listener.unbind(reference, service);
+                }
+            } 
+        }
+    }
+    
     public List<ServiceReference> getServiceReferences() {
         synchronized (references) {
             return new ArrayList<ServiceReference>(references);

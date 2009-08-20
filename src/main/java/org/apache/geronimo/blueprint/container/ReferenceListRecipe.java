@@ -78,7 +78,8 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
             addPartialObject(object);
             // Handle initial references
             createListeners();
-            retrack();
+            updateListeners();
+           
             return object;
         } catch (ComponentDefinitionException t) {
             throw t;
@@ -133,11 +134,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
                     }
                 }
                 if (listeners != null) {
-                    for (Listener listener : listeners) {
-                        if (listener != null) {
-                            listener.bind(dispatcher.reference, dispatcher.proxy);
-                        }
-                    }
+                    bind(dispatcher.reference, dispatcher.proxy);                   
                 } else {
                     unboundDispatchers.add(dispatcher);
                 }
@@ -151,13 +148,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
         if (storage != null) {
             ServiceDispatcher dispatcher = findDispatcher(reference);
             if (dispatcher != null) {
-                if (listeners != null) {
-                    for (Listener listener : listeners) {
-                        if (listener != null) {
-                            listener.unbind(dispatcher.reference, dispatcher.proxy);
-                        }
-                    }
-                }
+                unbind(dispatcher.reference, dispatcher.proxy);
                 storage.remove(dispatcher);
                 dispatcher.destroy();
             }
