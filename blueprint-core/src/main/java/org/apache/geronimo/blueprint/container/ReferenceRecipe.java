@@ -88,7 +88,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
 
             // Handle initial references
             createListeners();
-            retrack();
+            updateListeners();            
 
             // Return a ServiceProxy that can injection of references or proxies can be done correctly
             return wrapper;
@@ -144,12 +144,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             trackedServiceReference = ref;
             trackedService = null;
             monitor.notifyAll();
-            if (listeners != null) {
-                for (Listener listener : listeners) {
-                    listener.bind(trackedServiceReference, proxy);
-                }
-                listenersCreated = false;
-            }
+            bind(trackedServiceReference, proxy);
         }
     }
 
@@ -157,23 +152,11 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
         LOGGER.debug("Unbinding reference {}", getName());
         synchronized (monitor) {
             if (trackedServiceReference != null) {
-                if (listeners != null) {
-                    for (Listener listener : listeners) {
-                        listener.unbind(trackedServiceReference, proxy);
-                    }
-                    listenersCreated = false;
-                }
+                unbind(trackedServiceReference, proxy);
                 blueprintContainer.getBundleContext().ungetService(trackedServiceReference);
                 trackedServiceReference = null;
                 trackedService = null;
                 monitor.notifyAll();
-            } else if (listenersCreated) {
-                if (listeners != null) {
-                    for (Listener listener : listeners) {
-//                        listener.unbind(null, null);
-                    }
-                    listenersCreated = false;
-                }
             }
         }
     }
