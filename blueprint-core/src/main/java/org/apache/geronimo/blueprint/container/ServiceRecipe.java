@@ -128,11 +128,6 @@ public class ServiceRecipe extends AbstractRecipe {
     }
 
     protected Object internalCreate() throws ComponentDefinitionException {
-        if (explicitDependencies != null) {
-            for (Recipe recipe : explicitDependencies) {
-                recipe.create();
-            }
-        }
         ServiceRegistrationProxy proxy = new ServiceRegistrationProxy();
         addPartialObject(proxy);
         internalGetService(null, null); // null bundle means we don't want to retrieve the actual service when used with a ServiceFactory
@@ -145,6 +140,8 @@ public class ServiceRecipe extends AbstractRecipe {
 
     public void register() {
         if (registered.compareAndSet(false, true)) {
+            createExplicitDependencies();
+            
             Hashtable props = new Hashtable();
             if (properties == null) {
                 properties = (Map) createRecipe(propertiesRecipe);
@@ -185,7 +182,7 @@ public class ServiceRecipe extends AbstractRecipe {
             if (listeners != null) {
                 LOGGER.debug("Calling listeners for service unregistration");
                 for (ServiceListener listener : listeners) {
-                    listener.unregister(service instanceof ServiceFactory || !prototypeService ? service : null, registrationProperties);
+                    listener.unregister(service, registrationProperties);
                 }
             }
             if (reg != null) {
@@ -252,14 +249,12 @@ public class ServiceRecipe extends AbstractRecipe {
                         if (registered.get()) {
                             LOGGER.debug("Calling listeners for initial service registration");
                             for (ServiceListener listener : listeners) {
-                                listener.register(service instanceof ServiceFactory || !prototypeService ? service : null,
-                                                  registrationProperties);
+                                listener.register(service, registrationProperties);
                             }
                         } else {
                             LOGGER.debug("Calling listeners for initial service unregistration");
                             for (ServiceListener listener : listeners) {
-                                listener.unregister(service instanceof ServiceFactory || !prototypeService ? service : null,
-                                                    registrationProperties);
+                                listener.unregister(service, registrationProperties);
                             }
                         }
                     }
@@ -274,9 +269,6 @@ public class ServiceRecipe extends AbstractRecipe {
         if (bundle != null) {
             if (service instanceof ServiceFactory) {
                 service = ((ServiceFactory) service).getService(bundle, registration);
-            } else if (prototypeService && bundle != blueprintContainer.getBundleContext().getBundle()) {
-                service = createInstance();
-                LOGGER.debug("Created service instance for bundle: {} {}", bundle, service.hashCode());
             }
             if (service == null) {
                 throw new IllegalStateException("service is null");
@@ -315,6 +307,7 @@ public class ServiceRecipe extends AbstractRecipe {
         if (this.service instanceof ServiceFactory) {
             ((ServiceFactory) this.service).ungetService(bundle, registration, service);
         }
+        // TODO: need to check on this, if this should be called
         if (prototypeService) {
             destroyInstance(service);
             LOGGER.debug("Destroyed service instance for bundle: {}", bundle);
@@ -345,6 +338,14 @@ public class ServiceRecipe extends AbstractRecipe {
         return createRecipe(serviceRecipe);
     }
 
+    private void createExplicitDependencies() {
+        if (explicitDependencies != null) {
+            for (Recipe recipe : explicitDependencies) {
+                createRecipe(recipe);
+            }
+        }
+    }
+    
     private Object createRecipe(Recipe recipe) {
         String name = recipe.getName();
         Repository repo = blueprintContainer.getRepository();
@@ -353,7 +354,7 @@ public class ServiceRecipe extends AbstractRecipe {
         }
         return repo.create(name);
     }
-
+   
     private void destroyInstance(Object instance) {
         Recipe recipe = serviceRecipe;
         Repository objectRepository = blueprintContainer.getRepository();
