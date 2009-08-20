@@ -89,8 +89,6 @@ public class BlueprintRepository implements Repository, ExecutionContext {
      */
     private final LinkedList<Recipe> stack = new LinkedList<Recipe>();
     
-    private int createReentered = 0;
-
     public BlueprintRepository(ExtendedBlueprintContainer container) {
         blueprintContainer = container;
     }
@@ -125,29 +123,21 @@ public class BlueprintRepository implements Repository, ExecutionContext {
             throw new ComponentDefinitionException("Unable to convert instance " + name, e);
         }
     }
-    
+        
     public Object create(String name) throws ComponentDefinitionException {
-        return create(name, true);
-    }
-    
-    public Object create(String name, boolean allowReentry) throws ComponentDefinitionException {
         ExecutionContext oldContext = ExecutionContext.Holder.setContext(this);
         try {
-            Object instance = createInstance(name, allowReentry);                       
+            Object instance = createInstance(name);                       
             return convert(name, instance);
         } finally {
             ExecutionContext.Holder.setContext(oldContext);
         }
     }
-
-    public Map<String, Object> createAll(Collection<String> names) throws ComponentDefinitionException {
-        return createAll(names, true);        
-    }
     
-    public Map<String, Object> createAll(Collection<String> names, boolean allowReentry) throws ComponentDefinitionException {
+    public Map<String, Object> createAll(Collection<String> names) throws ComponentDefinitionException {
         ExecutionContext oldContext = ExecutionContext.Holder.setContext(this);
         try {
-            Map<String, Object> instances = createInstances(names, allowReentry);
+            Map<String, Object> instances = createInstances(names);
             for (String name : instances.keySet()) {
                 Object obj = instances.get(name);
                 instances.put(name, convert(name, obj));
@@ -195,10 +185,10 @@ public class BlueprintRepository implements Repository, ExecutionContext {
         }
     }
 
-    private Object createInstance(String name, boolean allowReentry) {
+    private Object createInstance(String name) {
         Object instance = getInstance(name);
         if (instance == null) {
-            Map <String, Object> instances = createInstances(Arrays.asList(name), allowReentry);
+            Map <String, Object> instances = createInstances(Arrays.asList(name));
             instance = instances.get(name); 
             if (instance == null) {
                 throw new NoSuchComponentException(name);
@@ -207,39 +197,26 @@ public class BlueprintRepository implements Repository, ExecutionContext {
         return instance;
     }
 
-    private Map<String, Object> createInstances(Collection<String> names, boolean allowReentry) {
+    private Map<String, Object> createInstances(Collection<String> names) {
         // We need to synchronize recipe creation on the repository
         // so that we don't end up with multiple threads creating the
         // same instance at the same time.
         synchronized (instanceLock) {
-            try {
-                if (!allowReentry) {
-                    createReentered++;
+            DependencyGraph graph = new DependencyGraph(this);
+            HashMap<String, Object> objects = new LinkedHashMap<String, Object>();
+            for (Map.Entry<String, Recipe> entry : graph.getSortedRecipes(names).entrySet()) {
+                String name = entry.getKey();
+                Object object = instances.get(name);
+                if (object == null) {
+                    Recipe recipe = entry.getValue();
+                    object = recipe.create();
                 }
-                DependencyGraph graph = new DependencyGraph(this);
-                HashMap<String, Object> objects = new LinkedHashMap<String, Object>();
-                for (Map.Entry<String, Recipe> entry : graph.getSortedRecipes(names).entrySet()) {
-                    String name = entry.getKey();
-                    Object object = instances.get(name);
-                    if (object == null) {
-                        Recipe recipe = entry.getValue();
-                        object = recipe.create();
-                    }
-                    objects.put(name, object);
-                }
-                return objects;
-            } finally {
-                if (!allowReentry) {
-                    createReentered--;
-                }
+                objects.put(name, object);
             }
+            return objects;
         }
     }
-    
-    public boolean isCreateReentered() {
-        return createReentered >= 2;
-    }
-    
+        
     public void validate() {
         for (Recipe recipe : getAllRecipes()) {
             // Check that references are satisfied

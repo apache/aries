@@ -18,7 +18,6 @@
 package org.apache.geronimo.blueprint.di;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,7 +29,6 @@ public abstract class AbstractRecipe implements Recipe {
 
     protected final String name;
     protected boolean prototype = true;
-    private boolean creating = false;
 
     protected AbstractRecipe(String name) {
         if (name == null) throw new NullPointerException("name is null");
@@ -54,11 +52,6 @@ public abstract class AbstractRecipe implements Recipe {
         ExecutionContext context = ExecutionContext.Holder.getContext();
 
         synchronized (context.getInstanceLock()) {
-            if (creating && context.isCreateReentered()) {
-                ArrayList<Recipe> circularity = new ArrayList<Recipe>(1);
-                circularity.add(this);
-                throw new CircularDependencyException("Dynamic cycle detected in recipe", circularity);
-            }
             // if this recipe has already been executed in this container, return the currently registered value
             Object obj = context.getPartialObject(name);
             if (obj != null) {
@@ -66,18 +59,14 @@ public abstract class AbstractRecipe implements Recipe {
             }
 
             // execute the recipe
-            creating = true;
             context.push(this);
             try {
                 obj = internalCreate();
-                if (prototype) {
-                    context.removePartialObject(name);
-                } else {
+                if (!prototype) {
                     context.addFullObject(name, obj);
                 }
                 return obj;
             } finally {
-                creating = false;
                 Recipe popped = context.pop();
                 if (popped != this) {
                     //noinspection ThrowFromFinallyBlock
@@ -91,7 +80,9 @@ public abstract class AbstractRecipe implements Recipe {
     protected abstract Object internalCreate() throws ComponentDefinitionException;
 
     protected void addPartialObject(Object obj) {
-        ExecutionContext.Holder.getContext().addPartialObject(name, obj);
+        if (!prototype) {                 
+            ExecutionContext.Holder.getContext().addPartialObject(name, obj);
+        }
     }
     
     protected Object convert(Object obj, ReifiedType type) throws Exception {

@@ -608,7 +608,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         }
         LOGGER.debug("Instantiating components: {}", components);
         try {
-            repository.createAll(components, false);
+            repository.createAll(components);
         } catch (ComponentDefinitionException e) {
             throw e;
         } catch (Throwable t) {
@@ -686,7 +686,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         }
         try {
             LOGGER.debug("Instantiating component {}", id);
-            return repository.create(id, false);
+            return repository.create(id);
         } catch (NoSuchComponentException e) {
             throw e;
         } catch (ComponentDefinitionException e) {

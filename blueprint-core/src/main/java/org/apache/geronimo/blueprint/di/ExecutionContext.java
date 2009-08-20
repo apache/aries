@@ -95,6 +95,5 @@ public interface ExecutionContext {
 
     public abstract Recipe getRecipe(String name);
     
-    public abstract boolean isCreateReentered();
 }
 
