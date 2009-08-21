@@ -33,9 +33,7 @@ import org.apache.geronimo.blueprint.di.AbstractRecipe;
 import org.apache.geronimo.blueprint.di.CollectionRecipe;
 import org.apache.geronimo.blueprint.di.MapRecipe;
 import org.apache.geronimo.blueprint.di.Recipe;
-import org.apache.geronimo.blueprint.di.RefRecipe;
 import org.apache.geronimo.blueprint.di.Repository;
-import org.apache.geronimo.blueprint.reflect.MetadataUtil;
 import org.apache.geronimo.blueprint.utils.JavaUtils;
 import org.apache.geronimo.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
@@ -44,9 +42,6 @@ import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
-import org.osgi.service.blueprint.reflect.BeanMetadata;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.slf4j.Logger;
@@ -68,7 +63,6 @@ public class ServiceRecipe extends AbstractRecipe {
     private final CollectionRecipe listenersRecipe;
     private final MapRecipe propertiesRecipe;
     private final List<Recipe> explicitDependencies;
-    private final boolean prototypeService;
 
     private Map properties;
     private final AtomicBoolean registered = new AtomicBoolean();
@@ -92,7 +86,6 @@ public class ServiceRecipe extends AbstractRecipe {
         this.listenersRecipe = listenersRecipe;
         this.propertiesRecipe = propertiesRecipe;
         this.explicitDependencies = explicitDependencies;
-        this.prototypeService = isPrototypeService(metadata.getServiceComponent());
     }
     
     public Recipe getServiceRecipe() {
@@ -307,11 +300,6 @@ public class ServiceRecipe extends AbstractRecipe {
         if (this.service instanceof ServiceFactory) {
             ((ServiceFactory) this.service).ungetService(bundle, registration, service);
         }
-        // TODO: need to check on this, if this should be called
-        if (prototypeService) {
-            destroyInstance(service);
-            LOGGER.debug("Destroyed service instance for bundle: {}", bundle);
-        }
     }
 
     private Set<String> getClasses() {
@@ -355,31 +343,6 @@ public class ServiceRecipe extends AbstractRecipe {
         return repo.create(name);
     }
    
-    private void destroyInstance(Object instance) {
-        Recipe recipe = serviceRecipe;
-        Repository objectRepository = blueprintContainer.getRepository();
-        if (recipe instanceof RefRecipe) {
-            recipe = objectRepository.getRecipe(((RefRecipe) recipe).getIdRef());
-        }
-        ((BeanRecipe) recipe).destroyInstance(instance);
-    }
-
-    private boolean isPrototypeService(Metadata value) {
-        ComponentMetadata metadata = null;
-        if (value instanceof RefMetadata) {
-            RefMetadata ref = (RefMetadata) value;
-            metadata = blueprintContainer.getComponentDefinitionRegistry().getComponentDefinition(ref.getComponentId());
-        } else if (value instanceof ComponentMetadata) {
-            metadata = (ComponentMetadata) value;
-        }
-        if (metadata instanceof BeanMetadata) {
-            BeanMetadata bean = (BeanMetadata) metadata;
-            return MetadataUtil.isPrototypeScope(bean);
-        } else {
-            return false;
-        }
-    }
-
     private String getComponentName() {
         if (metadata.getServiceComponent() instanceof RefMetadata) {
             RefMetadata ref = (RefMetadata) metadata.getServiceComponent();
