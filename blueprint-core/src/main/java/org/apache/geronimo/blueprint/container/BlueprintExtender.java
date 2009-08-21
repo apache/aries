@@ -111,15 +111,11 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
             int usage = 0;
             if (references != null) {
                 for (ServiceReference reference : references) {
-                    Bundle[] usingBundles = reference.getUsingBundles();
-                    if (usingBundles != null) {
-                        usage += usingBundles.length;
-                    }
+                    usage += getServiceUsage(reference);
                 }
             }
             LOGGER.debug("Usage for bundle {} is {}", bundle, usage);
             if (usage == 0) {
-                LOGGER.debug("Currently selecting bundle {} for destroy", bundle);
                 bundlesToDestroy.add(bundle);
             }
         }
@@ -129,11 +125,15 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                     return (int) (b2.getLastModified() - b1.getLastModified());
                 }
             });
+            LOGGER.debug("Selected bundles {} for destroy (no services in use)", bundlesToDestroy);
         } else {
             ServiceReference ref = null;
             for (Bundle bundle : containers.keySet()) {
                 ServiceReference[] references = bundle.getRegisteredServices();
                 for (ServiceReference reference : references) {
+                    if (getServiceUsage(reference) == 0) {
+                        continue;
+                    }
                     if (ref == null || reference.compareTo(ref) < 0) {
                         LOGGER.debug("Currently selecting bundle {} for destroy (with reference {})", bundle, reference);
                         ref = reference;
@@ -141,10 +141,16 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 }
             }
             bundlesToDestroy.add(ref.getBundle());
+            LOGGER.debug("Selected bundle {} for destroy (lowest ranking service)", bundlesToDestroy);
         }
         return bundlesToDestroy;
     }
 
+    private static int getServiceUsage(ServiceReference ref) {
+        Bundle[] usingBundles = ref.getUsingBundles();
+        return (usingBundles != null) ? usingBundles.length : 0;        
+    }
+    
     public void bundleChanged(BundleEvent event) {
         Bundle bundle = event.getBundle();
         if (event.getType() == BundleEvent.LAZY_ACTIVATION) {
