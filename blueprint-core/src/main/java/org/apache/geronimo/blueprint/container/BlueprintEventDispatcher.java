@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.geronimo.blueprint.utils.JavaUtils;
 import org.osgi.framework.Bundle;
@@ -145,6 +146,12 @@ public class BlueprintEventDispatcher implements BlueprintListener {
     
     public void destroy() {
         this.executor.shutdown();
+        // wait for the queued task to execute        
+        try {
+            this.executor.awaitTermination(60, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            // ignore
+        }
         this.containerListenerTracker.close();
     }
 
