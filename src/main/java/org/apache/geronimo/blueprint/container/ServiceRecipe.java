@@ -70,7 +70,7 @@ public class ServiceRecipe extends AbstractRecipe {
     private Map registrationProperties;
     private List<ServiceListener> listeners;
     private Object service;
-
+    
     public ServiceRecipe(String name,
                          ExtendedBlueprintContainer blueprintContainer,
                          ServiceMetadata metadata,
@@ -223,37 +223,10 @@ public class ServiceRecipe extends AbstractRecipe {
      */
     private Object internalGetService(Bundle bundle, ServiceRegistration registration) {
         LOGGER.debug("Retrieving service for bundle {} and service registration {}", bundle, registration);
-        synchronized (blueprintContainer.getRepository().getInstanceLock()) {
-            // Create initial service
-            if (this.service == null) {
-                try {
-                    LOGGER.debug("Creating service instance");
-                    this.service = createInstance();
-                    LOGGER.debug("Service created: {}", this.service);
-                    // When the service is first requested, we need to create listeners and call them
-                    if (listeners == null) {
-                        LOGGER.debug("Creating listeners");
-                        if (listenersRecipe != null) {
-                            listeners = (List) createRecipe(listenersRecipe);
-                        } else {
-                            listeners = Collections.emptyList();
-                        }
-                        LOGGER.debug("Listeners created: {}", listeners);
-                        if (registered.get()) {
-                            LOGGER.debug("Calling listeners for initial service registration");
-                            for (ServiceListener listener : listeners) {
-                                listener.register(service, registrationProperties);
-                            }
-                        } else {
-                            LOGGER.debug("Calling listeners for initial service unregistration");
-                            for (ServiceListener listener : listeners) {
-                                listener.unregister(service, registrationProperties);
-                            }
-                        }
-                    }
-                } catch (RuntimeException e) {
-                    LOGGER.error("Error retrieving service from " + this, e);
-                    throw e;
+        if (this.service == null) {
+            synchronized (blueprintContainer.getRepository().getInstanceLock()) {
+                if (this.service == null) {
+                    createService();
                 }
             }
         }
@@ -278,6 +251,38 @@ public class ServiceRecipe extends AbstractRecipe {
         return service;
     }
 
+    private void createService() {
+        try {
+            LOGGER.debug("Creating service instance");
+            service = createRecipe(serviceRecipe);
+            LOGGER.debug("Service created: {}", service);
+            // When the service is first requested, we need to create listeners and call them
+            if (listeners == null) {
+                LOGGER.debug("Creating listeners");
+                if (listenersRecipe != null) {
+                    listeners = (List) createRecipe(listenersRecipe);
+                } else {
+                    listeners = Collections.emptyList();
+                }
+                LOGGER.debug("Listeners created: {}", listeners);
+                if (registered.get()) {
+                    LOGGER.debug("Calling listeners for initial service registration");
+                    for (ServiceListener listener : listeners) {
+                        listener.register(service, registrationProperties);
+                    }
+                } else {
+                    LOGGER.debug("Calling listeners for initial service unregistration");
+                    for (ServiceListener listener : listeners) {
+                        listener.unregister(service, registrationProperties);
+                    }
+                }
+            }
+        } catch (RuntimeException e) {
+            LOGGER.error("Error retrieving service from " + this, e);
+            throw e;
+        }
+    }
+    
     private void validateClasses(Object service) {
         // Check if the service actually implement all the requested interfaces
         if (metadata.getAutoExport() == ServiceMetadata.AUTO_EXPORT_DISABLED) {
@@ -320,10 +325,6 @@ public class ServiceRecipe extends AbstractRecipe {
                 break;
         }
         return classes;
-    }
-
-    private Object createInstance() {
-        return createRecipe(serviceRecipe);
     }
 
     private void createExplicitDependencies() {
