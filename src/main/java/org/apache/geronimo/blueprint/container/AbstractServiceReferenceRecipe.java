@@ -460,7 +460,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                     ReflectionUtils.invoke(blueprintContainer.getAccessControlContext(), 
                                            method, listener, reference);
                 } catch (Exception e) {
-                    LOGGER.info("Error calling listener method " + method, e);
+                    LOGGER.error("Error calling listener method " + method, e);
                 }
             }
             for (Method method : objectMethods) {
@@ -468,7 +468,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                     ReflectionUtils.invoke(blueprintContainer.getAccessControlContext(), 
                                            method, listener, service);
                 } catch (Exception e) {
-                    LOGGER.info("Error calling listener method " + method, e);
+                    LOGGER.error("Error calling listener method " + method, e);
                 }
             }
             Map<String, Object> props = null;
@@ -485,7 +485,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                     ReflectionUtils.invoke(blueprintContainer.getAccessControlContext(), 
                                            method, listener, service, props);
                 } catch (Exception e) {
-                    LOGGER.info("Error calling listener method " + method, e);
+                    LOGGER.error("Error calling listener method " + method, e);
                 }
             }
         }

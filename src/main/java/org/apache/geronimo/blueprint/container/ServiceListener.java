@@ -98,7 +98,7 @@ public class ServiceListener {
                 ReflectionUtils.invoke(blueprintContainer.getAccessControlContext(), 
                                        method, listener, service, properties);
             } catch (Exception e) {
-                LOGGER.info("Error calling listener method " + method, e);
+                LOGGER.error("Error calling listener method " + method, e);
             }
         }
     }

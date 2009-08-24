@@ -69,7 +69,7 @@ public class ServiceRecipe extends AbstractRecipe {
     private volatile ServiceRegistration registration;
     private Map registrationProperties;
     private List<ServiceListener> listeners;
-    private Object service;
+    private volatile Object service;
     
     public ServiceRecipe(String name,
                          ExtendedBlueprintContainer blueprintContainer,
