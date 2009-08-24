@@ -586,10 +586,13 @@ public class BeanRecipe extends AbstractRecipe {
             if (getter != null) {
                 try {
                     instance = invoke(getter, instance, null);
-                    clazz = instance.getClass();
                 } catch (Exception e) {
                     throw new ComponentDefinitionException("Error getting property: " + names[i] + " on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName(), getRealCause(e));
                 }
+                if (instance == null) {
+                    throw new ComponentDefinitionException("Error setting compound property " + propertyName + " on bean " + getName() + ". Property " + names[i] + " is null");
+                }
+                clazz = instance.getClass();
             } else {
                 throw new ComponentDefinitionException("No getter for " + names[i] + " property on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName());
             }

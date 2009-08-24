@@ -56,7 +56,8 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
     private final List<ManagedCollection> collections = new ArrayList<ManagedCollection>();
     private final DynamicCollection<ServiceDispatcher> storage = new DynamicCollection<ServiceDispatcher>();
     private final List<ServiceDispatcher> unboundDispatchers = new ArrayList<ServiceDispatcher>();
-
+    private final Object monitor = new Object();
+    
     public ReferenceListRecipe(String name,
                          ExtendedBlueprintContainer blueprintContainer,
                          ReferenceListMetadata metadata,
@@ -98,7 +99,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
     }
 
     protected void track(ServiceReference reference) {
-        if (storage != null) {
+        synchronized (monitor) {
             try {
                 // ServiceReferences may be tracked at multiple points:
                 //  * first after the collection creation in #internalCreate()
@@ -145,7 +146,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
     }
 
     protected void untrack(ServiceReference reference) {
-        if (storage != null) {
+        synchronized (monitor) {
             ServiceDispatcher dispatcher = findDispatcher(reference);
             if (dispatcher != null) {
                 unbind(dispatcher.reference, dispatcher.proxy);
