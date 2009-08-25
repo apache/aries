@@ -280,26 +280,30 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         state = State.WaitForInitialReferences;
                         break;
                     case WaitForInitialReferences:
-                        if (!waitForDependencies || checkAllSatisfiables()) {
-                            state = State.InitialReferencesSatisfied;
-                            break;
-                        } else {
-                            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), getMissingDependencies()));
-                            return;
+                        if (waitForDependencies) {
+                            String[] missingDependencies = getMissingDependencies();
+                            if (missingDependencies.length > 0) {
+                                eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), missingDependencies));
+                                return;
+                            }
                         }
+                        state = State.InitialReferencesSatisfied;
+                        break;
                     case InitialReferencesSatisfied:
                         processTypeConverters();
                         processProcessors();
                         state = State.WaitForInitialReferences2;
                         break;
                     case WaitForInitialReferences2:
-                        if (!waitForDependencies || checkAllSatisfiables()) {
-                            state = State.Create;
-                            break;
-                        } else {
-                            eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), getMissingDependencies()));
-                            return;
-                        }
+                        if (waitForDependencies) {
+                            String[] missingDependencies = getMissingDependencies();
+                            if (missingDependencies.length > 0) {
+                                eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), missingDependencies));
+                                return;
+                            }
+                        }                       
+                        state = State.Create;
+                        break;
                     case Create:
                         timeoutFuture.cancel(false);
                         registerServices();
@@ -546,18 +550,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             }
             recipe.stop();
         }
-    }
-
-    private boolean checkAllSatisfiables() {
-        Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
-        for (List<SatisfiableRecipe> recipes : dependencies.values()) {
-            for (SatisfiableRecipe recipe : recipes) {
-                if (!recipe.isSatisfied()) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     public void notifySatisfaction(SatisfiableRecipe satisfiable) {
