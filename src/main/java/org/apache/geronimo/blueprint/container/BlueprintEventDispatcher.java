@@ -146,7 +146,7 @@ public class BlueprintEventDispatcher implements BlueprintListener {
     
     public void destroy() {
         this.executor.shutdown();
-        // wait for the queued task to execute        
+        // wait for the queued tasks to execute        
         try {
             this.executor.awaitTermination(60, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
