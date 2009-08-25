@@ -170,6 +170,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         if (blueprintContainer != null) {
             LOGGER.debug("Destroying BlueprintContainer for bundle {}", bundle.getSymbolicName());
             blueprintContainer.destroy();
+            eventDispatcher.contextDestroyed(bundle);
         }
     }
     

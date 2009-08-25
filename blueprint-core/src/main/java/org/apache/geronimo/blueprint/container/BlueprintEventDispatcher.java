@@ -144,6 +144,10 @@ public class BlueprintEventDispatcher implements BlueprintListener {
         }
     }
     
+    protected void contextDestroyed(Bundle bundle) {
+        states.remove(bundle);
+    }
+    
     public void destroy() {
         this.executor.shutdown();
         // wait for the queued tasks to execute        
