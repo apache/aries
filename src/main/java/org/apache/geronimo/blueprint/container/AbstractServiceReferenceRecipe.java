@@ -193,7 +193,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected void createListeners() {
         try {
             if (listenersRecipe != null) {
-                listeners = (List<Listener>) listenersRecipe.create();
+                List<Listener> listeners = (List<Listener>) listenersRecipe.create();
                 for (Listener listener : listeners) {
                     List<Class> cl = new ArrayList<Class>();
                     if (metadata.getInterface() != null) {
@@ -203,8 +203,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                     }
                     listener.init(cl);
                 }
+                this.listeners = listeners;
             } else {
-                listeners = Collections.emptyList();
+                this.listeners = Collections.emptyList();
             }
         } catch (ClassNotFoundException e) {
             throw new ComponentDefinitionException(e);
