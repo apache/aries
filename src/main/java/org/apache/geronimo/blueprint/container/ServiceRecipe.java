@@ -161,8 +161,8 @@ public class ServiceRecipe extends AbstractRecipe {
             LOGGER.debug("Registering service {} with interfaces {} and properties {}",
                          new Object[] { name, classes, props });
 
-            registration = blueprintContainer.registerService(classArray, new TriggerServiceFactory(), props);
             registrationProperties = props;
+            registration = blueprintContainer.registerService(classArray, new TriggerServiceFactory(), props);            
         }
     }
 
@@ -298,6 +298,13 @@ public class ServiceRecipe extends AbstractRecipe {
     }
 
     public synchronized Object getService(Bundle bundle, ServiceRegistration registration) {
+        /** getService() can get called before registerService() returns with the registration object.
+         *  So we need to set the registration object in case registration listeners call 
+         *  getServiceReference(). 
+         */
+        if (this.registration == null) {
+            this.registration = registration;
+        }
         return internalGetService(bundle, registration);
     }
 
