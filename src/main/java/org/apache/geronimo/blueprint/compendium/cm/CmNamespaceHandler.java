@@ -77,7 +77,7 @@ import org.slf4j.LoggerFactory;
 public class CmNamespaceHandler implements NamespaceHandler {
 
     public static final String BLUEPRINT_NAMESPACE = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
-    public static final String BLUEPRINT_CM_NAMESPACE = "http://www.osgi.org/xmlns/blueprint-cm/v1.0.0";
+    public static final String BLUEPRINT_CM_NAMESPACE = "http://geronimo.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0";
 
     public static final String PROPERTY_PLACEHOLDER_ELEMENT = "property-placeholder";
     public static final String MANAGED_PROPERTIES_ELEMENT = "managed-properties";
