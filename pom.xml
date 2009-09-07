@@ -32,59 +32,201 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix Transaction</name> 
 
+    <properties>
+        <geronimo-transaction-version>2.1.2</geronimo-transaction-version>
+    </properties>
+
     <dependencies>
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jta_1.1_spec</artifactId>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>1.2.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>1.2.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.components</groupId>
             <artifactId>geronimo-transaction</artifactId>
+            <version>2.1.2</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.howl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-core</artifactId>
+            <groupId>org.objectweb.howl</groupId>
+            <artifactId>howl</artifactId>
+            <version>1.0.1-1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <scope>test</scope>
+            <version>2.5.6</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.0.0</version>
+                <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <!--
                         <Import-Package>
-                            javax.transaction,
-                            org.apache.geronimo.transaction.manager,
-                            org.springframework.transaction,
+                            org.springframework.*;resolution:=optional,
+                            !org.apache.geronimo.transaction*,
+                            javax.resource.spi;version="1.5";resolution:=optional,
                             *
                         </Import-Package>
-                        -->
-                        <Export-Package>${pom.artifactId}*</Export-Package>
-                        <Spring-Context>*;publish-context:=false</Spring-Context>
+                        <Export-Package>
+                            org.apache.geronimo.transaction*;version="${geronimo-transaction-version}",
+                            javax.transaction*;version="1.1"
+                        </Export-Package>
+                        <Private-Package>
+                            org.objectweb.howl.log*,
+                            org.apache.servicemix.transaction
+                        </Private-Package>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Activator>org.apache.servicemix.transaction.Activator</Bundle-Activator>
+                        <Export-Service>
+                            javax.transaction.TransactionManager,
+                            javax.transaction.TransactionSynchronizationRegistry,
+                            javax.transaction.UserTransaction,
+                            org.apache.geronimo.transaction.manager.RecoverableTransactionManager
+                        </Export-Service>
+                        <Include-Resource>
+                            {maven-resources},
+                            javax/resource/spi/XATerminator.class=target/classes/javax/resource/spi/XATerminator.class
+                        </Include-Resource>
                     </instructions>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.geronimo.components</groupId>
+                                    <artifactId>geronimo-transaction</artifactId>
+                                    <classifier>sources</classifier>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.objectweb.howl</groupId>
+                                    <artifactId>howl</artifactId>
+                                    <classifier>sources</classifier>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/sources</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <tasks>
+                                <copy todir="${project.build.directory}/sources">
+                                    <fileset dir="${basedir}/src/main/java" />
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>package1</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <minmemory>128m</minmemory>
+                            <maxmemory>512m</maxmemory>
+                            <sourcepath>${project.build.directory}/sources</sourcepath>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin> -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.apache.geronimo.components:geronimo-transaction</include>
+                                    <include>org.objectweb.howl:howl</include>
+                                    <include>${project.groupId}:${project.artifactId}</include>
+                                </includes>
+                            </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>org.apache.geronimo.components:geronimo-transaction</artifact>
+                                    <excludes>
+                                        <exclude>org/**</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>org.objectweb.howl:howl</artifact>
+                                    <excludes>
+                                        <exclude>org/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <createSourcesJar>true</createSourcesJar>
+                            <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

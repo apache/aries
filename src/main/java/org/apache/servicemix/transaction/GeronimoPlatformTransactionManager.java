@@ -16,30 +16,29 @@
  */
 package org.apache.servicemix.transaction;
 
+import java.util.Map;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.transaction.Transaction;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
-import javax.transaction.Transaction;
 import javax.transaction.xa.XAException;
 
 import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionLog;
-import org.apache.geronimo.transaction.manager.TransactionManagerMonitor;
 import org.apache.geronimo.transaction.manager.XidFactory;
+import org.apache.geronimo.transaction.manager.TransactionManagerMonitor;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.jta.JtaTransactionManager;
-import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.jta.JtaTransactionManager;
 
 /**
- * @version $Revision$ $Date$
  */
 public class GeronimoPlatformTransactionManager extends GeronimoTransactionManager implements PlatformTransactionManager {
 
