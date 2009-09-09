@@ -99,30 +99,6 @@
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>ops4j.releases</id>
-            <url>http://repository.ops4j.org/maven2</url>
-        </repository>
-        <repository>
-            <id>ops4j.snapshots</id>
-            <url>http://repository.ops4j.org/mvn-snapshots</url>
-        </repository>
-        <repository>
-            <id>servicemix-repo</id>
-            <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>ops4j.releases</id>
-            <url>http://repository.ops4j.org/maven2</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
     <build>
         <plugins>
             <plugin>
