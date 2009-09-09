@@ -28,7 +28,7 @@
     <groupId>org.apache.geronimo</groupId>
     <artifactId>blueprint</artifactId>
     <name>Apache Geronimo Blueprint</name>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <description>
@@ -36,9 +36,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/geronimo/sandbox/blueprint/trunk</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/geronimo/sandbox/blueprint/trunk</developerConnection>
-        <url>http://svn.apache.org/viewvc/geronimo/sandbox/blueprint/trunk</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/geronimo/sandbox/blueprint/tags/blueprint-1.0.0</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/geronimo/sandbox/blueprint/tags/blueprint-1.0.0</developerConnection>
+        <url>http://svn.apache.org/viewvc/geronimo/sandbox/blueprint/tags/blueprint-1.0.0</url>
     </scm>
     
     <repositories>
