@@ -49,8 +49,8 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
             <scope>provided</scope>
         </dependency>
        <dependency>
