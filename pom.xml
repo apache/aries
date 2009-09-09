@@ -36,9 +36,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/geronimo/sandbox/blueprint</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/geronimo/sandbox/blueprint</developerConnection>
-        <url>http://svn.apache.org/viewvc/geronimo/sandbox/blueprint</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/geronimo/sandbox/blueprint/trunk</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/geronimo/sandbox/blueprint/trunk</developerConnection>
+        <url>http://svn.apache.org/viewvc/geronimo/sandbox/blueprint/trunk</url>
     </scm>
     
     <repositories>
