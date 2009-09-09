@@ -28,8 +28,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -44,6 +44,9 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>org.osgi.service.blueprint*;version="1.0"</Export-Package>
+                        <Import-Package>!org.osgi.service.blueprint*,*</Import-Package>
+                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
+                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
                 </configuration>
                 <executions>
