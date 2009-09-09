@@ -40,6 +40,16 @@
             <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -86,6 +96,7 @@
                             -->
                         </Private-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
+                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                         <_failok>true</_failok>
                      </instructions>
                     <unpackBundle>true</unpackBundle>
