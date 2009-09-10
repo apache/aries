@@ -171,7 +171,7 @@
                                     <artifactItems>
                                         <artifactItem>
                                             <groupId>org.apache.geronimo.blueprint</groupId>
-                                            <artifactId>org.apache.geronimo.blueprintapi</artifactId>
+                                            <artifactId>org.apache.geronimo.blueprint.api</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                         <artifactItem>
