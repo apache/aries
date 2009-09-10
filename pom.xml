@@ -114,26 +114,26 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.apache.geronimo:blueprint-api</include>
-                                    <include>org.apache.geronimo:blueprint-core</include>
-                                    <include>org.apache.geronimo:blueprint-cm</include>
+                                    <include>org.apache.geronimo.blueprint:org.apache.geronimo.blueprint.api</include>
+                                    <include>org.apache.geronimo.blueprint:org.apache.geronimo.blueprint.core</include>
+                                    <include>org.apache.geronimo.blueprint:org.apache.geronimo.blueprint.cm</include>
                                 </includes>
                             </artifactSet>
                             <filters>
                                 <filter>
-                                    <artifact>org.apache.geronimo:blueprint-api</artifact>
+                                    <artifact>org.apache.geronimo.blueprint:org.apache.geronimo.blueprint.api</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
                                 </filter>
                                 <filter>
-                                    <artifact>org.apache.geronimo:blueprint-core</artifact>
+                                    <artifact>org.apache.geronimo.blueprint:org.apache.geronimo.blueprint.core</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
                                 </filter>
                                 <filter>
-                                    <artifact>org.apache.geronimo:blueprint-cm</artifact>
+                                    <artifact>org.apache.geronimo.blueprint:org.apache.geronimo.blueprint.cm</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
@@ -170,18 +170,18 @@
                                 <configuration>
                                     <artifactItems>
                                         <artifactItem>
-                                            <groupId>org.apache.geronimo</groupId>
-                                            <artifactId>blueprint-api</artifactId>
+                                            <groupId>org.apache.geronimo.blueprint</groupId>
+                                            <artifactId>org.apache.geronimo.blueprintapi</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                         <artifactItem>
-                                            <groupId>org.apache.geronimo</groupId>
-                                            <artifactId>blueprint-core</artifactId>
+                                            <groupId>org.apache.geronimo.blueprint</groupId>
+                                            <artifactId>org.apache.geronimo.blueprint.core</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                         <artifactItem>
-                                            <groupId>org.apache.geronimo</groupId>
-                                            <artifactId>blueprint-cm</artifactId>
+                                            <groupId>org.apache.geronimo.blueprint</groupId>
+                                            <artifactId>org.apache.geronimo.blueprint.cm</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                     </artifactItems>
