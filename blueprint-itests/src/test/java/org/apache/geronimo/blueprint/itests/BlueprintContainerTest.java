@@ -59,12 +59,12 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
         props.put("key.b", "10");
         cf.update(props);
 
-        Bundle bundle = getInstalledBundle("blueprint-sample");
+        Bundle bundle = getInstalledBundle("org.apache.geronimo.blueprint.sample");
         assertNotNull(bundle);
 
         bundle.start();
 
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample", 5000);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.geronimo.blueprint.sample", 5000);
         assertNotNull(blueprintContainer);
 
         Object obj = blueprintContainer.getComponentInstance("bar");
@@ -99,7 +99,7 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
         Thread.sleep(1000);
 
         try {
-            blueprintContainer = getBlueprintContainerForBundle("blueprint-sample", 1);
+            blueprintContainer = getBlueprintContainerForBundle("org.apache.geronimo.blueprint.sample", 1);
             fail("BlueprintContainer should have been unregistered");
         } catch (Exception e) {
             // Expected, as the module container should have been unregistered
@@ -125,8 +125,8 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
             systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
             // Bundles
-            mavenBundle("org.apache.geronimo", "blueprint-bundle"),
-            mavenBundle("org.apache.geronimo", "blueprint-sample").noStart(),
+            mavenBundle("org.apache.geronimo.blueprint", "org.apache.geronimo.blueprint.bundle"),
+            mavenBundle("org.apache.geronimo.blueprint", "org.apache.geronimo.blueprint.sample").noStart(),
 
 //            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 

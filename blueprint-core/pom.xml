@@ -17,21 +17,25 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
- <parent>
-    <groupId>org.apache.geronimo</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.geronimo.blueprint</groupId>
     <artifactId>blueprint</artifactId>
     <version>1.0.1-SNAPSHOT</version>
   </parent>
 
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>blueprint-core</artifactId>
-  <name>Apache Geronimo Blueprint Core</name>
+  <artifactId>org.apache.geronimo.blueprint.core</artifactId>
   <packaging>bundle</packaging>
+  <name>Apache Geronimo Blueprint Core</name>
+  <description>
+      This bundle contains the core implementation of Blueprint 
+      along with the "ext" namespace handler.
+  </description>
   
   <dependencies>
       <dependency>
-          <groupId>org.apache.geronimo</groupId>
-          <artifactId>blueprint-api</artifactId>
+          <groupId>org.apache.geronimo.blueprint</groupId>
+          <artifactId>org.apache.geronimo.blueprint.api</artifactId>
       </dependency>
       <!-- We should use the org.osgi:org.osgi.core:1.5 jar, but it has not been released yet -->
       <dependency>
@@ -61,6 +65,18 @@
   </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>../blueprint-api/src/main/resources/org/osgi/service/blueprint</directory>
+                <targetPath>org/apache/geronimo/blueprint</targetPath>
+                <includes>
+                    <include>blueprint.xsd</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -74,6 +90,8 @@
                             org.apache.geronimo.blueprint*;version="${pom.version}"
                         </Export-Package>
                         <Import-Package>!org.apache.geronimo.blueprint*,*</Import-Package>
+                        <!-- include the right NOTICE with attribution to the OSGi alliance -->
+                        <Include-Resource>{maven-resources},META-INF/NOTICE=../NOTICE</Include-Resource>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>

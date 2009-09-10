@@ -25,7 +25,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.geronimo</groupId>
+    <groupId>org.apache.geronimo.blueprint</groupId>
     <artifactId>blueprint</artifactId>
     <name>Apache Geronimo Blueprint</name>
     <version>1.0.1-SNAPSHOT</version>
@@ -36,9 +36,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/geronimo/sandbox/blueprint/trunk</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/geronimo/sandbox/blueprint/trunk</developerConnection>
-        <url>http://svn.apache.org/viewvc/geronimo/sandbox/blueprint/trunk</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/geronimo/components/blueprint/trunk</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/geronimo/components/blueprint/trunk</developerConnection>
+        <url>http://svn.apache.org/viewvc/geronimo/components/blueprint/trunk</url>
     </scm>
     
     <repositories>
@@ -58,33 +58,33 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.apache.geronimo</groupId>
-                <artifactId>blueprint-api</artifactId>
+                <groupId>org.apache.geronimo.blueprint</groupId>
+                <artifactId>org.apache.geronimo.blueprint.api</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.geronimo</groupId>
-                <artifactId>blueprint-core</artifactId>
+                <groupId>org.apache.geronimo.blueprint</groupId>
+                <artifactId>org.apache.geronimo.blueprint.core</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.geronimo</groupId>
-                <artifactId>blueprint-cm</artifactId>
+                <groupId>org.apache.geronimo.blueprint</groupId>
+                <artifactId>org.apache.geronimo.blueprint.cm</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.geronimo</groupId>
-                <artifactId>blueprint-bundle</artifactId>
+                <groupId>org.apache.geronimo.blueprint</groupId>
+                <artifactId>org.apache.geronimo.blueprint.bundle</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.geronimo</groupId>
-                <artifactId>blueprint-sample</artifactId>
+                <groupId>org.apache.geronimo.blueprint</groupId>
+                <artifactId>org.apache.geronimo.blueprint.sample</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.geronimo</groupId>
-                <artifactId>blueprint-itests</artifactId>
+                <groupId>org.apache.geronimo.blueprint</groupId>
+                <artifactId>org.apache.geronimo.blueprint.itests</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>

@@ -50,7 +50,7 @@ public class TestReferences extends AbstractIntegrationTest {
 
     @Test
     public void testUnaryReference() throws Exception {
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample");
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.geronimo.blueprint.sample");
         assertNotNull(blueprintContainer);
 
         BindingListener listener = (BindingListener) blueprintContainer.getComponentInstance("bindingListener");
@@ -104,7 +104,7 @@ public class TestReferences extends AbstractIntegrationTest {
 
     @Test
     public void testListReferences() throws Exception {
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("blueprint-sample");
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.geronimo.blueprint.sample");
         assertNotNull(blueprintContainer);
 
         BindingListener listener = (BindingListener) blueprintContainer.getComponentInstance("listBindingListener");
@@ -144,8 +144,8 @@ public class TestReferences extends AbstractIntegrationTest {
             systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 
             // Bundles
-            mavenBundle("org.apache.geronimo", "blueprint-bundle"),
-            mavenBundle("org.apache.geronimo", "blueprint-sample"),
+            mavenBundle("org.apache.geronimo.blueprint", "org.apache.geronimo.blueprint.bundle"),
+            mavenBundle("org.apache.geronimo.blueprint", "org.apache.geronimo.blueprint.sample"),
 
 //            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 

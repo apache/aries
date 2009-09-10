@@ -17,23 +17,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.geronimo</groupId>
+        <groupId>org.apache.geronimo.blueprint</groupId>
         <artifactId>blueprint</artifactId>
         <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>blueprint-bundle</artifactId>
+    <artifactId>org.apache.geronimo.blueprint.bundle</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Geronimo Blueprint Bundle</name>
+    <description>
+        This bundle contains the standalone implementation along with the API.
+        It's composed of the blueprint-api, blueprint-core and blueprint-cm modules.
+    </description>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.geronimo</groupId>
-            <artifactId>blueprint-core</artifactId>
+            <groupId>org.apache.geronimo.blueprint</groupId>
+            <artifactId>org.apache.geronimo.blueprint.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo</groupId>
-            <artifactId>blueprint-cm</artifactId>
+            <groupId>org.apache.geronimo.blueprint</groupId>
+            <artifactId>org.apache.geronimo.blueprint.cm</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
@@ -84,17 +88,10 @@
                             org.apache.geronimo.blueprint.namespace,
                             org.apache.geronimo.blueprint.reflect,
                             org.apache.geronimo.blueprint.utils,
-                            <!--
-                            org.objectweb.asm,
-                            org.objectweb.asm.commons,
-                            org.objectweb.asm.signature,
-                            org.objectweb.asm.tree*,
-                            org.objectweb.asm.util,
-                            net.sf.cglib.core,
-                            net.sf.cglib.proxy,
-                            net.sf.cglib.reflect,
-                            -->
+                            OSGI-INF*
                         </Private-Package>
+                        <!-- include the right NOTICE with attribution to the OSGi alliance -->
+                        <Include-Resource>{maven-resources},META-INF/NOTICE=../NOTICE</Include-Resource>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                         <_failok>true</_failok>
@@ -102,6 +99,9 @@
                     <unpackBundle>true</unpackBundle>
                 </configuration>
             </plugin>
+            <!-- Use the shade plugin with the dependency plugin to unjar the three jars (api, core and cm)
+                 so that the associated sources and javadocs jars are complete.
+                 To build the main jar, the maven-bundle-plugin is used, that's why everything is exluded -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -114,30 +114,12 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <!--
-                                    <include>asm:asm-all</include>
-                                    <include>cglib:cglib</include>
-                                    -->
                                     <include>org.apache.geronimo:blueprint-api</include>
                                     <include>org.apache.geronimo:blueprint-core</include>
                                     <include>org.apache.geronimo:blueprint-cm</include>
                                 </includes>
                             </artifactSet>
                             <filters>
-                                <!--
-                                <filter>
-                                    <artifact>asm:asm-all</artifact>
-                                    <excludes>
-                                        <exclude>org/**</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>cglib:cglib</artifact>
-                                    <excludes>
-                                        <exclude>net/**</exclude>
-                                    </excludes>
-                                </filter>
-                                -->
                                 <filter>
                                     <artifact>org.apache.geronimo:blueprint-api</artifact>
                                     <excludes>
