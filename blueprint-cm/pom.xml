@@ -59,8 +59,6 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>org.apache.geronimo.blueprint.compendium.cm*;version="${pom.version}"</Export-Package>
                         <Import-Package>!org.apache.geronimo.blueprint.compendium.cm*,*</Import-Package>
-                        <!-- include the right NOTICE with attribution to the OSGi alliance -->
-                        <Include-Resource>{maven-resources},META-INF/NOTICE=../NOTICE</Include-Resource>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
