@@ -17,14 +17,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.geronimo</groupId>
+        <groupId>org.apache.geronimo.blueprint</groupId>
         <artifactId>blueprint</artifactId>
         <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>blueprint-api</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>org.apache.geronimo.blueprint.api</artifactId>
+    <packaging>bundle</packaging>
     <name>Apache Geronimo Blueprint API</name>
+    <description>
+        This bundle contains the blueprint api 1.0.0 and the corresponding xml schema.
+    </description>
 
     <dependencies>
         <dependency>
@@ -45,26 +48,11 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>org.osgi.service.blueprint*;version="1.0"</Export-Package>
                         <Import-Package>!org.osgi.service.blueprint*,*</Import-Package>
+                        <!-- include the right NOTICE with attribution to the OSGi alliance -->
+                        <Include-Resource>{maven-resources},META-INF/NOTICE=../NOTICE</Include-Resource>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
                 </configuration>
             </plugin>
         </plugins>
