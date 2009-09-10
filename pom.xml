@@ -17,14 +17,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.geronimo</groupId>
+        <groupId>org.apache.geronimo.blueprint</groupId>
         <artifactId>blueprint</artifactId>
         <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>blueprint-sample</artifactId>
+    <artifactId>org.apache.geronimo.blueprint.sample</artifactId>
     <name>Apache Geronimo Blueprint Sample</name>
     <packaging>bundle</packaging>
+    <description>
+        Example blueprint application, mostly used for integration tests.
+    </description>
 
     <build>
         <plugins>
@@ -54,8 +57,8 @@
             <scope>provided</scope>
         </dependency>
        <dependency>
-           <groupId>org.apache.geronimo</groupId>
-           <artifactId>blueprint-api</artifactId>
+           <groupId>org.apache.geronimo.blueprint</groupId>
+           <artifactId>org.apache.geronimo.blueprint.api</artifactId>
        </dependency>
     </dependencies>
 </project>
