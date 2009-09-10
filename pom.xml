@@ -17,21 +17,24 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
  <parent>
-    <groupId>org.apache.geronimo</groupId>
+    <groupId>org.apache.geronimo.blueprint</groupId>
     <artifactId>blueprint</artifactId>
     <version>1.0.1-SNAPSHOT</version>
   </parent>
 
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>blueprint-cm</artifactId>
-  <name>Apache Geronimo Blueprint CM</name>
+  <artifactId>org.apache.geronimo.blueprint.cm</artifactId>
   <packaging>bundle</packaging>
+  <name>Apache Geronimo Blueprint CM</name>
+  <description>
+      This bundle contains the ConfigAdmin namespace for blueprint.
+  </description>
   
   <dependencies>
       <dependency>
-          <groupId>org.apache.geronimo</groupId>
-          <artifactId>blueprint-core</artifactId>
+          <groupId>org.apache.geronimo.blueprint</groupId>
+          <artifactId>org.apache.geronimo.blueprint.core</artifactId>
       </dependency>
       <dependency>
           <groupId>org.eclipse</groupId>
@@ -56,6 +59,8 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>org.apache.geronimo.blueprint.compendium.cm*;version="${pom.version}"</Export-Package>
                         <Import-Package>!org.apache.geronimo.blueprint.compendium.cm*,*</Import-Package>
+                        <!-- include the right NOTICE with attribution to the OSGi alliance -->
+                        <Include-Resource>{maven-resources},META-INF/NOTICE=../NOTICE</Include-Resource>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
