@@ -144,7 +144,7 @@ public class TestReferences extends AbstractIntegrationTest {
             systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 
             // Bundles
-            mavenBundle("org.apache.geronimo.blueprint", "org.apache.geronimo.blueprint.bundle"),
+            mavenBundle("org.apache.geronimo.blueprint", "geronimo-blueprint"),
             mavenBundle("org.apache.geronimo.blueprint", "org.apache.geronimo.blueprint.sample"),
 
 //            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
