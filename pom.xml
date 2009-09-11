@@ -22,7 +22,7 @@
         <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.geronimo.blueprint.api</artifactId>
+    <artifactId>geronimo-blueprint-api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Geronimo Blueprint API</name>
     <description>
@@ -45,7 +45,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.groupId}.api</Bundle-SymbolicName>
                         <Export-Package>org.osgi.service.blueprint*;version="1.0"</Export-Package>
                         <Import-Package>!org.osgi.service.blueprint*,*</Import-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
