@@ -24,7 +24,7 @@
     <version>1.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.apache.geronimo.blueprint.core</artifactId>
+  <artifactId>geronimo-blueprint-core</artifactId>
   <packaging>bundle</packaging>
   <name>Apache Geronimo Blueprint Core</name>
   <description>
@@ -35,7 +35,7 @@
   <dependencies>
       <dependency>
           <groupId>org.apache.geronimo.blueprint</groupId>
-          <artifactId>org.apache.geronimo.blueprint.api</artifactId>
+          <artifactId>geronimo-blueprint-api</artifactId>
       </dependency>
       <!-- We should use the org.osgi:org.osgi.core:1.5 jar, but it has not been released yet -->
       <dependency>
@@ -84,7 +84,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.groupId}.core</Bundle-SymbolicName>
                         <Bundle-Activator>org.apache.geronimo.blueprint.container.BlueprintExtender</Bundle-Activator>
                         <Export-Package>
                             org.apache.geronimo.blueprint*;version="${pom.version}"

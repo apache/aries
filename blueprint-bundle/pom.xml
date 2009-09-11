@@ -22,7 +22,7 @@
         <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.geronimo.blueprint.bundle</artifactId>
+    <artifactId>geronimo-blueprint</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Geronimo Blueprint Bundle</name>
     <description>
@@ -33,11 +33,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.geronimo.blueprint</groupId>
-            <artifactId>org.apache.geronimo.blueprint.core</artifactId>
+            <artifactId>geronimo-blueprint-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.blueprint</groupId>
-            <artifactId>org.apache.geronimo.blueprint.cm</artifactId>
+            <artifactId>geronimo-blueprint-cm</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
@@ -64,7 +64,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.groupId}</Bundle-SymbolicName>
                         <Bundle-Activator>org.apache.geronimo.blueprint.container.BlueprintExtender</Bundle-Activator>
                         <Import-Package>
                             !org.apache.geronimo.blueprint*,
@@ -90,6 +90,8 @@
                             org.apache.geronimo.blueprint.utils,
                             OSGI-INF*
                         </Private-Package>
+                        <!-- include the right NOTICE with attribution to the OSGi alliance -->
+                        <Include-Resource>{maven-resources},META-INF/NOTICE=../NOTICE</Include-Resource>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                         <_failok>true</_failok>
@@ -112,26 +114,26 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.apache.geronimo.blueprint:org.apache.geronimo.blueprint.api</include>
-                                    <include>org.apache.geronimo.blueprint:org.apache.geronimo.blueprint.core</include>
-                                    <include>org.apache.geronimo.blueprint:org.apache.geronimo.blueprint.cm</include>
+                                    <include>org.apache.geronimo.blueprint:geronimo-blueprint-api</include>
+                                    <include>org.apache.geronimo.blueprint:geronimo-blueprint-core</include>
+                                    <include>org.apache.geronimo.blueprint:geronimo-blueprint-cm</include>
                                 </includes>
                             </artifactSet>
                             <filters>
                                 <filter>
-                                    <artifact>org.apache.geronimo.blueprint:org.apache.geronimo.blueprint.api</artifact>
+                                    <artifact>org.apache.geronimo.blueprint:geronimo-blueprint-api</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
                                 </filter>
                                 <filter>
-                                    <artifact>org.apache.geronimo.blueprint:org.apache.geronimo.blueprint.core</artifact>
+                                    <artifact>org.apache.geronimo.blueprint:geronimo-blueprint-core</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
                                 </filter>
                                 <filter>
-                                    <artifact>org.apache.geronimo.blueprint:org.apache.geronimo.blueprint.cm</artifact>
+                                    <artifact>org.apache.geronimo.blueprint:geronimo-blueprint-cm</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
@@ -169,17 +171,17 @@
                                     <artifactItems>
                                         <artifactItem>
                                             <groupId>org.apache.geronimo.blueprint</groupId>
-                                            <artifactId>org.apache.geronimo.blueprint.api</artifactId>
+                                            <artifactId>geronimo-blueprint-api</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                         <artifactItem>
                                             <groupId>org.apache.geronimo.blueprint</groupId>
-                                            <artifactId>org.apache.geronimo.blueprint.core</artifactId>
+                                            <artifactId>geronimo-blueprint-core</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                         <artifactItem>
                                             <groupId>org.apache.geronimo.blueprint</groupId>
-                                            <artifactId>org.apache.geronimo.blueprint.cm</artifactId>
+                                            <artifactId>geronimo-blueprint-cm</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                     </artifactItems>

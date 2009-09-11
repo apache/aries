@@ -59,22 +59,22 @@
         <dependencies>
             <dependency>
                 <groupId>org.apache.geronimo.blueprint</groupId>
-                <artifactId>org.apache.geronimo.blueprint.api</artifactId>
+                <artifactId>geronimo-blueprint-api</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.blueprint</groupId>
-                <artifactId>org.apache.geronimo.blueprint.core</artifactId>
+                <artifactId>geronimo-blueprint-core</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.blueprint</groupId>
-                <artifactId>org.apache.geronimo.blueprint.cm</artifactId>
+                <artifactId>geronimo-blueprint-cm</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.blueprint</groupId>
-                <artifactId>org.apache.geronimo.blueprint.bundle</artifactId>
+                <artifactId>geronimo-blueprint</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
@@ -131,22 +131,22 @@
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam</artifactId>
-                <version>1.0.0</version>
+                <version>1.1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-junit</artifactId>
-                <version>1.0.0</version>
+                <version>1.1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-container-default</artifactId>
-                <version>1.0.0</version>
+                <version>1.1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-junit-extender-impl</artifactId>
-                <version>1.0.0</version>
+                <version>1.1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.runner</groupId>
@@ -156,7 +156,7 @@
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.configadmin</artifactId>
-                <version>1.2.0</version>
+                <version>1.2.4</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
@@ -178,7 +178,7 @@
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.main</artifactId>
-                <version>1.8.0</version>
+                <version>2.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse</groupId>

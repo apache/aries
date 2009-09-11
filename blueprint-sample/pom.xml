@@ -38,7 +38,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.groupId}.sample</Bundle-SymbolicName>
                         <Bundle-Activator>
                             org.apache.geronimo.blueprint.sample.Activator
                         </Bundle-Activator>
@@ -58,7 +58,7 @@
         </dependency>
        <dependency>
            <groupId>org.apache.geronimo.blueprint</groupId>
-           <artifactId>org.apache.geronimo.blueprint.api</artifactId>
+           <artifactId>geronimo-blueprint-api</artifactId>
        </dependency>
     </dependencies>
 </project>

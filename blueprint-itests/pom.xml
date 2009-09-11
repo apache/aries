@@ -34,7 +34,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.geronimo.blueprint</groupId>
-            <artifactId>org.apache.geronimo.blueprint.bundle</artifactId>
+            <artifactId>geronimo-blueprint</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

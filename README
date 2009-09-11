@@ -1,8 +1,8 @@
 Installing and running the blueprint-sample bundle:
 ---------------------------------------------------
-0) Download Felix (version 2.0.0 when released or a 1.9.0-SNAPSHOT snapshot version used at the time of this writing):
+0) Download Felix (v2.0.0 at the time of this writing):
    
-   see http://felix.apache.org/site/building-felix.html
+   http://www.apache.org/dist/felix/felix-framework-2.0.0.tar.gz
 
 1) Start Felix under Java SE 5:
  
@@ -20,7 +20,7 @@ Installing and running the blueprint-sample bundle:
 
 4) Build the blueprint project and install the extender and sample bundles:
 
-  a) install file:///<m2_repo>/org/apache/geronimo/blueprint/org.apache.geronimo.blueprint.bundle/<version>/org.apache.geronimo.blueprint.bundle-<version>.jar
+  a) install file:///<m2_repo>/org/apache/geronimo/blueprint/geronimo-blueprint/<version>/geronimo-blueprint-<version>.jar
   b) install file:///<m2_repo>/org/apache/geronimo/blueprint/org.apache.geronimo.blueprint.sample/<version>/org.apache.geronimo.blueprint.sample-<version>.jar
 
 5) Start the ConfigurationAdmin, extender and sample bundles:
