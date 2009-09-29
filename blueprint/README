@@ -1,0 +1,80 @@
+Installing and running the blueprint-sample bundle:
+---------------------------------------------------
+0) Download Felix (v2.0.0 at the time of this writing):
+   
+   http://www.apache.org/dist/felix/felix-framework-2.0.0.tar.gz
+
+1) Start Felix under Java SE 5:
+ 
+  java -jar bin/felix.jar
+
+2) Install the following PAX Log service:
+
+  a) install http://repo1.maven.org/maven2/org/ops4j/pax/logging/pax-logging-api/1.4/pax-logging-api-1.4.jar
+  b) install http://repo1.maven.org/maven2/org/ops4j/pax/logging/pax-logging-service/1.4/pax-logging-service-1.4.jar
+
+3) Install Felix EventAdmin and ConfigurationAdmin:
+
+  a) install http://repo1.maven.org/maven2/org/apache/felix/org.apache.felix.eventadmin/1.0.0/org.apache.felix.eventadmin-1.0.0.jar
+  b) install http://repo1.maven.org/maven2/org/apache/felix/org.apache.felix.configadmin/1.2.4/org.apache.felix.configadmin-1.2.4.jar
+
+4) Build the blueprint project and install the extender and sample bundles:
+
+  a) install file:///<m2_repo>/org/apache/geronimo/blueprint/geronimo-blueprint/<version>/geronimo-blueprint-<version>.jar
+  b) install file:///<m2_repo>/org/apache/geronimo/blueprint/org.apache.geronimo.blueprint.sample/<version>/org.apache.geronimo.blueprint.sample-<version>.jar
+
+5) Start the ConfigurationAdmin, extender and sample bundles:
+
+  a) start <bundle id for config admin>
+  b) start <bundle id for blueprint-bundle>
+  c) start <bundle id for blueprint-sample>
+
+
+Installing and running the Web Console and Jetty:
+-------------------------------------------------
+1) Install the following bundles:
+
+   a) install http://www.apache.org/dist/felix/org.osgi.compendium-1.2.0.jar
+   b) install http://www.apache.org/dist/felix/org.apache.felix.scr-1.0.8.jar
+   c) install http://www.apache.org/dist/felix/org.apache.felix.http.jetty-1.0.0.jar
+   d) install http://www.apache.org/dist/felix/org.apache.felix.webconsole-1.2.10.jar
+
+2) Start the web console:
+
+   a) start <bundle id for org.apache.felix.http.jetty>
+   b) start <bundle id for org.apache.felix.webconsole>
+
+   Note:  You will have to start the Config, Event and Scr bundles for those
+     tabs to function in the web console.
+
+3) Access the web console in a browser:
+
+   http://localhost:8080/system/console
+   uid = admin
+   pwd = admin
+
+
+Installing and running the Daytrader sample:
+--------------------------------------------
+1) Install the following released bundles:
+
+   a) install http://repo1.maven.org/maven2/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar
+   b) install http://repo1.maven.org/maven2/commons-lang/commons-lang/2.4/commons-lang-2.4.jar
+   c) install http://repo1.maven.org/maven2/commons-pool/commons-pool/1.4/commons-pool-1.4.jar
+   d) install http://repo1.maven.org/maven2/org/apache/geronimo/specs/geronimo-jms_1.1_spec/1.1.1/geronimo-jms_1.1_spec-1.1.1.jar
+   e) install http://repo1.maven.org/maven2/org/apache/geronimo/specs/geronimo-jta_1.1_spec/1.1.1/geronimo-jta_1.1_spec-1.1.1.jar
+
+2) Install the following SNAPSHOT bundles:
+
+   a) install http://people.apache.org/repo/m2-snapshot-repository/org/apache/geronimo/specs/geronimo-jpa_2.0_spec/1.0-EA2-SNAPSHOT/geronimo-jpa_2.0_spec-1.0-EA2-SNAPSHOT.jar
+   b) install http://people.apache.org/repo/m2-snapshot-repository/org/apache/geronimo/specs/geronimo-validation_1.0_spec/1.0-SNAPSHOT/geronimo-validation_1.0_spec-1.0-SNAPSHOT.jar
+
+3) Build the OpenJPA trunk (2.0.0-SNAPSHOT) and install:
+
+  a) install file:///<m2_repo>/org/apache/openjpa/openjpa/2.0.0-SNAPSHOT/openjpa-2.0.0-SNAPSHOT.jar
+
+4) Build the Daytrader trunk (2.2-SNAPSHOT) and install the web-only bundle:
+
+  Note:  This step is still a work-in-progress and TBD...
+
+

@@ -1,0 +1,229 @@
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.geronimo.blueprint</groupId>
+        <artifactId>blueprint</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>geronimo-blueprint</artifactId>
+    <packaging>bundle</packaging>
+    <name>Apache Geronimo Blueprint Bundle</name>
+    <description>
+        This bundle contains the standalone implementation along with the API.
+        It's composed of the blueprint-api, blueprint-core and blueprint-cm modules.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.geronimo.blueprint</groupId>
+            <artifactId>geronimo-blueprint-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.blueprint</groupId>
+            <artifactId>geronimo-blueprint-cm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${pom.groupId}</Bundle-SymbolicName>
+                        <Bundle-Activator>org.apache.geronimo.blueprint.container.BlueprintExtender</Bundle-Activator>
+                        <Import-Package>
+                            !org.apache.geronimo.blueprint*,
+                            org.osgi.service.blueprint*,
+                            org.osgi.service.event*;resolution:=optional,
+                            net.sf.cglib*;resolution:=optional,
+                            *
+                        </Import-Package>
+                        <Export-Package>
+                            =org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.geronimo.blueprint,org.apache.geronimo.blueprint.ext,org.apache.geronimo.blueprint.mutable";version="1.0",
+                            org.osgi.service.blueprint.container;version="1.0",
+                            org.osgi.service.blueprint.reflect;version="1.0",
+                            org.apache.geronimo.blueprint;version="${pom.version}",
+                            org.apache.geronimo.blueprint.ext;version="${pom.version}",
+                            org.apache.geronimo.blueprint.mutable;version="${pom.version}"
+                        </Export-Package>
+                        <Private-Package>
+                            org.apache.geronimo.blueprint.compendium.cm,
+                            org.apache.geronimo.blueprint.container,
+                            org.apache.geronimo.blueprint.di,
+                            org.apache.geronimo.blueprint.namespace,
+                            org.apache.geronimo.blueprint.reflect,
+                            org.apache.geronimo.blueprint.utils,
+                            OSGI-INF*
+                        </Private-Package>
+                        <!-- include the right NOTICE with attribution to the OSGi alliance -->
+                        <Include-Resource>{maven-resources},META-INF/NOTICE=../NOTICE</Include-Resource>
+                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
+                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
+                        <_failok>true</_failok>
+                     </instructions>
+                    <unpackBundle>true</unpackBundle>
+                </configuration>
+            </plugin>
+            <!-- Use the shade plugin with the dependency plugin to unjar the three jars (api, core and cm)
+                 so that the associated sources and javadocs jars are complete.
+                 To build the main jar, the maven-bundle-plugin is used, that's why everything is exluded -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.apache.geronimo.blueprint:geronimo-blueprint-api</include>
+                                    <include>org.apache.geronimo.blueprint:geronimo-blueprint-core</include>
+                                    <include>org.apache.geronimo.blueprint:geronimo-blueprint-cm</include>
+                                </includes>
+                            </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>org.apache.geronimo.blueprint:geronimo-blueprint-api</artifact>
+                                    <excludes>
+                                        <exclude>org/**</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>org.apache.geronimo.blueprint:geronimo-blueprint-core</artifact>
+                                    <excludes>
+                                        <exclude>org/**</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>org.apache.geronimo.blueprint:geronimo-blueprint-cm</artifact>
+                                    <excludes>
+                                        <exclude>org/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <createSourcesJar>${createSourcesJar}</createSourcesJar>
+                            <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>deploy</id>
+            <properties>
+                <createSourcesJar>true</createSourcesJar>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-sources</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.apache.geronimo.blueprint</groupId>
+                                            <artifactId>geronimo-blueprint-api</artifactId>
+                                            <classifier>sources</classifier>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.apache.geronimo.blueprint</groupId>
+                                            <artifactId>geronimo-blueprint-core</artifactId>
+                                            <classifier>sources</classifier>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.apache.geronimo.blueprint</groupId>
+                                            <artifactId>geronimo-blueprint-cm</artifactId>
+                                            <classifier>sources</classifier>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}/sources</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>package</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <minmemory>128m</minmemory>
+                            <maxmemory>512m</maxmemory>
+                            <sourcepath>${project.build.directory}/sources</sourcepath>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
