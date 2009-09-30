@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
  * TODO: looks there is a potential problem if the service is unregistered between a call
  *        to ServiceDispatcher#loadObject() and when the actual invocation finish
  *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
 public class ReferenceRecipe extends AbstractServiceReferenceRecipe {

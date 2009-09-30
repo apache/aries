@@ -30,7 +30,6 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
  * We need to keep the reference to the ValueMetadata so that we can lazily retrieve
  * the value, allowing for placeholders or such to be used at the last moment.
  *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev$, $Date$
  */
 public class ValueRecipe extends AbstractRecipe {
