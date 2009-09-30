@@ -25,10 +25,10 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.geronimo.blueprint</groupId>
+    <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>blueprint</artifactId>
-    <name>Apache Geronimo Blueprint</name>
-    <version>1.0.1-SNAPSHOT</version>
+    <name>Apache Aries Blueprint</name>
+    <version>1.0.0-incubating-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
@@ -58,33 +58,33 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.apache.geronimo.blueprint</groupId>
-                <artifactId>geronimo-blueprint-api</artifactId>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>aries-blueprint-api</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.geronimo.blueprint</groupId>
-                <artifactId>geronimo-blueprint-core</artifactId>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>aries-blueprint-core</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.geronimo.blueprint</groupId>
-                <artifactId>geronimo-blueprint-cm</artifactId>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>aries-blueprint-cm</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.geronimo.blueprint</groupId>
-                <artifactId>geronimo-blueprint</artifactId>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>aries-blueprint</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.geronimo.blueprint</groupId>
-                <artifactId>org.apache.geronimo.blueprint.sample</artifactId>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>org.apache.aries.blueprint.sample</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.geronimo.blueprint</groupId>
-                <artifactId>org.apache.geronimo.blueprint.itests</artifactId>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>org.apache.aries.blueprint.itests</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>

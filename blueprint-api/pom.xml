@@ -17,14 +17,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.geronimo.blueprint</groupId>
+        <groupId>org.apache.aries.blueprint</groupId>
         <artifactId>blueprint</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>geronimo-blueprint-api</artifactId>
+    <artifactId>aries-blueprint-api</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Geronimo Blueprint API</name>
+    <name>Apache Aries Blueprint API</name>
     <description>
         This bundle contains the blueprint api 1.0.0 and the corresponding xml schema.
     </description>

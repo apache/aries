@@ -17,14 +17,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.geronimo.blueprint</groupId>
+        <groupId>org.apache.aries.blueprint</groupId>
         <artifactId>blueprint</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>geronimo-blueprint</artifactId>
+    <artifactId>aries-blueprint</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Geronimo Blueprint Bundle</name>
+    <name>Apache Aries Blueprint Bundle</name>
     <description>
         This bundle contains the standalone implementation along with the API.
         It's composed of the blueprint-api, blueprint-core and blueprint-cm modules.
@@ -32,12 +32,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.geronimo.blueprint</groupId>
-            <artifactId>geronimo-blueprint-core</artifactId>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>aries-blueprint-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.blueprint</groupId>
-            <artifactId>geronimo-blueprint-cm</artifactId>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>aries-blueprint-cm</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
@@ -114,26 +114,26 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.apache.geronimo.blueprint:geronimo-blueprint-api</include>
-                                    <include>org.apache.geronimo.blueprint:geronimo-blueprint-core</include>
-                                    <include>org.apache.geronimo.blueprint:geronimo-blueprint-cm</include>
+                                    <include>org.apache.aries.blueprint:aries-blueprint-api</include>
+                                    <include>org.apache.aries.blueprint:aries-blueprint-core</include>
+                                    <include>org.apache.aries.blueprint:aries-blueprint-cm</include>
                                 </includes>
                             </artifactSet>
                             <filters>
                                 <filter>
-                                    <artifact>org.apache.geronimo.blueprint:geronimo-blueprint-api</artifact>
+                                    <artifact>org.apache.aries.blueprint:aries-blueprint-api</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
                                 </filter>
                                 <filter>
-                                    <artifact>org.apache.geronimo.blueprint:geronimo-blueprint-core</artifact>
+                                    <artifact>org.apache.aries.blueprint:aries-blueprint-core</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
                                 </filter>
                                 <filter>
-                                    <artifact>org.apache.geronimo.blueprint:geronimo-blueprint-cm</artifact>
+                                    <artifact>org.apache.aries.blueprint:aries-blueprint-cm</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
@@ -170,18 +170,18 @@
                                 <configuration>
                                     <artifactItems>
                                         <artifactItem>
-                                            <groupId>org.apache.geronimo.blueprint</groupId>
-                                            <artifactId>geronimo-blueprint-api</artifactId>
+                                            <groupId>org.apache.aries.blueprint</groupId>
+                                            <artifactId>arieso-blueprint-api</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                         <artifactItem>
-                                            <groupId>org.apache.geronimo.blueprint</groupId>
-                                            <artifactId>geronimo-blueprint-core</artifactId>
+                                            <groupId>org.apache.aries.blueprint</groupId>
+                                            <artifactId>aries-blueprint-core</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                         <artifactItem>
-                                            <groupId>org.apache.geronimo.blueprint</groupId>
-                                            <artifactId>geronimo-blueprint-cm</artifactId>
+                                            <groupId>org.apache.aries.blueprint</groupId>
+                                            <artifactId>aries-blueprint-cm</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                     </artifactItems>
