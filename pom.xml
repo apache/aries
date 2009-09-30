@@ -57,8 +57,8 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.groupId}.cm</Bundle-SymbolicName>
-                        <Export-Package>org.apache.geronimo.blueprint.compendium.cm*;version="${pom.version}"</Export-Package>
-                        <Import-Package>!org.apache.geronimo.blueprint.compendium.cm*,*</Import-Package>
+                        <Export-Package>org.apache.aries.blueprint.compendium.cm*;version="${pom.version}"</Export-Package>
+                        <Import-Package>!org.apache.aries.blueprint.compendium.cm*,*</Import-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>

@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.compendium.cm;
+package org.apache.aries.blueprint.compendium.cm;
 
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Map;
 
-import org.apache.geronimo.blueprint.ext.AbstractPropertyPlaceholder;
-import org.apache.geronimo.blueprint.ext.PropertyPlaceholder;
+import org.apache.aries.blueprint.ext.AbstractPropertyPlaceholder;
+import org.apache.aries.blueprint.ext.PropertyPlaceholder;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.cm.Configuration;

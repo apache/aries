@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.compendium.cm;
+package org.apache.aries.blueprint.compendium.cm;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -30,21 +30,21 @@ import org.w3c.dom.EntityReference;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import org.apache.geronimo.blueprint.ComponentDefinitionRegistry;
-import org.apache.geronimo.blueprint.NamespaceHandler;
-import org.apache.geronimo.blueprint.ParserContext;
-import org.apache.geronimo.blueprint.container.Parser;
-import org.apache.geronimo.blueprint.container.ParserContextImpl;
-import org.apache.geronimo.blueprint.container.ServiceListener;
-import org.apache.geronimo.blueprint.ext.ExtNamespaceHandler;
-import org.apache.geronimo.blueprint.ext.PlaceholdersUtils;
-import org.apache.geronimo.blueprint.mutable.MutableBeanMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableCollectionMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableComponentMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableIdRefMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableMapMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableRefMetadata;
-import org.apache.geronimo.blueprint.mutable.MutableValueMetadata;
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.blueprint.NamespaceHandler;
+import org.apache.aries.blueprint.ParserContext;
+import org.apache.aries.blueprint.container.Parser;
+import org.apache.aries.blueprint.container.ParserContextImpl;
+import org.apache.aries.blueprint.container.ServiceListener;
+import org.apache.aries.blueprint.ext.ExtNamespaceHandler;
+import org.apache.aries.blueprint.ext.PlaceholdersUtils;
+import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
+import org.apache.aries.blueprint.mutable.MutableCollectionMetadata;
+import org.apache.aries.blueprint.mutable.MutableComponentMetadata;
+import org.apache.aries.blueprint.mutable.MutableIdRefMetadata;
+import org.apache.aries.blueprint.mutable.MutableMapMetadata;
+import org.apache.aries.blueprint.mutable.MutableRefMetadata;
+import org.apache.aries.blueprint.mutable.MutableValueMetadata;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -71,13 +71,12 @@ import org.slf4j.LoggerFactory;
  * @see CmProperties
  * @see CmPropertyPlaceholder
  *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
 public class CmNamespaceHandler implements NamespaceHandler {
 
     public static final String BLUEPRINT_NAMESPACE = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
-    public static final String BLUEPRINT_CM_NAMESPACE = "http://geronimo.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0";
+    public static final String BLUEPRINT_CM_NAMESPACE = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0";
 
     public static final String PROPERTY_PLACEHOLDER_ELEMENT = "property-placeholder";
     public static final String MANAGED_PROPERTIES_ELEMENT = "managed-properties";
@@ -109,7 +108,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     public static final String AUTO_EXPORT_DEFAULT = AUTO_EXPORT_DISABLED;
     public static final String RANKING_DEFAULT = "0";
 
-    private static final String MANAGED_OBJECT_MANAGER_NAME = "org.apache.geronimo.managedObjectManager";
+    private static final String MANAGED_OBJECT_MANAGER_NAME = "org.apache.aries.managedObjectManager";
     
     private static final Logger LOGGER = LoggerFactory.getLogger(CmNamespaceHandler.class);
 

@@ -16,16 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.compendium.cm;
+package org.apache.aries.blueprint.compendium.cm;
 
 import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
-import org.apache.geronimo.blueprint.ServiceProcessor;
-import org.apache.geronimo.blueprint.utils.JavaUtils;
+import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.ServiceProcessor;
+import org.apache.aries.blueprint.utils.JavaUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.Configuration;

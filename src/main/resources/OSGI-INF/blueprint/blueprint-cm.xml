@@ -19,11 +19,11 @@
 -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-    <service interface="org.apache.geronimo.blueprint.NamespaceHandler">
+    <service interface="org.apache.aries.blueprint.NamespaceHandler">
         <service-properties>
-            <entry key="osgi.service.blueprint.namespace" value="http://geronimo.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"/>
+            <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"/>
         </service-properties>
-        <bean class="org.apache.geronimo.blueprint.compendium.cm.CmNamespaceHandler">
+        <bean class="org.apache.aries.blueprint.compendium.cm.CmNamespaceHandler">
             <property name="configAdmin">
                 <reference interface="org.osgi.service.cm.ConfigurationAdmin"/>
             </property>

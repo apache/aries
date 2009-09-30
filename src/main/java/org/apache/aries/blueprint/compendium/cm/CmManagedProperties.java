@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.compendium.cm;
+package org.apache.aries.blueprint.compendium.cm;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,9 +33,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.geronimo.blueprint.BeanProcessor;
-import org.apache.geronimo.blueprint.ExtendedBlueprintContainer;
-import org.apache.geronimo.blueprint.utils.ReflectionUtils;
+import org.apache.aries.blueprint.BeanProcessor;
+import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.Configuration;

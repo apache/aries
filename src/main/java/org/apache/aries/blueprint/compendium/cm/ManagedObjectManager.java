@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.compendium.cm;
+package org.apache.aries.blueprint.compendium.cm;
 
 import java.util.ArrayList;
 import java.util.Collections;
