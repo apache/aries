@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A <code>Recipe</code> to export services into the OSGi registry.
  *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 776360 $, $Date: 2009-05-19 17:40:47 +0200 (Tue, 19 May 2009) $
  */
 public class ServiceRecipe extends AbstractRecipe {

@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A recipe to create a managed collection of service references
  *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
 public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {

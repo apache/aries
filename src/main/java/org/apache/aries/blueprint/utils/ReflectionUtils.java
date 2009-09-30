@@ -39,7 +39,6 @@ import java.util.WeakHashMap;
 /**
  * TODO: javadoc
  *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev$, $Date$
  */
 public class ReflectionUtils {
