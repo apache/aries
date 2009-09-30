@@ -57,7 +57,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A namespace handler for Aries blueprint extensions
  *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
 public class ExtNamespaceHandler implements org.apache.aries.blueprint.NamespaceHandler {

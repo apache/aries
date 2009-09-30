@@ -33,7 +33,6 @@ import java.util.NoSuchElementException;
  * synchronization lock, so the performance in heavy concurrency load is far from optimal.
  * If such a use is needed, a CopyOnWriteArrayList may be more suited.
  *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 766653 $, $Date: 2009-04-20 13:19:48 +0200 (Mon, 20 Apr 2009) $
  */
 public class DynamicCollection<E> extends AbstractCollection<E> {

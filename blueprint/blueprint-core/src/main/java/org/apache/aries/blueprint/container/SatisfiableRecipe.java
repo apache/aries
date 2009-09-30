@@ -21,12 +21,11 @@ package org.apache.aries.blueprint.container;
 import org.apache.aries.blueprint.di.Recipe;
 
 /**
- * Interface used to desribe an object which can satisfy a constraint or not.
+ * Interface used to describe an object which can satisfy a constraint or not.
  *
  * If the state of the object changes, registered SatisfactionListener objects
  * will be notified of the change.
  *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
 public interface SatisfiableRecipe extends Recipe {
@@ -34,7 +33,6 @@ public interface SatisfiableRecipe extends Recipe {
     /**
      * A listener that will be notified when the constraint satisfaction changes.
      *
-     * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
      * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
      */
     public interface SatisfactionListener {

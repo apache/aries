@@ -59,7 +59,6 @@ import org.xml.sax.SAXException;
  * This registry will track NamespaceHandler objects in the OSGi registry and make
  * them available, calling listeners when handlers are registered or unregistered.
  *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
 public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, ServiceTrackerCustomizer {

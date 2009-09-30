@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A <code>Recipe</code> to create POJOs.
  *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev$, $Date$
  */
 public class BeanRecipe extends AbstractRecipe {

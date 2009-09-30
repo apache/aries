@@ -32,7 +32,6 @@ import org.osgi.service.blueprint.reflect.Metadata;
  * 
  * This class is supposed to be short lived and only used for calling a given namespace handler.
  *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
 public class ParserContextImpl implements ParserContext {
