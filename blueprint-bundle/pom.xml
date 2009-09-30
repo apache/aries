@@ -65,29 +65,29 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.groupId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.geronimo.blueprint.container.BlueprintExtender</Bundle-Activator>
+                        <Bundle-Activator>org.apache.aries.blueprint.container.BlueprintExtender</Bundle-Activator>
                         <Import-Package>
-                            !org.apache.geronimo.blueprint*,
+                            !org.apache.aries.blueprint*,
                             org.osgi.service.blueprint*,
                             org.osgi.service.event*;resolution:=optional,
                             net.sf.cglib*;resolution:=optional,
                             *
                         </Import-Package>
                         <Export-Package>
-                            =org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.geronimo.blueprint,org.apache.geronimo.blueprint.ext,org.apache.geronimo.blueprint.mutable";version="1.0",
+                            =org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.aries.blueprint,org.apache.aries.blueprint.ext,org.apache.aries.blueprint.mutable";version="1.0",
                             org.osgi.service.blueprint.container;version="1.0",
                             org.osgi.service.blueprint.reflect;version="1.0",
-                            org.apache.geronimo.blueprint;version="${pom.version}",
-                            org.apache.geronimo.blueprint.ext;version="${pom.version}",
-                            org.apache.geronimo.blueprint.mutable;version="${pom.version}"
+                            org.apache.aries.blueprint;version="${pom.version}",
+                            org.apache.aries.blueprint.ext;version="${pom.version}",
+                            org.apache.aries.blueprint.mutable;version="${pom.version}"
                         </Export-Package>
                         <Private-Package>
-                            org.apache.geronimo.blueprint.compendium.cm,
-                            org.apache.geronimo.blueprint.container,
-                            org.apache.geronimo.blueprint.di,
-                            org.apache.geronimo.blueprint.namespace,
-                            org.apache.geronimo.blueprint.reflect,
-                            org.apache.geronimo.blueprint.utils,
+                            org.apache.aries.blueprint.compendium.cm,
+                            org.apache.aries.blueprint.container,
+                            org.apache.aries.blueprint.di,
+                            org.apache.aries.blueprint.namespace,
+                            org.apache.aries.blueprint.reflect,
+                            org.apache.aries.blueprint.utils,
                             OSGI-INF*
                         </Private-Package>
                         <!-- include the right NOTICE with attribution to the OSGi alliance -->
@@ -171,7 +171,7 @@
                                     <artifactItems>
                                         <artifactItem>
                                             <groupId>org.apache.aries.blueprint</groupId>
-                                            <artifactId>arieso-blueprint-api</artifactId>
+                                            <artifactId>aries-blueprint-api</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                         <artifactItem>

@@ -20,7 +20,7 @@
             xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             default-availability="mandatory" >
 
-    <bean id="method" class="org.apache.geronimo.blueprint.pojos.PojoGenerics">
+    <bean id="method" class="org.apache.aries.blueprint.pojos.PojoGenerics">
         <property name="list">
             <list>
                 <value>10</value>
@@ -47,7 +47,7 @@
         </property>        
     </bean>
     
-    <bean id="constructorList" class="org.apache.geronimo.blueprint.pojos.PojoGenerics">
+    <bean id="constructorList" class="org.apache.aries.blueprint.pojos.PojoGenerics">
         <argument type="java.util.List">
             <list>
                 <value>10</value>
@@ -57,7 +57,7 @@
         </argument>      
     </bean>
     
-    <bean id="constructorSet" class="org.apache.geronimo.blueprint.pojos.PojoGenerics">
+    <bean id="constructorSet" class="org.apache.aries.blueprint.pojos.PojoGenerics">
        <argument type="java.util.Set">
             <set>
                 <value>1000</value>
@@ -67,7 +67,7 @@
         </argument>
     </bean>
     
-    <bean id="constructorMap" class="org.apache.geronimo.blueprint.pojos.PojoGenerics">
+    <bean id="constructorMap" class="org.apache.aries.blueprint.pojos.PojoGenerics">
         <argument>
             <map>
                 <entry key="1" value="yes"/>

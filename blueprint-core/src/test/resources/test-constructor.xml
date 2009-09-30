@@ -20,24 +20,24 @@
             xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             default-availability="mandatory" >
 
-    <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB">
+    <bean id="pojoB" class="org.apache.aries.blueprint.pojos.PojoB">
         <argument value="urn:myuri" />
         <argument value="10" />
     </bean>
     
-    <bean id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA">
+    <bean id="pojoA" class="org.apache.aries.blueprint.pojos.PojoA">
         <argument ref="pojoB" />
         <property name="number">
             <value type="java.math.BigInteger">10</value>
         </property>
     </bean>
 
-    <bean id="pojoC" class="org.apache.geronimo.blueprint.pojos.PojoB" factory-method = "createStatic" >
+    <bean id="pojoC" class="org.apache.aries.blueprint.pojos.PojoB" factory-method = "createStatic" >
         <argument><value type="int">15</value></argument>
         <argument value="urn:myuri" />
     </bean>
     
-    <bean id="pojoD" class="org.apache.geronimo.blueprint.pojos.PojoB" factory-method = "createStatic" >
+    <bean id="pojoD" class="org.apache.aries.blueprint.pojos.PojoB" factory-method = "createStatic" >
         <argument value="15" index = "1" />
         <argument value="urn:myuri" index = "0" />
     </bean>
@@ -47,47 +47,47 @@
         <argument value="urn:myuri" />
     </bean>
     
-    <bean id="multipleInt" class="org.apache.geronimo.blueprint.pojos.Multiple">
+    <bean id="multipleInt" class="org.apache.aries.blueprint.pojos.Multiple">
         <argument type="int" value="123"/>
     </bean>
     
-    <bean id="multipleInteger" class="org.apache.geronimo.blueprint.pojos.Multiple">
+    <bean id="multipleInteger" class="org.apache.aries.blueprint.pojos.Multiple">
         <argument type="java.lang.Integer" value="123"/>
     </bean>
     
-    <bean id="multipleString" class="org.apache.geronimo.blueprint.pojos.Multiple">
+    <bean id="multipleString" class="org.apache.aries.blueprint.pojos.Multiple">
         <argument type="java.lang.String" value="123"/>
     </bean>
     
-    <bean id="multipleStringConvertable" class="org.apache.geronimo.blueprint.pojos.Multiple">
+    <bean id="multipleStringConvertable" class="org.apache.aries.blueprint.pojos.Multiple">
         <argument value="hello"/>
     </bean>
     
-    <bean id="multipleFactory1" class="org.apache.geronimo.blueprint.pojos.Multiple"
+    <bean id="multipleFactory1" class="org.apache.aries.blueprint.pojos.Multiple"
           factory-method = "create" >
         <argument value="hello"/>
         <argument value="1234"/>
     </bean>
         
-    <bean id="multipleFactory2" class="org.apache.geronimo.blueprint.pojos.Multiple"
+    <bean id="multipleFactory2" class="org.apache.aries.blueprint.pojos.Multiple"
           factory-method = "create" >
         <argument value="helloCreate"/>
         <argument value="yes"/>
     </bean>
 
-    <bean id="multipleFactoryNull" class="org.apache.geronimo.blueprint.pojos.Multiple"
+    <bean id="multipleFactoryNull" class="org.apache.aries.blueprint.pojos.Multiple"
           factory-method = "create" >
         <argument value="helloNull"/>
         <argument><null/></argument>
     </bean>
     
-     <bean id="multipleFactoryTypedNull" class="org.apache.geronimo.blueprint.pojos.Multiple"
+     <bean id="multipleFactoryTypedNull" class="org.apache.aries.blueprint.pojos.Multiple"
           factory-method = "create" >
         <argument value="hello"/>
         <argument type = "java.lang.Boolean"><null/></argument>
     </bean>
     
-    <bean id="mapConstruction" class="org.apache.geronimo.blueprint.pojos.Multiple">
+    <bean id="mapConstruction" class="org.apache.aries.blueprint.pojos.Multiple">
         <argument>
             <map>
                 <entry key="a" value="b"/>
@@ -95,7 +95,7 @@
         </argument>
     </bean>
 
-    <bean id="propsConstruction" class="org.apache.geronimo.blueprint.pojos.Multiple">
+    <bean id="propsConstruction" class="org.apache.aries.blueprint.pojos.Multiple">
         <argument>
             <props>
                 <prop key="a" value="b"/>
@@ -103,11 +103,11 @@
         </argument>
     </bean>
 
-    <bean id="booleanPrim" class="org.apache.geronimo.blueprint.pojos.BeanF">
+    <bean id="booleanPrim" class="org.apache.aries.blueprint.pojos.BeanF">
         <argument><value type="boolean">no</value></argument>
     </bean>
 
-    <bean id="booleanWrapped" class="org.apache.geronimo.blueprint.pojos.BeanF">
+    <bean id="booleanWrapped" class="org.apache.aries.blueprint.pojos.BeanF">
         <argument type="java.lang.Boolean" value="no" />
     </bean>
 

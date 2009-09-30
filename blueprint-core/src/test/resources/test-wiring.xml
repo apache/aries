@@ -19,19 +19,19 @@
            default-availability="mandatory" >
 
     <type-converters>
-            <bean id="converter1" class="org.apache.geronimo.blueprint.pojos.ConverterA">
+            <bean id="converter1" class="org.apache.aries.blueprint.pojos.ConverterA">
                 <property name="bundle" ref="blueprintBundleContext" />
             </bean>
     </type-converters>
 
-    <service id="service1" ref="pojoB" interface="org.apache.geronimo.blueprint.pojos.PojoB">
+    <service id="service1" ref="pojoB" interface="org.apache.aries.blueprint.pojos.PojoB">
         <service-properties>
             <entry key="key1" value="value1"/>
             <entry key="key2" value="value2"/>
         </service-properties>    
     </service>
 
-    <bean id="pojoC" class="org.apache.geronimo.blueprint.pojos.PojoB" scope = "prototype">
+    <bean id="pojoC" class="org.apache.aries.blueprint.pojos.PojoB" scope = "prototype">
         <property name="uri" value="urn:myuri" />
         <property name="objects">
             <list>
@@ -40,11 +40,11 @@
         </property>
     </bean>
     
-    <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB" init-method = "init" destroy-method = "destroy" >
+    <bean id="pojoB" class="org.apache.aries.blueprint.pojos.PojoB" init-method = "init" destroy-method = "destroy" >
         <property name="uri" value="urn:myuri" />
     </bean>
 
-    <bean id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA">
+    <bean id="pojoA" class="org.apache.aries.blueprint.pojos.PojoA">
         <property name="pojob" ref="pojoB"/>
         <property name="map">
             <map>
@@ -107,11 +107,11 @@
         </property>
     </bean>
 
-    <bean id="compound" class="org.apache.geronimo.blueprint.pojos.PojoB">
+    <bean id="compound" class="org.apache.aries.blueprint.pojos.PojoB">
         <property name="bean.name" value="hello bean property" />
     </bean>
     
-    <bean id="goodIdRef" class="org.apache.geronimo.blueprint.pojos.BeanD">
+    <bean id="goodIdRef" class="org.apache.aries.blueprint.pojos.BeanD">
         <property name="name">
           <idref component-id="pojoA"/>
         </property>

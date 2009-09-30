@@ -23,40 +23,40 @@
     </description>
 
     <type-converters>
-        <bean class="org.apache.geronimo.blueprint.pojos.ConverterA"/>
+        <bean class="org.apache.aries.blueprint.pojos.ConverterA"/>
         <ref component-id="converterB"/>
     </type-converters>
 
-    <bean id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA">
+    <bean id="pojoA" class="org.apache.aries.blueprint.pojos.PojoA">
         <property name="pojob" ref="pojoB"/>
     </bean>
 
-    <bean id="pojoAcns" class="org.apache.geronimo.blueprint.pojos.PojoA">
+    <bean id="pojoAcns" class="org.apache.aries.blueprint.pojos.PojoA">
         <argument ref="pojoB"/>
     </bean>
 
-    <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoB">
+    <bean id="pojoB" class="org.apache.aries.blueprint.pojos.PojoB">
         <property name="uri" value="urn:myuri"/>
     </bean>
 
-    <bean id="pojoBcns" class="org.apache.geronimo.blueprint.pojos.PojoB">
+    <bean id="pojoBcns" class="org.apache.aries.blueprint.pojos.PojoB">
         <argument value="urn:myuri"/>
     </bean>
 
-    <bean id="converterB" class="org.apache.geronimo.blueprint.pojos.ConverterB"/>
+    <bean id="converterB" class="org.apache.aries.blueprint.pojos.ConverterB"/>
 
-    <reference id="refA" filter="(key=prop)" interface="org.apache.geronimo.blueprint.pojos.InterfaceA"/>
+    <reference id="refA" filter="(key=prop)" interface="org.apache.aries.blueprint.pojos.InterfaceA"/>
 
     <reference id="refB" availability="optional">
         <interfaces>
-            <value>org.apache.geronimo.blueprint.pojos.InterfaceA</value>
+            <value>org.apache.aries.blueprint.pojos.InterfaceA</value>
         </interfaces>
         <listener   ref="listenerA" bind-method="bind" unbind-method="unbind"/>
     </reference>
 
-    <service interface="org.apache.geronimo.blueprint.pojos.InterfaceA" ref="pojoA"/>
+    <service interface="org.apache.aries.blueprint.pojos.InterfaceA" ref="pojoA"/>
 
-    <bean id="listenerA" class="org.apache.geronimo.blueprint.pojos.ListenerA"/>
+    <bean id="listenerA" class="org.apache.aries.blueprint.pojos.ListenerA"/>
 
     <reference-list availability="optional" member-type="service-object"/>
 

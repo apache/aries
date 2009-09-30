@@ -40,7 +40,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.groupId}.sample</Bundle-SymbolicName>
                         <Bundle-Activator>
-                            org.apache.geronimo.blueprint.sample.Activator
+                            org.apache.aries.blueprint.sample.Activator
                         </Bundle-Activator>
 <!--
                         <Bundle-Blueprint>/test.xml</Bundle-Blueprint>
