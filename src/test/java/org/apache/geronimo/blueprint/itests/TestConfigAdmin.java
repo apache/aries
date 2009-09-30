@@ -53,11 +53,11 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         props.put("currency", "PLN");
         cf.update(props);
 
-        Bundle bundle = getInstalledBundle("org.apache.geronimo.blueprint.sample");
+        Bundle bundle = getInstalledBundle("org.apache.aries.blueprint.sample");
         assertNotNull(bundle);
         bundle.start();
 
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.geronimo.blueprint.sample", 5000);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample", 5000);
         assertNotNull(blueprintContainer);
 
         Foo foo = (Foo) blueprintContainer.getComponentInstance("none-managed");
@@ -87,11 +87,11 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         props.put("currency", "PLN");
         cf.update(props);
 
-        Bundle bundle = getInstalledBundle("org.apache.geronimo.blueprint.sample");
+        Bundle bundle = getInstalledBundle("org.apache.aries.blueprint.sample");
         assertNotNull(bundle);
         bundle.start();
 
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.geronimo.blueprint.sample", 5000);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample", 5000);
         assertNotNull(blueprintContainer);
 
         Foo foo = (Foo) blueprintContainer.getComponentInstance("container-managed");
@@ -120,11 +120,11 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         props.put("currency", "PLN");
         cf.update(props);
 
-        Bundle bundle = getInstalledBundle("org.apache.geronimo.blueprint.sample");
+        Bundle bundle = getInstalledBundle("org.apache.aries.blueprint.sample");
         assertNotNull(bundle);
         bundle.start();
 
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.geronimo.blueprint.sample", 5000);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample", 5000);
         assertNotNull(blueprintContainer);
 
         Foo foo = (Foo) blueprintContainer.getComponentInstance("component-managed");
@@ -156,11 +156,11 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
         props.put("currency", "PLN");
         cf.update(props);
 
-        Bundle bundle = getInstalledBundle("org.apache.geronimo.blueprint.sample");
+        Bundle bundle = getInstalledBundle("org.apache.aries.blueprint.sample");
         assertNotNull(bundle);
         bundle.start();
 
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.geronimo.blueprint.sample", 5000);
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample", 5000);
         assertNotNull(blueprintContainer);
 
         Thread.sleep(5000);
@@ -182,8 +182,8 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
             systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
             // Bundles
-            mavenBundle("org.apache.geronimo.blueprint", "geronimo-blueprint"),
-            mavenBundle("org.apache.geronimo.blueprint", "org.apache.geronimo.blueprint.sample").noStart(),
+            mavenBundle("org.apache.aries.blueprint", "aries-blueprint"),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
 
 //            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
