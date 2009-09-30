@@ -26,7 +26,6 @@ import java.util.Map;
 /**
  * Utility class to parse a standard OSGi header with paths.
  *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev$, $Date$
  */
 public class HeaderParser  {

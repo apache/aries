@@ -26,7 +26,6 @@ import org.osgi.service.blueprint.reflect.NonNullMetadata;
 /**
  * A mutable version of the <code>MapMetadata</code> that allows modifications.
  *
- * @author <a href="mailto:dev@geronimo.apache.org">Apache Geronimo Project</a>
  * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
  */
 public interface MutableMapMetadata extends MapMetadata {
