@@ -18,7 +18,7 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            default-availability="mandatory" >
 
-   <bean id="badIdRef" class="org.apache.geronimo.blueprint.pojos.BeanD">
+   <bean id="badIdRef" class="org.apache.aries.blueprint.pojos.BeanD">
         <property name="name">
           <idref component-id="doesnotexist"/>
         </property>

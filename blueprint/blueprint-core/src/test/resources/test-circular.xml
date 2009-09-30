@@ -17,33 +17,33 @@
 -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-    <bean id="a" class="org.apache.geronimo.blueprint.pojos.PojoCircular">
+    <bean id="a" class="org.apache.aries.blueprint.pojos.PojoCircular">
         <property name="circular" ref="b"/>
     </bean>
 
-    <bean id="b" class="org.apache.geronimo.blueprint.pojos.PojoCircular">
+    <bean id="b" class="org.apache.aries.blueprint.pojos.PojoCircular">
         <property name="circular" ref="a"/>
     </bean>
     
-    <bean id="c" class="org.apache.geronimo.blueprint.pojos.PojoCircular" init-method = "init">
+    <bean id="c" class="org.apache.aries.blueprint.pojos.PojoCircular" init-method = "init">
         <property name="circular" ref="d"/>
     </bean>
 
-    <bean id="d" class="org.apache.geronimo.blueprint.pojos.PojoCircular">
+    <bean id="d" class="org.apache.aries.blueprint.pojos.PojoCircular">
         <property name="circular" ref="c"/>
     </bean>
     
     
     
-    <bean id="serviceBean" class="org.apache.geronimo.blueprint.pojos.PojoB">
+    <bean id="serviceBean" class="org.apache.aries.blueprint.pojos.PojoB">
         <property name="uri" value="urn:myuri" />
     </bean>
     
-    <bean id="listener" class="org.apache.geronimo.blueprint.pojos.PojoListener">
+    <bean id="listener" class="org.apache.aries.blueprint.pojos.PojoListener">
         <property name="service" ref="service" />
     </bean>
     
-    <service id="service" ref="serviceBean" interface="org.apache.geronimo.blueprint.pojos.PojoB">
+    <service id="service" ref="serviceBean" interface="org.apache.aries.blueprint.pojos.PojoB">
         <service-properties>
             <entry key="key1" value="value1"/>
             <entry key="key2" value="value2"/>
@@ -55,44 +55,44 @@
     
     <!-- for prototype cycle tests -->
     
-    <bean id="circularPrototype" class="org.apache.geronimo.blueprint.pojos.PojoCircular" scope = "prototype">
+    <bean id="circularPrototype" class="org.apache.aries.blueprint.pojos.PojoCircular" scope = "prototype">
         <property name="circular" ref="circularPrototype"/>
     </bean>
     
-    <bean id="circularPrototypeDriver" class="org.apache.geronimo.blueprint.pojos.PojoCircular" scope = "prototype">
+    <bean id="circularPrototypeDriver" class="org.apache.aries.blueprint.pojos.PojoCircular" scope = "prototype">
         <property name="circular" ref="circularPrototypeDriver"/>
     </bean>
             
      <!-- for dynamic cycle tests (blueprintContainer.getComponentInstance()) -->
      
-    <bean id="recursiveConstructor" class="org.apache.geronimo.blueprint.pojos.PojoRecursive">
+    <bean id="recursiveConstructor" class="org.apache.aries.blueprint.pojos.PojoRecursive">
         <argument ref="blueprintContainer"/>
         <argument value="recursiveConstructor"/>
         <argument value="1"/>
     </bean>
     
-    <bean id="recursiveSetter" class="org.apache.geronimo.blueprint.pojos.PojoRecursive">
+    <bean id="recursiveSetter" class="org.apache.aries.blueprint.pojos.PojoRecursive">
         <argument ref="blueprintContainer"/>
         <argument value="recursiveSetter"/>
         <property name="foo" value="1"/>
     </bean>
     
-    <bean id="recursiveInitMethod" class="org.apache.geronimo.blueprint.pojos.PojoRecursive" init-method = "init">
+    <bean id="recursiveInitMethod" class="org.apache.aries.blueprint.pojos.PojoRecursive" init-method = "init">
         <argument ref="blueprintContainer"/>
         <argument value="recursiveInitMethod"/>
     </bean>
 
     <!-- for breaking dependency cycle tests  -->
 
-    <bean id="c1" class="org.apache.geronimo.blueprint.pojos.PojoCircular">
+    <bean id="c1" class="org.apache.aries.blueprint.pojos.PojoCircular">
         <argument ref="c2"/>
     </bean>
     
-    <bean id="c2" class="org.apache.geronimo.blueprint.pojos.PojoCircular">
+    <bean id="c2" class="org.apache.aries.blueprint.pojos.PojoCircular">
         <argument ref="c3"/>
     </bean>
     
-    <bean id="c3" class="org.apache.geronimo.blueprint.pojos.PojoCircular">
+    <bean id="c3" class="org.apache.aries.blueprint.pojos.PojoCircular">
         <property name="circular" ref="c1"/>
     </bean>
     
