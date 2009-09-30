@@ -19,14 +19,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.geronimo.blueprint</groupId>
+    <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>blueprint</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0-incubating-SNAPSHOT</version>
   </parent>
 
-  <artifactId>geronimo-blueprint-core</artifactId>
+  <artifactId>aries-blueprint-core</artifactId>
   <packaging>bundle</packaging>
-  <name>Apache Geronimo Blueprint Core</name>
+  <name>Apache Aries Blueprint Core</name>
   <description>
       This bundle contains the core implementation of Blueprint 
       along with the "ext" namespace handler.
@@ -34,8 +34,8 @@
   
   <dependencies>
       <dependency>
-          <groupId>org.apache.geronimo.blueprint</groupId>
-          <artifactId>geronimo-blueprint-api</artifactId>
+          <groupId>org.apache.aries.blueprint</groupId>
+          <artifactId>aries-blueprint-api</artifactId>
       </dependency>
       <!-- We should use the org.osgi:org.osgi.core:1.5 jar, but it has not been released yet -->
       <dependency>

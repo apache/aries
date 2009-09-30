@@ -20,8 +20,8 @@ Installing and running the blueprint-sample bundle:
 
 4) Build the blueprint project and install the extender and sample bundles:
 
-  a) install file:///<m2_repo>/org/apache/geronimo/blueprint/geronimo-blueprint/<version>/geronimo-blueprint-<version>.jar
-  b) install file:///<m2_repo>/org/apache/geronimo/blueprint/org.apache.geronimo.blueprint.sample/<version>/org.apache.geronimo.blueprint.sample-<version>.jar
+  a) install file:///<m2_repo>/org/apache/aries/blueprint/aries-blueprint/<version>/aries-blueprint-<version>.jar
+  b) install file:///<m2_repo>/org/apache/aries/blueprint/org.apache.aries.blueprint.sample/<version>/org.apache.aries.blueprint.sample-<version>.jar
 
 5) Start the ConfigurationAdmin, extender and sample bundles:
 
@@ -52,29 +52,5 @@ Installing and running the Web Console and Jetty:
    http://localhost:8080/system/console
    uid = admin
    pwd = admin
-
-
-Installing and running the Daytrader sample:
---------------------------------------------
-1) Install the following released bundles:
-
-   a) install http://repo1.maven.org/maven2/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar
-   b) install http://repo1.maven.org/maven2/commons-lang/commons-lang/2.4/commons-lang-2.4.jar
-   c) install http://repo1.maven.org/maven2/commons-pool/commons-pool/1.4/commons-pool-1.4.jar
-   d) install http://repo1.maven.org/maven2/org/apache/geronimo/specs/geronimo-jms_1.1_spec/1.1.1/geronimo-jms_1.1_spec-1.1.1.jar
-   e) install http://repo1.maven.org/maven2/org/apache/geronimo/specs/geronimo-jta_1.1_spec/1.1.1/geronimo-jta_1.1_spec-1.1.1.jar
-
-2) Install the following SNAPSHOT bundles:
-
-   a) install http://people.apache.org/repo/m2-snapshot-repository/org/apache/geronimo/specs/geronimo-jpa_2.0_spec/1.0-EA2-SNAPSHOT/geronimo-jpa_2.0_spec-1.0-EA2-SNAPSHOT.jar
-   b) install http://people.apache.org/repo/m2-snapshot-repository/org/apache/geronimo/specs/geronimo-validation_1.0_spec/1.0-SNAPSHOT/geronimo-validation_1.0_spec-1.0-SNAPSHOT.jar
-
-3) Build the OpenJPA trunk (2.0.0-SNAPSHOT) and install:
-
-  a) install file:///<m2_repo>/org/apache/openjpa/openjpa/2.0.0-SNAPSHOT/openjpa-2.0.0-SNAPSHOT.jar
-
-4) Build the Daytrader trunk (2.2-SNAPSHOT) and install the web-only bundle:
-
-  Note:  This step is still a work-in-progress and TBD...
 
 
