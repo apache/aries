@@ -14,9 +14,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.geronimo.blueprint.sample;
+package org.apache.aries.blueprint.sample;
 
-public interface InterfaceA {
+import java.io.Serializable;
+import java.util.Map;
 
-    String hello(String msg);
+public class FooRegistrationListener {
+        
+    public void serviceRegistered(Serializable foo, Map props) {
+        System.out.println("Service registration notification: " + foo + " " + props);
+    }
+    
+    public void serviceUnregistered(Foo foo, Map props) {
+        System.out.println("Service unregistration notification: " + foo + " " + props);
+    }
+
 }

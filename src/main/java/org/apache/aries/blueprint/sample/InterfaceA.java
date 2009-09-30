@@ -14,21 +14,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.geronimo.blueprint.sample;
+package org.apache.aries.blueprint.sample;
 
-import java.util.Currency;
+public interface InterfaceA {
 
-import org.osgi.service.blueprint.container.Converter;
-import org.osgi.service.blueprint.container.ReifiedType;
-
-public class CurrencyTypeConverter implements Converter {
-
-    public boolean canConvert(Object fromValue, ReifiedType toType) {
-        return Currency.class.isAssignableFrom(toType.getRawClass());
-    }
-
-    public Object convert(Object source, ReifiedType toType) throws Exception {
-        return Currency.getInstance(source.toString());
-    }
-
+    String hello(String msg);
 }

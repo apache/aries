@@ -14,19 +14,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.geronimo.blueprint.sample;
+package org.apache.aries.blueprint.sample;
 
-import java.io.Serializable;
-import java.util.Map;
+import java.util.Currency;
 
-public class FooRegistrationListener {
-        
-    public void serviceRegistered(Serializable foo, Map props) {
-        System.out.println("Service registration notification: " + foo + " " + props);
+import org.osgi.service.blueprint.container.Converter;
+import org.osgi.service.blueprint.container.ReifiedType;
+
+public class CurrencyTypeConverter implements Converter {
+
+    public boolean canConvert(Object fromValue, ReifiedType toType) {
+        return Currency.class.isAssignableFrom(toType.getRawClass());
     }
-    
-    public void serviceUnregistered(Foo foo, Map props) {
-        System.out.println("Service unregistration notification: " + foo + " " + props);
+
+    public Object convert(Object source, ReifiedType toType) throws Exception {
+        return Currency.getInstance(source.toString());
     }
 
 }

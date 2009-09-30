@@ -14,19 +14,29 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.geronimo.blueprint.sample;
+package org.apache.aries.blueprint.sample;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class Activator implements BundleActivator {
+import org.osgi.service.blueprint.container.Converter;
+import org.osgi.service.blueprint.container.ReifiedType;
 
-    public void start(BundleContext context) {
-        System.out.println("Bundle start");
+public class DateTypeConverter implements Converter {
+
+    DateFormat dateFormat;
+    
+    public void setFormat(String format) {
+        dateFormat = new SimpleDateFormat(format);
+    }
+    
+    public Object convert(Object source, ReifiedType toType) throws Exception {
+        return dateFormat.parse(source.toString());
     }
 
-    public void stop(BundleContext context) {
-        System.out.println("Bundle stop");
+    public boolean canConvert(Object fromValue, ReifiedType toType) {
+        return Date.class.isAssignableFrom(toType.getRawClass());
     }
-   
+
 }
