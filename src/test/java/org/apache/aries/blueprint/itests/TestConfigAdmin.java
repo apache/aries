@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.itests;
+package org.apache.aries.blueprint.itests;
 
 import java.util.Currency;
 import java.util.Hashtable;
 
-import org.apache.geronimo.blueprint.sample.Foo;
+import org.apache.aries.blueprint.sample.Foo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Test;

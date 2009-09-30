@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.geronimo.blueprint.itests;
+package org.apache.aries.blueprint.itests;
 
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Inject;
