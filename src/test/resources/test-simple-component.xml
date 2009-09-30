@@ -17,7 +17,7 @@
 -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-    <bean id="pojoA" class="org.apache.geronimo.blueprint.pojos.PojoA" depends-on=" pojoB  pojoC ">
+    <bean id="pojoA" class="org.apache.aries.blueprint.pojos.PojoA" depends-on=" pojoB  pojoC ">
         <argument value="val0"/>
         <argument ref="val1" />
         <argument>
@@ -45,7 +45,7 @@
         </property>
     </bean>
 
-    <bean id="pojoB" class="org.apache.geronimo.blueprint.pojos.PojoA" init-method="initPojo" >
+    <bean id="pojoB" class="org.apache.aries.blueprint.pojos.PojoA" init-method="initPojo" >
         <argument index = "1" value="val0"/>
         <argument index = "0" ref="val1" />
     </bean>

@@ -71,7 +71,7 @@
             </resource>
             <resource>
                 <directory>../blueprint-api/src/main/resources/org/osgi/service/blueprint</directory>
-                <targetPath>org/apache/geronimo/blueprint</targetPath>
+                <targetPath>org/apache/aries/blueprint</targetPath>
                 <includes>
                     <include>blueprint.xsd</include>
                 </includes>
@@ -85,11 +85,11 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.groupId}.core</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.geronimo.blueprint.container.BlueprintExtender</Bundle-Activator>
+                        <Bundle-Activator>org.apache.aries.blueprint.container.BlueprintExtender</Bundle-Activator>
                         <Export-Package>
-                            org.apache.geronimo.blueprint*;version="${pom.version}"
+                            org.apache.aries.blueprint*;version="${pom.version}"
                         </Export-Package>
-                        <Import-Package>!org.apache.geronimo.blueprint*,*</Import-Package>
+                        <Import-Package>!org.apache.aries.blueprint*,*</Import-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
