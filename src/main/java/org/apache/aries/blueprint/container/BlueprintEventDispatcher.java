@@ -138,7 +138,12 @@ public class BlueprintEventDispatcher implements BlueprintListener {
         Object[] listeners = containerListenerTracker.getServices();
         if (listeners != null) {
             for (Object listener : listeners) {
-                ((BlueprintListener) listener).blueprintEvent(event);
+                try {
+                    ((BlueprintListener) listener).blueprintEvent(event);
+                } catch (Throwable e) {
+                    // an exception in a BlueprintListener should not terminate the
+                    // dispatch chain to other listeners
+                }
             }
         }
     }
