@@ -1,0 +1,75 @@
+-------------------------------------------------------------------------------
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-------------------------------------------------------------------------------
+
+This file contains the PGP keys of various Virtual Computing Lab developers.
+
+Users:
+    pgp < KEYS
+    gpg --import KEYS
+  
+Developers: 
+    (gpg --list-sigs <your name> && gpg --armor --export <your name>) >> KEYS
+
+-------------------------------------------------------------------------------
+
+----------------------------------
+pub   1024D/7BE01498 2008-01-15
+uid                  Alan D. Cabrera <adc@apache.org>
+sig 3        7BE01498 2008-01-15  Alan D. Cabrera <adc@apache.org>
+sub   4096g/24D0D205 2008-01-15
+sig          7BE01498 2008-01-15  Alan D. Cabrera <adc@apache.org>
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG/MacGPG2 v2.0.12 (Darwin)
+
+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
+=4MkG
+-----END PGP PUBLIC KEY BLOCK-----
