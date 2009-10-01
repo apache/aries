@@ -142,14 +142,14 @@ public class BlueprintEventDispatcher implements BlueprintListener {
             }
         }
     }
-    
+
     protected void contextDestroyed(Bundle bundle) {
         states.remove(bundle);
     }
-    
+
     public void destroy() {
         this.executor.shutdown();
-        // wait for the queued tasks to execute        
+        // wait for the queued tasks to execute
         try {
             this.executor.awaitTermination(60, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -180,17 +180,11 @@ public class BlueprintEventDispatcher implements BlueprintListener {
             props.put(EventConstants.BUNDLE, event.getBundle());
             props.put(EventConstants.BUNDLE_SYMBOLICNAME, event.getBundle().getSymbolicName());
             props.put(EventConstants.BUNDLE_ID, event.getBundle().getBundleId());
-            Version version = JavaUtils.getBundleVersion(event.getBundle());
-            if (version != null) {
-                props.put(EventConstants.BUNDLE_VERSION, version);
-            }
+            props.put(EventConstants.BUNDLE_VERSION, JavaUtils.getBundleVersion(event.getBundle()));
             props.put(EventConstants.EXTENDER_BUNDLE, event.getExtenderBundle());
             props.put(EventConstants.EXTENDER_BUNDLE_ID, event.getExtenderBundle().getBundleId());
             props.put(EventConstants.EXTENDER_BUNDLE_SYMBOLICNAME, event.getExtenderBundle().getSymbolicName());
-            version = JavaUtils.getBundleVersion(event.getExtenderBundle());
-            if (version != null) {
-                props.put(EventConstants.EXTENDER_BUNDLE_VERSION, version);
-            }
+            props.put(EventConstants.EXTENDER_BUNDLE_VERSION, JavaUtils.getBundleVersion(event.getExtenderBundle()));
 
             if (event.getCause() != null) {
                 props.put(EventConstants.CAUSE, event.getCause());

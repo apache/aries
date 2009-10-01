@@ -29,7 +29,7 @@ import org.osgi.framework.Version;
  * @version $Rev$ $Date$
  */
 public final class JavaUtils {
-    
+
     private JavaUtils() {
     }
 
@@ -41,7 +41,7 @@ public final class JavaUtils {
             destination.put(key, value);
         }
     }
-    
+
     public static Hashtable getProperties(ServiceReference ref) {
         Hashtable props = new Hashtable();
         for (String key : ref.getPropertyKeys()) {
@@ -49,11 +49,11 @@ public final class JavaUtils {
         }
         return props;
     }
-    
+
     public static Version getBundleVersion(Bundle bundle) {
         Dictionary headers = bundle.getHeaders();
         String version = (String)headers.get(Constants.BUNDLE_VERSION);
-        return (version != null) ? Version.parseVersion(version) : null;
+        return (version != null) ? Version.parseVersion(version) : Version.emptyVersion;
     }
-    
+
 }
