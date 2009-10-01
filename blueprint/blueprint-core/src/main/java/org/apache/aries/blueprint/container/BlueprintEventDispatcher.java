@@ -52,7 +52,7 @@ public class BlueprintEventDispatcher implements BlueprintListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintEventDispatcher.class);
 
-    private final BlueprintListener eventAdminListener;
+    private final EventAdminListener eventAdminListener;
     private final ServiceTracker containerListenerTracker;
     private final Map<Bundle, BlueprintEvent> states;
     private final ExecutorService executor;
@@ -60,7 +60,7 @@ public class BlueprintEventDispatcher implements BlueprintListener {
     public BlueprintEventDispatcher(final BundleContext bundleContext) {
         this.states = new ConcurrentHashMap<Bundle, BlueprintEvent>();
         this.executor = Executors.newSingleThreadExecutor();
-        BlueprintListener listener = null;
+        EventAdminListener listener = null;
         try {
             getClass().getClassLoader().loadClass("org.osgi.service.event.EventAdmin");
             listener = new EventAdminListener(bundleContext);
@@ -161,6 +161,10 @@ public class BlueprintEventDispatcher implements BlueprintListener {
             // ignore
         }
         this.containerListenerTracker.close();
+        // clean up the EventAdmin tracker if we're using that
+        if (this.eventAdminListener != null) {
+            eventAdminListener.destroy();
+        }
     }
 
     static class EventAdminListener implements BlueprintListener {
@@ -224,6 +228,13 @@ public class BlueprintEventDispatcher implements BlueprintListener {
                     throw new IllegalStateException("Unknown blueprint event type: " + event.getType());
             }
             eventAdmin.postEvent(new Event(topic, props));
+        }
+
+        /**
+         * Perform cleanup at Blueprint extender shutdown.
+         */
+        public void destroy() {
+            tracker.close();
         }
 
     }
