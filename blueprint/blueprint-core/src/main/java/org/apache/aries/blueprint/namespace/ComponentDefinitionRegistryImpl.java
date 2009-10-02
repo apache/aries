@@ -27,10 +27,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ComponentNameAlreadyInUseException;
-import org.apache.aries.blueprint.reflect.EnvironmentMetadataImpl;
+import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Target;
-import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
  * ComponentDefinitionRegistry implementation.
@@ -69,7 +68,7 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
             // TODO: should we generate a unique name?
             throw new IllegalArgumentException("Component must have a valid id");
         }
-        if (id.startsWith("blueprint") && !(component instanceof EnvironmentMetadataImpl)) {
+        if (id.startsWith("blueprint") && !(component instanceof PassThroughMetadataImpl)) {
             // TODO: log a warning
         }
         // TODO: perform other validation: scope, class/runtimeClass/factoryMethod, etc...

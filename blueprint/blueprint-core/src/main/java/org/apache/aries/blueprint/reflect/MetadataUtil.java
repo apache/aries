@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.aries.blueprint.PassThroughMetadata;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.CollectionMetadata;
@@ -87,6 +88,9 @@ public class MetadataUtil {
         else if (source instanceof CollectionMetadata) {
             return new CollectionMetadataImpl((CollectionMetadata)source);
         }
+        else if (source instanceof PassThroughMetadata) {
+            return new PassThroughMetadataImpl((PassThroughMetadata)source);
+        }
 
         throw new RuntimeException("Unknown Metadata type received: " + source.getClass().getName());
     }
@@ -146,6 +150,8 @@ public class MetadataUtil {
             return type.cast(new ReferenceMetadataImpl());
         } else if (CollectionMetadata.class.isAssignableFrom(type)) {
             return type.cast(new CollectionMetadataImpl());
+        } else if (PassThroughMetadataImpl.class.isAssignableFrom(type)) {
+            return type.cast(new PassThroughMetadataImpl());
         } else {
             throw new IllegalArgumentException("Unsupport metadata type: " + (type != null ? type.getName() : null));
         }

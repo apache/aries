@@ -29,17 +29,17 @@ import java.util.Set;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.di.ArrayRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.di.IdRefRecipe;
 import org.apache.aries.blueprint.di.MapRecipe;
+import org.apache.aries.blueprint.di.PassThroughRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.RefRecipe;
 import org.apache.aries.blueprint.di.ValueRecipe;
-import org.apache.aries.blueprint.di.EnvironmentRecipe;
 import org.apache.aries.blueprint.mutable.MutableMapMetadata;
 import org.apache.aries.blueprint.reflect.MetadataUtil;
-import org.apache.aries.blueprint.reflect.EnvironmentMetadataImpl;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -97,15 +97,15 @@ public class RecipeBuilder {
             return createReferenceRecipe((ReferenceMetadata) component);
         } else if (component instanceof ReferenceListMetadata) {
             return createReferenceListRecipe((ReferenceListMetadata) component);
-        } else if (component instanceof EnvironmentMetadataImpl) {
-            return createEnvironmentRecipe((EnvironmentMetadataImpl) component);
+        } else if (component instanceof PassThroughMetadata) {
+            return createPassThroughRecipe((PassThroughMetadata) component);
         } else {
             throw new IllegalStateException("Unsupported component type " + component.getClass());
         }
     }
 
-    private Recipe createEnvironmentRecipe(EnvironmentMetadataImpl environmentMetadata) {
-        return new EnvironmentRecipe(environmentMetadata.getId(), environmentMetadata.getObject());
+    private Recipe createPassThroughRecipe(PassThroughMetadata passThroughMetadata) {
+        return new PassThroughRecipe(passThroughMetadata.getId(), passThroughMetadata.getObject());
     }
 
 

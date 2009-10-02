@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,23 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.reflect;
+package org.apache.aries.blueprint;
+
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
 /**
- * A metadata for environment managers.
- *
- * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
+ * Metadata used to bypass the creation of the object.
+ * This is mostly usefull when creating custom namespace handlers
+ * that end-up with already instanciated objects.
  */
-public class EnvironmentMetadataImpl extends ComponentMetadataImpl {
+public interface PassThroughMetadata extends ComponentMetadata {
 
-    private Object object;
+    Object getObject();
 
-    public EnvironmentMetadataImpl(String id, Object object) {
-        this.id = id;
-        this.object = object;
-    }
-
-    public Object getObject() {
-        return object;
-    }
 }

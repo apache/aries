@@ -20,7 +20,7 @@ package org.apache.aries.blueprint;
 
 import org.apache.aries.blueprint.container.BlueprintContainerImpl;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.aries.blueprint.reflect.EnvironmentMetadataImpl;
+import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 
 public class TestBlueprintContainer extends BlueprintContainerImpl {
 
@@ -30,10 +30,10 @@ public class TestBlueprintContainer extends BlueprintContainerImpl {
         super(new TestBundleContext(), null, null, null, null, null);
         this.registry = registry;
         if (registry != null) {
-            registry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintContainer", this));
-            registry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintBundle", getBundleContext().getBundle()));
-            registry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintBundleContext", getBundleContext()));
-            registry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintConverter", getConverter()));
+            registry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintContainer", this));
+            registry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundle", getBundleContext().getBundle()));
+            registry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundleContext", getBundleContext()));
+            registry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintConverter", getConverter()));
         }
     }
 
