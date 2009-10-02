@@ -24,11 +24,11 @@ import org.osgi.service.blueprint.container.ComponentDefinitionException;
 /**
  * @version $Rev: 6685 $ $Date: 2005-12-28T00:29:37.967210Z $
  */
-public class EnvironmentRecipe extends AbstractRecipe {
+public class PassThroughRecipe extends AbstractRecipe {
 
     private Object object;
 
-    public EnvironmentRecipe(String id, Object object) {
+    public PassThroughRecipe(String id, Object object) {
         super(id);
         this.prototype = false;
         this.object = object;

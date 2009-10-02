@@ -52,7 +52,7 @@ import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.Processor;
-import org.apache.aries.blueprint.reflect.EnvironmentMetadataImpl;
+import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 import org.apache.aries.blueprint.reflect.MetadataUtil;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
@@ -251,10 +251,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), missing.toArray(new String[missing.size()])));
                             return;
                         }
-                        componentDefinitionRegistry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintContainer", this));
-                        componentDefinitionRegistry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintBundle", bundleContext.getBundle()));
-                        componentDefinitionRegistry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintBundleContext", bundleContext));
-                        componentDefinitionRegistry.registerComponentDefinition(new EnvironmentMetadataImpl("blueprintConverter", converter));
+                        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintContainer", this));
+                        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundle", bundleContext.getBundle()));
+                        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundleContext", bundleContext));
+                        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintConverter", converter));
                         parser.populate(handlers, componentDefinitionRegistry);
                         state = State.Populated;
                         break;
