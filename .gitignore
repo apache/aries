@@ -5,4 +5,7 @@
 .ruleset
 .settings/
 target/
+*.iml
+*.iws
+*.ipr
 velocity.log
