@@ -29,7 +29,6 @@ import junit.framework.TestCase;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.aries.blueprint.container.Parser;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.aries.blueprint.reflect.EnvironmentMetadataImpl;
 import org.xml.sax.SAXException;
 
 public abstract class AbstractBlueprintTest extends TestCase {
