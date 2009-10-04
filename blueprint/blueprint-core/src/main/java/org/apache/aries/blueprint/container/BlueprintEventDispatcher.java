@@ -65,12 +65,16 @@ class BlueprintEventDispatcher implements BlueprintListener, SynchronousBundleLi
     private final Set<BlueprintListener> listeners = new CopyOnWriteArraySet<BlueprintListener>();
     private final Map<Bundle, BlueprintEvent> states = new ConcurrentHashMap<Bundle, BlueprintEvent>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService sharedExecutor;
     private final EventAdminListener eventAdminListener;
     private final ServiceTracker containerListenerTracker;
 
-    BlueprintEventDispatcher(final BundleContext bundleContext) {
+    BlueprintEventDispatcher(final BundleContext bundleContext, ExecutorService sharedExecutor) {
 
         assert bundleContext != null;
+        assert sharedExecutor != null;
+
+        this.sharedExecutor = sharedExecutor;
 
         bundleContext.addBundleListener(this);
 
@@ -130,7 +134,7 @@ class BlueprintEventDispatcher implements BlueprintListener, SynchronousBundleLi
 
         if (eventAdminListener != null) {
             try {
-                executor.submit(new Runnable() {
+                sharedExecutor.submit(new Runnable() {
                     public void run() {
                         eventAdminListener.blueprintEvent(event);
                     }
