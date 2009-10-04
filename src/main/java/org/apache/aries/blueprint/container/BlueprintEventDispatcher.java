@@ -37,7 +37,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.container.BlueprintListener;
 import org.osgi.service.blueprint.container.EventConstants;
@@ -56,7 +58,7 @@ import org.apache.aries.blueprint.utils.JavaUtils;
  *
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-class BlueprintEventDispatcher implements BlueprintListener {
+class BlueprintEventDispatcher implements BlueprintListener, SynchronousBundleListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintEventDispatcher.class);
 
@@ -69,6 +71,8 @@ class BlueprintEventDispatcher implements BlueprintListener {
     BlueprintEventDispatcher(final BundleContext bundleContext) {
 
         assert bundleContext != null;
+
+        bundleContext.addBundleListener(this);
 
         EventAdminListener listener = null;
         try {
@@ -197,10 +201,6 @@ class BlueprintEventDispatcher implements BlueprintListener {
         }
     }
 
-    void contextDestroyed(Bundle bundle) {
-        states.remove(bundle);
-    }
-
     void destroy() {
         executor.shutdown();
         // wait for the queued tasks to execute
@@ -213,6 +213,12 @@ class BlueprintEventDispatcher implements BlueprintListener {
         // clean up the EventAdmin tracker if we're using that
         if (eventAdminListener != null) {
             eventAdminListener.destroy();
+        }
+    }
+
+    public void bundleChanged(BundleEvent event) {
+        if (BundleEvent.STOPPING == event.getType()) {
+            states.remove(event.getBundle());
         }
     }
 
