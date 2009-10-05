@@ -18,10 +18,6 @@
  */
 package org.apache.aries.jndi;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
-
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.NamingException;
@@ -35,6 +31,10 @@ import javax.naming.spi.ObjectFactory;
 import javax.naming.spi.ObjectFactoryBuilder;
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 
 public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFactory, DirObjectFactory {
     /**
@@ -231,7 +231,6 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
      * when we get called by DirectoryManager#getObjectInstance if we can't find the object 
      * instance, we just need to return the passed in refInfo  
      */
-    @Override
     public Object getObjectInstance(Object refInfo, Name name, Context nameCtx, 
                                     Hashtable<?, ?> environment, Attributes attrs) throws Exception {
         Object result = getObjectInstance(refInfo, name, nameCtx, environment);
