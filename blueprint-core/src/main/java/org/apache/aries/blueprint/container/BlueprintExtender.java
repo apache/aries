@@ -64,9 +64,9 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         LOGGER.debug("Starting blueprint extender...");
 
         this.context = context;
-        eventDispatcher = new BlueprintEventDispatcher(context, executors);
         handlers = new NamespaceHandlerRegistryImpl(context);
         executors = Executors.newScheduledThreadPool(3);
+        eventDispatcher = new BlueprintEventDispatcher(context, executors);
         containers = new HashMap<Bundle, BlueprintContainerImpl>();
 
         context.addBundleListener(this);
