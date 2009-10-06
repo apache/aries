@@ -29,8 +29,12 @@ import javax.naming.NameClassPair;
 import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
+import javax.naming.directory.SearchControls;
 
-public class DelegateContext implements Context
+public class DelegateContext implements DirContext
 {
   private Hashtable<Object, Object> env = new Hashtable<Object, Object>();
   private Context defaultContext;
@@ -284,5 +288,109 @@ public class DelegateContext implements Context
   public void setURLContext(String url, Context ctx)
   {
     urlContexts.put(url, ctx);
+  }
+  
+  public Attributes getAttributes(Name name) throws NamingException {
+      return ((DirContext)findContext(name)).getAttributes(name);
+  }
+  
+  public Attributes getAttributes(String name) throws NamingException {
+      return ((DirContext)findContext(name)).getAttributes(name);
+  }
+  
+  public Attributes getAttributes(Name name, String[] attrIds) throws NamingException {
+      return ((DirContext)findContext(name)).getAttributes(name, attrIds);
+  }
+  
+  public Attributes getAttributes(String name, String[] attrIds) throws NamingException {
+      return ((DirContext)findContext(name)).getAttributes(name, attrIds);
+  }
+  
+  public void modifyAttributes(Name name, int mod_op, Attributes attrs) throws NamingException {
+      ((DirContext)findContext(name)).modifyAttributes(name, mod_op, attrs);
+  }
+  
+  public void modifyAttributes(String name, int mod_op, Attributes attrs) throws NamingException {
+      ((DirContext)findContext(name)).modifyAttributes(name, mod_op, attrs);
+  }
+  
+  public void modifyAttributes(Name name, ModificationItem[] mods) throws NamingException {
+      ((DirContext)findContext(name)).modifyAttributes(name, mods);
+  }
+  
+  public void modifyAttributes(String name, ModificationItem[] mods) throws NamingException {
+      ((DirContext)findContext(name)).modifyAttributes(name, mods);
+  }
+  
+  public void bind(Name name, Object obj, Attributes attrs) throws NamingException {
+      ((DirContext)findContext(name)).bind(name, obj, attrs);
+  }
+  
+  public void bind(String name, Object obj, Attributes attrs) throws NamingException {
+      ((DirContext)findContext(name)).bind(name, obj, attrs);
+  }
+
+  public void rebind(Name name, Object obj, Attributes attrs) throws NamingException {
+      ((DirContext)findContext(name)).rebind(name, obj, attrs);
+  }
+
+  public void rebind(String name, Object obj, Attributes attrs) throws NamingException {
+      ((DirContext)findContext(name)).rebind(name, obj, attrs);
+  }
+
+  public DirContext createSubcontext(Name name, Attributes attrs) throws NamingException {
+      return ((DirContext)findContext(name)).createSubcontext(name, attrs);
+  }
+
+  public DirContext createSubcontext(String name, Attributes attrs) throws NamingException {
+      return ((DirContext)findContext(name)).createSubcontext(name, attrs);
+  }
+
+  public DirContext getSchema(Name name) throws NamingException {
+      return ((DirContext)findContext(name)).getSchema(name);
+  }
+
+  public DirContext getSchema(String name) throws NamingException {
+      return ((DirContext)findContext(name)).getSchema(name);
+  }
+
+  public DirContext getSchemaClassDefinition(Name name) throws NamingException {
+      return ((DirContext)findContext(name)).getSchemaClassDefinition(name);
+  }
+
+  public DirContext getSchemaClassDefinition(String name) throws NamingException {
+      return ((DirContext)findContext(name)).getSchemaClassDefinition(name);
+  }
+
+  public NamingEnumeration search(Name name, Attributes matchingAttributes, String[] attributesToReturn) throws NamingException {
+      return ((DirContext)findContext(name)).search(name, matchingAttributes, attributesToReturn);
+  }
+
+  public NamingEnumeration search(String name, Attributes matchingAttributes, String[] attributesToReturn) throws NamingException {
+      return ((DirContext)findContext(name)).search(name, matchingAttributes, attributesToReturn);
+  }
+
+  public NamingEnumeration search(Name name, Attributes matchingAttributes) throws NamingException {
+      return ((DirContext)findContext(name)).search(name, matchingAttributes);
+  }
+
+  public NamingEnumeration search(String name, Attributes matchingAttributes) throws NamingException {
+      return ((DirContext)findContext(name)).search(name, matchingAttributes);
+  }
+
+  public NamingEnumeration search(Name name, String filter, SearchControls cons) throws NamingException {
+      return ((DirContext)findContext(name)).search(name, filter, cons);
+  }
+
+  public NamingEnumeration search(String name, String filter, SearchControls cons) throws NamingException {
+      return ((DirContext)findContext(name)).search(name, filter, cons);
+  }
+
+  public NamingEnumeration search(Name name, String filterExpr, Object[] filterArgs, SearchControls cons) throws NamingException {
+      return ((DirContext)findContext(name)).search(name, filterExpr, filterArgs, cons);
+  }
+
+  public NamingEnumeration search(String name, String filterExpr, Object[] filterArgs, SearchControls cons) throws NamingException {
+      return ((DirContext)findContext(name)).search(name, filterExpr, filterArgs, cons);
   }
 }
