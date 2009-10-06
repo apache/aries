@@ -1,0 +1,62 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIESOR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.aries.jndi.startup;
+
+import javax.naming.NamingException;
+import javax.naming.spi.NamingManager;
+
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+
+import org.apache.aries.jndi.ContextHelper;
+import org.apache.aries.jndi.OSGiInitialContextFactoryBuilder;
+import org.apache.aries.jndi.OSGiObjectFactoryBuilder;
+
+/**
+ * The activator for this bundle makes sure the static classes in it are
+ * driven so they can do their magic stuff properly.
+ */
+public class Activator implements BundleActivator
+{
+  public void start(BundleContext context)
+  {
+    ContextHelper.setBundleContext(context);
+    OSGiObjectFactoryBuilder.setBundleContext(context);
+  
+    try {
+      if (!!!NamingManager.hasInitialContextFactoryBuilder()) {
+        NamingManager.setInitialContextFactoryBuilder(new OSGiInitialContextFactoryBuilder(context));
+      }
+    } catch (NamingException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+    try {
+      NamingManager.setObjectFactoryBuilder(new OSGiObjectFactoryBuilder());
+    } catch (NamingException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IllegalStateException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void stop(BundleContext context) {}
+}
