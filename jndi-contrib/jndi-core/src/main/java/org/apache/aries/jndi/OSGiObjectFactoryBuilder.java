@@ -28,6 +28,8 @@ import javax.naming.RefAddr;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
 import javax.naming.StringRefAddr;
+import javax.naming.directory.Attributes;
+import javax.naming.spi.DirObjectFactory;
 import javax.naming.spi.ObjectFactory;
 import javax.naming.spi.ObjectFactoryBuilder;
 
@@ -35,7 +37,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
-public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFactory
+public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFactory, DirObjectFactory
 {
   /** The bundle context we use for accessing the SR */
   private static BundleContext context;
@@ -230,4 +232,15 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
 
     return result;
   }
+  
+  /**
+   * when we get called by DirectoryManager#getObjectInstance if we can't find the object 
+   * instance, we just need to return the passed in refInfo  
+   */
+  public Object getObjectInstance(Object refInfo, Name name, Context nameCtx, 
+                                  Hashtable<?, ?> environment, Attributes attrs) throws Exception {
+      Object result = getObjectInstance(refInfo, name, nameCtx, environment);
+      return result == null ? refInfo : result;
+  }
+
 }
