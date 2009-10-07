@@ -25,6 +25,8 @@ import java.io.IOException;
 import javax.xml.validation.Schema;
 
 import org.apache.aries.blueprint.NamespaceHandler;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.xml.sax.SAXException;
 
 /**
@@ -38,31 +40,11 @@ public interface NamespaceHandlerRegistry {
      * Retrieve the <code>NamespaceHandler</code> for the specified URI
      *
      * @param uri the namespace identifying the namespace handler
-     * @return the registered <code>NamespaceHandler</code> or <code>null</code> if none has been registered for the given namespace
-     */
-    NamespaceHandler getNamespaceHandler(URI uri);
-
-    /**
-     * Add a new Listener to be called when namespace handlers are registerd or unregistered
+     * @param bundle the blueprint bundle to be checked for class space consistency
      *
-     * @param listener the listener to register
+     * @return a set of registered <code>NamespaceHandler</code>s compatible with the class space of the given bundle
      */
-    void addListener(Listener listener);
-
-    /**
-     * Remove a previously registered Listener
-     *
-     * @param listener the listener to unregister
-     */
-    void removeListener(Listener listener);
-
-    /**
-     * Obtain a schema to validate the XML for the given list of namespaces
-     *
-     * @param namespaces
-     * @return
-     */
-    Schema getSchema(Set<URI> namespaces) throws SAXException, IOException;
+    NamespaceHandlerSet getNamespaceHandlers(Set<URI> uri, Bundle bundle);
 
     /**
      * Destroy this registry
@@ -70,10 +52,53 @@ public interface NamespaceHandlerRegistry {
     void destroy();
 
     /**
+     * Interface used to managed a set of namespace handlers
+     */
+    public interface NamespaceHandlerSet {
+
+        Set<URI> getNamespaces();
+
+        boolean isComplete();
+
+        /**
+         * Retrieve the NamespaceHandler to use for the given namespace
+         *
+         * @return the NamespaceHandler to use or <code>null</code> if none is available at this time
+         */
+        NamespaceHandler getNamespaceHandler(URI namespace);
+
+        /**
+         * Obtain a schema to validate the XML for the given list of namespaces
+         *
+         * @return the schema to use to validate the XML
+         */
+        Schema getSchema() throws SAXException, IOException;
+
+        /**
+         * Add a new Listener to be called when namespace handlers are registerd or unregistered
+         *
+         * @param listener the listener to register
+         */
+        void addListener(Listener listener);
+
+        /**
+         * Remove a previously registered Listener
+         *
+         * @param listener the listener to unregister
+         */
+        void removeListener(Listener listener);
+
+        /**
+         * Destroy this handler set
+         */
+        void destroy();
+    }
+
+    /**
      * Interface used to listen to registered or unregistered namespace handlers.
      *
-     * @see NamespaceHandlerRegistry#addListener(org.apache.aries.blueprint.container.NamespaceHandlerRegistry.Listener)
-     * @see NamespaceHandlerRegistry#removeListener(org.apache.aries.blueprint.container.NamespaceHandlerRegistry.Listener) 
+     * @see NamespaceHandlerSet#addListener(org.apache.aries.blueprint.container.NamespaceHandlerRegistry.Listener)
+     * @see NamespaceHandlerSet#removeListener(org.apache.aries.blueprint.container.NamespaceHandlerRegistry.Listener) 
      */
     public interface Listener {
 

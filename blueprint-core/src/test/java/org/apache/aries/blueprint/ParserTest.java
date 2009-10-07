@@ -20,6 +20,9 @@ package org.apache.aries.blueprint;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.io.IOException;
@@ -32,6 +35,7 @@ import org.w3c.dom.Node;
 
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
+import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -150,7 +154,7 @@ public class ParserTest extends AbstractBlueprintTest {
 
 
     public void testCustomNodes() throws Exception {
-        ComponentDefinitionRegistry registry = parse("/test-custom-nodes.xml", new TestNamespaceHandlerRegistry());
+        ComponentDefinitionRegistry registry = parse("/test-custom-nodes.xml", new TestNamespaceHandlerSet());
         
         ComponentMetadata metadata;
         
@@ -180,32 +184,51 @@ public class ParserTest extends AbstractBlueprintTest {
         assertEquals("org.apache.aries.Cache", comp3.getClassName());         
     }
 
-    private static class TestNamespaceHandlerRegistry implements NamespaceHandlerRegistry {
-        
-        public void destroy() {
+    private static class TestNamespaceHandlerSet implements NamespaceHandlerRegistry.NamespaceHandlerSet {
+
+        private TestNamespaceHandlerSet() {
         }
-        
-        public NamespaceHandler getNamespaceHandler(URI uri) {
+
+        public Set<URI> getNamespaces() {
+            return Collections.singleton(URI.create("http://cache.org"));
+        }
+
+        public boolean isComplete() {
+            return true;
+        }
+
+        public NamespaceHandler getNamespaceHandler(URI namespace) {
             URI u = URI.create("http://cache.org");
-            if (u.equals(uri)) {
+            if (u.equals(namespace)) {
                 return new TestNamespaceHandler();
             } else {
                 return null;
-            }        
+            }
         }
 
-        public void addListener(Listener listener) {
-        }
-
-        public void removeListener(Listener listener) {
-        }
-
-        public Schema getSchema(Set<URI> namespaces) throws SAXException, IOException {
+        public Schema getSchema() throws SAXException, IOException {
             return null;
         }
+
+        public void addListener(NamespaceHandlerRegistry.Listener listener) {
+        }
+
+        public void removeListener(NamespaceHandlerRegistry.Listener listener) {
+        }
+
+        public void destroy() {
+        }
     }
-    
+
     private static class TestNamespaceHandler implements NamespaceHandler {
+
+        public URL getSchemaLocation(String namespace) {
+            return getClass().getResource("/cache.xsd");
+        }
+
+        public Set<Class> getManagedClasses() {
+            return new HashSet<Class>();
+        }
 
         public ComponentMetadata decorate(Node node,
                                           ComponentMetadata component,
@@ -225,10 +248,6 @@ public class ParserTest extends AbstractBlueprintTest {
             } else {
                 throw new RuntimeException("Unhandled node: " + node);
             }
-        }
-
-        public URL getSchemaLocation(String namespace) {
-            return getClass().getResource("/cache.xsd");
         }
 
         public Metadata parse(Element element, ParserContext context) {

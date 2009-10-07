@@ -183,7 +183,7 @@ public class Parser {
 
     private List<Document> documents;
     private ComponentDefinitionRegistry registry;
-    private NamespaceHandlerRegistry namespaceHandlerRegistry;
+    private NamespaceHandlerRegistry.NamespaceHandlerSet handlers;
     private String idPrefix = "component-";
     private Set<String> ids = new HashSet<String>();
     private int idCounter;
@@ -191,18 +191,12 @@ public class Parser {
     private String defaultAvailability;
     private String defaultActivation;
     private Set<URI> namespaces;
-    private boolean validation;
-    private boolean validated;
 
     public Parser() {
     }
 
     public Parser(String idPrefix) {
         this.idPrefix = idPrefix;
-    }
-
-    public void setValidation(boolean validation) {
-        this.validation = validation;
     }
 
     public void parse(List<URL> urls) throws Exception {
@@ -250,17 +244,12 @@ public class Parser {
         }
     }
 
-    public void populate(NamespaceHandlerRegistry handlers,
+    public void populate(NamespaceHandlerRegistry.NamespaceHandlerSet handlers,
                          ComponentDefinitionRegistry registry) {
-        this.namespaceHandlerRegistry = handlers;
+        this.handlers = handlers;
         this.registry = registry;
         if (this.documents == null) {
             throw new IllegalStateException("Documents should be parsed before populating the registry");
-        }
-        // Validate xmls
-        if (!this.validated && validation) {
-            validate();
-            this.validated = true;
         }
         // Parse components
         for (Document doc : this.documents) {
@@ -268,10 +257,8 @@ public class Parser {
         }
     }
 
-    private void validate() {
-        // Use a LinkedHashSet to ensure that the blueprint schema is loaded first
+    public void validate(Schema schema) {
         try {
-            Schema schema = this.namespaceHandlerRegistry.getSchema(getNamespaces());
             Validator validator = schema.newValidator();
             for (Document doc : this.documents) {
                 validator.validate(new DOMSource(doc));
@@ -1163,11 +1150,11 @@ public class Parser {
     }
 
     private NamespaceHandler getNamespaceHandler(Node node) {
-        if (namespaceHandlerRegistry == null) {
+        if (handlers == null) {
             throw new ComponentDefinitionException("Unsupported node (namespace handler registry is not set): " + node);
         }
         URI ns = URI.create(node.getNamespaceURI());
-        NamespaceHandler handler = this.namespaceHandlerRegistry.getNamespaceHandler(ns);
+        NamespaceHandler handler = this.handlers.getNamespaceHandler(ns);
         if (handler == null) {
             throw new ComponentDefinitionException("Unsupported node namespace: " + node.getNamespaceURI());
         }

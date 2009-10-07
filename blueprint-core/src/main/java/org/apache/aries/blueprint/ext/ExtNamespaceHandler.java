@@ -20,7 +20,10 @@ package org.apache.aries.blueprint.ext;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.CharacterData;
@@ -95,6 +98,12 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
 
     public URL getSchemaLocation(String namespace) {
         return getClass().getResource("blueprint-ext.xsd");
+    }
+
+    public Set<Class> getManagedClasses() {
+        return new HashSet<Class>(Arrays.asList(
+                PropertyPlaceholder.class
+        ));
     }
 
     public Metadata parse(Element element, ParserContext context) {
