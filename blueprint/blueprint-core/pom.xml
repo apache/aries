@@ -37,10 +37,9 @@
           <groupId>org.apache.aries.blueprint</groupId>
           <artifactId>aries-blueprint-api</artifactId>
       </dependency>
-      <!-- We should use the org.osgi:org.osgi.core:1.5 jar, but it has not been released yet -->
       <dependency>
-          <groupId>org.eclipse</groupId>
-          <artifactId>osgi</artifactId>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.osgi.core</artifactId>
           <scope>provided</scope>
       </dependency>
       <dependency>

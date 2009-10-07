@@ -121,6 +121,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private final ScheduledExecutorService executors;
     private Set<URI> namespaces;
     private State state = State.Unknown;
+    private NamespaceHandlerRegistry.NamespaceHandlerSet handlerSet;
     private boolean destroyed;
     private Parser parser;
     private BlueprintRepository repository;
@@ -231,19 +232,17 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         checkDirectives();
                         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATING, getBundleContext().getBundle(), getExtenderBundle()));
                         parser = new Parser();
-                        parser.setValidation(xmlValidation);
                         parser.parse(getResources());
                         namespaces = parser.getNamespaces();
-                        if (namespaces.size() > 0) {
-                            handlers.addListener(this);
-                        }
+                        handlerSet = handlers.getNamespaceHandlers(namespaces, getBundleContext().getBundle());
+                        handlerSet.addListener(this);
                         state = State.WaitForNamespaceHandlers;
                         break;
                     case WaitForNamespaceHandlers:
                     {
                         List<String> missing = new ArrayList<String>();
                         for (URI ns : namespaces) {
-                            if (handlers.getNamespaceHandler(ns) == null) {
+                            if (handlerSet.getNamespaceHandler(ns) == null) {
                                 missing.add("(&(" + Constants.OBJECTCLASS + "=" + NamespaceHandler.class.getName() + ")(" + NamespaceHandlerRegistryImpl.NAMESPACE + "=" + ns + "))");
                             }
                         }
@@ -255,7 +254,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                         componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundle", bundleContext.getBundle()));
                         componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundleContext", bundleContext));
                         componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintConverter", converter));
-                        parser.populate(handlers, componentDefinitionRegistry);
+                        if (xmlValidation) {
+                            parser.validate(handlerSet.getSchema());
+                        }
+                        parser.populate(handlerSet, componentDefinitionRegistry);
                         state = State.Populated;
                         break;
                     }
@@ -777,7 +779,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         if (registration != null) {
             registration.unregister();
         }
-        handlers.removeListener(this);
+        if (handlerSet != null) {
+            handlerSet.removeListener(this);
+            handlerSet.destroy();
+        }
         unregisterServices();
         untrackServiceReferences();
 
