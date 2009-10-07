@@ -37,6 +37,11 @@
           <artifactId>org.osgi.core</artifactId>
           <scope>provided</scope>
       </dependency>
+      <dependency>
+          <groupId>org.apache.aries.testsupport</groupId>
+          <artifactId>aries-testsupport-unit</artifactId>
+          <scope>test</scope>
+      </dependency>
   </dependencies>
 
     <build>
