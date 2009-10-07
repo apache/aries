@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.transaction;
+package org.apache.aries.transaction;
 
 import java.util.Dictionary;
 import java.util.List;
@@ -44,21 +44,21 @@ import org.objectweb.howl.log.LogConfigurationException;
  */
 public class TransactionManagerService {
 
-    public static final String TRANSACTION_TIMEOUT = "felix.transaction.timeout";
-    public static final String RECOVERABLE = "felix.transaction.recoverable";
-    public static final String HOWL_BUFFER_CLASS_NAME = "felix.transaction.howl.bufferClassName";
-    public static final String HOWL_BUFFER_SIZE = "felix.transaction.howl.bufferSize";
-    public static final String HOWL_CHECKSUM_ENABLED = "felix.transaction.howl.checksumEnabled";
-    public static final String HOWL_ADLER32_CHECKSUM = "felix.transaction.howl.adler32Checksum";
-    public static final String HOWL_FLUSH_SLEEP_TIME = "felix.transaction.howl.flushSleepTime";
-    public static final String HOWL_LOG_FILE_EXT = "felix.transaction.howl.logFileExt";
-    public static final String HOWL_LOG_FILE_NAME = "felix.transaction.howl.logFileName";
-    public static final String HOWL_MAX_BLOCKS_PER_FILE = "felix.transaction.howl.maxBlocksPerFile";
-    public static final String HOWL_MAX_LOG_FILES = "felix.transaction.howl.maxLogFiles";
-    public static final String HOWL_MAX_BUFFERS = "felix.transaction.howl.maxBuffers";
-    public static final String HOWL_MIN_BUFFERS = "felix.transaction.howl.minBuffers";
-    public static final String HOWL_THREADS_WAITING_FORCE_THRESHOLD = "felix.transaction.howl.threadsWaitingForceThreshold";
-    public static final String HOWL_LOG_FILE_DIR = "felix.transaction.howl.logFileDir";
+    public static final String TRANSACTION_TIMEOUT = "aries.transaction.timeout";
+    public static final String RECOVERABLE = "aries.transaction.recoverable";
+    public static final String HOWL_BUFFER_CLASS_NAME = "aries.transaction.howl.bufferClassName";
+    public static final String HOWL_BUFFER_SIZE = "aries.transaction.howl.bufferSize";
+    public static final String HOWL_CHECKSUM_ENABLED = "aries.transaction.howl.checksumEnabled";
+    public static final String HOWL_ADLER32_CHECKSUM = "aries.transaction.howl.adler32Checksum";
+    public static final String HOWL_FLUSH_SLEEP_TIME = "aries.transaction.howl.flushSleepTime";
+    public static final String HOWL_LOG_FILE_EXT = "aries.transaction.howl.logFileExt";
+    public static final String HOWL_LOG_FILE_NAME = "aries.transaction.howl.logFileName";
+    public static final String HOWL_MAX_BLOCKS_PER_FILE = "aries.transaction.howl.maxBlocksPerFile";
+    public static final String HOWL_MAX_LOG_FILES = "aries.transaction.howl.maxLogFiles";
+    public static final String HOWL_MAX_BUFFERS = "aries.transaction.howl.maxBuffers";
+    public static final String HOWL_MIN_BUFFERS = "aries.transaction.howl.minBuffers";
+    public static final String HOWL_THREADS_WAITING_FORCE_THRESHOLD = "aries.transaction.howl.threadsWaitingForceThreshold";
+    public static final String HOWL_LOG_FILE_DIR = "aries.transaction.howl.logFileDir";
 
     public static final int DEFAULT_TRANSACTION_TIMEOUT = 600; // 600 seconds -> 10 minutes
     public static final boolean DEFAULT_RECOVERABLE = false;   // not recoverable by default
