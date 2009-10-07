@@ -20,8 +20,11 @@ package org.apache.aries.blueprint.compendium.cm;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Comment;
@@ -136,6 +139,15 @@ public class CmNamespaceHandler implements NamespaceHandler {
 
     public URL getSchemaLocation(String namespace) {
         return getClass().getResource("blueprint-cm.xsd");
+    }
+
+    public Set<Class> getManagedClasses() {
+        return new HashSet<Class>(Arrays.asList(
+                CmPropertyPlaceholder.class,
+                CmManagedServiceFactory.class,
+                CmManagedProperties.class,
+                CmProperties.class
+        ));
     }
 
     public Metadata parse(Element element, ParserContext context) {
