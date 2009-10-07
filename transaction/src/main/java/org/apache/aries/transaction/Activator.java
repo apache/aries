@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.transaction;
+package org.apache.aries.transaction;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Activator implements BundleActivator, ManagedServiceFactory {
 
-    private static final Logger log = LoggerFactory.getLogger("org.apache.felix.transaction");
+    private static final Logger log = LoggerFactory.getLogger("org.apache.aries.transaction");
 
     private BundleContext bundleContext;
     private Map managers = new HashMap<String, TransactionManagerService>();
@@ -73,7 +73,7 @@ public class Activator implements BundleActivator, ManagedServiceFactory {
     }
 
     public String getName() {
-        return "org.apache.felix.transaction";
+        return "org.apache.aries.transaction";
     }
 
     public void updated(String pid, Dictionary properties) throws ConfigurationException {
