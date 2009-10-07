@@ -19,13 +19,14 @@
 package org.apache.aries.blueprint;
 
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.Target;
 
 /**
  * Metadata used to bypass the creation of the object.
  * This is mostly usefull when creating custom namespace handlers
  * that end-up with already instanciated objects.
  */
-public interface PassThroughMetadata extends ComponentMetadata {
+public interface PassThroughMetadata extends ComponentMetadata, Target {
 
     Object getObject();
 

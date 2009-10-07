@@ -150,7 +150,7 @@ public class MetadataUtil {
             return type.cast(new ReferenceMetadataImpl());
         } else if (CollectionMetadata.class.isAssignableFrom(type)) {
             return type.cast(new CollectionMetadataImpl());
-        } else if (PassThroughMetadataImpl.class.isAssignableFrom(type)) {
+        } else if (PassThroughMetadata.class.isAssignableFrom(type)) {
             return type.cast(new PassThroughMetadataImpl());
         } else {
             throw new IllegalArgumentException("Unsupport metadata type: " + (type != null ? type.getName() : null));
