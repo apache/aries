@@ -29,31 +29,36 @@ import junit.framework.TestCase;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.aries.blueprint.container.Parser;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.osgi.framework.Bundle;
 import org.xml.sax.SAXException;
 
 public abstract class AbstractBlueprintTest extends TestCase {
 
     protected ComponentDefinitionRegistryImpl parse(String name) throws Exception {
-        NamespaceHandlerRegistry handlers = new NamespaceHandlerRegistry() {
-            public NamespaceHandler getNamespaceHandler(URI uri) {
+        NamespaceHandlerRegistry.NamespaceHandlerSet handlers = new NamespaceHandlerRegistry.NamespaceHandlerSet() {
+            public Set<URI> getNamespaces() {
                 return null;
             }
-            public void addCallback(Runnable runnable) {
+            public NamespaceHandler getNamespaceHandler(URI namespace) {
+                return null;
+            }
+            public void removeListener(NamespaceHandlerRegistry.Listener listener) {
+            }
+            public Schema getSchema() throws SAXException, IOException {
+                return null;
+            }
+            public boolean isComplete() {
+                return false;
+            }
+            public void addListener(NamespaceHandlerRegistry.Listener listener) {
             }
             public void destroy() {
-            }
-            public void addListener(Listener listener) {
-            }
-            public void removeListener(Listener listener) {
-            }
-            public Schema getSchema(Set<URI> namespaces) throws SAXException, IOException {
-                return null;
             }
         };
         return parse(name, handlers);
     }
 
-    protected ComponentDefinitionRegistryImpl parse(String name, NamespaceHandlerRegistry handlers) throws Exception {
+    protected ComponentDefinitionRegistryImpl parse(String name, NamespaceHandlerRegistry.NamespaceHandlerSet handlers) throws Exception {
         ComponentDefinitionRegistryImpl registry = new ComponentDefinitionRegistryImpl();
         Parser parser = new Parser();
         parser.parse(Collections.singletonList(getClass().getResource(name)));

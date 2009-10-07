@@ -17,6 +17,7 @@
 package org.apache.aries.blueprint;
 
 import java.net.URL;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -27,6 +28,8 @@ import org.osgi.service.blueprint.reflect.Metadata;
 public interface NamespaceHandler  {
     
     URL getSchemaLocation(String namespace);
+
+    Set<Class> getManagedClasses();
     
     Metadata parse(Element element, ParserContext context);
     

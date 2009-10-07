@@ -513,7 +513,7 @@ public class BeanRecipe extends AbstractRecipe {
         // call init method
         if (initMethod != null) {
             try {
-                invoke(initMethod, obj, null);
+                invoke(initMethod, obj, (Object[]) null);
             } catch (Throwable t) {
                 throw new ComponentDefinitionException("Unable to intialize bean " + getName(), getRealCause(t));
             }
@@ -529,7 +529,7 @@ public class BeanRecipe extends AbstractRecipe {
         try {
             Method method = getDestroyMethod(obj);
             if (method != null) {
-                invoke(method, obj, null);
+                invoke(method, obj, (Object[]) null);
             }
         } catch (Exception e) {
             LOGGER.info("Error invoking destroy method", getRealCause(e));
@@ -544,7 +544,7 @@ public class BeanRecipe extends AbstractRecipe {
         Method method = getDestroyMethod(instance);
         if (method != null) {
             try {
-                invoke(method, instance, null);
+                invoke(method, instance, (Object[]) null);
             } catch (Throwable e) {
                 LOGGER.info("Error destroying bean " + getName(), getRealCause(e));
             }
@@ -584,7 +584,7 @@ public class BeanRecipe extends AbstractRecipe {
             Method getter = getPropertyDescriptor(clazz, names[i]).getGetter();
             if (getter != null) {
                 try {
-                    instance = invoke(getter, instance, null);
+                    instance = invoke(getter, instance, (Object[]) null);
                 } catch (Exception e) {
                     throw new ComponentDefinitionException("Error getting property: " + names[i] + " on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName(), getRealCause(e));
                 }
