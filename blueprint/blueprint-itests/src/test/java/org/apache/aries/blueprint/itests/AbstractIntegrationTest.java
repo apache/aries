@@ -19,7 +19,11 @@
 package org.apache.aries.blueprint.itests;
 
 import org.ops4j.pax.exam.CoreOptions;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import org.ops4j.pax.exam.Inject;
+import org.ops4j.pax.exam.Option;
+import static org.ops4j.pax.exam.OptionUtils.combine;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -101,4 +105,18 @@ public abstract class AbstractIntegrationTest {
         return CoreOptions.mavenBundle().groupId(groupId).artifactId(artifactId).versionAsInProject();
     }
 
+
+    protected static Option[] updateOptions(Option[] options) {
+        // We need to add pax-exam-junit here when running with the ibm
+        // jdk to avoid the following exception during the test run:
+        // ClassNotFoundException: org.ops4j.pax.exam.junit.Configuration
+        if ("IBM Corporation".equals(System.getProperty("java.vendor"))) {
+            Option[] ibmOptions = options(
+                wrappedBundle(mavenBundle("org.ops4j.pax.exam", "pax-exam-junit"))
+            );
+            options = combine(ibmOptions, options);
+        }
+
+        return options;
+    }
 }
