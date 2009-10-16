@@ -189,6 +189,7 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
 
             equinox().version("3.5.0")
         );
+        options = updateOptions(options);
         return options;
     }
 
