@@ -18,12 +18,15 @@
  */
 package org.apache.aries.blueprint.container;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -38,8 +41,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
-import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.slf4j.Logger;
@@ -172,6 +175,18 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         }
     }
     
+    private String getFilePart(URL url)
+    {
+      String path = url.getPath();
+      int index = path.lastIndexOf('/');
+      return path.substring(index+1);
+    }
+    
+    private String cachePath(Bundle bundle, String filePath)
+    {
+      return bundle.getSymbolicName() + "/" + bundle.getVersion() + "/" + filePath;
+    }     
+    
     private void checkBundle(Bundle bundle) {
         LOGGER.debug("Scanning bundle {} for blueprint application", bundle.getSymbolicName());
         try {
@@ -202,7 +217,45 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                         addEntry(bundle, name, pathList);
                     }                    
                 }
-            }            
+            }
+            
+            //Override bundle specified blueprint XML with 
+            //XML already in the private storage.
+			Iterator<Object> pathIter = pathList.iterator();
+			List<Object> overridden = new ArrayList<Object>();
+			while (pathIter.hasNext()) {
+				Object path = pathIter.next();
+				if (path instanceof URL) {
+					URL url = (URL) path;
+					File privateDataVersion = context.getDataFile(cachePath(
+							bundle, "OSGI-INF/blueprint/" + getFilePart(url)));
+					if (privateDataVersion != null && privateDataVersion.exists()) {
+						try {
+							overridden.add(privateDataVersion.toURL());
+							pathIter.remove();
+						} catch (MalformedURLException e) {
+							LOGGER.error("Unexpected URL Conversion Issue", e);
+						}
+					}
+				} else if (path instanceof String) {
+					String s = (String) path;
+					File privateDataVersion = context.getDataFile(cachePath(
+							bundle, s));
+					if (privateDataVersion != null 	&& privateDataVersion.exists()) {
+						try {
+							overridden.add(privateDataVersion.toURL());
+							pathIter.remove();
+						} catch (MalformedURLException e) {
+							LOGGER.error("Unexpected URL Conversion Issue", e);
+						}
+					}
+				} else {
+					throw new IllegalArgumentException("Unexpected path type: "
+							+ path.getClass());
+				}
+			}
+			pathList.addAll(overridden);          
+            
             if (!pathList.isEmpty()) {
                 LOGGER.debug("Found blueprint application in bundle {} with paths: {}", bundle.getSymbolicName(), pathList);
                 // Check compatibility
