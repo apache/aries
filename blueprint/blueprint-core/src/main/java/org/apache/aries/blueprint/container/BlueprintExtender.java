@@ -18,6 +18,8 @@
  */
 package org.apache.aries.blueprint.container;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,8 +40,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
-import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.slf4j.Logger;
@@ -247,15 +249,60 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         return path.indexOf("*") >= 0; 
     }
     
+    private String getFilePart(URL url) {
+        String path = url.getPath();
+        int index = path.lastIndexOf('/');
+        return path.substring(index + 1);
+    }
+    
+    private String cachePath(Bundle bundle, String filePath)
+    {
+      return bundle.getSymbolicName() + "/" + bundle.getVersion() + "/" + filePath;
+    }    
+    
+    private URL getOverrideURLForCachePath(String privatePath){
+        URL override = null;
+        File privateDataVersion = context.getDataFile(privatePath);
+        if (privateDataVersion != null
+                && privateDataVersion.exists()) {
+            try {
+                override = privateDataVersion.toURL();
+            } catch (MalformedURLException e) {
+                LOGGER.error("Unexpected URL Conversion Issue", e);
+            }
+        }
+        return override;
+    }
+    
+    private URL getOverrideURL(Bundle bundle, String path){
+        String cachePath = cachePath(bundle, path);
+        return getOverrideURLForCachePath(cachePath);
+    }
+    
+    private URL getOverrideURL(Bundle bundle, URL path, String basePath){
+        String cachePath = cachePath(bundle, basePath + getFilePart(path));
+        return getOverrideURLForCachePath(cachePath);
+    }    
+    
     private void addEntry(Bundle bundle, String path, List<Object> pathList) {
-        pathList.add(path);
+        URL override = getOverrideURL(bundle, path);
+        if(override == null) {
+            pathList.add(path);
+        } else {
+            pathList.add(override);
+        }
     }
     
     private void addEntries(Bundle bundle, String path, String filePattern, List<Object> pathList) {
         Enumeration e = bundle.findEntries(path, filePattern, false);
         while (e != null && e.hasMoreElements()) {
             URL u = (URL) e.nextElement();
-            pathList.add(u);
+            URL override = getOverrideURL(bundle, u, path);
+            if(override == null) {
+                pathList.add(u);
+            } else {
+                pathList.add(override);
+            }
         }
     }
 }
