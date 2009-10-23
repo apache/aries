@@ -41,6 +41,7 @@
         <module>blueprint</module>
         <module>jndi</module>
         <module>transaction</module>
+        <module>application</module>
     </modules>
 
 </project>
