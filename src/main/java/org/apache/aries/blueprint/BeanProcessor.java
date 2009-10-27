@@ -18,6 +18,8 @@
  */
 package org.apache.aries.blueprint;
 
+import org.osgi.service.blueprint.reflect.BeanMetadata;
+
 /**
  * TODO: javadoc
  *
@@ -31,9 +33,22 @@ package org.apache.aries.blueprint;
  */
 public interface BeanProcessor extends Processor {
 
-    Object beforeInit(Object bean, String beanName);
+    /**
+     * Interface from which a BeanProcessor can obtain another bean.
+     */
+    interface BeanCreator {
+        /**
+         * Obtains a new instance of the Bean this BeanProcessor handled. <br>
+         * New instances have been processed by the same chain of BeanProcessors
+         * that the original Bean had been. 
+         * @return new instance of bean.
+         */
+        Object getBean();
+    }    
+    
+    Object beforeInit(Object bean, String beanName, BeanCreator beanCreator, BeanMetadata beanData);
 
-    Object afterInit(Object bean, String beanName);
+    Object afterInit(Object bean, String beanName, BeanCreator beanCreator, BeanMetadata beanData);
 
     void beforeDestroy(Object bean, String beanName);
 
