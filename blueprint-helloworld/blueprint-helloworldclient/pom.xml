@@ -17,15 +17,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-    	<artifactId>blueprint</artifactId>
         <groupId>org.apache.aries.blueprint</groupId>
+        <artifactId>blueprint-helloworld</artifactId>
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>helloworldserver</artifactId>
-    <name>Apache Aries Blueprint HelloWorldServer</name>
+    <artifactId>blueprint-helloworldclient</artifactId>
+    <groupId>org.apache.aries.blueprint.blueprint-helloworld</groupId>
+    <name>Apache Aries Blueprint HelloWorldClient</name>
     <packaging>bundle</packaging>
-    <description>Example blueprint hello world application - server</description>
+    <description>Example blueprint hello world client application.</description>
 
     <build>
         <plugins>
@@ -36,7 +37,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.helloworldserver</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.groupId}.blueprint-helloworldclient</Bundle-SymbolicName>
                     </instructions>
                 </configuration>
             </plugin>
@@ -48,9 +49,18 @@
             <artifactId>osgi</artifactId>
             <scope>provided</scope>
         </dependency>
-       <dependency>
-           <groupId>org.apache.aries.blueprint</groupId>
-           <artifactId>aries-blueprint-api</artifactId>
-       </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.blueprint</groupId>
+        	<artifactId>aries-blueprint-api</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.blueprint.blueprint-helloworld</groupId>
+        	<artifactId>blueprint-helloworldserver</artifactId>
+        	<version>1.0.0-incubating-SNAPSHOT</version>
+        </dependency>
     </dependencies>
+    <dependencyManagement>
+    	<dependencies>
+    	</dependencies>
+    </dependencyManagement>
 </project>
