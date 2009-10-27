@@ -18,6 +18,8 @@
  */
 package org.apache.aries.blueprint.container;
 
+import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -35,9 +37,9 @@ import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
-import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
-import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.ReifiedType;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -485,6 +487,33 @@ public class BeanRecipe extends AbstractRecipe {
         return method;
     }
     
+    /**
+     * Small helper class, to construct a chain of BeanCreators.
+     * <br> 
+     * Each bean creator in the chain will return a bean that has been 
+     * processed by every BeanProcessor in the chain before it.
+     */
+    private static class BeanCreatorChain implements BeanProcessor.BeanCreator {
+        private BeanProcessor.BeanCreator parentBeanCreator;
+        private BeanProcessor parentBeanProcessor;
+        private BeanMetadata beanData;
+        private String beanName;
+        public BeanCreatorChain(BeanProcessor.BeanCreator parentBeanCreator, 
+                                BeanProcessor parentBeanProcessor,
+                                BeanMetadata beanData,
+                                String beanName){
+            this.parentBeanCreator = parentBeanCreator;
+            this.parentBeanProcessor = parentBeanProcessor;
+            this.beanData = beanData;
+            this.beanName = beanName;
+        }
+
+        public Object getBean() {
+            Object previousBean = parentBeanCreator.getBean();
+            return parentBeanProcessor.beforeInit(previousBean, beanName, parentBeanCreator, beanData);
+        }   
+    }
+        
     @Override
     protected Object internalCreate() throws ComponentDefinitionException {
         
@@ -505,9 +534,28 @@ public class BeanRecipe extends AbstractRecipe {
 
         // inject properties
         setProperties(obj);
+        
+        String beanName = getName();
+        BeanMetadata beanData = (BeanMetadata) blueprintContainer
+          .getComponentDefinitionRegistry().getComponentDefinition(beanName);        
+        List<BeanProcessor> processors = blueprintContainer.getProcessors(BeanProcessor.class);
+        
+        //The start link of the chain, that provides the 
+        //original, unprocessed bean to the head of the chain.
+        BeanProcessor.BeanCreator initialBeanCreator = new BeanProcessor.BeanCreator() {            
+            public Object getBean() {
+                Object obj = getInstance();
+                //getinit, getdestroy, addpartial object don't need calling again.
+                //however, property injection does.
+                setProperties(obj);
+                return obj;
+            }
+        };
 
-        for (BeanProcessor processor : blueprintContainer.getProcessors(BeanProcessor.class)) {
-            obj = processor.beforeInit(obj, getName());
+        BeanProcessor.BeanCreator currentCreator = initialBeanCreator;
+        for(BeanProcessor processor : processors){
+            obj = processor.beforeInit(obj, getName(), currentCreator, beanData);
+            currentCreator = new BeanCreatorChain(currentCreator, processor, beanData, beanName);
         }
         
         // call init method

@@ -38,9 +38,10 @@ import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+import org.osgi.service.blueprint.container.ReifiedType;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.osgi.service.blueprint.container.ReifiedType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,7 +163,7 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
         }.start();
     }
 
-    public Object beforeInit(Object bean, String beanName) {
+    public Object beforeInit(Object bean, String beanName, BeanCreator beanCreator, BeanMetadata beanData) {
         if (beanName != null && beanName.equals(this.beanName)) {
             LOGGER.debug("Adding bean for bean={} / pid={}", beanName, persistentId);
             synchronized (lock) {
@@ -173,7 +174,7 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
         return bean;
     }
 
-    public Object afterInit(Object bean, String beanName) {
+    public Object afterInit(Object bean, String beanName, BeanCreator beanCreator, BeanMetadata beanData) {
         return bean;
     }
 
