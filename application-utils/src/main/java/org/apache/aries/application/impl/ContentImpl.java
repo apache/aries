@@ -48,27 +48,22 @@ public class ContentImpl implements Content
     setup(content, this.attributes, this.directives);
   }
   
-  @Override
   public String getContent() {
     return this.content;
   }
   
-  @Override
   public String getContentName() {
     return this.contentName;
   }
   
-  @Override
   public Map<String, String> getAttributes() {
     return Collections.unmodifiableMap(this.attributes);
   }
   
-  @Override
   public Map<String, String> getDirectives() {
     return Collections.unmodifiableMap(this.directives);
   }
   
-  @Override
   public String getAttribute(String key) {
     String toReturn = this.attributes.get(key);
     return toReturn;
@@ -83,7 +78,6 @@ public class ContentImpl implements Content
     this.attributes.put(key, value);
   }
   
-  @Override
   public String getDirective(String key) {
     String toReturn = this.directives.get(key);
     return toReturn;
@@ -98,7 +92,6 @@ public class ContentImpl implements Content
     this.directives.put(key, value);
   }
   
-  @Override
   public VersionRange getVersion() {
     VersionRange vi = null;
     if (this.attributes.get("version") != null && this.attributes.get("version").length() > 0) {
