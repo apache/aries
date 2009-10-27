@@ -118,42 +118,35 @@ public class ApplicationMetadataImpl implements ApplicationMetadata
     return props;
   }  
     
-  @Override
   public List<Content> getApplicationContents()
   {
     return Collections.unmodifiableList(this.appContents);
   }
 
-  @Override
   public List<ServiceDeclaration> getApplicationExportServices()
   {
     return Collections.unmodifiableList(this.exportServices);
   }
 
-  @Override
   public List<ServiceDeclaration> getApplicationImportServices()
   {
     return Collections.unmodifiableList(this.importServices);
   }
 
-  @Override
   public String getApplicationSymbolicName()
   {
     return this.appSymbolicName;
   }
 
-  @Override
   public Version getApplicationVersion()
   {
     return this.appVersion;
   }
 
-  @Override
   public String getApplicationName() {
     return this.appName;
   }
   
-  @Override
   public String getApplicationScope() {
     return this.appSymbolicName + "_" + this.appVersion.toString();
   }
