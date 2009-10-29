@@ -494,25 +494,106 @@ public class BeanRecipe extends AbstractRecipe {
      * processed by every BeanProcessor in the chain before it.
      */
     private static class BeanCreatorChain implements BeanProcessor.BeanCreator {
+        public enum ChainType{Before,After};
         private BeanProcessor.BeanCreator parentBeanCreator;
         private BeanProcessor parentBeanProcessor;
         private BeanMetadata beanData;
-        private String beanName;
+        private String beanName;        
+        private ChainType when;
         public BeanCreatorChain(BeanProcessor.BeanCreator parentBeanCreator, 
                                 BeanProcessor parentBeanProcessor,
                                 BeanMetadata beanData,
-                                String beanName){
+                                String beanName,
+                                ChainType when){
             this.parentBeanCreator = parentBeanCreator;
             this.parentBeanProcessor = parentBeanProcessor;
             this.beanData = beanData;
             this.beanName = beanName;
+            this.when = when;
         }
 
         public Object getBean() {
             Object previousBean = parentBeanCreator.getBean();
-            return parentBeanProcessor.beforeInit(previousBean, beanName, parentBeanCreator, beanData);
+            Object processed = null;
+            switch(when){
+                case Before :
+                  processed = parentBeanProcessor.beforeInit(previousBean, beanName, parentBeanCreator, beanData);
+                  break;
+                case After:
+                  processed = parentBeanProcessor.afterInit(previousBean, beanName, parentBeanCreator, beanData);
+                  break;
+            }
+            return processed;
         }   
     }
+    
+    private Object runBeanProcPreInit(Object obj){
+        String beanName = getName();
+        BeanMetadata beanData = (BeanMetadata) blueprintContainer
+          .getComponentDefinitionRegistry().getComponentDefinition(beanName);        
+        List<BeanProcessor> processors = blueprintContainer.getProcessors(BeanProcessor.class);
+        
+        //The start link of the chain, that provides the 
+        //original, unprocessed bean to the head of the chain.
+        BeanProcessor.BeanCreator initialBeanCreator = new BeanProcessor.BeanCreator() {            
+            public Object getBean() {
+                Object obj = getInstance();
+                //getinit, getdestroy, addpartial object don't need calling again.
+                //however, property injection does.
+                setProperties(obj);
+                return obj;
+            }
+        };
+
+        BeanProcessor.BeanCreator currentCreator = initialBeanCreator;
+        for(BeanProcessor processor : processors){
+            obj = processor.beforeInit(obj, getName(), currentCreator, beanData);
+            currentCreator = new BeanCreatorChain(currentCreator, processor, beanData, beanName, BeanCreatorChain.ChainType.Before);
+        }
+        return obj;
+    }
+    
+    private void runBeanProcInit(Method initMethod, Object obj){
+        // call init method
+        if (initMethod != null) {
+            try {
+                invoke(initMethod, obj, (Object[]) null);
+            } catch (Throwable t) {
+                throw new ComponentDefinitionException("Unable to intialize bean " + getName(), getRealCause(t));
+            }
+        }   
+    }
+    
+    private Object runBeanProcPostInit(Object obj){
+        String beanName = getName();
+        BeanMetadata beanData = (BeanMetadata) blueprintContainer
+          .getComponentDefinitionRegistry().getComponentDefinition(beanName);        
+        List<BeanProcessor> processors = blueprintContainer.getProcessors(BeanProcessor.class);
+        
+        //The start link of the chain, that provides the 
+        //original, unprocessed bean to the head of the chain.
+        BeanProcessor.BeanCreator initialBeanCreator = new BeanProcessor.BeanCreator() {            
+            public Object getBean() {                                
+                Object obj = getInstance();
+                //getinit, getdestroy, addpartial object don't need calling again.
+                //however, property injection does.
+                setProperties(obj);
+                //as this is the post init chain, new beans need to go thru 
+                //the pre-init chain, and then have init called, before 
+                //being passed along the post-init chain.
+                obj = runBeanProcPreInit(obj);
+                runBeanProcInit(getInitMethod(obj), obj);
+                return obj;
+            }
+        };
+
+        BeanProcessor.BeanCreator currentCreator = initialBeanCreator;
+        for(BeanProcessor processor : processors){
+            obj = processor.afterInit(obj, getName(), currentCreator, beanData);
+            currentCreator = new BeanCreatorChain(currentCreator, processor, beanData, beanName, BeanCreatorChain.ChainType.After);
+        }
+        return obj;
+    }    
         
     @Override
     protected Object internalCreate() throws ComponentDefinitionException {
@@ -535,37 +616,11 @@ public class BeanRecipe extends AbstractRecipe {
         // inject properties
         setProperties(obj);
         
-        String beanName = getName();
-        BeanMetadata beanData = (BeanMetadata) blueprintContainer
-          .getComponentDefinitionRegistry().getComponentDefinition(beanName);        
-        List<BeanProcessor> processors = blueprintContainer.getProcessors(BeanProcessor.class);
+        obj = runBeanProcPreInit(obj);
         
-        //The start link of the chain, that provides the 
-        //original, unprocessed bean to the head of the chain.
-        BeanProcessor.BeanCreator initialBeanCreator = new BeanProcessor.BeanCreator() {            
-            public Object getBean() {
-                Object obj = getInstance();
-                //getinit, getdestroy, addpartial object don't need calling again.
-                //however, property injection does.
-                setProperties(obj);
-                return obj;
-            }
-        };
-
-        BeanProcessor.BeanCreator currentCreator = initialBeanCreator;
-        for(BeanProcessor processor : processors){
-            obj = processor.beforeInit(obj, getName(), currentCreator, beanData);
-            currentCreator = new BeanCreatorChain(currentCreator, processor, beanData, beanName);
-        }
+        runBeanProcInit(initMethod, obj);
         
-        // call init method
-        if (initMethod != null) {
-            try {
-                invoke(initMethod, obj, (Object[]) null);
-            } catch (Throwable t) {
-                throw new ComponentDefinitionException("Unable to intialize bean " + getName(), getRealCause(t));
-            }
-        }
+        obj = runBeanProcPostInit(obj);
         
         return obj;
     }
