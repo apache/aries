@@ -18,6 +18,26 @@
  */
 package org.apache.aries.blueprint.helloworldclient;
 
-public interface HelloWorldClient {
-	public void startUp();
+import org.apache.aries.blueprint.helloworldapi.HelloWorldService;
+
+public class HelloWorldClient {
+
+        HelloWorldService helloWorldService = null;
+
+        public void startUp() {
+                System.out.println("========>>>>Client HelloWorld: About to execute a method from the Hello World service");
+                helloWorldService.hello();
+                System.out.println("========>>>>Client HelloWorld: ... if you didn't just see a Hello World message something went wrong");
+        }
+
+        public HelloWorldService getHelloWorldService() {
+                return helloWorldService;
+        }
+
+        public void setHelloWorldService(HelloWorldService helloWorldService) {
+                this.helloWorldService = helloWorldService;
+
+        }
+
 }
+
