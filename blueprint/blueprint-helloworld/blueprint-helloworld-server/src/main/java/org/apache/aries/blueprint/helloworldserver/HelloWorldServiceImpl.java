@@ -17,14 +17,17 @@
  * under the License.
  */
 package org.apache.aries.blueprint.helloworldserver;
+import org.apache.aries.blueprint.helloworldapi.HelloWorldService;
 
-public class HelloWorldServerImpl implements HelloWorldServer {
+public class HelloWorldServiceImpl implements HelloWorldService {
 
-	public void hello() {
-		System.out.println("======>>> A message from the server: Hello World!");
-	}
+        public void hello() {
+                System.out.println("======>>> A message from the server: Hello World!");
+        }
 
-	public void startUp() {
-		System.out.println("======>>> Starting HelloWorld Server");
-	}
+        public void startUp() {
+                System.out.println("======>>> Starting HelloWorld Server");
+        }
 }
+
+ 
