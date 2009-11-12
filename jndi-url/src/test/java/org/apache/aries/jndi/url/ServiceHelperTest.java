@@ -24,6 +24,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -204,6 +206,43 @@ public class ServiceHelperTest
     
     // this should be 3 times, once for the first call to getServices, and twice for the second
     skel.assertCalledExactNumberOfTimes(getService, 3);
+    skel.assertCalledExactNumberOfTimes(ungetService, 1);
+  }
+
+  /**
+   * This test checks that the getServices method correctly walks the class loader heirarchy
+   * when searching for the callers bundle context.
+   */
+  @Test
+  public void parentClassLoaderImplementsBundleContext()
+  {
+    Bundle b = Skeleton.newMock(new BundleMock("scooby.doo", new Properties()), Bundle.class);
+
+    Skeleton skel = Skeleton.getSkeleton(b);
+
+    ClassLoader cl = new URLClassLoader(new URL[0], ((BundleMock)skel.getTemplateObject()).getClassLoader());
+    cl = new URLClassLoader(new URL[0], cl);
+
+    Thread.currentThread().setContextClassLoader(cl);
+
+    skel = Skeleton.getSkeleton(b.getBundleContext());
+
+    Object retrievedService = ServiceHelper.getService("java.lang.Runnable", null);
+
+    assertNotNull("We could not locate the service in the registry", retrievedService);
+
+    assertTrue("We didn't get back the service we expected", service == retrievedService);
+
+    MethodCall getService = new MethodCall(BundleContext.class, "getService", ServiceReference.class);
+    MethodCall ungetService = new MethodCall(BundleContext.class, "ungetService", ServiceReference.class);
+
+    skel.assertNotCalled(ungetService);
+    skel.assertCalledExactNumberOfTimes(getService, 1);
+
+    Object retrievedService2 = ServiceHelper.getService("java.lang.Runnable", null);
+
+    assertTrue("We got different objects, which we did not want", retrievedService == retrievedService2);
+    skel.assertCalledExactNumberOfTimes(getService, 2);
     skel.assertCalledExactNumberOfTimes(ungetService, 1);
   }
 }
