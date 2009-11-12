@@ -30,21 +30,12 @@ import java.util.List;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
-
-import org.w3c.dom.Attr;
-import org.w3c.dom.CharacterData;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.EntityReference;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.NamespaceHandler;
@@ -89,6 +80,15 @@ import org.osgi.service.blueprint.reflect.Target;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Attr;
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.EntityReference;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 /**
@@ -234,8 +234,26 @@ public class Parser {
     private void findNamespaces(Set<URI> namespaces, Node node) {
         if (node instanceof Element || node instanceof Attr) {
             String ns = node.getNamespaceURI();
-            if (ns != null && !isBlueprintNamespace(ns)) {
+            if (ns != null && !isBlueprintNamespace(ns) && !XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(ns)) {
                 namespaces.add(URI.create(ns));
+            }else if ( ns == null && //attributes from blueprint are unqualified as per schema.
+                       node instanceof Attr &&
+                       SCOPE_ATTRIBUTE.equals(node.getNodeName()) &&
+                       ((Attr)node).getOwnerElement() != null && //should never occur from parsed doc.
+                       BLUEPRINT_NAMESPACE.equals(((Attr)node).getOwnerElement().getNamespaceURI()) &&
+                       BEAN_ELEMENT.equals(((Attr)node).getOwnerElement().getLocalName()) ){
+                //Scope attribute is special case, as may contain namespace usage within its value.
+                
+                URI scopeNS = getNamespaceForAttributeValue(node);
+                if(scopeNS!=null){
+                    namespaces.add(scopeNS);
+                }
+            }
+        }
+        NamedNodeMap nnm = node.getAttributes();
+        if(nnm!=null){
+            for(int i = 0; i< nnm.getLength() ; i++){
+                findNamespaces(namespaces, nnm.item(i));
             }
         }
         NodeList nl = node.getChildNodes();
@@ -405,6 +423,61 @@ public class Parser {
             }
         }
     }
+    
+    /**
+     * Takes an Attribute Node containing a namespace prefix qualified attribute value, and resolves the namespace using the DOM Node.<br> 
+     *  
+     * @param attr The DOM Node with the qualified attribute value.
+     * @return The URI if one is resolvable, or null if the attr is null, or not namespace prefixed. (or not a DOM Attribute Node)
+     * @throws ComponentDefinitonException if the namespace prefix in the attribute value cannot be resolved.
+     */
+    private URI getNamespaceForAttributeValue(Node attrNode){
+        URI uri = null;
+        if(attrNode!=null && (attrNode instanceof Attr)){
+            Attr attr = (Attr)attrNode;
+            String attrValue = attr.getValue();
+            if(attrValue!=null && attrValue.indexOf(":")!=-1){
+                String parts[] = attrValue.split(":");
+                String uriStr = attr.getOwnerElement().lookupNamespaceURI(parts[0]);
+                if(uriStr!=null){
+                    uri = URI.create(uriStr);
+                }else{
+                    throw new ComponentDefinitionException("Unsupported attribute namespace prefix "+parts[0]+" "+attr);
+                }
+            }
+        }
+        return uri;
+    }
+    
+    /**
+     * Tests if a scope attribute value is a custom scope, and if so invokes
+     * the appropriate namespace handler, passing the blueprint scope node. 
+     * <p> 
+     * Currently this tests for custom scope by looking for the presence of
+     * a ':' char within the scope attribute value. This is valid as long as
+     * the blueprint schema continues to restrict that custom scopes should
+     * require that characters presence.
+     * <p>
+     *  
+     * @param scope Value of scope attribute
+     * @param bean DOM element for bean associated to this scope 
+     * @param cm Metadata for bean associated to this scope
+     * @return Metadata as processed by NS Handler.
+     * @throws ComponentDefinitionException if an undeclared prefix is used, 
+     *           if a namespace handler is unavailable for a resolved prefix, 
+     *           or if the resolved prefix results as the blueprint namespace.
+     */
+    private ComponentMetadata handleCustomScope(Node scope, Element bean, ComponentMetadata metadata){
+        URI scopeNS = getNamespaceForAttributeValue(scope);
+        if(scopeNS!=null && !BLUEPRINT_NAMESPACE.equals(scopeNS)){
+            NamespaceHandler nsHandler = getNamespaceHandler(scopeNS);
+            ParserContextImpl context = new ParserContextImpl(this, registry, metadata, scope);
+            metadata = nsHandler.decorate(scope, metadata, context);
+        }else if(scopeNS!=null){
+            throw new ComponentDefinitionException("Custom scopes cannot use the blueprint namespace "+scope);
+        }
+        return metadata;
+    }
 
     private ComponentMetadata parseBeanMetadata(Element element, boolean topElement) {
         BeanMetadataImpl metadata = new BeanMetadataImpl();
@@ -478,7 +551,10 @@ public class Parser {
         MetadataUtil.validateBeanArguments(metadata.getArguments());
         
         ComponentMetadata m = metadata;
-
+        
+        // Parse custom scopes
+        m = handleCustomScope(element.getAttributeNode(SCOPE_ATTRIBUTE), element, m);
+        
         // Parse custom attributes
         m = handleCustomAttributes(element.getAttributes(), m);
         
@@ -1114,9 +1190,12 @@ public class Parser {
         if (attributes != null) {
             for (int i = 0; i < attributes.getLength(); i++) {
                 Node node = attributes.item(i);
+                //attr is custom if it has a namespace, and it isnt blueprint, or the xmlns ns. 
+                //blueprint ns would be an error, as blueprint attrs are unqualified.
                 if (node instanceof Attr && 
                     node.getNamespaceURI() != null && 
-                    !isBlueprintNamespace(node.getNamespaceURI())) {
+                    !isBlueprintNamespace(node.getNamespaceURI()) &&
+                    !XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(node.getNamespaceURI()) ) {
                     enclosingComponent = decorateCustomNode(node, enclosingComponent);
                 }
             }
@@ -1150,17 +1229,22 @@ public class Parser {
     }
 
     private NamespaceHandler getNamespaceHandler(Node node) {
-        if (handlers == null) {
-            throw new ComponentDefinitionException("Unsupported node (namespace handler registry is not set): " + node);
-        }
         URI ns = URI.create(node.getNamespaceURI());
-        NamespaceHandler handler = this.handlers.getNamespaceHandler(ns);
+        NamespaceHandler handler = getNamespaceHandler(ns);
+        return handler;
+    }
+
+    private NamespaceHandler getNamespaceHandler(URI uri) {
+        if (handlers == null) {
+            throw new ComponentDefinitionException("Unsupported node (namespace handler registry is not set): " + uri);
+        }
+        NamespaceHandler handler = this.handlers.getNamespaceHandler(uri);
         if (handler == null) {
-            throw new ComponentDefinitionException("Unsupported node namespace: " + node.getNamespaceURI());
+            throw new ComponentDefinitionException("Unsupported node namespace: " + uri);
         }
         return handler;
     }
-    
+
     public String getId(Element element) {
         String id;
         if (element.hasAttribute(ID_ATTRIBUTE)) {
