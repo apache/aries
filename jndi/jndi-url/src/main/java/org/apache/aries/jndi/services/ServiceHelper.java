@@ -198,10 +198,14 @@ public final class ServiceHelper
    */
   private static BundleContext getBundleContext()
   {
-    BundleContext result = context;
+    BundleContext result = null;
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
-    if (cl instanceof BundleReference) {
-      result = ((BundleReference)cl).getBundle().getBundleContext();
+    while (result == null && cl != null) {
+      if (cl instanceof BundleReference) {
+        result = ((BundleReference)cl).getBundle().getBundleContext();
+      } else if (cl != null) {
+        cl = cl.getParent();
+      }
     } 
     
     if (result == null) result = context;
