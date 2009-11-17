@@ -18,7 +18,10 @@
  */
 package org.apache.aries.blueprint.namespace;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ComponentNameAlreadyInUseException;
+import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Target;
@@ -43,11 +47,13 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
 
     private final Map<String, ComponentMetadata> components;
     private final List<Target> typeConverters;
+    private final Map<ComponentMetadata, List<Interceptor>> interceptors;
 
     public ComponentDefinitionRegistryImpl() {
         // Use a linked hash map to keep the declaration order 
         components = Collections.synchronizedMap(new LinkedHashMap<String, ComponentMetadata>());
         typeConverters = new CopyOnWriteArrayList<Target>();
+        interceptors = Collections.synchronizedMap(new HashMap<ComponentMetadata, List<Interceptor>>());
     }
 
     public boolean containsComponentDefinition(String name) {
@@ -79,7 +85,10 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
     }
 
     public void removeComponentDefinition(String name) {
-        components.remove(name);
+        ComponentMetadata removed = components.remove(name);
+        if(removed!=null){
+            interceptors.remove(removed);
+        }
     }
 
     public void registerTypeConverter(Target component) {
@@ -91,6 +100,29 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
 
     public List<Target> getTypeConverters() {
         return typeConverters;
+    }
+
+    public void registerInterceptorWithComponent(ComponentMetadata component, Interceptor interceptor) {
+        if(interceptor!=null){
+            List<Interceptor> componentInterceptorList = interceptors.get(component);
+            if(componentInterceptorList==null){
+                componentInterceptorList = new ArrayList<Interceptor>();
+                interceptors.put(component, componentInterceptorList);
+            }
+            if(!componentInterceptorList.contains(interceptor)){
+                componentInterceptorList.add(interceptor);
+                Collections.sort(componentInterceptorList, new Comparator<Interceptor>(){
+                    public int compare(Interceptor object1, Interceptor object2) {
+                        //invert the order so higher ranks are sorted 1st
+                        return object2.getRank() - object1.getRank();
+                    }
+                });
+            }
+        }
+    }
+
+    public List<Interceptor> getInterceptors(ComponentMetadata component) {
+        return interceptors.get(component);
     }
     
 }

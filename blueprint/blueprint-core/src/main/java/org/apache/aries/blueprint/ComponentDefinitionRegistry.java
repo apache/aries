@@ -37,5 +37,9 @@ public interface ComponentDefinitionRegistry  {
     void registerTypeConverter(Target component);
 
     List<Target> getTypeConverters();
+    
+    void registerInterceptorWithComponent(ComponentMetadata component, Interceptor interceptor);
+    
+    List<Interceptor> getInterceptors(ComponentMetadata component);
 
 }
