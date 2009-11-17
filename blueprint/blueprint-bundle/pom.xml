@@ -86,6 +86,7 @@
                             org.apache.aries.blueprint.container,
                             org.apache.aries.blueprint.di,
                             org.apache.aries.blueprint.namespace,
+                            org.apache.aries.blueprint.proxy,
                             org.apache.aries.blueprint.reflect,
                             org.apache.aries.blueprint.utils,
                             OSGI-INF*
