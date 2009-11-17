@@ -33,13 +33,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.aries.blueprint.BeanProcessor;
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.Interceptor;
+import org.apache.aries.blueprint.container.AbstractServiceReferenceRecipe.CgLibProxyFactory;
+import org.apache.aries.blueprint.container.AbstractServiceReferenceRecipe.JdkProxyFactory;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.Recipe;
+import org.apache.aries.blueprint.proxy.CgLibInterceptorWrapper;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -594,6 +600,32 @@ public class BeanRecipe extends AbstractRecipe {
         }
         return obj;
     }    
+    
+    private Object addInterceptors(Object original) throws ComponentDefinitionException{
+        
+        try {
+            // Try load load a cglib class (to make sure it's actually available
+            getClass().getClassLoader().loadClass("net.sf.cglib.proxy.Enhancer");
+        } catch (Throwable t) {
+            throw new ComponentDefinitionException("Interceptors have been configured but cglib can not be used", t);
+        }
+        
+        Object intercepted = null;
+        String beanName = getName();
+        ComponentDefinitionRegistry reg = blueprintContainer.getComponentDefinitionRegistry();
+        ComponentMetadata metaData = reg.getComponentDefinition(beanName);
+        List<Interceptor> interceptors = reg.getInterceptors(metaData); 
+        if(interceptors!=null && interceptors.size()>0){
+            intercepted = CgLibInterceptorWrapper.createProxyObject(original.getClass().getClassLoader(), 
+                                                                metaData, 
+                                                                interceptors, 
+                                                                original, 
+                                                                original.getClass().getInterfaces());
+        }else{
+            intercepted = original;
+        }
+        return intercepted;
+    }
         
     @Override
     protected Object internalCreate() throws ComponentDefinitionException {
@@ -621,6 +653,8 @@ public class BeanRecipe extends AbstractRecipe {
         runBeanProcInit(initMethod, obj);
         
         obj = runBeanProcPostInit(obj);
+        
+        obj = addInterceptors(obj);
         
         return obj;
     }
