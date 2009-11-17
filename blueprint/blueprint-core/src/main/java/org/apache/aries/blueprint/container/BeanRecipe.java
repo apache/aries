@@ -603,19 +603,19 @@ public class BeanRecipe extends AbstractRecipe {
     
     private Object addInterceptors(Object original) throws ComponentDefinitionException{
         
-        try {
-            // Try load load a cglib class (to make sure it's actually available
-            getClass().getClassLoader().loadClass("net.sf.cglib.proxy.Enhancer");
-        } catch (Throwable t) {
-            throw new ComponentDefinitionException("Interceptors have been configured but cglib can not be used", t);
-        }
-        
         Object intercepted = null;
         String beanName = getName();
         ComponentDefinitionRegistry reg = blueprintContainer.getComponentDefinitionRegistry();
         ComponentMetadata metaData = reg.getComponentDefinition(beanName);
         List<Interceptor> interceptors = reg.getInterceptors(metaData); 
         if(interceptors!=null && interceptors.size()>0){
+            try {
+                // Try load load a cglib class (to make sure it's actually available
+                getClass().getClassLoader().loadClass("net.sf.cglib.proxy.Enhancer");
+            } catch (Throwable t) {
+                throw new ComponentDefinitionException("Interceptors have been configured but cglib can not be used", t);
+            }            
+            
             intercepted = CgLibInterceptorWrapper.createProxyObject(original.getClass().getClassLoader(), 
                                                                 metaData, 
                                                                 interceptors, 
