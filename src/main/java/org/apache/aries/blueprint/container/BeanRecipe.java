@@ -659,7 +659,8 @@ public class BeanRecipe extends AbstractRecipe {
         return obj;
     }
     
-    public void destroyInstance(Object obj) {
+    @Override
+    public void destroy(Object obj) {
         for (BeanProcessor processor : blueprintContainer.getProcessors(BeanProcessor.class)) {
             processor.beforeDestroy(obj, getName());
         }
@@ -673,18 +674,6 @@ public class BeanRecipe extends AbstractRecipe {
         }
         for (BeanProcessor processor : blueprintContainer.getProcessors(BeanProcessor.class)) {
             processor.afterDestroy(obj, getName());
-        }
-    }
-
-    @Override
-    public void destroy(Object instance) {
-        Method method = getDestroyMethod(instance);
-        if (method != null) {
-            try {
-                invoke(method, instance, (Object[]) null);
-            } catch (Throwable e) {
-                LOGGER.info("Error destroying bean " + getName(), getRealCause(e));
-            }
         }
     }
 
