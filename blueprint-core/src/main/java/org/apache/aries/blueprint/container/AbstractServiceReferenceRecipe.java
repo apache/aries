@@ -254,7 +254,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             if (!proxyClass) {
                 for (Class cl : classes) {
                     if (!cl.isInterface()) {
-                        throw new ComponentDefinitionException("A class " + cl.getName() + " was found in the interfaces list, but class proxying is not allowed by default. The ext:proxy-method='class' attribute needs to be added to this service reference.");
+                        throw new ComponentDefinitionException("A class " + cl.getName() + " was found in the interfaces list, but class proxying is not allowed by default. The ext:proxy-method='classes' attribute needs to be added to this service reference.");
                     }
                 }
             }
