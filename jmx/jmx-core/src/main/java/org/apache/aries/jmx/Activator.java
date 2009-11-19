@@ -16,30 +16,56 @@
  */
 package org.apache.aries.jmx;
 
+import org.apache.aries.jmx.agent.JMXAgent;
+import org.apache.aries.jmx.agent.JMXAgentImpl;
+import org.apache.aries.jmx.agent.JMXAgentContext;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.log.LogService;
 
 /**
+ * <p>Activator for JMX OSGi bundle.</p>
  * 
- *
  * @version $Rev$ $Date$
  */
 public class Activator implements BundleActivator {
 
-    /* (non-Javadoc)
-     * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
+    private JMXAgent agent;
+    private Logger logger;
+
+    /**
+     * <p>Called when JMX OSGi bundle starts.
+     * This method creates and starts JMX agent.</p>
+     * 
+     * @see org.osgi.framework.BundleActivator#start(BundleContext)
      */
     public void start(BundleContext context) throws Exception {
-        // TODO Auto-generated method stub
-
+        logger = new Logger(context);
+        //starting logger
+        logger.open();
+        logger.log(LogService.LOG_DEBUG, "Starting JMX OSGi bundle");
+        agent = new JMXAgentImpl(logger);
+        JMXAgentContext agentContext = new JMXAgentContext(context, agent, logger);
+        agent.setAgentContext(agentContext);
+        agent.start();
     }
 
-    /* (non-Javadoc)
-     * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
+    /**
+     * <p>Called when JMX OSGi bundle stops.
+     * This method stops agent and logger @see {@link Logger}.</p>
+     * 
+     * @see org.osgi.framework.BundleActivator#stop(BundleContext)
      */
-    public void stop(BundleContext context) throws Exception {
-        // TODO Auto-generated method stub
-
+    public void stop(BundleContext bc) throws Exception {
+        if (logger != null) {
+            logger.log(LogService.LOG_DEBUG, "Stopping JMX OSGi bundle");
+        }
+        if (agent != null) {
+            agent.stop();
+        }
+        if (logger != null) {
+            logger.close();
+        }
     }
 
 }
