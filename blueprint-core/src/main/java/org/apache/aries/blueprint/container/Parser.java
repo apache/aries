@@ -234,7 +234,7 @@ public class Parser {
     private void findNamespaces(Set<URI> namespaces, Node node) {
         if (node instanceof Element || node instanceof Attr) {
             String ns = node.getNamespaceURI();
-            if (ns != null && !isBlueprintNamespace(ns) && !XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(ns)) {
+            if (ns != null && !isBlueprintNamespace(ns) && !isIgnorableAttributeNamespace(ns)) {
                 namespaces.add(URI.create(ns));
             }else if ( ns == null && //attributes from blueprint are unqualified as per schema.
                        node instanceof Attr &&
@@ -1195,7 +1195,7 @@ public class Parser {
                 if (node instanceof Attr && 
                     node.getNamespaceURI() != null && 
                     !isBlueprintNamespace(node.getNamespaceURI()) &&
-                    !XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(node.getNamespaceURI()) ) {
+                    !isIgnorableAttributeNamespace(node.getNamespaceURI()) ) {
                     enclosingComponent = decorateCustomNode(node, enclosingComponent);
                 }
             }
@@ -1262,6 +1262,30 @@ public class Parser {
         return BLUEPRINT_NAMESPACE.equals(ns);
     }
 
+    /**
+     * Test if this namespace uri does not require a Namespace Handler.<p>
+     *      <li>    XMLConstants.RELAXNG_NS_URI
+     *      <li>    XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI
+     *      <li>    XMLConstants.W3C_XML_SCHEMA_NS_URI
+     *      <li>    XMLConstants.W3C_XPATH_DATATYPE_NS_URI
+     *      <li>    XMLConstants.W3C_XPATH_DATATYPE_NS_URI
+     *      <li>    XMLConstants.XML_DTD_NS_URI
+     *      <li>    XMLConstants.XML_NS_URI
+     *      <li>    XMLConstants.XMLNS_ATTRIBUTE_NS_URI
+     * @param ns URI to be tested.
+     * @return true if the uri does not require a namespace handler.
+     */
+    public static boolean isIgnorableAttributeNamespace(String ns) {
+        return XMLConstants.RELAXNG_NS_URI.equals(ns) ||
+               XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(ns) || 
+               XMLConstants.W3C_XML_SCHEMA_NS_URI.equals(ns) ||
+               XMLConstants.W3C_XPATH_DATATYPE_NS_URI.equals(ns) ||
+               XMLConstants.W3C_XPATH_DATATYPE_NS_URI.equals(ns) ||
+               XMLConstants.XML_DTD_NS_URI.equals(ns) ||
+               XMLConstants.XML_NS_URI.equals(ns) || 
+               XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(ns);
+    }
+    
     private static boolean nodeNameEquals(Node node, String name) {
         return (name.equals(node.getNodeName()) || name.equals(node.getLocalName()));
     }
