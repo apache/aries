@@ -51,40 +51,20 @@
                 <artifactId>aries-jmx-core</artifactId>
                 <version>${version}</version>
             </dependency>
-			<dependency>
+            <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
                 <artifactId>aries-jmx</artifactId>
                 <version>${version}</version>
             </dependency>
-			 <dependency>
-                <groupId>org.apache.felix</groupId>
+            <dependency>
+                <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
-                <version>1.4.0</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.foundation</artifactId>
-                    </exclusion>
-                </exclusions>
+                <version>4.2.0</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.felix</groupId>
+                <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.compendium</artifactId>
-                <version>1.2.0</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.foundation</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>javax.servlet</artifactId>
-                    </exclusion>
-                </exclusions>
+                <version>4.2.0</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
@@ -126,7 +106,7 @@
     <modules>
         <module>jmx-api</module>
         <module>jmx-core</module>
-		<module>jmx-bundle</module>
+        <module>jmx-bundle</module>
     </modules>
 
 </project>
