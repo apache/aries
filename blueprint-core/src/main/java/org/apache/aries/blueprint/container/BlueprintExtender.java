@@ -44,11 +44,14 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
+import org.osgi.util.tracker.BundleTracker;
+import org.osgi.util.tracker.BundleTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO: javadoc
+ * This is the blueprint extender that listens to blueprint bundles.  it implements the sync
+ * bundle listener but it doesn't register the listener and uses the bundle tracker instead.
  *
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
@@ -61,6 +64,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     private Map<Bundle, BlueprintContainerImpl> containers;
     private BlueprintEventDispatcher eventDispatcher;
     private NamespaceHandlerRegistry handlers;
+    private BundleTracker bt;
 
     public void start(BundleContext context) {
         LOGGER.debug("Starting blueprint extender...");
@@ -71,8 +75,10 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         eventDispatcher = new BlueprintEventDispatcher(context, executors);
         containers = new HashMap<Bundle, BlueprintContainerImpl>();
 
-        context.addBundleListener(this);
-
+        // TODO: allow aries consumer to plugin their own bundletracker customizer.
+        bt = new BundleTracker(context, Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING, new BlueprintBundleTrackerCustomizer());
+        bt.open();
+        
         Bundle[] bundles = context.getBundles();
         for (Bundle b : bundles) {
             // If the bundle is active, check it
@@ -92,7 +98,10 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
 
     public void stop(BundleContext context) {
         LOGGER.debug("Stopping blueprint extender...");
-        context.removeBundleListener(this);
+        if (bt != null) {
+        	bt.close();
+        }
+
         // Orderly shutdown of containers
         while (!containers.isEmpty()) {
             for (Bundle bundle : getBundlesToDestroy()) {
@@ -305,4 +314,38 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
             }
         }
     }
+    
+    // blueprint bundle tracker calls bundleChanged to minimize changes.
+    private class BlueprintBundleTrackerCustomizer implements BundleTrackerCustomizer {
+
+        public BlueprintBundleTrackerCustomizer() {
+        }
+        
+        public Object addingBundle(Bundle b, BundleEvent event)
+        {
+          if (event == null) {
+            return null;
+          }
+          
+          bundleChanged(event);
+          
+          return b;
+        }
+
+        public void modifiedBundle(Bundle b, BundleEvent event, Object arg2)
+        {          
+            if (event == null) {
+                return;
+            }
+        
+            bundleChanged(event);
+          
+        }
+
+        // don't think we would be interested in removedBundle, as that is
+        // called when bundle is removed from the tracker
+        public void removedBundle(Bundle b, BundleEvent event, Object arg2)
+        {      
+        }
+      }
 }
