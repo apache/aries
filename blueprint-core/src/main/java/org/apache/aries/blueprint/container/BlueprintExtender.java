@@ -316,36 +316,34 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     }
     
     // blueprint bundle tracker calls bundleChanged to minimize changes.
-    private class BlueprintBundleTrackerCustomizer implements BundleTrackerCustomizer {
+    private class BlueprintBundleTrackerCustomizer implements
+            BundleTrackerCustomizer {
 
         public BlueprintBundleTrackerCustomizer() {
         }
-        
-        public Object addingBundle(Bundle b, BundleEvent event)
-        {
-          if (event == null) {
-            return null;
-          }
-          
-          bundleChanged(event);
-          
-          return b;
+
+        public Object addingBundle(Bundle b, BundleEvent event) {
+            if (event == null) {
+                return null;
+            }
+
+            bundleChanged(event);
+
+            return b;
         }
 
-        public void modifiedBundle(Bundle b, BundleEvent event, Object arg2)
-        {          
+        public void modifiedBundle(Bundle b, BundleEvent event, Object arg2) {
             if (event == null) {
                 return;
             }
-        
+
             bundleChanged(event);
-          
+
         }
 
         // don't think we would be interested in removedBundle, as that is
         // called when bundle is removed from the tracker
-        public void removedBundle(Bundle b, BundleEvent event, Object arg2)
-        {      
+        public void removedBundle(Bundle b, BundleEvent event, Object arg2) {
         }
-      }
+    }
 }
