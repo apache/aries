@@ -88,34 +88,14 @@
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.felix</groupId>
+                <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
-                <version>1.4.0</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.foundation</artifactId>
-                    </exclusion>
-                </exclusions>
+                <version>4.2.0</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.felix</groupId>
+                <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.compendium</artifactId>
-                <version>1.2.0</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.foundation</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>javax.servlet</artifactId>
-                    </exclusion>
-                </exclusions>
+                <version>4.2.0</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
