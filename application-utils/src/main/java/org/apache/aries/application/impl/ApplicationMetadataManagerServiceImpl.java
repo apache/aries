@@ -68,7 +68,9 @@ public class ApplicationMetadataManagerServiceImpl implements ApplicationMetadat
   public boolean registerApplication(ApplicationMetadata app)
   {
     if (manager.registerApplication(app)) {
-      appMetaData.add(app);
+      synchronized (appMetaData) {
+        appMetaData.add(app);
+      }
       return true;
     }
     return false;
@@ -80,10 +82,12 @@ public class ApplicationMetadataManagerServiceImpl implements ApplicationMetadat
    */
   public void close()
   {
-    for (ApplicationMetadata app : appMetaData) {
-      manager.removeApplication(app);
+    synchronized (appMetaData) {
+      for (ApplicationMetadata app : appMetaData) {
+        manager.removeApplication(app);
+      }
+      
+      appMetaData.clear();
     }
-    
-    appMetaData.clear();
   }
 }
