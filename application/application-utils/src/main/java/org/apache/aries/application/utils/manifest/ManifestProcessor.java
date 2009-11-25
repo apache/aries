@@ -18,7 +18,10 @@
  */
 package org.apache.aries.application.utils.manifest;
 
-import static org.apache.aries.application.utils.AppConstants.TRACE_GROUP;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +31,11 @@ import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+/**
+ * This class contains utilities for parsing manifests. It provides methods to
+ * parse the manifest, read a manifest into a map and to split an manifest
+ * entry that follows the Import-Package syntax.
+ */
 public class ManifestProcessor
 {
   /**
@@ -59,6 +67,62 @@ public class ManifestProcessor
   }
   
   /**
+   * This method parses the manifest using a custom manifest parsing routine.
+   * This means that we can avoid the 76 byte line length in a manifest providing
+   * a better developer experience.
+   * 
+   * @param in the input stream to read the manifest from.
+   * @return   the parsed manifest
+   * @throws IOException
+   */
+  public static Manifest parseManifest(InputStream in) throws IOException
+  {
+    Manifest man = new Manifest();
+    
+    // I'm assuming that we use UTF-8 here, but the jar spec doesn't say.
+    BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+    
+    String line;
+    StringBuilder attribute = null;
+    
+    String namedAttribute = null;
+    
+    while ((line = reader.readLine()) != null) {
+      line = line.trim();
+      // if we get a blank line skip to the next one
+      if (line.length() == 0) continue;
+      if (line.charAt(0) == ' ' && attribute != null) {
+        // we have a continuation line, so add to the builder, ignoring the
+        // first character
+        attribute.append(line.substring(1));
+      } else if (attribute == null) {
+        attribute = new StringBuilder(line);
+      } else if (attribute != null) {
+        // We have fully parsed an attribute
+        int index = attribute.indexOf(":");
+        String attributeName = attribute.substring(0, index).trim();
+        // TODO cope with index + 1 being after the end of attribute
+        String attributeValue = attribute.substring(index + 1).trim();
+        
+        if ("Name".equals(attributeName)) {
+          man.getEntries().put(attributeValue, new Attributes());
+          namedAttribute = attributeValue;
+        } else {
+          if (namedAttribute == null) {
+            man.getMainAttributes().put(new Attributes.Name(attributeName), attributeValue);
+          } else {
+            man.getAttributes(namedAttribute).put(new Attributes.Name(attributeName), attributeValue);
+          }
+        }
+        
+        attribute = new StringBuilder(line);
+      }
+    }
+    
+    return man;
+  }
+  
+  /**
    * 
    * Splits a delimiter separated string, tolerating presence of non separator commas
    * within double quoted segments.
@@ -83,8 +147,8 @@ public class ManifestProcessor
         String tmp = packages[i++].trim();
         // if there is a odd number of " in a string, we need to append
         while (count(tmp, "\"") % 2 == 1) {
-          // check to see if we need to append the next package[i++]          
-            tmp = tmp + delimiter + packages[i++].trim();          
+          // check to see if we need to append the next package[i++]
+          tmp = tmp + delimiter + packages[i++].trim();
         }
         
         result.add(tmp);

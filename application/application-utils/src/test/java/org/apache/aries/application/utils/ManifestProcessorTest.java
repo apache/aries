@@ -39,9 +39,9 @@ import org.junit.Test;
 import org.osgi.framework.Version;
 
 import org.apache.aries.application.ApplicationMetadata;
-import org.apache.aries.application.ApplicationMetadataFactory;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.VersionRange;
+import org.apache.aries.application.impl.ApplicationMetadataManagerImpl;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
 
 public class ManifestProcessorTest
@@ -157,26 +157,25 @@ public class ManifestProcessorTest
   @Test
   public void testManifestMetadata() throws Exception
   {
-	Manifest mf = new Manifest(new FileInputStream(new File(appFolder,"/META-INF/APPLICATION.MF")));
-	ApplicationMetadata am = ApplicationMetadataFactory.getApplicationMetadata(mf);
-	assertNotNull(am);
-	
-	String appName = pairs.get("Application-Name");
-	assertEquals(am.getApplicationName(),appName);
+    ApplicationMetadataManagerImpl manager = new ApplicationMetadataManagerImpl();
+    ApplicationMetadata am = manager.parseApplication(new FileInputStream(new File(appFolder,"/META-INF/APPLICATION.MF")));
+    assertNotNull(am);
 
-	//"com.travel.reservation.web;version=\"[1.1.0,1.2.0)\",com.travel.reservation.business",
-	List<Content> contents = am.getApplicationContents();
-	for(Content content : contents){
-		if("com.travel.reservation.web".equals(content.getContentName())){
-			VersionRange vr = content.getVersion();
-			assertEquals(vr.getMinimumVersion(),new Version("1.1.0"));
-			assertEquals(vr.getMaximumVersion(),new Version("1.2.0"));
-		}else if("com.travel.reservation.business".equals(content.getContentName())){
-			VersionRange vr = content.getVersion();
-			assertNull(vr);		
-		}else fail("Unexepcted content name " + content.getContentName());
-	}
-  }  
-  
-  
+    String appName = pairs.get("Application-Name");
+    assertEquals(am.getApplicationName(),appName);
+
+    //"com.travel.reservation.web;version=\"[1.1.0,1.2.0)\",com.travel.reservation.business",
+    List<Content> contents = am.getApplicationContents();
+    for (Content content : contents){
+      if ("com.travel.reservation.web".equals(content.getContentName())){
+        VersionRange vr = content.getVersion();
+        assertEquals(vr.getMinimumVersion(),new Version("1.1.0"));
+        assertEquals(vr.getMaximumVersion(),new Version("1.2.0"));
+      } else if("com.travel.reservation.business".equals(content.getContentName())){
+        VersionRange vr = content.getVersion();
+        assertNull(vr);
+      } else 
+        fail("Unexepcted content name " + content.getContentName());
+    }
+  }
 }
