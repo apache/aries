@@ -36,8 +36,6 @@ public class VersionRangeImpl implements VersionRange
   private boolean minimumExclusive;
   /** True if the match is exclusive of the maximum version */
   private boolean maximumExclusive;
-  /** exact version */
-  private boolean exactVersion;
   /** A regexp to select the version */
   private static final Pattern versionCapture = Pattern.compile("\"?(.*?)\"?$");
   
@@ -47,7 +45,6 @@ public class VersionRangeImpl implements VersionRange
    */
   public VersionRangeImpl(String version) {
     this.version = version;
-    this.exactVersion = false;
     processVersionAttribute(this.version);
   }
   
@@ -56,9 +53,8 @@ public class VersionRangeImpl implements VersionRange
    * @param version             version for the verioninfo
    * @param exactVersion        whether this is an exact version
    */
-  public VersionRangeImpl(String version, boolean exactVersion) {
+  public VersionRangeImpl(String version, boolean exactVersion) {;
     this.version = version;
-    this.exactVersion = exactVersion;
     if (exactVersion) {
       processExactVersionAttribute(this.version);
     } else {
@@ -79,7 +75,7 @@ public class VersionRangeImpl implements VersionRange
  */
   public Version getExactVersion() {
     Version v = null;
-    if (this.exactVersion) {
+    if (isExactVersion()) {
       v = getMinimumVersion();
     } 
     return v;
@@ -138,10 +134,15 @@ public class VersionRangeImpl implements VersionRange
     if (maximumVersion == null) {
       maximumVersion = minimumVersion;
     }
+
     if (!minimumVersion.equals(maximumVersion)) {
       throw new IllegalArgumentException("Failed to parse " + version + " for the exact version. Could not parse " + version);
     }
-    
+
+    if (!!!isExactVersion()) {
+      throw new IllegalArgumentException("Failed to parse " + version + " for the exact version.");
+    }
+
     return success;
   }
   /**
@@ -179,7 +180,8 @@ public class VersionRangeImpl implements VersionRange
         }
       } else {
         try {
-          minimumVersion = new Version(versions.trim());
+          if (versions.trim().length() == 0) minimumVersion = new Version(0,0,0);
+          else minimumVersion = new Version(versions.trim());
           success = true;
         } catch (NumberFormatException nfe) {
           throw new IllegalArgumentException("Failed to parse " + version + ". Could not parse " + versions, nfe);
@@ -191,11 +193,26 @@ public class VersionRangeImpl implements VersionRange
     
     return success;
   }
-  
+
+  public boolean matches(Version version)
+  {
+    boolean result;
+    if (this.getMaximumVersion() == null) {
+      result = this.getMinimumVersion().compareTo(version) <= 0;
+    } else {
+      int minN = this.isMinimumExclusive() ? 0 : 1;
+      int maxN = this.isMaximumExclusive() ? 0 : 1;
+      
+      result = (this.getMinimumVersion().compareTo(version) < minN) &&
+               (version.compareTo(this.getMaximumVersion()) < maxN);
+    }
+    return result;
+  }
+
   /* (non-Javadoc)
  * @see org.apache.aries.application.impl.VersionRange#isExactVersion()
  */
   public boolean isExactVersion() {
-    return this.exactVersion;
+    return minimumVersion.equals(maximumVersion) && minimumExclusive == maximumExclusive && !!!minimumExclusive;
   }
 }
