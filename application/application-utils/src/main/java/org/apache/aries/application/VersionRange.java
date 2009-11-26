@@ -20,52 +20,56 @@ package org.apache.aries.application;
 
 import org.osgi.framework.Version;
 
-public interface VersionRange {
+public interface VersionRange
+{
+  /**
+   * this method returns the exact version from the versionInfo obj.
+   * this is used for DeploymentContent only to return a valid exact version
+   * otherwise, null is returned.
+   * @return
+   */
+  public abstract Version getExactVersion();
 
-	public abstract String toString();
+  /**
+   * get the maximum version
+   * @return    the maximum version
+   */
+  public abstract Version getMaximumVersion();
 
-	/**
-	 * this method returns the exact version from the versionInfo obj.
-	 * this is used for DeploymentContent only to return a valid exact version
-	 * otherwise, null is returned.
-	 * @return
-	 */
-	public abstract Version getExactVersion();
+  /**
+   * get the minimum version
+   * @return    the minimum version
+   */
+  public abstract Version getMinimumVersion();
 
-	/**
-	 * get the maximum version
-	 * @return    the maximum version
-	 */
-	public abstract Version getMaximumVersion();
+  /**
+   * is the maximum version exclusive
+   * @return  
+   */
+  public abstract boolean isMaximumExclusive();
 
-	/**
-	 * get the minimum version
-	 * @return    the minimum version
-	 */
-	public abstract Version getMinimumVersion();
+  /**
+   * is the maximum version unbounded
+   * @return
+   */
+  public abstract boolean isMaximumUnbounded();
 
-	/**
-	 * is the maximum version exclusive
-	 * @return  
-	 */
-	public abstract boolean isMaximumExclusive();
+  /**
+   * is the minimum version exclusive
+   * @return
+   */
+  public abstract boolean isMinimumExclusive();
 
-	/**
-	 * is the maximum version unbounded
-	 * @return
-	 */
-	public abstract boolean isMaximumUnbounded();
-
-	/**
-	 * is the minimum version exclusive
-	 * @return
-	 */
-	public abstract boolean isMinimumExclusive();
-
-	/**
-	 * check if the versioninfo is the exact version
-	 * @return
-	 */
-	public abstract boolean isExactVersion();
-
+  /**
+   * check if the versioninfo is the exact version
+   * @return
+   */
+  public abstract boolean isExactVersion();
+  /**
+   * This method tests to see if the provided version is inside this range.
+   * 
+   * @param version the version to test.
+   * @return        true if the version matches, false otherwise.
+   */
+  public boolean matches(Version version);
 }
