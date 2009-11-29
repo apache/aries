@@ -33,6 +33,8 @@ import javax.management.StandardMBean;
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
 import org.apache.aries.jmx.MBeanServiceTracker;
+import org.apache.aries.jmx.framework.FrameworkMBeanHandler;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -76,9 +78,10 @@ public class JMXAgentImpl implements JMXAgent {
      */
     public void start() {
         logger.log(LogService.LOG_INFO, "Starting JMX OSGi agent");
-        //MBeanHandler frameworkHandler = new FrameworkMBeanHandler(bc, logger);
-        //frameworkHandler.open();
-        //mbeansHandlers.add(frameworkHandler);
+        BundleContext bc = agentContext.getBundleContext();
+        MBeanHandler frameworkHandler = new FrameworkMBeanHandler(bc, logger);
+        frameworkHandler.open();
+        mbeansHandlers.add(frameworkHandler);
         mbeanServiceTracker = new MBeanServiceTracker(agentContext);
         mbeanServiceTracker.open();
     }
