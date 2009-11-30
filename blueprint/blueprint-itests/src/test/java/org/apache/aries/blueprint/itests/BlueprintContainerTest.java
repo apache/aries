@@ -127,7 +127,7 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
             // Bundles
             mavenBundle("org.apache.aries.blueprint", "aries-blueprint"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
-
+            mavenBundle("org.osgi", "org.osgi.compendium"),
 //            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
             equinox().version("3.5.0")
