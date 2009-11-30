@@ -106,6 +106,7 @@ public class PermissionAdminTest {
             encodedPermissions[i++] = info.getEncoded();
         }
         mbean.setDefaultPermissions(encodedPermissions);
+        Mockito.verify(permAdmin).setDefaultPermissions(permInfos);
     }
 
     @Test
@@ -119,6 +120,7 @@ public class PermissionAdminTest {
             encodedPermissions[i++] = info.getEncoded();
         }
         mbean.setPermissions("test", encodedPermissions);
+        Mockito.verify(permAdmin).setPermissions("test", permInfos);
     }
 
 }
