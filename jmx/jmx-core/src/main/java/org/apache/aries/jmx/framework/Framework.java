@@ -88,14 +88,25 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#installBundle(java.lang.String, java.lang.String)
      */
     public long installBundle(String location, String url) throws IOException {
-        InputStream inputStream;
+        InputStream inputStream = null;
         try {
-            inputStream = new URL(url).openStream();
+            inputStream = createStream(url);
             Bundle bundle = context.installBundle(location, inputStream);
             return bundle.getBundleId();
         } catch (BundleException e) {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException ioe) {
+
+                }
+            }
             throw new IOException("Can't install bundle with location" + location);
         }
+    }
+
+    public InputStream createStream(String url) throws IOException {
+        return new URL(url).openStream();
     }
 
     /**
@@ -170,12 +181,7 @@ public class Framework implements FrameworkMBean {
             try {
                 refreshPackages(bundleIdentifiers[i]);
             } catch (Throwable t) {
-                long[] completed = new long[i];
-                System.arraycopy(bundleIdentifiers, 0, completed, 0, i);
-                long[] remaining = new long[completed.length - i - 1];
-                System.arraycopy(bundleIdentifiers, i + 1, remaining, 0, remaining.length);
-                return new BatchActionResult(completed, t.toString(), remaining, bundleIdentifiers[i])
-                        .toCompositeData();
+                return createFailedBatchActionResult(bundleIdentifiers, i, t);
             }
         }
         return new BatchActionResult(bundleIdentifiers).toCompositeData();
@@ -241,12 +247,7 @@ public class Framework implements FrameworkMBean {
             try {
                 setBundleStartLevel(bundleIdentifiers[i], newlevels[i]);
             } catch (Throwable t) {
-                long[] completed = new long[i];
-                System.arraycopy(bundleIdentifiers, 0, completed, 0, i);
-                long[] remaining = new long[completed.length - i - 1];
-                System.arraycopy(bundleIdentifiers, i + 1, remaining, 0, remaining.length);
-                return new BatchActionResult(completed, t.toString(), remaining, bundleIdentifiers[i])
-                        .toCompositeData();
+                return createFailedBatchActionResult(bundleIdentifiers, i, t);
             }
         }
         return new BatchActionResult(bundleIdentifiers).toCompositeData();
@@ -304,12 +305,7 @@ public class Framework implements FrameworkMBean {
             try {
                 startBundle(bundleIdentifiers[i]);
             } catch (Throwable t) {
-                long[] completed = new long[i];
-                System.arraycopy(bundleIdentifiers, 0, completed, 0, i);
-                long[] remaining = new long[completed.length - i - 1];
-                System.arraycopy(bundleIdentifiers, i + 1, remaining, 0, remaining.length);
-                return new BatchActionResult(completed, t.toString(), remaining, bundleIdentifiers[i])
-                        .toCompositeData();
+                return createFailedBatchActionResult(bundleIdentifiers, i, t);
             }
         }
         return new BatchActionResult(bundleIdentifiers).toCompositeData();
@@ -340,12 +336,7 @@ public class Framework implements FrameworkMBean {
             try {
                 stopBundle(bundleIdentifiers[i]);
             } catch (Throwable t) {
-                long[] completed = new long[i];
-                System.arraycopy(bundleIdentifiers, 0, completed, 0, i);
-                long[] remaining = new long[completed.length - i - 1];
-                System.arraycopy(bundleIdentifiers, i + 1, remaining, 0, remaining.length);
-                return new BatchActionResult(completed, t.toString(), remaining, bundleIdentifiers[i])
-                        .toCompositeData();
+                return createFailedBatchActionResult(bundleIdentifiers, i, t);
             }
         }
         return new BatchActionResult(bundleIdentifiers).toCompositeData();
@@ -355,7 +346,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#uninstallBundle(long)
      */
     public void uninstallBundle(long bundleIdentifier) throws IOException {
-        Bundle bundle = context.getBundle(bundleIdentifier);
+        Bundle bundle = getBundle(bundleIdentifier);
         if (bundle != null) {
             try {
                 bundle.uninstall();
@@ -363,8 +354,6 @@ public class Framework implements FrameworkMBean {
                 throw new IOException("Failed to uninstall bundle with id " + bundleIdentifier);
             }
         }
-
-        throw new IllegalArgumentException("Can't find bundle with id " + bundleIdentifier);
 
     }
 
@@ -379,12 +368,7 @@ public class Framework implements FrameworkMBean {
             try {
                 uninstallBundle(bundleIdentifiers[i]);
             } catch (Throwable t) {
-                long[] completed = new long[i];
-                System.arraycopy(bundleIdentifiers, 0, completed, 0, i);
-                long[] remaining = new long[completed.length - i - 1];
-                System.arraycopy(bundleIdentifiers, i + 1, remaining, 0, remaining.length);
-                return new BatchActionResult(completed, t.toString(), remaining, bundleIdentifiers[i])
-                        .toCompositeData();
+                return createFailedBatchActionResult(bundleIdentifiers, i, t);
             }
         }
         return new BatchActionResult(bundleIdentifiers).toCompositeData();
@@ -408,10 +392,10 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#updateBundle(long, java.lang.String)
      */
     public void updateBundle(long bundleIdentifier, String url) throws IOException {
-        Bundle bundle = getBundle(0);
+        Bundle bundle = getBundle(bundleIdentifier);
         InputStream inputStream = null;
         try {
-            inputStream = new URL(url).openStream();
+            inputStream = createStream(url);
             bundle.update(inputStream);
         } catch (BundleException be) {
             if (inputStream != null) {
@@ -437,12 +421,7 @@ public class Framework implements FrameworkMBean {
             try {
                 updateBundle(bundleIdentifiers[i]);
             } catch (Throwable t) {
-                long[] completed = new long[i];
-                System.arraycopy(bundleIdentifiers, 0, completed, 0, i);
-                long[] remaining = new long[completed.length - i - 1];
-                System.arraycopy(bundleIdentifiers, i + 1, remaining, 0, remaining.length);
-                return new BatchActionResult(completed, t.toString(), remaining, bundleIdentifiers[i])
-                        .toCompositeData();
+                return createFailedBatchActionResult(bundleIdentifiers, i, t);
             }
         }
         return new BatchActionResult(bundleIdentifiers).toCompositeData();
@@ -463,12 +442,7 @@ public class Framework implements FrameworkMBean {
             try {
                 updateBundle(bundleIdentifiers[i], urls[i]);
             } catch (Throwable t) {
-                long[] completed = new long[i];
-                System.arraycopy(bundleIdentifiers, 0, completed, 0, i);
-                long[] remaining = new long[completed.length - i - 1];
-                System.arraycopy(bundleIdentifiers, i + 1, remaining, 0, remaining.length);
-                return new BatchActionResult(completed, t.toString(), remaining, bundleIdentifiers[i])
-                        .toCompositeData();
+                return createFailedBatchActionResult(bundleIdentifiers, i, t);
             }
         }
         return new BatchActionResult(bundleIdentifiers).toCompositeData();
@@ -487,6 +461,22 @@ public class Framework implements FrameworkMBean {
 
     }
 
+    /**
+     * Create {@link BatchActionResult}, when the operation fail.
+     * 
+     * @param bundleIdentifiers bundle ids for operation.
+     * @param i index of loop pointing on which operation fails.
+     * @param t Throwable thrown by failed operation.
+     * @return created BatchActionResult instance.
+     */
+    private CompositeData createFailedBatchActionResult(long[] bundleIdentifiers, int i, Throwable t) {
+        long[] completed = new long[i];
+        System.arraycopy(bundleIdentifiers, 0, completed, 0, i);
+        long[] remaining = new long[bundleIdentifiers.length - i - 1];
+        System.arraycopy(bundleIdentifiers, i + 1, remaining, 0, remaining.length);
+        return new BatchActionResult(completed, t.toString(), remaining, bundleIdentifiers[i]).toCompositeData();
+    }
+    
     /**
      * Gets bundle with provided bundleId.
      * 
