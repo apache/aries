@@ -34,6 +34,7 @@ import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
 import org.apache.aries.jmx.MBeanServiceTracker;
 import org.apache.aries.jmx.framework.FrameworkMBeanHandler;
+import org.apache.aries.jmx.framework.PackageStateMBeanHandler;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
@@ -82,6 +83,9 @@ public class JMXAgentImpl implements JMXAgent {
         MBeanHandler frameworkHandler = new FrameworkMBeanHandler(bc, logger);
         frameworkHandler.open();
         mbeansHandlers.add(frameworkHandler);
+        MBeanHandler packageStateHandler = new PackageStateMBeanHandler(bc, logger);
+        packageStateHandler.open();
+        mbeansHandlers.add(packageStateHandler);
         mbeanServiceTracker = new MBeanServiceTracker(agentContext);
         mbeanServiceTracker.open();
     }
