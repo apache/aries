@@ -27,7 +27,7 @@
     <name>Apache Aries Blueprint Bundle</name>
     <description>
         This bundle contains the standalone implementation along with the API.
-        It's composed of the blueprint-api, blueprint-core and blueprint-cm modules.
+        It's composed of the blueprint-core and blueprint-cm modules.
     </description>
 
     <dependencies>
@@ -75,9 +75,6 @@
                             *
                         </Import-Package>
                         <Export-Package>
-                            =org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.aries.blueprint,org.apache.aries.blueprint.ext,org.apache.aries.blueprint.mutable";version="1.0",
-                            org.osgi.service.blueprint.container;version="1.0",
-                            org.osgi.service.blueprint.reflect;version="1.0",
                             org.apache.aries.blueprint;version="${pom.version}",
                             org.apache.aries.blueprint.ext;version="${pom.version}",
                             org.apache.aries.blueprint.mutable;version="${pom.version}"
@@ -116,18 +113,11 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.apache.aries.blueprint:aries-blueprint-api</include>
                                     <include>org.apache.aries.blueprint:aries-blueprint-core</include>
                                     <include>org.apache.aries.blueprint:aries-blueprint-cm</include>
                                 </includes>
                             </artifactSet>
                             <filters>
-                                <filter>
-                                    <artifact>org.apache.aries.blueprint:aries-blueprint-api</artifact>
-                                    <excludes>
-                                        <exclude>org/**</exclude>
-                                    </excludes>
-                                </filter>
                                 <filter>
                                     <artifact>org.apache.aries.blueprint:aries-blueprint-core</artifact>
                                     <excludes>
@@ -171,11 +161,6 @@
                                 </goals>
                                 <configuration>
                                     <artifactItems>
-                                        <artifactItem>
-                                            <groupId>org.apache.aries.blueprint</groupId>
-                                            <artifactId>aries-blueprint-api</artifactId>
-                                            <classifier>sources</classifier>
-                                        </artifactItem>
                                         <artifactItem>
                                             <groupId>org.apache.aries.blueprint</groupId>
                                             <artifactId>aries-blueprint-core</artifactId>
