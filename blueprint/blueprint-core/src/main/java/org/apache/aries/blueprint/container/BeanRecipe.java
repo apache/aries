@@ -206,6 +206,16 @@ public class BeanRecipe extends AbstractRecipe {
         if (factory != null) {
             // look for instance method on factory object
             Object factoryObj = factory.create();
+            
+            // If the factory is a service reference, we need to get hold of the actual proxy for the service
+            if (factoryObj instanceof ReferenceRecipe.ServiceProxyWrapper) {
+                try {
+                    factoryObj = ((ReferenceRecipe.ServiceProxyWrapper) factoryObj).convert(new ReifiedType(Object.class));
+                } catch (Exception e) {
+                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getType(), getRealCause(e));
+                }
+            }
+            
             // Map of matching methods
             Map<Method, List<Object>> matches = findMatchingMethods(factoryObj.getClass(), factoryMethod, true, args, argTypes);
             if (matches.size() == 1) {
@@ -213,7 +223,7 @@ public class BeanRecipe extends AbstractRecipe {
                     Map.Entry<Method, List<Object>> match = matches.entrySet().iterator().next();
                     instance = invoke(match.getKey(), factoryObj, match.getValue().toArray());
                 } catch (Throwable e) {
-                    throw new ComponentDefinitionException("Error when instanciating bean " + getName() + " of class " + getType(), getRealCause(e));
+                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getType(), getRealCause(e));
                 }
             } else if (matches.size() == 0) {
                 throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + factoryObj.getClass().getName() + " for arguments " + args + " when instanciating bean " + getName());
