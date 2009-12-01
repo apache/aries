@@ -95,17 +95,17 @@ public class FrameworkTest {
 
     @Test
     public void testInstallBundleStringString() throws Exception {
-        Framework partialMock = new FrameworkPartialMock(context, startLevel, admin);
+        // Framework partialMock = new FrameworkPartialMock(context, startLevel, admin);
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.installBundle(Mockito.anyString(), Mockito.any(InputStream.class))).thenReturn(bundle);
         Mockito.when(bundle.getBundleId()).thenReturn(new Long(2));
-        Framework spiedMBean = Mockito.spy(partialMock);
+        Framework spiedMBean = Mockito.spy(mbean);
         InputStream stream = Mockito.mock(InputStream.class);
-        Mockito.when(spiedMBean.createStream("test.jar")).thenReturn(stream);
+        Mockito.doReturn(stream).when(spiedMBean).createStream("test.jar");
         long bundleId = spiedMBean.installBundle("file:test.jar", "test.jar");
         Assert.assertEquals(2, bundleId);
         Mockito.reset(context);
-        Mockito.when(spiedMBean.createStream(Mockito.anyString())).thenReturn(stream);
+        Mockito.doReturn(stream).when(spiedMBean).createStream(Mockito.anyString());
         Mockito.when(context.installBundle(Mockito.anyString(), Mockito.any(InputStream.class))).thenThrow(
                 new BundleException("location doesn't exist"));
 
@@ -146,13 +146,12 @@ public class FrameworkTest {
 
     @Test
     public void testInstallBundlesStringArrayStringArray() throws Exception {
-        Framework partialMock = new FrameworkPartialMock(context, startLevel, admin);
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.installBundle(Mockito.anyString(), Mockito.any(InputStream.class))).thenReturn(bundle);
         Mockito.when(bundle.getBundleId()).thenReturn(new Long(2));
-        Framework spiedMBean = Mockito.spy(partialMock);
+        Framework spiedMBean = Mockito.spy(mbean);
         InputStream stream = Mockito.mock(InputStream.class);
-        Mockito.when(spiedMBean.createStream(Mockito.anyString())).thenReturn(stream);
+        Mockito.doReturn(stream).when(spiedMBean).createStream(Mockito.anyString());
         CompositeData data = spiedMBean.installBundles(new String[] { "file:test.jar" }, new String[] { "test.jar" });
         Assert.assertNotNull(data);
         BatchInstallResult batch = BatchInstallResult.from(data);
@@ -296,16 +295,16 @@ public class FrameworkTest {
         Mockito.when(context.getBundle(5)).thenReturn(bundle);
         mbean.startBundle(5);
         Mockito.verify(bundle).start();
-        
+
         Mockito.reset(context);
         Mockito.when(context.getBundle(6)).thenReturn(bundle);
         Mockito.doThrow(new BundleException("")).when(bundle).start();
-        
+
         try {
             mbean.startBundle(6);
             Assert.fail("Shouldn't go to this stage, BundleException was thrown");
         } catch (IOException ioe) {
-            //expected
+            // expected
         }
     }
 
@@ -400,10 +399,9 @@ public class FrameworkTest {
 
     @Test
     public void testUpdateBundleLongString() throws Exception {
-        Framework partialMock = new FrameworkPartialMock(context, startLevel, admin);
-        Framework spiedMBean = Mockito.spy(partialMock);
+        Framework spiedMBean = Mockito.spy(mbean);
         InputStream stream = Mockito.mock(InputStream.class);
-        Mockito.when(spiedMBean.createStream(Mockito.anyString())).thenReturn(stream);
+        Mockito.doReturn(stream).when(spiedMBean).createStream(Mockito.anyString());
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.getBundle(5)).thenReturn(bundle);
         spiedMBean.updateBundle(5, "file:test.jar");
@@ -463,10 +461,9 @@ public class FrameworkTest {
 
     @Test
     public void testUpdateBundlesLongArrayStringArray() throws Exception {
-        Framework partialMock = new FrameworkPartialMock(context, startLevel, admin);
-        Framework spiedMBean = Mockito.spy(partialMock);
+        Framework spiedMBean = Mockito.spy(mbean);
         InputStream stream = Mockito.mock(InputStream.class);
-        Mockito.when(spiedMBean.createStream(Mockito.anyString())).thenReturn(stream);
+        Mockito.doReturn(stream).when(spiedMBean).createStream(Mockito.anyString());
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.getBundle(5)).thenReturn(bundle);
         CompositeData data = spiedMBean.updateBundles(new long[] { 5 }, new String[] { "file:test.jar" });
@@ -491,20 +488,6 @@ public class FrameworkTest {
         Mockito.when(context.getBundle(0)).thenReturn(bundle);
         mbean.restartFramework();
         Mockito.verify(bundle).update();
-    }
-
-    /**
-     * Mocking {@link Framework} method createStream.
-     */
-    private class FrameworkPartialMock extends Framework {
-
-        public FrameworkPartialMock(BundleContext context, StartLevel startLevel, PackageAdmin packageAdmin) {
-            super(context, startLevel, packageAdmin);
-        }
-
-        public InputStream createStream(String url) throws IOException {
-            return null;
-        }
     }
 
 }
