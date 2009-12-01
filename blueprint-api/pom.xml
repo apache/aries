@@ -22,7 +22,7 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aries-blueprint-api</artifactId>
+    <artifactId>org.apache.aries.blueprint.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint API</name>
     <description>

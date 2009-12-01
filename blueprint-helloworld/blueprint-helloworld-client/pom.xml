@@ -22,8 +22,7 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>blueprint-helloworldclient</artifactId>
-    <groupId>org.apache.aries.blueprint.blueprint-helloworld</groupId>
+    <artifactId>org.apache.aries.blueprint.helloworld.client</artifactId>
     <name>Apache Aries Blueprint HelloWorldClient</name>
     <packaging>bundle</packaging>
     <description>Example blueprint hello world client application.</description>
@@ -37,7 +36,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.blueprint-helloworldclient</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                     </instructions>
                 </configuration>
             </plugin>
@@ -45,8 +44,8 @@
     </build>
     <dependencies>
         <dependency>
-                <groupId>org.apache.aries.blueprint.blueprint-helloworld</groupId>
-                <artifactId>blueprint-helloworldserver</artifactId>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>org.apache.aries.blueprint.helloworld.server</artifactId>
                 <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
     </dependencies>

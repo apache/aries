@@ -22,7 +22,7 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aries-blueprint</artifactId>
+    <artifactId>org.apache.aries.blueprint</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint Bundle</name>
     <description>
@@ -33,11 +33,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>aries-blueprint-core</artifactId>
+            <artifactId>org.apache.aries.blueprint.core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>aries-blueprint-cm</artifactId>
+            <artifactId>org.apache.aries.blueprint.cm</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
@@ -113,19 +113,19 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.apache.aries.blueprint:aries-blueprint-core</include>
-                                    <include>org.apache.aries.blueprint:aries-blueprint-cm</include>
+                                    <include>org.apache.aries.blueprint:org.apache.aries.blueprint.core</include>
+                                    <include>org.apache.aries.blueprint:org.apache.aries.blueprint.cm</include>
                                 </includes>
                             </artifactSet>
                             <filters>
                                 <filter>
-                                    <artifact>org.apache.aries.blueprint:aries-blueprint-core</artifact>
+                                    <artifact>org.apache.aries.blueprint:org.apache.aries.blueprint.core</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
                                 </filter>
                                 <filter>
-                                    <artifact>org.apache.aries.blueprint:aries-blueprint-cm</artifact>
+                                    <artifact>org.apache.aries.blueprint:org.apache.aries.blueprint.cm</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
@@ -163,12 +163,12 @@
                                     <artifactItems>
                                         <artifactItem>
                                             <groupId>org.apache.aries.blueprint</groupId>
-                                            <artifactId>aries-blueprint-core</artifactId>
+                                            <artifactId>org.apache.aries.blueprint.core</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                         <artifactItem>
                                             <groupId>org.apache.aries.blueprint</groupId>
-                                            <artifactId>aries-blueprint-cm</artifactId>
+                                            <artifactId>org.apache.aries.blueprint.cm</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                     </artifactItems>

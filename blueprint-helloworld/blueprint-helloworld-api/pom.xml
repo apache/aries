@@ -22,8 +22,7 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>blueprint-helloworld-api</artifactId>
-    <groupId>org.apache.aries.blueprint.blueprint-helloworld</groupId>
+    <artifactId>org.apache.aries.blueprint.helloworld.api</artifactId>
     <name>Apache Aries Blueprint HelloWorld Api</name>
     <packaging>bundle</packaging>
     <description>Example blueprint hello world application - api</description>
@@ -37,8 +36,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>
-        ${pom.groupId}.blueprint-helloworld-api</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                     </instructions>
                 </configuration>
             </plugin>
