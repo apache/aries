@@ -59,22 +59,22 @@
         <dependencies>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>aries-blueprint-api</artifactId>
+                <artifactId>org.apache.aries.blueprint.api</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>aries-blueprint-core</artifactId>
+                <artifactId>org.apache.aries.blueprint.core</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>aries-blueprint-cm</artifactId>
+                <artifactId>org.apache.aries.blueprint.cm</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>aries-blueprint</artifactId>
+                <artifactId>org.apache.aries.blueprint</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
