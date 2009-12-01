@@ -27,52 +27,60 @@ import org.osgi.service.framework.CompositeBundle;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
-public abstract class AriesBundleTrackerCustomizer implements BundleTrackerCustomizer {
-  
-  public AriesBundleTrackerCustomizer() {
-  }
-  
-  public Object addingBundle(Bundle b, BundleEvent event)
-  {
-    customizedProcessBundle(b, event, Bundle.STARTING | Bundle.STOPPING);
-    return null;   
-  }
-  
-  public void modifiedBundle(Bundle b, BundleEvent event, Object arg2)
-  {
-    // we are only interested in uninstalled bundle state for composite bundles
-    // as we need to remove the bt off the bt factory
-    if (event.getType() == BundleEvent.STOPPING) {
-      customizedProcessBundle(b, event, 0);
-    }
-  }
+public abstract class AriesBundleTrackerCustomizer implements
+        BundleTrackerCustomizer {
 
-  public void removedBundle(Bundle b, BundleEvent event, Object arg2)
-  {  
-  }
-  
-  protected void customizedProcessBundle(Bundle b, BundleEvent event, int stateMask) {
-    if (b instanceof CompositeBundle) {
-      // check if the compositeBundle is already tracked in the BundleTrackerFactory
-      String bundleScope = b.getSymbolicName() + "_" + b.getVersion().toString();
-      List<BundleTracker> btList = BundleTrackerFactory.getBundleTrackerList(bundleScope);
-      
-      if (event.getType() == BundleEvent.STOPPING) {
-        // if CompositeBundle is being stopped, let's remove the bundle tracker(s) associated with the composite bundle
-        if (btList != null) {
-          // unregister the bundlescope off the factory and close bundle trackers 
-          BundleTrackerFactory.unregisterAndCloseBundleTracker(bundleScope);
-        }
-      } else if (event.getType() == BundleEvent.STARTING) {
-        // let's process each of the bundle in the CompositeBundle
-        CompositeBundle cb = (CompositeBundle)b;
-        BundleContext compositeBundleContext = cb.getCompositeFramework().getBundleContext();
-        
-        // let's track each of the bundle in the CompositeBundle
-        BundleTracker bt = new BundleTracker(compositeBundleContext, stateMask, this);
-        bt.open();
-        BundleTrackerFactory.registerBundleTracker(bundleScope, bt);
-      }
+    public AriesBundleTrackerCustomizer() {
     }
-  }  
+
+    public Object addingBundle(Bundle b, BundleEvent event) {
+        customizedProcessBundle(b, event, Bundle.STARTING | Bundle.STOPPING);
+        return null;
+    }
+
+    public void modifiedBundle(Bundle b, BundleEvent event, Object arg2) {
+        // we are only interested in uninstalled bundle state for composite
+        // bundles
+        // as we need to remove the bt off the bt factory
+        if (event.getType() == BundleEvent.STOPPING) {
+            customizedProcessBundle(b, event, 0);
+        }
+    }
+
+    public void removedBundle(Bundle b, BundleEvent event, Object arg2) {
+    }
+
+    protected void customizedProcessBundle(Bundle b, BundleEvent event,
+            int stateMask) {
+        if (b instanceof CompositeBundle) {
+            // check if the compositeBundle is already tracked in the
+            // BundleTrackerFactory
+            String bundleScope = b.getSymbolicName() + "_"
+                    + b.getVersion().toString();
+            List<BundleTracker> btList = BundleTrackerFactory
+                    .getBundleTrackerList(bundleScope);
+
+            if (event.getType() == BundleEvent.STOPPING) {
+                // if CompositeBundle is being stopped, let's remove the bundle
+                // tracker(s) associated with the composite bundle
+                if (btList != null) {
+                    // unregister the bundlescope off the factory and close
+                    // bundle trackers
+                    BundleTrackerFactory
+                            .unregisterAndCloseBundleTracker(bundleScope);
+                }
+            } else if (event.getType() == BundleEvent.STARTING) {
+                // let's process each of the bundle in the CompositeBundle
+                CompositeBundle cb = (CompositeBundle) b;
+                BundleContext compositeBundleContext = cb
+                        .getCompositeFramework().getBundleContext();
+
+                // let's track each of the bundle in the CompositeBundle
+                BundleTracker bt = new BundleTracker(compositeBundleContext,
+                        stateMask, this);
+                bt.open();
+                BundleTrackerFactory.registerBundleTracker(bundleScope, bt);
+            }
+        }
+    }
 }
