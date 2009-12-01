@@ -29,69 +29,78 @@ import org.osgi.util.tracker.BundleTracker;
 /**
  * this is the factory for BundleTracker
  */
-public class BundleTrackerFactory
-{
-  private static ConcurrentHashMap<String, List<BundleTracker>> btMap = new ConcurrentHashMap<String, List<BundleTracker>>();
+public class BundleTrackerFactory {
+    private static ConcurrentHashMap<String, List<BundleTracker>> btMap = new ConcurrentHashMap<String, List<BundleTracker>>();
 
-  /**
-   * get bundle tracker based on bundle name and version
-   * @param bundleScope        composite bundle's - SymbolicName_Version
-   * @return                   the list of bundle tracker associated with the bundle scope
-   */
-  public static List<BundleTracker> getBundleTrackerList(String bundleScope)
-  {
-    return (List<BundleTracker>) btMap.get(bundleScope);
-  }
-  
-  /**
-   * get bundle tracker based on composite bundle's symbolicName and version
-   * @param bundleSymbolicName  composite bundle's symbolicName 
-   * @param bundleVersion       composite bundle's version
-   * @return                    the list of bundle tracker associated with the bundle scope
-   */
-  public static List<BundleTracker> getBundleTrackerList(String symbolicName, Version version)
-  {
-    return (List<BundleTracker>) btMap.get(symbolicName + "_" + version.toString());
-  }
-
-  /**
-   * get all bundle tracker registered in this factory
-   * @return
-   */
-  public static Collection<List<BundleTracker>> getAllBundleTracker()
-  {
-    return btMap.values();
-  }
-  
-  /**
-   * register the bundle tracker
-   * @param bundleScope    composite bundle's SymbolicName_Version
-   * @param bt          the bundle tracker to be registered
-   */
-  public static void registerBundleTracker(String bundleScope, BundleTracker bt)
-  {
-    List<BundleTracker> list = btMap.get(bundleScope);
-    if (list == null) {
-      list = new ArrayList<BundleTracker>();
-    } 
-    list.add(bt);
-    btMap.putIfAbsent(bundleScope, list);
-  }
-  
-  /**
-   * unregister and close the bundle tracker(s) associated with composite bundle's - SymbolicName_Version
-   * @param bundleScope  composite bundle's - SymbolicName_Version
-   */
-  public static void unregisterAndCloseBundleTracker(String bundleScope)
-  {
-    List<BundleTracker> list = btMap.get(bundleScope);
-    if (list == null) {
-      return;
-    } else {
-      for (BundleTracker bt : list) {
-        bt.close();
-      }
+    /**
+     * get bundle tracker based on bundle name and version
+     * 
+     * @param bundleScope
+     *            composite bundle's - SymbolicName_Version
+     * @return the list of bundle tracker associated with the bundle scope
+     */
+    public static List<BundleTracker> getBundleTrackerList(String bundleScope) {
+        return (List<BundleTracker>) btMap.get(bundleScope);
     }
-    btMap.remove(bundleScope);
-  }
+
+    /**
+     * get bundle tracker based on composite bundle's symbolicName and version
+     * 
+     * @param bundleSymbolicName
+     *            composite bundle's symbolicName
+     * @param bundleVersion
+     *            composite bundle's version
+     * @return the list of bundle tracker associated with the bundle scope
+     */
+    public static List<BundleTracker> getBundleTrackerList(String symbolicName,
+            Version version) {
+        return (List<BundleTracker>) btMap.get(symbolicName + "_"
+                + version.toString());
+    }
+
+    /**
+     * get all bundle tracker registered in this factory
+     * 
+     * @return
+     */
+    public static Collection<List<BundleTracker>> getAllBundleTracker() {
+        return btMap.values();
+    }
+
+    /**
+     * register the bundle tracker
+     * 
+     * @param bundleScope
+     *            composite bundle's SymbolicName_Version
+     * @param bt
+     *            the bundle tracker to be registered
+     */
+    public static void registerBundleTracker(String bundleScope,
+            BundleTracker bt) {
+        List<BundleTracker> list = btMap.get(bundleScope);
+        if (list == null) {
+            list = new ArrayList<BundleTracker>();
+        }
+        list.add(bt);
+        btMap.putIfAbsent(bundleScope, list);
+    }
+
+    /**
+     * unregister and close the bundle tracker(s) associated with composite
+     * bundle's - SymbolicName_Version
+     * 
+     * @param bundleScope
+     *            composite bundle's - SymbolicName_Version
+     */
+    public static void unregisterAndCloseBundleTracker(String bundleScope) {
+        List<BundleTracker> list = btMap.get(bundleScope);
+        if (list == null) {
+            return;
+        } else {
+            for (BundleTracker bt : list) {
+                bt.close();
+            }
+        }
+        btMap.remove(bundleScope);
+    }
 }
