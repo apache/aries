@@ -42,7 +42,7 @@
         <module>jndi</module>
         <module>transaction</module>
         <module>application</module>
-		<module>jmx</module>
+        <module>jmx</module>
     </modules>
 
 </project>
