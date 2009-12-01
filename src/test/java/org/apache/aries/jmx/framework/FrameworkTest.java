@@ -95,7 +95,6 @@ public class FrameworkTest {
 
     @Test
     public void testInstallBundleStringString() throws Exception {
-        // Framework partialMock = new FrameworkPartialMock(context, startLevel, admin);
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.installBundle(Mockito.anyString(), Mockito.any(InputStream.class))).thenReturn(bundle);
         Mockito.when(bundle.getBundleId()).thenReturn(new Long(2));
