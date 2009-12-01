@@ -58,7 +58,7 @@
         </dependency>
        <dependency>
            <groupId>org.apache.aries.blueprint</groupId>
-           <artifactId>aries-blueprint-api</artifactId>
+           <artifactId>org.apache.aries.blueprint.api</artifactId>
        </dependency>
     </dependencies>
 </project>

@@ -144,7 +144,7 @@ public class TestReferences extends AbstractIntegrationTest {
             systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 
             // Bundles
-            mavenBundle("org.apache.aries.blueprint", "aries-blueprint"),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample"),
             mavenBundle("org.osgi", "org.osgi.compendium"),
 
