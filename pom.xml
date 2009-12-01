@@ -39,6 +39,18 @@
           <scope>provided</scope>
       </dependency>
       <dependency>
+          <groupId>org.osgi</groupId>
+          <artifactId>org.osgi.compendium</artifactId>
+          <version>4.2.0</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.eclipse</groupId>
+          <artifactId>osgi</artifactId>
+          <version>3.5.0.v20090520</version>
+          <scope>provided</scope>
+      </dependency>      
+      <dependency>
           <groupId>org.apache.aries.testsupport</groupId>
           <artifactId>aries-testsupport-unit</artifactId>
           <version>${version}</version>
@@ -62,9 +74,11 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
-                            org.apache.aries.util;version="${pom.version}"
+                            org.apache.aries.util*;version="${pom.version}"
                         </Export-Package>
-                        <Import-Package>!org.apache.aries.util*,*</Import-Package>
+                        <!--  let's make org.osgi.service.framework optional as this is proposed API 
+                        may not be avail depends on the OSGi framework -->
+                        <Import-Package>!org.apache.aries.util*,org.osgi.service.framework;resolution:=optional,*</Import-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
