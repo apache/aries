@@ -24,7 +24,7 @@
     <version>1.0.0-incubating-SNAPSHOT</version>
   </parent>
 
-  <artifactId>aries-blueprint-cm</artifactId>
+  <artifactId>org.apache.aries.blueprint.cm</artifactId>
   <packaging>bundle</packaging>
   <name>Apache Aries Blueprint CM</name>
   <description>
@@ -34,7 +34,7 @@
   <dependencies>
       <dependency>
           <groupId>org.apache.aries.blueprint</groupId>
-          <artifactId>aries-blueprint-core</artifactId>
+          <artifactId>org.apache.aries.blueprint.core</artifactId>
       </dependency>
       <dependency>
           <groupId>org.osgi</groupId>
