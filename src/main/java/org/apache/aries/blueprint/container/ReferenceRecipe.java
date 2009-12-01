@@ -32,6 +32,7 @@ import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
+import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,7 +163,8 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
 
     private Object getService() throws InterruptedException {
         synchronized (monitor) {
-            if (isStarted() && trackedServiceReference == null && metadata.getTimeout() > 0) {
+            if (isStarted() && trackedServiceReference == null && metadata.getTimeout() > 0
+                    && metadata.getAvailability() == ServiceReferenceMetadata.AVAILABILITY_MANDATORY) {
                 blueprintContainer.getEventDispatcher().blueprintEvent(new BlueprintEvent(BlueprintEvent.WAITING, blueprintContainer.getBundleContext().getBundle(), blueprintContainer.getExtenderBundle(), new String[] { getOsgiFilter() }));
                 monitor.wait(metadata.getTimeout());
             }
