@@ -146,7 +146,6 @@ public class Framework implements FrameworkMBean {
         }
         long[] ids = new long[locations.length];
         for (int i = 0; i < locations.length; i++) {
-            // check index
             try {
                 long id = installBundle(locations[i], urls[i]);
                 ids[i] = id;
@@ -284,7 +283,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#startBundle(long)
      */
     public void startBundle(long bundleIdentifier) throws IOException {
-        Bundle bundle = context.getBundle(bundleIdentifier);
+        Bundle bundle = getBundle(bundleIdentifier);
         if (bundle != null) {
             try {
                 bundle.start();
@@ -315,7 +314,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#stopBundle(long)
      */
     public void stopBundle(long bundleIdentifier) throws IOException {
-        Bundle bundle = context.getBundle(bundleIdentifier);
+        Bundle bundle = getBundle(bundleIdentifier);
         if (bundle != null) {
             try {
                 bundle.stop();
@@ -414,9 +413,9 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#updateBundles(long[])
      */
     public CompositeData updateBundles(long[] bundleIdentifiers) throws IOException {
-        if(bundleIdentifiers == null){
-            return new BatchActionResult("Failed to update bundles, bundle id's can't be null").toCompositeData(); 
-         }
+        if (bundleIdentifiers == null) {
+            return new BatchActionResult("Failed to update bundles, bundle id's can't be null").toCompositeData();
+        }
         for (int i = 0; i < bundleIdentifiers.length; i++) {
             try {
                 updateBundle(bundleIdentifiers[i]);
