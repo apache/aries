@@ -38,6 +38,10 @@
           <artifactId>org.apache.aries.blueprint.api</artifactId>
       </dependency>
       <dependency>
+          <groupId>org.apache.aries</groupId>
+          <artifactId>org.apache.aries.util</artifactId>
+      </dependency>
+      <dependency>
           <groupId>org.osgi</groupId>
           <artifactId>org.osgi.core</artifactId>
           <scope>provided</scope>
@@ -88,7 +92,7 @@
                         <Export-Package>
                             org.apache.aries.blueprint*;version="${pom.version}"
                         </Export-Package>
-                        <Import-Package>!org.apache.aries.blueprint*,*</Import-Package>
+                        <Import-Package>!org.apache.aries.blueprint*,org.apache.aries.util.tracker;resolution:=optional,*</Import-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
