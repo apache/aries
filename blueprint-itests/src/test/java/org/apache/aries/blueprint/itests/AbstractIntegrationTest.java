@@ -18,6 +18,18 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.text.SimpleDateFormat;
+import java.util.Currency;
+
+import org.apache.aries.blueprint.sample.Bar;
+import org.apache.aries.blueprint.sample.Foo;
 import org.ops4j.pax.exam.CoreOptions;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
@@ -97,7 +109,6 @@ public abstract class AbstractIntegrationTest {
 
     protected Bundle installBundle(String groupId, String artifactId) throws Exception {
         MavenArtifactProvisionOption mvnUrl = mavenBundle(groupId, artifactId);
-        System.out.println("***linsun: mvnUrl.getURL() " + mvnUrl.getURL());
         return bundleContext.installBundle(mvnUrl.getURL());
     }
 
@@ -128,4 +139,60 @@ public abstract class AbstractIntegrationTest {
 
         return options;
     }
+    
+    protected void testBlueprintContainer(Bundle bundle) throws Exception {
+        testBlueprintContainer(bundleContext, bundle);
+    }
+    
+    
+    protected void testBlueprintContainer(BundleContext bc, Bundle bundle) throws Exception {
+        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle(
+                bc == null ? bundleContext : bc, "org.apache.aries.blueprint.sample",
+                5000);
+        assertNotNull(blueprintContainer);
+
+        Object obj = blueprintContainer.getComponentInstance("bar");
+        assertNotNull(obj);
+        assertEquals(Bar.class, obj.getClass());
+        Bar bar = (Bar) obj;
+        assertNotNull(bar.getContext());
+        assertEquals("Hello FooBar", bar.getValue());
+        assertNotNull(bar.getList());
+        assertEquals(2, bar.getList().size());
+        assertEquals("a list element", bar.getList().get(0));
+        assertEquals(Integer.valueOf(5), bar.getList().get(1));
+        obj = blueprintContainer.getComponentInstance("foo");
+        assertNotNull(obj);
+        assertEquals(Foo.class, obj.getClass());
+        Foo foo = (Foo) obj;
+        assertEquals(5, foo.getA());
+        assertEquals(10, foo.getB());
+        assertSame(bar, foo.getBar());
+        assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
+        assertEquals(new SimpleDateFormat("yyyy.MM.dd").parse("2009.04.17"),
+                foo.getDate());
+
+        assertTrue(foo.isInitialized());
+        assertFalse(foo.isDestroyed());
+
+        obj = getOsgiService(bc == null ? bundleContext : bc, Foo.class, null, 5000);
+        assertNotNull(obj);
+        assertSame(foo, obj);
+
+        bundle.stop();
+
+        Thread.sleep(1000);
+
+        try {
+            blueprintContainer = getBlueprintContainerForBundle(bc == null ? bundleContext : bc, 
+                    "org.apache.aries.blueprint.sample", 1);
+            fail("BlueprintContainer should have been unregistered");
+        } catch (Exception e) {
+            // Expected, as the module container should have been unregistered
+        }
+
+        assertTrue(foo.isInitialized());
+        assertTrue(foo.isDestroyed());
+    }
+
 }
