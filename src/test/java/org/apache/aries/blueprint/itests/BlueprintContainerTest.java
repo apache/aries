@@ -59,50 +59,9 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
         assertNotNull(bundle);
 
         bundle.start();
-
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample", 5000);
-        assertNotNull(blueprintContainer);
-
-        Object obj = blueprintContainer.getComponentInstance("bar");
-        assertNotNull(obj);
-        assertEquals(Bar.class, obj.getClass());
-        Bar bar = (Bar) obj;
-        assertNotNull(bar.getContext());
-        assertEquals("Hello FooBar", bar.getValue());
-        assertNotNull(bar.getList());
-        assertEquals(2, bar.getList().size());
-        assertEquals("a list element", bar.getList().get(0));
-        assertEquals(Integer.valueOf(5), bar.getList().get(1));
-        obj = blueprintContainer.getComponentInstance("foo");
-        assertNotNull(obj);
-        assertEquals(Foo.class, obj.getClass());
-        Foo foo = (Foo) obj;
-        assertEquals(5, foo.getA());
-        assertEquals(10, foo.getB());
-        assertSame(bar, foo.getBar());
-        assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
-        assertEquals(new SimpleDateFormat("yyyy.MM.dd").parse("2009.04.17"), foo.getDate());
-
-        assertTrue(foo.isInitialized());
-        assertFalse(foo.isDestroyed());
-
-        obj = getOsgiService(Foo.class, 5000);
-        assertNotNull(obj);
-        assertSame(foo, obj);
-
-        bundle.stop();
-
-        Thread.sleep(1000);
-
-        try {
-            blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample", 1);
-            fail("BlueprintContainer should have been unregistered");
-        } catch (Exception e) {
-            // Expected, as the module container should have been unregistered
-        }
-
-        assertTrue(foo.isInitialized());
-        assertTrue(foo.isDestroyed());
+        
+        // do the test
+        testBlueprintContainer(bundle);
     }
 
     @org.ops4j.pax.exam.junit.Configuration
