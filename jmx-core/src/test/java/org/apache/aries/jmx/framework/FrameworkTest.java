@@ -305,6 +305,14 @@ public class FrameworkTest {
         } catch (IOException ioe) {
             // expected
         }
+        
+        Mockito.when(context.getBundle(6)).thenReturn(null);
+        try {
+            mbean.startBundle(6);
+            Assert.fail("IllegalArgumentException should be thrown");
+        } catch (IllegalArgumentException iae) {
+            //expected
+        }
     }
 
     @Test
@@ -335,6 +343,15 @@ public class FrameworkTest {
         Mockito.when(context.getBundle(5)).thenReturn(bundle);
         mbean.stopBundle(5);
         Mockito.verify(bundle).stop();
+        
+        Mockito.when(context.getBundle(5)).thenReturn(null);
+        try {
+            mbean.stopBundle(5);
+            Assert.fail("IllegalArgumentException should be thrown");
+        } catch (IllegalArgumentException iae) {
+            //expected
+        }
+       
     }
 
     @Test

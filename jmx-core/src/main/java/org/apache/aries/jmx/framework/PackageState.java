@@ -120,8 +120,10 @@ public class PackageState implements PackageStateMBean {
         Set<Package> packages = new HashSet<Package>();
         for (Bundle bundle : context.getBundles()) {
             ExportedPackage[] exportedPackages = packageAdmin.getExportedPackages(bundle);
-            for (ExportedPackage exportedPackage : exportedPackages) {
-                packages.add(new Package(exportedPackage));
+            if (exportedPackages != null) {
+                for (ExportedPackage exportedPackage : exportedPackages) {
+                    packages.add(new Package(exportedPackage));
+                }
             }
 
         }
