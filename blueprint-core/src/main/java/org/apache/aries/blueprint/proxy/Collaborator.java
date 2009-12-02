@@ -118,7 +118,7 @@ class Collaborator implements InvocationHandler, Serializable {
         Object toReturn = null;
 
         // Added method to unwrap from the collaborator.
-        if (method.getName().equals("getWrappedObject")
+        if (method.getName().equals("unwrapObject")
                 && method.getDeclaringClass() == WrapperedObject.class) {
             toReturn = object;
         } else
