@@ -45,6 +45,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
+import org.osgi.service.framework.CompositeBundle;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 import org.slf4j.Logger;
@@ -86,22 +87,42 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         bt.open();
         
         Bundle[] bundles = context.getBundles();
-        for (Bundle b : bundles) {
-            // If the bundle is active, check it
-            if (b.getState() == Bundle.ACTIVE) {
-                checkBundle(b);
-            // Also check bundles in the starting state with a lazy activation policy
-            } else if (b.getState() == Bundle.STARTING) {
-                String activationPolicyHeader = (String) b.getHeaders().get(Constants.BUNDLE_ACTIVATIONPOLICY);
-                if (activationPolicyHeader != null && activationPolicyHeader.startsWith(Constants.ACTIVATION_LAZY)) {
-                    checkBundle(b);
-                }
-            }
-        }
+        checkAllBundles(bundles, sr);
+
         LOGGER.debug("Blueprint extender started");
     }
 
 
+    /**
+     *  this method check all bundles. if the sr is null, then we only check
+     *  bundles within the current bundle context where this bundle resides.  
+     *  if sr is not null, then we also check the bundles inside the child frameworks
+     *  that are associated with composite bundles 
+     * @param bundles  bundles to be checked
+     * @param sr       Service reference for the composite bundle factory service
+     */
+    private void checkAllBundles(Bundle[] bundles, ServiceReference sr) {
+        for (Bundle b : bundles) {
+            if (sr != null && (b instanceof CompositeBundle)) {
+                // let's check bundles associated with the composite bundle
+                CompositeBundle cb = (CompositeBundle)b;
+                Bundle[] buns = cb.getCompositeFramework().getBundleContext().getBundles();
+                checkAllBundles(buns, sr);
+            } else {
+                // If the bundle is active, check it
+                if (b.getState() == Bundle.ACTIVE) {
+                    checkBundle(b);
+                // Also check bundles in the starting state with a lazy activation policy
+                } else if (b.getState() == Bundle.STARTING) {
+                    String activationPolicyHeader = (String) b.getHeaders().get(Constants.BUNDLE_ACTIVATIONPOLICY);
+                    if (activationPolicyHeader != null && activationPolicyHeader.startsWith(Constants.ACTIVATION_LAZY)) {
+                        checkBundle(b);
+                    }
+                }
+            }
+        }
+    }
+    
     public void stop(BundleContext context) {
         LOGGER.debug("Stopping blueprint extender...");
         if (bt != null) {
@@ -362,12 +383,13 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         }
 
         public Object addingBundle(Bundle b, BundleEvent event) {
+
+            super.addingBundle(b, event);
             
             if (event == null) {
                 return null;
             }
-
-            super.addingBundle(b, event);
+            
             bundleChanged(event);
 
             return b;

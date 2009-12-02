@@ -52,6 +52,11 @@
           <scope>provided</scope>
       </dependency>
       <dependency>
+          <groupId>org.eclipse</groupId>
+          <artifactId>osgi</artifactId>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
           <groupId>org.apache.servicemix.bundles</groupId>
           <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
           <optional>true</optional>
@@ -92,7 +97,7 @@
                         <Export-Package>
                             org.apache.aries.blueprint*;version="${pom.version}"
                         </Export-Package>
-                        <Import-Package>!org.apache.aries.blueprint*,org.apache.aries.util.tracker;resolution:=optional,*</Import-Package>
+                        <Import-Package>!org.apache.aries.blueprint*,org.apache.aries.util.tracker;resolution:=optional,org.osgi.service.framework;resolution:=optional,*</Import-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
