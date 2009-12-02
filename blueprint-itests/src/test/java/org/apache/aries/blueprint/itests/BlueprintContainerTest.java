@@ -18,29 +18,25 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import java.text.SimpleDateFormat;
-import java.util.Currency;
-import java.util.Hashtable;
-
-import org.apache.aries.blueprint.sample.Bar;
-import org.apache.aries.blueprint.sample.Foo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assert.assertNull;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.mavenConfiguration;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-import static org.ops4j.pax.exam.CoreOptions.customFramework;
+
+import java.text.SimpleDateFormat;
+import java.util.Currency;
+import java.util.Hashtable;
+
+import org.apache.aries.blueprint.sample.Bar;
+import org.apache.aries.blueprint.sample.Foo;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.profile;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.rawPaxRunnerOption;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
@@ -125,6 +121,7 @@ public class BlueprintContainerTest extends AbstractIntegrationTest {
             systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
             // Bundles
+            mavenBundle("org.apache.aries", "org.apache.aries.util"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
             mavenBundle("org.osgi", "org.osgi.compendium"),

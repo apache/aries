@@ -88,6 +88,11 @@
                 <version>${version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.aries</groupId>
+                <artifactId>org.apache.aries.util</artifactId>
+                <version>${version}</version> 
+            </dependency>
+            <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>4.2.0</version>
