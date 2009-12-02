@@ -18,26 +18,17 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.aries.blueprint.sample.Bar;
-import org.apache.aries.blueprint.sample.Foo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.CoreOptions;
@@ -48,7 +39,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.framework.CompositeBundle;
