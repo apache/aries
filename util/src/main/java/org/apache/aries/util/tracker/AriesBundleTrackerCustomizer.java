@@ -34,7 +34,7 @@ public abstract class AriesBundleTrackerCustomizer implements
     }
 
     public Object addingBundle(Bundle b, BundleEvent event) {
-        customizedProcessBundle(b, event, Bundle.STARTING | Bundle.STOPPING);
+        customizedProcessBundle(b, event, Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING);
         return null;
     }
 
