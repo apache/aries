@@ -35,16 +35,11 @@ public abstract class AriesBundleTrackerCustomizer implements
 
     public Object addingBundle(Bundle b, BundleEvent event) {
         customizedProcessBundle(b, event, Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING);
-        return null;
+        return b;
     }
 
     public void modifiedBundle(Bundle b, BundleEvent event, Object arg2) {
-        // we are only interested in uninstalled bundle state for composite
-        // bundles
-        // as we need to remove the bt off the bt factory
-        if (event.getType() == BundleEvent.STOPPING) {
-            customizedProcessBundle(b, event, 0);
-        }
+        customizedProcessBundle(b, event, Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING);
     }
 
     public void removedBundle(Bundle b, BundleEvent event, Object arg2) {
