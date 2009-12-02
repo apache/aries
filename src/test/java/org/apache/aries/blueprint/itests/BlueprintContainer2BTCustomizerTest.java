@@ -45,14 +45,13 @@ import org.osgi.service.framework.CompositeBundle;
 import org.osgi.service.framework.CompositeBundleFactory;
 
 /**
- * This test is based on the BlueprintContainerTest.  The difference is that in this test,
- * the blueprint sample is installed into a child framework that is associated with a composite
- * bundle created from CompositeBundleFactory.  This test only runs when the CompositeBundleFactory 
- * service is avail in the OSGi service registry.
+ * This test is based on the BlueprintContainerBTCustomizerTest.  but this test starts the
+ * blueprint sample before the blueprint bundle is started so going a slightly 
+ * different code path
  *
  */
 @RunWith(JUnit4TestRunner.class)
-public class BlueprintContainerBTCustomizerTest extends AbstractIntegrationTest {
+public class BlueprintContainer2BTCustomizerTest extends AbstractIntegrationTest {
 
     @Test
     public void test() throws Exception {
@@ -96,6 +95,11 @@ public class BlueprintContainerBTCustomizerTest extends AbstractIntegrationTest 
             // start the composite bundle then the blueprint sample
             cb.start();
             bundle.start();
+            
+            // start the blueprint bundle and it should detect the previously started blueprint sample
+            Bundle blueprintBundle = getInstalledBundle("org.apache.aries.blueprint");
+            blueprintBundle.start();
+            //Thread.sleep(5000);
 
             // do the test
             testBlueprintContainer(compositeBundleContext, bundle);
@@ -120,11 +124,11 @@ public class BlueprintContainerBTCustomizerTest extends AbstractIntegrationTest 
 
             // Bundles
             mavenBundle("org.apache.aries", "org.apache.aries.util"),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint").noStart(),
             // don't install the blueprint sample here as it will be installed onto the same framework as the blueprint core bundle
-            //mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
+            // mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
             mavenBundle("org.osgi", "org.osgi.compendium"),
-            //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+            // org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
             equinox().version("3.5.0")
         );
