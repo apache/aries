@@ -35,6 +35,7 @@ import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.aries.blueprint.utils.HeaderParser;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
+import org.apache.aries.util.tracker.AriesBundleTrackerCustomizer;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -75,8 +76,13 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         eventDispatcher = new BlueprintEventDispatcher(context, executors);
         containers = new HashMap<Bundle, BlueprintContainerImpl>();
 
-        // TODO: allow aries consumer to plugin their own bundletracker customizer.
-        bt = new BundleTracker(context, Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING, new BlueprintBundleTrackerCustomizer());
+        ServiceReference sr = this.context.getServiceReference("org.osgi.service.framework.CompositeBundleFactory");
+        if (sr == null) {
+            bt = new BundleTracker(context, Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING, new BlueprintBundleTrackerCustomizer()); 
+        } else {
+            // composite bundle factory service is active, let's track blueprint bundles installed in the child frameworks too.
+            bt = new BundleTracker(context, Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING, new BlueprintMutilBundleTrackerCustomizer());   
+        }
         bt.open();
         
         Bundle[] bundles = context.getBundles();
@@ -337,6 +343,42 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 return;
             }
 
+            bundleChanged(event);
+
+        }
+
+        // don't think we would be interested in removedBundle, as that is
+        // called when bundle is removed from the tracker
+        public void removedBundle(Bundle b, BundleEvent event, Object arg2) {
+        }
+    }
+    
+    // blueprint bundle tracker calls bundleChanged to minimize changes.
+    // this bundle tracker customizer handles bundles installed in the child framework as well
+    private class BlueprintMutilBundleTrackerCustomizer extends
+            AriesBundleTrackerCustomizer {
+
+        public BlueprintMutilBundleTrackerCustomizer() {
+        }
+
+        public Object addingBundle(Bundle b, BundleEvent event) {
+            
+            if (event == null) {
+                return null;
+            }
+
+            super.addingBundle(b, event);
+            bundleChanged(event);
+
+            return b;
+        }
+
+        public void modifiedBundle(Bundle b, BundleEvent event, Object arg2) {
+            if (event == null) {
+                return;
+            }
+
+            super.modifiedBundle(b, event, arg2);
             bundleChanged(event);
 
         }
