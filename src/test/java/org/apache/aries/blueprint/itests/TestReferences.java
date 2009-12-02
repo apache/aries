@@ -18,27 +18,23 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import java.util.Hashtable;
-import java.util.List;
-
-import org.apache.aries.blueprint.sample.BindingListener;
-import org.apache.aries.blueprint.sample.InterfaceA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import static org.ops4j.pax.exam.CoreOptions.felix;
-import static org.ops4j.pax.exam.CoreOptions.mavenConfiguration;
+import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.customFramework;
+
+import java.util.Hashtable;
+import java.util.List;
+
+import org.apache.aries.blueprint.sample.BindingListener;
+import org.apache.aries.blueprint.sample.InterfaceA;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.profile;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.rawPaxRunnerOption;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -144,6 +140,7 @@ public class TestReferences extends AbstractIntegrationTest {
             systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 
             // Bundles
+            mavenBundle("org.apache.aries", "org.apache.aries.util"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample"),
             mavenBundle("org.osgi", "org.osgi.compendium"),

@@ -18,23 +18,19 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+
 import java.util.Currency;
 import java.util.Hashtable;
 
 import org.apache.aries.blueprint.sample.Foo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.felix;
-import static org.ops4j.pax.exam.CoreOptions.mavenConfiguration;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-import static org.ops4j.pax.exam.CoreOptions.customFramework;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.OptionUtils;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
@@ -182,6 +178,7 @@ public class TestConfigAdmin extends AbstractIntegrationTest {
             systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
             // Bundles
+            mavenBundle("org.apache.aries", "org.apache.aries.util"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
             mavenBundle("org.osgi","org.osgi.compendium"),

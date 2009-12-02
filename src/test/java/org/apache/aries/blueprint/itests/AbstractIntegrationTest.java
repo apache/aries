@@ -48,6 +48,10 @@ public abstract class AbstractIntegrationTest {
     protected BlueprintContainer getBlueprintContainerForBundle(String symbolicName, long timeout) throws Exception {
         return getOsgiService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=" + symbolicName + ")", timeout);
     }
+    
+    protected BlueprintContainer getBlueprintContainerForBundle(BundleContext bc, String symbolicName, long timeout) throws Exception {
+        return getOsgiService(bc, BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=" + symbolicName + ")", timeout);
+    }
 
     protected <T> T getOsgiService(Class<T> type, long timeout) {
         return getOsgiService(type, null, timeout);
@@ -56,8 +60,8 @@ public abstract class AbstractIntegrationTest {
     protected <T> T getOsgiService(Class<T> type) {
         return getOsgiService(type, null, DEFAULT_TIMEOUT);
     }
-
-    protected <T> T getOsgiService(Class<T> type, String filter, long timeout) {
+    
+    protected <T> T getOsgiService(BundleContext bc, Class<T> type, String filter, long timeout) {
         ServiceTracker tracker = null;
         try {
             String flt;
@@ -71,7 +75,7 @@ public abstract class AbstractIntegrationTest {
                 flt = "(" + Constants.OBJECTCLASS + "=" + type.getName() + ")";
             }
             Filter osgiFilter = FrameworkUtil.createFilter(flt);
-            tracker = new ServiceTracker(bundleContext, osgiFilter, null);
+            tracker = new ServiceTracker(bc == null ? bundleContext : bc, osgiFilter, null);
             tracker.open();
             // Note that the tracker is not closed to keep the reference
             // This is buggy, has the service reference may change i think
@@ -86,9 +90,14 @@ public abstract class AbstractIntegrationTest {
             throw new RuntimeException(e);
         }
     }
+    
+    protected <T> T getOsgiService(Class<T> type, String filter, long timeout) {
+        return getOsgiService(null, type, filter, timeout);
+    }
 
     protected Bundle installBundle(String groupId, String artifactId) throws Exception {
         MavenArtifactProvisionOption mvnUrl = mavenBundle(groupId, artifactId);
+        System.out.println("***linsun: mvnUrl.getURL() " + mvnUrl.getURL());
         return bundleContext.installBundle(mvnUrl.getURL());
     }
 
