@@ -55,27 +55,40 @@ public abstract class AriesBundleTrackerCustomizer implements
             List<BundleTracker> btList = BundleTrackerFactory
                     .getBundleTrackerList(bundleScope);
 
-            if (event.getType() == BundleEvent.STOPPING) {
-                // if CompositeBundle is being stopped, let's remove the bundle
-                // tracker(s) associated with the composite bundle
-                if (btList != null) {
-                    // unregister the bundlescope off the factory and close
-                    // bundle trackers
-                    BundleTrackerFactory
-                            .unregisterAndCloseBundleTracker(bundleScope);
+            // bundle is already active and there is no event associated
+            // this can happen when bundle is first time added to the tracker
+            if (event == null) {
+                if (b.getState() == Bundle.ACTIVE) {
+                    openTracker(b, bundleScope, stateMask);
                 }
-            } else if (event.getType() == BundleEvent.STARTING) {
-                // let's process each of the bundle in the CompositeBundle
-                CompositeBundle cb = (CompositeBundle) b;
-                BundleContext compositeBundleContext = cb
-                        .getCompositeFramework().getBundleContext();
-
-                // let's track each of the bundle in the CompositeBundle
-                BundleTracker bt = new BundleTracker(compositeBundleContext,
-                        stateMask, this);
-                bt.open();
-                BundleTrackerFactory.registerBundleTracker(bundleScope, bt);
+            } else {
+                if (event.getType() == BundleEvent.STOPPING) {
+                    // if CompositeBundle is being stopped, let's remove the bundle
+                    // tracker(s) associated with the composite bundle
+                    if (btList != null) {
+                        // unregister the bundlescope off the factory and close
+                        // bundle trackers
+                        BundleTrackerFactory
+                                .unregisterAndCloseBundleTracker(bundleScope);
+                    }
+                } else if (event.getType() == BundleEvent.STARTING) {
+                    openTracker(b, bundleScope, stateMask);
+                }
             }
         }
     }
+        
+     private void openTracker(Bundle b, String bundleScope, int stateMask) {
+         // let's process each of the bundle in the CompositeBundle
+         CompositeBundle cb = (CompositeBundle) b;
+         BundleContext compositeBundleContext = cb
+                 .getCompositeFramework().getBundleContext();
+
+         // let's track each of the bundle in the CompositeBundle
+         BundleTracker bt = new BundleTracker(compositeBundleContext,
+                 stateMask, this);
+         bt.open();
+         BundleTrackerFactory.registerBundleTracker(bundleScope, bt);
+     }
+     
 }
