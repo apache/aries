@@ -411,6 +411,14 @@ public class WiringTest extends AbstractBlueprintTest {
         assertNotNull(repository.create("c3"));
     }
     
+    public void testDefaultBeans() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-circular.xml");
+        assertNotNull(registry.getBlueprintContainer());
+        assertNotNull(registry.getBlueprintBundle());
+        assertNotNull(registry.getBlueprintBundleContext());
+        assertNotNull(registry.getBlueprintConverter());
+    }
+    
     private TestBlueprintContainer createBlueprintContainer() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-circular.xml");
         return new TestBlueprintContainer(registry);
