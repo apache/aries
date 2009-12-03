@@ -35,11 +35,11 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.LinkedHashSet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -52,12 +52,11 @@ import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.Processor;
-import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
-import org.apache.aries.blueprint.reflect.MetadataUtil;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
+import org.apache.aries.blueprint.reflect.MetadataUtil;
 import org.apache.aries.blueprint.utils.HeaderParser;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
@@ -145,7 +144,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
         this.handlers = handlers;
         this.pathList = pathList;
         this.converter = new AggregateConverter(this);
-        this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
+        this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl(this, bundleContext, converter);
         this.executors = executors;
         this.processors = new ArrayList<Processor>();
         if (System.getSecurityManager() != null) {
@@ -250,10 +249,6 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), missing.toArray(new String[missing.size()])));
                             return;
                         }
-                        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintContainer", this));
-                        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundle", bundleContext.getBundle()));
-                        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundleContext", bundleContext));
-                        componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintConverter", converter));
                         if (xmlValidation) {
                             parser.validate(handlerSet.getSchema());
                         }
