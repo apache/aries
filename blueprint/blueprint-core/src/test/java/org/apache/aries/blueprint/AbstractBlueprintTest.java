@@ -18,18 +18,22 @@
  */
 package org.apache.aries.blueprint;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Set;
-import java.io.IOException;
 
 import javax.xml.validation.Schema;
 
 import junit.framework.TestCase;
+
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.aries.blueprint.container.Parser;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.osgi.framework.Bundle;
+import org.apache.aries.unittest.mocks.Skeleton;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.container.Converter;
 import org.xml.sax.SAXException;
 
 public abstract class AbstractBlueprintTest extends TestCase {
@@ -59,7 +63,10 @@ public abstract class AbstractBlueprintTest extends TestCase {
     }
 
     protected ComponentDefinitionRegistryImpl parse(String name, NamespaceHandlerRegistry.NamespaceHandlerSet handlers) throws Exception {
-        ComponentDefinitionRegistryImpl registry = new ComponentDefinitionRegistryImpl();
+        ComponentDefinitionRegistryImpl registry = new ComponentDefinitionRegistryImpl(
+                Skeleton.newMock(BlueprintContainer.class),
+                Skeleton.newMock(BundleContext.class),
+                Skeleton.newMock(Converter.class));
         Parser parser = new Parser();
         parser.parse(Collections.singletonList(getClass().getResource(name)));
         parser.populate(handlers, registry);
