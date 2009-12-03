@@ -90,7 +90,7 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
                     is = url.openStream();
                 } catch (IOException e) {
                     if (ignoreMissingLocations) {
-                        LOGGER.info("Unable to load properties from url " + url, e);
+                        LOGGER.debug("Unable to load properties from url " + url + " while ignoreMissingLocations is set to true");
                     } else {
                         throw e;
                     }
