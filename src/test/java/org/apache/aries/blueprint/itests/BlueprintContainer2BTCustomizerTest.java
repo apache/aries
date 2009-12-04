@@ -104,6 +104,8 @@ public class BlueprintContainer2BTCustomizerTest extends AbstractIntegrationTest
             // do the test
             testBlueprintContainer(compositeBundleContext, bundle);
             
+            // unget the service
+            bundleContext.ungetService(sr);
         }
     }
 
