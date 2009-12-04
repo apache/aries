@@ -69,8 +69,6 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     private BlueprintEventDispatcher eventDispatcher;
     private NamespaceHandlerRegistry handlers;
     private BundleTracker bt;
-    
-    // MN adding new bits
     private ServiceRegistration parserServiceReg;
 
     public void start(BundleContext context) {
@@ -122,7 +120,6 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         LOGGER.debug("Blueprint extender started");
     }
 
-
     public void stop(BundleContext context) {
         LOGGER.debug("Stopping blueprint extender...");
         if (bt != null) {
@@ -130,7 +127,6 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         }
         
         parserServiceReg.unregister();
-
 
         // Orderly shutdown of containers
         while (!containers.isEmpty()) {
