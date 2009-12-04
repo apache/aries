@@ -88,20 +88,20 @@ public class ManifestProcessor
     String namedAttribute = null;
     
     while ((line = reader.readLine()) != null) {
-      line = line.trim();
+      String trimmedLine = line.trim();
       // if we get a blank line skip to the next one
-      if (line.length() == 0) continue;
+      if (trimmedLine.length() == 0) continue;
       if (line.charAt(0) == ' ' && attribute != null) {
         // we have a continuation line, so add to the builder, ignoring the
         // first character
-        attribute.append(line.substring(1));
+        attribute.append(trimmedLine);
       } else if (attribute == null) {
-        attribute = new StringBuilder(line);
+        attribute = new StringBuilder(trimmedLine);
       } else if (attribute != null) {
         // We have fully parsed an attribute
         namedAttribute = setAttribute(man, namedAttribute, attribute);
         
-        attribute = new StringBuilder(line);
+        attribute = new StringBuilder(trimmedLine);
       }
     }
     
