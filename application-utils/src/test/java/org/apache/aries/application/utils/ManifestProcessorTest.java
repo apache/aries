@@ -47,21 +47,10 @@ import org.apache.aries.application.utils.manifest.ManifestProcessor;
 public class ManifestProcessorTest
 {
 
-  private static final String APP_FOLDER_NAME = "myAppFolder";
-  private static final String META_NAME = "META-INF";
-  private static final String SEP = ": ";
-  
-  private static File appFolder = new File(APP_FOLDER_NAME);
-  private static File f = new File(appFolder, APPLICATION_MF);
-  private static File metaFolder = new File(appFolder,META_NAME);
-  
   private static Map<String,String> pairs = null;
   
   @Before
   public void setUp() throws Exception{
-    
-    //clean up in case of a bad previous run
-    tearDown();
     
     //enforce ordering of the keys
     String[] keys = new String[]{
@@ -96,39 +85,8 @@ public class ManifestProcessorTest
       pairs.put(key, values[i]);
       i++;
     }
-    
-    appFolder.mkdir();
-    metaFolder.mkdir();
-    f.createNewFile();
-    PrintWriter pw = new PrintWriter(f);
-    //use write line for all but the last line
-    //count so we don't do the last line
-    i = 0;
-    for (String key : keys){
-      if (i < keys.length-1){
-        pw.println(key + SEP + pairs.get(key));
-      }
-      else{
-        //intentionally fail to print a new line at the end of the file
-        pw.print(key + SEP + pairs.get(key));
-      }
-      i++;
-    }
-    pw.write("\n\n");
-    
-    //finish writing the file
-    pw.flush();
-    pw.close();
   }
-  
-  @After
-  public void tearDown() throws Exception {
-    if (f.exists()) f.delete();
-    if (metaFolder.exists()) metaFolder.delete();
-    if (appFolder.exists()) appFolder.delete();
-  }
-  
-
+ 
   /**
    * Check a simple manifest can be read.
    * @throws Exception
@@ -136,21 +94,38 @@ public class ManifestProcessorTest
   @Test
   public void testSimpleManifest() throws Exception
   {
-	Manifest mf = new Manifest(new FileInputStream(new File(appFolder,"/META-INF/APPLICATION.MF")));
-    Map<String, String> map = ManifestProcessor.readManifestIntoMap(mf);
-    assertNotNull(map);
-
-    //check all the expected keys and values
-    for (String key : pairs.keySet()){
-      assertTrue("Key: " + key + " was not found",map.containsKey(key));
-      String value = map.get(key);
-      assertNotNull("Value was not present for key: " + key ,value);
-      assertEquals("Value was not correct for key: " + key ,pairs.get(key),value);
-    }
-    //check there aren't any extra entries in the map that weren't expected
-    assertEquals("The maps did not match",pairs,map);
+	Manifest mf = new Manifest(getClass().getClassLoader().getResourceAsStream("META-INF/APPLICATION.MF"));
+	checkManifest(mf);
   }
   
+  /**
+   * Check a simple manifest can be parsed.
+   * @throws Exception
+   */
+  @Test
+  public void testParseManifest() throws Exception
+  {
+    Manifest mf = ManifestProcessor.parseManifest(getClass().getClassLoader().getResourceAsStream("META-INF/APPLICATION.MF"));
+    checkManifest(mf);
+  }
+  
+  private void checkManifest(Manifest mf) throws Exception 
+  {
+      Map<String, String> map = ManifestProcessor.readManifestIntoMap(mf);
+      assertNotNull(map);
+
+      assertEquals("Unexpected number of manifest entires", pairs.size(), map.size());
+      
+      //check all the expected keys and values
+      for (String key : pairs.keySet()){
+        assertTrue("Key: " + key + " was not found",map.containsKey(key));
+        String value = map.get(key);
+        assertNotNull("Value was not present for key: " + key ,value);
+        assertEquals("Value was not correct for key: " + key ,pairs.get(key),value);
+      }
+      //check there aren't any extra entries in the map that weren't expected
+      assertEquals("The maps did not match",pairs,map);  
+  }
   /**
    * Check metadata can be extracted from a simple manifest.
    */
@@ -158,7 +133,7 @@ public class ManifestProcessorTest
   public void testManifestMetadata() throws Exception
   {
     ApplicationMetadataManagerImpl manager = new ApplicationMetadataManagerImpl();
-    ApplicationMetadata am = manager.parseApplication(new FileInputStream(new File(appFolder,"/META-INF/APPLICATION.MF")));
+    ApplicationMetadata am = manager.parseApplication(getClass().getClassLoader().getResourceAsStream("META-INF/APPLICATION.MF"));
     assertNotNull(am);
 
     String appName = pairs.get("Application-Name");
