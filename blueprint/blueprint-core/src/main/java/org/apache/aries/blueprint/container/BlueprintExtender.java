@@ -26,12 +26,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.aries.blueprint.BlueprintConstants;
+import org.apache.aries.blueprint.ParserService;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.aries.blueprint.utils.HeaderParser;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
@@ -42,10 +44,10 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
-import org.osgi.service.framework.CompositeBundle;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 import org.slf4j.Logger;
@@ -67,6 +69,9 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     private BlueprintEventDispatcher eventDispatcher;
     private NamespaceHandlerRegistry handlers;
     private BundleTracker bt;
+    
+    // MN adding new bits
+    private ServiceRegistration parserServiceReg;
 
     public void start(BundleContext context) {
         LOGGER.debug("Starting blueprint extender...");
@@ -108,14 +113,24 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 checkBundle(b);
             }
         }
-
+        
+        // Create and publish a ParserService
+        parserServiceReg = context.registerService(ParserService.class.getName(), 
+            new ParserServiceImpl (handlers), 
+            new Hashtable<Object, Object>()); 
+        
+        LOGGER.debug("Blueprint extender started");
     }
-    
+
+
     public void stop(BundleContext context) {
         LOGGER.debug("Stopping blueprint extender...");
         if (bt != null) {
         	bt.close();
         }
+        
+        parserServiceReg.unregister();
+
 
         // Orderly shutdown of containers
         while (!containers.isEmpty()) {
@@ -373,7 +388,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         }
 
         public Object addingBundle(Bundle b, BundleEvent event) {
-
+            
             super.addingBundle(b, event);
             
             if (event == null) {
