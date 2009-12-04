@@ -30,10 +30,6 @@ import junit.framework.TestCase;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.aries.blueprint.container.Parser;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
-import org.apache.aries.unittest.mocks.Skeleton;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.osgi.service.blueprint.container.Converter;
 import org.xml.sax.SAXException;
 
 public abstract class AbstractBlueprintTest extends TestCase {
@@ -63,10 +59,7 @@ public abstract class AbstractBlueprintTest extends TestCase {
     }
 
     protected ComponentDefinitionRegistryImpl parse(String name, NamespaceHandlerRegistry.NamespaceHandlerSet handlers) throws Exception {
-        ComponentDefinitionRegistryImpl registry = new ComponentDefinitionRegistryImpl(
-                Skeleton.newMock(BlueprintContainer.class),
-                Skeleton.newMock(BundleContext.class),
-                Skeleton.newMock(Converter.class));
+        ComponentDefinitionRegistryImpl registry = new ComponentDefinitionRegistryImpl();
         Parser parser = new Parser();
         parser.parse(Collections.singletonList(getClass().getResource(name)));
         parser.populate(handlers, registry);
