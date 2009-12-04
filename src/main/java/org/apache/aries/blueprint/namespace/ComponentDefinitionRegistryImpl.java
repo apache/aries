@@ -31,12 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ComponentNameAlreadyInUseException;
 import org.apache.aries.blueprint.Interceptor;
-import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Target;
 
@@ -49,31 +44,16 @@ import org.osgi.service.blueprint.reflect.Target;
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
 public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegistry {
-    
-    private static final String COMP_ID_BLUEPRINT_CONVERTER = "blueprintConverter";
-    private static final String COMP_ID_BLUEPRINT_BUNDLE_CONTEXT = "blueprintBundleContext";
-    private static final String COMP_ID_BLUEPRINT_BUNDLE = "blueprintBundle";
-    private static final String COMP_ID_BLUEPRINT_CONTAINER = "blueprintContainer";
-    
+
     private final Map<String, ComponentMetadata> components;
     private final List<Target> typeConverters;
     private final Map<ComponentMetadata, List<Interceptor>> interceptors;
 
-    public ComponentDefinitionRegistryImpl(BlueprintContainer container, 
-            BundleContext applicationBundleContext, Converter blueprintConverter) {
+    public ComponentDefinitionRegistryImpl() {
         // Use a linked hash map to keep the declaration order 
         components = Collections.synchronizedMap(new LinkedHashMap<String, ComponentMetadata>());
         typeConverters = new CopyOnWriteArrayList<Target>();
         interceptors = Collections.synchronizedMap(new HashMap<ComponentMetadata, List<Interceptor>>());
-
-        registerComponentDefinition(
-                new PassThroughMetadataImpl(COMP_ID_BLUEPRINT_CONTAINER, container));
-        registerComponentDefinition(
-                new PassThroughMetadataImpl(COMP_ID_BLUEPRINT_BUNDLE, applicationBundleContext.getBundle()));
-        registerComponentDefinition(
-                new PassThroughMetadataImpl(COMP_ID_BLUEPRINT_BUNDLE_CONTEXT, applicationBundleContext));
-        registerComponentDefinition(
-                new PassThroughMetadataImpl(COMP_ID_BLUEPRINT_CONVERTER, blueprintConverter));
     }
 
     public boolean containsComponentDefinition(String name) {
@@ -143,26 +123,6 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
 
     public List<Interceptor> getInterceptors(ComponentMetadata component) {
         return interceptors.get(component);
-    }
-
-    public Bundle getBlueprintBundle() {
-        PassThroughMetadata meta = (PassThroughMetadata) components.get(COMP_ID_BLUEPRINT_BUNDLE);
-        return (Bundle) meta.getObject();
-    }
-
-    public BundleContext getBlueprintBundleContext() {
-        PassThroughMetadata meta = (PassThroughMetadata) components.get(COMP_ID_BLUEPRINT_BUNDLE_CONTEXT);
-        return (BundleContext) meta.getObject();
-    }
-
-    public BlueprintContainer getBlueprintContainer() {
-        PassThroughMetadata meta = (PassThroughMetadata) components.get(COMP_ID_BLUEPRINT_CONTAINER);
-        return (BlueprintContainer) meta.getObject();
-    }
-
-    public Converter getBlueprintConverter() {
-        PassThroughMetadata meta = (PassThroughMetadata) components.get(COMP_ID_BLUEPRINT_CONVERTER);
-        return (Converter) meta.getObject();
     }
     
 }
