@@ -99,27 +99,38 @@ public class ManifestProcessor
         attribute = new StringBuilder(line);
       } else if (attribute != null) {
         // We have fully parsed an attribute
-        int index = attribute.indexOf(":");
-        String attributeName = attribute.substring(0, index).trim();
-        // TODO cope with index + 1 being after the end of attribute
-        String attributeValue = attribute.substring(index + 1).trim();
-        
-        if ("Name".equals(attributeName)) {
-          man.getEntries().put(attributeValue, new Attributes());
-          namedAttribute = attributeValue;
-        } else {
-          if (namedAttribute == null) {
-            man.getMainAttributes().put(new Attributes.Name(attributeName), attributeValue);
-          } else {
-            man.getAttributes(namedAttribute).put(new Attributes.Name(attributeName), attributeValue);
-          }
-        }
+        namedAttribute = setAttribute(man, namedAttribute, attribute);
         
         attribute = new StringBuilder(line);
       }
     }
     
+    if (attribute != null) {
+        setAttribute(man, namedAttribute, attribute);
+    }
+    
     return man;
+  }
+  
+  private static String setAttribute(Manifest man, String namedAttribute, StringBuilder attribute) 
+  {
+      int index = attribute.indexOf(":");
+      String attributeName = attribute.substring(0, index).trim();
+      // TODO cope with index + 1 being after the end of attribute
+      String attributeValue = attribute.substring(index + 1).trim();
+      
+      if ("Name".equals(attributeName)) {
+        man.getEntries().put(attributeValue, new Attributes());
+        namedAttribute = attributeValue;
+      } else {
+        if (namedAttribute == null) {
+          man.getMainAttributes().put(new Attributes.Name(attributeName), attributeValue);
+        } else {
+          man.getAttributes(namedAttribute).put(new Attributes.Name(attributeName), attributeValue);
+        }
+      }
+      
+      return namedAttribute;
   }
   
   /**

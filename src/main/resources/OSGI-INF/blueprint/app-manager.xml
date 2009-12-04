@@ -21,7 +21,7 @@
   
   <bean id="core-manager" class="org.apache.aries.application.impl.ApplicationMetadataManagerImpl" scope="singleton" activation="lazy"/>
   
-  <bean id="manager-service" class="org.apache.aries.application.impl.ApplicationMetadataManagerServiceImpl" scope="prototype" destroy-method="close">
+  <bean id="manager-service" class="org.apache.aries.application.impl.ApplicationMetadataManagerServiceImpl" scope="singleton" destroy-method="close">
     <property name="manager" ref="core-manager"/>
   </bean>
   
