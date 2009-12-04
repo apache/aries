@@ -70,12 +70,6 @@
           <artifactId>slf4j-simple</artifactId>
           <scope>test</scope>
       </dependency>
-      <dependency>
-          <groupId>org.apache.aries.testsupport</groupId>
-          <artifactId>aries-testsupport-unit</artifactId>
-          <version>${version}</version>
-          <scope>test</scope>
-      </dependency>     
   </dependencies>
 
     <build>

@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.aries.blueprint.CallbackTracker.Callback;
+import org.apache.aries.blueprint.container.BlueprintRepository;
 import org.apache.aries.blueprint.di.CircularDependencyException;
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
@@ -37,13 +38,9 @@ import org.apache.aries.blueprint.pojos.BeanF;
 import org.apache.aries.blueprint.pojos.Multiple;
 import org.apache.aries.blueprint.pojos.PojoA;
 import org.apache.aries.blueprint.pojos.PojoB;
-import org.apache.aries.blueprint.pojos.PojoCircular;
 import org.apache.aries.blueprint.pojos.PojoGenerics;
 import org.apache.aries.blueprint.pojos.PojoListener;
 import org.apache.aries.blueprint.pojos.PojoRecursive;
-import org.apache.aries.blueprint.container.AggregateConverter;
-import org.apache.aries.blueprint.container.BlueprintRepository;
-import org.apache.aries.blueprint.container.GenericType;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
@@ -409,14 +406,6 @@ public class WiringTest extends AbstractBlueprintTest {
         
         repository = createBlueprintContainer().getRepository();        
         assertNotNull(repository.create("c3"));
-    }
-    
-    public void testDefaultBeans() throws Exception {
-        ComponentDefinitionRegistryImpl registry = parse("/test-circular.xml");
-        assertNotNull(registry.getBlueprintContainer());
-        assertNotNull(registry.getBlueprintBundle());
-        assertNotNull(registry.getBlueprintBundleContext());
-        assertNotNull(registry.getBlueprintConverter());
     }
     
     private TestBlueprintContainer createBlueprintContainer() throws Exception {
