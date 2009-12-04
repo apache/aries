@@ -30,9 +30,10 @@ public class TestBlueprintContainer extends BlueprintContainerImpl {
         super(new TestBundleContext(), null, null, null, null, null);
         this.registry = registry;
         if (registry != null) {
-            // overwrite the dummy container with something proper because it is needed somewhere
-            registry.removeComponentDefinition("blueprintContainer");
             registry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintContainer", this));
+            registry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundle", getBundleContext().getBundle()));
+            registry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundleContext", getBundleContext()));
+            registry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintConverter", getConverter()));
         }
     }
 

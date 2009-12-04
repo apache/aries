@@ -19,10 +19,6 @@ package org.apache.aries.blueprint;
 import java.util.List;
 import java.util.Set;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Target;
 
@@ -46,28 +42,4 @@ public interface ComponentDefinitionRegistry  {
     
     List<Interceptor> getInterceptors(ComponentMetadata component);
     
-    /**
-     * Obtain the blueprint container of that this component definition registry belongs to
-     * @return
-     */
-    BlueprintContainer getBlueprintContainer();
-    
-    /**
-     * Obtain the client bundle that defines this blueprint module
-     * @return
-     */
-    Bundle getBlueprintBundle();
-    
-    /**
-     * Obtain the client bundle context of the bundle that defines this blueprint module
-     * @return
-     */
-    BundleContext getBlueprintBundleContext();
-    
-    /**
-     * Obtain the blueprint converter of the current blueprint module
-     * @return
-     */
-    Converter getBlueprintConverter();
-
 }
