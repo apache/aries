@@ -22,7 +22,7 @@ import java.util.Set;
 
 import javax.management.openmbean.TabularData;
 
-import org.apache.aries.jmx.codec.Package;
+import org.apache.aries.jmx.codec.PackageData;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;
@@ -117,17 +117,17 @@ public class PackageState implements PackageStateMBean {
      * @see org.osgi.jmx.framework.PackageStateMBean#listPackages()
      */
     public TabularData listPackages() throws IOException {
-        Set<Package> packages = new HashSet<Package>();
+        Set<PackageData> packages = new HashSet<PackageData>();
         for (Bundle bundle : context.getBundles()) {
             ExportedPackage[] exportedPackages = packageAdmin.getExportedPackages(bundle);
             if (exportedPackages != null) {
                 for (ExportedPackage exportedPackage : exportedPackages) {
-                    packages.add(new Package(exportedPackage));
+                    packages.add(new PackageData(exportedPackage));
                 }
             }
 
         }
-        return Package.tableFrom(packages);
+        return PackageData.tableFrom(packages);
     }
 
 }
