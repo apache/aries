@@ -99,7 +99,7 @@ public class BlueprintContainer2BTCustomizerTest extends AbstractIntegrationTest
             // start the blueprint bundle and it should detect the previously started blueprint sample
             Bundle blueprintBundle = getInstalledBundle("org.apache.aries.blueprint");
             blueprintBundle.start();
-            //Thread.sleep(5000);
+            Thread.sleep(2000);
 
             // do the test
             testBlueprintContainer(compositeBundleContext, bundle);
