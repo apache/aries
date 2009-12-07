@@ -107,7 +107,7 @@ public interface UserAdminMBean {
 			.compositeType(
 					"ROLE",
 					"Mapping of org.osgi.service.useradmin.Role for remote management purposes. User and Group extend Role",
-					NAME_ITEM, TYPE_ITEM);
+					NAME_ITEM, TYPE_ITEM, PROPERTIES_ITEM);
 
 	/**
 	 * The CREDENTIALS key, used in {@link #CREDENTIALS_ITEM}.
@@ -136,7 +136,8 @@ public interface UserAdminMBean {
 			.extend(
 					ROLE_TYPE,
 					"USER",
-					"Mapping of org.osgi.service.useradmin.User for remote management purposes. User extends Role");
+					"Mapping of org.osgi.service.useradmin.User for remote management purposes. User extends Role",
+					CREDENTIALS_ITEM);
 
 	/**
 	 * The MEMBERS key, used in {@link #MEMBERS_ITEM}.
