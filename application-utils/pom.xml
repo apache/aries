@@ -24,7 +24,7 @@
     <version>1.0.0-incubating-SNAPSHOT</version>
   </parent>
 
-  <artifactId>aries-application-utils</artifactId>
+  <artifactId>org.apache.aries.application.utils</artifactId>
   <packaging>bundle</packaging>
   <name>Apache Aries Application Utils</name>
   <description>
