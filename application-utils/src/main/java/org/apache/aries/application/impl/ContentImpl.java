@@ -24,13 +24,15 @@ import java.util.Map;
 
 import org.apache.aries.application.Content;
 import org.apache.aries.application.VersionRange;
+import org.apache.aries.application.utils.AppConstants;
+import org.osgi.framework.Constants;
 
 
 /**
  * Implementation of Content 
  *
  */
-public class ContentImpl implements Content
+public final class ContentImpl implements Content
 {
   private String content;
   private String contentName;
@@ -46,6 +48,10 @@ public class ContentImpl implements Content
     this.attributes = new HashMap<String, String>();
     this.directives = new HashMap<String, String>();
     setup(content, this.attributes, this.directives);
+    
+    if (!!!attributes.containsKey(Constants.VERSION_ATTRIBUTE)) {
+      attributes.put(Constants.VERSION_ATTRIBUTE, AppConstants.DEFAULT_VERSION);
+    }
   }
   
   public String getContent() {
@@ -100,6 +106,34 @@ public class ContentImpl implements Content
     return vi;
   }
   
+  @Override
+  public String toString()
+  {
+    return content;
+  }
+  
+  @Override
+  public boolean equals(Object other)
+  {
+    if (other == this) return true;
+    if (other == null) return false;
+    
+    if (other instanceof ContentImpl) {
+      ContentImpl otherContent = (ContentImpl)other;
+      return contentName.equals(otherContent.contentName) && 
+             attributes.equals(otherContent.attributes) &&
+             directives.equals(otherContent.directives);
+    }
+    
+    return false;
+  }
+  
+  @Override
+  public int hashCode()
+  {
+    return contentName.hashCode();
+  }
+  
   /**
    * setup attributes and directives from the Application-Content or Import-Package
    * @param content
@@ -110,7 +144,7 @@ public class ContentImpl implements Content
   {
     String[] tokens = content.split(";");
     if (tokens.length < 1) {
-      throw new IllegalArgumentException("Invalid header split: " + content);
+      throw new IllegalArgumentException("Invalid content: " + content);
     }
     this.contentName = tokens[0].trim();
     for (int i = 1; i < tokens.length; i++) {

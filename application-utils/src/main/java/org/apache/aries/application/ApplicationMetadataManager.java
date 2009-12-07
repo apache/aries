@@ -40,6 +40,8 @@ public interface ApplicationMetadataManager
    * @throws IOException if an IOException occurs reading from the stream.
    */
   public ApplicationMetadata parseApplication(InputStream in) throws IOException;
+  public Content parseContent(String content);
+  public VersionRange parseVersionRange(String versionRange);
   /**
    * Create the application metadata from the provided Manifest. This is provided
    * so application metadata can be created from within the JVM. When reading
@@ -71,4 +73,13 @@ public interface ApplicationMetadataManager
    * @return    true if the application was registered, false otherwise.
    */
   public boolean registerApplication(ApplicationMetadata app);
+  
+  /**
+   * This method is used to remove a previously registered application. An
+   * application can only be removed by the bundle that registered the application.
+   * 
+   * @param app the application to remove.
+   * @return    true if the application was removed, false otherwise.
+   */
+  public boolean unregisterApplication(ApplicationMetadata app);
 }

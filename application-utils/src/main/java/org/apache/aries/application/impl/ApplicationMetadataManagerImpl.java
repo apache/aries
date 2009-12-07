@@ -26,6 +26,8 @@ import java.util.jar.Manifest;
 
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.ApplicationMetadataManager;
+import org.apache.aries.application.Content;
+import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
 import org.osgi.framework.Version;
 
@@ -56,9 +58,7 @@ public class ApplicationMetadataManagerImpl implements ApplicationMetadataManage
   
   public boolean registerApplication(ApplicationMetadata app)
   {
-    String key = app.getApplicationSymbolicName() + "_" + app.getApplicationVersion();
-    
-    ApplicationMetadata existingApp = applications.putIfAbsent(key, app);
+    ApplicationMetadata existingApp = applications.putIfAbsent(app.getApplicationScope(), app);
     
     return existingApp == null;
   }
@@ -68,16 +68,19 @@ public class ApplicationMetadataManagerImpl implements ApplicationMetadataManage
     return new ApplicationMetadataImpl(man);
   }
   
-  /**
-   * This method is called by the service facade to remove applications when
-   * the client bundle releases the service. It is not public.
-   * 
-   * @param app the application to remove.
-   */
-  public void removeApplication(ApplicationMetadata app)
+  public boolean unregisterApplication(ApplicationMetadata app)
   {
-    String key = app.getApplicationSymbolicName() + "_" + app.getApplicationVersion();
-    applications.remove(key);
+    return applications.remove(app.getApplicationScope()) != null;
+  }
+
+  public Content parseContent(String content)
+  {
+    return new ContentImpl(content);
+  }
+
+  public VersionRange parseVersionRange(String versionRange)
+  {
+    return new VersionRangeImpl(versionRange);
   }
 
 }
