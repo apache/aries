@@ -16,13 +16,13 @@ import org.osgi.service.packageadmin.ExportedPackage;
 
 /**
  * <p>
- * <tt>Package</tt>represents PackageType @see {@link PackageStateMBean#PACKAGE_TYPE}.
+ * <tt>PackageData</tt>represents PackageType @see {@link PackageStateMBean#PACKAGE_TYPE}.
  * It is a codec for the composite data representing an OSGi ExportedPackage.
  * </p>
  * 
  * @version $Rev$ $Date$
  */
-public class Package {
+public class PackageData {
 
     /**
      * {@link PackageStateMBean#EXPORTING_BUNDLE}
@@ -50,17 +50,17 @@ public class Package {
     String version;
 
     /**
-     * Constructs new Package with provided ExportedPackage.
+     * Constructs new PackageData with provided ExportedPackage.
      * @param exportedPackage @see {@link ExportedPackage}.
      */
-    public Package(ExportedPackage exportedPackage) {
+    public PackageData(ExportedPackage exportedPackage) {
         this(exportedPackage.getExportingBundle().getBundleId(), toBundleIds(exportedPackage.getImportingBundles()),
                 exportedPackage.getName(), exportedPackage.isRemovalPending(), exportedPackage.getVersion().toString());
 
     }
 
     /**
-     * Constructs new Package.
+     * Constructs new PackageData.
      * 
      * @param exportingBundle the bundle the package belongs to.
      * @param importingBundles the importing bundles of the package.
@@ -68,7 +68,7 @@ public class Package {
      * @param removalPending whether the package is pending removal.
      * @param version package version.
      */
-    public Package(long exportingBundle, long[] importingBundles, String name, boolean removalPending, String version) {
+    public PackageData(long exportingBundle, long[] importingBundles, String name, boolean removalPending, String version) {
         this.exportingBundle = exportingBundle;
         this.importingBundles = importingBundles;
         this.name = name;
@@ -77,10 +77,10 @@ public class Package {
     }
     
     /**
-     * Translates Package to CompositeData represented by
+     * Translates PackageData to CompositeData represented by
      * compositeType {@link PackageStateMBean#PACKAGE_TYPE}.
      * 
-     * @return translated Package to compositeData.
+     * @return translated PackageData to compositeData.
      */
     public CompositeData toCompositeData() {
         try {
@@ -97,12 +97,12 @@ public class Package {
     }
 
     /**
-     * Static factory method to create Package from CompositeData object.
+     * Static factory method to create PackageData from CompositeData object.
      * 
      * @param data {@link CompositeData} instance.
-     * @return Package instance.
+     * @return PackageData instance.
      */
-    public static Package from(CompositeData data) {
+    public static PackageData from(CompositeData data) {
         if(data == null){
             return null;
         }
@@ -111,18 +111,18 @@ public class Package {
         String name = (String) data.get(PackageStateMBean.NAME);
         boolean removalPending = (Boolean) data.get(PackageStateMBean.REMOVAL_PENDING);
         String version = (String) data.get(PackageStateMBean.VERSION);
-        return new Package(exportingBundle,importingBundles,name, removalPending,version);
+        return new PackageData(exportingBundle,importingBundles,name, removalPending,version);
     }
 
     /**
-     * Creates {@link TabularData} for set of Package's.
+     * Creates {@link TabularData} for set of PackageData's.
      * 
-     * @param packages set of Package's
+     * @param packages set of PackageData's
      * @return {@link TabularData} instance.
      */
-    public static TabularData tableFrom(Set<Package> packages){
+    public static TabularData tableFrom(Set<PackageData> packages){
         TabularData table = new TabularDataSupport(PackageStateMBean.PACKAGES_TYPE);
-        for(Package pkg : packages){
+        for(PackageData pkg : packages){
             table.put(pkg.toCompositeData());
         }
         return table;

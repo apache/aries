@@ -37,6 +37,8 @@ import org.apache.aries.jmx.framework.BundleStateMBeanHandler;
 import org.apache.aries.jmx.framework.FrameworkMBeanHandler;
 import org.apache.aries.jmx.framework.ServiceStateMBeanHandler;
 import org.apache.aries.jmx.framework.PackageStateMBeanHandler;
+import org.apache.aries.jmx.permissionadmin.PermissionAdminMBeanHandler;
+import org.apache.aries.jmx.useradmin.UserAdminMBeanHandler;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
@@ -94,6 +96,12 @@ public class JMXAgentImpl implements JMXAgent {
         MBeanHandler packageStateHandler = new PackageStateMBeanHandler(bc, logger);
         packageStateHandler.open();
         mbeansHandlers.add(packageStateHandler);
+        MBeanHandler permissionAdminHandler = new PermissionAdminMBeanHandler(bc, logger);
+        permissionAdminHandler.open();
+        mbeansHandlers.add(permissionAdminHandler);
+        MBeanHandler userAdminHandler = new UserAdminMBeanHandler(agentContext);
+        userAdminHandler.open();
+        mbeansHandlers.add(userAdminHandler);
         mbeanServiceTracker = new MBeanServiceTracker(agentContext);
         mbeanServiceTracker.open();
     }
