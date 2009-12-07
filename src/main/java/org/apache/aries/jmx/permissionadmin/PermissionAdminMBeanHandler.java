@@ -23,7 +23,6 @@ import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.jmx.framework.FrameworkMBean;
 import org.osgi.jmx.service.permissionadmin.PermissionAdminMBean;
 import org.osgi.service.log.LogService;
 
@@ -52,7 +51,7 @@ public class PermissionAdminMBeanHandler implements MBeanHandler {
      */
     public PermissionAdminMBeanHandler(BundleContext context, Logger logger) {
         this.context = context;
-        this.name = FrameworkMBean.OBJECTNAME;
+        this.name = PermissionAdminMBean.OBJECTNAME;
         this.logger = logger;
     }
 
@@ -73,7 +72,7 @@ public class PermissionAdminMBeanHandler implements MBeanHandler {
                 .getService(adminRef);
         PermissionAdminMBean paMBean = new PermissionAdmin(permissionAdmin);
         try {
-            mbean = new StandardMBean(paMBean, FrameworkMBean.class);
+            mbean = new StandardMBean(paMBean, PermissionAdminMBean.class);
         } catch (NotCompliantMBeanException e) {
             logger.log(LogService.LOG_ERROR, "Not compliant MBean", e);
         }
