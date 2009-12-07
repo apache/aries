@@ -20,12 +20,17 @@ package org.apache.aries.application.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.jar.Manifest;
 
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.ApplicationMetadataManager;
+import org.apache.aries.application.Content;
+import org.apache.aries.application.VersionRange;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceFactory;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 
 /**
@@ -33,61 +38,103 @@ import org.osgi.framework.Version;
  * remove registered applications when the requesting bundle releases the service.
  * There is one instance of this class per requesting bundle.
  */
-public class ApplicationMetadataManagerServiceImpl implements ApplicationMetadataManager
+public class ApplicationMetadataManagerServiceImpl implements ServiceFactory
 {
-  /** The core application metadata manager */
-  private ApplicationMetadataManagerImpl manager;
-  /** A list of all applications registered via this service instance */
-  private List<ApplicationMetadata> appMetaData = new ArrayList<ApplicationMetadata>();
+  private static class RealApplicationMetadataManagerServiceImpl implements ApplicationMetadataManager
+  {
+    /** The core application metadata manager */
+    private ApplicationMetadataManager manager;
+    /** A list of all applications registered via this service instance */
+    private Set<ApplicationMetadata> appMetaData = new HashSet<ApplicationMetadata>();
+    
+    public RealApplicationMetadataManagerServiceImpl(ApplicationMetadataManager man)
+    {
+      manager = man;
+    }
+
+    public ApplicationMetadata getApplication(String applicationSymbolicName, Version version)
+    {
+      return manager.getApplication(applicationSymbolicName, version);
+    }
   
+    public ApplicationMetadata parseApplication(InputStream in) throws IOException
+    {
+      return manager.parseApplication(in);
+    }
+  
+    public ApplicationMetadata createApplication(Manifest man)
+    {
+      return manager.createApplication(man);
+    }
+  
+    public boolean registerApplication(ApplicationMetadata app)
+    {
+      if (manager.registerApplication(app)) {
+        synchronized (appMetaData) {
+          appMetaData.add(app);
+        }
+        return true;
+      }
+      return false;
+    }
+    
+    public boolean unregisterApplication(ApplicationMetadata app)
+    {
+      boolean remove = false;
+      synchronized (appMetaData) {
+        remove = appMetaData.contains(app);
+      }
+      
+      if (remove) return manager.unregisterApplication(app);
+      
+      return false;
+    }
+    
+    /**
+     * This method is called by blueprint when the calling bundle releases the
+     * service. It removes all the registered applications from the core manager.
+     */
+    public void close()
+    {
+      synchronized (appMetaData) {
+        for (ApplicationMetadata app : appMetaData) {
+          manager.unregisterApplication(app);
+        }
+        
+        appMetaData.clear();
+      }
+    }
+  
+    public Content parseContent(String content)
+    {
+      return manager.parseContent(content);
+    }
+  
+    public VersionRange parseVersionRange(String versionRange)
+    {
+      return manager.parseVersionRange(versionRange);
+    }
+  }
+
+  private ApplicationMetadataManager manager;
+
   /**
    * Called by blueprint.
    * 
    * @param appManager the core app metadata manager.
    */
-  public void setManager(ApplicationMetadataManagerImpl appManager)
+  public void setManager(ApplicationMetadataManager appManager)
   {
     manager = appManager;
   }
   
-  public ApplicationMetadata getApplication(String applicationSymbolicName, Version version)
+  public Object getService(Bundle bundle, ServiceRegistration registration)
   {
-    return manager.getApplication(applicationSymbolicName, version);
+    return new RealApplicationMetadataManagerServiceImpl(manager);
   }
 
-  public ApplicationMetadata parseApplication(InputStream in) throws IOException
+  public void ungetService(Bundle bundle, ServiceRegistration registration, Object service)
   {
-    return manager.parseApplication(in);
-  }
-
-  public ApplicationMetadata createApplication(Manifest man)
-  {
-    return manager.createApplication(man);
-  }
-
-  public boolean registerApplication(ApplicationMetadata app)
-  {
-    if (manager.registerApplication(app)) {
-      synchronized (appMetaData) {
-        appMetaData.add(app);
-      }
-      return true;
-    }
-    return false;
-  }
-  
-  /**
-   * This method is called by blueprint when the calling bundle releases the
-   * service. It removes all the registered applications from the core manager.
-   */
-  public void close()
-  {
-    synchronized (appMetaData) {
-      for (ApplicationMetadata app : appMetaData) {
-        manager.removeApplication(app);
-      }
-      
-      appMetaData.clear();
-    }
+    ((RealApplicationMetadataManagerServiceImpl)service).close();
   }
 }
