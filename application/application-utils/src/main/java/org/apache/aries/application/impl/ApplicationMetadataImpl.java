@@ -40,11 +40,12 @@ import org.apache.aries.application.utils.manifest.ManifestProcessor;
  * Implementation of ApplicationMetadata and DeploymentMetadata
  *
  */
-public class ApplicationMetadataImpl implements ApplicationMetadata
+public final class ApplicationMetadataImpl implements ApplicationMetadata
 {
   private String appSymbolicName;
   private Version appVersion;
   private String appName;
+  private String appScope;
   private List<Content> appContents;
   private List<ServiceDeclaration> importServices;
   private List<ServiceDeclaration> exportServices;
@@ -66,15 +67,15 @@ public class ApplicationMetadataImpl implements ApplicationMetadata
    * setup the application metadata from the appManifest
    * @param appManifest     application.mf manifest
    */
-  private void setup(Manifest appManifest) {
-
-    
+  private void setup(Manifest appManifest) 
+  {
     Map<String, String> appMap = readManifestIntoMap(appManifest);
     
     // configure the appSymbolicName and appVersion
-    this.appSymbolicName = appMap.get(AppConstants.APPLICATION_SYMBOLIC_NAME).trim();
-    this.appVersion = new Version(appMap.get(AppConstants.APPLICATION_VERSION).trim());
+    this.appSymbolicName = appMap.get(AppConstants.APPLICATION_SYMBOLIC_NAME);
+    this.appVersion = new Version(appMap.get(AppConstants.APPLICATION_VERSION));
     this.appName = appMap.get(AppConstants.APPLICATION_NAME);
+    this.appScope = this.appSymbolicName + "_" + this.appVersion.toString();
     
     if (this.appSymbolicName == null || this.appVersion == null) {
       throw new IllegalArgumentException("Failed to create ApplicationMetadataImpl object from Manifest " + appManifest);
@@ -143,11 +144,29 @@ public class ApplicationMetadataImpl implements ApplicationMetadata
     return this.appVersion;
   }
 
-  public String getApplicationName() {
+  public String getApplicationName() 
+  {
     return this.appName;
   }
   
-  public String getApplicationScope() {
-    return this.appSymbolicName + "_" + this.appVersion.toString();
+  public String getApplicationScope() 
+  {
+    return appScope;
+  }
+  
+  public boolean equals(Object other)
+  {
+    if (other == this) return true;
+    if (other == null) return false;
+    if (other instanceof ApplicationMetadataImpl) {
+      return appScope.equals(((ApplicationMetadataImpl)other).appScope);
+    }
+    
+    return false;
+  }
+  
+  public int hashCode()
+  {
+    return appScope.hashCode();
   }
 }
