@@ -41,20 +41,6 @@
         <url>http://svn.apache.org/viewvc/incubator/aries/trunk/blueprint</url>
     </scm>
     
-    <repositories>
-        <repository>
-            <id>servicemix.m2</id>
-            <name>Apache ServiceMix Maven2 Repository</name>
-            <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
