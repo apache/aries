@@ -44,13 +44,8 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>application-utils</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.aries.testsupport</groupId>
-                <artifactId>aries-testsupport-unit</artifactId>
+                <artifactId>org.apache.aries.testsupport.unit</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
@@ -86,14 +81,6 @@
             </plugins>
         </pluginManagement>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <modules>
         <module>application-utils</module>
