@@ -45,17 +45,17 @@
         <dependencies>
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
-                <artifactId>aries-jndi-core</artifactId>
+                <artifactId>org.apache.aries.jndi.core</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
-                <artifactId>aries-jndi-url</artifactId>
+                <artifactId>org.apache.aries.jndi.url</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
-                <artifactId>aries-jndi</artifactId>
+                <artifactId>org.apache.aries.jndi</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
