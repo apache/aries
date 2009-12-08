@@ -24,7 +24,7 @@
     <version>1.0.0-incubating-SNAPSHOT</version>
   </parent>
 
-  <artifactId>aries-jndi-url</artifactId>
+  <artifactId>org.apache.aries.jndi.url</artifactId>
   <packaging>bundle</packaging>
   <name>Apache Aries JNDI URL Handler</name>
   <description>
@@ -39,7 +39,7 @@
       </dependency>
       <dependency>
           <groupId>org.apache.aries.jndi</groupId>
-          <artifactId>aries-jndi-core</artifactId>
+          <artifactId>org.apache.aries.jndi.core</artifactId>
           <scope>test</scope>
       </dependency>
       <dependency>
