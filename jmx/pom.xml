@@ -71,7 +71,7 @@
                 <artifactId>junit</artifactId>
                 <version>4.5</version>
             </dependency>
-			<dependency>
+            <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam</artifactId>
                 <version>1.1.0</version>
@@ -137,7 +137,7 @@
         <module>jmx-api</module>
         <module>jmx-core</module>
         <module>jmx-bundle</module>
-		<module>jmx-itests</module>
+        <module>jmx-itests</module>
   </modules>
 
 </project>
