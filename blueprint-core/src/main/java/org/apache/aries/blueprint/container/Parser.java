@@ -181,7 +181,7 @@ public class Parser {
 
     private static DocumentBuilderFactory documentBuilderFactory;
 
-    private List<Document> documents;
+    private List<Document> documents = new ArrayList<Document>();
     private ComponentDefinitionRegistry registry;
     private NamespaceHandlerRegistry.NamespaceHandlerSet handlers;
     private String idPrefix = "component-";
@@ -199,22 +199,34 @@ public class Parser {
         this.idPrefix = idPrefix;
     }
 
+    /**
+     * Parse an input stream for blueprint xml. 
+     * @param inputStream The data to parse. The caller is responsible for closing the stream afterwards. 
+     * @throws Exception
+     */
+    public void parse(InputStream inputStream) throws Exception { 
+      InputSource inputSource = new InputSource(inputStream);
+      DocumentBuilder builder = getDocumentBuilderFactory().newDocumentBuilder();
+      Document doc = builder.parse(inputSource);
+      documents.add(doc);
+    }
+    
+    /**
+     * Parse blueprint xml referred to by a list of URLs
+     * @param urls URLs to blueprint xml to parse
+     * @throws Exception
+     */
     public void parse(List<URL> urls) throws Exception {
-        List<Document> documents = new ArrayList<Document>();
         // Create document builder factory
         // Load documents
         for (URL url : urls) {
             InputStream inputStream = url.openStream();
             try {
-                InputSource inputSource = new InputSource(inputStream);
-                DocumentBuilder builder = getDocumentBuilderFactory().newDocumentBuilder();
-                Document doc = builder.parse(inputSource);
-                documents.add(doc);
+                parse (inputStream);
             } finally {
                 inputStream.close();
             }
         }
-        this.documents = documents;
     }
 
     public Set<URI> getNamespaces() {
