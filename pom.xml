@@ -52,7 +52,7 @@
       </dependency>      
       <dependency>
           <groupId>org.apache.aries.testsupport</groupId>
-          <artifactId>aries-testsupport-unit</artifactId>
+          <artifactId>org.apache.aries.testsupport.unit</artifactId>
           <version>${version}</version>
           <scope>test</scope>
       </dependency>
