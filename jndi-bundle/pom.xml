@@ -22,7 +22,7 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aries-jndi</artifactId>
+    <artifactId>org.apache.aries.jndi</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JNDI Bundle</name>
     <description>
@@ -33,11 +33,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
-            <artifactId>aries-jndi-core</artifactId>
+            <artifactId>org.apache.aries.jndi.core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
-            <artifactId>aries-jndi-url</artifactId>
+            <artifactId>org.apache.aries.jndi.url</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -91,19 +91,19 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.apache.aries.jndi:aries-jndi-core</include>
-                                    <include>org.apache.aries.jndi:aries-jndi-url</include>
+                                    <include>org.apache.aries.jndi:org.apache.aries.jndi.core</include>
+                                    <include>org.apache.aries.jndi:org.apache.aries.jndi.url</include>
                                 </includes>
                             </artifactSet>
                             <filters>
                                 <filter>
-                                    <artifact>org.apache.aries.jndi:aries-jndi-core</artifact>
+                                    <artifact>org.apache.aries.jndi:org.apache.aries.jndi.core</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
                                 </filter>
                                 <filter>
-                                    <artifact>org.apache.aries.jndi:aries-jndi-url</artifact>
+                                    <artifact>org.apache.aries.jndi:org.apache.aries.jndi.url</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
@@ -141,12 +141,12 @@
                                     <artifactItems>
                                         <artifactItem>
                                             <groupId>org.apache.aries.jndi</groupId>
-                                            <artifactId>aries-jndi-core</artifactId>
+                                            <artifactId>org.apache.aries.jndi.core</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                         <artifactItem>
                                             <groupId>org.apache.aries.jndi</groupId>
-                                            <artifactId>aries-jndi-url</artifactId>
+                                            <artifactId>org.apache.aries.jndi.url</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                     </artifactItems>
