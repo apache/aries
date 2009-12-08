@@ -27,7 +27,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.transaction</groupId>
-    <artifactId>aries-transaction</artifactId>
+    <artifactId>org.apache.aries.transaction</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Transaction</name> 
 
@@ -39,13 +39,13 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>4.1.0</version>
+            <version>4.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
-            <version>4.1.0</version>
+            <version>4.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -79,6 +79,7 @@
                             org.springframework.*;resolution:=optional,
                             !org.apache.geronimo.transaction*,
                             javax.resource.spi;version="1.5";resolution:=optional,
+                            org.osgi.framework;version="1.4",
                             *
                         </Import-Package>
                         <Export-Package>
