@@ -24,8 +24,6 @@ import java.util.Map;
 
 import org.apache.aries.application.Content;
 import org.apache.aries.application.VersionRange;
-import org.apache.aries.application.utils.AppConstants;
-import org.osgi.framework.Constants;
 
 
 /**
@@ -48,10 +46,6 @@ public final class ContentImpl implements Content
     this.attributes = new HashMap<String, String>();
     this.directives = new HashMap<String, String>();
     setup(content, this.attributes, this.directives);
-    
-    if (!!!attributes.containsKey(Constants.VERSION_ATTRIBUTE)) {
-      attributes.put(Constants.VERSION_ATTRIBUTE, AppConstants.DEFAULT_VERSION);
-    }
   }
   
   public String getContent() {
@@ -102,6 +96,8 @@ public final class ContentImpl implements Content
     VersionRange vi = null;
     if (this.attributes.get("version") != null && this.attributes.get("version").length() > 0) {
       vi = new VersionRangeImpl(this.attributes.get("version"));
+    } else {
+      vi = new VersionRangeImpl("0.0.0");
     }
     return vi;
   }
