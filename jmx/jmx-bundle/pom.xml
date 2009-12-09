@@ -31,7 +31,7 @@
 
 
     <dependencies>
-		<dependency>
+        <dependency>
           <groupId>org.apache.aries.jmx</groupId>
           <artifactId>aries-jmx-api</artifactId>
         </dependency>
