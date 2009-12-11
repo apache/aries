@@ -16,11 +16,10 @@
  */
 package org.apache.aries.blueprint;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public interface ParserContext  {
     
@@ -34,4 +33,16 @@ public interface ParserContext  {
 
     <T> T parseElement(Class<T> type, ComponentMetadata enclosingComponent, Element element);
 
+    /** 
+     * Generate a unique id following the same scheme that the blueprint container
+     * uses internally
+     */
+    String generateId();
+    
+    String getDefaultActivation();
+    
+    String getDefaultAvailability();
+    
+    String getDefaultTimeout();
 }
+

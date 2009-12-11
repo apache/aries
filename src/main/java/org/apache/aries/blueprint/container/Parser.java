@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -382,6 +381,8 @@ public class Parser {
             return type.cast(parseRef(element));
         } else if (ValueMetadata.class.isAssignableFrom(type)) {
             return type.cast(parseValue(element, null));
+        } else if (ReferenceListener.class.isAssignableFrom(type)) {
+            return type.cast(parseServiceListener(element, enclosingComponent));
         } else {
             throw new ComponentDefinitionException("Unknown type to parse element: " + type.getName());
         }
@@ -925,6 +926,18 @@ public class Parser {
         return r;
     }
 
+    public String getDefaultTimeout() {
+        return defaultTimeout;
+    }
+
+    public String getDefaultAvailability() {
+        return defaultAvailability;
+    }
+
+    public String getDefaultActivation() {
+        return defaultActivation;
+    }
+
     private ComponentMetadata parseRefList(Element element, boolean topElement) {
         ReferenceListMetadataImpl references = new ReferenceListMetadataImpl();
         if (topElement) {
@@ -1257,16 +1270,23 @@ public class Parser {
         return handler;
     }
 
+    public String generateId() {
+        String id;
+        do {
+            id = "." + idPrefix + ++idCounter;
+        } while (ids.contains(id));
+        ids.add(id);
+        return id;        
+    }
+    
     public String getId(Element element) {
         String id;
         if (element.hasAttribute(ID_ATTRIBUTE)) {
             id = element.getAttribute(ID_ATTRIBUTE);
+            ids.add(id);
         } else {
-            do {
-                id = "." + idPrefix + ++idCounter;
-            } while (ids.contains(id));
+            id = generateId();
         }
-        ids.add(id);
         return id;
     }
 
