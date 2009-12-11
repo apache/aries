@@ -18,14 +18,13 @@
  */
 package org.apache.aries.blueprint.container;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.reflect.MetadataUtil;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * A simple ParserContext implementation.
@@ -34,8 +33,7 @@ import org.osgi.service.blueprint.reflect.Metadata;
  *
  * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
  */
-public class ParserContextImpl implements ParserContext {
-
+public class ParserContextImpl implements ParserContext {    
     private final Parser parser;
     private final ComponentDefinitionRegistry componentDefinitionRegistry;
     private final ComponentMetadata enclosingComponent;
@@ -73,5 +71,21 @@ public class ParserContextImpl implements ParserContext {
     
     public Parser getParser() {
         return parser;
+    }
+    
+    public String generateId() {
+        return parser.generateId();
+    }
+
+    public String getDefaultActivation() {
+        return parser.getDefaultActivation();
+    }
+
+    public String getDefaultAvailability() {
+        return parser.getDefaultAvailability();
+    }
+
+    public String getDefaultTimeout() {
+        return parser.getDefaultTimeout();
     }
 }

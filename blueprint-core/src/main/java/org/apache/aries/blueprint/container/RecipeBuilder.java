@@ -32,12 +32,16 @@ import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.di.ArrayRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
+import org.apache.aries.blueprint.di.ComponentFactoryRecipe;
+import org.apache.aries.blueprint.di.DependentComponentFactoryRecipe;
 import org.apache.aries.blueprint.di.IdRefRecipe;
 import org.apache.aries.blueprint.di.MapRecipe;
 import org.apache.aries.blueprint.di.PassThroughRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.RefRecipe;
 import org.apache.aries.blueprint.di.ValueRecipe;
+import org.apache.aries.blueprint.ext.ComponentFactoryMetadata;
+import org.apache.aries.blueprint.ext.DependentComponentFactoryMetadata;
 import org.apache.aries.blueprint.mutable.MutableMapMetadata;
 import org.apache.aries.blueprint.reflect.MetadataUtil;
 import org.osgi.service.blueprint.reflect.BeanArgument;
@@ -51,8 +55,8 @@ import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.NullMetadata;
 import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.RegistrationListener;
@@ -89,7 +93,15 @@ public class RecipeBuilder {
     }
 
     public Recipe createRecipe(ComponentMetadata component) {
-        if (component instanceof BeanMetadata) {
+
+        // Custom components should be handled before built-in ones
+        // in case we have a custom component that also implements a built-in metadata
+        
+        if (component instanceof DependentComponentFactoryMetadata) { 
+            return createDependentComponentFactoryMetadata((DependentComponentFactoryMetadata) component);
+        } else if (component instanceof ComponentFactoryMetadata) {
+            return createComponentFactoryMetadata((ComponentFactoryMetadata) component);
+        } else if (component instanceof BeanMetadata) {
             return createBeanRecipe((BeanMetadata) component);
         } else if (component instanceof ServiceMetadata) {
             return createServiceRecipe((ServiceMetadata) component);
@@ -104,10 +116,27 @@ public class RecipeBuilder {
         }
     }
 
+    private Recipe createComponentFactoryMetadata(ComponentFactoryMetadata metadata) {
+        return new ComponentFactoryRecipe<ComponentFactoryMetadata>(
+                metadata.getId(), metadata, blueprintContainer, getDependencies(metadata));
+    }
+    
+    private Recipe createDependentComponentFactoryMetadata(DependentComponentFactoryMetadata metadata) {
+        return new DependentComponentFactoryRecipe(
+                metadata.getId(), metadata, blueprintContainer, getDependencies(metadata));
+    }
+    
+    private List<Recipe> getDependencies(ComponentMetadata metadata) {
+        List<Recipe> deps = new ArrayList<Recipe>();
+        for (String name : metadata.getDependsOn()) {
+            deps.add(new RefRecipe(getName(null), name));
+        }
+        return deps;
+    }
+
     private Recipe createPassThroughRecipe(PassThroughMetadata passThroughMetadata) {
         return new PassThroughRecipe(passThroughMetadata.getId(), passThroughMetadata.getObject());
     }
-
 
     private Recipe createReferenceListRecipe(ReferenceListMetadata metadata) {
         CollectionRecipe listenersRecipe = null;
@@ -117,15 +146,11 @@ public class RecipeBuilder {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
-        List<Recipe> deps = new ArrayList<Recipe>();
-        for (String name : metadata.getDependsOn()) {
-            deps.add(new RefRecipe(getName(null), name));
-        }
         ReferenceListRecipe recipe = new ReferenceListRecipe(getName(metadata.getId()),
                                                  blueprintContainer,
                                                  metadata,
                                                  listenersRecipe,
-                                                 deps);
+                                                 getDependencies(metadata));
         return recipe;
     }
 
@@ -137,15 +162,11 @@ public class RecipeBuilder {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
-        List<Recipe> deps = new ArrayList<Recipe>();
-        for (String name : metadata.getDependsOn()) {
-            deps.add(new RefRecipe(getName(null), name));
-        }
         ReferenceRecipe recipe = new ReferenceRecipe(getName(metadata.getId()),
                                                      blueprintContainer,
                                                      metadata,
                                                      listenersRecipe,
-                                                     deps);
+                                                     getDependencies(metadata));
         return recipe;
     }
 
@@ -156,17 +177,13 @@ public class RecipeBuilder {
                 listenersRecipe.add(createRecipe(listener));
             }
         }
-        List<Recipe> deps = new ArrayList<Recipe>();
-        for (String name : serviceExport.getDependsOn()) {
-            deps.add(new RefRecipe(getName(null), name));
-        }
         ServiceRecipe recipe = new ServiceRecipe(getName(serviceExport.getId()),
                                                  blueprintContainer,
                                                  serviceExport,
                                                  getValue(serviceExport.getServiceComponent(), null),
                                                  listenersRecipe,
                                                  getServicePropertiesRecipe(serviceExport),
-                                                 deps);
+                                                 getDependencies(serviceExport));
         return recipe;
     }
 
@@ -199,11 +216,7 @@ public class RecipeBuilder {
                 blueprintContainer,
                 getBeanClass(beanMetadata));
         // Create refs for explicit dependencies
-        List<Recipe> deps = new ArrayList<Recipe>();
-        for (String name : beanMetadata.getDependsOn()) {
-            deps.add(new RefRecipe(getName(null), name));
-        }
-        recipe.setExplicitDependencies(deps);
+        recipe.setExplicitDependencies(getDependencies(beanMetadata));
         recipe.setPrototype(MetadataUtil.isPrototypeScope(beanMetadata));
         recipe.setInitMethod(beanMetadata.getInitMethod());
         recipe.setDestroyMethod(beanMetadata.getDestroyMethod());
