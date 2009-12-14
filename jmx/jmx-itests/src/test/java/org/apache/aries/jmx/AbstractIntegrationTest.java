@@ -18,13 +18,24 @@ package org.apache.aries.jmx;
 
 import static org.ops4j.pax.exam.CoreOptions.mavenConfiguration;
 import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.junit.Assert.*;
 
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.MBeanServerInvocationHandler;
+import javax.management.ObjectName;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * 
@@ -34,18 +45,57 @@ import org.osgi.framework.BundleContext;
  */
 @RunWith(JUnit4TestRunner.class)
 public class AbstractIntegrationTest {
+    
+    ServiceRegistration registration;
+    ServiceReference reference;
+    MBeanServer mbeanServer;
 
     @Inject
-    protected BundleContext context;
+    protected BundleContext bundleContext;
     
     @Configuration
-    public static Option[] config()
+    public static Option[] configure()
     {
         return options(
+            CoreOptions.equinox(),
             mavenConfiguration()
         );
     }
     
-   
-   
+    @Before
+    public void setUp() throws Exception {
+        mbeanServer = MBeanServerFactory.createMBeanServer();
+
+        registration = bundleContext.registerService(MBeanServer.class
+                .getCanonicalName(), mbeanServer, null);
+            
+        String key = MBeanServer.class.getCanonicalName();
+        System.out.println(key);
+
+        reference = bundleContext.getServiceReference(key);
+        assertNotNull(reference);
+        MBeanServer mbeanService = (MBeanServer) bundleContext.getService(reference);
+        assertNotNull(mbeanService);
+    }
+    
+    @After
+    public void tearDown() throws Exception {
+        bundleContext.ungetService(reference);
+        registration.unregister();
+    }
+    
+    protected <T> T getMBean(String name, Class<T> type) {
+        ObjectName objectName = null;
+        try {
+            objectName = new ObjectName(name);
+        } catch (Exception e) {
+            fail(e.toString());
+        }
+        assertNotNull(mbeanServer);
+        assertNotNull(objectName);
+        T mbean = (T) MBeanServerInvocationHandler.newProxyInstance(mbeanServer, objectName,
+                type, false);
+        return mbean;
+    }
+
 }
