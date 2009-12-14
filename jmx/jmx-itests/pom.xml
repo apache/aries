@@ -42,9 +42,30 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.aries.jmx</groupId>
+			<artifactId>aries-jmx-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.aries.jmx</groupId>
+			<artifactId>aries-jmx-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.compendium</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!--<dependency>
+			<groupId>org.apache.aries.jmx</groupId>
 			<artifactId>aries-jmx</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>org.ops4j.pax.exam</groupId>
 			<artifactId>pax-exam</artifactId>
