@@ -72,6 +72,7 @@
                             org.osgi.service.blueprint*,
                             org.osgi.service.event*;resolution:=optional,
                             net.sf.cglib*;resolution:=optional,
+                            org.osgi.service.cm;version="[1.2.1,2.0.0)",
                             *
                         </Import-Package>
                         <Export-Package>
