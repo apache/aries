@@ -41,6 +41,7 @@ import org.apache.aries.blueprint.pojos.PojoB;
 import org.apache.aries.blueprint.pojos.PojoGenerics;
 import org.apache.aries.blueprint.pojos.PojoListener;
 import org.apache.aries.blueprint.pojos.PojoRecursive;
+import org.apache.aries.blueprint.pojos.Primavera;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
@@ -333,6 +334,14 @@ public class WiringTest extends AbstractBlueprintTest {
         pojo = (PojoGenerics) obj;
         
         assertEquals(expectedMap, pojo.getMap());
+        
+        obj = repository.create("genericPojo");
+        assertTrue(obj instanceof Primavera);
+        assertEquals("string", ((Primavera) obj).prop);
+        
+        obj = repository.create("doubleGenericPojo");
+        assertTrue(obj instanceof Primavera);
+        assertEquals("stringToo", ((Primavera) obj).prop);
     }
     
     public void testCircular() throws Exception {

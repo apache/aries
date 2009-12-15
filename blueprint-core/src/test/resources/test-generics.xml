@@ -80,5 +80,13 @@
         </argument>
     </bean>
     
+		<bean id="genericPojoFactory" class="org.apache.aries.blueprint.pojos.PrimaveraFactory" />
+		<bean id="genericPojo" factory-ref="genericPojoFactory" factory-method="getObject">
+				<property name="property" value="string" />
+		</bean>
+
+		<bean id="doubleGenericPojo" factory-ref="genericPojoFactory" factory-method="getObject">
+	    	<property name="property" value="stringToo" />
+		</bean>
     
 </blueprint>
