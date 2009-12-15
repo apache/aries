@@ -281,6 +281,8 @@ public class BeanRecipe extends AbstractRecipe {
                 it.remove();
             } else if (instance ^ !Modifier.isStatic(mth.getModifiers())) {
                 it.remove();
+            } else if (mth.isBridge()) {
+                it.remove();
             }
         }
         // Find a direct match with assignment

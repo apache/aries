@@ -22,9 +22,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -104,7 +101,7 @@ public class ReflectionUtils {
         List<Method> methods = new ArrayList<Method>();
         for (Method method : clazz.getMethods()) {
             Class[] methodParams = method.getParameterTypes();
-            if (name.equals(method.getName()) && Void.TYPE.equals(method.getReturnType()) && methodParams.length == paramTypes.length) {
+            if (name.equals(method.getName()) && Void.TYPE.equals(method.getReturnType()) && methodParams.length == paramTypes.length && !method.isBridge()) {
                 boolean assignable = true;
                 for (int i = 0; i < paramTypes.length && assignable; i++) {
                     assignable &= paramTypes[i] == null || methodParams[i].isAssignableFrom(paramTypes[i]);
@@ -122,7 +119,7 @@ public class ReflectionUtils {
         if (properties == null) {
             List<PropertyDescriptor> props = new ArrayList<PropertyDescriptor>();
             for (Method method : clazz.getMethods()) {
-                if (Modifier.isStatic(method.getModifiers())) {
+                if (Modifier.isStatic(method.getModifiers()) || method.isBridge()) {
                     continue;
                 }
                 String name = method.getName();
