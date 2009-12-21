@@ -47,6 +47,11 @@
           <artifactId>junit</artifactId>
           <scope>test</scope>
       </dependency>
+      <dependency>
+      	<groupId>org.apache.aries.application</groupId>
+      	<artifactId>org.apache.aries.application.api</artifactId>
+      	<version>1.0.0-incubating-SNAPSHOT</version>
+      </dependency>
   </dependencies>
 
     <build>
