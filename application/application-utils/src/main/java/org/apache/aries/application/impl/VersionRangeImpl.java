@@ -25,7 +25,7 @@ import org.osgi.framework.Version;
 
 import org.apache.aries.application.VersionRange;
 
-public class VersionRangeImpl implements VersionRange
+public final class VersionRangeImpl implements VersionRange
 {
   private String version;
   /** The minimum desired version for the bundle */
@@ -63,11 +63,28 @@ public class VersionRangeImpl implements VersionRange
   }
   
   /* (non-Javadoc)
- * @see org.apache.aries.application.impl.VersionRange#toString()
- */
-@Override
+   * @see org.apache.aries.application.impl.VersionRange#toString()
+   */
+  @Override
   public String toString() {
     return this.version;
+  }
+  
+  public int hashCode()
+  {
+    return version.hashCode();
+  }
+  
+  public boolean equals(Object other)
+  {
+    if (other == this) return true;
+    if (other == null) return false;
+    
+    if (other instanceof VersionRangeImpl) {
+      return version.equals(((VersionRangeImpl)other).version);
+    }
+    
+    return false;
   }
   
   /* (non-Javadoc)
