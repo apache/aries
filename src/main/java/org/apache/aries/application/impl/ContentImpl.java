@@ -116,9 +116,25 @@ public final class ContentImpl implements Content
     
     if (other instanceof ContentImpl) {
       ContentImpl otherContent = (ContentImpl)other;
+      
+      Map<String,String> attributesWithoutVersion = attributes;
+      
+      if (attributes.containsKey("version")) {
+        attributesWithoutVersion = new HashMap<String, String>(attributes);
+        attributesWithoutVersion.remove("version");
+      }
+      
+      Map<String, String> otherAttributesWithoutVersion = otherContent.attributes;
+      
+      if (otherContent.attributes.containsKey("version")) {
+        otherAttributesWithoutVersion = new HashMap<String, String>(otherContent.attributes);
+        otherAttributesWithoutVersion.remove("version");
+      }
+      
       return contentName.equals(otherContent.contentName) && 
-             attributes.equals(otherContent.attributes) &&
-             directives.equals(otherContent.directives);
+             attributesWithoutVersion.equals(otherAttributesWithoutVersion) &&
+             directives.equals(otherContent.directives) &&
+             getVersion().equals(otherContent.getVersion());
     }
     
     return false;
