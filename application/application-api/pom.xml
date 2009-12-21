@@ -24,11 +24,11 @@
     <version>1.0.0-incubating-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.apache.aries.application.utils</artifactId>
+  <artifactId>org.apache.aries.application.api</artifactId>
   <packaging>bundle</packaging>
-  <name>Apache Aries Application Utils</name>
+  <name>Apache Aries Application API</name>
   <description>
-      Utilities for working with Aries Applications.
+      Application API.
   </description>
   
   <dependencies>
@@ -36,35 +36,9 @@
           <groupId>org.osgi</groupId>
           <artifactId>org.osgi.core</artifactId>
           <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.aries.testsupport</groupId>
-          <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-      	<groupId>org.apache.aries.application</groupId>
-      	<artifactId>org.apache.aries.application.api</artifactId>
-      	<version>1.0.0-incubating-SNAPSHOT</version>
-      </dependency>
+      </dependency> 
   </dependencies>
-
     <build>
-        <resources>
-            <resource>
-                <targetPath>OSGI-INF/blueprint</targetPath>
-                <filtering>false</filtering>
-                <directory>${basedir}/src/main/resources/OSGI-INF/blueprint</directory>
-                <includes>
-                    <include>*.xml</include>
-                </includes>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -72,10 +46,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.core</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.groupId}.api</Bundle-SymbolicName>
                         <Export-Package>
-                            org.apache.aries.application;version="${pom.version}",
-                            org.apache.aries.application.utils;version="${pom.version}"
+                            org.apache.aries.application;version="${pom.version}"
                         </Export-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
