@@ -41,13 +41,13 @@ public class ApplicationMetadataManagerImpl implements ApplicationMetadataManage
   /** The applications managed, keyed based on the app symbolic name and version */
   public ConcurrentMap<String, ApplicationMetadata> applications = new ConcurrentHashMap<String, ApplicationMetadata>();
 
-  public ApplicationMetadata getApplication(String applicationSymbolicName, Version version)
+  public ApplicationMetadata getApplicationMetadata (String applicationSymbolicName, Version version)
   {
     ApplicationMetadata metadata = applications.get(applicationSymbolicName + "_" + version);
     return metadata;
   }
 
-  public ApplicationMetadata parseApplication(InputStream in) throws IOException
+  public ApplicationMetadata parseApplicationMetadata(InputStream in) throws IOException
   {
     Manifest man = ManifestProcessor.parseManifest(in);
     
@@ -63,7 +63,7 @@ public class ApplicationMetadataManagerImpl implements ApplicationMetadataManage
     return existingApp == null;
   }
   
-  public ApplicationMetadata createApplication(Manifest man)
+  public ApplicationMetadata createApplicationMetadata(Manifest man)
   {
     return new ApplicationMetadataImpl(man);
   }

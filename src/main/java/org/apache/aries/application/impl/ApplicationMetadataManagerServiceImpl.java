@@ -52,19 +52,19 @@ public class ApplicationMetadataManagerServiceImpl implements ServiceFactory
       manager = man;
     }
 
-    public ApplicationMetadata getApplication(String applicationSymbolicName, Version version)
+    public ApplicationMetadata getApplicationMetadata (String applicationSymbolicName, Version version)
     {
-      return manager.getApplication(applicationSymbolicName, version);
+      return manager.getApplicationMetadata (applicationSymbolicName, version);
     }
   
-    public ApplicationMetadata parseApplication(InputStream in) throws IOException
+    public ApplicationMetadata parseApplicationMetadata(InputStream in) throws IOException
     {
-      return manager.parseApplication(in);
+      return manager.parseApplicationMetadata(in);
     }
   
-    public ApplicationMetadata createApplication(Manifest man)
+    public ApplicationMetadata createApplicationMetadata(Manifest man)
     {
-      return manager.createApplication(man);
+      return manager.createApplicationMetadata(man);
     }
   
     public boolean registerApplication(ApplicationMetadata app)
