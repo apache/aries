@@ -39,7 +39,7 @@ public interface ApplicationMetadataManager
    * 
    * @throws IOException if an IOException occurs reading from the stream.
    */
-  public ApplicationMetadata parseApplication(InputStream in) throws IOException;
+  public ApplicationMetadata parseApplicationMetadata(InputStream in) throws IOException;
   public Content parseContent(String content);
   public VersionRange parseVersionRange(String versionRange);
   /**
@@ -50,7 +50,7 @@ public interface ApplicationMetadataManager
    * @param man the manifest to read from
    * @return    the parsed application metadata.
    */
-  public ApplicationMetadata createApplication(Manifest man);
+  public ApplicationMetadata createApplicationMetadata(Manifest man);
   /**
    * This method is used to retrived a previously registered application metadata.
    * 
@@ -60,7 +60,11 @@ public interface ApplicationMetadataManager
    * @return the application metadata, or null if no application has been 
    *         registered.
    */
-  public ApplicationMetadata getApplication(String applicationSymbolicName, Version version);
+  public ApplicationMetadata getApplicationMetadata (String applicationSymbolicName, Version version);
+  
+  // MN: Dec 22: register, unregisterApplication probably will not be required
+  // as we implement AriesApplicationManager, so I'm not refactoring the method names. 
+  
   /**
    * This method is used to register an application. The ApplicationMetadata
    * passed in should be created via the createApplication or parseApplication
