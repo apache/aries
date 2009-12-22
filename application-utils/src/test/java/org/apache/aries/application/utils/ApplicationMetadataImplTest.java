@@ -33,7 +33,7 @@ public class ApplicationMetadataImplTest
   public void testBasicMetadataCreation() throws IOException
   {
     ApplicationMetadataManager manager = new ApplicationMetadataManagerImpl();
-    ApplicationMetadata app = manager.parseApplication(getClass().getResourceAsStream("/META-INF/APPLICATION.MF"));
+    ApplicationMetadata app = manager.parseApplicationMetadata(getClass().getResourceAsStream("/META-INF/APPLICATION.MF"));
     
     Assert.assertEquals("Travel Reservation", app.getApplicationName());
   }
