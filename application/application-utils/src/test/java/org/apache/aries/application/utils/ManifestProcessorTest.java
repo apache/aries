@@ -86,7 +86,7 @@ public class ManifestProcessorTest
   {
     ApplicationMetadataManagerImpl manager = new ApplicationMetadataManagerImpl();
     InputStream in = getClass().getClassLoader().getResourceAsStream("META-INF/APPLICATION.MF");
-    ApplicationMetadata am = manager.parseApplication(in);
+    ApplicationMetadata am = manager.parseApplicationMetadata(in);
     assertNotNull(am);
 
     assertEquals(am.getApplicationName(),appName);
@@ -117,7 +117,7 @@ public class ManifestProcessorTest
     
     InputStream in = getClass().getClassLoader().getResourceAsStream("META-INF/APPLICATION2.MF");
     
-    ApplicationMetadata am = manager.parseApplication(in);
+    ApplicationMetadata am = manager.parseApplicationMetadata(in);
     assertNotNull(am);
 
     assertEquals(am.getApplicationName(),appName);
@@ -144,7 +144,7 @@ public class ManifestProcessorTest
     
     InputStream in = getClass().getClassLoader().getResourceAsStream("META-INF/APPLICATION3.MF");
     
-    ApplicationMetadata am = manager.parseApplication(in);
+    ApplicationMetadata am = manager.parseApplicationMetadata(in);
     assertNotNull(am);
 
     assertEquals("Wrong number of bundles are in the application", 1, am.getApplicationContents().size());
