@@ -14,7 +14,8 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.aries.jmx</groupId>
@@ -28,7 +29,7 @@
     <description>
         This bundle contains the JMX Blueprint API
     </description>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -39,7 +40,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.groupId}.api</Bundle-SymbolicName>
                         <Export-Package>
-			  org.apache.aries.jmx.blueprint
+                            org.apache.aries.jmx.blueprint
                         </Export-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
