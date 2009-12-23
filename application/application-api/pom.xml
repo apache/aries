@@ -48,7 +48,8 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.groupId}.api</Bundle-SymbolicName>
                         <Export-Package>
-                            org.apache.aries.application;version="${pom.version}"
+                            org.apache.aries.application;version="${pom.version}",
+                            org.apache.aries.application.filesystem;version="${pom.version}"
                         </Export-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
