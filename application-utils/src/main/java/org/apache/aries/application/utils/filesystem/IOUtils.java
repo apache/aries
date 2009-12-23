@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.aries.application.filesystem.utils;
+package org.apache.aries.application.utils.filesystem;
 
 import java.io.Closeable;
 import java.io.File;

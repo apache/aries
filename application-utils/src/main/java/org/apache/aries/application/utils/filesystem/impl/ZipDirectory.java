@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.aries.application.filesystem.utils.impl;
+package org.apache.aries.application.utils.filesystem.impl;
 
 import java.io.File;
 import java.io.InputStream;
