@@ -6,8 +6,8 @@ import java.util.jar.Manifest;
 
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
-import org.apache.aries.application.filesystem.utils.FileSystem;
 import org.apache.aries.application.utils.AppConstants;
+import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.osgi.framework.Version;
 
 public class ManifestDefaultsInjector

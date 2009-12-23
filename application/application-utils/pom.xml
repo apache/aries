@@ -81,7 +81,8 @@
                         <Export-Package>
                             org.apache.aries.application;version="${pom.version}",
                             org.apache.aries.application.utils;version="${pom.version}", 
-                            org.apache.aries.application.filesystem.utils;version="${pom.version}"
+                            org.apache.aries.application.utils.filesystem;version="${pom.version}",
+                            org.apache.aries.application.utils.manifest;version="${pom.version}"
                         </Export-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
