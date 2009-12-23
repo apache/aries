@@ -1,0 +1,59 @@
+<project> 
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.aries.application</groupId>
+    <artifactId>application</artifactId>
+    <version>1.0.0-incubating-SNAPSHOT</version>
+  </parent>
+  <groupId>org.apache.aries.application.management</groupId>
+  <artifactId>org.apache.aries.application.management</artifactId>
+  <packaging>bundle</packaging> 
+  <name>Apache Aries application management</name>
+
+  <dependencies>
+  	<dependency>
+  		<groupId>org.osgi</groupId>
+  		<artifactId>org.osgi.core</artifactId>
+  		<scope>provided</scope>
+  	</dependency>
+  	<dependency>
+       <groupId>org.apache.aries.application</groupId>
+       <artifactId>org.apache.aries.application.api</artifactId>
+       <version>1.0.0-incubating-SNAPSHOT</version>
+    </dependency>
+  	<dependency>
+  		<groupId>org.osgi</groupId>
+  		<artifactId>org.osgi.compendium</artifactId>
+  		<version>4.2.0</version>
+  		<scope>provided</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.aries.application</groupId>
+  		<artifactId>org.apache.aries.application.utils</artifactId>
+  		<version>1.0.0-incubating-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
+  <dependencyManagement>
+  	<dependencies>
+  	</dependencies>
+  </dependencyManagement>
+  
+  <build>
+    <sourceDirectory>.src/main/java</sourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId> 
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration> 
+           <instructions>
+	         <Bundle-SymbolicName>${pom.groupId}.management</Bundle-SymbolicName>
+             <Private-Package>org.apache.aries.application.management.impl</Private-Package> 
+             <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
+             <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
+         </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
