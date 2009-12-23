@@ -29,7 +29,7 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 import org.apache.aries.application.filesystem.IFile;
-import org.apache.aries.application.filesystem.utils.IOUtils;
+import org.apache.aries.application.utils.filesystem.IOUtils;
 import org.apache.aries.application.utils.internal.MessageUtil;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValuePair;
