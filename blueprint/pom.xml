@@ -216,7 +216,6 @@
         <module>blueprint-bundle</module>
         <module>blueprint-sample</module>
         <module>blueprint-itests</module>
-        <module>blueprint-helloworld</module>
     </modules>
 
 </project>
