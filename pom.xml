@@ -52,6 +52,11 @@
       	<artifactId>org.apache.aries.application.api</artifactId>
       	<version>1.0.0-incubating-SNAPSHOT</version>
       </dependency>
+      <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.4.3</version>
+      </dependency>
   </dependencies>
 
     <build>
@@ -72,10 +77,11 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.core</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.groupId}.utils</Bundle-SymbolicName>
                         <Export-Package>
                             org.apache.aries.application;version="${pom.version}",
-                            org.apache.aries.application.utils;version="${pom.version}"
+                            org.apache.aries.application.utils;version="${pom.version}", 
+                            org.apache.aries.application.filesystem.utils;version="${pom.version}"
                         </Export-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
