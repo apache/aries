@@ -53,15 +53,6 @@ public class AbstractIntegrationTest {
     @Inject
     protected BundleContext bundleContext;
     
-    @Configuration
-    public static Option[] configure()
-    {
-        return options(
-            CoreOptions.equinox(),
-            mavenConfiguration()
-        );
-    }
-    
     @Before
     public void setUp() throws Exception {
         mbeanServer = MBeanServerFactory.createMBeanServer();

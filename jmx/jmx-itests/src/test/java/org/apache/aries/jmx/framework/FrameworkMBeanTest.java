@@ -26,6 +26,9 @@ import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.apache.aries.jmx.codec.BatchActionResult;
 import org.junit.Assert;
 import org.junit.Test;
+import org.ops4j.pax.exam.CoreOptions;
+import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.junit.Configuration;
 import org.osgi.jmx.framework.FrameworkMBean;
 
 /**
@@ -34,6 +37,14 @@ import org.osgi.jmx.framework.FrameworkMBean;
  * @version $Rev$ $Date$
  */
 public class FrameworkMBeanTest extends AbstractIntegrationTest {
+
+    @Configuration
+    public static Option[] configuration() {
+        return CoreOptions.options(CoreOptions.equinox(), 
+                CoreOptions.mavenBundle().groupId("org.apache.aries.jmx").artifactId("aries-jmx-api").versionAsInProject(),
+                CoreOptions.mavenBundle().groupId("org.apache.aries.jmx").artifactId("aries-jmx-core").versionAsInProject()
+        );
+    }  
 
     @Test
     public void testSetBundleStartLevels() throws IOException {
