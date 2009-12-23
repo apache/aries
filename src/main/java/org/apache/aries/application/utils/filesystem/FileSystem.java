@@ -17,15 +17,15 @@
  * under the License.
  */
 
-package org.apache.aries.application.filesystem.utils;
+package org.apache.aries.application.utils.filesystem;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.aries.application.filesystem.IDirectory;
-import org.apache.aries.application.filesystem.utils.impl.DirectoryImpl;
-import org.apache.aries.application.filesystem.utils.impl.ZipDirectory;
+import org.apache.aries.application.utils.filesystem.impl.DirectoryImpl;
+import org.apache.aries.application.utils.filesystem.impl.ZipDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
