@@ -53,6 +53,16 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
+                <artifactId>aries-jmx-blueprint-api</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jmx</groupId>
+                <artifactId>aries-jmx-blueprint-core</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jmx</groupId>
                 <artifactId>aries-jmx</artifactId>
                 <version>${version}</version>
             </dependency>
@@ -95,6 +105,16 @@
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-service</artifactId>
                 <version>1.4</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.sun.jdmk</groupId>
+                        <artifactId>jmxtools</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.jmx</groupId>
+                        <artifactId>jmxri</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.url</groupId>
@@ -145,7 +165,9 @@
 
     <modules>
         <module>jmx-api</module>
+        <module>jmx-blueprint-api</module>
         <module>jmx-core</module>
+        <module>jmx-blueprint-core</module>
         <module>jmx-bundle</module>
         <module>jmx-itests</module>
   </modules>
