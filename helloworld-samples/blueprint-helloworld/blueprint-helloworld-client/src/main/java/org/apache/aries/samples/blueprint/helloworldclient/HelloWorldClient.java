@@ -16,18 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.helloworldserver;
+package org.apache.aries.samples.blueprint.helloworldclient;
+
 import org.apache.aries.blueprint.helloworldapi.HelloWorldService;
 
-public class HelloWorldServiceImpl implements HelloWorldService {
+public class HelloWorldClient {
 
-        public void hello() {
-                System.out.println("======>>> A message from the server: Hello World!");
-        }
+        HelloWorldService helloWorldService = null;
 
         public void startUp() {
-                System.out.println("======>>> Starting HelloWorld Server");
+                System.out.println("========>>>>Client HelloWorld: About to execute a method from the Hello World service");
+                helloWorldService.hello();
+                System.out.println("========>>>>Client HelloWorld: ... if you didn't just see a Hello World message something went wrong");
         }
+
+        public HelloWorldService getHelloWorldService() {
+                return helloWorldService;
+        }
+
+        public void setHelloWorldService(HelloWorldService helloWorldService) {
+                this.helloWorldService = helloWorldService;
+
+        }
+
 }
 
- 
