@@ -23,7 +23,7 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aries-jmx-api</artifactId>
+    <artifactId>org.apache.aries.jmx.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX API</name>
     <description>
@@ -38,7 +38,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.api</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
                             org.osgi.jmx;version="1.0.0";uses:="javax.management.openmbean",
                             org.osgi.jmx.framework;version="1.5.0";uses:="org.osgi.jmx,javax.management.openmbean",
