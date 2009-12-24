@@ -34,11 +34,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
-            <artifactId>aries-jmx-api</artifactId>
+            <artifactId>org.apache.aries.jmx.api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
-            <artifactId>aries-jmx-core</artifactId>
+            <artifactId>org.apache.aries.jmx.core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -76,11 +76,11 @@
                             javax.management.openmbean,
                             *
                         </Import-Package>
-                        <Bundle-Activator>org.apache.aries.jmx.Activator</Bundle-Activator>
-                        <!-- Not currently exporting from the standalone -->
                         <Export-Package>
-                            !* 
+                            org.osgi.jmx*,
+                            org.apache.aries.jmx.codec;version="${pom.version}"
                         </Export-Package>
+                        <Bundle-Activator>org.apache.aries.jmx.Activator</Bundle-Activator>
                         <!-- include the right NOTICE with attribution to the OSGi alliance -->
                         <Include-Resource>{maven-resources},META-INF/NOTICE=../NOTICE</Include-Resource>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
@@ -107,8 +107,8 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.apache.aries.jmx:aries-jmx-api</include>
-                                    <include>org.apache.aries.jmx:aries-jmx-core</include>
+                                    <include>org.apache.aries.jmx:org.apache.aries.jmx.api</include>
+                                    <include>org.apache.aries.jmx:org.apache.aries.jmx.core</include>
                                 </includes>
                             </artifactSet>
                             <createSourcesJar>${createSourcesJar}</createSourcesJar>
