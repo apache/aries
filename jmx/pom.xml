@@ -43,27 +43,32 @@
         <dependencies>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
-                <artifactId>aries-jmx-api</artifactId>
+                <artifactId>org.apache.aries.jmx.api</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
-                <artifactId>aries-jmx-core</artifactId>
+                <artifactId>org.apache.aries.jmx.core</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
-                <artifactId>aries-jmx-blueprint-api</artifactId>
+                <artifactId>org.apache.aries.jmx.blueprint.api</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
-                <artifactId>aries-jmx-blueprint-core</artifactId>
+                <artifactId>org.apache.aries.jmx.blueprint.core</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
                 <artifactId>aries-jmx</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jmx</groupId>
+                <artifactId>aries-jmx-blueprint</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
@@ -169,6 +174,7 @@
         <module>jmx-core</module>
         <module>jmx-blueprint-core</module>
         <module>jmx-bundle</module>
+        <module>jmx-blueprint-bundle</module>
         <module>jmx-itests</module>
   </modules>
 
