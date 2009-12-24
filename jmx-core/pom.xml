@@ -23,7 +23,7 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aries-jmx-core</artifactId>
+    <artifactId>org.apache.aries.jmx.core</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Core</name>
     <description>
@@ -34,7 +34,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
-            <artifactId>aries-jmx-api</artifactId>
+            <artifactId>org.apache.aries.jmx.api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -62,7 +62,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.core</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Activator>org.apache.aries.jmx.Activator</Bundle-Activator>
                         <Import-Package>
                             !org.apache.aries.jmx*,

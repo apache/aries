@@ -23,7 +23,7 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aries-jmx-blueprint-core</artifactId>
+    <artifactId>org.apache.aries.jmx.blueprint.core</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Blueprint Core</name>
     <description>
@@ -33,7 +33,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
-            <artifactId>aries-jmx-blueprint-api</artifactId>
+            <artifactId>org.apache.aries.jmx.blueprint.api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -73,7 +73,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.core</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Activator>org.apache.aries.jmx.blueprint.impl.Activator</Bundle-Activator>
                         <Export-Package>
                             org.apache.aries.jmx.blueprint.impl.codec*;version=${project.version} 

@@ -23,9 +23,9 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aries-jmx</artifactId>
+    <artifactId>aries-jmx-blueprint</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Aries JMX Bundle</name>
+    <name>Apache Aries JMX Blueprint Bundle</name>
     <description>
        This bundle contains the standalone implementation of the along with the API.
     </description>
@@ -34,11 +34,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
-            <artifactId>org.apache.aries.jmx.api</artifactId>
+            <artifactId>org.apache.aries.jmx.blueprint.api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
-            <artifactId>org.apache.aries.jmx.core</artifactId>
+            <artifactId>org.apache.aries.jmx.blueprint.core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -60,29 +60,21 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.groupId}.blueprint</Bundle-SymbolicName>
                         <Import-Package>
                             !org.apache.aries.jmx*,
-                            org.osgi.framework;version="1.5.0",
-                            org.osgi.service.packageadmin;version="1.2.0",
-                            org.osgi.service.startlevel;version="1.1.0",
-                            org.osgi.service.cm;version="1.3.0";resolution:="optional",
-                            org.osgi.service.permissionadmin;version="1.2.0";resolution:="optional",
-                            org.osgi.service.provisioning;version="1.2.0";resolution:="optional",
-                            org.osgi.service.useradmin;version="1.1.0";resolution:="optional",
-                            org.osgi.util.tracker,
-                            org.osgi.service.log,
                             javax.management,
                             javax.management.openmbean,
+                            org.osgi.framework;version="1.5.0",
+                            org.osgi.service.blueprint.container;version="1.0",
+                            org.osgi.service.blueprint.reflect;version="1.0",
+                            org.osgi.util.tracker;version="1.4",
                             *
                         </Import-Package>
                         <Export-Package>
-                            org.osgi.jmx*,
-                            org.apache.aries.jmx.codec;version="${pom.version}"
+                            org.apache.aries.jmx.blueprint
                         </Export-Package>
-                        <Bundle-Activator>org.apache.aries.jmx.Activator</Bundle-Activator>
-                        <!-- include the right NOTICE with attribution to the OSGi alliance -->
-                        <Include-Resource>{maven-resources},META-INF/NOTICE=../NOTICE</Include-Resource>
+                        <Bundle-Activator>org.apache.aries.jmx.blueprint.impl.Activator</Bundle-Activator>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                         <_failok>true</_failok>
@@ -107,8 +99,8 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.apache.aries.jmx:org.apache.aries.jmx.api</include>
-                                    <include>org.apache.aries.jmx:org.apache.aries.jmx.core</include>
+                                    <include>org.apache.aries.jmx:org.apache.aries.jmx.blueprint.api</include>
+                                    <include>org.apache.aries.jmx:org.apache.aries.jmx.blueprint.core</include>
                                 </includes>
                             </artifactSet>
                             <createSourcesJar>${createSourcesJar}</createSourcesJar>
