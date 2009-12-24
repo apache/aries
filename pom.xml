@@ -23,7 +23,7 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aries-jmx-blueprint-api</artifactId>
+    <artifactId>org.apache.aries.jmx.blueprint.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Blueprint API</name>
     <description>
@@ -38,7 +38,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.api</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
                             org.apache.aries.jmx.blueprint
                         </Export-Package>
