@@ -78,8 +78,7 @@ public class BlueprintMBeanTest {
                 CoreOptions.mavenBundle().groupId("org.ops4j.pax.logging").artifactId("pax-logging-service").versionAsInProject(),
                 CoreOptions.mavenBundle().groupId("org.apache.aries.blueprint").artifactId("aries-blueprint").versionAsInProject(),
                 CoreOptions.mavenBundle().groupId("org.apache.aries.blueprint").artifactId("org.apache.aries.blueprint.sample").versionAsInProject(),
-                CoreOptions.mavenBundle().groupId("org.apache.aries.jmx").artifactId("aries-jmx-blueprint-api").versionAsInProject(),
-                CoreOptions.mavenBundle().groupId("org.apache.aries.jmx").artifactId("aries-jmx-blueprint-core").versionAsInProject()
+                CoreOptions.mavenBundle().groupId("org.apache.aries.jmx").artifactId("aries-jmx-blueprint").versionAsInProject()
         );
     }  
 
