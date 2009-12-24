@@ -41,22 +41,12 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
-            <artifactId>aries-jmx-api</artifactId>
+            <artifactId>aries-jmx</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
-            <artifactId>aries-jmx-core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.jmx</groupId>
-            <artifactId>aries-jmx-blueprint-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.jmx</groupId>
-            <artifactId>aries-jmx-blueprint-core</artifactId>
+            <artifactId>aries-jmx-blueprint</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -146,6 +136,7 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>maven-paxexam-plugin</artifactId>
@@ -164,6 +155,7 @@
                     </settings>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
