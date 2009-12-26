@@ -340,7 +340,7 @@ public interface BlueprintMetadataMBean {
     Item            VALUES_ITEM             = new Item(
                                                     VALUES,
                                                     "All the values",
-                                                    Item.arrayType(1, JmxConstants.BYTE_ARRAY_TYPE));
+                                                    Item.arrayType(2, SimpleType.BYTE));
     
 
     /**
