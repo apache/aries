@@ -40,10 +40,13 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
 
     @Configuration
     public static Option[] configuration() {
-        return CoreOptions.options(CoreOptions.equinox(), 
-                CoreOptions.mavenBundle().groupId("org.apache.aries.jmx").artifactId("org.apache.aries.jmx").versionAsInProject()
+        Option[] options = CoreOptions.options(
+            CoreOptions.equinox(), 
+            mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx")
         );
-    }  
+        options = updateOptions(options);
+        return options;
+    }
 
     @Test
     public void testSetBundleStartLevels() throws IOException {

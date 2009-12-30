@@ -16,8 +16,10 @@
  */
 package org.apache.aries.jmx;
 
-import static org.ops4j.pax.exam.CoreOptions.mavenConfiguration;
 import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
+import static org.ops4j.pax.exam.OptionUtils.combine;
+import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import static org.junit.Assert.*;
 
 import javax.management.MBeanServer;
@@ -31,7 +33,6 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -48,7 +49,7 @@ public class AbstractIntegrationTest {
     
     ServiceRegistration registration;
     ServiceReference reference;
-    MBeanServer mbeanServer;
+    protected MBeanServer mbeanServer;
 
     @Inject
     protected BundleContext bundleContext;
@@ -87,6 +88,24 @@ public class AbstractIntegrationTest {
         T mbean = (T) MBeanServerInvocationHandler.newProxyInstance(mbeanServer, objectName,
                 type, false);
         return mbean;
+    }
+
+    public static MavenArtifactProvisionOption mavenBundle(String groupId, String artifactId) {
+        return CoreOptions.mavenBundle().groupId(groupId).artifactId(artifactId).versionAsInProject();
+    }
+
+    protected static Option[] updateOptions(Option[] options) {
+        // We need to add pax-exam-junit here when running with the ibm
+        // jdk to avoid the following exception during the test run:
+        // ClassNotFoundException: org.ops4j.pax.exam.junit.Configuration
+        if ("IBM Corporation".equals(System.getProperty("java.vendor"))) {
+            Option[] ibmOptions = options(
+                wrappedBundle(mavenBundle("org.ops4j.pax.exam", "pax-exam-junit"))
+            );
+            options = combine(ibmOptions, options);
+        }
+
+        return options;
     }
 
 }
