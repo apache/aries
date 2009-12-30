@@ -38,8 +38,8 @@ import java.util.zip.ZipOutputStream;
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.utils.AppConstants;
-import org.junit.AfterClass;
 import org.apache.aries.unittest.junit.Assert;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -237,6 +237,11 @@ public class FileSystemTest
     assertTrue(file.isFile());
     
     List<IFile> files = dir.listFiles();
+    for (IFile f: files) { 
+      if (f.getName().equalsIgnoreCase(".svn")) { 
+        files.remove(f);
+      }
+    }
     
     assertEquals(1, files.size());
     
@@ -247,9 +252,11 @@ public class FileSystemTest
     assertNotNull(metaInf.convert());
     
     for (IFile aFile : dir) {
-      assertTrue(aFile.isDirectory());
-      assertEquals("META-INF", aFile.getName());
-      assertNotNull(aFile.convert());
+      if (!aFile.getName().equalsIgnoreCase(".svn")) { 
+        assertTrue(aFile.isDirectory());
+        assertEquals("META-INF", aFile.getName());
+        assertNotNull(aFile.convert());
+      }
     }
     
     InputStream is = file.open();
