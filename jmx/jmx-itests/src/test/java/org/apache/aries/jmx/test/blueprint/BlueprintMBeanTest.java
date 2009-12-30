@@ -28,6 +28,7 @@ import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
 
+import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.apache.aries.jmx.blueprint.BlueprintMetadataMBean;
 import org.apache.aries.jmx.blueprint.BlueprintStateMBean;
 import org.apache.aries.jmx.test.blueprint.framework.BeanPropertyValidator;
@@ -59,52 +60,42 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
-@RunWith(JUnit4TestRunner.class)
-public class BlueprintMBeanTest {
+public class BlueprintMBeanTest extends AbstractIntegrationTest {
     
-    @Inject
-    private BundleContext rbc;
-    
-    MBeanServer mbs;
-    ServiceRegistration mbsr;
-    
-    // will run before each test
     @Configuration
-    public static Option[] configuration()
-    {      
-        return CoreOptions.options(CoreOptions.equinox(), 
-                CoreOptions.mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.configadmin").versionAsInProject(), 
-                CoreOptions.mavenBundle().groupId("org.ops4j.pax.logging").artifactId("pax-logging-api").versionAsInProject(),
-                CoreOptions.mavenBundle().groupId("org.ops4j.pax.logging").artifactId("pax-logging-service").versionAsInProject(),
-                CoreOptions.mavenBundle().groupId("org.osgi").artifactId("org.osgi.compendium").versionAsInProject(),
-                CoreOptions.mavenBundle().groupId("org.apache.aries").artifactId("org.apache.aries.util").versionAsInProject(),
-                CoreOptions.mavenBundle().groupId("org.apache.aries.blueprint").artifactId("org.apache.aries.blueprint").versionAsInProject(),
-                CoreOptions.mavenBundle().groupId("org.apache.aries.blueprint").artifactId("org.apache.aries.blueprint.sample").versionAsInProject(),
-                CoreOptions.mavenBundle().groupId("org.apache.aries.jmx").artifactId("org.apache.aries.jmx.blueprint").versionAsInProject()
+    public static Option[] configuration() {    
+        Option[] options = CoreOptions.options(
+                CoreOptions.equinox(), 
+                mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-api"), 
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-service"), 
+                mavenBundle("org.osgi", "org.osgi.compendium") ,
+                mavenBundle("org.apache.aries", "org.apache.aries.util"), 
+                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
+                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample"), 
+                mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.blueprint")
         );
+        options = updateOptions(options);
+        return options;
     }  
 
     @Before
-    public void setup() throws Exception {
-       System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Before Test");
-       
-       // Create a MBean Server
-       //MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-       mbs = MBeanServerFactory.createMBeanServer();
-       
-       // Register as a service, so that the blueprint mbean impl can found the server.
-       mbsr = rbc.registerService(MBeanServer.class.getCanonicalName(), mbs, null);
+    public void setUp() throws Exception {
+        super.setUp();
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Before Test");
        
        // Wait MBeans register in server
        int i=0;
-       while (true){
+       while (true) {
            try {
-               mbs.getObjectInstance(new ObjectName(BlueprintStateMBean.OBJECTNAME));
-               mbs.getObjectInstance(new ObjectName(BlueprintMetadataMBean.OBJECTNAME));
+               mbeanServer.getObjectInstance(new ObjectName(BlueprintStateMBean.OBJECTNAME));
+               mbeanServer.getObjectInstance(new ObjectName(BlueprintMetadataMBean.OBJECTNAME));
                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Found MBeans");
                break;
-           }catch(InstanceNotFoundException e){
-               if (i==5) throw new Exception(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BlueprintStateMBean & BlueprintMetadataMBean are not found in server");
+           } catch (InstanceNotFoundException e) {
+               if (i == 5) {
+                   throw new Exception(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BlueprintStateMBean & BlueprintMetadataMBean are not found in server");
+               }
            }
            i++;
            Thread.sleep(1000);
@@ -112,17 +103,11 @@ public class BlueprintMBeanTest {
        
        // Wait enough time for osgi framework and blueprint bundles to be set up
        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Waiting for bundles to be set up");
-       Thread.sleep(10000);
-       
+       Thread.sleep(10000);       
     }
     
-    @After
-    public void teardown(){
-        if (mbsr!=null) mbsr.unregister();
-    }
-        
     @Test
-    public void BlueprintSample()throws Exception{
+    public void BlueprintSample() throws Exception {
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Start Test Blueprint Sample");
         
         //////////////////////////////
@@ -132,7 +117,7 @@ public class BlueprintMBeanTest {
         //find the Blueprint Sample bundle id and the blueprint extender bundle id
         long sampleBundleId = -1;
         long extenderBundleId = -1;     // the blueprint extender bundle "org.apache.geronimo.blueprint.geronimo-blueprint" is also a blueprint bundle.
-        for (Bundle bundle : rbc.getBundles()){
+        for (Bundle bundle : bundleContext.getBundles()){
             if (bundle.getSymbolicName().equals("org.apache.aries.blueprint.sample")) sampleBundleId = bundle.getBundleId();
             if (bundle.getSymbolicName().equals("org.apache.aries.blueprint")) extenderBundleId = bundle.getBundleId();
         }
@@ -140,7 +125,7 @@ public class BlueprintMBeanTest {
         if (-1==extenderBundleId) fail("Blueprint Extender Bundle is not found!");
         
         //retrieve the proxy object
-        BlueprintStateMBean stateProxy = (BlueprintStateMBean) MBeanServerInvocationHandler.newProxyInstance(mbs, new ObjectName(BlueprintStateMBean.OBJECTNAME), BlueprintStateMBean.class, false);
+        BlueprintStateMBean stateProxy = (BlueprintStateMBean) MBeanServerInvocationHandler.newProxyInstance(mbeanServer, new ObjectName(BlueprintStateMBean.OBJECTNAME), BlueprintStateMBean.class, false);
         
         // test getBlueprintBundleIds
         long[] bpBundleIds = stateProxy.getBlueprintBundleIds();
@@ -158,19 +143,19 @@ public class BlueprintMBeanTest {
         //////////////////////////////
         
         //find the Blueprint Sample bundle's container service id
-        Bundle sampleBundle = rbc.getBundle(sampleBundleId);
+        Bundle sampleBundle = bundleContext.getBundle(sampleBundleId);
         String filter = "(&(osgi.blueprint.container.symbolicname=" // no similar one in interfaces
                 + sampleBundle.getSymbolicName() + ")(osgi.blueprint.container.version=" + sampleBundle.getVersion() + "))";
         ServiceReference[] serviceReferences = null;
         try {
-            serviceReferences = rbc.getServiceReferences(BlueprintContainer.class.getName(), filter);
+            serviceReferences = bundleContext.getServiceReferences(BlueprintContainer.class.getName(), filter);
         } catch (InvalidSyntaxException e) {
             throw new RuntimeException(e);
         }
         long sampleBlueprintContainerServiceId = (Long) serviceReferences[0].getProperty(Constants.SERVICE_ID);
         
         //retrieve the proxy object
-        BlueprintMetadataMBean metadataProxy = (BlueprintMetadataMBean) MBeanServerInvocationHandler.newProxyInstance(mbs, new ObjectName(BlueprintMetadataMBean.OBJECTNAME), BlueprintMetadataMBean.class, false);
+        BlueprintMetadataMBean metadataProxy = (BlueprintMetadataMBean) MBeanServerInvocationHandler.newProxyInstance(mbeanServer, new ObjectName(BlueprintMetadataMBean.OBJECTNAME), BlueprintMetadataMBean.class, false);
         
         // test getBlueprintContainerServiceIds
         long[] bpContainerServiceIds = metadataProxy.getBlueprintContainerServiceIds();
@@ -275,6 +260,5 @@ public class BlueprintMBeanTest {
         bv_circularReference.addPropertyValidators(bpv_list_2);
         bv_circularReference.validate(metadataProxy.getComponentMetadata(sampleBlueprintContainerServiceId, "circularReference"));
     }
-    
-        
+            
 }
