@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.aries.application.utils.manifest.test;
+package org.apache.aries.application.utils.manifest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -37,10 +37,15 @@ import org.junit.Test;
 
 public class BundleManifestTest
 {
+  private static File _testfile;
+  
   @BeforeClass
   public static void setup() throws Exception
   {
-    ZipOutputStream out = new ZipOutputStream(new FileOutputStream("../src/test/resources/bundles/nonExploded.jar"));
+    _testfile = new File ("./bundleManifestTest/nonExploded.jar");
+    _testfile.getParentFile().mkdirs();
+    
+    ZipOutputStream out = new ZipOutputStream(new FileOutputStream(_testfile));
     ZipEntry ze = new ZipEntry("META-INF/");
     out.putNextEntry(ze);
     
@@ -62,7 +67,7 @@ public class BundleManifestTest
   @AfterClass
   public static void cleanup()
   {
-    new File("../src/test/resources/bundles/nonExploded.jar").delete();
+    _testfile.delete();
   }
   
   @Test
@@ -77,11 +82,11 @@ public class BundleManifestTest
   public void testZip() throws Exception
   {
     // make sure that the manifest is not the first file in the jar archive
-    JarInputStream jarIs = new JarInputStream(new FileInputStream("../src/test/resources/bundles/nonExploded.jar"));
+    JarInputStream jarIs = new JarInputStream(new FileInputStream(_testfile));
     assertNull(jarIs.getManifest());
     jarIs.close();
     
-    BundleManifest sut = BundleManifest.fromBundle(new File("../src/test/resources/bundles/nonExploded.jar"));
+    BundleManifest sut = BundleManifest.fromBundle(_testfile);
     assertEquals("com.ibm.test", sut.getSymbolicName());
     assertEquals("1.0.0", sut.getVersion().toString());
   }

@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import org.osgi.framework.Version;
 
 import org.apache.aries.application.VersionRange;
+import org.apache.aries.application.utils.internal.MessageUtil;
 
 public final class VersionRangeImpl implements VersionRange
 {
@@ -153,11 +154,11 @@ public final class VersionRangeImpl implements VersionRange
     }
 
     if (!minimumVersion.equals(maximumVersion)) {
-      throw new IllegalArgumentException("Failed to parse " + version + " for the exact version. Could not parse " + version);
+      throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0011E", version));
     }
 
     if (!!!isExactVersion()) {
-      throw new IllegalArgumentException("Failed to parse " + version + " for the exact version.");
+      throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0009E", version));
     }
 
     return success;
@@ -193,7 +194,7 @@ public final class VersionRangeImpl implements VersionRange
           maximumVersion = new Version(maxVersion.trim());
           success = true;
         } catch (NumberFormatException nfe) {
-          throw new IllegalArgumentException("Failed to parse " + version + ". Could not parse " + versions, nfe);
+          throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0009E", version), nfe);
         }
       } else {
         try {
@@ -201,11 +202,11 @@ public final class VersionRangeImpl implements VersionRange
           else minimumVersion = new Version(versions.trim());
           success = true;
         } catch (NumberFormatException nfe) {
-          throw new IllegalArgumentException("Failed to parse " + version + ". Could not parse " + versions, nfe);
+          throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0009E", version), nfe);
         }
       }      
     } else {
-      throw new IllegalArgumentException("Failed to parse " + version + ". Could not parse " + version);
+      throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0009E", version));
     }
     
     return success;
