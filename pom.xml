@@ -72,8 +72,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.aries</groupId>
+            <artifactId>org.apache.aries.util</artifactId>
+            <version>1.0.0-incubating-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>aries-blueprint</artifactId>
+            <artifactId>org.apache.aries.blueprint</artifactId>
             <version>1.0.0-incubating-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
