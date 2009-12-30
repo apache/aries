@@ -41,12 +41,12 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
-            <artifactId>aries-jmx</artifactId>
+            <artifactId>org.apache.aries.jmx</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
-            <artifactId>aries-jmx-blueprint</artifactId>
+            <artifactId>org.apache.aries.jmx.blueprint</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

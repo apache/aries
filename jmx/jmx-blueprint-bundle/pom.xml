@@ -23,7 +23,7 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aries-jmx-blueprint</artifactId>
+    <artifactId>org.apache.aries.jmx.blueprint</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Blueprint Bundle</name>
     <description>
@@ -60,7 +60,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.blueprint</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
                             !org.apache.aries.jmx*,
                             javax.management,
