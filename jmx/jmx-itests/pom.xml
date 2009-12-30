@@ -102,12 +102,6 @@
             <artifactId>pax-exam-container-default</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--
-            <dependency> <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-api</artifactId> <version>1.4</version> </dependency>
-            <dependency> <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-service</artifactId> <version>1.4</version> </dependency>
-        -->
         <dependency>
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-mvn</artifactId>
@@ -128,13 +122,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
             </plugin>
 
             <plugin>
