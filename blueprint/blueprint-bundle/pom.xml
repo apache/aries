@@ -118,14 +118,14 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.apache.aries.blueprint:aries-blueprint-api</include>
+                                    <include>org.apache.aries.blueprint:org.apache.aries.blueprint.api</include>
                                     <include>org.apache.aries.blueprint:org.apache.aries.blueprint.core</include>
                                     <include>org.apache.aries.blueprint:org.apache.aries.blueprint.cm</include>
                                 </includes>
                             </artifactSet>
                             <filters>
                                  <filter>
-                                    <artifact>org.apache.aries.blueprint:aries-blueprint-api</artifact>
+                                    <artifact>org.apache.aries.blueprint:org.apache.aries.blueprint.api</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
@@ -175,7 +175,7 @@
                                     <artifactItems>
                                         <artifactItem>
                                             <groupId>org.apache.aries.blueprint</groupId>
-                                            <artifactId>aries-blueprint-api</artifactId>
+                                            <artifactId>org.apache.aries.blueprint.api</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                         <artifactItem>
