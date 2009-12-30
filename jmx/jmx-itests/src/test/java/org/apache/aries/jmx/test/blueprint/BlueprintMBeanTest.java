@@ -76,7 +76,9 @@ public class BlueprintMBeanTest {
                 CoreOptions.mavenBundle().groupId("org.apache.felix").artifactId("org.apache.felix.configadmin").versionAsInProject(), 
                 CoreOptions.mavenBundle().groupId("org.ops4j.pax.logging").artifactId("pax-logging-api").versionAsInProject(),
                 CoreOptions.mavenBundle().groupId("org.ops4j.pax.logging").artifactId("pax-logging-service").versionAsInProject(),
-                CoreOptions.mavenBundle().groupId("org.apache.aries.blueprint").artifactId("aries-blueprint").versionAsInProject(),
+                CoreOptions.mavenBundle().groupId("org.osgi").artifactId("org.osgi.compendium").versionAsInProject(),
+                CoreOptions.mavenBundle().groupId("org.apache.aries").artifactId("org.apache.aries.util").versionAsInProject(),
+                CoreOptions.mavenBundle().groupId("org.apache.aries.blueprint").artifactId("org.apache.aries.blueprint").versionAsInProject(),
                 CoreOptions.mavenBundle().groupId("org.apache.aries.blueprint").artifactId("org.apache.aries.blueprint.sample").versionAsInProject(),
                 CoreOptions.mavenBundle().groupId("org.apache.aries.jmx").artifactId("aries-jmx-blueprint").versionAsInProject()
         );
