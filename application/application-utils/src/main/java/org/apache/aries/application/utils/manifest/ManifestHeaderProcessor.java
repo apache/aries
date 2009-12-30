@@ -28,9 +28,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.aries.application.VersionRange;
+import org.apache.aries.application.impl.VersionRangeImpl;
 import org.apache.aries.application.utils.internal.MessageUtil;
 import org.osgi.framework.Constants;
-import org.osgi.framework.Version;
 
 
 public class ManifestHeaderProcessor
@@ -398,166 +399,6 @@ public class ManifestHeaderProcessor
     return genericNameWithNameValuePairProcess(s).get(0); // should just return the first one
   }
 
-  
-  /**
-   * A simple class to represent Version Range information.<br>
-   * Intended to provide version range parsing for callers.
-   */
-  public static class VersionRange
-  {
-    private boolean minimumExclusive = false;
-    private boolean maximumExclusive = false;
-    private Version minimumVersion = null;
-    private Version maximumVersion = null;
-    /** exact version */
-    private boolean exactVersion = false;
-
-    /**
-     * Private, constructed via ManifestHeaderProcessor.parseVersionRange
-     * @param version The string data to parse.
-     */
-    private VersionRange(String version) throws IllegalArgumentException
-    {
-      if (version != null) {
-        version = version.trim();
-        if(version.startsWith("\"") && version.endsWith("\"")){
-          version = version.substring(1,version.length()-1).trim();
-        }
-        
-        if ((version.startsWith("[") || version.startsWith("("))
-            && (version.endsWith("]") || version.endsWith(")"))) {
-          if (version.startsWith("[")) minimumExclusive = false;
-          else if (version.startsWith("(")) minimumExclusive = true;
-
-          if (version.endsWith("]")) maximumExclusive = false;
-          else if (version.endsWith(")")) maximumExclusive = true;
-
-          int index = version.indexOf(',');
-          String minVersion = version.substring(1, index);
-          String maxVersion = version.substring(index + 1, version.length() - 1);
-
-          try {
-            minimumVersion = Version.parseVersion(minVersion);
-            maximumVersion = Version.parseVersion(maxVersion);
-            
-            if ((minimumVersion.compareTo(maximumVersion) == 0) 
-                && !!!maximumExclusive && !!!minimumExclusive){
-              exactVersion = true;             
-            }
-          } catch (NumberFormatException nfe) {
-            throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0009E", version), nfe);
-          }
-        } else {
-          minimumExclusive = false;
-          maximumExclusive = false;
-          
-          try {
-            minimumVersion = Version.parseVersion(version);
-          } catch (NumberFormatException nfe) {
-            throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0009E", version), nfe);
-          }
-        }
-      }else{
-        throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0010E"));        
-      }
-    }
-    
-    /**
-     * Private, constructed via ManifestHeaderProcessor.parseVersionRange
-     * @param version The string data to parse.
-     * @param exactVersion whether this is an exact version
-     */
-    private VersionRange(String version, boolean exactVersion) throws IllegalArgumentException {
-      this(version);
-      this.exactVersion = exactVersion;
-      
-      if (this.maximumVersion == null) {
-        this.maximumVersion = this.minimumVersion;
-      }
-      if (exactVersion) {
-        if (!!!minimumVersion.equals(maximumVersion) || minimumExclusive || maximumExclusive) {
-          throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0011E", version));
-        }
-      }
-    }
-
-    /**
-     * This method checks that the provided version matches the desired version.
-     * 
-     * @param version the version.
-     * @return        true if the version matches, false otherwise.
-     */
-    public boolean matches(Version version)
-    {
-      boolean result;
-      if (this.getMaximumVersion() == null) {
-        result = this.getMinimumVersion().compareTo(version) <= 0;
-      } else {
-        int minN = this.isMinimumExclusive() ? 0 : 1;
-        int maxN = this.isMaximumExclusive() ? 0 : 1;
-        
-        result = (this.getMinimumVersion().compareTo(version) < minN) &&
-                 (version.compareTo(this.getMaximumVersion()) < maxN);
-      }
-      return result;
-    }
-    
-    /**
-     * Returns true if the Minimum is considered Exclusive<br> 
-     * The Range was defined starting with '('
-     * @return true if exclusive, false otherwise.
-     */
-    public boolean isMinimumExclusive()
-    {
-      return minimumExclusive;
-    }
-    /**
-     * Returns true if the Maximum is considered Exclusive<br> 
-     * The Range was defined ending with ')'<p>
-     * This has no meaning if getMaximumVersion returns null.<br>
-     * @return true if exclusive, false otherwise.
-     */
-    public boolean isMaximumExclusive()
-    {
-      return maximumExclusive;
-    }
-    /**
-     * Returns the parsed Minimum Version
-     * @return Minimum Version
-     */
-    public Version getMinimumVersion()
-    {
-      return minimumVersion;
-    }
-    /**
-     * Returns the parsed Maximum Version. 
-     * May return null if none was set, interpretable as Max Unbounded.
-     * @return Maximum Version, or null if none was set.
-     */
-    public Version getMaximumVersion()
-    {
-      return maximumVersion;
-    }
-    
-    /**
-     * check if the versioninfo is the exact version
-     * @return
-     */
-    public boolean isExactVersion() {
-      return this.exactVersion;
-    }
-    
-    /**
-     * this method returns the exact version from the versionInfo obj.
-     * this is used for DeploymentContent only to return a valid exact version
-     * otherwise, null is returned.
-     * @return
-     */
-    public Version getExactVersion() {
-      return this.exactVersion ? getMinimumVersion() : null;
-    }
-  }
-  
   /**
    * Parse a version range.. 
    * 
@@ -566,7 +407,7 @@ public class ManifestHeaderProcessor
    * @throws IllegalArgumentException if the String could not be parsed as a VersionRange
    */
   public static VersionRange parseVersionRange(String s) throws IllegalArgumentException{
-    return new VersionRange(s);
+    return new VersionRangeImpl(s);
   }
   
   /**
@@ -578,7 +419,7 @@ public class ManifestHeaderProcessor
    * @throws IllegalArgumentException if the String could not be parsed as a VersionRange
    */
   public static VersionRange parseVersionRange(String s, boolean exactVersion) throws IllegalArgumentException{
-    return new VersionRange(s, exactVersion);
+    return new VersionRangeImpl(s, exactVersion);
   }
 
   /**
