@@ -23,7 +23,7 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aries-jmx</artifactId>
+    <artifactId>org.apache.aries.jmx</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Bundle</name>
     <description>
@@ -60,7 +60,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
                             !org.apache.aries.jmx*,
                             org.osgi.framework;version="1.5.0",

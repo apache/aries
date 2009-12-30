@@ -63,12 +63,12 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
-                <artifactId>aries-jmx</artifactId>
+                <artifactId>org.apache.aries.jmx</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
-                <artifactId>aries-jmx-blueprint</artifactId>
+                <artifactId>org.apache.aries.jmx.blueprint</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
