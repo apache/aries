@@ -240,6 +240,71 @@ public class ManifestHeaderProcessorTest
       
     }
     
+    private String createExpectedFilter(NameValueMap<String, String> values, String ... parts)
+    {
+      StringBuilder builder = new StringBuilder(parts[0]);
+      
+      for (Map.Entry<String, String> entry : values.entrySet()) {
+        if ("version".equals(entry.getKey())) builder.append(parts[2]);
+        else if ("company".equals(entry.getKey())) builder.append(parts[1]);
+      }
+      
+      builder.append(parts[3]);
+      
+      return builder.toString();
+    }
+    
+    /**
+     * Test the filter generated correctly
+     * @throws Exception
+     */
+    @Test
+    public void testGenerateFilter() throws Exception {
+      NameValueMap<String, String> valueMap = new NameValueMap<String, String>();
+      valueMap.addToCollection("version", "[1.2, 2.3]");
+      valueMap.addToCollection("resulution:", "mandatory");
+      valueMap.addToCollection("company", "com");
+      String filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
+      String expected = createExpectedFilter(valueMap, "(&(symbolic-name=com.ibm.foo)", "(company=com)", "(version>=1.2.0)(version<=2.3.0)", "(mandatory:<*company))");
+      assertEquals("The filter is wrong.", expected, filter );
+      
+      
+      valueMap.clear();
+      
+      valueMap.addToCollection("version", "(1.2, 2.3]");
+      valueMap.addToCollection("resulution:", "mandatory");
+      valueMap.addToCollection("company", "com");
+      filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
+      expected = createExpectedFilter(valueMap, "(&(symbolic-name=com.ibm.foo)", "(company=com)", "(version>=1.2.0)(version<=2.3.0)(!(version=1.2.0))", "(mandatory:<*company))");
+      assertEquals("The filter is wrong.", expected, filter );
+      
+      valueMap.clear();
+      
+      valueMap.addToCollection("version", "(1.2, 2.3)");
+      valueMap.addToCollection("resulution:", "mandatory");
+      valueMap.addToCollection("company", "com");
+      filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
+      expected = createExpectedFilter(valueMap, "(&(symbolic-name=com.ibm.foo)", "(company=com)", "(version>=1.2.0)(version<=2.3.0)(!(version=1.2.0))(!(version=2.3.0))", "(mandatory:<*company))");
+      assertEquals("The filter is wrong.", expected, filter );
+      
+      valueMap.clear();
+      
+      valueMap.addToCollection("version", "1.2");
+      valueMap.addToCollection("resulution:", "mandatory");
+      valueMap.addToCollection("company", "com");
+      filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
+      expected = createExpectedFilter(valueMap, "(&(symbolic-name=com.ibm.foo)", "(company=com)", "(version>=1.2.0)", "(mandatory:<*company))");
+      assertEquals("The filter is wrong.", expected, filter );
+      
+      valueMap.clear();
+      
+      valueMap.addToCollection("resulution:", "mandatory");
+      valueMap.addToCollection("company", "com");
+      filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
+      expected = createExpectedFilter(valueMap, "(&(symbolic-name=com.ibm.foo)", "(company=com)", "", "(mandatory:<*company))");
+      assertEquals("The filter is wrong.", expected, filter );
+    }
+    
     /**
      * Test the version range created correctly
      * @throws Exception
@@ -357,80 +422,7 @@ public class ManifestHeaderProcessorTest
       }
 
     }
-    
-    /**
-     * Test the filter generated correctly
-     * @throws Exception
-     */
-  
-    @Test
-    public void testGenerateFilter() throws Exception {
-      NameValueMap<String, String> valueMap = new NameValueMap<String, String>();
-      valueMap.addToCollection("version", "[1.2, 2.3]");
-      valueMap.addToCollection("resulution:", "mandatory");
-      valueMap.addToCollection("company", "com");
-      String filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
-      assertEquals("The filter is wrong.","(&(symbolic-name=com.ibm.foo)(version>=1.2.0)(version<=2.3.0)(company=com)(mandatory:<*company))", filter );
-      
-      
-      valueMap.clear();
-      
-      valueMap.addToCollection("version", "(1.2, 2.3]");
-      valueMap.addToCollection("resulution:", "mandatory");
-      valueMap.addToCollection("company", "com");
-      filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
-      assertEquals("The filter is wrong.","(&(symbolic-name=com.ibm.foo)(version>=1.2.0)(version<=2.3.0)(!(version=1.2.0))(company=com)(mandatory:<*company))", filter );
-      
-      valueMap.clear();
-      
-      valueMap.addToCollection("version", "(1.2, 2.3)");
-      valueMap.addToCollection("resulution:", "mandatory");
-      valueMap.addToCollection("company", "com");
-      filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
-      assertEquals("The filter is wrong.","(&(symbolic-name=com.ibm.foo)(version>=1.2.0)(version<=2.3.0)(!(version=1.2.0))(!(version=2.3.0))(company=com)(mandatory:<*company))", filter );
-      
-      
-      valueMap.clear();
-      
-      valueMap.addToCollection("version", "1.2");
-      valueMap.addToCollection("resulution:", "mandatory");
-      valueMap.addToCollection("company", "com");
-      filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
-      assertEquals("The filter is wrong.","(&(symbolic-name=com.ibm.foo)(version>=1.2.0)(company=com)(mandatory:<*company))", filter );
-      
-      valueMap.clear();
-      
-      
-      valueMap.addToCollection("resulution:", "mandatory");
-      valueMap.addToCollection("company", "com");
-      filter = ManifestHeaderProcessor.generateFilter("symbolic-name", "com.ibm.foo", valueMap);
-      assertEquals("The filter is wrong.","(&(symbolic-name=com.ibm.foo)(company=com)(mandatory:<*company))", filter );
-    }
-    
-    @Test
-    public void testParseFilter()
-    {
-      Map<String,String> attrs = ManifestHeaderProcessor.parseFilter("(package=com.ibm.test)");
-      assertEquals("com.ibm.test", attrs.get("package"));
-      
-      attrs = ManifestHeaderProcessor.parseFilter("(&(package=com.ibm.test)(attr=value))");
-      assertEquals("com.ibm.test", attrs.get("package"));
-      assertEquals("value", attrs.get("attr"));
-      assertEquals(2, attrs.size());
-      
-      attrs = ManifestHeaderProcessor.parseFilter("(&(version>=1.0.0))");
-      assertEquals("1.0.0", attrs.get("version"));
-      
-      attrs = ManifestHeaderProcessor.parseFilter("(&(version>=1.0.0)(version<=2.0.0))");
-      assertEquals("[1.0.0,2.0.0]", attrs.get("version"));
 
-      attrs = ManifestHeaderProcessor.parseFilter("(&(version>=1.0.0)(version<=2.0.0)(!(version=1.0.0)))");
-      assertEquals("(1.0.0,2.0.0]", attrs.get("version"));
-
-      attrs = ManifestHeaderProcessor.parseFilter("(&(!(version=2.0.0))(!(version=1.0.0))(version>=1.0.0)(version<=2.0.0))");
-      assertEquals("(1.0.0,2.0.0)", attrs.get("version"));
-    }
-    
     @Test
     public void testSplit() throws Exception {
       String export = "com.ibm.ws.eba.obr.fep.bundle122;version=\"3\";company=mood;local=yes;security=yes;mandatory:=\"mood,security\"";
@@ -485,7 +477,31 @@ public class ManifestHeaderProcessorTest
       assertEquals(pkg3.trim(), splitList.get(1));
       assertEquals(pkg5.trim(), splitList.get(2));   
     }
- 
+    
+    @Test
+    public void testParseFilter()
+    {
+      Map<String,String> attrs = ManifestHeaderProcessor.parseFilter("(package=com.ibm.test)");
+      assertEquals("com.ibm.test", attrs.get("package"));
+      
+      attrs = ManifestHeaderProcessor.parseFilter("(&(package=com.ibm.test)(attr=value))");
+      assertEquals("com.ibm.test", attrs.get("package"));
+      assertEquals("value", attrs.get("attr"));
+      assertEquals(2, attrs.size());
+      
+      attrs = ManifestHeaderProcessor.parseFilter("(&(version>=1.0.0))");
+      assertEquals("1.0.0", attrs.get("version"));
+      
+      attrs = ManifestHeaderProcessor.parseFilter("(&(version>=1.0.0)(version<=2.0.0))");
+      assertEquals("[1.0.0,2.0.0]", attrs.get("version"));
+
+      attrs = ManifestHeaderProcessor.parseFilter("(&(version>=1.0.0)(version<=2.0.0)(!(version=1.0.0)))");
+      assertEquals("(1.0.0,2.0.0]", attrs.get("version"));
+
+      attrs = ManifestHeaderProcessor.parseFilter("(&(!(version=2.0.0))(!(version=1.0.0))(version>=1.0.0)(version<=2.0.0))");
+      assertEquals("(1.0.0,2.0.0)", attrs.get("version"));
+    }
+    
     @Test
     public void testExactVersion() throws Exception 
     {
@@ -522,9 +538,4 @@ public class ManifestHeaderProcessorTest
       
       
     }
-  
-    
-
-  }
-
-
+}
