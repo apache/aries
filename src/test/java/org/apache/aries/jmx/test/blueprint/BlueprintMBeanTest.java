@@ -80,7 +80,7 @@ public class BlueprintMBeanTest {
                 CoreOptions.mavenBundle().groupId("org.apache.aries").artifactId("org.apache.aries.util").versionAsInProject(),
                 CoreOptions.mavenBundle().groupId("org.apache.aries.blueprint").artifactId("org.apache.aries.blueprint").versionAsInProject(),
                 CoreOptions.mavenBundle().groupId("org.apache.aries.blueprint").artifactId("org.apache.aries.blueprint.sample").versionAsInProject(),
-                CoreOptions.mavenBundle().groupId("org.apache.aries.jmx").artifactId("aries-jmx-blueprint").versionAsInProject()
+                CoreOptions.mavenBundle().groupId("org.apache.aries.jmx").artifactId("org.apache.aries.jmx.blueprint").versionAsInProject()
         );
     }  
 
