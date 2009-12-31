@@ -21,7 +21,6 @@ package org.apache.aries.application.management.impl;
 
 import java.io.File;
 import java.io.OutputStream;
-import java.net.URL;
 import java.util.List;
 import java.util.Set;
 
@@ -29,21 +28,26 @@ import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
-import org.osgi.framework.Bundle;
 
 public class AriesApplicationImpl implements AriesApplication {
 
-  public AriesApplicationImpl(ApplicationMetadata meta, List<Bundle> bundles) {}
-  public AriesApplicationImpl () {}
+  private Set<BundleInfo> _bundleInfo;
+  private ApplicationMetadata _applicationMetadata;
+  private DeploymentMetadata _deploymentMetadata;
+  
+  public AriesApplicationImpl(ApplicationMetadata meta, Set<BundleInfo> bundleInfo) {
+    _applicationMetadata = meta;
+    _bundleInfo = bundleInfo;
+    _deploymentMetadata = null;
+    
+  }
   
   public ApplicationMetadata getApplicationMetadata() {
-    // TODO Auto-generated method stub
-    return null;
+    return _applicationMetadata;
   }
 
   public Set<BundleInfo> getBundles() {
-    // TODO Auto-generated method stub
-    return null;
+    return _bundleInfo;
   }
 
   public DeploymentMetadata getDeploymentMetadata() {
@@ -59,6 +63,10 @@ public class AriesApplicationImpl implements AriesApplication {
   public void store(OutputStream in) {
     // TODO Auto-generated method stub
 
+  }
+  
+  public void setDeploymentMetadata (DeploymentMetadata dm) { 
+    _deploymentMetadata = dm;
   }
 
 }
