@@ -64,6 +64,8 @@ public interface ApplicationMetadataManager
   
   // MN: Dec 22: register, unregisterApplication probably will not be required
   // as we implement AriesApplicationManager, so I'm not refactoring the method names. 
+  // Once we remove the methods, this interface should be renamed ApplicationMetadataFactory, since 
+  // it won't be managing anything anymore. 
   
   /**
    * This method is used to register an application. The ApplicationMetadata
