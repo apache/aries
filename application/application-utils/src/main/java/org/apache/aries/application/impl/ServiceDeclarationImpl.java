@@ -38,7 +38,7 @@ public class ServiceDeclarationImpl implements ServiceDeclaration
   
   /**
    * construct the ServiceDeclaration from the service string
-   * @param service  the service string value of Import-Services or Export-Services header
+   * @param service A single service string value from the Import-Services or Export-Services header
    * @throws InvalidSyntaxException
    */
   public ServiceDeclarationImpl(String service) throws InvalidSyntaxException 

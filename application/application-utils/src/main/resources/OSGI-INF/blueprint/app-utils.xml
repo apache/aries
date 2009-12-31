@@ -26,4 +26,8 @@
   </bean>
   
   <service interface="org.apache.aries.application.ApplicationMetadataManager" ref="manager-service" />
+  
+  <bean id="deploymentMf-factory" class="org.apache.aries.application.impl.DeploymentMetadataFactoryImpl" />
+  <service interface="org.apache.aries.application.DeploymentMetadataFactory" ref="deploymentMf-factory" />
+  
 </blueprint>
