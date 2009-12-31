@@ -21,9 +21,20 @@
   
   <bean id="app-manager" class="org.apache.aries.application.management.impl.AriesApplicationManagerImpl" scope="singleton" activation="lazy">
     <property name="applicationMetadataManager" ref="app-metadata-manager"/>
+    <property name="deploymentMetadataFactory" ref="deployment-metadata-factory"/>
+    <property name="bundleConverters" ref="bundle-converters"/>
+    <property name="resolver" ref="resolver"/>
   </bean>
   
-  <reference id="app-metadata-manager" interface="ApplicationMetadataManager"/>
+  <reference id="app-metadata-manager" interface="org.apache.aries.application.ApplicationMetadataManager"/>
+  <reference id="deployment-metadata-factory" interface="org.apache.aries.application.DeploymentMetadataFactory"/>
+  <reference-list id="bundle-converters" 
+                  interface="org.apache.aries.application.management.BundleConverter"
+                  availability="optional"/>
+  <reference id="resolver" interface="org.apache.aries.application.management.AriesApplicationResolver"/>
+             
   
+    
   <service interface="org.apache.aries.application.management.AriesApplicationManager" ref="manager-service" />
+  
 </blueprint>
