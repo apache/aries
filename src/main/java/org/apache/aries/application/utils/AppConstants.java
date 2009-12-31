@@ -20,7 +20,7 @@ package org.apache.aries.application.utils;
 
 
 /**
- * Constants for this bundle
+ * Widely used constants in parsing Aries applications
  */
 public interface AppConstants
 {
@@ -41,6 +41,16 @@ public interface AppConstants
   public static final String DEFAULT_VERSION = "0.0.0";
   /** The name of the application manifest in the application */
   public static final String APPLICATION_MF = "META-INF/APPLICATION.MF";
-
+  /** The name of the deployment manifest in the application */
+  public static final String DEPLOYMENT_MF = "META-INF/DEPLOYMENT.MF";
+  /** The name of the META-INF directory   */
+  public static final String META_INF = "META-INF";
+  /** The name of an application.xml file which will be used in processing legacy .war files */
+  public static final String APPLICATION_XML = "META-INF/application.xml";
+  /** The expected lower case suffix of a jar file */
+  public static final String LOWER_CASE_JAR_SUFFIX = ".jar";
+  /** The expected lower case suffix of a war file */
+  public static final String LOWER_CASE_WAR_SUFFIX = ".war";
+  
   public static final String MANIFEST_VERSION="1.0";
 }
