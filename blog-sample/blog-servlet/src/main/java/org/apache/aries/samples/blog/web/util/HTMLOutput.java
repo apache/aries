@@ -133,13 +133,13 @@ public class HTMLOutput {
 		out.println("        <TD>");
 		out.println("         <DIV align=\"left\">");
 		out.println("          <!-- Breadcrumbs -->");
-		out.println("           &nbsp;");
 		out.println("          <!-- Breadcrumbs -->");
 		out.println("         </DIV>");
 		out.println("        </TD>");
 		out.println("        <TD>");
 		out.println("         <DIV align=\"right\">");
 		out.println("          <!-- Quicklinks -->");
+		out.println("           <p><a href=\"ViewBlog\" style=\"text-decoration: none; color: white\">Blog home</a></p>");
 		out.println("          <!-- Quicklinks -->");
 		out.println("         </DIV>");
 		out.println("        </TD>");
