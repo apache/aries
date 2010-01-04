@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.apache.aries.application.ApplicationMetadata;
@@ -91,6 +90,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     DeploymentMetadata deploymentMetadata;
     Map<String, InputStream> modifiedBundles = new HashMap<String, InputStream>();
     AriesApplicationImpl application = null;
+    boolean manifestChanged = false;
     
     try { 
       if (!ebaFile.isFile()) { 
@@ -101,22 +101,20 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
       // Locate META-INF/APPLICATION.MF and ensure that the 
       // manifest has the necessary fields set 
       Manifest applicationManifest = parseManifest (ebaFile, AppConstants.APPLICATION_MF);
-      boolean manifestChanged = ManifestDefaultsInjector.updateManifest(applicationManifest, ebaFile.getName(), ebaFile); 
+      manifestChanged = ManifestDefaultsInjector.updateManifest(applicationManifest, ebaFile.getName(), ebaFile); 
       applicationMetadata = _applicationMetadataManager.createApplicationMetadata(applicationManifest);
 
       Manifest deploymentManifest = parseManifest (ebaFile, AppConstants.DEPLOYMENT_MF);
       if (deploymentManifest != null) {
         // If there's a deployment.mf present, check it matches applicationManifest, and if so, use it
       } else { 
-        //   -- Look for application.xml to support .war file migration
-        //   -- Process any other files in the .eba, i.e. migrate wars to wabs, plain jars to bundles
+        //  -- Process any other files in the .eba, i.e. migrate wars to wabs, plain jars to bundles
         IDirectory eba = FileSystem.getFSRoot(ebaFile);
-        IFile appXml = eba.getFile(AppConstants.APPLICATION_XML);
+        
         Set<BundleInfo> bundleInfo = new HashSet<BundleInfo>();
         for (IFile f : eba) { 
           BundleManifest bm = getBundleManifest (f);
           if (bm != null) {
-            Attributes bundleAttributes;
             if (bm.isValid()) {
               bundleInfo.add(new BundleInfoImpl(bm, null));
             } else { 
@@ -128,13 +126,15 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
                 Iterator<BundleConverter> converters = _bundleConverters.iterator();
                 while (converters.hasNext() && convertedBinary == null) { 
                   try { 
-                    convertedBinary = converters.next().convert(is, f.getName());
+                    // WarToWabConverter can extract application.xml via
+                    // eba.getFile(AppConstants.APPLICATION_XML);
+                    convertedBinary = converters.next().convert(is, eba);
                   } catch (ServiceException sx) {
                     // We'll get this if our optional BundleConverter has not been injected. 
                   }
                 }
                 if (convertedBinary != null) { 
-                  modifiedBundles.put (f.getName(), convertedBinary); // I expect I'll need the filename in a bit
+                  modifiedBundles.put (f.getName(), convertedBinary); 
                   bm = BundleManifest.fromBundle(is);
                   bundleInfo.add(new BundleInfoImpl(bm, null));
                 }
@@ -144,19 +144,22 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
                 } catch (IOException iox) {}
               }
             }
-          }
+          } 
         }
         application = new AriesApplicationImpl (applicationMetadata, bundleInfo);
-        Set<BundleInfo> resolvedBundles = _resolver.resolve(application);
-        deploymentMetadata = _deploymentMetadataFactory.createDeploymentMetadata(application, resolvedBundles);
+        Set<BundleInfo> additionalBundlesRequired = _resolver.resolve(application);
+        deploymentMetadata = _deploymentMetadataFactory.createDeploymentMetadata(application, additionalBundlesRequired);
         application.setDeploymentMetadata(deploymentMetadata);
+        
+        // We may have changed parts of its content. The application's store()
+        // method needs to be able to work. Do something with modifiedBundles 
+        // and manifestChanged. We'll save them in the application for now. 
+        application.setApplicationManifestChanged (manifestChanged);
+        application.setModifiedBundles (modifiedBundles);
+        
       }
-      
-      // We may have changed parts of its content. The application's store()
-      // method needs to be able to work. Do something with modifiedBundles 
-      // and manifestChanged
-      
     } catch (IOException iox) { 
+      // Log an error
       throw new ManagementException(iox);
     }
     

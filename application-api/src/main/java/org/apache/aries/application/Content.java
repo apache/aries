@@ -34,12 +34,6 @@ public interface Content
   public String getContentName();
   
   /**
-   * get the entire content including the content name, directives & attributes
-   * @return the entire content in String format
-   */
-  public String getContent();
-  
-  /**
    * get the attributes of the content
    * @return    the attributes of the content
    */
