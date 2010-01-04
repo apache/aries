@@ -18,6 +18,8 @@
  */
 package org.apache.aries.application.impl;
 
+import java.io.File;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -168,5 +170,15 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
   public int hashCode()
   {
     return appScope.hashCode();
+  }
+
+  public void store(File f) {
+    // TODO when writing AriesApplication.store()
+    
+  }
+
+  public void store(OutputStream out) {
+    // TODO when writing AriesApplication.store()
+    
   }
 }

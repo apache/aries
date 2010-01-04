@@ -17,25 +17,19 @@
  * under the License.
  */
 
-package org.apache.aries.application.management;
-
-import java.io.InputStream;
-
-import org.apache.aries.application.filesystem.IDirectory;
+package org.apache.aries.application.management.impl;
 
 /**
- * A BundleConverter turns a .jar that is not an OSGi bundle into a well formed OSGi bundle,
- * or a .war that is not a WAB into a WAB. 
+ * An administrator may supply an application.eba file that will be changed before deployment.  
+ * We may augment, or even create, META-INF/APPLICATION.MF. 
+ * We will create META-INF/DEPLOYMENT.MF if one does not exist. 
+ * We may migrate plain .war files to WABs, and may also migrate plain .jar files to become 
+ * well formed bundles. Thus the .eba file that will be subsequently used to provide bundles into 
+ * the application server's runtime may differ from that originally provided by the administrator. 
+ * This class handles the creation of the modified .eba artifact. 
  */
-public interface BundleConverter {
-  /**
-   * 
-   * @param inputBundle Stream to the input bundle
-   * @param artifact The root of the eba containing the artifact being converted - 
-   *                 currently a .zip file. In time we may come to support this 
-   *                 being an exploded directory.  
-   * @return valid input stream or null if the bundle could not be converted. 
-   */
-  public InputStream convert (InputStream inputBundle, IDirectory parentEba);
+public class ExplodedEBA {
 
+  // TODO
+  
 }

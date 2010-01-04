@@ -20,8 +20,10 @@
 package org.apache.aries.application.management.impl;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.aries.application.ApplicationMetadata;
@@ -34,6 +36,10 @@ public class AriesApplicationImpl implements AriesApplication {
   private Set<BundleInfo> _bundleInfo;
   private ApplicationMetadata _applicationMetadata;
   private DeploymentMetadata _deploymentMetadata;
+  
+  // Placeholders for information we'll need for store()
+  private boolean _applicationManifestChanged = false;
+  private Map<String, InputStream> _modifiedBundles = null;
   
   public AriesApplicationImpl(ApplicationMetadata meta, Set<BundleInfo> bundleInfo) {
     _applicationMetadata = meta;
@@ -51,8 +57,7 @@ public class AriesApplicationImpl implements AriesApplication {
   }
 
   public DeploymentMetadata getDeploymentMetadata() {
-    // TODO Auto-generated method stub
-    return null;
+    return _deploymentMetadata;
   }
 
   public void store(File f) {
@@ -69,4 +74,14 @@ public class AriesApplicationImpl implements AriesApplication {
     _deploymentMetadata = dm;
   }
 
+  // When store() is called we'll need to know whether application.mf was changed, 
+  // or any constituent .wars or .jars migrated to bundles in the course of constructing
+  // the AriesApplication. 
+  void setApplicationManifestChanged (boolean changed) { 
+    _applicationManifestChanged = changed;
+  }
+  
+  void setModifiedBundles (Map<String, InputStream> modifiedBundles) { 
+    _modifiedBundles = modifiedBundles;
+  }
 }
