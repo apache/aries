@@ -18,6 +18,8 @@
  */
 package org.apache.aries.application; 
 
+import java.io.File;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.osgi.framework.Version;
@@ -70,4 +72,8 @@ public interface ApplicationMetadata
    * @return    the value of the AppScope
    */
   public String getApplicationScope();
+  
+  /** Stores any changes to disk using this implementation's storage form */
+  public void store(File f);
+  public void store(OutputStream out);
 }

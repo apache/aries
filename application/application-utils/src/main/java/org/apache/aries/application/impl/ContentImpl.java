@@ -24,6 +24,11 @@ import java.util.Map;
 
 import org.apache.aries.application.Content;
 import org.apache.aries.application.VersionRange;
+import org.apache.aries.application.utils.internal.MessageUtil;
+import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
+import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
+import org.osgi.framework.Constants;
+import org.osgi.framework.Version;
 
 
 /**
@@ -32,24 +37,44 @@ import org.apache.aries.application.VersionRange;
  */
 public final class ContentImpl implements Content
 {
-  private String content;
   private String contentName;
   protected Map<String, String> attributes;
   private Map<String, String> directives;
+  private NameValueMap<String, String> nameValueMap;
   
   /**
    * 
    * @param content  Application-Content, Import-Package content
    */
   public ContentImpl(String content) {
-    this.content = content;
-    this.attributes = new HashMap<String, String>();
-    this.directives = new HashMap<String, String>();
-    setup(content, this.attributes, this.directives);
+    Map<String, NameValueMap<String, String>> appContentsMap = ManifestHeaderProcessor.parseImportString(content);
+    if (appContentsMap.size() != 1) {
+      throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0004E",content));
+    }
+    for (Map.Entry<String, NameValueMap<String, String>> entry : appContentsMap.entrySet()) {
+      this.contentName = entry.getKey();
+      this.nameValueMap= entry.getValue();
+      setup();
+      break;
+    }
   }
   
-  public String getContent() {
-    return this.content;
+  public ContentImpl (String bundleSymbolicName, Version version) { 
+    this.contentName = bundleSymbolicName;
+    this.nameValueMap = new NameValueMap<String, String>();
+    nameValueMap.put("version", version.toString());
+    setup();
+  }
+  
+  /**
+   * 
+   * @param contentName  
+   * @param nameValueMap
+   */
+  public ContentImpl(String contentName, NameValueMap<String, String> nameValueMap) {
+    this.contentName = contentName;
+    this.nameValueMap= nameValueMap;
+    setup();
   }
   
   public String getContentName() {
@@ -94,10 +119,12 @@ public final class ContentImpl implements Content
   
   public VersionRange getVersion() {
     VersionRange vi = null;
-    if (this.attributes.get("version") != null && this.attributes.get("version").length() > 0) {
-      vi = new VersionRangeImpl(this.attributes.get("version"));
+    if (this.attributes.get(Constants.VERSION_ATTRIBUTE) != null 
+        && this.attributes.get(Constants.VERSION_ATTRIBUTE).length() > 0) {
+      vi = ManifestHeaderProcessor.parseVersionRange(this.attributes.get(Constants.VERSION_ATTRIBUTE));
     } else {
-      vi = new VersionRangeImpl("0.0.0");
+      // what if version is not specified?  let's interpret it as 0.0.0 
+      vi = ManifestHeaderProcessor.parseVersionRange("0.0.0");
     }
     return vi;
   }
@@ -105,7 +132,7 @@ public final class ContentImpl implements Content
   @Override
   public String toString()
   {
-    return content;
+    return this.contentName + ";" + this.nameValueMap.toString();
   }
   
   @Override
@@ -147,43 +174,18 @@ public final class ContentImpl implements Content
   }
   
   /**
-   * setup attributes and directives from the Application-Content or Import-Package
-   * @param content
-   * @param attributes
-   * @param directives
+   * set up directives and attributes
    */
-  protected void setup(String content, Map<String, String> attributes, Map<String, String> directives)
-  {
-    String[] tokens = content.split(";");
-    if (tokens.length < 1) {
-      throw new IllegalArgumentException("Invalid content: " + content);
-    }
-    this.contentName = tokens[0].trim();
-    for (int i = 1; i < tokens.length; i++) {
-      int pos = tokens[i].indexOf('=');
-      if (pos != -1) {
-        if (pos > 0 && tokens[i].charAt(pos - 1) == ':') {
-          String name = tokens[i].substring(0, pos - 1).trim();
-          String value = tokens[i].substring(pos + 1).trim();
-          directives.put(name, trimDoubleQuotes(value));
-        } else {
-          String name = tokens[i].substring(0, pos).trim();
-          String value = tokens[i].substring(pos + 1).trim();
-          attributes.put(name, trimDoubleQuotes(value));
-        }
+  protected void setup() {
+    this.attributes = new HashMap<String, String>();
+    this.directives = new HashMap<String, String>();
+    
+    for (String key : this.nameValueMap.keySet()) {
+      if (key.endsWith(":")) {
+        this.directives.put(key.substring(0, key.length() - 1), this.nameValueMap.get(key));
+      } else {
+        this.attributes.put(key, this.nameValueMap.get(key));
       }
     }
-  }
-  
-  /**
-   * this method trims the double quotes at the beginning and end, for example version="1.0.0"
-   * @param value
-   * @return
-   */
-  private String trimDoubleQuotes(String value) {
-    if (value.startsWith("\"") && value.endsWith("\"")) {
-      value = value.substring(1, value.length() -1);
-    }   
-    return value;
   }
 }
