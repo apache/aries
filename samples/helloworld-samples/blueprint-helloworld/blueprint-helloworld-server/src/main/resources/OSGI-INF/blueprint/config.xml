@@ -17,11 +17,11 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
         <bean id="helloservice"
-                class="org.apache.aries.blueprint.helloworldserver.HelloWorldServiceImpl"
+                class="org.apache.aries.samples.blueprint.helloworld.server.HelloWorldServiceImpl"
                 init-method="startUp">
         </bean>
 
         <service ref="helloservice"
-                interface="org.apache.aries.blueprint.helloworldapi.HelloWorldService" />
+                interface="org.apache.aries.samples.blueprint.helloworld.api.HelloWorldService" />
 
 </blueprint>
