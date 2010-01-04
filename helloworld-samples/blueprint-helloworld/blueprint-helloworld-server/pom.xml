@@ -22,7 +22,7 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.aries.samples.blueprint.helloworld.server</artifactId>
+    <artifactId>blueprint-helloworld-server</artifactId>
     <name>Apache Aries Blueprint HelloWorldServer</name>
     <packaging>bundle</packaging>
     <description>Example blueprint hello world application - server</description>
