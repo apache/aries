@@ -24,8 +24,8 @@
 		<version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>blog-assembly</artifactId>
-	<name>Apache Aries blog sample assembly</name>
+	<artifactId>blueprint-helloworld-assembly</artifactId>
+	<name>Apache Aries Blueprint HelloWorld Assembly</name>
 	<packaging>pom</packaging>
 
 	    <dependencies>
