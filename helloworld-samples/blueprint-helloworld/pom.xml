@@ -34,6 +34,7 @@
 		<module>blueprint-helloworld-server</module>
 		<module>blueprint-helloworld-client</module>
 		<module>blueprint-helloworld-api</module>
+		<module>blueprint-helloworld-assembly</module>
 	</modules>
 
 </project>

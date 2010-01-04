@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-SymbolicName: org.apache.aries.blueprint.blueprint-helloworld.b
- lueprint-helloworldapi
-Export-Package: org.apache.aries.blueprint.helloworldapi
-Bundle-Version: 1.0.0.incubating-SNAPSHOT
-Bundle-Description: Example blueprint hello world api.
-Bundle-ManifestVersion: 2
