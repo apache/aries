@@ -16,19 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.ibm.osgi.jpa.util;
+package org.apache.aries.jpa.container.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
 
 /**
  * This helper can be used to locate persistence.xml files in a bundle
@@ -36,102 +38,106 @@ import org.osgi.framework.Constants;
 public class PersistenceBundleHelper
 {
   /** The persistence xml location */
-  private static final String PERSISTENCE_XML = "META-INF/persistence.xml";
+  public static final String PERSISTENCE_XML = "META-INF/persistence.xml";
+  public static final String PERSISTENCE_UNIT_HEADER = "Meta-Persistence";
 
   /**
-   * This method locates persistence xml files in the following
-   * locations:
-   * META-INF
-   * WEB-INF/classes
-   * the META-INF of any jar in WEB-INF/lib
-   * the META-INF of any jar on the Bundle-ClassPath
+   * This method locates persistence descriptor files based on a combination of
+   * the default location "META-INF/persistence.xml" and the Meta-Persistence
+   * header.
    * 
-   * Note that getEntry and getEntryPaths are used to ensure
-   * we do not transition the bundle to RESOLVED
+   * Note that getEntry is used to ensure we do not alter the state of the bundle
    * 
    * @param bundle
    * @return
    */
-  public static Collection<PersistenceLocationData> findPersistenceXmlFiles(Bundle bundle)
+  public static Collection<InputStream> findPersistenceXmlFiles(Bundle bundle)
   {
+    //The files we have found
+    Collection<InputStream> persistenceXmlFiles = new HashSet<InputStream>();
     
-    Collection<PersistenceLocationData> persistenceXmlFiles = new ArrayList<PersistenceLocationData>();
+    //Always search the default location
+    List<String> locations = new ArrayList<String>();
+    locations.add(PERSISTENCE_XML);
     
-    addLocationToCollectionIfFound(persistenceXmlFiles, "", bundle);
+    String header = (String) bundle.getHeaders().get(PERSISTENCE_UNIT_HEADER);
     
-    addLocationToCollectionIfFound(persistenceXmlFiles, "WEB-INF/classes", bundle);
-   
-    @SuppressWarnings("unchecked")
-    Enumeration<String> webInfLibJars = bundle.getEntryPaths("WEB-INF/lib");
-    
-    if(webInfLibJars != null) {
-      
-      List<String> paths = Collections.list(webInfLibJars);
-      Iterator<String> it = paths.iterator();
-      
-      while(it.hasNext()){
-        String s = it.next();
-        // We want to process jars in WEB-INF/lib/ so it should end
-        // .jar, and not contain any / separators after character 11
-        if(s.endsWith(".jar") && s.lastIndexOf('/') < 12) {
-          processNestedJar(bundle, persistenceXmlFiles, s);
-        }
-      }
+    if(header != null) {
+      //Split apart the header to get the individual entries
+      List<String> headerLocations = Arrays.asList(header.split(","));
+      locations.addAll(headerLocations);
     }
     
-    String bundleClassPath = (String) bundle.getHeaders().get(Constants.BUNDLE_CLASSPATH);
-
-    if(bundleClassPath != null) {
-      String[] cpEntries = bundleClassPath.split(",");
-      
-      for (String s : cpEntries) {
-        s = s.trim();
-        if(s.endsWith(".jar")) {
-          processNestedJar(bundle, persistenceXmlFiles, s);
+    try {
+      for(String location : locations) {
+        InputStream file = locateFile(bundle, location.trim());
+          
+        if(file != null)
+          persistenceXmlFiles.add(file);
+        }
+    } catch (Exception e) {
+        //TODO log
+      for (InputStream is : persistenceXmlFiles) {
+        try {
+          is.close();
+        } catch (IOException ioe) {
+          // TODO: log ioe
         }
       }
+      persistenceXmlFiles = Collections.emptySet();
     }
-      return persistenceXmlFiles;
-  }
+   return persistenceXmlFiles;
+ }
 
   /**
-   * Check to see if a nested jar contains a "META-INF/persistence.xml" file
-   * and add it to the list if it does
+   * Locate a persistence descriptor file in a bundle
+   * based on a String name.
    * 
    * @param bundle
    * @param persistenceXmlFiles
    * @param jarLocation
    */
-  private static void processNestedJar(Bundle bundle,
-      Collection<PersistenceLocationData> persistenceXmlFiles, String jarLocation)
+  private static InputStream locateFile(Bundle bundle, String location)
   {
-    URL jar = bundle.getEntry(jarLocation);
-    if(jar != null) {
-    ClassLoader cl = new URLClassLoader(new URL[] {jar});
-    URL xml = cl.getResource(PERSISTENCE_XML);
-
-    if(xml != null)
-      persistenceXmlFiles.add(new PersistenceLocationData(xml, jar, bundle));
+    InputStream is = null;
+    if(location != "") {
+      return null;
     }
-  }
-  
-  /**
-   * This method will attempt to find an entry for a given path in a given bundle
-   * and add it to the collection if the entry exists
-   * @param collection
-   * @param rootPath
-   * @param bundle
-   */
-  private static void addLocationToCollectionIfFound(Collection<PersistenceLocationData> collection, String rootPath, Bundle bundle)
-  {
-    rootPath = (rootPath.endsWith("/")) ? rootPath : rootPath + "/";
-    URL root = bundle.getEntry(rootPath);
-    if(root != null) {
-      String xmlPath = rootPath + PERSISTENCE_XML;
-      URL xml = bundle.getEntry(xmlPath);
-      if(xml != null)
-        collection.add(new PersistenceLocationData(xml, root, bundle));
+      
+    int bangIndex = location.indexOf('!');
+    
+    if(bangIndex == -1) {
+      URL url = bundle.getEntry(location);
+      
+      if(url != null) {
+        try {
+          is = url.openStream();
+        } catch (IOException e) {
+          // TODO log this
+        }
+      }
+    } else {
+      URL url = bundle.getEntry(location.substring(0, bangIndex));
+      
+      if(url != null) {
+        String toLocate = location.substring(bangIndex + 1);
+        
+        try {
+          JarInputStream jis = new JarInputStream(url.openStream());
+          JarEntry entry = jis.getNextJarEntry();
+          
+          while(entry != null) {
+            if(entry.getName().equals(toLocate)) {
+              is = jis;
+              break;
+            }
+            entry = jis.getNextJarEntry();
+          }
+        } catch (IOException ioe) {
+          //TODO log this
+        }
+      }
     }
+    return is;
   }
-  
 }

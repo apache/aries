@@ -10,4 +10,16 @@
   <packaging>bundle</packaging>
   <name>Aries JPA Container</name>
   <version>1.0.0-incubating-SNAPSHOT</version>
+  <dependencies>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>
