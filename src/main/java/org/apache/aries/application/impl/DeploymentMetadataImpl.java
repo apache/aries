@@ -19,33 +19,61 @@
 
 package org.apache.aries.application.impl;
 
+import java.io.File;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
+import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.BundleInfo;
 import org.osgi.framework.Version;
 
 public class DeploymentMetadataImpl implements DeploymentMetadata {
+  
+  ApplicationMetadata _applicationMetadata;
+  List<DeploymentContent> _deploymentContent;
+  
+  public DeploymentMetadataImpl (AriesApplication app, Set<BundleInfo> additionalBundlesRequired) {
+    _applicationMetadata = app.getApplicationMetadata();
+    _deploymentContent = new ArrayList<DeploymentContent>();
+    for (BundleInfo bundleInfo : additionalBundlesRequired) { 
+      DeploymentContentImpl dci = new DeploymentContentImpl(bundleInfo.getSymbolicName(), 
+          bundleInfo.getVersion()); 
+      _deploymentContent.add(dci);
+    }
+  }
 
   public List<DeploymentContent> getApplicationDeploymentContents() {
-    // TODO Auto-generated method stub
-    return null;
+    return Collections.unmodifiableList(_deploymentContent);
   }
 
   public ApplicationMetadata getApplicationMetadata() {
-    // TODO Auto-generated method stub
-    return null;
+    return _applicationMetadata;
   }
 
   public String getApplicationSymbolicName() {
-    // TODO Auto-generated method stub
-    return null;
+    return _applicationMetadata.getApplicationSymbolicName();
   }
 
   public Version getApplicationVersion() {
-    // TODO Auto-generated method stub
-    return null;
+    return _applicationMetadata.getApplicationVersion();
+  }
+
+
+  public void store(File f) {
+    // TODO when writing AriesApplication.store()
+    
+  }
+
+
+  public void store(OutputStream in) {
+    // TODO when writing AriesApplication.store()
+    
   }
 
 }

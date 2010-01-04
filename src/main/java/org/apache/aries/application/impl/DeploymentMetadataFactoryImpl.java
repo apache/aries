@@ -20,9 +20,7 @@
 package org.apache.aries.application.impl;
 
 import java.util.Set;
-import java.util.jar.Manifest;
 
-import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.DeploymentMetadataFactory;
 import org.apache.aries.application.management.AriesApplication;
@@ -31,11 +29,7 @@ import org.apache.aries.application.management.BundleInfo;
 public class DeploymentMetadataFactoryImpl implements DeploymentMetadataFactory {
 
   public DeploymentMetadata createDeploymentMetadata(AriesApplication app,
-      Set<BundleInfo> bundleInfo) {
-    // TODO Auto-generated method stub
-    return null;
+      Set<BundleInfo> additionalBundlesRequired) {
+    return new DeploymentMetadataImpl (app, additionalBundlesRequired);
   }
-
-  
-
 }
