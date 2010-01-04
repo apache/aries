@@ -19,6 +19,8 @@
 
 package org.apache.aries.application;
 
+import java.io.File;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.osgi.framework.Version;
@@ -53,4 +55,8 @@ public interface DeploymentMetadata {
    * @return the application.
    */
   public ApplicationMetadata getApplicationMetadata();
+  
+  /** Stores any changes to disk using this implementation's storage form */
+  public void store(File f);
+  public void store(OutputStream in);
 }

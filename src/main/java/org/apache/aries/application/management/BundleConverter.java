@@ -21,6 +21,8 @@ package org.apache.aries.application.management;
 
 import java.io.InputStream;
 
+import org.apache.aries.application.filesystem.IDirectory;
+
 /**
  * A BundleConverter turns a .jar that is not an OSGi bundle into a well formed OSGi bundle,
  * or a .war that is not a WAB into a WAB. 
@@ -29,9 +31,11 @@ public interface BundleConverter {
   /**
    * 
    * @param inputBundle Stream to the input bundle
-   * @param bundleFileName Used to infer which type of conversion is required. 
+   * @param artifact The root of the eba containing the artifact being converted - 
+   *                 currently a .zip file. In time we may come to support this 
+   *                 being an exploded directory.  
    * @return valid input stream or null if the bundle could not be converted. 
    */
-  public InputStream convert (InputStream inputBundle, String bundleFileName);
+  public InputStream convert (InputStream inputBundle, IDirectory parentEba);
 
 }
