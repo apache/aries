@@ -23,7 +23,7 @@
 		<version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.apache.aries.samples.blueprint.helloworld.client</artifactId>
+	<artifactId>blueprint-helloworld-client</artifactId>
 	<name>Apache Aries Blueprint HelloWorldClient</name>
 	<packaging>bundle</packaging>
 	<description>Example blueprint hello world client application.</description>
