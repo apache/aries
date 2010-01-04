@@ -17,9 +17,9 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
         <reference id="helloservice"
-                interface="org.apache.aries.blueprint.helloworldapi.HelloWorldService" />
+                interface="org.apache.aries.samples.blueprint.helloworld.api.HelloWorldService" />
 
-        <bean id="helloclient" class="org.apache.aries.blueprint.helloworldclient.HelloWorldClient"
+        <bean id="helloclient" class="org.apache.aries.samples.blueprint.helloworld.client.HelloWorldClient"
                 init-method="startUp">
                 <property name="helloWorldService" ref="helloservice" />
         </bean>
