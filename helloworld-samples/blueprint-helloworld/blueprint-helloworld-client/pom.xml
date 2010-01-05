@@ -46,7 +46,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.aries.samples</groupId>
-			<artifactId>org.apache.aries.samples.blueprint.helloworld.api</artifactId>
+			<artifactId>blueprint-helloworld-api</artifactId>
 			<version>1.0.0-incubating-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
