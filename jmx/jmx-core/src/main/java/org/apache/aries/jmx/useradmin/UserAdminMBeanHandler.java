@@ -44,7 +44,7 @@ public class UserAdminMBeanHandler extends AbstractCompendiumHandler {
      * @param agentContext JMXAgentContext instance.
      */
     public UserAdminMBeanHandler(JMXAgentContext agentContext) {
-        super(agentContext, org.osgi.service.useradmin.UserAdmin.class.getCanonicalName());
+        super(agentContext, "org.osgi.service.useradmin.UserAdmin");
     }
 
     /**
