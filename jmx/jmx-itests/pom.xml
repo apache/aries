@@ -131,25 +131,6 @@
             </plugin>
 
             <plugin>
-                <groupId>org.ops4j.pax.exam</groupId>
-                <artifactId>maven-paxexam-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>generate-config</id>
-                        <goals>
-                            <goal>generate-config</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <settings>
-                        <platform>felix</platform>
-                        <profiles>compendium</profiles>
-                    </settings>
-                </configuration>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
