@@ -70,6 +70,16 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>org.apache.aries.blueprint.testbundlea</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>org.apache.aries.blueprint.testbundleb</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.itests</artifactId>
                 <version>${version}</version>
             </dependency>
@@ -215,7 +225,10 @@
         <module>blueprint-cm</module>
         <module>blueprint-bundle</module>
         <module>blueprint-sample</module>
+        <module>blueprint-testbundlea</module>
+        <module>blueprint-testbundleb</module>
         <module>blueprint-itests</module>
     </modules>
 
 </project>
+
