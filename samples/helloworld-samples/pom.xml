@@ -27,7 +27,7 @@
 	<artifactId>helloworld-samples</artifactId>
 	<name>Apache Aries HelloWorld samples</name>
 	<packaging>pom</packaging>
-	<description>Example blueprint hello world application</description>
+	<description>Example hello world application</description>
 
 	<modules>
 		<module>blueprint-helloworld</module>
