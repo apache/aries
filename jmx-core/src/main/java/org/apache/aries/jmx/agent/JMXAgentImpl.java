@@ -96,7 +96,7 @@ public class JMXAgentImpl implements JMXAgent {
         MBeanHandler packageStateHandler = new PackageStateMBeanHandler(bc, logger);
         packageStateHandler.open();
         mbeansHandlers.add(packageStateHandler);
-        MBeanHandler permissionAdminHandler = new PermissionAdminMBeanHandler(bc, logger);
+        MBeanHandler permissionAdminHandler = new PermissionAdminMBeanHandler(agentContext);
         permissionAdminHandler.open();
         mbeansHandlers.add(permissionAdminHandler);
         MBeanHandler userAdminHandler = new UserAdminMBeanHandler(agentContext);

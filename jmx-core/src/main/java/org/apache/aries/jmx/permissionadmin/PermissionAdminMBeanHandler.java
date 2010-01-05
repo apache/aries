@@ -19,10 +19,10 @@ package org.apache.aries.jmx.permissionadmin;
 import javax.management.NotCompliantMBeanException;
 import javax.management.StandardMBean;
 
+import org.apache.aries.jmx.AbstractCompendiumHandler;
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.apache.aries.jmx.agent.JMXAgentContext;
 import org.osgi.jmx.service.permissionadmin.PermissionAdminMBean;
 import org.osgi.service.log.LogService;
 
@@ -34,61 +34,38 @@ import org.osgi.service.log.LogService;
  * 
  * @version $Rev$ $Date$
  */
-public class PermissionAdminMBeanHandler implements MBeanHandler {
-
-    private String name;
-    private StandardMBean mbean;
-    private BundleContext context;
-    private Logger logger;
+public class PermissionAdminMBeanHandler extends AbstractCompendiumHandler {
 
     /**
      * Constructs new PermissionAdminMBeanHandler.
      * 
-     * @param context
-     *            bundle context of JMX bundle.
-     * @param logger
-     *            @see {@link Logger}.
+     * @param agentContext JMXAgentContext instance.
      */
-    public PermissionAdminMBeanHandler(BundleContext context, Logger logger) {
-        this.context = context;
-        this.name = PermissionAdminMBean.OBJECTNAME;
-        this.logger = logger;
+    public PermissionAdminMBeanHandler(JMXAgentContext agentContext) {
+        super(agentContext, "org.osgi.service.permissionadmin.PermissionAdmin");
     }
 
     /**
-     * @see org.apache.aries.jmx.MBeanHandler#getMbean()
+     * @see org.apache.aries.jmx.AbstractCompendiumHandler#constructInjectMBean(java.lang.Object)
      */
-    public StandardMBean getMbean() {
-        return mbean;
-    }
-
-    /**
-     * @see org.apache.aries.jmx.MBeanHandler#open()
-     */
-    public void open() {
-        ServiceReference adminRef = context.getServiceReference(org.osgi.service.permissionadmin.PermissionAdmin.class
-                .getCanonicalName());
-        org.osgi.service.permissionadmin.PermissionAdmin permissionAdmin = (org.osgi.service.permissionadmin.PermissionAdmin) context
-                .getService(adminRef);
-        PermissionAdminMBean paMBean = new PermissionAdmin(permissionAdmin);
+    @Override
+    protected StandardMBean constructInjectMBean(Object targetService) {
+        PermissionAdminMBean paMBean = new PermissionAdmin((org.osgi.service.permissionadmin.PermissionAdmin) targetService);
+        StandardMBean mbean = null;
         try {
             mbean = new StandardMBean(paMBean, PermissionAdminMBean.class);
         } catch (NotCompliantMBeanException e) {
+            Logger logger = agentContext.getLogger();
             logger.log(LogService.LOG_ERROR, "Not compliant MBean", e);
         }
+        return mbean;
     }
 
-    /**
-     * @see org.apache.aries.jmx.MBeanHandler#close()
-     */
-    public void close() {
-        // not used
-    }
 
     /**
      * @see org.apache.aries.jmx.MBeanHandler#getName()
      */
     public String getName() {
-        return name;
+        return PermissionAdminMBean.OBJECTNAME;
     }
 }
