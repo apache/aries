@@ -31,9 +31,9 @@
 	<description>Example blueprint hello world application</description>
 
 	<modules>
+		<module>blueprint-helloworld-api</module>
 		<module>blueprint-helloworld-server</module>
 		<module>blueprint-helloworld-client</module>
-		<module>blueprint-helloworld-api</module>
 		<module>blueprint-helloworld-assembly</module>
 	</modules>
 
