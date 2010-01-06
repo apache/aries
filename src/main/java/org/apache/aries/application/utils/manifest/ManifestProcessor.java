@@ -31,6 +31,9 @@ import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.apache.aries.application.filesystem.IDirectory;
+import org.apache.aries.application.filesystem.IFile;
+
 /**
  * This class contains utilities for parsing manifests. It provides methods to
  * parse the manifest, read a manifest into a map and to split an manifest
@@ -122,6 +125,24 @@ public class ManifestProcessor
     
     return man;
   }
+  
+  /**
+   * Obtain a manifest from an IDirectory. 
+   * 
+   * @param appDir
+   * @param manifestName the name of manifest
+   * @return Manifest, or null if none found.
+   * @throws IOException
+   */
+  public static Manifest obtainManifestFromAppDir(IDirectory appDir, String manifestName) throws IOException{
+    IFile manifestFile = appDir.getFile(manifestName);
+    Manifest man = null;
+    if (manifestFile != null) {
+      man = parseManifest(manifestFile.open());
+    }
+    return man;
+  }
+
   
   /**
    * 

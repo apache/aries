@@ -24,11 +24,14 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.aries.application.ApplicationMetadata;
+import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
+import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
 import org.osgi.framework.Version;
@@ -41,6 +44,12 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
   public DeploymentMetadataImpl (AriesApplication app, Set<BundleInfo> additionalBundlesRequired) {
     _applicationMetadata = app.getApplicationMetadata();
     _deploymentContent = new ArrayList<DeploymentContent>();
+    
+    // DeploymentContent needs to list everything in the application content
+    // plus all the bundles in additonalBundlesRequired
+    for (Content c: _applicationMetadata.getApplicationContents()) { 
+      _deploymentContent.add(new DeploymentContentImpl(c.getContentName(), c.getVersion().getMinimumVersion()));
+    }
     for (BundleInfo bundleInfo : additionalBundlesRequired) { 
       DeploymentContentImpl dci = new DeploymentContentImpl(bundleInfo.getSymbolicName(), 
           bundleInfo.getVersion()); 
