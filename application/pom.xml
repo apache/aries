@@ -85,6 +85,7 @@
     <modules>
         <module>application-utils</module>
         <module>application-api</module>
+        <module>application-management</module>
     </modules>
 
 </project>
