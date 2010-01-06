@@ -19,26 +19,11 @@
 
 package org.apache.aries.jpa.container.impl;
 
-import java.io.InputStream;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
-import org.osgi.framework.Filter;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.framework.Version;
 import org.osgi.util.tracker.BundleTracker;
 
 
@@ -49,19 +34,22 @@ public class PersistenceBundleManager extends BundleTracker
 {
   /** The bundle context for this bundle */
   private BundleContext ctx = null;
-  /** A BundleTracker that locates Persistence Bundles */
-  private BundleTracker persistenceBundles = null;
   /** A map of bundles to generated fragments */
-  private final ConcurrentMap<Bundle, Bundle> hostToFragmentMap = new ConcurrentHashMap<Bundle, Bundle>();
-  /** A map of persistence bundles to sets of persistence metadata */
-  private final ConcurrentMap<Bundle, Set<ServiceRegistration>> hostToPersistenceUnitMap = new ConcurrentHashMap<Bundle, Set<ServiceRegistration>>();
+//  private final ConcurrentMap<Bundle, Bundle> hostToFragmentMap = new ConcurrentHashMap<Bundle, Bundle>();
+//  /** A map of persistence bundles to sets of persistence metadata */
+//  private final ConcurrentMap<Bundle, Set<ServiceRegistration>> hostToPersistenceUnitMap = new ConcurrentHashMap<Bundle, Set<ServiceRegistration>>();
   //TODO pull this from config
   /** The default JPA provider to use */
   public static final String DEFAULT_JPA_PROVIDER ="org.apache.openjpa.persistence.PersistenceProviderImpl";
 
+  /**
+   * Create the extender. Note that it will not start tracking 
+   * until the {@code open()} method is called
+   * @param ctx The extender bundle's context
+   */
   public PersistenceBundleManager(BundleContext ctx) 
   {
-	super(ctx, Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING |
+	  super(ctx, Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING |
 			  Bundle.ACTIVE | Bundle.STOPPING, null);
     this.ctx = ctx;
   }
@@ -100,7 +88,7 @@ public class PersistenceBundleManager extends BundleTracker
       //TODO LOG WARNING HERE
     }
 
-    Collection <InputStream> persistenceXmls = PersistenceBundleHelper.findPersistenceXmlFiles(bundle);
+    Collection <PersistenceDescriptor> persistenceXmls = PersistenceBundleHelper.findPersistenceXmlFiles(bundle);
 
     //If we have no persistence units then our job is done
     if (!!!persistenceXmls.isEmpty()) {
@@ -168,59 +156,6 @@ public class PersistenceBundleManager extends BundleTracker
       
   }
   
-  /**
-   * Parse the persistence.xml files referenced by the URLs in the collection
-   * @param persistenceXmls
-   * @param bundle  The bundle containing the persistence xml files
-   * @return A collection of parsed persistence units.
-   */
-//  private Collection<PersistenceUnitImpl> parseXmlFiles(Collection<PersistenceLocationData> persistenceXmls, Bundle bundle)
-//  {
-//    Collection<PersistenceUnitImpl> persistenceUnits = new ArrayList<PersistenceUnitImpl>();
-//    //Parse each xml file in turn
-//    for(PersistenceLocationData datum : persistenceXmls) {
-//      SAXParserFactory parserFactory = SAXParserFactory.newInstance();
-//      InputStream is = null;
-//      try {
-//        SAXParser parser = parserFactory.newSAXParser();
-//        is = datum.getPersistenceXML().openStream();
-//        
-//        try{
-//          parser.parse(is, new SchemaLocatingHandler(ctx.getBundle()));
-//        } catch (EarlyParserReturn epr) {
-//          //This is not really an exception, but a way to work out which
-//          //version of the persistence schema to use in validation
-//          Schema s = epr.getSchema();
-//          
-//          if(s != null) {
-//            parserFactory.setSchema(s);
-//            parserFactory.setNamespaceAware(true);
-//            parser = parserFactory.newSAXParser();
-//           
-//            //Get back to the beginning of the stream
-//            is.close();
-//            is = datum.getPersistenceXML().openStream();
-//            
-//            JPAHandler handler = new JPAHandler(datum, epr.getVersion());
-//            parser.parse(is, handler);
-//       
-//            persistenceUnits.addAll(handler.getPersistenceUnits());
-//          }
-//        }
-//      } catch (Exception e) {
-//        //TODO Log this error in parsing
-//        e.printStackTrace();
-//      } finally {
-//        if(is != null) try {
-//          is.close();
-//        } catch (IOException e) {
-//          //TODO Log this
-//          e.printStackTrace();
-//        }
-//      }
-//    }
-//    return persistenceUnits;
-//  }
 
   /**
    * Get a persistence provider from the service registry described by the
@@ -270,119 +205,119 @@ public class PersistenceBundleManager extends BundleTracker
 //    return null;
 //  }
  
-  /**
-   * Locate the best provider for the given criteria
-   * @param providerClass
-   * @param matchingCriteria
-   * @return
-   */
-  private ServiceReference getBestProvider(String providerClass, Set<Filter> matchingCriteria)
-  {
-    ServiceReference[] array = null;
-    try {
-      array = ctx.getAllServiceReferences(providerClass, null);
-    } catch (InvalidSyntaxException e) {
-      //TODO this can never happen
-    }
-    
-    if(array != null) {
-      //A linked list is faster for large numbers of ServiceReferences
-      //Note we cannot use Arrays.asList() as we need to remove items
-      //via an iterator, and this would throw UnsupportedOperationException.
-      List<ServiceReference> refs = new LinkedList<ServiceReference>();
-      
-      for(ServiceReference reference : array)
-        refs.add(reference);
-      
-      Iterator<ServiceReference> it = refs.iterator();
-      
-      //Remove anything that doesn't match the filter
-      while(it.hasNext())
-      {
-        ServiceReference ref = it.next();
-        for(Filter f : matchingCriteria)
-        {
-          if(!!!f.match(ref)) {
-            it.remove();
-            break;
-          }
-        }
-      }
-      
-      if(!!!refs.isEmpty()) {
-        //Sort the list in DESCENDING ORDER
-        Collections.sort(refs, new Comparator<ServiceReference>() {
-
-          //TODO we may wish to use Ranking, then versions for equal ranks
-          public int compare(ServiceReference object1, ServiceReference object2)
-          {
-            Version v1 = object1.getBundle().getVersion();
-            Version v2 = object2.getBundle().getVersion();
-            return v2.compareTo(v1);
-          }
-        });
-        return refs.get(0);
-      } else {
-        //TODO no matching providers for matching criteria
-      }
-    } else {
-      //TODO log no matching Providers for impl class
-    }
-    
-    return null;
-  }
-  
-  /**
-   * Create a filter for the supplied version range string
-   * @param providerVersion
-   * @return
-   * @throws InvalidSyntaxException
-   */
-  private Filter getFilter(String providerVersion)
-      throws InvalidSyntaxException
-  {
-    String toReturn = null;
-    
-    //TODO NLS enable the messages in the exceptions below (Invalid version range specified...)
-    //Create a filter to match the required provider version range
-    if(providerVersion != null) {
-      if(!!!providerVersion.contains(","))
-        toReturn = ("(osgi.jpa.provider.version>=" + providerVersion + ")");
-      else {
-        String[] versionArray = providerVersion.split(",");
-        
-        if(versionArray.length == 2) {
-          
-          versionArray[0] = versionArray[0].trim();
-          versionArray[1] = versionArray[1].trim();
-          
-          char bracket1 = versionArray[0].charAt(0);
-          char bracket2 = versionArray[1].charAt(versionArray[1].length() - 1);
-          
-          String version1 = versionArray[0].substring(1);
-          String version2 = versionArray[1].substring(0, versionArray[1].length() -1);
-
-          if(version1.compareTo(version2) > 0)
-            throw new InvalidSyntaxException("Invalid version range specified. " + providerVersion, providerVersion);
-          
-          String compare1 = "(osgi.jpa.provider.version>=" + version1 + ")";
-          String compare2 = "(osgi.jpa.provider.version<=" + version2 + ")";
-          
-          if('(' == bracket1)
-             compare1 = compare1 + "(!(osgi.jpa.provider.version=" + version1 + "))";
-          else if('[' != bracket1) throw new InvalidSyntaxException("Invalid version range specified. " + providerVersion, providerVersion);
-          
-
-          if(')' == bracket2)
-            compare2 = compare2 + "(!(osgi.jpa.provider.version=" + version2 + "))";
-          else if(']' != bracket2) throw new InvalidSyntaxException("Invalid version range specified. " + providerVersion, providerVersion);
-         
-         
-          toReturn = "(&" + compare1 + compare2 + ")";
-        } else throw new InvalidSyntaxException("Invalid version range specified. " + providerVersion, providerVersion);
-        
-      }
-    }
-    return FrameworkUtil.createFilter(toReturn);
-  }
+//  /**
+//   * Locate the best provider for the given criteria
+//   * @param providerClass
+//   * @param matchingCriteria
+//   * @return
+//   */
+//  private ServiceReference getBestProvider(String providerClass, Set<Filter> matchingCriteria)
+//  {
+//    ServiceReference[] array = null;
+//    try {
+//      array = ctx.getAllServiceReferences(providerClass, null);
+//    } catch (InvalidSyntaxException e) {
+//      //TODO this can never happen
+//    }
+//    
+//    if(array != null) {
+//      //A linked list is faster for large numbers of ServiceReferences
+//      //Note we cannot use Arrays.asList() as we need to remove items
+//      //via an iterator, and this would throw UnsupportedOperationException.
+//      List<ServiceReference> refs = new LinkedList<ServiceReference>();
+//      
+//      for(ServiceReference reference : array)
+//        refs.add(reference);
+//      
+//      Iterator<ServiceReference> it = refs.iterator();
+//      
+//      //Remove anything that doesn't match the filter
+//      while(it.hasNext())
+//      {
+//        ServiceReference ref = it.next();
+//        for(Filter f : matchingCriteria)
+//        {
+//          if(!!!f.match(ref)) {
+//            it.remove();
+//            break;
+//          }
+//        }
+//      }
+//      
+//      if(!!!refs.isEmpty()) {
+//        //Sort the list in DESCENDING ORDER
+//        Collections.sort(refs, new Comparator<ServiceReference>() {
+//
+//          //TODO we may wish to use Ranking, then versions for equal ranks
+//          public int compare(ServiceReference object1, ServiceReference object2)
+//          {
+//            Version v1 = object1.getBundle().getVersion();
+//            Version v2 = object2.getBundle().getVersion();
+//            return v2.compareTo(v1);
+//          }
+//        });
+//        return refs.get(0);
+//      } else {
+//        //TODO no matching providers for matching criteria
+//      }
+//    } else {
+//      //TODO log no matching Providers for impl class
+//    }
+//    
+//    return null;
+//  }
+//  
+//  /**
+//   * Create a filter for the supplied version range string
+//   * @param providerVersion
+//   * @return
+//   * @throws InvalidSyntaxException
+//   */
+//  private Filter getFilter(String providerVersion)
+//      throws InvalidSyntaxException
+//  {
+//    String toReturn = null;
+//    
+//    //TODO NLS enable the messages in the exceptions below (Invalid version range specified...)
+//    //Create a filter to match the required provider version range
+//    if(providerVersion != null) {
+//      if(!!!providerVersion.contains(","))
+//        toReturn = ("(osgi.jpa.provider.version>=" + providerVersion + ")");
+//      else {
+//        String[] versionArray = providerVersion.split(",");
+//        
+//        if(versionArray.length == 2) {
+//          
+//          versionArray[0] = versionArray[0].trim();
+//          versionArray[1] = versionArray[1].trim();
+//          
+//          char bracket1 = versionArray[0].charAt(0);
+//          char bracket2 = versionArray[1].charAt(versionArray[1].length() - 1);
+//          
+//          String version1 = versionArray[0].substring(1);
+//          String version2 = versionArray[1].substring(0, versionArray[1].length() -1);
+//
+//          if(version1.compareTo(version2) > 0)
+//            throw new InvalidSyntaxException("Invalid version range specified. " + providerVersion, providerVersion);
+//          
+//          String compare1 = "(osgi.jpa.provider.version>=" + version1 + ")";
+//          String compare2 = "(osgi.jpa.provider.version<=" + version2 + ")";
+//          
+//          if('(' == bracket1)
+//             compare1 = compare1 + "(!(osgi.jpa.provider.version=" + version1 + "))";
+//          else if('[' != bracket1) throw new InvalidSyntaxException("Invalid version range specified. " + providerVersion, providerVersion);
+//          
+//
+//          if(')' == bracket2)
+//            compare2 = compare2 + "(!(osgi.jpa.provider.version=" + version2 + "))";
+//          else if(']' != bracket2) throw new InvalidSyntaxException("Invalid version range specified. " + providerVersion, providerVersion);
+//         
+//         
+//          toReturn = "(&" + compare1 + compare2 + ")";
+//        } else throw new InvalidSyntaxException("Invalid version range specified. " + providerVersion, providerVersion);
+//        
+//      }
+//    }
+//    return FrameworkUtil.createFilter(toReturn);
+//  }
 }
