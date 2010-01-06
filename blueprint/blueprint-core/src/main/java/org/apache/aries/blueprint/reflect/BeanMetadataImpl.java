@@ -33,7 +33,7 @@ import org.osgi.service.blueprint.reflect.Target;
 /**
  * Implementation of BeanMetadata
  *
- * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
+ * @version $Rev$, $Date$
  */
 public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBeanMetadata {
 
