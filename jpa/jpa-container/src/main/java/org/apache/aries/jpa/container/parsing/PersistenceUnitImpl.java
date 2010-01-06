@@ -16,12 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.ibm.osgi.jpa.unit;
+package org.apache.aries.jpa.container.parsing;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,27 +26,24 @@ import java.util.Properties;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.jpa.PersistenceUnitInfoService;
-
-import com.ibm.osgi.jpa.util.PersistenceLocationData;
 
 /**
  * An implementation of PersistenceUnit for parsed persistence unit metadata
  *
  */
 @SuppressWarnings("unchecked")
-public class PersistenceUnitImpl implements PersistenceUnitInfoService
+public class PersistenceUnitImpl implements ParsedPersistenceUnit
 {
   /** A map to hold the metadata from the xml */
   private final Map<String,Object> metadata = new HashMap<String, Object>();
-  /** Information about the location of this persistence unit */
-  private final PersistenceLocationData xmlLocationData;
+  /** The bundle defining this persistence unit */
+  private final Bundle bundle;
 
   /**
    * The Service Reference for the provider to which this persistence
    * unit is tied
    */
-  private ServiceReference provider;
+  ServiceReference provider;
 
   
   /**
@@ -61,10 +55,9 @@ public class PersistenceUnitImpl implements PersistenceUnitInfoService
    * @param location
    * @param version    The version of the JPA schema used in persistence.xml
    */
-  public PersistenceUnitImpl(String name, String transactionType, PersistenceLocationData location, String version)
+  public PersistenceUnitImpl(Bundle b, String name, String transactionType, String version)
   {
-    xmlLocationData = location;
-    
+    this.bundle = b;
     metadata.put(SCHEMA_VERSION, version);
 
     if (name != null)metadata.put(UNIT_NAME, name);
@@ -76,13 +69,7 @@ public class PersistenceUnitImpl implements PersistenceUnitInfoService
   @Override
   public Bundle getDefiningBundle()
   {
-    return xmlLocationData.getPersistenceBundle();
-  }
-
-  @Override
-  public ServiceReference getProviderReference()
-  {
-    return provider;
+    return bundle;
   }
 
   @Override
@@ -99,18 +86,6 @@ public class PersistenceUnitImpl implements PersistenceUnitInfoService
     data.put(PROPERTIES, ((Properties)metadata.get(PROPERTIES)).clone());
     
     return data;
-  }
-
-  @Override
-  public URL getPersistenceXmlLocation()
-  {
-    return xmlLocationData.getPersistenceXML();
-  }
-  
-  @Override
-  public URL getPersistenceUnitRoot()
-  {
-    return xmlLocationData.getPersistenceUnitRoot();
   }
 
   /**
@@ -205,40 +180,5 @@ public class PersistenceUnitImpl implements PersistenceUnitInfoService
   public void setProviderReference(ServiceReference providerRef)
   {
     provider = providerRef;
-  }
-
-  @Override
-  public ClassLoader getClassLoader()
-  {
-    return new BundleDelegatingClassLoader(getDefiningBundle());
-  }
-  
-  private static class BundleDelegatingClassLoader extends ClassLoader
-  {
-    private final Bundle bundle;
-    
-    public BundleDelegatingClassLoader(Bundle b)
-    {
-      super(ClassLoader.getSystemClassLoader());
-      bundle = b;
-    }
-    
-    @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException
-    {
-      return bundle.loadClass(name);
-    }
-    
-    @Override
-    protected URL findResource(String resName)
-    {
-      return bundle.getResource(resName);
-    }
-    
-    @Override
-    protected Enumeration<URL> findResources(String resName) throws IOException
-    {
-      return bundle.getResources(resName);
-    }
   }
 }

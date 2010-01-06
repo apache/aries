@@ -18,45 +18,23 @@
  */
 package org.apache.aries.jpa.container.parsing;
 
-import javax.xml.validation.Schema;
-
-import org.xml.sax.SAXException;
-
 /**
- * A convenience mechanism for finding the version of the schema to validate with
+ * This Exception will be thrown when there was an error parsing a PersistenceDescriptor
+ * It will use the standard chaining mechanism to wrap the Exception thrown by the parser. 
  */
-public class EarlyParserReturn extends SAXException
-{
-  /** This class is serializable */
-  private static final long serialVersionUID = 6173561765417524327L;
-  /** The schema to use */
-  private final Schema schema;
-  /** The value of the version attribute in the xml */
-  private final String jpaVersion;
+public class PersistenceDescriptorParserException extends Exception {
 
   /**
-   * @return The schema that was used in the xml document
+   * Construct a PersistenceDescriptorException
+   * @param e the exception to wrap
    */
-  public Schema getSchema()
-  {
-    return schema;
-  }
-  
-  /**
-   * @return The version of the JPA schema used
-   */
-  public String getVersion()
-  {
-    return jpaVersion;
+  public PersistenceDescriptorParserException(Exception e) {
+    super(e);
   }
 
   /**
-   * @param s  The schema used
-   * @param version The version of the schema used
+   * For Serialization
    */
-  public EarlyParserReturn(Schema s, String version)
-  {
-    schema = s;
-    jpaVersion = version;
-  }
+  private static final long serialVersionUID = -8960763303021136544L;
+
 }
