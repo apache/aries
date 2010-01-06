@@ -44,6 +44,8 @@ import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleConverter;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.impl.AriesApplicationManagerImpl;
+import org.apache.aries.application.management.impl.BundleInfoImpl;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.filesystem.IOUtils;
 import org.apache.aries.application.utils.manifest.BundleManifest;
