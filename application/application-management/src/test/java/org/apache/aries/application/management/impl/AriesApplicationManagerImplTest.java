@@ -73,6 +73,7 @@ public class AriesApplicationManagerImplTest {
   
   @BeforeClass 
   public static void setup() throws Exception { 
+    new File("ariesApplicationManagerImplTest").mkdir();
     EbaUnitTestUtils.createEba("../src/test/resources/bundles/test.eba", _testEba);
     File src = new File ("../src/test/resources/bundles/repository/a.handy.persistence.library.jar");
     File dest = new File ("ariesApplicationManagerImplTest/a.handy.persistence.library.jar");
