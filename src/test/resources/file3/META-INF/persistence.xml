@@ -1,0 +1,28 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+   version="1.0">
+
+  <!-- This is an empty persistence.xml file -->
+  
+  <persistence-unit name="bravo" transaction-type="J_T_A">
+    <description>
+      <provider>bravo.persistence.provider</provider>
+    </description>
+    <jta-data-source>bravo/jtaDS</jta-data-source>
+    <non-jta-data-source>bravo/nonJtaDS</non-jta-data-source>
+    <mapping-file>bravoMappingFile1.xml</mapping-file>
+    <mapping-file>bravoMappingFile2.xml</mapping-file>
+    <jar-file>bravoJarFile1.jar</jar-file>
+    <jar-file>bravoJarFile2.jar</jar-file>
+    <class>bravoClass1</class>
+    <class>bravoClass2</class>
+    <exclude-unlisted-classes/>
+    <properties>
+      <property name="some.prop" value="prop.value"/>
+      <property name="some.other.prop" value="another.prop.value"/>
+    </properties>
+  </persistence-unit> 
+ 
+  
+</persistence>
