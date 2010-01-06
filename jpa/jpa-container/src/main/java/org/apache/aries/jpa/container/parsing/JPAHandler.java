@@ -16,18 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.ibm.osgi.jpa.unit.parsing;
+package org.apache.aries.jpa.container.parsing;
 
 import java.util.Collection;
 import java.util.Stack;
 
+import org.osgi.framework.Bundle;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import com.ibm.osgi.jpa.unit.PersistenceUnitImpl;
-import com.ibm.osgi.jpa.util.PersistenceLocationData;
 
 /**
  *  This code is responsible for parsing the persistence.xml into PersistenceUnits
@@ -38,20 +36,20 @@ public class JPAHandler extends DefaultHandler
   private final Stack<PersistenceUnitImpl> persistenceUnits = new Stack<PersistenceUnitImpl>();
   /** The name of the current element */
   private String elementName;
-  /** The persistence xml location data */
-  private final PersistenceLocationData xmlLocationData;
   /** The version of the persistence.xml file */
   private final String jpaVersion;
   /** A StringBuilder for caching the information from getCharacters */
   private StringBuilder builder = new StringBuilder();
+  /** The bundle that contains this persistence descriptor */
+  private Bundle bundle;
   
   /**
    * Create a new JPA Handler for the given peristence.xml
    * @param data
    * @param version  the version of the JPA schema used in the xml
    */
-  public JPAHandler(PersistenceLocationData data, String version){
-    xmlLocationData = data;
+  public JPAHandler(Bundle b, String version){
+    bundle = b;
     jpaVersion = version;
   }
   
@@ -73,7 +71,7 @@ public class JPAHandler extends DefaultHandler
     elementName = (localName == null || "".equals(localName))? name : localName;
 
     if("persistence-unit".equals(elementName)) {
-      persistenceUnits.push(new PersistenceUnitImpl(attributes.getValue("name"), attributes.getValue("transaction-type"), xmlLocationData, jpaVersion));
+      persistenceUnits.push(new PersistenceUnitImpl(bundle, attributes.getValue("name"), attributes.getValue("transaction-type"), jpaVersion));
     } else if("exclude-unlisted-classes".equals(elementName))
       persistenceUnits.peek().setExcludeUnlisted(true);
     else if("property".equals(elementName))

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.ibm.osgi.jpa.unit.parsing;
+package org.apache.aries.jpa.container.parsing;
 
 import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +26,6 @@ import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.osgi.framework.Bundle;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -37,23 +36,12 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class SchemaLocatingHandler extends DefaultHandler
 {
-  /** The RFC 143 bundle object */
-  private final Bundle extender;
   
   /**
    * A static cache of schemas in use in the runtime
    */
   private static final ConcurrentMap<String, Schema> schemaCache = new ConcurrentHashMap<String, Schema>();
   
-  /**
-   * Create a new SchemaLocatingHandler
-   * @param bundle The bundle object for the RFC 143 bundle
-   */
-  public SchemaLocatingHandler(Bundle bundle)
-  {
-    extender = bundle;
-  }
-
   @Override
   public void startElement(String uri, String localName, String name, Attributes attributes)
       throws SAXException
