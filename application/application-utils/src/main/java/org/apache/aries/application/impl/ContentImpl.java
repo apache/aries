@@ -108,6 +108,14 @@ public final class ContentImpl implements Content
     return toReturn;
   }
   
+  public NameValueMap<String, String> getNameValueMap() {
+    NameValueMap<String, String> nvm = new NameValueMap<String, String>();
+    for (String key : this.nameValueMap.keySet()) {
+      nvm.addToCollection(key, this.nameValueMap.get(key));
+    }
+    return nvm;
+  }
+  
   /**
    * add key value to the directives map
    * @param key

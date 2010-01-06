@@ -65,4 +65,10 @@ public interface Content
    * ASK ALASDAIR: should we return default version 0.0.0 instead of null?
    */
   public VersionRange getVersion();
+  
+  /**
+   * get the attribute and directive info in NameValueMap
+   * @return namevalueMap that contains attribute and directive info
+   */
+  public Map<String, String> getNameValueMap();
 }

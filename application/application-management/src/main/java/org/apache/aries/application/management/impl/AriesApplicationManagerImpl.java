@@ -78,14 +78,10 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   
   
   /**
-   * Create an AriesApplication from a .eba file
+   * Create an AriesApplication from a .eba file: a zip file with a '.eba' extension
+   * as per http://incubator.apache.org/aries/applications.html 
    */
-  public AriesApplication createApplication(File ebaFile) throws ManagementException {
-    /* 
-     * ebaFile should be a zip file with a '.eba' extension 
-     * as per http://incubator.apache.org/aries/applications.html
-     */    
-
+  public AriesApplication createApplication(IDirectory ebaFile) throws ManagementException {
     ApplicationMetadata applicationMetadata;
     DeploymentMetadata deploymentMetadata;
     Map<String, InputStream> modifiedBundles = new HashMap<String, InputStream>();
@@ -93,11 +89,6 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     boolean manifestChanged = false;
     
     try { 
-      if (!ebaFile.isFile()) { 
-        // TODO: NLS this, and implement create-from-directory
-        throw new ManagementException ("Cannot create .eba from directory yet");
-      }
-      
       // Locate META-INF/APPLICATION.MF and ensure that the 
       // manifest has the necessary fields set 
       Manifest applicationManifest = parseManifest (ebaFile, AppConstants.APPLICATION_MF);
@@ -109,14 +100,18 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
         // If there's a deployment.mf present, check it matches applicationManifest, and if so, use it
       } else { 
         //  -- Process any other files in the .eba, i.e. migrate wars to wabs, plain jars to bundles
-        IDirectory eba = FileSystem.getFSRoot(ebaFile);
         
-        Set<BundleInfo> bundleInfo = new HashSet<BundleInfo>();
-        for (IFile f : eba) { 
+        Set<BundleInfo> extraBundlesInfo = new HashSet<BundleInfo>();
+        for (IFile f : ebaFile) { 
+          if (f.isDirectory()) { 
+            continue;
+          }
+          System.out.println ("Call getBundleManifest on " + f.getName());
+          
           BundleManifest bm = getBundleManifest (f);
           if (bm != null) {
             if (bm.isValid()) {
-              bundleInfo.add(new BundleInfoImpl(bm, null));
+              extraBundlesInfo.add(new BundleInfoImpl(bm, null));
             } else { 
               // We have a jar that needs converting to a bundle, or a war to migrate to a WAB
               InputStream is = null;
@@ -128,7 +123,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
                   try { 
                     // WarToWabConverter can extract application.xml via
                     // eba.getFile(AppConstants.APPLICATION_XML);
-                    convertedBinary = converters.next().convert(is, eba);
+                    convertedBinary = converters.next().convert(is, ebaFile);
                   } catch (ServiceException sx) {
                     // We'll get this if our optional BundleConverter has not been injected. 
                   }
@@ -136,7 +131,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
                 if (convertedBinary != null) { 
                   modifiedBundles.put (f.getName(), convertedBinary); 
                   bm = BundleManifest.fromBundle(is);
-                  bundleInfo.add(new BundleInfoImpl(bm, null));
+                  extraBundlesInfo.add(new BundleInfoImpl(bm, null));
                 }
               } finally { 
                 try { 
@@ -146,7 +141,8 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
             }
           } 
         }
-        application = new AriesApplicationImpl (applicationMetadata, bundleInfo);
+               
+        application = new AriesApplicationImpl (applicationMetadata, extraBundlesInfo);
         Set<BundleInfo> additionalBundlesRequired = _resolver.resolve(application);
         deploymentMetadata = _deploymentMetadataFactory.createDeploymentMetadata(application, additionalBundlesRequired);
         application.setDeploymentMetadata(deploymentMetadata);
@@ -167,6 +163,8 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   }
 
   public AriesApplication createApplication(URL url) throws ManagementException {
+    // If URL isn't file://, we need to download the asset from that url and 
+    // then call createApplication(File)
     return null;
   }
 
@@ -208,26 +206,22 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
    * @return parsed manifest, or null
    * @throws IOException
    */
-  private Manifest parseManifest (File ebaFile, String fileName) throws IOException {
+  private Manifest parseManifest (IDirectory source, String fileName) throws IOException {
     Manifest result = null;
-    IDirectory eba = FileSystem.getFSRoot(ebaFile);
-    List<IFile> files = eba.listFiles();
-    for (IFile f : files) { 
-      if (f.getName().equalsIgnoreCase(fileName)) {
-        InputStream is = null;
+    IFile f = source.getFile(fileName);
+    if (f != null) { 
+      InputStream is = null;
+      try { 
+        is = f.open();
+        result = ManifestProcessor.parseManifest(is);
+        is.close();
+      } catch (IOException iox) { 
+        // TODO: log error
+        throw iox;
+      } finally { 
         try { 
-          is = f.open();
-          result = ManifestProcessor.parseManifest(is);
-          is.close();
-        } catch (IOException iox) { 
-          // TODO: log error
-          throw iox;
-        } finally { 
-          try { 
-            if (is != null) is.close();
-          } catch (IOException iox) {}
-        }
-        break;
+          if (is != null) is.close();
+        } catch (IOException iox) {}
       }
     }
     return result;
