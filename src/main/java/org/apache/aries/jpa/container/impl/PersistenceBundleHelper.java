@@ -51,10 +51,10 @@ public class PersistenceBundleHelper
    * @param bundle
    * @return
    */
-  public static Collection<InputStream> findPersistenceXmlFiles(Bundle bundle)
+  public static Collection<PersistenceDescriptor> findPersistenceXmlFiles(Bundle bundle)
   {
     //The files we have found
-    Collection<InputStream> persistenceXmlFiles = new HashSet<InputStream>();
+    Collection<PersistenceDescriptor> persistenceXmlFiles = new HashSet<PersistenceDescriptor>();
     
     //Always search the default location
     List<String> locations = new ArrayList<String>();
@@ -71,15 +71,14 @@ public class PersistenceBundleHelper
     try {
       for(String location : locations) {
         InputStream file = locateFile(bundle, location.trim());
-          
         if(file != null)
-          persistenceXmlFiles.add(file);
+          persistenceXmlFiles.add(new PersistenceDescriptor(location, file));
         }
     } catch (Exception e) {
         //TODO log
-      for (InputStream is : persistenceXmlFiles) {
+      for (PersistenceDescriptor desc : persistenceXmlFiles) {
         try {
-          is.close();
+          desc.getInputStream().close();
         } catch (IOException ioe) {
           // TODO: log ioe
         }
