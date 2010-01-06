@@ -33,7 +33,7 @@ import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
- * @version $Rev: 6687 $ $Date: 2005-12-28T21:08:56.733437Z $
+ * @version $Rev$ $Date$
  */
 public class MapRecipe extends AbstractRecipe {
 

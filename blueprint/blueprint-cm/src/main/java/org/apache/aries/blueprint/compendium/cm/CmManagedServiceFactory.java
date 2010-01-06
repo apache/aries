@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * TODO: if we need to make those exported services tied to their references as for other <service/> elements
  * TODO: it becomes a problem as currently we would have to create a specific recipe or something like that
  *
- * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
+ * @version $Rev$, $Date$
  */
 public class CmManagedServiceFactory {
 
