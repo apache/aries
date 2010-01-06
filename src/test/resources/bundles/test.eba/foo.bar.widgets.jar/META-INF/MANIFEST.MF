@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: FooBarWidgets
+Bundle-SymbolicName: foo.bar.widgets
+Bundle-Version: 1.1
+Bundle-Vendor: Apache.org
+Export-Package: foo.bar.widgets
+
+

@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: MyBusinessLogic
+Bundle-SymbolicName: my.business.logic
+Bundle-Version: 1.1
+Bundle-Vendor: Apache.org
+Export-Package: my.business.logic
