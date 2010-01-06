@@ -60,7 +60,7 @@ import org.osgi.service.blueprint.container.Converter;
  * Each {@link org.osgi.service.blueprint.container.BlueprintContainer} has its own AggregateConverter
  * used to register converters defined by the related blueprint bundle.
  *
- * @version $Rev: 760378 $, $Date: 2009-03-31 11:31:38 +0200 (Tue, 31 Mar 2009) $
+ * @version $Rev$, $Date$
  */
 public class AggregateConverter implements Converter {
 

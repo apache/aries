@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A namespace handler for Aries blueprint extensions
  *
- * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
+ * @version $Rev$, $Date$
  */
 public class ExtNamespaceHandler implements org.apache.aries.blueprint.NamespaceHandler {
 

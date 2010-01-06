@@ -56,7 +56,7 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
 /**
  * Abstract class for property placeholders.
  *
- * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
+ * @version $Rev$, $Date$
  */
 public abstract class AbstractPropertyPlaceholder implements ComponentDefinitionRegistryProcessor {
 

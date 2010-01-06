@@ -22,7 +22,7 @@ import java.util.List;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
- * @version $Rev: 6685 $ $Date: 2005-12-28T00:29:37.967210Z $
+ * @version $Rev$ $Date$
  */
 public class PassThroughRecipe extends AbstractRecipe {
 
