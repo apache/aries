@@ -36,16 +36,17 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 
 public class BundleInfoImpl implements BundleInfo {
-
-  private BundleManifest _bundleManifest;
+  private String _symbolicName;
+  private Version _version;
   private Attributes _attributes;
   private Set<Content> _exportPackages = null;
   private Set<Content> _importPackages = null;
   private String _location;
   
   public BundleInfoImpl (BundleManifest bm, String location) { 
-    _bundleManifest = bm;
-    _attributes = _bundleManifest.getRawAttributes();
+    _symbolicName = bm.getSymbolicName();
+    _version = bm.getVersion();
+    _attributes = bm.getRawAttributes();
     _location = location;
   }
   
@@ -79,11 +80,11 @@ public class BundleInfoImpl implements BundleInfo {
   }
 
   public String getSymbolicName() {
-    return _bundleManifest.getSymbolicName();
+    return _symbolicName;
   }
 
   public Version getVersion() {
-    return _bundleManifest.getVersion();
+    return _version;
   }
 
   private Set<Content> getContentSetFromHeader (Attributes attributes, String key) { 

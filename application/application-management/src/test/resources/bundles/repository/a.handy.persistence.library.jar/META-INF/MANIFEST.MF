@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: HandyPersistenceLibrary
+Bundle-SymbolicName: a.handy.persistence.library
+Bundle-Version: 1.1
+Bundle-Vendor: Apache.org
+Export-Package: org.apache.handy.persistence
+

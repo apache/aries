@@ -51,6 +51,10 @@ public interface AppConstants
   public static final String LOWER_CASE_JAR_SUFFIX = ".jar";
   /** The expected lower case suffix of a war file */
   public static final String LOWER_CASE_WAR_SUFFIX = ".war";
+  /** The attribute used to record the deployed version of a bundle */
+  public static final String DEPLOYMENT_BUNDLE_VERSION = "deployed-version";
+  /** The name of the bundle manifest */
+  public static final String MANIFEST_MF = "META-INF/MANIFEST.MF";
   
   public static final String MANIFEST_VERSION="1.0";
 }
