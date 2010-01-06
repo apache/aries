@@ -27,7 +27,7 @@ package org.apache.aries.blueprint;
  *    &lt;bp:bean ext:role="processor" ...&gt;
  * </pre>
  *
- * @version $Rev: 766508 $, $Date: 2009-04-19 22:09:27 +0200 (Sun, 19 Apr 2009) $
+ * @version $Rev$, $Date$
  */
 public interface ComponentDefinitionRegistryProcessor {
 

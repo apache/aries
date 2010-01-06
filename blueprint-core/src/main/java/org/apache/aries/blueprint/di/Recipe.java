@@ -23,7 +23,7 @@ import org.osgi.service.blueprint.container.ComponentDefinitionException;
 /**
  * The <code>Recipe</code> interface abstracts the creation of objects
  *
- * @version $Rev: 6680 $ $Date: 2005-12-24T04:38:27.427468Z $
+ * @version $Rev$ $Date$
  */
 public interface Recipe {
 
