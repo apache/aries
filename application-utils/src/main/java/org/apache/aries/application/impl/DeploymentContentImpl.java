@@ -23,20 +23,37 @@ import java.util.Map;
 
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.VersionRange;
+import org.apache.aries.application.utils.AppConstants;
+import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
+import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.osgi.framework.Version;
 
-public class DeploymentContentImpl implements DeploymentContent {
+public final class DeploymentContentImpl implements DeploymentContent {
   
   private ContentImpl _content;
   
-  public DeploymentContentImpl (String content) { 
-    _content = new ContentImpl (content);
+  /**
+   * DeploymentContent relates to a bundle at a particular version. 
+   * We can therefore assume that the Version passed into this 
+   * constructor is the exact version in question. 
+   * @param bundleSymbolicName
+   * @param version
+   */
+  public DeploymentContentImpl (String bundleSymbolicName, Version version) {
+    NameValueMap<String, String> nvMap = new NameValueMap<String, String>();
+    nvMap.put(AppConstants.DEPLOYMENT_BUNDLE_VERSION, version.toString());
+    _content = new ContentImpl (bundleSymbolicName, nvMap);
   }
   
-  public DeploymentContentImpl (String bundleSymbolicName, Version version) { 
-    _content = new ContentImpl (bundleSymbolicName, version);
+  /**
+   * Construct a DeploymentContent from a string of the form, 
+   *   bundle.symbolic.name;deployedContent="1.2.3"
+   * @param deployedContent
+   */
+  public DeploymentContentImpl (String deployedContent) {
+    _content = new ContentImpl (deployedContent);
   }
-
+  
   public Version getExactVersion() {
     return getVersion().getExactVersion();
   }
@@ -62,7 +79,28 @@ public class DeploymentContentImpl implements DeploymentContent {
   }
 
   public VersionRange getVersion() {
-    return _content.getVersion();
+    String deployedVersion = _content.getAttribute(AppConstants.DEPLOYMENT_BUNDLE_VERSION);
+    VersionRange vr = null;
+    if (deployedVersion != null && deployedVersion.length() > 0) {
+      vr = ManifestHeaderProcessor.parseVersionRange(deployedVersion, true);
+    }
+    return vr;
   }
 
+  @Override
+  public boolean equals(Object other) { 
+    if (other == null) 
+      return false;
+    if (this == other) 
+      return true;
+    if (other instanceof DeploymentContentImpl) {
+      return _content.equals(((DeploymentContentImpl) other)._content);
+    } else { 
+      return false;
+    }
+  }
+
+  public Map<String, String> getNameValueMap() {
+    return _content.getNameValueMap();
+  }
 }

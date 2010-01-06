@@ -20,16 +20,17 @@
 
 package org.apache.aries.application.management;
 
-import java.io.File;
 import java.net.URL;
 import java.util.Set;
+
+import org.apache.aries.application.filesystem.IDirectory;
 
 /**
  * Create, install and uninstall applications via this service. 
  */
 public interface AriesApplicationManager
 {
-  public AriesApplication createApplication(File f) throws ManagementException;
+  public AriesApplication createApplication(IDirectory source) throws ManagementException;
   public AriesApplication createApplication(URL url) throws ManagementException;
   public Set<ApplicationContext> getApplicationContexts();
   public ApplicationContext getApplicationContext(AriesApplication app);
