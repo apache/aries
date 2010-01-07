@@ -11,7 +11,7 @@
   <name>Aries JPA Component</name>
   <version>1.0.0-incubating-SNAPSHOT</version>
   <modules>
-  	<!-- <module>jpa-container</module>  -->
+  	<module>jpa-container</module>
   </modules>
   <dependencyManagement>
     <dependencies>
