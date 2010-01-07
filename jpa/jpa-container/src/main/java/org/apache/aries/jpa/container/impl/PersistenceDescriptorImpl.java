@@ -20,13 +20,15 @@ package org.apache.aries.jpa.container.impl;
 
 import java.io.InputStream;
 
+import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
+
 /**
  * Stores the location of a persistence descriptor and
  * a stream to its contents. Note that there is only one
  * copy of the InputStream, only one thread should try to
  * read from it, and it can only be closed once. 
  */
-public class PersistenceDescriptor {
+public class PersistenceDescriptorImpl implements PersistenceDescriptor {
 
   /** The location of the persistence descriptor */
   private final String location;
@@ -38,22 +40,20 @@ public class PersistenceDescriptor {
    * @param location
    * @param inputStream
    */
-  public PersistenceDescriptor(String location, InputStream inputStream) {
+  public PersistenceDescriptorImpl(String location, InputStream inputStream) {
     this.location = location;
     this.inputStream = inputStream;
   }
 
-  /**
-   * Get the location of the persistence descriptor
-   * @return
+  /* (non-Javadoc)
+   * @see org.apache.aries.jpa.container.impl.PersistenceDescriptor#getLocation()
    */
   public String getLocation() {
     return location;
   }
 
-  /**
-   * Get hold of the wrapped InputStream
-   * @return
+  /* (non-Javadoc)
+   * @see org.apache.aries.jpa.container.impl.PersistenceDescriptor#getInputStream()
    */
   public InputStream getInputStream() {
     return inputStream;

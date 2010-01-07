@@ -21,6 +21,7 @@ package org.apache.aries.jpa.container.impl;
 
 import java.util.Collection;
 
+import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;

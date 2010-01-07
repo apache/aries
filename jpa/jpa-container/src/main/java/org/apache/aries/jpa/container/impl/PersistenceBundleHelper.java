@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
+import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
 import org.osgi.framework.Bundle;
 
 /**
@@ -72,7 +73,7 @@ public class PersistenceBundleHelper
       for(String location : locations) {
         InputStream file = locateFile(bundle, location.trim());
         if(file != null)
-          persistenceXmlFiles.add(new PersistenceDescriptor(location, file));
+          persistenceXmlFiles.add(new PersistenceDescriptorImpl(location, file));
         }
     } catch (Exception e) {
         //TODO log

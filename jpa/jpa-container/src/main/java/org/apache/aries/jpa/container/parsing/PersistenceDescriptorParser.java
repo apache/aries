@@ -30,7 +30,9 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.Schema;
 
-import org.apache.aries.jpa.container.impl.PersistenceDescriptor;
+import org.apache.aries.jpa.container.parsing.impl.EarlyParserReturn;
+import org.apache.aries.jpa.container.parsing.impl.JPAHandler;
+import org.apache.aries.jpa.container.parsing.impl.SchemaLocatingHandler;
 import org.osgi.framework.Bundle;
 
 public class PersistenceDescriptorParser {

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.container.parsing;
+package org.apache.aries.jpa.container.parsing.impl;
 
 import java.util.Collection;
 import java.util.Stack;
