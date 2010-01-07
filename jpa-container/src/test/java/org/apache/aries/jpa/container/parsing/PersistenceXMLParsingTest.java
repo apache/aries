@@ -35,7 +35,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.aries.jpa.container.impl.PersistenceDescriptor;
+import org.apache.aries.jpa.container.impl.PersistenceDescriptorImpl;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -54,7 +54,7 @@ public class PersistenceXMLParsingTest
     try {
       String location = "src/test/resources/file1/META-INF/persistence.xml";
       is = new FileInputStream(location);
-      PersistenceDescriptor descriptor = new PersistenceDescriptor(location, is);
+      PersistenceDescriptor descriptor = new PersistenceDescriptorImpl(location, is);
       
       Bundle b = Skeleton.newMock(Bundle.class);
       
@@ -204,7 +204,7 @@ public class PersistenceXMLParsingTest
     try {
       String location = "src/test/resources/file2/META-INF/persistence.xml";
       is = new FileInputStream(location);
-      PersistenceDescriptor descriptor = new PersistenceDescriptor(location, is);
+      PersistenceDescriptor descriptor = new PersistenceDescriptorImpl(location, is);
 
       Bundle b = Skeleton.newMock(Bundle.class);
       
@@ -224,7 +224,7 @@ public class PersistenceXMLParsingTest
     try {
       String location = "src/test/resources/file3/META-INF/persistence.xml";
       is = new FileInputStream(location);
-      PersistenceDescriptor descriptor = new PersistenceDescriptor(location, is);
+      PersistenceDescriptor descriptor = new PersistenceDescriptorImpl(location, is);
       
       Bundle b = Skeleton.newMock(Bundle.class);
       
