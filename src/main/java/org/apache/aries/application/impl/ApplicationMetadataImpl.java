@@ -19,6 +19,8 @@
 package org.apache.aries.application.impl;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,13 +32,12 @@ import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.osgi.framework.Version;
-
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.ServiceDeclaration;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
+import org.osgi.framework.Version;
 
 /**
  * Implementation of ApplicationMetadata and DeploymentMetadata
@@ -51,6 +52,7 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
   private List<Content> appContents;
   private List<ServiceDeclaration> importServices;
   private List<ServiceDeclaration> exportServices;
+  private Manifest manifest;
   
   /**
    * create the applicationMetadata from appManifest
@@ -63,6 +65,10 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
     this.exportServices = new ArrayList<ServiceDeclaration>();
     setup(appManifest);
     
+    // As of 7 Jan 2010 we have no setter methods. Hence it's currently 
+    // fine to keep a copy of appManifest, and to use it in the store()
+    // method.
+    manifest = appManifest;
   }
   
   /**
@@ -172,13 +178,19 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
     return appScope.hashCode();
   }
 
-  public void store(File f) {
-    // TODO when writing AriesApplication.store()
-    
+  public void store(File f) throws IOException {
+    FileOutputStream fos = new FileOutputStream (f);
+    store(fos);
+    fos.close();
   }
 
-  public void store(OutputStream out) {
-    // TODO when writing AriesApplication.store()
-    
+  public void store(OutputStream out) throws IOException {
+    if (manifest != null) {
+      Attributes att = manifest.getMainAttributes();
+      if ((att.getValue(Attributes.Name.MANIFEST_VERSION.toString())) == null) {
+        att.putValue(Attributes.Name.MANIFEST_VERSION.toString(), AppConstants.MANIFEST_VERSION);
+      }
+      manifest.write(out);
+    }
   }
 }

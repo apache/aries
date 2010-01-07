@@ -57,4 +57,9 @@ public interface AppConstants
   public static final String MANIFEST_MF = "META-INF/MANIFEST.MF";
   
   public static final String MANIFEST_VERSION="1.0";
+  
+  /* The Deployed-Content header in DEPLOYMENT.MF records all the bundles
+   * to be deployed for a particular application. 
+   */
+  public static final String DEPLOYMENT_CONTENT = "Deployed-Content";
 }
