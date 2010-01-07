@@ -56,12 +56,9 @@ public class PersistenceXMLParsingTest
       is = new FileInputStream(location);
       PersistenceDescriptor descriptor = new PersistenceDescriptor(location, is);
       
-      Collection<PersistenceDescriptor> descriptors = new ArrayList<PersistenceDescriptor>();
-      descriptors.add(descriptor);
-      
       Bundle b = Skeleton.newMock(Bundle.class);
       
-      Collection<ParsedPersistenceUnit> parsedUnits = PersistenceDescriptorParser.parse(b, descriptors);
+      Collection<ParsedPersistenceUnit> parsedUnits = PersistenceDescriptorParser.parse(b, descriptor);
       assertEquals("An incorrect number of persistence units has been returned.", 4, parsedUnits.size());
       
       List<ParsedPersistenceUnit> units = getList(parsedUnits);
@@ -208,13 +205,10 @@ public class PersistenceXMLParsingTest
       String location = "src/test/resources/file2/META-INF/persistence.xml";
       is = new FileInputStream(location);
       PersistenceDescriptor descriptor = new PersistenceDescriptor(location, is);
-      
-      Collection<PersistenceDescriptor> descriptors = new ArrayList<PersistenceDescriptor>();
-      descriptors.add(descriptor);
-      
+
       Bundle b = Skeleton.newMock(Bundle.class);
       
-      Collection<ParsedPersistenceUnit> parsedUnits = PersistenceDescriptorParser.parse(b, descriptors);
+      Collection<ParsedPersistenceUnit> parsedUnits = PersistenceDescriptorParser.parse(b, descriptor);
       assertEquals("An incorrect number of persistence units has been returned.", 0, parsedUnits.size());
     } finally {
       if(is != null)
@@ -232,12 +226,9 @@ public class PersistenceXMLParsingTest
       is = new FileInputStream(location);
       PersistenceDescriptor descriptor = new PersistenceDescriptor(location, is);
       
-      Collection<PersistenceDescriptor> descriptors = new ArrayList<PersistenceDescriptor>();
-      descriptors.add(descriptor);
-      
       Bundle b = Skeleton.newMock(Bundle.class);
       
-      Collection<ParsedPersistenceUnit> parsedUnits = PersistenceDescriptorParser.parse(b, descriptors);
+      Collection<ParsedPersistenceUnit> parsedUnits = PersistenceDescriptorParser.parse(b, descriptor);
 
       fail("Parsing should not succeed");
     } finally {

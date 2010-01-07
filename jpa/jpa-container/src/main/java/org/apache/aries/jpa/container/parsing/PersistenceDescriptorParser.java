@@ -55,52 +55,49 @@ public class PersistenceDescriptorParser {
    * @param args
    * @throws PersistenceDescriptorParserException 
    */
-  public static Collection<ParsedPersistenceUnit> parse(Bundle b, Collection<PersistenceDescriptor> descriptors) throws PersistenceDescriptorParserException {
+  public static Collection<ParsedPersistenceUnit> parse(Bundle b, PersistenceDescriptor descriptor) throws PersistenceDescriptorParserException {
     Collection<ParsedPersistenceUnit> persistenceUnits = new ArrayList<ParsedPersistenceUnit>();
     //Parse each xml file in turn
-    for(PersistenceDescriptor descriptor : descriptors) {
-      SAXParserFactory parserFactory = SAXParserFactory.newInstance();
-      BufferedInputStream is = null;
-      try {
-        //Buffer the InputStream so we can mark it
-        is = new BufferedInputStream(descriptor.getInputStream(), 8192);
-        is.mark(8192);
-        SAXParser parser = parserFactory.newSAXParser();
-        try{
-          parser.parse(new UnclosableInputStream(is), new SchemaLocatingHandler());
-        } catch (EarlyParserReturn epr) {
-          //This is not really an exception, but a way to work out which
-          //version of the persistence schema to use in validation
-          Schema s = epr.getSchema();
+    SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+    BufferedInputStream is = null;
+    try {
+      //Buffer the InputStream so we can mark it
+      is = new BufferedInputStream(descriptor.getInputStream(), 8192);
+      is.mark(8192);
+      SAXParser parser = parserFactory.newSAXParser();
+      try{
+        parser.parse(new UnclosableInputStream(is), new SchemaLocatingHandler());
+      } catch (EarlyParserReturn epr) {
+        //This is not really an exception, but a way to work out which
+        //version of the persistence schema to use in validation
+        Schema s = epr.getSchema();
+        
+        if(s != null) {
+          parserFactory.setSchema(s);
+          parserFactory.setNamespaceAware(true);
+          parser = parserFactory.newSAXParser();
+         
+          //Get back to the beginning of the stream
+          is.reset();
           
-          if(s != null) {
-            parserFactory.setSchema(s);
-            parserFactory.setNamespaceAware(true);
-            parser = parserFactory.newSAXParser();
-           
-            //Get back to the beginning of the stream
-            is.reset();
-            
-            JPAHandler handler = new JPAHandler(b, epr.getVersion());
-            parser.parse(is, handler);
-            persistenceUnits.addAll(handler.getPersistenceUnits());
-          } else {
-            //TODO Should we try without validation?
-          }
-            
+          JPAHandler handler = new JPAHandler(b, epr.getVersion());
+          parser.parse(is, handler);
+          persistenceUnits.addAll(handler.getPersistenceUnits());
+        } else {
+          //TODO Should we try without validation?
         }
-      } catch (Exception e) {
-        //TODO Log this error in parsing
-        System.out.println("Error parsing " + descriptor.getLocation() + " in bundle " + b.getSymbolicName() + "_" + b.getVersion());
+      }
+    } catch (Exception e) {
+      //TODO Log this error in parsing
+      System.out.println("Error parsing " + descriptor.getLocation() + " in bundle " + b.getSymbolicName() + "_" + b.getVersion());
+      e.printStackTrace();
+      throw new PersistenceDescriptorParserException(e);
+    } finally {
+      if(is != null) try {
+        is.close();
+      } catch (IOException e) {
+        //TODO Log this
         e.printStackTrace();
-        throw new PersistenceDescriptorParserException(e);
-      } finally {
-        if(is != null) try {
-          is.close();
-        } catch (IOException e) {
-          //TODO Log this
-          e.printStackTrace();
-        }
       }
     }
     return persistenceUnits;
