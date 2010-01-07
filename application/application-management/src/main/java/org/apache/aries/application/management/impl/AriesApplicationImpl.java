@@ -47,7 +47,6 @@ public class AriesApplicationImpl implements AriesApplication {
   private LocalPlatform _localPlatform;
   
   // Placeholders for information we'll need for store()
-  private boolean _applicationManifestChanged = false;
   private Map<String, InputStream> _modifiedBundles = null;
   
   public AriesApplicationImpl(ApplicationMetadata meta, Set<BundleInfo> bundleInfo,
