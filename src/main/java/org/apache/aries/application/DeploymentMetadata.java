@@ -20,6 +20,7 @@
 package org.apache.aries.application;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -57,6 +58,6 @@ public interface DeploymentMetadata {
   public ApplicationMetadata getApplicationMetadata();
   
   /** Stores any changes to disk using this implementation's storage form */
-  public void store(File f);
-  public void store(OutputStream in);
+  public void store(File f) throws IOException;
+  public void store(OutputStream in) throws IOException;
 }

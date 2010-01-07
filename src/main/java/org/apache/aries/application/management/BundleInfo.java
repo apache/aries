@@ -30,10 +30,22 @@ import org.apache.aries.application.Content;
  */
 public interface BundleInfo
 {
+  /** Bundle-SymbolicName */
   public String getSymbolicName();
+  
+  /** Bundle-Version: */
   public Version getVersion();
+  
+  /** Returns a String which can be turned into a URL to the bundle binary */
   public String getLocation();
+  
+  /** Import-Package */
   public Set<Content> getImportPackage();
+  
+  /** Export-Package */
   public Set<Content> getExportPackage();
+  
+  /** All the headers in the MANIFEST.MF file */
   public Map<String, String> getHeaders();
+  
 }
