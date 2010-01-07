@@ -19,7 +19,6 @@
 
 package org.apache.aries.application.management.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -44,9 +43,10 @@ import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleConverter;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.LocalPlatform;
 import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.utils.AppConstants;
-import org.apache.aries.application.utils.filesystem.FileSystem;
+import org.apache.aries.application.utils.filesystem.IOUtils;
 import org.apache.aries.application.utils.manifest.BundleManifest;
 import org.apache.aries.application.utils.manifest.ManifestDefaultsInjector;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
@@ -58,6 +58,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   private DeploymentMetadataFactory _deploymentMetadataFactory;
   private List<BundleConverter> _bundleConverters;
   private AriesApplicationResolver _resolver;
+  private LocalPlatform _localPlatform;
 
   public void setApplicationMetadataManager (ApplicationMetadataManager amm) { 
     _applicationMetadataManager = amm;
@@ -74,7 +75,10 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   public void setResolver (AriesApplicationResolver resolver) { 
     _resolver = resolver;
   }
-  
+
+  public void setLocalPlatform (LocalPlatform lp) { 
+    _localPlatform = lp;
+  }
   
   
   /**
@@ -86,18 +90,19 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     DeploymentMetadata deploymentMetadata;
     Map<String, InputStream> modifiedBundles = new HashMap<String, InputStream>();
     AriesApplicationImpl application = null;
-    boolean manifestChanged = false;
     
+    /* Locate META-INF/APPLICATION.MF and ensure that the 
+     * manifest has the necessary fields set
+     */
     try { 
-      // Locate META-INF/APPLICATION.MF and ensure that the 
-      // manifest has the necessary fields set 
       Manifest applicationManifest = parseManifest (ebaFile, AppConstants.APPLICATION_MF);
-      manifestChanged = ManifestDefaultsInjector.updateManifest(applicationManifest, ebaFile.getName(), ebaFile); 
+      ManifestDefaultsInjector.updateManifest(applicationManifest, ebaFile.getName(), ebaFile); 
       applicationMetadata = _applicationMetadataManager.createApplicationMetadata(applicationManifest);
 
       Manifest deploymentManifest = parseManifest (ebaFile, AppConstants.DEPLOYMENT_MF);
       if (deploymentManifest != null) {
         // If there's a deployment.mf present, check it matches applicationManifest, and if so, use it
+        // TODO: Implement this bit
       } else { 
         //  -- Process any other files in the .eba, i.e. migrate wars to wabs, plain jars to bundles
         
@@ -106,12 +111,11 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
           if (f.isDirectory()) { 
             continue;
           }
-          System.out.println ("Call getBundleManifest on " + f.getName());
           
           BundleManifest bm = getBundleManifest (f);
           if (bm != null) {
             if (bm.isValid()) {
-              extraBundlesInfo.add(new BundleInfoImpl(bm, null));
+              extraBundlesInfo.add(new BundleInfoImpl(bm, f.toURL().toExternalForm()));
             } else { 
               // We have a jar that needs converting to a bundle, or a war to migrate to a WAB
               InputStream is = null;
@@ -131,26 +135,21 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
                 if (convertedBinary != null) { 
                   modifiedBundles.put (f.getName(), convertedBinary); 
                   bm = BundleManifest.fromBundle(is);
-                  extraBundlesInfo.add(new BundleInfoImpl(bm, null));
+                  extraBundlesInfo.add(new BundleInfoImpl(bm, f.getName()));
                 }
               } finally { 
-                try { 
-                  if (is != null) is.close();
-                } catch (IOException iox) {}
+                IOUtils.close(is);
               }
             }
           } 
         }
                
-        application = new AriesApplicationImpl (applicationMetadata, extraBundlesInfo);
+        application = new AriesApplicationImpl (applicationMetadata, extraBundlesInfo, _localPlatform);
         Set<BundleInfo> additionalBundlesRequired = _resolver.resolve(application);
         deploymentMetadata = _deploymentMetadataFactory.createDeploymentMetadata(application, additionalBundlesRequired);
         application.setDeploymentMetadata(deploymentMetadata);
         
-        // We may have changed parts of its content. The application's store()
-        // method needs to be able to work. Do something with modifiedBundles 
-        // and manifestChanged. We'll save them in the application for now. 
-        application.setApplicationManifestChanged (manifestChanged);
+        // Store a reference to any modified bundles
         application.setModifiedBundles (modifiedBundles);
         
       }
@@ -214,14 +213,11 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
       try { 
         is = f.open();
         result = ManifestProcessor.parseManifest(is);
-        is.close();
       } catch (IOException iox) { 
         // TODO: log error
         throw iox;
       } finally { 
-        try { 
-          if (is != null) is.close();
-        } catch (IOException iox) {}
+        IOUtils.close(is);
       }
     }
     return result;
@@ -239,9 +235,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
       in = file.open();
       mf = BundleManifest.fromBundle(in);
     } finally { 
-      try { 
-        if (in != null) in.close();
-      } catch (IOException iox) {}
+      IOUtils.close(in);
     }    
     return mf;
   } 

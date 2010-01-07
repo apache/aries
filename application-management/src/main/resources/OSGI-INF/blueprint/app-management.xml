@@ -24,6 +24,7 @@
     <property name="deploymentMetadataFactory" ref="deployment-metadata-factory"/>
     <property name="bundleConverters" ref="bundle-converters"/>
     <property name="resolver" ref="resolver"/>
+    <property name="localPlatform" ref="localPlatform"/>
   </bean>
   
   <reference id="app-metadata-manager" interface="org.apache.aries.application.ApplicationMetadataManager"/>
@@ -32,6 +33,7 @@
                   interface="org.apache.aries.application.management.BundleConverter"
                   availability="optional"/>
   <reference id="resolver" interface="org.apache.aries.application.management.AriesApplicationResolver"/>
+  <reference id="localPlatform" interface="org.apache.aries.application.management.LocalPlatform"/>
     
   <service interface="org.apache.aries.application.management.AriesApplicationManager" ref="manager-service" />
   
