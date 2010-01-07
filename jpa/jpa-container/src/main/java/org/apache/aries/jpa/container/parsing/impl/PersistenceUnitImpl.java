@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.container.parsing;
+package org.apache.aries.jpa.container.parsing.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 
