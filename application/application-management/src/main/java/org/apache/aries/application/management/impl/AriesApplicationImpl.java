@@ -20,31 +20,42 @@
 package org.apache.aries.application.management.impl;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.aries.application.ApplicationMetadata;
+import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.LocalPlatform;
+import org.apache.aries.application.utils.AppConstants;
+import org.apache.aries.application.utils.filesystem.IOUtils;
 
 public class AriesApplicationImpl implements AriesApplication {
 
   private Set<BundleInfo> _bundleInfo;
   private ApplicationMetadata _applicationMetadata;
   private DeploymentMetadata _deploymentMetadata;
+  private LocalPlatform _localPlatform;
   
   // Placeholders for information we'll need for store()
   private boolean _applicationManifestChanged = false;
   private Map<String, InputStream> _modifiedBundles = null;
   
-  public AriesApplicationImpl(ApplicationMetadata meta, Set<BundleInfo> bundleInfo) {
+  public AriesApplicationImpl(ApplicationMetadata meta, Set<BundleInfo> bundleInfo,
+      LocalPlatform lp) {
     _applicationMetadata = meta;
     _bundleInfo = bundleInfo;
     _deploymentMetadata = null;
+    _localPlatform = lp;
     
   }
   
@@ -59,29 +70,67 @@ public class AriesApplicationImpl implements AriesApplication {
   public DeploymentMetadata getDeploymentMetadata() {
     return _deploymentMetadata;
   }
-
-  public void store(File f) {
-    // TODO Auto-generated method stub
-
-  }
-
-  public void store(OutputStream in) {
-    // TODO Auto-generated method stub
-
-  }
   
   public void setDeploymentMetadata (DeploymentMetadata dm) { 
     _deploymentMetadata = dm;
   }
-
-  // When store() is called we'll need to know whether application.mf was changed, 
-  // or any constituent .wars or .jars migrated to bundles in the course of constructing
-  // the AriesApplication. 
-  void setApplicationManifestChanged (boolean changed) { 
-    _applicationManifestChanged = changed;
-  }
   
-  void setModifiedBundles (Map<String, InputStream> modifiedBundles) { 
+  public void setModifiedBundles (Map<String, InputStream> modifiedBundles) {
     _modifiedBundles = modifiedBundles;
+  }
+
+  public void store(File f) throws FileNotFoundException, IOException {
+    OutputStream os = new FileOutputStream (f);
+    store(os);
+    os.close();
+  }
+
+  public void store(OutputStream targetStream) throws FileNotFoundException, IOException {
+    // Construct an eba in a temporary directory
+    // Copy the eba to the target output stream 
+    // Delete the temporary directory. 
+    //
+    // This code will be run on various application server platforms, each of which
+    // will have its own policy about where to create temporary directories. We 
+    // can't just ask the local filesystem for a temporary directory since it may
+    // be quite large: the app server implementation will be better able to select
+    // an appropriate location. 
+    File tempDir = _localPlatform.getTemporaryDirectory();
+    OutputStream out = null;
+    InputStream in = null;
+    try {
+      out = IOUtils.getOutputStream(tempDir, AppConstants.APPLICATION_MF);
+      _applicationMetadata.store(out);
+
+    } finally {
+      IOUtils.close(out);
+    }
+    try {
+      out = IOUtils.getOutputStream(tempDir, AppConstants.DEPLOYMENT_MF);
+      _deploymentMetadata.store(out);
+    } finally {
+      IOUtils.close(out);
+    }
+    
+    // Write the by-value eba files out
+    for (BundleInfo bi : _bundleInfo) { 
+      // bi.getLocation() will return a URL to the source bundle. It may be of the form
+      // file:/path/to/my/file.jar, or
+      // jar:file:/my/path/to/eba.jar!/myBundle.jar
+      String bundleLocation = bi.getLocation();
+      String bundleFileName = bundleLocation.substring(bundleLocation.lastIndexOf('/') + 1);
+      try { 
+        out = IOUtils.getOutputStream(tempDir, bundleFileName);
+        URL bundleURL = new URL (bundleLocation);
+        InputStream is = bundleURL.openStream();
+        IOUtils.copy(is, out);
+      } finally { 
+        IOUtils.close(out);
+        IOUtils.close(in);
+      }
+    }
+
+    // TODO: Write the migrated bundles out
+    
   }
 }
