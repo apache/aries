@@ -20,29 +20,13 @@
 package org.apache.aries.application.management;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Set;
-
-import org.apache.aries.application.ApplicationMetadata;
-import org.apache.aries.application.DeploymentMetadata;
-
 
 /**
- * Metadata about an Aries application - a representation of a .eba
- * file, as per http://incubator.apache.org/aries/applications.html
+ * This is a difficult interface to name properly. It holds methods that need to 
+ * be implemented on a per-application server platform basis. 
  *
  */
-public interface AriesApplication
-{
-  public ApplicationMetadata getApplicationMetadata();
-  public DeploymentMetadata getDeploymentMetadata();
+public interface LocalPlatform {
 
-  /** the set of bundles included in the application by value */
-  public Set<BundleInfo> getBundles();
-
-  /** Stores any changes to disk using this implementations storage form */
-  public void store(File f) throws FileNotFoundException, IOException;
-  public void store(OutputStream in) throws FileNotFoundException, IOException;
+  public File getTemporaryDirectory();
 }
