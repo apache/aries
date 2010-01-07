@@ -26,7 +26,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,8 +51,8 @@ public class PersistenceXMLParsingTest
   {
     InputStream is = null;
     try {
-      String location = "src/test/resources/file1/META-INF/persistence.xml";
-      is = new FileInputStream(location);
+      String location = "file1/META-INF/persistence.xml"; 
+      is = getClass().getClassLoader().getResourceAsStream(location);
       PersistenceDescriptor descriptor = new PersistenceDescriptorImpl(location, is);
       
       Bundle b = Skeleton.newMock(Bundle.class);
@@ -202,8 +201,8 @@ public class PersistenceXMLParsingTest
     InputStream is = null;
 
     try {
-      String location = "src/test/resources/file2/META-INF/persistence.xml";
-      is = new FileInputStream(location);
+      String location = "file2/META-INF/persistence.xml";
+      is = getClass().getClassLoader().getResourceAsStream(location);
       PersistenceDescriptor descriptor = new PersistenceDescriptorImpl(location, is);
 
       Bundle b = Skeleton.newMock(Bundle.class);
@@ -222,8 +221,8 @@ public class PersistenceXMLParsingTest
     InputStream is = null;
 
     try {
-      String location = "src/test/resources/file3/META-INF/persistence.xml";
-      is = new FileInputStream(location);
+      String location = "file3/META-INF/persistence.xml";
+      is = getClass().getClassLoader().getResourceAsStream(location);
       PersistenceDescriptor descriptor = new PersistenceDescriptorImpl(location, is);
       
       Bundle b = Skeleton.newMock(Bundle.class);

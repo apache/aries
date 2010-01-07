@@ -44,6 +44,7 @@
         <module>transaction</module>
         <module>application</module>
         <module>jmx</module>
+        <module>jpa</module>
     </modules>
 
 </project>
