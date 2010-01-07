@@ -44,8 +44,6 @@ import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleConverter;
 import org.apache.aries.application.management.BundleInfo;
-import org.apache.aries.application.management.impl.AriesApplicationManagerImpl;
-import org.apache.aries.application.management.impl.BundleInfoImpl;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.filesystem.IOUtils;
 import org.apache.aries.application.utils.manifest.BundleManifest;
@@ -69,12 +67,12 @@ public class AriesApplicationManagerImplTest {
     
   }
 
-  static String _testEba = "./ariesApplicationManagerImplTest/test.eba";
+  static final String TEST_EBA = "./ariesApplicationManagerImplTest/test.eba";
   
   @BeforeClass 
   public static void setup() throws Exception { 
     new File("ariesApplicationManagerImplTest").mkdir();
-    EbaUnitTestUtils.createEba("../src/test/resources/bundles/test.eba", _testEba);
+    EbaUnitTestUtils.createEba("../src/test/resources/bundles/test.eba", TEST_EBA);
     File src = new File ("../src/test/resources/bundles/repository/a.handy.persistence.library.jar");
     File dest = new File ("ariesApplicationManagerImplTest/a.handy.persistence.library.jar");
     IOUtils.zipUp(src, dest);
@@ -108,7 +106,7 @@ public class AriesApplicationManagerImplTest {
     nextResolverResult.add(resolvedPersistenceLibrary);
     resolver.setNextResult(nextResolverResult);
     
-    IDirectory testEba = FileSystem.getFSRoot(new File(_testEba));
+    IDirectory testEba = FileSystem.getFSRoot(new File(TEST_EBA));
     AriesApplication app = appMgr.createApplication(testEba);
     
     ApplicationMetadata appMeta = app.getApplicationMetadata();
