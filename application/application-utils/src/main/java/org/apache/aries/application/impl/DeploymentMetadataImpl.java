@@ -20,20 +20,24 @@
 package org.apache.aries.application.impl;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
-import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.utils.AppConstants;
 import org.osgi.framework.Version;
 
 public class DeploymentMetadataImpl implements DeploymentMetadata {
@@ -74,15 +78,36 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
   }
 
 
-  public void store(File f) {
-    // TODO when writing AriesApplication.store()
-    
+  public void store(File f) throws FileNotFoundException, IOException{
+    FileOutputStream fos = new FileOutputStream (f);
+    store(fos);
+    fos.close();
   }
 
 
-  public void store(OutputStream in) {
-    // TODO when writing AriesApplication.store()
-    
+  public void store(OutputStream out) throws IOException {
+    // We weren't built from a Manifest, so construct one. 
+    Manifest mf = new Manifest();
+    Attributes attributes = mf.getMainAttributes();
+    attributes.putValue(Attributes.Name.MANIFEST_VERSION.toString(), AppConstants.MANIFEST_VERSION);
+    attributes.putValue(AppConstants.APPLICATION_VERSION, getApplicationVersion().toString());
+    attributes.putValue(AppConstants.APPLICATION_SYMBOLIC_NAME, getApplicationSymbolicName());
+    attributes.putValue(AppConstants.DEPLOYMENT_CONTENT, getDeploymentContentsAsString());
+    mf.write(out);
+  }
+  
+  private String getDeploymentContentsAsString () { 
+    StringBuilder builder = new StringBuilder();
+    for (DeploymentContent dc : getApplicationDeploymentContents()) {
+      builder.append(dc.getContentName());
+      builder.append(';' + AppConstants.DEPLOYMENT_BUNDLE_VERSION + "=");
+      builder.append(dc.getExactVersion());
+      builder.append(",");
+    }
+    if (builder.length() > 0) { 
+      builder.deleteCharAt(builder.length() - 1);
+    }
+    return builder.toString();
   }
 
 }
