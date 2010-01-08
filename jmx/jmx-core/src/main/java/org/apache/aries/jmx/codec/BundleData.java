@@ -71,6 +71,7 @@ import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.jmx.framework.BundleStateMBean;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.startlevel.StartLevel;
@@ -190,7 +191,7 @@ public class BundleData {
     }
 
     @SuppressWarnings("unchecked")
-    public BundleData(Bundle bundle, PackageAdmin packageAdmin, StartLevel startLevel) {
+    public BundleData(BundleContext localBundleContext, Bundle bundle, PackageAdmin packageAdmin, StartLevel startLevel) {
         if (bundle == null) {
             throw new IllegalArgumentException("Argument bundle cannot be null");
         }
@@ -208,14 +209,14 @@ public class BundleData {
         }
         this.hosts = getHostIds(bundle, packageAdmin);
         this.identifier = bundle.getBundleId();
-        this.importedPackages = getBundleImportedPackages(bundle, packageAdmin);
+        this.importedPackages = getBundleImportedPackages(localBundleContext, bundle, packageAdmin);
         this.lastModified = bundle.getLastModified();
         this.location = bundle.getLocation();
         this.persistentlyStarted = startLevel.isBundlePersistentlyStarted(bundle);
         this.registeredServices = getRegisteredServiceIds(bundle);
         this.removalPending = isBundlePendingRemoval(bundle, packageAdmin);
         this.required = isBundleRequiredByOthers(bundle, packageAdmin);
-        this.requiredBundles = getBundleDependencies(bundle, packageAdmin);
+        this.requiredBundles = getBundleDependencies(localBundleContext, bundle, packageAdmin);
         this.requiringBundles = getDependentBundles(bundle, packageAdmin);
         this.servicesInUse = getServicesInUseByBundle(bundle);
         this.bundleStartLevel = startLevel.getBundleStartLevel(bundle);

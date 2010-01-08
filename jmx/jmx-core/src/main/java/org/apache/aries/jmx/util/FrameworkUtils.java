@@ -210,14 +210,15 @@ public class FrameworkUtils {
 
     /**
      * Returns the resolved package imports for the given bundle
-     * 
-     * @param bundle
+     * @param localBundleContext BundleContext object of this bundle/caller
+     * @param bundle target Bundle object to query imported packages for
      * @param packageAdmin
+     * 
      * @return
      * @throws IllegalArgumentException
      *             if fragment or packageAdmin are null
      */
-    public static String[] getBundleImportedPackages(Bundle bundle, PackageAdmin packageAdmin)
+    public static String[] getBundleImportedPackages(BundleContext localBundleContext, Bundle bundle, PackageAdmin packageAdmin)
             throws IllegalArgumentException {
         if (bundle == null) {
             throw new IllegalArgumentException("Argument bundle cannot be null");
@@ -228,7 +229,7 @@ public class FrameworkUtils {
         List<String> result = new ArrayList<String>();
         // TODO - Is there an easier way to achieve this? Unable to find a direct way through Framework
         // API to find the actual package wiring
-        Bundle[] bundles = bundle.getBundleContext().getBundles();
+        Bundle[] bundles = localBundleContext.getBundles();
         for (Bundle candidate : bundles) {
             if (candidate.equals(bundle)) {
                 continue;
@@ -366,14 +367,15 @@ public class FrameworkUtils {
 
     /**
      * Returns an array of ids of bundles the given bundle depends on
-     * 
-     * @param bundle
+     * @param localBundleContext BundleContext object of this bundle/caller 
+     * @param bundle target Bundle object to query dependencies for
      * @param packageAdmin
+     * 
      * @return
      * @throws IllegalArgumentException
      *             if bundle or packageAdmin are null
      */
-    public static long[] getBundleDependencies(Bundle bundle, PackageAdmin packageAdmin)
+    public static long[] getBundleDependencies(BundleContext localBundleContext, Bundle bundle, PackageAdmin packageAdmin)
             throws IllegalArgumentException {
         if (bundle == null) {
             throw new IllegalArgumentException("Argument bundle cannot be null");
@@ -384,7 +386,7 @@ public class FrameworkUtils {
         List<Bundle> dependencies = new ArrayList<Bundle>();
         // TODO - Is there an easier way to achieve this? Unable to find a direct way through Framework
         // API to resolve the current dependencies
-        for (Bundle candidate : bundle.getBundleContext().getBundles()) {
+        for (Bundle candidate : localBundleContext.getBundles()) {
             if (candidate.equals(bundle)) {
                 continue;
             }
