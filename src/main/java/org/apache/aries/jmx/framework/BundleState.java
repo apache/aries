@@ -140,7 +140,7 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
      */
     public String[] getImportedPackages(long bundleId) throws IOException, IllegalArgumentException {
         Bundle bundle = resolveBundle(bundleContext, bundleId);
-        return getBundleImportedPackages(bundle, packageAdmin);
+        return getBundleImportedPackages(bundleContext, bundle, packageAdmin);
     }
 
     /**
@@ -172,7 +172,7 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
      */
     public long[] getRequiredBundles(long bundleIdentifier) throws IOException, IllegalArgumentException {
         Bundle bundle = resolveBundle(bundleContext, bundleIdentifier);
-        return getBundleDependencies(bundle, packageAdmin);
+        return getBundleDependencies(bundleContext, bundle, packageAdmin);
     }
 
     /**
@@ -262,7 +262,7 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
         Bundle[] containerBundles = bundleContext.getBundles();
         List<BundleData> bundleDatas = new ArrayList<BundleData>();
         for (Bundle containerBundle : containerBundles) {
-            bundleDatas.add(new BundleData(containerBundle, packageAdmin, startLevel));
+            bundleDatas.add(new BundleData(bundleContext, containerBundle, packageAdmin, startLevel));
         }
         TabularData bundleTable = new TabularDataSupport(BUNDLES_TYPE);
         for (BundleData bundleData : bundleDatas) {
