@@ -120,7 +120,6 @@ public class FrameworkUtilsTest {
         
         Bundle bundle = mock(Bundle.class);
         BundleContext context = mock(BundleContext.class);
-        when(bundle.getBundleContext()).thenReturn(context);
         
         Bundle b1 = mock(Bundle.class);
         Bundle b2 = mock(Bundle.class);
@@ -143,7 +142,7 @@ public class FrameworkUtilsTest {
         when(admin.getExportedPackages(b3)).thenReturn(null);
         
         assertArrayEquals(new String[] { "org.apache.aries.jmx.b1;0.0.0" , "org.apache.aries.jmx.b2;2.0.1"} 
-                    , getBundleImportedPackages(bundle, admin));
+                    , getBundleImportedPackages(context, bundle, admin));
         
     }
     
@@ -227,8 +226,7 @@ public class FrameworkUtilsTest {
         
         Bundle bundle = mock(Bundle.class);
         BundleContext context = mock(BundleContext.class);
-        when(bundle.getBundleContext()).thenReturn(context);
-        
+       
         Bundle b1 = mock(Bundle.class);
         when(b1.getSymbolicName()).thenReturn("b1");
         when(b1.getBundleId()).thenReturn(new Long(44));
@@ -242,7 +240,7 @@ public class FrameworkUtilsTest {
         when(context.getBundles()).thenReturn(new Bundle[] { bundle, b1, b2, b3 });
         
         PackageAdmin admin = mock(PackageAdmin.class);
-        assertEquals(0, getBundleDependencies(bundle, admin).length);
+        assertEquals(0, getBundleDependencies(context, bundle, admin).length);
         
         RequiredBundle rb1 = mock(RequiredBundle.class);
         when(rb1.getBundle()).thenReturn(b1);
@@ -258,8 +256,10 @@ public class FrameworkUtilsTest {
         when(admin.getRequiredBundles("b2")).thenReturn(new RequiredBundle[] { rb2 });
         when(admin.getRequiredBundles("b3")).thenReturn(new RequiredBundle[] { rb3 });
         
-        assertArrayEquals(new long[] { 44, 66 }, getBundleDependencies(bundle, admin));
+        assertArrayEquals(new long[] { 44, 66 }, getBundleDependencies(context, bundle, admin));
         
         
     }
+    
+    
 }
