@@ -33,11 +33,13 @@ import javax.management.StandardMBean;
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
 import org.apache.aries.jmx.MBeanServiceTracker;
+import org.apache.aries.jmx.cm.ConfigurationAdminMBeanHandler;
 import org.apache.aries.jmx.framework.BundleStateMBeanHandler;
 import org.apache.aries.jmx.framework.FrameworkMBeanHandler;
-import org.apache.aries.jmx.framework.ServiceStateMBeanHandler;
 import org.apache.aries.jmx.framework.PackageStateMBeanHandler;
+import org.apache.aries.jmx.framework.ServiceStateMBeanHandler;
 import org.apache.aries.jmx.permissionadmin.PermissionAdminMBeanHandler;
+import org.apache.aries.jmx.provisioning.ProvisioningServiceMBeanHandler;
 import org.apache.aries.jmx.useradmin.UserAdminMBeanHandler;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.log.LogService;
@@ -102,6 +104,12 @@ public class JMXAgentImpl implements JMXAgent {
         MBeanHandler userAdminHandler = new UserAdminMBeanHandler(agentContext);
         userAdminHandler.open();
         mbeansHandlers.add(userAdminHandler);
+        MBeanHandler configAdminHandler = new ConfigurationAdminMBeanHandler(agentContext);
+        configAdminHandler.open();
+        mbeansHandlers.add(configAdminHandler);
+        MBeanHandler provServiceHandler = new ProvisioningServiceMBeanHandler(agentContext);
+        provServiceHandler.open();
+        mbeansHandlers.add(provServiceHandler);
         mbeanServiceTracker = new MBeanServiceTracker(agentContext);
         mbeanServiceTracker.open();
     }
