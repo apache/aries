@@ -99,7 +99,6 @@ public class BundleDataTest {
         when(bundle.getSymbolicName()).thenReturn("test");
         when(bundle.getVersion()).thenReturn(Version.emptyVersion);
         when(bundle.getBundleId()).thenReturn(new Long(1));
-        when(bundle.getBundleContext()).thenReturn(context);
         when(bundle.getLastModified()).thenReturn(new Long(12345));
         when(bundle.getLocation()).thenReturn("location");
         
@@ -154,7 +153,7 @@ public class BundleDataTest {
         
         when(bundle.getServicesInUse()).thenReturn(new ServiceReference[] { s1, s2, s3 });
         
-        BundleData b = new BundleData(bundle, packageAdmin, startLevel);
+        BundleData b = new BundleData(context, bundle, packageAdmin, startLevel);
         CompositeData compositeData = b.toCompositeData();
         
         assertEquals("test", compositeData.get(SYMBOLIC_NAME));
