@@ -59,14 +59,14 @@ public class HTMLOutput {
 
 	public static final void writeDojoUses(PrintWriter out, String... modules) {
 		out
-				.println("<link rel=\"Stylesheet\" href=\"http://ajax.googleapis.com/ajax/libs/dojo/1.3/dijit/themes/tundra/tundra.css\" type=\"text/css\" media=\"screen\"/>");
+				.println("<link rel=\"Stylesheet\" href=\"http://ajax.googleapis.com/ajax/libs/dojo/1.4.0/dijit/themes/tundra/tundra.css\" type=\"text/css\" media=\"screen\"/>");
 		out
-				.println("<link rel=\"Stylesheet\" href=\"http://ajax.googleapis.com/ajax/libs/dojo/1.3/dijit/themes/nihilo/nihilo.css\" type=\"text/css\" media=\"screen\"/>");
+				.println("<link rel=\"Stylesheet\" href=\"http://ajax.googleapis.com/ajax/libs/dojo/1.4.0/dijit/themes/nihilo/nihilo.css\" type=\"text/css\" media=\"screen\"/>");
 		out
-				.println("<link rel=\"Stylesheet\" href=\"http://ajax.googleapis.com/ajax/libs/dojo/1.3/dijit/themes/soria/soria.css\" type=\"text/css\" media=\"screen\"/>");
-		//out.println("<link rel=\"Stylesheet\" href=\"http://ajax.googleapis.com/ajax/libs/dojo/1.3/dojo/resources/dojo.css\" type=\"text/css\" media=\"screen\"/>");
+				.println("<link rel=\"Stylesheet\" href=\"http://ajax.googleapis.com/ajax/libs/dojo/1.4.0/dijit/themes/soria/soria.css\" type=\"text/css\" media=\"screen\"/>");
+	
 		out
-				.println("<script type=\"text/javascript\"  src=\"http://ajax.googleapis.com/ajax/libs/dojo/1.2.3/dojo/dojo.xd.js\" djConfig=\"parseOnLoad: true\"></script>");
+				.println("<script type=\"text/javascript\"  src=\"http://ajax.googleapis.com/ajax/libs/dojo/1.4.0/dojo/dojo.xd.js\" djConfig=\"parseOnLoad: true\"></script>");
 		out.println("<script type=\"text/javascript\">");
 		out.println("dojo.require(\"dojo.parser\");");
 
