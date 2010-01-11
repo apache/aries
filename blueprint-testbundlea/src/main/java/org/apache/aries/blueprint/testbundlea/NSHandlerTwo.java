@@ -51,8 +51,18 @@ public class NSHandlerTwo implements NamespaceHandler{
     
     private static Interceptor tracker = new Interceptor() {
         
+        //debug/trace calls to toString etc will mess up the interceptor
+        //log, and break tests if tracked. So we filter them out here.
+        private boolean isIgnorableMethod(Method m){
+            if(m.getDeclaringClass()==Object.class){
+                return true;
+            }
+            else
+                return false;
+        }
+        
         public Object preCall(ComponentMetadata cm, Method m, Object... parameters)
-                throws Throwable {
+                throws Throwable {            
             String args = "[";
             if(parameters!=null){
                 if(parameters.length>0){
@@ -64,18 +74,25 @@ public class NSHandlerTwo implements NamespaceHandler{
             }
             args+="]";
             String token = cm.getId() +":"+ m.getName() +":"+args+":"+System.currentTimeMillis();
-            interceptorLog.add("PRECALL:"+token);
+            
+            if(!isIgnorableMethod(m))
+              interceptorLog.add("PRECALL:"+token);
+            
             return token;
         }
         
         public void postCallWithReturn(ComponentMetadata cm, Method m,
                 Object returnType, Object preCallToken) throws Throwable {
-            interceptorLog.add("POSTCALL["+returnType.toString()+"]:"+preCallToken);
+            
+            if(!isIgnorableMethod(m))
+                interceptorLog.add("POSTCALL["+returnType.toString()+"]:"+preCallToken);
         }
         
         public void postCallWithException(ComponentMetadata cm, Method m,
                 Exception ex, Object preCallToken) throws Throwable {
-            interceptorLog.add("POSTCALLEXCEPTION["+ex.toString()+"]:"+preCallToken);
+            
+            if(!isIgnorableMethod(m))
+                interceptorLog.add("POSTCALLEXCEPTION["+ex.toString()+"]:"+preCallToken);
         }
         
         public int getRank() {
