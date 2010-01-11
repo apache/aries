@@ -28,9 +28,9 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 
 @RunWith(JUnit4TestRunner.class)
-public class MultiBundleWithCgLibTest extends AbstractMultiBundleTest{
+public class MultiBundleWithAsmTest extends AbstractMultiBundleTest{
     @Test
-    public void doMultiBundleCgLibTest() throws Exception{
+    public void doMultiBundleAsmTest() throws Exception{
         doCommonMultiBundleTest();
     }
     
@@ -51,6 +51,7 @@ public class MultiBundleWithCgLibTest extends AbstractMultiBundleTest{
             // Bundles
             mavenBundle("org.apache.aries", "org.apache.aries.util"),
             mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.cglib"),
+            mavenBundle("asm","asm-all"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlea").noStart(),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundleb").noStart(),
