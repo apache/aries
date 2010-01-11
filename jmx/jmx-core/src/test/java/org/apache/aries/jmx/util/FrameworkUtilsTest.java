@@ -35,6 +35,9 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -141,8 +144,23 @@ public class FrameworkUtilsTest {
         when(admin.getExportedPackages(b2)).thenReturn(new ExportedPackage[] { ep2 });
         when(admin.getExportedPackages(b3)).thenReturn(null);
         
+        //check first with DynamicImport
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(Constants.DYNAMICIMPORT_PACKAGE, "*");
+        when(bundle.getHeaders()).thenReturn(headers);
         assertArrayEquals(new String[] { "org.apache.aries.jmx.b1;0.0.0" , "org.apache.aries.jmx.b2;2.0.1"} 
                     , getBundleImportedPackages(context, bundle, admin));
+        
+        //check with ImportPackage statement
+        headers.remove(Constants.DYNAMICIMPORT_PACKAGE);
+        String importPackageStatement = "org.apache.aries.jmx.b1;version=0.0.0;resolution:=optional,org.apache.aries.jmx.b2;attribute:=value"; 
+        headers.put(Constants.IMPORT_PACKAGE, importPackageStatement);
+        when(admin.getExportedPackages("org.apache.aries.jmx.b1")).thenReturn(new ExportedPackage[] { ep1 });
+        when(admin.getExportedPackages("org.apache.aries.jmx.b2")).thenReturn(new ExportedPackage[] { ep2 });
+        
+        assertArrayEquals(new String[] { "org.apache.aries.jmx.b1;0.0.0" , "org.apache.aries.jmx.b2;2.0.1"} 
+                    , getBundleImportedPackages(context, bundle, admin));
+        
         
     }
     
@@ -239,6 +257,9 @@ public class FrameworkUtilsTest {
         
         when(context.getBundles()).thenReturn(new Bundle[] { bundle, b1, b2, b3 });
         
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        when(bundle.getHeaders()).thenReturn(headers);
+        
         PackageAdmin admin = mock(PackageAdmin.class);
         assertEquals(0, getBundleDependencies(context, bundle, admin).length);
         
@@ -251,6 +272,8 @@ public class FrameworkUtilsTest {
         RequiredBundle rb3 = mock(RequiredBundle.class);
         when(rb3.getBundle()).thenReturn(b3);
         when(rb3.getRequiringBundles()).thenReturn(new Bundle[] { bundle, b1, b2 });
+        
+        headers.put(Constants.REQUIRE_BUNDLE, "b1;bundle-version=\"1.0.0\",b3;bundle-version=\"2.0.0\"");
         
         when(admin.getRequiredBundles("b1")).thenReturn(new RequiredBundle[] { rb1 });
         when(admin.getRequiredBundles("b2")).thenReturn(new RequiredBundle[] { rb2 });
