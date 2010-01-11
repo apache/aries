@@ -22,10 +22,12 @@ package org.apache.aries.application.management;
 import java.io.InputStream;
 
 import org.apache.aries.application.filesystem.IDirectory;
+import org.apache.aries.application.filesystem.IFile;
 
 /**
  * A BundleConverter turns a .jar that is not an OSGi bundle into a well formed OSGi bundle,
- * or a .war that is not a WAB into a WAB. 
+ * or a .war that is not a WAB into a WAB. The first converter to return a non-null result is
+ * taken as having fully converted the bundle. 
  */
 public interface BundleConverter {
   /**
@@ -38,6 +40,6 @@ public interface BundleConverter {
    *                   
    * @return valid input stream or null if the bundle could not be converted. 
    */
-  public InputStream convert (InputStream inputBundle, IDirectory parentEba, String pathToArtifact);
+  public InputStream convert (IDirectory parentEba, IFile fileInEba);
 
 }

@@ -118,27 +118,27 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
               extraBundlesInfo.add(new BundleInfoImpl(bm, f.toURL().toExternalForm()));
             } else { 
               // We have a jar that needs converting to a bundle, or a war to migrate to a WAB
-              InputStream is = null;
-              try { 
-                is = f.open();
-                InputStream convertedBinary = null;
-                Iterator<BundleConverter> converters = _bundleConverters.iterator();
-                while (converters.hasNext() && convertedBinary == null) { 
-                  try { 
-                    // WarToWabConverter can extract application.xml via
-                    // eba.getFile(AppConstants.APPLICATION_XML);
-                    convertedBinary = converters.next().convert(is, ebaFile, f.getName());
-                  } catch (ServiceException sx) {
-                    // We'll get this if our optional BundleConverter has not been injected. 
-                  }
+              InputStream convertedBinary = null;
+              Iterator<BundleConverter> converters = _bundleConverters.iterator();
+              while (converters.hasNext() && convertedBinary == null) { 
+                try { 
+                  // WarToWabConverter can extract application.xml via
+                  // eba.getFile(AppConstants.APPLICATION_XML);
+                  convertedBinary = converters.next().convert(ebaFile, f);
+                } catch (ServiceException sx) {
+                  // We'll get this if our optional BundleConverter has not been injected. 
                 }
-                if (convertedBinary != null) { 
-                  modifiedBundles.put (f.getName(), convertedBinary); 
+              }
+              if (convertedBinary != null) { 
+                modifiedBundles.put (f.getName(), convertedBinary);
+                InputStream is = null;
+                try { 
+                  is = f.open();
                   bm = BundleManifest.fromBundle(is);
-                  extraBundlesInfo.add(new BundleInfoImpl(bm, f.getName()));
+                } finally { 
+                  IOUtils.close(is);
                 }
-              } finally { 
-                IOUtils.close(is);
+                extraBundlesInfo.add(new BundleInfoImpl(bm, f.getName()));
               }
             }
           } 
