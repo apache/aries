@@ -22,6 +22,22 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <artifactId>org.apache.aries.application.api</artifactId>
+      <groupId>org.apache.aries.application</groupId>
+      <version>1.0.0-incubating-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <artifactId>org.apache.aries.application.utils</artifactId>
+      <groupId>org.apache.aries.application</groupId>
+      <version>1.0.0-incubating-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jpa_2.0_spec</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency> 
+    
+    <dependency>
       <groupId>org.apache.aries.testsupport</groupId>
       <artifactId>org.apache.aries.testsupport.unit</artifactId>
       <scope>test</scope>
@@ -36,6 +52,16 @@
   
   
       <build>
+       <resources>
+            <resource>
+                <targetPath>OSGI-INF/blueprint</targetPath>
+                <filtering>false</filtering>
+                <directory>${basedir}/src/main/resources/OSGI-INF/blueprint</directory>
+                <includes>
+                    <include>*.xml</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -45,7 +71,8 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.groupId}.container</Bundle-SymbolicName>
                         <Export-Package>
-                            org.apache.aries.jpa.container.parsing;version="${pom.version}", 
+                            org.apache.aries.jpa.container.parsing;version="${pom.version}",
+                            org.apache.aries.jpa.container;version="${pom.version}"
                         </Export-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
