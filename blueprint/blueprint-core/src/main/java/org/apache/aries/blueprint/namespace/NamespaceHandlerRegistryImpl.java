@@ -86,15 +86,20 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     }
 
     public Object addingService(ServiceReference reference) {
+        LOGGER.debug("Adding NamespaceHandler "+reference.toString());
         NamespaceHandler handler = (NamespaceHandler) bundleContext.getService(reference);
-        try {
-            Map<String, Object> props = new HashMap<String, Object>();
-            for (String name : reference.getPropertyKeys()) {
-                props.put(name, reference.getProperty(name));
+        if(handler!=null){
+            try {
+                Map<String, Object> props = new HashMap<String, Object>();
+                for (String name : reference.getPropertyKeys()) {
+                    props.put(name, reference.getProperty(name));
+                }
+                registerHandler(handler, props);
+            } catch (Exception e) {
+                LOGGER.warn("Error registering NamespaceHandler", e);
             }
-            registerHandler(handler, props);
-        } catch (Exception e) {
-            LOGGER.warn("Error registering NamespaceHandler", e);
+        }else{
+            LOGGER.warn("Error resolving NamespaceHandler, null Service obtained from tracked ServiceReference {} for bundle {}, ver {}", new Object[]{reference.toString(), reference.getBundle().getSymbolicName(), reference.getBundle().getVersion()});
         }
         return handler;
     }
