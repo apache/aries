@@ -36,10 +36,9 @@ import org.apache.aries.blueprint.BeanProcessor;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.Interceptor;
-import org.apache.aries.blueprint.container.AbstractServiceReferenceRecipe.CgLibProxyFactory;
-import org.apache.aries.blueprint.container.AbstractServiceReferenceRecipe.JdkProxyFactory;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.Recipe;
+import org.apache.aries.blueprint.proxy.AsmInterceptorWrapper;
 import org.apache.aries.blueprint.proxy.CgLibInterceptorWrapper;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
@@ -613,27 +612,53 @@ public class BeanRecipe extends AbstractRecipe {
         return obj;
     }    
     
-    private Object addInterceptors(Object original) throws ComponentDefinitionException{
-        
+    private Object addInterceptors(Object original)
+            throws ComponentDefinitionException {
+
         Object intercepted = null;
         String beanName = getName();
-        ComponentDefinitionRegistry reg = blueprintContainer.getComponentDefinitionRegistry();
+        ComponentDefinitionRegistry reg = blueprintContainer
+                .getComponentDefinitionRegistry();
         ComponentMetadata metaData = reg.getComponentDefinition(beanName);
-        List<Interceptor> interceptors = reg.getInterceptors(metaData); 
-        if(interceptors!=null && interceptors.size()>0){
+        List<Interceptor> interceptors = reg.getInterceptors(metaData);
+        if (interceptors != null && interceptors.size() > 0) {
+            boolean asmAvailable = false;
             try {
-                // Try load load a cglib class (to make sure it's actually available
-                getClass().getClassLoader().loadClass("net.sf.cglib.proxy.Enhancer");
+                // Try load load an asm class (to make sure it's actually
+                // available)
+                getClass().getClassLoader().loadClass(
+                        "org.objectweb.asm.ClassVisitor");
+                LOGGER.debug("asm available for interceptors");
+                asmAvailable = true;
             } catch (Throwable t) {
-                throw new ComponentDefinitionException("Interceptors have been configured but cglib can not be used", t);
-            }            
-            
-            intercepted = CgLibInterceptorWrapper.createProxyObject(original.getClass().getClassLoader(), 
-                                                                metaData, 
-                                                                interceptors, 
-                                                                original, 
-                                                                original.getClass().getInterfaces());
-        }else{
+                try {
+                    // Try load load a cglib class (to make sure it's actually
+                    // available)
+                    getClass().getClassLoader().loadClass(
+                            "net.sf.cglib.proxy.Enhancer");
+                } catch (Throwable u) {
+                    throw new ComponentDefinitionException(
+                            "Interceptors have been configured but neither asm nor cglib are available",
+                            u);
+                }
+            }
+            if (asmAvailable) {
+                // if asm is available we can proxy the original object with the
+                // AsmInterceptorWrapper
+                intercepted = AsmInterceptorWrapper.createProxyObject(original
+                        .getClass().getClassLoader(), metaData, interceptors,
+                        original, original.getClass());
+            } else {
+                LOGGER.debug("cglib available for interceptors");
+                // otherwise we're using cglib and need to use the interfaces
+                // with the CgLibInterceptorWrapper
+                intercepted = CgLibInterceptorWrapper.createProxyObject(
+                        original.getClass().getClassLoader(), metaData,
+                        interceptors, original, original.getClass()
+                                .getInterfaces());
+            }
+
+        } else {
             intercepted = original;
         }
         return intercepted;
