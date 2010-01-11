@@ -31,6 +31,7 @@ import java.net.URL;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 
 import org.apache.aries.jpa.container.impl.PersistenceBundleManager;
@@ -94,26 +95,20 @@ public class PersistenceBundleLifecycleTest
     BundleContextMock.clear();
   }
   
-//  @Test
-//  public void testManagerStartOneExistingPersistenceBundleNoExistingProvider() throws Exception
-//  {
-//    //Check we don't register anything (the bundle was installed before we started)
-//
-//    PersistenceBundleManager mgr = new PersistenceBundleManager();
-//    
-//    BundleContext ctx = extenderBundle.getBundleContext();
-//    
-//    Skeleton.getSkeleton(ctx).setReturnValue(
-//        new MethodCall(BundleContext.class, "getBundles"),
-//        new Bundle[] {persistenceBundle});
-//    
-//    setupPersistenceBundle("unittest/resources/file4/");
-//    
-//    mgr.start(ctx);
-//    
-//    BundleContextMock.assertNoServiceExists(PersistenceUnitInfoService.class.getName());
-//    
-//  }
+  @Test
+  public void testManager_OnePreExistingPersistenceBundle_NoProvider() throws Exception
+  {
+    BundleContext ctx = extenderBundle.getBundleContext();
+
+    PersistenceBundleManager mgr = new PersistenceBundleManager(ctx);
+    
+    setupPersistenceBundle("unittest/resources/file4/");
+    
+    mgr.addingBundle(persistenceBundle, null);
+    
+    BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
+    
+  }
 //
 //  @Test
 //  public void testManagerStartOneExistingPersistenceBundleOneExistingProvider() throws Exception
@@ -893,21 +888,21 @@ public class PersistenceBundleLifecycleTest
 //    testUnsuccessfulInstalledEvent(mgr, ctx);
 //  }
 // 
-//  private void setupPersistenceBundle(String s) throws MalformedURLException
-//  {
-//    Skeleton skel = Skeleton.getSkeleton(persistenceBundle);
-//    
-//    skel.setReturnValue(new MethodCall(Bundle.class, "getState"), Bundle.ACTIVE);
-//    
-//    URL root = new File(s).toURI().toURL();
-//    
-//    URL xml = new File(s + "META-INF/persistence.xml").toURI().toURL();
-//    
-//    skel.setReturnValue(new MethodCall(Bundle.class, "getEntry", "/"), root);
-//    skel.setReturnValue(new MethodCall(Bundle.class, "getEntry", "/META-INF/persistence.xml"), xml);
-//    skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("0.0.0"));
-//
-//  }
+  private void setupPersistenceBundle(String s) throws MalformedURLException
+  {
+    Skeleton skel = Skeleton.getSkeleton(persistenceBundle);
+    
+    skel.setReturnValue(new MethodCall(Bundle.class, "getState"), Bundle.ACTIVE);
+    
+    URL root = new File(s).toURI().toURL();
+    
+    URL xml = new File(s + "META-INF/persistence.xml").toURI().toURL();
+    
+    skel.setReturnValue(new MethodCall(Bundle.class, "getEntry", "/"), root);
+    skel.setReturnValue(new MethodCall(Bundle.class, "getEntry", "/META-INF/persistence.xml"), xml);
+    skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("0.0.0"));
+
+  }
 //  
 //  private void registerVersionedPersistenceProviders(PersistenceProvider pp100,
 //      PersistenceProvider pp101, PersistenceProvider pp110,
