@@ -67,13 +67,11 @@ public class PersistenceUnitImpl implements ParsedPersistenceUnit
   }
   
   
-  @Override
   public Bundle getDefiningBundle()
   {
     return bundle;
   }
 
-  @Override
   public Map<String, Object> getPersistenceXmlMetadata()
   {
     Map<String, Object> data = new HashMap<String, Object>(metadata);
