@@ -116,19 +116,23 @@ class Collaborator implements InvocationHandler, Serializable {
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
         Object toReturn = null;
-
+        
         // Added method to unwrap from the collaborator.
         if (method.getName().equals("unwrapObject")
                 && method.getDeclaringClass() == WrapperedObject.class) {
             toReturn = object;
         } else
-        // Unwrap calls for equals 
+        // Unwrap calls for equals
         if (method.getName().equals("equals")
                 && method.getDeclaringClass() == Object.class) {
+            // replace the wrapper with the unwrapped object, to
+            // enable object identity etc to function.
             if (args[0] instanceof WrapperedObject) {
-                //replace the wrapper with the unwrapped object, to 
-                //enable object identity etc to function.
+                // unwrap in the WrapperedObject case
                 args[0] = ((WrapperedObject) args[0]).unwrapObject();
+            } else if (AsmInterceptorWrapper.isProxyClass(args[0].getClass())) {
+                // unwrap in the asm case
+                args[0] = AsmInterceptorWrapper.unwrapObject(args[0]);
             }
             toReturn = delegate.invoke(proxy, method, args);
         } else 
