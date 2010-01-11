@@ -31,11 +31,13 @@ public interface BundleConverter {
   /**
    * 
    * @param inputBundle Stream to the input bundle
-   * @param artifact The root of the eba containing the artifact being converted - 
-   *                 currently a .zip file. In time we may come to support this 
-   *                 being an exploded directory.  
+   * @param parentEba The root of the eba containing the artifact being converted - 
+   *                  currently a .zip file. In time we may come to support this 
+   *                  being an exploded directory.
+   * @param pathToArtifact Path to the artifact to be converted
+   *                   
    * @return valid input stream or null if the bundle could not be converted. 
    */
-  public InputStream convert (InputStream inputBundle, IDirectory parentEba);
+  public InputStream convert (InputStream inputBundle, IDirectory parentEba, String pathToArtifact);
 
 }

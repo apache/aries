@@ -127,7 +127,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
                   try { 
                     // WarToWabConverter can extract application.xml via
                     // eba.getFile(AppConstants.APPLICATION_XML);
-                    convertedBinary = converters.next().convert(is, ebaFile);
+                    convertedBinary = converters.next().convert(is, ebaFile, f.getName());
                   } catch (ServiceException sx) {
                     // We'll get this if our optional BundleConverter has not been injected. 
                   }
