@@ -45,6 +45,11 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>osgi</artifactId>
             <scope>provided</scope>
@@ -72,6 +77,7 @@
                             org.osgi.service.blueprint*,
                             org.osgi.service.event*;resolution:=optional,
                             net.sf.cglib*;resolution:=optional,
+                            org.objectweb.asm*;version="[3.1,4)";resolution:=optional,
                             org.osgi.service.cm;version="[1.2.0,2.0.0)",
                             *
                         </Import-Package>
