@@ -54,6 +54,11 @@ public interface ParsedPersistenceUnit {
   public static final String NON_JTA_DATASOURCE = "org.apache.aries.jpa.non.jta.datasource";
   /** A Boolean indicating whether unlisted classes should be excluded */
   public static final String EXCLUDE_UNLISTED_CLASSES = "org.apache.aries.jpa.exclude.unlisted";
+  
+  /* End of Map keys */
+  
+  /** This property is used in the JPA properties to indicate a provider version range */
+  public static final String JPA_PROVIDER_VERSION = "org.apache.aries.jpa.provider.version";
 
   /**
    * Return the bundle that defines the persistence unit
