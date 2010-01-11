@@ -123,6 +123,7 @@ public class BundleDataTest {
         when(ep2.getImportingBundles()).thenReturn(new Bundle[] { bundle, b3 });
         when(ep2.getName()).thenReturn("org.apache.aries.jmx.b2");
         when(ep2.getVersion()).thenReturn(Version.parseVersion("2.0.1"));
+        headers.put(Constants.DYNAMICIMPORT_PACKAGE, "*");
   
         when(packageAdmin.getExportedPackages(b1)).thenReturn(new ExportedPackage[] { ep1 });
         when(packageAdmin.getExportedPackages(b2)).thenReturn(new ExportedPackage[] { ep2 });
@@ -138,7 +139,7 @@ public class BundleDataTest {
         RequiredBundle rb3 = mock(RequiredBundle.class);
         when(rb3.getBundle()).thenReturn(b3);
         when(rb3.getRequiringBundles()).thenReturn(new Bundle[] { bundle, b1, b2 });
-        
+        headers.put(Constants.REQUIRE_BUNDLE, "b1;bundle-version=\"1.0.0\",b3;bundle-version=\"2.0.0\"");
         when(packageAdmin.getRequiredBundles("b1")).thenReturn(new RequiredBundle[] { rb1 });
         when(packageAdmin.getRequiredBundles("b2")).thenReturn(new RequiredBundle[] { rb2 });
         when(packageAdmin.getRequiredBundles("b3")).thenReturn(new RequiredBundle[] { rb3 });
@@ -159,7 +160,7 @@ public class BundleDataTest {
         assertEquals("test", compositeData.get(SYMBOLIC_NAME));
         assertEquals("0.0.0", (String) compositeData.get(VERSION));
         TabularData headerTable = (TabularData) compositeData.get(HEADERS);
-        assertEquals(2, headerTable.values().size());
+        assertEquals(4, headerTable.values().size());
         assertArrayEquals(new String[] { "org.apache.aries.jmx;1.0.0"} , (String[]) compositeData.get(EXPORTED_PACKAGES));
         assertArrayEquals(new String[] { "org.apache.aries.jmx.b1;0.0.0" , "org.apache.aries.jmx.b2;2.0.1"}, (String[]) compositeData.get(IMPORTED_PACKAGES));
         assertArrayEquals(new Long[] { new Long(44), new Long(66) }, (Long[]) compositeData.get(REQUIRED_BUNDLES));

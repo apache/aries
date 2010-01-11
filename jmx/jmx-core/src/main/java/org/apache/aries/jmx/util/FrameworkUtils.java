@@ -25,6 +25,7 @@ import static org.osgi.jmx.framework.BundleStateMBean.UNINSTALLED;
 import static org.osgi.jmx.framework.BundleStateMBean.UNKNOWN;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 
 import org.osgi.framework.Bundle;
@@ -49,7 +50,7 @@ public class FrameworkUtils {
 
     /**
      * 
-     * Returns the Bundle object for a given id 
+     * Returns the Bundle object for a given id
      * 
      * @param bundleContext
      * @param bundleId
@@ -99,7 +100,8 @@ public class FrameworkUtils {
         }
         ServiceReference result = null;
         try {
-            ServiceReference[] references = bundleContext.getAllServiceReferences(null, "(" + Constants.SERVICE_ID + "=" + serviceId + ")");
+            ServiceReference[] references = bundleContext.getAllServiceReferences(null, "(" + Constants.SERVICE_ID
+                    + "=" + serviceId + ")");
             if (references == null || references.length < 1) {
                 throw new IllegalArgumentException("Service with id [" + serviceId + "] Not Found");
             } else {
@@ -107,10 +109,10 @@ public class FrameworkUtils {
             }
         } catch (InvalidSyntaxException e) {
             throw new IllegalStateException("Failure when resolving service ", e);
-        } 
+        }
         return result;
     }
-    
+
     /**
      * Returns an array of service.id values
      * 
@@ -210,16 +212,20 @@ public class FrameworkUtils {
 
     /**
      * Returns the resolved package imports for the given bundle
-     * @param localBundleContext BundleContext object of this bundle/caller
-     * @param bundle target Bundle object to query imported packages for
+     * 
+     * @param localBundleContext
+     *            BundleContext object of this bundle/caller
+     * @param bundle
+     *            target Bundle object to query imported packages for
      * @param packageAdmin
      * 
      * @return
      * @throws IllegalArgumentException
      *             if fragment or packageAdmin are null
      */
-    public static String[] getBundleImportedPackages(BundleContext localBundleContext, Bundle bundle, PackageAdmin packageAdmin)
-            throws IllegalArgumentException {
+    @SuppressWarnings("unchecked")
+    public static String[] getBundleImportedPackages(BundleContext localBundleContext, Bundle bundle,
+            PackageAdmin packageAdmin) throws IllegalArgumentException {
         if (bundle == null) {
             throw new IllegalArgumentException("Argument bundle cannot be null");
         }
@@ -227,23 +233,46 @@ public class FrameworkUtils {
             throw new IllegalArgumentException("Argument packageAdmin cannot be null");
         }
         List<String> result = new ArrayList<String>();
-        // TODO - Is there an easier way to achieve this? Unable to find a direct way through Framework
-        // API to find the actual package wiring
-        Bundle[] bundles = localBundleContext.getBundles();
-        for (Bundle candidate : bundles) {
-            if (candidate.equals(bundle)) {
-                continue;
+        Dictionary<String, String> bundleHeaders = bundle.getHeaders();
+        String dynamicImportHeader = bundleHeaders.get(Constants.DYNAMICIMPORT_PACKAGE);
+        // if DynamicImport-Package used, then do full iteration
+        if (dynamicImportHeader != null && dynamicImportHeader.contains("*")) {
+            Bundle[] bundles = localBundleContext.getBundles();
+            for (Bundle candidate : bundles) {
+                if (candidate.equals(bundle)) {
+                    continue;
+                }
+                ExportedPackage[] candidateExports = packageAdmin.getExportedPackages(candidate);
+                if (candidateExports != null) {
+                    for (ExportedPackage exportedPackage : candidateExports) {
+                        Bundle[] userBundles = exportedPackage.getImportingBundles();
+                        if (userBundles != null && arrayContains(userBundles, bundle)) {
+                            result.add(exportedPackage.getName() + ";" + exportedPackage.getVersion().toString());
+                        }
+                    }// end for candidateExports
+                }
+            }// end for bundles
+        } else { // only query ExportPackage for package names declared as imported
+            List<String> importPackages = new ArrayList<String>();
+            String importPackageHeader = bundleHeaders.get(Constants.IMPORT_PACKAGE);
+            if (importPackageHeader != null && importPackageHeader.length() > 0) {
+                importPackages.addAll(extractHeaderDeclaration(importPackageHeader));
             }
-            ExportedPackage[] candidateExports = packageAdmin.getExportedPackages(candidate);
-            if (candidateExports != null) {
-                for (ExportedPackage exportedPackage : candidateExports) {
-                    Bundle[] userBundles = exportedPackage.getImportingBundles();
-                    if (userBundles != null && arrayContains(userBundles, bundle)) {
-                        result.add(exportedPackage.getName() + ";" + exportedPackage.getVersion().toString());
-                    }
-                }// end for candidateExports
+            if (dynamicImportHeader != null) {
+                importPackages.addAll(extractHeaderDeclaration(dynamicImportHeader));
             }
-        }// end for bundles
+            for (String packageName : importPackages) {
+                ExportedPackage[] candidateExports = packageAdmin.getExportedPackages(packageName);
+                if (candidateExports != null) {
+                    for (ExportedPackage exportedPackage : candidateExports) {
+                        Bundle[] userBundles = exportedPackage.getImportingBundles();
+                        if (userBundles != null && arrayContains(userBundles, bundle)) {
+                            result.add(exportedPackage.getName() + ";" + exportedPackage.getVersion().toString());
+                        }
+                    }// end for candidateExports
+                }
+            }
+        }
         return result.toArray(new String[result.size()]);
     }
 
@@ -367,16 +396,20 @@ public class FrameworkUtils {
 
     /**
      * Returns an array of ids of bundles the given bundle depends on
-     * @param localBundleContext BundleContext object of this bundle/caller 
-     * @param bundle target Bundle object to query dependencies for
+     * 
+     * @param localBundleContext
+     *            BundleContext object of this bundle/caller
+     * @param bundle
+     *            target Bundle object to query dependencies for
      * @param packageAdmin
      * 
      * @return
      * @throws IllegalArgumentException
      *             if bundle or packageAdmin are null
      */
-    public static long[] getBundleDependencies(BundleContext localBundleContext, Bundle bundle, PackageAdmin packageAdmin)
-            throws IllegalArgumentException {
+    @SuppressWarnings("unchecked")
+    public static long[] getBundleDependencies(BundleContext localBundleContext, Bundle bundle,
+            PackageAdmin packageAdmin) throws IllegalArgumentException {
         if (bundle == null) {
             throw new IllegalArgumentException("Argument bundle cannot be null");
         }
@@ -384,20 +417,20 @@ public class FrameworkUtils {
             throw new IllegalArgumentException("Argument packageAdmin cannot be null");
         }
         List<Bundle> dependencies = new ArrayList<Bundle>();
-        // TODO - Is there an easier way to achieve this? Unable to find a direct way through Framework
-        // API to resolve the current dependencies
-        for (Bundle candidate : localBundleContext.getBundles()) {
-            if (candidate.equals(bundle)) {
-                continue;
-            }
-            RequiredBundle[] candidateRequiredBundles = packageAdmin.getRequiredBundles(candidate.getSymbolicName());
-            if (candidateRequiredBundles == null) {
-                continue;
-            } else {
-                for (RequiredBundle candidateRequiredBundle : candidateRequiredBundles) {
-                    Bundle[] bundlesRequiring = candidateRequiredBundle.getRequiringBundles();
-                    if (bundlesRequiring != null && arrayContains(bundlesRequiring, bundle)) {
-                        dependencies.add(candidateRequiredBundle.getBundle());
+        Dictionary<String, String> bundleHeaders = bundle.getHeaders();
+        String requireBundleHeader = bundleHeaders.get(Constants.REQUIRE_BUNDLE);
+        if (requireBundleHeader != null) { // only check if Require-Bundle is used
+            List<String> bundleSymbolicNames = extractHeaderDeclaration(requireBundleHeader);
+            for (String bundleSymbolicName: bundleSymbolicNames) {
+                RequiredBundle[] candidateRequiredBundles = packageAdmin.getRequiredBundles(bundleSymbolicName);
+                if (candidateRequiredBundles == null) {
+                    continue;
+                } else {
+                    for (RequiredBundle candidateRequiredBundle : candidateRequiredBundles) {
+                        Bundle[] bundlesRequiring = candidateRequiredBundle.getRequiringBundles();
+                        if (bundlesRequiring != null && arrayContains(bundlesRequiring, bundle)) {
+                            dependencies.add(candidateRequiredBundle.getBundle());
+                        }
                     }
                 }
             }
@@ -476,6 +509,19 @@ public class FrameworkUtils {
                     break;
                 }
             }
+        }
+        return result;
+    }
+
+    /*
+     * Will parse a header value, strip out trailing attributes and return a list of declarations
+     */
+    public static List<String> extractHeaderDeclaration(String headerStatement) {
+        List<String> result = new ArrayList<String>();
+        for (String headerDeclaration : headerStatement.split("\\s*,\\s*")) {
+            String name = headerDeclaration.contains(";") ? headerDeclaration.substring(0, headerDeclaration
+                    .indexOf(";")) : headerDeclaration;
+            result.add(name);
         }
         return result;
     }
