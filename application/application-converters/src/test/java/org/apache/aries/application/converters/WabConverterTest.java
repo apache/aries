@@ -42,6 +42,9 @@ import org.osgi.framework.Constants;
  */
 public class WabConverterTest
 {
+  public static final String WAR_FILE_NAME_WO_SUFFIX = "test";
+  public static final String WAR_FILE_NAME = WAR_FILE_NAME_WO_SUFFIX + ".war";
+  
   /**
    * Test that we can handle a null manifest (in case a jar archive was created without manifest)
    */
@@ -98,6 +101,84 @@ public class WabConverterTest
     assertEquals("test.bundle", m.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME));
   }
   
+  @Test 
+  public void testDefaultProperties() throws Exception {
+    Attributes attrs = convertWithProperties();
+    
+    assertTrue(attrs.getValue(Constants.BUNDLE_SYMBOLICNAME).startsWith(WAR_FILE_NAME_WO_SUFFIX));
+    assertEquals("/", attrs.getValue(WarToWabConverter.WEB_JSP_EXTRACT_LOCATION));    
+    assertEquals("1.0", attrs.getValue(Constants.BUNDLE_VERSION));
+    assertEquals("javax.servlet;version=2.5,javax.servlet.http;version=2.5,javax.el;version=2.1," +
+        "javax.servlet.jsp;version=2.1,javax.servlet.jsp.el;version=2.1," +
+        "javax.servlet.jsp.tagext;version=2.1",
+        attrs.getValue(Constants.IMPORT_PACKAGE));
+    assertEquals("WEB-INF/classes/",attrs.getValue(Constants.BUNDLE_CLASSPATH));
+  }
+  
+  @Test
+  public void testPropertySupport() throws Exception {
+    Attributes attrs = convertWithProperties(
+        WarToWabConverter.WEB_CONTEXT_PATH, "../WebFiles",
+        WarToWabConverter.WEB_JSP_EXTRACT_LOCATION, "/jsp",
+        Constants.BUNDLE_VERSION, "2.0",
+        Constants.IMPORT_PACKAGE, "org.apache.aries.test;version=2.5,org.apache.aries.test.eba;version=1.0");
+    
+    assertEquals("../WebFiles", attrs.getValue(WarToWabConverter.WEB_CONTEXT_PATH));
+    assertEquals("/jsp", attrs.getValue(WarToWabConverter.WEB_JSP_EXTRACT_LOCATION));
+    assertEquals("2.0", attrs.getValue(Constants.BUNDLE_VERSION));
+    assertEquals("org.apache.aries.test;version=2.5,org.apache.aries.test.eba;version=1.0,"+
+        "javax.servlet;version=2.5,javax.servlet.http;version=2.5,javax.el;version=2.1," +
+        "javax.servlet.jsp;version=2.1,javax.servlet.jsp.el;version=2.1," +
+        "javax.servlet.jsp.tagext;version=2.1",
+        attrs.getValue(Constants.IMPORT_PACKAGE));
+  }
+  
+  @Test
+  public void testManifestAndPropertyOverwrites() throws Exception {
+    Manifest m = new Manifest();
+    Attributes attrs = m.getMainAttributes();
+    attrs.putValue(Constants.BUNDLE_SYMBOLICNAME, "org.apache.test");
+    attrs.putValue(Constants.BUNDLE_VERSION, "1.0");
+    attrs.putValue(Constants.IMPORT_PACKAGE, "org.apache.util,org.apache.test;version=1.0");
+    attrs.putValue(Constants.BUNDLE_CLASSPATH, "jsp/classes/");
+    
+    attrs = convertWithProperties(m, Constants.BUNDLE_VERSION, "2.0",
+        Constants.IMPORT_PACKAGE, "org.apache.wab,org.apache.test;version=2.0",
+        Constants.BUNDLE_CLASSPATH, "aries/generated/");
+    
+    assertEquals("org.apache.test", attrs.getValue(Constants.BUNDLE_SYMBOLICNAME));
+    assertEquals("2.0", attrs.getValue(Constants.BUNDLE_VERSION));
+    assertTrue(attrs.getValue(Constants.IMPORT_PACKAGE).contains("org.apache.util"));
+    assertTrue(attrs.getValue(Constants.IMPORT_PACKAGE).contains("org.apache.test;version=2.0"));    
+    assertTrue(attrs.getValue(Constants.IMPORT_PACKAGE).contains("org.apache.wab"));
+    assertEquals("WEB-INF/classes/,aries/generated/,jsp/classes/", attrs.getValue(Constants.BUNDLE_CLASSPATH));
+  }
+  
+  private Attributes convertWithProperties(Manifest m, String ... props) throws Exception {
+    Properties properties = new Properties();
+    for (int i=0;i<props.length;i+=2) {
+      properties.put(props[i], props[i+1]);
+    }
+    
+    byte[] bytes = new byte[0];
+
+    if (m != null) {      
+      m.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1");
+      final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+      JarOutputStream out = new JarOutputStream(bout,m);
+      out.close();
+      bytes = bout.toByteArray();
+    }
+    
+    WarToWabConverter sut = new WarToWabConverter(makeTestFile(bytes), properties);
+    return sut.getWABManifest().getMainAttributes();
+  }
+  
+  private Attributes convertWithProperties(String ... props) throws Exception {
+    return convertWithProperties(null, props);
+  }
+  
+  
   private IFile makeTestFile(byte[] content) {
     return Skeleton.newMock(new IFileProxy(content), IFile.class);
   }
@@ -113,7 +194,7 @@ public class WabConverterTest
       return new ByteArrayInputStream(content);
     }
     
-    public String getName() { return "test.war"; }
+    public String getName() { return WAR_FILE_NAME; }
   }
   
 }
