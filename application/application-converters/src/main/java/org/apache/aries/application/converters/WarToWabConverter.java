@@ -67,6 +67,7 @@ public class WarToWabConverter {
 
   // InputStream for the new WAB file
   private byte[] wabFile;
+  private Manifest wabManifest;
   private String warName;
   
   private boolean converted = false;
@@ -95,14 +96,13 @@ public class WarToWabConverter {
     ZipEntry entry;
     JarInputStream jarInput = null;
 
-    Manifest manifest;
     try {
       jarInput = new JarInputStream(warFile.open());
       scanForDependencies(jarInput);
 
       // Add the new properties to the manifest byte stream
-      manifest = jarInput.getManifest();
-      manifest = updateManifest(manifest);
+      wabManifest = jarInput.getManifest();
+      wabManifest = updateManifest(wabManifest);
     } 
     finally {
       try { if (jarInput != null) jarInput.close(); } catch (IOException e) { e.printStackTrace(); }
@@ -116,7 +116,7 @@ public class WarToWabConverter {
     // Copy across all entries from the original jar
     int val;
     try {
-      jarOutput = new JarOutputStream(output, manifest);
+      jarOutput = new JarOutputStream(output, wabManifest);
       jarInput = new JarInputStream(warFile.open());
       while ((entry = jarInput.getNextEntry()) != null) {
         jarOutput.putNextEntry(entry);
@@ -254,17 +254,17 @@ public class WarToWabConverter {
 
     // Get the list from the URL and add to classpath (removing duplicates)
     mergePathList(properties.getProperty(Constants.BUNDLE_CLASSPATH),
-        classpath, ";");
+        classpath, ",");
 
     // Get the existing list from the manifest file and add to classpath
     // (removing duplicates)
     mergePathList(manifest.getMainAttributes().getValue(
-        Constants.BUNDLE_CLASSPATH), classpath, ";");
+        Constants.BUNDLE_CLASSPATH), classpath, ",");
 
     // Construct the classpath string and set it into the properties
     StringBuffer classPathValue = new StringBuffer();
     for (String entry : classpath) {
-      classPathValue.append(";");
+      classPathValue.append(",");
       classPathValue.append(entry);
     }
 
@@ -386,21 +386,25 @@ public class WarToWabConverter {
   }
 
   public InputStream getWAB() throws IOException {
-    if (!!!converted) {
-      convert();
-      converted = true;
-    }
-    
+    ensureConverted();
     return new ByteArrayInputStream(wabFile);
+  }
+  
+  public Manifest getWABManifest() throws IOException {
+    ensureConverted();
+    return wabManifest;
   }
 
   public int getWabLength() throws IOException {
+    ensureConverted();
+    return wabFile.length;
+  }
+  
+  private void ensureConverted() throws IOException {
     if (!!!converted) {
       convert();
       converted = true;
     }
-
-    return wabFile.length;
   }
 
 }
