@@ -110,20 +110,27 @@ public class IOUtils
     }
   }
   
+  /** 
+   * Zip up all contents of rootDir (recursively) into targetStream
+   */
+  @SuppressWarnings("unchecked")
+  public static void zipUp (File rootDir, OutputStream targetStream) throws IOException
+  {
+    ZipOutputStream out = null;
+    try { 
+      out = new ZipOutputStream (targetStream);
+      zipUpRecursive(out, "", rootDir, (Set<String>) Collections.EMPTY_SET);
+    } finally { 
+      close(out);
+    }
+  }
+  
   /**
    * Zip up all contents of rootDir (recursively) into targetFile
    */
-  @SuppressWarnings("unchecked")
   public static void zipUp(File rootDir, File targetFile) throws IOException
   {
-    ZipOutputStream out = null; 
-    try {
-      out = new ZipOutputStream(new FileOutputStream(targetFile));
-      zipUpRecursive(out, "", rootDir, (Set<String>) Collections.EMPTY_SET);
-    }
-    finally {
-      close(out);
-    }
+    zipUp (rootDir, new FileOutputStream (targetFile));
   }
   
   /**

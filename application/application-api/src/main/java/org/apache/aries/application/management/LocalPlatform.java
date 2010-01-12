@@ -20,6 +20,7 @@
 package org.apache.aries.application.management;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * This is a difficult interface to name properly. It holds methods that need to 
@@ -28,5 +29,6 @@ import java.io.File;
  */
 public interface LocalPlatform {
 
-  public File getTemporaryDirectory();
+  public File getTemporaryDirectory() throws IOException;
+  public File getTemporaryFile() throws IOException;
 }

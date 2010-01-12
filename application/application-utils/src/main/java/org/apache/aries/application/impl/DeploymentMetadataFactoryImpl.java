@@ -19,10 +19,12 @@
 
 package org.apache.aries.application.impl;
 
+import java.io.IOException;
 import java.util.Set;
 
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.DeploymentMetadataFactory;
+import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
 
@@ -31,5 +33,9 @@ public class DeploymentMetadataFactoryImpl implements DeploymentMetadataFactory 
   public DeploymentMetadata createDeploymentMetadata(AriesApplication app,
       Set<BundleInfo> additionalBundlesRequired) {
     return new DeploymentMetadataImpl (app, additionalBundlesRequired);
+  }
+  
+  public DeploymentMetadata createDeploymentMetadata(IFile src) throws IOException { 
+    return new DeploymentMetadataImpl (src);
   }
 }

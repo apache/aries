@@ -38,4 +38,5 @@ public interface AriesApplicationManager
   public void uninstall(ApplicationContext app);
   public void addApplicationListener(ApplicationListener l);
   public void removeApplicationListener(ApplicationListener l);
+  AriesApplication resolve (AriesApplication originalApp, ResolveConstraint ... constraints);
 }
