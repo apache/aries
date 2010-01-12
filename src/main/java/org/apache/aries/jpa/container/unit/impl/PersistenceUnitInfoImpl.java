@@ -105,7 +105,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   }
 
   public URL getPersistenceUnitRootUrl() {
-    return bundle.getResource("");
+    return bundle.getResource("/");
   }
 
   public String getPersistenceXMLSchemaVersion() {

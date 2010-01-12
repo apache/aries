@@ -17,8 +17,9 @@
 -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-    <bean id="container"  class="org.apache.aries.jpa.container.impl.PersistenceBundleManager" init-method="open">
+    <bean id="container"  class="org.apache.aries.jpa.container.impl.PersistenceBundleManager" init-method="open" destroy-method="close">
       <argument ref="blueprintBundleContext"/>
+      <property name="config"><props/></property>
     </bean>
 
 	<reference-list interface="javax.persistence.spi.PersistenceProvider">
