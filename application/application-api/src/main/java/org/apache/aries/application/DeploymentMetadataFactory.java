@@ -19,8 +19,10 @@
 
 package org.apache.aries.application;
 
+import java.io.IOException;
 import java.util.Set;
 
+import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
 
@@ -33,5 +35,10 @@ public interface DeploymentMetadataFactory {
    * @return
    */
   public DeploymentMetadata createDeploymentMetadata (AriesApplication app, Set<BundleInfo> bundleInfo);
+  
+  /**
+   * Create a DeploymentMetadata instance from an IFile
+   */
+  public DeploymentMetadata createDeploymentMetadata (IFile src) throws IOException;
   
 }

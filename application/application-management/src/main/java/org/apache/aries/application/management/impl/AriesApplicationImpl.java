@@ -58,6 +58,15 @@ public class AriesApplicationImpl implements AriesApplication {
     
   }
   
+  public AriesApplicationImpl(ApplicationMetadata meta, DeploymentMetadata dep, 
+      Set<BundleInfo> bundleInfo, LocalPlatform lp) {
+    _applicationMetadata = meta;
+    _bundleInfo = bundleInfo;
+    _deploymentMetadata = dep;
+    _localPlatform = lp;
+    
+  }
+  
   public ApplicationMetadata getApplicationMetadata() {
     return _applicationMetadata;
   }
@@ -77,6 +86,10 @@ public class AriesApplicationImpl implements AriesApplication {
   public void setModifiedBundles (Map<String, InputStream> modifiedBundles) {
     _modifiedBundles = modifiedBundles;
   }
+  
+  public void setLocalPlatform (LocalPlatform lp) { 
+    _localPlatform = lp;
+  }
 
   public void store(File f) throws FileNotFoundException, IOException {
     OutputStream os = new FileOutputStream (f);
@@ -84,10 +97,14 @@ public class AriesApplicationImpl implements AriesApplication {
     os.close();
   }
 
+  /**
+   * Construct an eba in a temporary directory
+   * Copy the eba to the target output stream 
+   * Delete the temporary directory.
+   * Leave target output stream open
+   */
   public void store(OutputStream targetStream) throws FileNotFoundException, IOException {
-    // Construct an eba in a temporary directory
-    // Copy the eba to the target output stream 
-    // Delete the temporary directory. 
+ 
     //
     // This code will be run on various application server platforms, each of which
     // will have its own policy about where to create temporary directories. We 
@@ -129,7 +146,20 @@ public class AriesApplicationImpl implements AriesApplication {
       }
     }
 
-    // TODO: Write the migrated bundles out
+    // Write the migrated bundles out
+    if (_modifiedBundles != null) { 
+      for (Map.Entry<String, InputStream> modifiedBundle : _modifiedBundles.entrySet()) { 
+        out = IOUtils.getOutputStream(tempDir, modifiedBundle.getKey());
+        IOUtils.copy(modifiedBundle.getValue(), out);
+        IOUtils.close(out);
+      }
+    }
     
+    // We now have an exploded eba in tempDir which we need to copy into targetStream
+    IOUtils.zipUp(tempDir, targetStream);
+    if (!IOUtils.deleteRecursive(tempDir))
+    {
+      // TODO: Log a warning
+    }
   }
 }
