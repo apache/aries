@@ -44,5 +44,5 @@ public interface AriesApplication
 
   /** Stores any changes to disk using this implementations storage form */
   public void store(File f) throws FileNotFoundException, IOException;
-  public void store(OutputStream in) throws FileNotFoundException, IOException;
+  public void store(OutputStream out) throws FileNotFoundException, IOException;
 }

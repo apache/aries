@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,9 +36,11 @@ import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
+import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.utils.AppConstants;
+import org.apache.aries.application.utils.manifest.ManifestProcessor;
 import org.osgi.framework.Version;
 
 public class DeploymentMetadataImpl implements DeploymentMetadata {
@@ -58,6 +61,30 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
       DeploymentContentImpl dci = new DeploymentContentImpl(bundleInfo.getSymbolicName(), 
           bundleInfo.getVersion()); 
       _deploymentContent.add(dci);
+    }
+  }
+  
+  /**
+   * Construct a DeploymentMetadata from an IFile
+   * @param src
+   * @throws IOException
+   */
+  public DeploymentMetadataImpl (IFile src) throws IOException { 
+    InputStream is = src.open();
+    try { 
+      // Populate application symbolic name and version fields
+      Manifest mf = ManifestProcessor.parseManifest(is);
+      _applicationMetadata = new ApplicationMetadataImpl (mf);
+
+      Attributes attributes = mf.getMainAttributes();
+      String deploymentContent = attributes.getValue(AppConstants.DEPLOYMENT_CONTENT);
+      List<String> dcList = ManifestProcessor.split(deploymentContent, ",");
+      _deploymentContent = new ArrayList<DeploymentContent>();
+      for (String s : dcList) { 
+        _deploymentContent.add(new DeploymentContentImpl(s));
+      }
+    } finally { 
+      is.close();
     }
   }
 
@@ -84,7 +111,6 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
     fos.close();
   }
 
-
   public void store(OutputStream out) throws IOException {
     // We weren't built from a Manifest, so construct one. 
     Manifest mf = new Manifest();
@@ -95,6 +121,8 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
     attributes.putValue(AppConstants.DEPLOYMENT_CONTENT, getDeploymentContentsAsString());
     mf.write(out);
   }
+  
+  
   
   private String getDeploymentContentsAsString () { 
     StringBuilder builder = new StringBuilder();

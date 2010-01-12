@@ -17,19 +17,17 @@
  * under the License.
  */
 
-package org.apache.aries.application.management.impl;
+package org.apache.aries.application.management;
+
+import org.osgi.framework.Version;
 
 /**
- * An administrator may supply an application.eba file that will be changed before deployment.  
- * We may augment, or even create, META-INF/APPLICATION.MF. 
- * We will create META-INF/DEPLOYMENT.MF if one does not exist. 
- * We may migrate plain .war files to WABs, and may also migrate plain .jar files to become 
- * well formed bundles. Thus the .eba file that will be subsequently used to provide bundles into 
- * the application server's runtime may differ from that originally provided by the administrator. 
- * This class handles the creation of the modified .eba artifact. 
+ * An administrator may wish to change the content of an installed application. 
+ * A ResolveConstraint records one of the desired elements of the newly re-resolved
+ * application. 
  */
-public class ExplodedEBA {
+public interface ResolveConstraint {
+  public String getBundleName();
+  public Version getVersion();
 
-  // TODO
-  
 }
