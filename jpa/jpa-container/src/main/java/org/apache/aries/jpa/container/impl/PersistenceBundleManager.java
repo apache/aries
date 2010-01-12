@@ -105,10 +105,12 @@ public class PersistenceBundleManager extends BundleTracker
     
     if(persistenceUnitFactory == null)
       persistenceUnitFactory = new ManagedPersistenceUnitInfoFactoryImpl();
-
     
     super.open();
   }
+  
+  
+  
 //  /**
 //   * If we have generated a resources for the supplied bundle, then
 //   * tidy them  up.
@@ -134,8 +136,7 @@ public class PersistenceBundleManager extends BundleTracker
 //      }
 //    }
 //  }
-  
-  
+
   public Object addingBundle(Bundle bundle, BundleEvent event) 
   {
     
@@ -179,16 +180,19 @@ public class PersistenceBundleManager extends BundleTracker
             }
           }
         }
-        try {
-          mgr.bundleStateChange();
-        } catch (InvalidPersistenceUnitException e) {
-          // TODO Log this error
-          mgr.destroy();
+        if(mgr != null) {
+          try {
+            mgr.bundleStateChange();
+          } catch (InvalidPersistenceUnitException e) {
+            // TODO Log this error
+            mgr.destroy();
+            persistenceUnitFactory.destroyPersistenceBundle(bundle);
+          }
         }
       }
     }
     return mgr;
-}
+  }
   
   public synchronized void addingProvider(ServiceReference ref)
   {
@@ -390,7 +394,7 @@ public class PersistenceBundleManager extends BundleTracker
     }
     
     //Now check that we have valid values
-    int check = minVersion.compareTo(maxVersion);
+    int check = (maxVersion == null) ? -1 : minVersion.compareTo(maxVersion);
     //If min is greater than max, or min is equal to max and one of the exclusive
     //flags is set then we have a problem!
     if(check > 0 || (check == 0 && (minExclusive || maxExclusive))) {

@@ -160,7 +160,6 @@ public class EntityManagerFactoryManager {
    * This method should only be called when not holding any locks
    */
   public synchronized void destroy() {
-    unregisterEntityManagerFactories();
     destroyEntityManagerFactories();
     
     provider = null;

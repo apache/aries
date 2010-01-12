@@ -67,24 +67,25 @@ public class PersistenceBundleHelper
       //Split apart the header to get the individual entries
       List<String> headerLocations = Arrays.asList(header.split(","));
       locations.addAll(headerLocations);
-    }
     
-    try {
-      for(String location : locations) {
-        InputStream file = locateFile(bundle, location.trim());
-        if(file != null)
-          persistenceXmlFiles.add(new PersistenceDescriptorImpl(location, file));
+    
+      try {
+        for(String location : locations) {
+          InputStream file = locateFile(bundle, location.trim());
+          if(file != null)
+            persistenceXmlFiles.add(new PersistenceDescriptorImpl(location, file));
+          }
+      } catch (Exception e) {
+          //TODO log
+        for (PersistenceDescriptor desc : persistenceXmlFiles) {
+          try {
+            desc.getInputStream().close();
+          } catch (IOException ioe) {
+            // TODO: log ioe
+          }
         }
-    } catch (Exception e) {
-        //TODO log
-      for (PersistenceDescriptor desc : persistenceXmlFiles) {
-        try {
-          desc.getInputStream().close();
-        } catch (IOException ioe) {
-          // TODO: log ioe
-        }
+        persistenceXmlFiles = Collections.emptySet();
       }
-      persistenceXmlFiles = Collections.emptySet();
     }
    return persistenceXmlFiles;
  }
@@ -100,7 +101,7 @@ public class PersistenceBundleHelper
   private static InputStream locateFile(Bundle bundle, String location)
   {
     InputStream is = null;
-    if(location != "") {
+    if(location == "") {
       return null;
     }
       
@@ -114,6 +115,7 @@ public class PersistenceBundleHelper
           is = url.openStream();
         } catch (IOException e) {
           // TODO log this
+          e.printStackTrace();
         }
       }
     } else {
