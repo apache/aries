@@ -19,16 +19,15 @@
 
 package org.apache.aries.application.management;
 
-import java.io.File;
-import java.io.IOException;
+import org.osgi.framework.Version;
 
 /**
- * This is a difficult interface to name properly. It holds methods that need to 
- * be implemented on a per-application server platform basis. 
- *
+ * An administrator may wish to change the content of an installed application. 
+ * A ResolveConstraint records one of the desired elements of the newly re-resolved
+ * application. 
  */
-public interface LocalPlatform {
+public interface ResolveConstraint {
+  public String getBundleName();
+  public Version getVersion();
 
-  public File getTemporaryDirectory() throws IOException;
-  public File getTemporaryFile() throws IOException;
 }
