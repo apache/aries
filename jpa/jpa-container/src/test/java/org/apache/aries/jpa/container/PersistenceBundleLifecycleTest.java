@@ -28,11 +28,15 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.apache.aries.jpa.container.impl.PersistenceBundleManager;
 import org.apache.aries.mocks.BundleContextMock;
@@ -48,6 +52,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 
 public class PersistenceBundleLifecycleTest
@@ -55,6 +60,7 @@ public class PersistenceBundleLifecycleTest
   private static final String FRAGMENT_SYM_NAME = "scooby.doo.jpa.fragment";
   
   private Bundle persistenceBundle;
+  private BundleContext persistenceBundleContext;
   
   private Bundle providerBundleP100;
   private Bundle providerBundleP101;
@@ -63,102 +69,131 @@ public class PersistenceBundleLifecycleTest
   
   private Bundle extenderBundle;
   
+  private PersistenceBundleManager mgr;
+  private PersistenceProvider pp;
+  
   @Before
   public void setUp() throws Exception
   {
     persistenceBundle = Skeleton.newMock(new BundleMock("scooby.doo", new Hashtable<String, Object>()), Bundle.class);
+    persistenceBundleContext = persistenceBundle.getBundleContext();
     
-    providerBundleP100 = Skeleton.newMock(new BundleMock("no.such.Provider", new Hashtable<String, Object>()), Bundle.class);
-    Skeleton skel = Skeleton.getSkeleton(providerBundleP100);
-    skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("1.0.0"));
-
-    providerBundleP101 = Skeleton.newMock(new BundleMock("no.such.Provider", new Hashtable<String, Object>()), Bundle.class);
-    skel = Skeleton.getSkeleton(providerBundleP101);
-    skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("1.0.1"));
-
-    providerBundleP110 = Skeleton.newMock(new BundleMock("no.such.Provider", new Hashtable<String, Object>()), Bundle.class);
-    skel = Skeleton.getSkeleton(providerBundleP110);
-    skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("1.1.0"));
-
-    providerBundleP111 = Skeleton.newMock(new BundleMock("no.such.Provider", new Hashtable<String, Object>()), Bundle.class);
-    skel = Skeleton.getSkeleton(providerBundleP111);
-    skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("1.1.1"));
+//    providerBundleP100 = Skeleton.newMock(new BundleMock("no.such.Provider", new Hashtable<String, Object>()), Bundle.class);
+//    Skeleton skel = Skeleton.getSkeleton(providerBundleP100);
+//    skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("1.0.0"));
+//
+//    providerBundleP101 = Skeleton.newMock(new BundleMock("no.such.Provider", new Hashtable<String, Object>()), Bundle.class);
+//    skel = Skeleton.getSkeleton(providerBundleP101);
+//    skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("1.0.1"));
+//
+//    providerBundleP110 = Skeleton.newMock(new BundleMock("no.such.Provider", new Hashtable<String, Object>()), Bundle.class);
+//    skel = Skeleton.getSkeleton(providerBundleP110);
+//    skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("1.1.0"));
+//
+//    providerBundleP111 = Skeleton.newMock(new BundleMock("no.such.Provider", new Hashtable<String, Object>()), Bundle.class);
+//    skel = Skeleton.getSkeleton(providerBundleP111);
+//    skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("1.1.1"));
 
     extenderBundle = Skeleton.newMock(new BundleMock("extender", new Hashtable<String, Object>()), Bundle.class);
-    Skeleton.getSkeleton(extenderBundle).setReturnValue(new MethodCall(Bundle.class, "getResource", "schemas/persistence_1_0.xsd"), new File("unittest/resources/persistence_1_0.xsd").toURI().toURL());
-    persistenceBundle = Skeleton.newMock(new BundleMock("scooby.doo", new Hashtable<String, Object>()), Bundle.class);
+//    Skeleton.getSkeleton(extenderBundle).setReturnValue(new MethodCall(Bundle.class, "getResource", "schemas/persistence_1_0.xsd"), new File("unittest/resources/persistence_1_0.xsd").toURI().toURL());
   }
 
   @After
   public void destroy() throws Exception
   {
+    mgr = null;
     BundleContextMock.clear();
+  }
+  
+  private BundleContext preExistingBundleSetup() {
+    
+    BundleContext ctx = extenderBundle.getBundleContext();
+
+    Skeleton.getSkeleton(ctx).setReturnValue(
+        new MethodCall(BundleContext.class, "getBundles"),
+        new Bundle[] {persistenceBundle});
+    
+    mgr = new PersistenceBundleManager(ctx);
+    mgr.setConfig(new Properties());
+    return ctx;
+  }
+  
+  @Test
+  public void testManager_NonPersistenceBundle() throws Exception
+  {
+    preExistingBundleSetup();
+    mgr.open();
+
+    //Check the persistence.xml was not looked for
+    Skeleton.getSkeleton(persistenceBundle).assertNotCalled(new MethodCall(Bundle.class, "getEntry", String.class));
+    //Check we didn't use getResource()
+    Skeleton.getSkeleton(persistenceBundle).assertNotCalled(new MethodCall(Bundle.class, "getResource", String.class));
+    //Check we don't have an EMF
+    BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
+    
   }
   
   @Test
   public void testManager_OnePreExistingPersistenceBundle_NoProvider() throws Exception
   {
-    BundleContext ctx = extenderBundle.getBundleContext();
-
-    PersistenceBundleManager mgr = new PersistenceBundleManager(ctx);
+    preExistingBundleSetup();
     
-    setupPersistenceBundle("unittest/resources/file4/");
+    //Set the persistence.xml etc
+    setupPersistenceBundle("file4", "");
     
-    mgr.addingBundle(persistenceBundle, null);
+    mgr.open();
     
+    //Check the persistence.xml was looked for
+    Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
+    //Check we didn't use getResource()
+    Skeleton.getSkeleton(persistenceBundle).assertNotCalled(new MethodCall(Bundle.class, "getResource", String.class));
+    //Check we don't have an EMF
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
     
   }
-//
-//  @Test
-//  public void testManagerStartOneExistingPersistenceBundleOneExistingProvider() throws Exception
-//  {
-//    //Check we don't register anything (the bundle was installed before we started)
-//
-//    PersistenceProvider pp = Skeleton.newMock(PersistenceProvider.class);
-//    
-//    Hashtable<String,String> hash1 = new Hashtable<String, String>();
-//    persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName(), "no.such.Provider"} ,
-//        pp, hash1 );
-//    
-//    PersistenceBundleManager mgr = new PersistenceBundleManager();
-//    
-//    BundleContext ctx = extenderBundle.getBundleContext();
-//    
-//    Skeleton.getSkeleton(ctx).setReturnValue(
-//        new MethodCall(BundleContext.class, "getBundles"),
-//        new Bundle[] {persistenceBundle});
-//    
-//    setupPersistenceBundle("unittest/resources/file4/");
-//    
-//    mgr.start(ctx);
-//    
-//    BundleContextMock.assertNoServiceExists(PersistenceUnitInfoService.class.getName());
-//  }
-//  
-//  @Test
-//  public void testManagerStopUnregistersUnits() throws Exception
-//  {
-//    PersistenceProvider pp = Skeleton.newMock(PersistenceProvider.class);
-//    
-//    Hashtable<String,String> hash1 = new Hashtable<String, String>();
-//    persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName(), "no.such.Provider"} ,
-//        pp, hash1 );
-//    
-//    PersistenceBundleManager mgr = new PersistenceBundleManager();
-//    
-//    BundleContext ctx = extenderBundle.getBundleContext();
-//    
-//    setupPersistenceBundle("unittest/resources/file4/");
-//    mgr.start(ctx);
-//
-//    testSuccessfulInstalledEvent(mgr, ctx, 1);
-//    
-//    mgr.stop(ctx);
-//    
-//    BundleContextMock.assertNoServiceExists(PersistenceUnitInfoService.class.getName());
-//  }
-//
+
+  @Test
+  public void testManager_OnePreExistingPersistenceBundle_OneExistingProvider() throws Exception
+  {
+    BundleContext ctx = preExistingBundleSetup();
+    
+    pp = Skeleton.newMock(PersistenceProvider.class);
+    
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
+    hash1.put("javax.persistence.provider", "no.such.Provider");
+    ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
+        pp, hash1 );
+    ServiceReference ref = reg.getReference();
+    
+    mgr.addingProvider(ref);
+    
+    setupPersistenceBundle("file4", "");
+    
+    mgr.open();
+    
+    //Check the persistence.xml was looked for
+    Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
+    //Check we didn't use getResource()
+    Skeleton.getSkeleton(persistenceBundle).assertNotCalled(new MethodCall(Bundle.class, "getResource", String.class));
+    //Check we loaded the Provider service
+    Skeleton.getSkeleton(ctx).assertCalled(new MethodCall(BundleContext.class, "getService", ref));
+    Skeleton.getSkeleton(persistenceBundleContext).assertCalled(new MethodCall(BundleContext.class, "registerService", EntityManagerFactory.class.getName(), EntityManagerFactory.class, Dictionary.class));
+    Skeleton.getSkeleton(pp).assertCalled(new MethodCall(PersistenceProvider.class, "createContainerEntityManagerFactory", PersistenceUnitInfo.class, Map.class));
+    
+    BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
+  }
+  
+  @Test
+  public void testManagerStopUnregistersUnits() throws Exception
+  {
+    testManager_OnePreExistingPersistenceBundle_OneExistingProvider();
+    
+    mgr.close();
+    
+    Skeleton.getSkeleton(pp).assertCalled(new MethodCall(EntityManagerFactory.class, "close"));
+    BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
+  }
+
 //  @Test
 //  public void testBundleChangedInstalledOnePreexistingProvider() throws Exception
 //  {
@@ -888,20 +923,20 @@ public class PersistenceBundleLifecycleTest
 //    testUnsuccessfulInstalledEvent(mgr, ctx);
 //  }
 // 
-  private void setupPersistenceBundle(String s) throws MalformedURLException
+  private void setupPersistenceBundle(String root, String header) throws MalformedURLException
   {
+    persistenceBundle.getHeaders().put("Meta-Persistence", header);
+    
     Skeleton skel = Skeleton.getSkeleton(persistenceBundle);
     
     skel.setReturnValue(new MethodCall(Bundle.class, "getState"), Bundle.ACTIVE);
     
-    URL root = new File(s).toURI().toURL();
+    URL rootURL = getClass().getClassLoader().getResource(root);
+    URL xml = getClass().getClassLoader().getResource(root + "/META-INF/persistence.xml");
     
-    URL xml = new File(s + "META-INF/persistence.xml").toURI().toURL();
-    
-    skel.setReturnValue(new MethodCall(Bundle.class, "getEntry", "/"), root);
-    skel.setReturnValue(new MethodCall(Bundle.class, "getEntry", "/META-INF/persistence.xml"), xml);
+    skel.setReturnValue(new MethodCall(Bundle.class, "getResource", "/"), rootURL);
+    skel.setReturnValue(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"), xml);
     skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("0.0.0"));
-
   }
 //  
 //  private void registerVersionedPersistenceProviders(PersistenceProvider pp100,
