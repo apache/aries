@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.converters;
+package org.apache.aries.web.converter.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,11 +38,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
-import org.apache.aries.application.filesystem.IFile;
+import org.apache.aries.web.converter.WarToWabConverter.InputStreamProvider;
 import org.objectweb.asm.ClassReader;
 import org.osgi.framework.Constants;
 
-public class WarToWabConverter {
+public class WarToWabConverterImpl {
   private static final String DEFAULT_BUNDLE_VERSION = "1.0";
   private static final String DEFAULT_BUNDLE_MANIFESTVERSION = "2";
   private static final String INITIAL_CLASSPATH_ENTRY = "WEB-INF/classes/";
@@ -69,6 +69,7 @@ public class WarToWabConverter {
   private byte[] wabFile;
   private Manifest wabManifest;
   private String warName;
+  private InputStreamProvider input;
   
   private boolean converted = false;
 
@@ -78,17 +79,15 @@ public class WarToWabConverter {
   private Set<String> exemptPackages;
   private Map<String, Manifest> manifests; 
   private ArrayList<String> classPath;
-  
-  private IFile warFile;
 
-  public WarToWabConverter(IFile warFile, Properties properties) throws IOException {
+  public WarToWabConverterImpl(InputStreamProvider warFile, String name, Properties properties) throws IOException {
     this.properties = properties;
     fileNames = new ArrayList<String>();
     classPath = new ArrayList<String>();
     importPackages = new HashSet<String>();
     exemptPackages = new HashSet<String>();
-    this.warFile = warFile;
-    this.warName = warFile.getName();
+    input = warFile;
+    this.warName = name;
   }
   
   private void convert() throws IOException {
@@ -97,7 +96,7 @@ public class WarToWabConverter {
     JarInputStream jarInput = null;
 
     try {
-      jarInput = new JarInputStream(warFile.open());
+      jarInput = new JarInputStream(input.getInputStream());
       scanForDependencies(jarInput);
 
       // Add the new properties to the manifest byte stream
@@ -117,7 +116,7 @@ public class WarToWabConverter {
     int val;
     try {
       jarOutput = new JarOutputStream(output, wabManifest);
-      jarInput = new JarInputStream(warFile.open());
+      jarInput = new JarInputStream(input.getInputStream());
       while ((entry = jarInput.getNextEntry()) != null) {
         jarOutput.putNextEntry(entry);
         while ((val = jarInput.read()) != -1)

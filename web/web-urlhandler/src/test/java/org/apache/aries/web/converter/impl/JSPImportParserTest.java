@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.converters;
+package org.apache.aries.web.converter.impl;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStream;
 import java.util.Collection;
 
+import org.apache.aries.web.converter.impl.JSPImportParser;
 import org.junit.Test;
 
 public class JSPImportParserTest {
