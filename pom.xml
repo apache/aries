@@ -48,18 +48,17 @@
 			<version>1.0.0-incubating-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.geronimo.testsupport</groupId>
-			<artifactId>test-war-javaee_5</artifactId>
-			<version>2.2</version>
-			<type>war</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.aries.testsupport</groupId>
 			<artifactId>org.apache.aries.testsupport.unit</artifactId>
 			<version>1.0.0-incubating-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.aries.web</groupId>
+            <artifactId>org.apache.aries.web.urlhandler</artifactId>
+            <version>1.0.0-incubating-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
 	</dependencies>
 
 	<build>
@@ -74,27 +73,11 @@
 						</Bundle-SymbolicName>
 						<Bundle-Activator>org.apache.aries.application.converters.Activator
 						</Bundle-Activator>
-						<Export-Package>
-							org.apache.aries.application;version="${pom.version}",
-							org.apache.aries.application.filesystem;version="${pom.version}"
-						</Export-Package>
 						<_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))
 						</_versionpolicy>
 						<_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL
 						</_removeheaders>
 					</instructions>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<systemProperties>
-						<property>
-							<name>maven.repo.local</name>
-							<value>${localRepository}</value>
-						</property>
-					</systemProperties>
 				</configuration>
 			</plugin>
 		</plugins>
