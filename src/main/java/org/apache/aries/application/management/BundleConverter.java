@@ -31,15 +31,13 @@ import org.apache.aries.application.filesystem.IFile;
  */
 public interface BundleConverter {
   /**
-   * 
-   * @param inputBundle Stream to the input bundle
    * @param parentEba The root of the eba containing the artifact being converted - 
-   *                  currently a .zip file. In time we may come to support this 
-   *                  being an exploded directory.
-   * @param pathToArtifact Path to the artifact to be converted
-   *                   
-   * @return valid input stream or null if the bundle could not be converted. 
+   *                  a zip format file with .eba suffix, or an exploded directory. 
+   * @param fileInEba The object within the eba to convert
+   * @throws ConversionException if conversion was attempted but failed
+   * @return valid input stream or null if this converter does not support conversion of
+   *         this artifact type.  
    */
-  public InputStream convert (IDirectory parentEba, IFile fileInEba);
+  public InputStream convert (IDirectory parentEba, IFile fileInEba) throws ConversionException;
 
 }
