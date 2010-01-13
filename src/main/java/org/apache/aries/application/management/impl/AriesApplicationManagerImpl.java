@@ -209,16 +209,6 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     return null;
   } 
   
-  public ApplicationContext getApplicationContext(AriesApplication app) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  public Set<ApplicationContext> getApplicationContexts() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
   public ApplicationContext install(AriesApplication app) {
     // TODO Auto-generated method stub
     return null;
