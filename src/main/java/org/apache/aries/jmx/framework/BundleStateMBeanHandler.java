@@ -44,6 +44,7 @@ public class BundleStateMBeanHandler implements MBeanHandler {
     private Logger logger;
     private String name;
     private StandardMBean mbean;
+    private BundleState bundleStateMBean;
     private BundleContext bundleContext;
     private ServiceReference packageAdminRef;
     private ServiceReference startLevelRef;
@@ -63,7 +64,7 @@ public class BundleStateMBeanHandler implements MBeanHandler {
         PackageAdmin packageAdmin = (PackageAdmin) bundleContext.getService(packageAdminRef);
         startLevelRef = bundleContext.getServiceReference(StartLevel.class.getName());
         StartLevel startLevel = (StartLevel) bundleContext.getService(startLevelRef);
-        BundleStateMBean bundleStateMBean = new BundleState(bundleContext, packageAdmin, startLevel, logger);
+        bundleStateMBean = new BundleState(bundleContext, packageAdmin, startLevel, logger);
         try {
             mbean = new RegistrableStandardEmitterMBean(bundleStateMBean, BundleStateMBean.class);
         } catch (NotCompliantMBeanException e) {
@@ -105,6 +106,10 @@ public class BundleStateMBeanHandler implements MBeanHandler {
                 logger.log(LogService.LOG_WARNING, "Exception occured during cleanup", e);
             }
             startLevelRef = null;
+        }
+        // ensure dispatcher is shutdown even if postDeRegister is not honored
+        if (bundleStateMBean != null) {
+            bundleStateMBean.shutDownDispatcher();
         }
     }
 
