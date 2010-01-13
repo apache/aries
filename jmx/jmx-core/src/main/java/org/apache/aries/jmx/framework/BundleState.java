@@ -36,6 +36,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -63,8 +64,8 @@ import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.startlevel.StartLevel;
 
 /**
- * Implementation of <code>BundleStateMBean</code> which emits JMX <code>Notification</code>
- * on <code>Bundle</code> state changes
+ * Implementation of <code>BundleStateMBean</code> which emits JMX <code>Notification</code> on <code>Bundle</code>
+ * state changes
  * 
  * @version $Rev$ $Date$
  */
@@ -108,7 +109,7 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
     }
 
     /**
-     *  @see org.osgi.jmx.framework.BundleStateMBean#getHeaders(long)
+     * @see org.osgi.jmx.framework.BundleStateMBean#getHeaders(long)
      */
     @SuppressWarnings("unchecked")
     public TabularData getHeaders(long bundleId) throws IOException, IllegalArgumentException {
@@ -199,7 +200,7 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
         return startLevel.getBundleStartLevel(bundle);
     }
 
-    /** 
+    /**
      * @see org.osgi.jmx.framework.BundleStateMBean#getState(long)
      */
     public String getState(long bundleId) throws IOException, IllegalArgumentException {
@@ -287,8 +288,7 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
      */
     public void postDeregister() {
         if (registrations.decrementAndGet() < 1) {
-            bundleContext.removeBundleListener(bundleListener);
-            eventDispatcher.shutdown();
+            shutDownDispatcher();
         }
     }
 
@@ -296,10 +296,10 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
      * @see javax.management.MBeanRegistration#postRegister(java.lang.Boolean)
      */
     public void postRegister(Boolean registrationDone) {
-            if (registrationDone && registrations.incrementAndGet() == 1) {
-                eventDispatcher = Executors.newSingleThreadExecutor();
-                bundleContext.addBundleListener(bundleListener);
-            } 
+        if (registrationDone && registrations.incrementAndGet() == 1) {
+            eventDispatcher = Executors.newSingleThreadExecutor();
+            bundleContext.addBundleListener(bundleListener);
+        }
     }
 
     /**
@@ -318,8 +318,8 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
             if (bundleListener == null) {
                 bundleListener = new BundleListener() {
                     public void bundleChanged(BundleEvent event) {
-                        final Notification notification = new Notification(EVENT, OBJECTNAME, notificationSequenceNumber
-                                .getAndIncrement());
+                        final Notification notification = new Notification(EVENT, OBJECTNAME,
+                                notificationSequenceNumber.getAndIncrement());
                         try {
                             notification.setUserData(new BundleEventData(event).toCompositeData());
                             eventDispatcher.submit(new Runnable() {
@@ -327,24 +327,39 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
                                     sendNotification(notification);
                                 }
                             });
+                        } catch (RejectedExecutionException re) {
+                            logger.log(LogService.LOG_WARNING, "Task rejected for JMX Notification dispatch of event ["
+                                    + event + "] - Dispatcher may have been shutdown");
                         } catch (Exception e) {
-                            logger.log(LogService.LOG_WARNING, "Exception occured on JMX Notification dispatch for event ["
-                                    + event + "]", e);
+                            logger.log(LogService.LOG_WARNING,
+                                    "Exception occured on JMX Notification dispatch for event [" + event + "]", e);
                         }
                     }
                 };
             }
         } finally {
             lock.unlock();
-        }  
+        }
         return name;
+    }
+
+    /*
+     * Shuts down the notification dispatcher
+     */
+    protected void shutDownDispatcher() {
+        if (bundleListener != null) {
+            bundleContext.removeBundleListener(bundleListener);  
+        }
+        if (eventDispatcher != null) {
+            eventDispatcher.shutdown(); 
+        }
     }
 
     /*
      * Returns the ExecutorService used to dispatch Notifications
      */
-    public ExecutorService getEventDispatcher() {
+    protected ExecutorService getEventDispatcher() {
         return eventDispatcher;
     }
-    
+
 }
