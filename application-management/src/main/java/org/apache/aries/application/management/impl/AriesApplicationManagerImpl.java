@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -46,6 +47,7 @@ import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleConverter;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.ConversionException;
 import org.apache.aries.application.management.LocalPlatform;
 import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.ResolveConstraint;
@@ -56,6 +58,8 @@ import org.apache.aries.application.utils.manifest.BundleManifest;
 import org.apache.aries.application.utils.manifest.ManifestDefaultsInjector;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
 import org.osgi.framework.ServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AriesApplicationManagerImpl implements AriesApplicationManager {
 
@@ -64,6 +68,8 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   private List<BundleConverter> _bundleConverters;
   private AriesApplicationResolver _resolver;
   private LocalPlatform _localPlatform;
+
+  private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.application.management.impl");
 
   public void setApplicationMetadataManager (ApplicationMetadataManager amm) { 
     _applicationMetadataManager = amm;
@@ -105,6 +111,9 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
       if (deploymentManifest != null) { 
         deploymentMetadata = _deploymentMetadataFactory.createDeploymentMetadata(deploymentManifest);
       }
+      
+      // TODO: validate
+      
       /* We require that all other .jar and .war files included by-value be valid bundles
        * because a DEPLOYMENT.MF has been provided. If no DEPLOYMENT.MF, migrate 
        * wars to wabs, plain jars to bundles
@@ -126,14 +135,21 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
             // We have a jar that needs converting to a bundle, or a war to migrate to a WAB
             InputStream convertedBinary = null;
             Iterator<BundleConverter> converters = _bundleConverters.iterator();
+            List<ConversionException> conversionExceptions = Collections.emptyList();
             while (converters.hasNext() && convertedBinary == null) { 
               try { 
-                // WarToWabConverter can extract application.xml via
-                // eba.getFile(AppConstants.APPLICATION_XML);
                 convertedBinary = converters.next().convert(ebaFile, f);
               } catch (ServiceException sx) {
                 // We'll get this if our optional BundleConverter has not been injected. 
+              } catch (ConversionException cx) { 
+                conversionExceptions.add(cx);
               }
+            }
+            if (conversionExceptions.size() > 0) {
+              for (ConversionException cx : conversionExceptions) { 
+                _logger.error("Conversion failure", cx);
+              }
+              throw new ManagementException ("createApplication failed due to conversion failures: see log for details");
             }
             if (convertedBinary != null) { 
               modifiedBundles.put (f.getName(), convertedBinary);
@@ -156,7 +172,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
         
       }
     } catch (IOException iox) { 
-      // Log an error
+      _logger.error ("createApplication failed", iox);
       throw new ManagementException(iox);
     }
     
