@@ -7,14 +7,27 @@ import java.util.Properties;
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.BundleConverter;
+import org.apache.aries.web.converter.WarToWabConverter;
+import org.apache.aries.web.converter.WarToWabConverter.InputStreamProvider;
 
 public class WabConverterService implements BundleConverter {
+  private WarToWabConverter wabConverter;
+  
+  public WarToWabConverter getWabConverter() {
+    return wabConverter;
+  }
 
-  public InputStream convert(IDirectory parentEba, IFile toBeConverted) {
+  public void setWabConverter(WarToWabConverter wabConverter) {
+    this.wabConverter = wabConverter;
+  }
+
+  public InputStream convert(IDirectory parentEba, final IFile toBeConverted) {
     try {
-      //TODO find the real name of the WAR file
-      WarToWabConverter converter = new WarToWabConverter(toBeConverted, new Properties());
-      return converter.getWAB();
+      return wabConverter.convert(new InputStreamProvider() {
+        public InputStream getInputStream() throws IOException {
+          return toBeConverted.open();
+        }
+      }, toBeConverted.getName(), new Properties());
     } catch (IOException e) {
       // TODO what to do with the Exception
       return null;

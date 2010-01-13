@@ -16,13 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.converters;
+package org.apache.aries.web.converter.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.jar.Attributes;
@@ -31,8 +32,7 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
-import org.apache.aries.application.filesystem.IFile;
-import org.apache.aries.unittest.mocks.Skeleton;
+import org.apache.aries.web.converter.WarToWabConverter.InputStreamProvider;
 import org.junit.Test;
 import org.osgi.framework.Constants;
 
@@ -51,7 +51,7 @@ public class WabConverterTest
   @Test
   public void testNullManifest() throws Exception
   {
-    WarToWabConverter sut = new WarToWabConverter(makeTestFile(new byte[0]), new Properties());
+    WarToWabConverterImpl sut = new WarToWabConverterImpl(makeTestFile(new byte[0]), WAR_FILE_NAME, new Properties());
     
     Manifest res = sut.updateManifest(null);
     Attributes attrs = res.getMainAttributes();
@@ -62,7 +62,7 @@ public class WabConverterTest
   @Test
   public void testImportPackageMerge() throws Exception
   {
-    WarToWabConverter sut = new WarToWabConverter(makeTestFile(new byte[0]), new Properties());
+    WarToWabConverterImpl sut = new WarToWabConverterImpl(makeTestFile(new byte[0]), WAR_FILE_NAME, new Properties());
     
     Manifest input = new Manifest();
     input.getMainAttributes().putValue("Import-Package", "com.ibm.test,javax.servlet.http");
@@ -91,11 +91,11 @@ public class WabConverterTest
     out.write("hello world".getBytes());
     out.close();
     
-    IFile input = makeTestFile(bout.toByteArray());
+    InputStreamProvider input = makeTestFile(bout.toByteArray());
     
     Properties props = new Properties();
     props.put(Constants.BUNDLE_SYMBOLICNAME, "test.bundle");
-    WarToWabConverter sut = new WarToWabConverter(input, props);
+    WarToWabConverterImpl sut = new WarToWabConverterImpl(input, WAR_FILE_NAME, props);
     
     Manifest m = new JarInputStream(sut.getWAB()).getManifest();
     assertEquals("test.bundle", m.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME));
@@ -106,7 +106,7 @@ public class WabConverterTest
     Attributes attrs = convertWithProperties();
     
     assertTrue(attrs.getValue(Constants.BUNDLE_SYMBOLICNAME).startsWith(WAR_FILE_NAME_WO_SUFFIX));
-    assertEquals("/", attrs.getValue(WarToWabConverter.WEB_JSP_EXTRACT_LOCATION));    
+    assertEquals("/", attrs.getValue(WarToWabConverterImpl.WEB_JSP_EXTRACT_LOCATION));    
     assertEquals("1.0", attrs.getValue(Constants.BUNDLE_VERSION));
     assertEquals("javax.servlet;version=2.5,javax.servlet.http;version=2.5,javax.el;version=2.1," +
         "javax.servlet.jsp;version=2.1,javax.servlet.jsp.el;version=2.1," +
@@ -118,13 +118,13 @@ public class WabConverterTest
   @Test
   public void testPropertySupport() throws Exception {
     Attributes attrs = convertWithProperties(
-        WarToWabConverter.WEB_CONTEXT_PATH, "../WebFiles",
-        WarToWabConverter.WEB_JSP_EXTRACT_LOCATION, "/jsp",
+        WarToWabConverterImpl.WEB_CONTEXT_PATH, "../WebFiles",
+        WarToWabConverterImpl.WEB_JSP_EXTRACT_LOCATION, "/jsp",
         Constants.BUNDLE_VERSION, "2.0",
         Constants.IMPORT_PACKAGE, "org.apache.aries.test;version=2.5,org.apache.aries.test.eba;version=1.0");
     
-    assertEquals("../WebFiles", attrs.getValue(WarToWabConverter.WEB_CONTEXT_PATH));
-    assertEquals("/jsp", attrs.getValue(WarToWabConverter.WEB_JSP_EXTRACT_LOCATION));
+    assertEquals("../WebFiles", attrs.getValue(WarToWabConverterImpl.WEB_CONTEXT_PATH));
+    assertEquals("/jsp", attrs.getValue(WarToWabConverterImpl.WEB_JSP_EXTRACT_LOCATION));
     assertEquals("2.0", attrs.getValue(Constants.BUNDLE_VERSION));
     assertEquals("org.apache.aries.test;version=2.5,org.apache.aries.test.eba;version=1.0,"+
         "javax.servlet;version=2.5,javax.servlet.http;version=2.5,javax.el;version=2.1," +
@@ -170,7 +170,7 @@ public class WabConverterTest
       bytes = bout.toByteArray();
     }
     
-    WarToWabConverter sut = new WarToWabConverter(makeTestFile(bytes), properties);
+    WarToWabConverterImpl sut = new WarToWabConverterImpl(makeTestFile(bytes), WAR_FILE_NAME, properties);
     return sut.getWABManifest().getMainAttributes();
   }
   
@@ -179,22 +179,11 @@ public class WabConverterTest
   }
   
   
-  private IFile makeTestFile(byte[] content) {
-    return Skeleton.newMock(new IFileProxy(content), IFile.class);
-  }
-  
-  private static class IFileProxy {
-    private byte[] content;
-    
-    public IFileProxy(byte[] content) {
-      this.content = content;
-    }
-    
-    public InputStream open() {
-      return new ByteArrayInputStream(content);
-    }
-    
-    public String getName() { return WAR_FILE_NAME; }
-  }
-  
+  private InputStreamProvider makeTestFile(final byte[] content) {
+    return new InputStreamProvider() {      
+      public InputStream getInputStream() throws IOException {
+        return new ByteArrayInputStream(content);
+      }
+    };
+  }  
 }

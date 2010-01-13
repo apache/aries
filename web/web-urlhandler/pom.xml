@@ -16,15 +16,15 @@
 	-->
 <project>
 	<parent>
-		<artifactId>application</artifactId>
-		<groupId>org.apache.aries.application</groupId>
+		<artifactId>web</artifactId>
+		<groupId>org.apache.aries.web</groupId>
 		<version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>org.apache.aries.application.converters</artifactId>
+	<artifactId>org.apache.aries.web.urlhandler</artifactId>
 	<packaging>bundle</packaging>
-	<name>Apache Aries Application Converters</name>
+	<name>Apache Aries Web Url handler</name>
 
 	<dependencies>
 		<dependency>
@@ -43,22 +43,11 @@
 			<version>3.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.aries.application</groupId>
-			<artifactId>org.apache.aries.application.api</artifactId>
-			<version>1.0.0-incubating-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.aries.testsupport</groupId>
 			<artifactId>org.apache.aries.testsupport.unit</artifactId>
 			<version>1.0.0-incubating-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.apache.aries.web</groupId>
-            <artifactId>org.apache.aries.web.urlhandler</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
 	</dependencies>
 
 	<build>
@@ -73,6 +62,8 @@
 						</Bundle-SymbolicName>
 						<Bundle-Activator>org.apache.aries.application.converters.Activator
 						</Bundle-Activator>
+						<Export-Package>org.apache.aries.web.converter;version="${pom.version}",
+						</Export-Package>
 						<_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))
 						</_versionpolicy>
 						<_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL
