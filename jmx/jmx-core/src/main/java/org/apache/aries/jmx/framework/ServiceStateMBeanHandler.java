@@ -40,6 +40,7 @@ public class ServiceStateMBeanHandler implements MBeanHandler {
 
     private String name;
     private StandardMBean mbean;
+    private ServiceState serviceStateMBean;
     private BundleContext bundleContext;
     private Logger logger;
     
@@ -54,7 +55,7 @@ public class ServiceStateMBeanHandler implements MBeanHandler {
      * @see org.apache.aries.jmx.MBeanHandler#open()
      */
     public void open() {
-        ServiceStateMBean serviceStateMBean = new ServiceState(bundleContext, logger);
+        serviceStateMBean = new ServiceState(bundleContext, logger);
         try {
             mbean = new RegistrableStandardEmitterMBean(serviceStateMBean, ServiceStateMBean.class);
         } catch (NotCompliantMBeanException e) {
@@ -80,7 +81,10 @@ public class ServiceStateMBeanHandler implements MBeanHandler {
      * @see org.apache.aries.jmx.MBeanHandler#close()
      */
     public void close() {
-       // No action
+       // ensure dispatcher is shutdown even if postDeRegister is not honored
+       if (serviceStateMBean != null) {
+           serviceStateMBean.shutDownDispatcher();
+       }
     }
     
     
