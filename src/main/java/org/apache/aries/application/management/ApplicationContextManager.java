@@ -17,24 +17,17 @@
  * under the License.
  */
 
-
 package org.apache.aries.application.management;
 
-import java.net.URL;
 import java.util.Set;
 
-import org.apache.aries.application.filesystem.IDirectory;
+/* We'll use this interface as a plug-point to the application-runtime */
+public interface ApplicationContextManager {
 
-/**
- * Create, install and uninstall applications via this service. 
- */
-public interface AriesApplicationManager
-{
-  public AriesApplication createApplication(IDirectory source) throws ManagementException;
-  public AriesApplication createApplication(URL url) throws ManagementException;
-  public ApplicationContext install(AriesApplication app);
-  public void uninstall(ApplicationContext app);
-  public void addApplicationListener(ApplicationListener l);
-  public void removeApplicationListener(ApplicationListener l);
-  AriesApplication resolve (AriesApplication originalApp, ResolveConstraint ... constraints);
+  // Moved from AriesApplicationManager
+  public ApplicationContext getApplicationContext(AriesApplication app);
+  
+  // Not sure who needs this or for what, so don't yet know if it'll need to 
+  // be an immutable copy, or a live reference. 
+  public Set<ApplicationContext> getApplicationContexts();
 }
