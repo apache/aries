@@ -41,7 +41,9 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
     @Configuration
     public static Option[] configuration() {
         Option[] options = CoreOptions.options(
-            CoreOptions.equinox(), 
+            CoreOptions.equinox(),
+            mavenBundle("org.ops4j.pax.logging", "pax-logging-api"), 
+            mavenBundle("org.ops4j.pax.logging", "pax-logging-service"), 
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx")
         );
         options = updateOptions(options);
