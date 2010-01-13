@@ -23,6 +23,7 @@ import static org.osgi.jmx.JmxConstants.PROPERTIES_TYPE;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -150,8 +151,7 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
      */
     public void postDeregister() {
         if (registrations.decrementAndGet() < 1) {
-            bundleContext.removeServiceListener(serviceListener);
-            eventDispatcher.shutdown();
+            shutDownDispatcher();
         }
     }
 
@@ -187,6 +187,9 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
                                     sendNotification(notification);
                                 }
                             });
+                        } catch (RejectedExecutionException re) {
+                            logger.log(LogService.LOG_WARNING, "Task rejected for JMX Notification dispatch of event ["
+                                    + serviceevent + "] - Dispatcher may have been shutdown");
                         } catch (Exception e) {
                             logger.log(LogService.LOG_WARNING,
                                     "Exception occured on JMX Notification dispatch for event [" + serviceevent + "]",
@@ -202,9 +205,21 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     }
 
     /*
+     * Shuts down the notification dispatcher
+     */
+    protected void shutDownDispatcher() {
+        if (serviceListener != null) {
+            bundleContext.removeServiceListener(serviceListener);
+        }
+        if (eventDispatcher != null) {  
+            eventDispatcher.shutdown();
+        }
+    }
+
+    /*
      * Returns the ExecutorService used to dispatch Notifications
      */
-    public ExecutorService getEventDispatcher() {
+    protected ExecutorService getEventDispatcher() {
         return eventDispatcher;
     }
 
