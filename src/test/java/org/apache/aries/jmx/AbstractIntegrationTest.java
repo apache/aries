@@ -34,9 +34,11 @@ import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.Version;
 
 /**
  * 
@@ -73,9 +75,10 @@ public class AbstractIntegrationTest {
     @After
     public void tearDown() throws Exception {
         bundleContext.ungetService(reference);
-        registration.unregister();
+        //plainRegistration.unregister();
     }
     
+    @SuppressWarnings("unchecked")
     protected <T> T getMBean(String name, Class<T> type) {
         ObjectName objectName = null;
         try {
@@ -89,7 +92,24 @@ public class AbstractIntegrationTest {
                 type, false);
         return mbean;
     }
-
+    
+    protected Bundle getBundle(String symbolicName) {
+        return getBundle(symbolicName, null);
+    }
+    
+    protected Bundle getBundle(String bundleSymbolicName, String version) {
+        Bundle result = null;
+        for (Bundle b : bundleContext.getBundles()) {
+            if ( b.getSymbolicName().equals(bundleSymbolicName) ) {
+                if (version == null || b.getVersion().equals(Version.parseVersion(version))) {
+                    result = b;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+    
     public static MavenArtifactProvisionOption mavenBundle(String groupId, String artifactId) {
         return CoreOptions.mavenBundle().groupId(groupId).artifactId(artifactId).versionAsInProject();
     }
