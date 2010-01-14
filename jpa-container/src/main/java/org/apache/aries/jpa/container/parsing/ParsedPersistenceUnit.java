@@ -18,18 +18,25 @@
  */
 package org.apache.aries.jpa.container.parsing;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.osgi.framework.Bundle;
 
 /**
- * The parsed information from a persistence unit
+ * This interface provides access to the information defined by a 
+ * persistence unit in a persistence descriptor.
+ * 
+ * Implementations of this interface will be returned by calls to
+ * {@link PersistenceDescriptorParser}.
  */
 public interface ParsedPersistenceUnit {
   /*
    * Keys for use in the PersistenceXml Map
    * Stored values are Strings unless otherwise specified, and all values
-   * other than the schema version and unit name may be null.
+   * other than the schema version and unit name may be null. A null value
+   * indicates that the element/attribute was not present in the xml.
    */
   
   /** The version of the JPA schema being used */
@@ -38,13 +45,13 @@ public interface ParsedPersistenceUnit {
   public static final String UNIT_NAME = "org.apache.aries.jpa.unit.name";
   /** The Transaction type of the persistence unit */
   public static final String TRANSACTION_TYPE = "org.apache.aries.jpa.transaction.type";
-  /** A List of String mapping file names */
+  /** A {@link List} of {@link String} mapping file names */
   public static final String MAPPING_FILES = "org.apache.aries.jpa.mapping.files";
-  /** A List of String jar file names */
+  /** A {@link List} of {@link String} jar file names */
   public static final String JAR_FILES = "org.apache.aries.jpa.jar.files";
-  /** A List of String managed class names */
+  /** A {@link List} of {@link String} managed class names */
   public static final String MANAGED_CLASSES = "org.apache.aries.jpa.managed.classes";
-  /** A Properties object containing the properties from the persistence unit */
+  /** A {@link Properties} object containing the properties from the persistence unit */
   public static final String PROPERTIES = "org.apache.aries.jpa.properties";
   /** The provider class name */
   public static final String PROVIDER_CLASSNAME = "org.apache.aries.jpa.provider";
@@ -52,7 +59,7 @@ public interface ParsedPersistenceUnit {
   public static final String JTA_DATASOURCE = "org.apache.aries.jpa.jta.datasource";
   /** The non-jta-datasource name */
   public static final String NON_JTA_DATASOURCE = "org.apache.aries.jpa.non.jta.datasource";
-  /** A Boolean indicating whether unlisted classes should be excluded */
+  /** A {@link Boolean} indicating whether unlisted classes should be excluded */
   public static final String EXCLUDE_UNLISTED_CLASSES = "org.apache.aries.jpa.exclude.unlisted";
   
   /* End of Map keys */
@@ -61,13 +68,14 @@ public interface ParsedPersistenceUnit {
   public static final String JPA_PROVIDER_VERSION = "org.apache.aries.jpa.provider.version";
 
   /**
-   * Return the bundle that defines the persistence unit
+   * Return the persistence bundle that defines this persistence unit
    * @return
    */
   public Bundle getDefiningBundle();
 
   /**
-   * Returns a deep copy of the persistence metadata. 
+   * Returns a deep copy of the persistence metadata, modifications to the
+   * returned {@link Map} will not be reflected in future calls. 
    * @return
    */
   public Map<String, Object> getPersistenceXmlMetadata();
