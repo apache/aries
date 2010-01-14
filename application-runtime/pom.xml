@@ -68,7 +68,6 @@
         <configuration> 
            <instructions>
 	         <Bundle-SymbolicName>${pom.groupId}.runtime</Bundle-SymbolicName>
-	         <Bundle-Activator>org.apache.aries.application.runtime.internal.Activator</Bundle-Activator>
              <Private-Package>org.apache.aries.application.management.impl</Private-Package> 
              <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
              <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
@@ -77,4 +76,5 @@
       </plugin>
     </plugins>
   </build>
+
 </project>
