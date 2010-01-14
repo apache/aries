@@ -19,8 +19,16 @@
 package org.apache.aries.jpa.container.impl;
 
 import org.osgi.framework.Version;
-
+/**
+ * This exception is thrown when a persistence descriptor contains
+ * an set of version ranges with no common overlap
+ */
 public class InvalidRangeCombination extends Exception {
+
+  /**
+   * For Serialization
+   */
+  private static final long serialVersionUID = 3631484834936016561L;
 
   public InvalidRangeCombination(Version minVersion, boolean minExclusive,
       Version maxVersion, boolean maxExclusive) {
