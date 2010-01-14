@@ -22,6 +22,7 @@ package org.apache.aries.application.management;
 import java.util.Set;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
 
 /**
  * Represents an Aries application in the runtime
@@ -30,8 +31,8 @@ public interface ApplicationContext
 {
   public ApplicationState getApplicationState();
   public AriesApplication getApplication();
-  public void start();
-  public void stop();
+  public void start() throws BundleException;
+  public void stop() throws BundleException;
   public Set<Bundle> getApplicationContent(); // 
   
   public enum ApplicationState
