@@ -41,6 +41,7 @@ import org.apache.aries.application.DeploymentMetadataFactory;
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.ApplicationContext;
+import org.apache.aries.application.management.ApplicationContextManager;
 import org.apache.aries.application.management.ApplicationListener;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationManager;
@@ -51,12 +52,15 @@ import org.apache.aries.application.management.ConversionException;
 import org.apache.aries.application.management.LocalPlatform;
 import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.ResolveConstraint;
+import org.apache.aries.application.management.internal.MessageUtil;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.filesystem.IOUtils;
 import org.apache.aries.application.utils.manifest.BundleManifest;
 import org.apache.aries.application.utils.manifest.ManifestDefaultsInjector;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +72,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   private List<BundleConverter> _bundleConverters;
   private AriesApplicationResolver _resolver;
   private LocalPlatform _localPlatform;
+  private ApplicationContextManager _applicationContextManager;
 
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.application.management.impl");
 
@@ -91,6 +96,10 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     _localPlatform = lp;
   }
   
+  public void setApplicationContextManager (ApplicationContextManager acm) { 
+    _applicationContextManager = acm;
+  }
+  
   
   /**
    * Create an AriesApplication from a .eba file: a zip file with a '.eba' extension
@@ -110,9 +119,14 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
       IFile deploymentManifest = ebaFile.getFile(AppConstants.DEPLOYMENT_MF);
       if (deploymentManifest != null) { 
         deploymentMetadata = _deploymentMetadataFactory.createDeploymentMetadata(deploymentManifest);
+        
+        // Validate: symbolic names must match
+        String appSymbolicName = applicationMetadata.getApplicationSymbolicName();
+        String depSymbolicName = applicationMetadata.getApplicationSymbolicName();
+        if (!appSymbolicName.equals(depSymbolicName)) {
+          throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0002E", ebaFile.getName(), appSymbolicName, depSymbolicName));
+        }
       }
-      
-      // TODO: validate
       
       /* We require that all other .jar and .war files included by-value be valid bundles
        * because a DEPLOYMENT.MF has been provided. If no DEPLOYMENT.MF, migrate 
@@ -130,7 +144,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
           if (bm.isValid()) {
             extraBundlesInfo.add(new BundleInfoImpl(bm, f.toURL().toExternalForm()));
           } else if (deploymentMetadata != null) {
-            throw new ManagementException ("Invalid bundle " + f.getName() + " found when DEPLOYMENT.MF present");
+            throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0003E", f.getName(), ebaFile.getName()));
           } else { 
             // We have a jar that needs converting to a bundle, or a war to migrate to a WAB
             InputStream convertedBinary = null;
@@ -147,9 +161,9 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
             }
             if (conversionExceptions.size() > 0) {
               for (ConversionException cx : conversionExceptions) { 
-                _logger.error("Conversion failure", cx);
+                _logger.error("APPMANAGEMENT0004E", new Object[]{f.getName(), ebaFile.getName(), cx});
               }
-              throw new ManagementException ("createApplication failed due to conversion failures: see log for details");
+              throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0005E", ebaFile.getName()));
             }
             if (convertedBinary != null) { 
               modifiedBundles.put (f.getName(), convertedBinary);
@@ -172,7 +186,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
         
       }
     } catch (IOException iox) { 
-      _logger.error ("createApplication failed", iox);
+      _logger.error ("APPMANAGEMENT0006E", new Object []{ebaFile.getName(), iox});
       throw new ManagementException(iox);
     }
     
@@ -208,14 +222,17 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     // TODO Auto-generated method stub
     return null;
   } 
-  
+
   public ApplicationContext install(AriesApplication app) {
-    // TODO Auto-generated method stub
-    return null;
+    ApplicationContext result = _applicationContextManager.getApplicationContext(app);
+    return result;
   }
   
-  public void uninstall(ApplicationContext app) {
-    // TODO Auto-generated method stub
+  public void uninstall(ApplicationContext app) throws BundleException {
+    Set<Bundle> bundles = app.getApplicationContent();
+    for (Bundle b : bundles) { 
+      b.uninstall();
+    }
 
   }
 
@@ -245,7 +262,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
         is = f.open();
         result = ManifestProcessor.parseManifest(is);
       } catch (IOException iox) { 
-        // TODO: log error
+        _logger.error ("APPMANAGEMENT0007E", new Object[]{source.getName(), iox});
         throw iox;
       } finally { 
         IOUtils.close(is);

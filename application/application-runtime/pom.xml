@@ -7,7 +7,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.aries.application</groupId>
   <artifactId>application-runtime</artifactId>
-  <name>application-runtime</name>
+    <name>Apache Aries application runtime</name>
+  <description>
+      A very basic runtime implementation
+  </description>
   <version>1.0.0-incubating-SNAPSHOT</version>
   <url>http://maven.apache.org</url>
  <dependencies>
@@ -55,4 +58,23 @@
   		<version>1.0.0-incubating-SNAPSHOT</version>
   	</dependency>
   </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId> 
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration> 
+           <instructions>
+	         <Bundle-SymbolicName>${pom.groupId}.runtime</Bundle-SymbolicName>
+	         <Bundle-Activator>org.apache.aries.application.runtime.internal.Activator</Bundle-Activator>
+             <Private-Package>org.apache.aries.application.management.impl</Private-Package> 
+             <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
+             <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
+         </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
