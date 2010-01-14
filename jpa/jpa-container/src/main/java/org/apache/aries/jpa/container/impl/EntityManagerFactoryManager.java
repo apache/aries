@@ -34,19 +34,23 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-
+/**
+ * This class manages the lifecycle of Persistence Units and their associated
+ * {@link EntityManagerFactory} objects.
+ */
 public class EntityManagerFactoryManager {
 
+  /** The container's {@link BundleContext} */
   private final BundleContext containerContext;
-  
+  /** The persistence bundle */
   private final Bundle bundle;
-  
+  /** The {@link PersistenceProvider} to use */
   private ServiceReference provider;
-  
+  /** The persistence units to manage */
   private Collection<ManagedPersistenceUnitInfo> persistenceUnits;
-  
+  /** A Map of created {@link EntityManagerFactory}s */
   private Map<String, EntityManagerFactory> emfs = null;
-  
+  /** The {@link ServiceRegistration} objects for the {@link EntityManagerFactory}s */
   private Collection<ServiceRegistration> registrations = null;
 
   /**
@@ -69,6 +73,18 @@ public class EntityManagerFactoryManager {
     persistenceUnits = infos;
   }
 
+  /**
+   * Notify the {@link EntityManagerFactoryManager} that a provider is being
+   * removed from the service registry.
+   * 
+   * If the provider is used by this {@link EntityManagerFactoryManager} then
+   * the manager should destroy the dependent persistence units.
+   * 
+   * <b>This method should only be called when not holding any locks</b>
+   * 
+   * @param ref  The provider service reference
+   * @return true if the the provider is being used by this manager
+   */
   public synchronized boolean providerRemoved(ServiceReference ref) {
     
     boolean toReturn = ref == provider;
@@ -79,6 +95,15 @@ public class EntityManagerFactoryManager {
     return toReturn;
   }
 
+  /**
+   * Notify the {@link EntityManagerFactoryManager} that the bundle it is
+   * managing has changed state
+   * 
+   * <b>This method should only be called when not holding any locks</b>
+   * 
+   * @throws InvalidPersistenceUnitException if the manager is no longer valid and
+   *                                         should be destroyed
+   */
   public synchronized void bundleStateChange() throws InvalidPersistenceUnitException {
     
     switch(bundle.getState()) {
@@ -89,19 +114,26 @@ public class EntityManagerFactoryManager {
         //Create the EMF objects if necessary
         createEntityManagerFactories();
         break;
+        //Starting and active both require EMFs to be registered
       case Bundle.STARTING :
       case Bundle.ACTIVE :
         registerEntityManagerFactories();
         break;
+        //Stopping means the EMFs should
       case Bundle.STOPPING :
         unregisterEntityManagerFactories();
         break;
       case Bundle.INSTALLED :
+        //Destroy everything
         destroyEntityManagerFactories();
     }
   }
 
+  /**
+   * Unregister all {@link EntityManagerFactory} services
+   */
   private void unregisterEntityManagerFactories() {
+    //If we have registrations then unregister them
     if(registrations != null) {
       for(ServiceRegistration reg : registrations) {
         try {
@@ -110,14 +142,23 @@ public class EntityManagerFactoryManager {
           //TODO log this
         }
       }
+      // remember to set registrations to be null
       registrations = null;
     }
   }
 
+  /**
+   * Register {@link EntityManagerFactory} services
+   * 
+   * @throws InvalidPersistenceUnitException if this {@link EntityManagerFactory} is no longer
+   *  valid and should be destroyed
+   */
   private void registerEntityManagerFactories() throws InvalidPersistenceUnitException {
+    //Only register if there is a provider and we are not
+    //already registered
     if(provider != null && registrations == null) {
-      if(emfs == null)
-        createEntityManagerFactories();
+      //Make sure the EntityManagerFactories are instantiated
+      createEntityManagerFactories();
       
       registrations = new ArrayList<ServiceRegistration>();
       String providerName = (String) provider.getProperty("javax.persistence.provider");
@@ -125,6 +166,7 @@ public class EntityManagerFactoryManager {
         //TODO log this
         throw new InvalidPersistenceUnitException();
       }
+      //Register each EMF
       for(Entry<String, EntityManagerFactory> entry : emfs.entrySet())
       {
         Properties props = new Properties();
@@ -148,12 +190,19 @@ public class EntityManagerFactoryManager {
     }
   }
 
+  /**
+   * Create {@link EntityManagerFactory} services for this peristence unit
+   * throws InvalidPersistenceUnitException if this {@link EntityManagerFactory} is no longer
+   *  valid and should be destroyed
+   */
   private void createEntityManagerFactories() throws InvalidPersistenceUnitException {
+    //Only try if we have a provider and EMFs
     if(provider != null) {
       if(emfs == null) {
         try {
           emfs = new HashMap<String, EntityManagerFactory>();
         
+          //Get hold of the provider
           PersistenceProvider providerService = (PersistenceProvider) containerContext.getService(provider);
 
           if(providerService == null) throw new InvalidPersistenceUnitException();
@@ -166,6 +215,7 @@ public class EntityManagerFactoryManager {
                     pUnitInfo, info.getContainerProperties()));
           }
         } finally {
+          //Remember to unget the provider
           containerContext.ungetService(provider);
         }
       }
@@ -199,6 +249,9 @@ public class EntityManagerFactoryManager {
     persistenceUnits = null;
   }
 
+  /**
+   * S
+   */
   private void destroyEntityManagerFactories() {
     if(registrations != null)
       unregisterEntityManagerFactories();
