@@ -40,6 +40,7 @@ public class PersistenceBundleHelper
 {
   /** The persistence xml location */
   public static final String PERSISTENCE_XML = "META-INF/persistence.xml";
+  /** The Meta-Persistence header */
   public static final String PERSISTENCE_UNIT_HEADER = "Meta-Persistence";
 
   /**
@@ -49,7 +50,7 @@ public class PersistenceBundleHelper
    * 
    * Note that getEntry is used to ensure we do not alter the state of the bundle
    * 
-   * @param bundle
+   * @param bundle The bundle to search
    * @return
    */
   public static Collection<PersistenceDescriptor> findPersistenceXmlFiles(Bundle bundle)
@@ -57,7 +58,8 @@ public class PersistenceBundleHelper
     //The files we have found
     Collection<PersistenceDescriptor> persistenceXmlFiles = new ArrayList<PersistenceDescriptor>();
     
-    //Always search the default location
+    //Always search the default location, and use a set so we don't search the same
+    //location twice!
     Collection<String> locations = new HashSet<String>();
     locations.add(PERSISTENCE_XML);
     
@@ -65,18 +67,20 @@ public class PersistenceBundleHelper
     
     if(header != null) {
       //Split apart the header to get the individual entries
-      List<String> headerLocations = Arrays.asList(header.split(","));
-      locations.addAll(headerLocations);
+      for(String s : header.split(","))
+        locations.add(s.trim());
     
-    
+      //Find the file and add it to our list
       try {
         for(String location : locations) {
-          InputStream file = locateFile(bundle, location.trim());
+          InputStream file = locateFile(bundle, location);
           if(file != null)
             persistenceXmlFiles.add(new PersistenceDescriptorImpl(location, file));
           }
       } catch (Exception e) {
           //TODO log
+        //If we get an exception, then go through closing all of our streams.
+        //It is better to fail completely than half succeed.
         for (PersistenceDescriptor desc : persistenceXmlFiles) {
           try {
             desc.getInputStream().close();
@@ -97,46 +101,42 @@ public class PersistenceBundleHelper
    * @param bundle
    * @param persistenceXmlFiles
    * @param jarLocation
+   * @throws IOException 
    */
-  private static InputStream locateFile(Bundle bundle, String location)
+  private static InputStream locateFile(Bundle bundle, String location) throws IOException
   {
+    //There is nothing for an empty location
     InputStream is = null;
     if(location == "") {
       return null;
     }
-      
-    int bangIndex = location.indexOf('!');
     
+    //If there is a '!' then we have to look in a jar
+    int bangIndex = location.indexOf('!');
+    //No '!', getEntry will do
     if(bangIndex == -1) {
       URL url = bundle.getEntry(location);
       
-      if(url != null) {
-        try {
-          is = url.openStream();
-        } catch (IOException e) {
-          // TODO log this
-          e.printStackTrace();
-        }
-      }
+      if(url != null) 
+        is = url.openStream();
+      
     } else {
+      //There was a '!', find the jar
       URL url = bundle.getEntry(location.substring(0, bangIndex));
       
       if(url != null) {
+        //Remember to trim off the "!/"
         String toLocate = location.substring(bangIndex + 2);
+      
+        JarInputStream jis = new JarInputStream(url.openStream());
+        JarEntry entry = jis.getNextJarEntry();
         
-        try {
-          JarInputStream jis = new JarInputStream(url.openStream());
-          JarEntry entry = jis.getNextJarEntry();
-          
-          while(entry != null) {
-            if(entry.getName().equals(toLocate)) {
-              is = jis;
-              break;
-            }
-            entry = jis.getNextJarEntry();
+        while(entry != null) {
+          if(entry.getName().equals(toLocate)) {
+            is = jis;
+            break;
           }
-        } catch (IOException ioe) {
-          //TODO log this
+          entry = jis.getNextJarEntry();
         }
       }
     }
