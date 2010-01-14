@@ -73,7 +73,7 @@ public class PersistenceBundleManager extends BundleTracker
 
   private static final String DEFAULT_PU_INFO_FACTORY = "";
   
-  private static final String DEFAULT_PU_INFO_FACTORY_KEY = "org.apache.aries.jpa.container.PersistenceUnitInfoFactory";
+  private static final String DEFAULT_PU_INFO_FACTORY_KEY = "org.apache.aries.jpa.container.ManagedPersistenceUnitInfoFactory";
   
   /**
    * Create the extender. Note that it will not start tracking 
@@ -167,16 +167,17 @@ public class PersistenceBundleManager extends BundleTracker
       
       if(!!!pUnits.isEmpty()) {
         ServiceReference ref = getProviderServiceReference(pUnits);
-          
-        Collection<ManagedPersistenceUnitInfo> infos = persistenceUnitFactory.
-            createManagedPersistenceUnitMetadata(ctx, bundle, ref, pUnits);
-        if(mgr != null)
-          mgr.manage(ref, infos);
-        else {
-          synchronized (this) {
-            if(persistenceProviders.contains(ref)) {
-                mgr = new EntityManagerFactoryManager(ctx, bundle, ref, infos);
-                bundleToManagerMap.put(bundle, mgr);
+        if(ref != null) {  
+          Collection<ManagedPersistenceUnitInfo> infos = persistenceUnitFactory.
+              createManagedPersistenceUnitMetadata(ctx, bundle, ref, pUnits);
+          if(mgr != null)
+            mgr.manage(ref, infos);
+          else {
+            synchronized (this) {
+              if(persistenceProviders.contains(ref)) {
+                  mgr = new EntityManagerFactoryManager(ctx, bundle, ref, infos);
+                  bundleToManagerMap.put(bundle, mgr);
+              }
             }
           }
         }
@@ -336,13 +337,15 @@ public class PersistenceBundleManager extends BundleTracker
     }
     //If we have too many provider class names or incompatible version ranges specified then blow up
     
-    VersionRange range;
-    try {
-      range = combineVersionRanges(versionRanges);
-    } catch (InvalidRangeCombination e) {
-      // TODO Log this error
-      e.printStackTrace();
-      return null;
+    VersionRange range = null;
+    if(!!!versionRanges.isEmpty()) {
+      try {
+        range = combineVersionRanges(versionRanges);
+      } catch (InvalidRangeCombination e) {
+        // TODO Log this error
+        e.printStackTrace();
+        return null;
+      }
     }
     
     if(ppClassNames.size() > 1)
@@ -408,7 +411,7 @@ public class PersistenceBundleManager extends BundleTracker
       rangeString.insert(0, minExclusive ? "(" : "[");
       rangeString.append(",");
       rangeString.append(maxVersion);
-      rangeString.append(maxExclusive ? ")" : "[");
+      rangeString.append(maxExclusive ? ")" : "]");
     }
     
     return ManifestHeaderProcessor.parseVersionRange(rangeString.toString());
@@ -420,37 +423,47 @@ public class PersistenceBundleManager extends BundleTracker
    * @param matchingCriteria
    * @return
    */
+  @SuppressWarnings("unchecked")
   private synchronized ServiceReference getBestProvider(String providerClass, VersionRange matchingCriteria)
   {
     if(!!!persistenceProviders.isEmpty()) {
-
+      
       List<ServiceReference> refs = new ArrayList<ServiceReference>();
       
-      for(ServiceReference reference : persistenceProviders) {
-        
-        if(providerClass != null && !!!providerClass.equals(
-            reference.getProperty("javax.persistence.provider")))
-          continue;
+      if((providerClass != null && !!!"".equals(providerClass))
+          || matchingCriteria != null) {
+        for(ServiceReference reference : persistenceProviders) {
           
-        if(matchingCriteria.matches(reference.getBundle().getVersion()))
-          refs.add(reference);
-      }
-      
-      if(!!!refs.isEmpty()) {
-        //Sort the list in DESCENDING ORDER
-        Collections.sort(refs, new Comparator<ServiceReference>() {
-
-          //TODO we may wish to use Ranking, then versions for equal ranks
-          public int compare(ServiceReference object1, ServiceReference object2)
-          {
-            Version v1 = object1.getBundle().getVersion();
-            Version v2 = object2.getBundle().getVersion();
-            return v2.compareTo(v1);
-          }
-        });
-        return refs.get(0);
+          if(providerClass != null && !!!providerClass.equals(
+              reference.getProperty("javax.persistence.provider")))
+            continue;
+            
+          if(matchingCriteria == null || matchingCriteria.
+              matches(reference.getBundle().getVersion()))
+            refs.add(reference);
+        }
+        
+        if(!!!refs.isEmpty()) {
+          //Sort the list in DESCENDING ORDER
+          Collections.sort(refs, new Comparator<ServiceReference>() {
+  
+            //TODO we may wish to use Ranking, then versions for equal ranks
+            public int compare(ServiceReference object1, ServiceReference object2)
+            {
+              Version v1 = object1.getBundle().getVersion();
+              Version v2 = object2.getBundle().getVersion();
+              return v2.compareTo(v1);
+            }
+          });
+          
+          return refs.get(0);
+        } else {
+          //TODO no matching providers for matching criteria
+        }
       } else {
-        //TODO no matching providers for matching criteria
+        refs.addAll(persistenceProviders);
+        Collections.sort(refs);
+        return refs.get(0);
       }
     } else {
       //TODO log no matching Providers for impl class

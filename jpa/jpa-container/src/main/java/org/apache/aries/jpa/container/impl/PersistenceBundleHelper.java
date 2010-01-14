@@ -122,7 +122,7 @@ public class PersistenceBundleHelper
       URL url = bundle.getEntry(location.substring(0, bangIndex));
       
       if(url != null) {
-        String toLocate = location.substring(bangIndex + 1);
+        String toLocate = location.substring(bangIndex + 2);
         
         try {
           JarInputStream jis = new JarInputStream(url.openStream());
