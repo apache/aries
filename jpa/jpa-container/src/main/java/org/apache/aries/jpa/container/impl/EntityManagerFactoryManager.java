@@ -65,6 +65,10 @@ public class EntityManagerFactoryManager {
     
     switch(bundle.getState()) {
       case Bundle.RESOLVED :
+        //If we are Resolved as a result of having stopped
+        //and missed the STOPPING event we need to unregister
+        unregisterEntityManagerFactories();
+        //Create the EMF objects if necessary
         createEntityManagerFactories();
         break;
       case Bundle.STARTING :
@@ -74,6 +78,8 @@ public class EntityManagerFactoryManager {
       case Bundle.STOPPING :
         unregisterEntityManagerFactories();
         break;
+      case Bundle.INSTALLED :
+        destroyEntityManagerFactories();
     }
   }
 
@@ -91,17 +97,26 @@ public class EntityManagerFactoryManager {
   }
 
   private void registerEntityManagerFactories() throws InvalidPersistenceUnitException {
-    if(provider != null) {
+    if(provider != null && registrations == null) {
       if(emfs == null)
         createEntityManagerFactories();
       
       registrations = new ArrayList<ServiceRegistration>();
       String providerName = (String) provider.getProperty("javax.persistence.provider");
-      
+      if(providerName == null) {
+        //TODO log this
+        throw new InvalidPersistenceUnitException();
+      }
       for(Entry<String, EntityManagerFactory> entry : emfs.entrySet())
       {
         Properties props = new Properties();
         String unitName = entry.getKey();
+        
+        if(unitName == null) {
+          //TODO log
+          throw new InvalidPersistenceUnitException();
+        }
+          
         props.put("osgi.unit.name", unitName);
         props.put("osgi.unit.provider", providerName);
         props.put("org.apache.aries.jpa.container.managed", Boolean.TRUE);

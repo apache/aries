@@ -7,21 +7,21 @@
   <persistence-unit name="alpha">
   	<provider>no.such.Provider</provider>
   	<properties>
-      <property name="osgi.jpa.provider.version" value="[1.0.0,2.0.0]"/>
+      <property name="org.apache.aries.jpa.provider.version" value="[1.0.0,2.0.0]"/>
     </properties>
   </persistence-unit>  
   
   <persistence-unit name="bravo">
   	<provider>no.such.Provider</provider>
   	<properties>
-      <property name="osgi.jpa.provider.version" value="[0.0.5,0.9.9]"/>
+      <property name="org.apache.aries.jpa.provider.version" value="[0.0.5,1.0.0)"/>
     </properties>
   </persistence-unit>
   
     <persistence-unit name="ch">
   	<provider>no.such.Provider</provider>
   	<properties>
-      <property name="osgi.jpa.provider.version" value="[1.0.0,1.9.9]"/>
+      <property name="org.apache.aries.jpa.provider.version" value="[1.0.0,1.9.9]"/>
     </properties>
   </persistence-unit>
   
