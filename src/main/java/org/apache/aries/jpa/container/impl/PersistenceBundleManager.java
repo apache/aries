@@ -72,10 +72,6 @@ public class PersistenceBundleManager extends BundleTracker
   /** Configuration for this extender */
   private Properties config;
 
-  private static final String DEFAULT_PU_INFO_FACTORY = "";
-  
-  private static final String DEFAULT_PU_INFO_FACTORY_KEY = "org.apache.aries.jpa.container.ManagedPersistenceUnitInfoFactory";
-  
   /**
    * Create the extender. Note that it will not start tracking 
    * until the {@code open()} method is called
@@ -90,7 +86,7 @@ public class PersistenceBundleManager extends BundleTracker
   
   @Override
   public void open() {
-    String className = (String) config.get(DEFAULT_PU_INFO_FACTORY_KEY);
+    String className = (String) config.get(ManagedPersistenceUnitInfoFactory.DEFAULT_PU_INFO_FACTORY_KEY);
     Class<? extends ManagedPersistenceUnitInfoFactory> clazz = null;
     
     if(className != null) {
@@ -216,7 +212,7 @@ public class PersistenceBundleManager extends BundleTracker
   
   public void setConfig(Properties props) {
     config = props;
-    URL u = ctx.getBundle().getResource("org.apache.aries.jpa.container.properties");
+    URL u = ctx.getBundle().getResource(ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES);
     
     if(u != null)
       try {
@@ -428,10 +424,9 @@ public class PersistenceBundleManager extends BundleTracker
   private synchronized ServiceReference getBestProvider(String providerClass, VersionRange matchingCriteria)
   {
     if(!!!persistenceProviders.isEmpty()) {
-      List<ServiceReference> refs = new ArrayList<ServiceReference>();
-      
       if((providerClass != null && !!!"".equals(providerClass))
           || matchingCriteria != null) {
+        List<ServiceReference> refs = new ArrayList<ServiceReference>();
         for(ServiceReference reference : persistenceProviders) {
           
           if(providerClass != null && !!!providerClass.equals(
@@ -445,15 +440,13 @@ public class PersistenceBundleManager extends BundleTracker
         
         if(!!!refs.isEmpty()) {
           //Sort the list in DESCENDING ORDER
-          Collections.sort(refs, new ProviderServiceComparator());
-          return refs.get(0);
+          
+          return Collections.max(refs, new ProviderServiceComparator());
         } else {
           //TODO no matching providers for matching criteria
         }
       } else {
-        refs.addAll(persistenceProviders);
-        Collections.sort(refs, new ProviderServiceComparator());
-        return refs.get(0);
+        return (ServiceReference) Collections.max(persistenceProviders);
       }
     } else {
       //TODO log no matching Providers for impl class
@@ -466,14 +459,13 @@ public class PersistenceBundleManager extends BundleTracker
     {
       Version v1 = object1.getBundle().getVersion();
       Version v2 = object2.getBundle().getVersion();
-      int res = v2.compareTo(v1);
+      int res = v1.compareTo(v2);
       if (res == 0) {
         Integer rank1 = (Integer) object1.getProperty(Constants.SERVICE_RANKING);
         Integer rank2 = (Integer) object2.getProperty(Constants.SERVICE_RANKING);
         if (rank1 != null && rank2 != null)
-          res = rank2.compareTo(rank1);
+          res = rank1.compareTo(rank2);
       }
-      
       return res;
     }
   }
