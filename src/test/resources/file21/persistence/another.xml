@@ -4,11 +4,6 @@
    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
    version="1.0">
 
-  <persistence-unit name="alpha">
-  	<provider>no.such.Provider</provider>
-  	<properties>
-      <property name="org.apache.aries.jpa.provider.version" value="1.0.0"/>
-    </properties>
-  </persistence-unit>  
-  
+  <persistence-unit name="another"/>
+    
 </persistence>
