@@ -18,14 +18,22 @@
  */
 package org.apache.aries.jpa.container.impl;
 
+/**
+ * This exception is thrown if an {@link EntityManagerFactoryManager} has
+ * entered an invalid state and needs to be destroyed
+ */
 public class InvalidPersistenceUnitException extends Exception {
+
+  /**
+   * For serialization
+   */
+  private static final long serialVersionUID = 6523462131213055375L;
 
   public InvalidPersistenceUnitException(Exception e) {
     super(e);
   }
 
   public InvalidPersistenceUnitException() {
-    // TODO Auto-generated constructor stub
   }
 
 }
