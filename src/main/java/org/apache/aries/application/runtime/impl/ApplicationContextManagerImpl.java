@@ -17,24 +17,52 @@
  * under the License.
  */
 
-package org.apache.aries.application.runtime;
+package org.apache.aries.application.runtime.impl;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.aries.application.management.ApplicationContext;
 import org.apache.aries.application.management.ApplicationContextManager;
 import org.apache.aries.application.management.AriesApplication;
+import org.osgi.framework.BundleContext;
 
 public class ApplicationContextManagerImpl implements ApplicationContextManager {
 
+  ConcurrentMap<AriesApplication, ApplicationContext> _appToContextMap;
+  BundleContext _bundleContext;
+  
+  public ApplicationContextManagerImpl () { 
+    _appToContextMap = new ConcurrentHashMap<AriesApplication, ApplicationContext>();
+  }
+  
+  public void setBundleContext (BundleContext b) { 
+    _bundleContext = b;
+  }
+  
   public ApplicationContext getApplicationContext(AriesApplication app) {
-    // TODO Auto-generated method stub
-    return null;
+    ApplicationContext result;
+    if (_appToContextMap.containsKey(app)) { 
+      result = _appToContextMap.get(app);
+    } else { 
+      result = new ApplicationContextImpl (_bundleContext, app);
+      ApplicationContext previous = _appToContextMap.putIfAbsent(app, result);
+      if (previous != null) { 
+        result = previous;
+      }
+    }
+    return result;
   }
 
   public Set<ApplicationContext> getApplicationContexts() {
-    // TODO Auto-generated method stub
-    return null;
+    Set<ApplicationContext> result = new HashSet<ApplicationContext>();
+    for (Map.Entry<AriesApplication, ApplicationContext> entry: _appToContextMap.entrySet()) {
+      result.add (entry.getValue());
+    }
+    return result;
   }
 
 }
