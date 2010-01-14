@@ -55,10 +55,10 @@ public class PersistenceBundleHelper
   public static Collection<PersistenceDescriptor> findPersistenceXmlFiles(Bundle bundle)
   {
     //The files we have found
-    Collection<PersistenceDescriptor> persistenceXmlFiles = new HashSet<PersistenceDescriptor>();
+    Collection<PersistenceDescriptor> persistenceXmlFiles = new ArrayList<PersistenceDescriptor>();
     
     //Always search the default location
-    List<String> locations = new ArrayList<String>();
+    Collection<String> locations = new HashSet<String>();
     locations.add(PERSISTENCE_XML);
     
     String header = (String) bundle.getHeaders().get(PERSISTENCE_UNIT_HEADER);

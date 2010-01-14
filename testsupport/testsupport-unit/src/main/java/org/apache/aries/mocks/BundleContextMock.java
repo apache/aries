@@ -158,7 +158,7 @@ public class BundleContextMock
    * This class represents the information registered about a service. It also
    * implements part of the ServiceRegistration and ServiceReference interfaces.
    */
-  private class ServiceData
+  private class ServiceData implements Comparable<ServiceReference>
   {
     /** The service that was registered */
     private ServiceFactory serviceImpl;
@@ -316,6 +316,29 @@ public class BundleContextMock
     public Hashtable<String, Object> getProperties()
     {
       return new Hashtable<String, Object>(serviceProps);
+    }
+
+    /**
+     * Implement the standard behaviour of the registry
+     */
+    public int compareTo(ServiceReference o) {
+      Integer rank = (Integer) serviceProps.get(Constants.SERVICE_RANKING);
+      if(rank == null)
+        rank = 0;
+      
+      Integer otherRank = (Integer) o.getProperty(Constants.SERVICE_RANKING);
+      if(otherRank == null)
+        otherRank = 0;
+      //Higher rank = higher order
+      int result = rank.compareTo(otherRank);
+      
+      if(result == 0) {
+        Long id = (Long) serviceProps.get(Constants.SERVICE_ID);
+        Long otherId = (Long) o.getProperty(Constants.SERVICE_ID);
+        //higher id = lower order
+        return otherId.compareTo(id);
+      }
+      return result;
     }
   }
 
