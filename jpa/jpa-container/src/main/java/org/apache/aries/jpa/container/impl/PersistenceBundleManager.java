@@ -45,6 +45,7 @@ import org.apache.aries.jpa.container.unit.impl.ManagedPersistenceUnitInfoFactor
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.util.tracker.BundleTracker;
@@ -427,7 +428,6 @@ public class PersistenceBundleManager extends BundleTracker
   private synchronized ServiceReference getBestProvider(String providerClass, VersionRange matchingCriteria)
   {
     if(!!!persistenceProviders.isEmpty()) {
-      
       List<ServiceReference> refs = new ArrayList<ServiceReference>();
       
       if((providerClass != null && !!!"".equals(providerClass))
@@ -445,29 +445,36 @@ public class PersistenceBundleManager extends BundleTracker
         
         if(!!!refs.isEmpty()) {
           //Sort the list in DESCENDING ORDER
-          Collections.sort(refs, new Comparator<ServiceReference>() {
-  
-            //TODO we may wish to use Ranking, then versions for equal ranks
-            public int compare(ServiceReference object1, ServiceReference object2)
-            {
-              Version v1 = object1.getBundle().getVersion();
-              Version v2 = object2.getBundle().getVersion();
-              return v2.compareTo(v1);
-            }
-          });
-          
+          Collections.sort(refs, new ProviderServiceComparator());
           return refs.get(0);
         } else {
           //TODO no matching providers for matching criteria
         }
       } else {
         refs.addAll(persistenceProviders);
-        Collections.sort(refs);
+        Collections.sort(refs, new ProviderServiceComparator());
         return refs.get(0);
       }
     } else {
       //TODO log no matching Providers for impl class
     }
     return null;
+  }
+  
+  private static class ProviderServiceComparator implements Comparator<ServiceReference> {
+    public int compare(ServiceReference object1, ServiceReference object2)
+    {
+      Version v1 = object1.getBundle().getVersion();
+      Version v2 = object2.getBundle().getVersion();
+      int res = v2.compareTo(v1);
+      if (res == 0) {
+        Integer rank1 = (Integer) object1.getProperty(Constants.SERVICE_RANKING);
+        Integer rank2 = (Integer) object2.getProperty(Constants.SERVICE_RANKING);
+        if (rank1 != null && rank2 != null)
+          res = rank2.compareTo(rank1);
+      }
+      
+      return res;
+    }
   }
 }
