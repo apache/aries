@@ -35,11 +35,15 @@ import org.apache.aries.jpa.container.parsing.impl.JPAHandler;
 import org.apache.aries.jpa.container.parsing.impl.SchemaLocatingHandler;
 import org.osgi.framework.Bundle;
 
+/**
+ * This class may be used to parse JPA persistence descriptors. The parser validates
+ * using the relevant version of the persistence schema as defined by the xml file. 
+ */
 public class PersistenceDescriptorParser {
 
   /**
-   * This class is used to prevent the first pass parse from
-   * closing the InputStream
+   * This class is used internally to prevent the first pass parse from
+   * closing the InputStream when it exits.
    */
   private static class UnclosableInputStream extends FilterInputStream {
 
@@ -49,21 +53,27 @@ public class PersistenceDescriptorParser {
 
     @Override
     public void close() throws IOException {
-      //No op
+      //No op, don't close the parent.
     }
   }
   
   /**
-   * @param args
-   * @throws PersistenceDescriptorParserException 
+   * Parse the supplied {@link PersistenceDescriptor} 
+   * 
+   * @param b  The bundle that contains the persistence descriptor
+   * @param descriptor The descriptor
+   * 
+   * @return A collection of {@link ParsedPersistenceUnit}
+   * @throws PersistenceDescriptorParserException  if any error occurs in parsing
    */
   public static Collection<ParsedPersistenceUnit> parse(Bundle b, PersistenceDescriptor descriptor) throws PersistenceDescriptorParserException {
     Collection<ParsedPersistenceUnit> persistenceUnits = new ArrayList<ParsedPersistenceUnit>();
-    //Parse each xml file in turn
     SAXParserFactory parserFactory = SAXParserFactory.newInstance();
     BufferedInputStream is = null;
     try {
-      //Buffer the InputStream so we can mark it
+      //Buffer the InputStream so we can mark it, though we'll be in 
+      //trouble if we have to read more than 8192 characters before finding
+      //the schema!
       is = new BufferedInputStream(descriptor.getInputStream(), 8192);
       is.mark(8192);
       SAXParser parser = parserFactory.newSAXParser();
