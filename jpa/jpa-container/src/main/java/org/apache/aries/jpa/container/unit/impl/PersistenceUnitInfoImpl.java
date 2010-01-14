@@ -41,10 +41,13 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
 
   private final ParsedPersistenceUnit unit;
   
+  private final BundleDelegatingClassLoader cl;
+  
   public PersistenceUnitInfoImpl (Bundle b, ParsedPersistenceUnit parsedData)
   {
     bundle = b;
     unit = parsedData;
+    cl = new BundleDelegatingClassLoader(b);
   }
   
   public void addTransformer(ClassTransformer arg0) {
@@ -57,8 +60,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   }
 
   public ClassLoader getClassLoader() {
-    // TODO Auto-generated method stub
-    return null;
+    return cl;
   }
 
   @SuppressWarnings("unchecked")
@@ -96,8 +98,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   }
 
   public ClassLoader getNewTempClassLoader() {
-    // TODO Auto-generated method stub
-    return null;
+    return new TempBundleDelegatingClassLoader(bundle);
   }
 
   public DataSource getNonJtaDataSource() {
