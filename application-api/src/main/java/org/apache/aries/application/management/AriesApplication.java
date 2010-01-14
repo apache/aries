@@ -40,7 +40,7 @@ public interface AriesApplication
   public DeploymentMetadata getDeploymentMetadata();
 
   /** the set of bundles included in the application by value */
-  public Set<BundleInfo> getBundles();
+  public Set<BundleInfo> getBundleInfo();
 
   /** Stores any changes to disk using this implementations storage form */
   public void store(File f) throws FileNotFoundException, IOException;

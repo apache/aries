@@ -17,26 +17,30 @@
  * under the License.
  */
 
-package org.apache.aries.application.management;
+package org.apache.aries.application.management.internal;
 
-import java.util.Set;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleException;
-
-/**
- * Represents an Aries application in the runtime
- */
-public interface ApplicationContext
+public class MessageUtil
 {
-  public ApplicationState getApplicationState();
-  public AriesApplication getApplication();
-  public void start() throws BundleException;
-  public void stop() throws BundleException;
-  public Set<Bundle> getApplicationContent(); // 
+  /** The resource bundle for blueprint messages */
+  private final static ResourceBundle messages = ResourceBundle.getBundle("org.apache.aries.application.management.messages.AppManagementMessages");
   
-  public enum ApplicationState
+  /**
+   * Resolve a message from the bundle, including any necessary formatting.
+   * 
+   * @param key     the message key.
+   * @param inserts any required message inserts.
+   * @return        the message translated into the server local.
+   */
+  public static final String getMessage(String key, Object ... inserts)
   {
-  INSTALLED, RESOLVED, STARTING, STOPPING, ACTIVE, UNINSTALLED
+    String msg = messages.getString(key);
+    
+    if (inserts.length > 0)
+      msg = MessageFormat.format(msg, inserts);
+    
+    return msg;
   }
 }

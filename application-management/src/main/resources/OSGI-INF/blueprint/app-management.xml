@@ -25,6 +25,7 @@
     <property name="bundleConverters" ref="bundle-converters"/>
     <property name="resolver" ref="resolver"/>
     <property name="localPlatform" ref="localPlatform"/>
+    <property name="applicationContextManager" ref="application-context-manager"/>
   </bean>
   
   <reference id="app-metadata-manager" interface="org.apache.aries.application.ApplicationMetadataManager"/>
@@ -34,6 +35,7 @@
                   availability="optional"/>
   <reference id="resolver" interface="org.apache.aries.application.management.AriesApplicationResolver"/>
   <reference id="localPlatform" interface="org.apache.aries.application.management.LocalPlatform"/>
+  <reference id="application-context-manager" interface="org.apache.aries.application.management.ApplicationContextManager"/>
     
   <service interface="org.apache.aries.application.management.AriesApplicationManager" ref="manager-service" />
   

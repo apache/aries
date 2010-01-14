@@ -21,9 +21,9 @@
 package org.apache.aries.application.management;
 
 import java.net.URL;
-import java.util.Set;
 
 import org.apache.aries.application.filesystem.IDirectory;
+import org.osgi.framework.BundleException;
 
 /**
  * Create, install and uninstall applications via this service. 
@@ -32,8 +32,8 @@ public interface AriesApplicationManager
 {
   public AriesApplication createApplication(IDirectory source) throws ManagementException;
   public AriesApplication createApplication(URL url) throws ManagementException;
-  public ApplicationContext install(AriesApplication app);
-  public void uninstall(ApplicationContext app);
+  public ApplicationContext install(AriesApplication app) throws BundleException;
+  public void uninstall(ApplicationContext app) throws BundleException;
   public void addApplicationListener(ApplicationListener l);
   public void removeApplicationListener(ApplicationListener l);
   AriesApplication resolve (AriesApplication originalApp, ResolveConstraint ... constraints);
