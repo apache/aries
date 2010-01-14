@@ -87,6 +87,7 @@
         <module>application-api</module>
         <module>application-management</module>
         <module>application-converters</module>
+        <module>application-runtime</module>
   </modules>
 
 </project>
