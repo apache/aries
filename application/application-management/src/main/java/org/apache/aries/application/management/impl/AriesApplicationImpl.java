@@ -38,8 +38,12 @@ import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.LocalPlatform;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AriesApplicationImpl implements AriesApplication {
+
+  private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.application.management");
 
   private Set<BundleInfo> _bundleInfo;
   private ApplicationMetadata _applicationMetadata;
@@ -71,7 +75,7 @@ public class AriesApplicationImpl implements AriesApplication {
     return _applicationMetadata;
   }
 
-  public Set<BundleInfo> getBundles() {
+  public Set<BundleInfo> getBundleInfo() {
     return _bundleInfo;
   }
 
@@ -159,7 +163,7 @@ public class AriesApplicationImpl implements AriesApplication {
     IOUtils.zipUp(tempDir, targetStream);
     if (!IOUtils.deleteRecursive(tempDir))
     {
-      // TODO: Log a warning
+      _logger.warn("APPMANAGEMENT0001E", tempDir);
     }
   }
 }
