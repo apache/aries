@@ -27,8 +27,8 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.jar.Attributes;
 
+import org.apache.aries.application.ApplicationMetadataManager;
 import org.apache.aries.application.Content;
-import org.apache.aries.application.impl.ContentImpl;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.utils.manifest.BundleManifest;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
@@ -42,12 +42,14 @@ public class BundleInfoImpl implements BundleInfo {
   private Set<Content> _exportPackages = null;
   private Set<Content> _importPackages = null;
   private String _location;
+  private ApplicationMetadataManager _applicationMetadataManager;
   
-  public BundleInfoImpl (BundleManifest bm, String location) { 
+  public BundleInfoImpl (ApplicationMetadataManager amm, BundleManifest bm, String location) { 
     _symbolicName = bm.getSymbolicName();
     _version = bm.getVersion();
     _attributes = bm.getRawAttributes();
     _location = location;
+    _applicationMetadataManager = amm;
   }
   
   public Set<Content> getExportPackage() {
@@ -92,7 +94,8 @@ public class BundleInfoImpl implements BundleInfo {
     List<String> splitHeader = ManifestHeaderProcessor.split(header, ",");
     HashSet<Content> result = new HashSet<Content>();
     for (String s: splitHeader) { 
-      result.add(new ContentImpl(s));
+      Content c = _applicationMetadataManager.parseContent(s);
+      result.add(c);
     }
     return result;
   }

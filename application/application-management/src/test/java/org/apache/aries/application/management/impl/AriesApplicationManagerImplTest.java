@@ -189,7 +189,7 @@ public class AriesApplicationManagerImplTest {
     String persistenceLibraryLocation = "../src/test/resources/bundles/repository/a.handy.persistence.library.jar";
     File persistenceLibrary = new File (persistenceLibraryLocation);
     BundleManifest mf = BundleManifest.fromBundle(persistenceLibrary);
-    BundleInfo resolvedPersistenceLibrary = new BundleInfoImpl(mf, persistenceLibraryLocation); 
+    BundleInfo resolvedPersistenceLibrary = new BundleInfoImpl(_appMetaMgr, mf, persistenceLibraryLocation); 
     Field v = BundleInfoImpl.class.getDeclaredField("_version");
     v.setAccessible(true);
     v.set(resolvedPersistenceLibrary, new Version("1.1.0"));
