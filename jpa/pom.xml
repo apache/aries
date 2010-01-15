@@ -31,6 +31,7 @@
   <version>1.0.0-incubating-SNAPSHOT</version>
   <modules>
   	<module>jpa-container</module>
+  	<module>jpa-container-context</module>
   </modules>
   <dependencyManagement>
     <dependencies>
