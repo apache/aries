@@ -16,55 +16,52 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.apache.aries.application</groupId>
-    <artifactId>application</artifactId>
-    <version>1.0.0-incubating-SNAPSHOT</version>
-  </parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.aries.application</groupId>
+        <artifactId>application</artifactId>
+        <version>1.0.0-incubating-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>org.apache.aries.application.utils</artifactId>
-  <packaging>bundle</packaging>
-  <name>Apache Aries Application Utils</name>
-  <description>
+    <artifactId>org.apache.aries.application.utils</artifactId>
+    <packaging>bundle</packaging>
+    <name>Apache Aries Application Utils</name>
+    <description>
       Utilities for working with Aries Applications.
-  </description>
-  
-  <dependencies>
-      <dependency>
-          <groupId>org.osgi</groupId>
-          <artifactId>org.osgi.core</artifactId>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.aries.testsupport</groupId>
-          <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <version>1.0.0-incubating-SNAPSHOT</version>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-      	<groupId>org.apache.aries.application</groupId>
-      	<artifactId>org.apache.aries.application.api</artifactId>
-      	<version>1.0.0-incubating-SNAPSHOT</version>
-      </dependency>
-      <dependency>
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.5.6</version>
-      </dependency>
-      <dependency>
-      	<groupId>org.slf4j</groupId>
-      	<artifactId>slf4j-simple</artifactId>
-      	<version>1.5.6</version>
-      	<scope>test</scope>
-      </dependency>
-  </dependencies>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <resources>
@@ -77,12 +74,11 @@
                 </includes>
             </resource>
             <resource>
-              <directory>${basedir}/src/main/java</directory>
-              <includes>
-                <include>**/*.properties</include>
-              </includes>
+                <directory>${basedir}/src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
             </resource>
-            
         </resources>
         <plugins>
             <plugin>
@@ -91,9 +87,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.utils</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
-                            org.apache.aries.application.utils;version="${pom.version}", 
+                            org.apache.aries.application.utils;version="${pom.version}",
                             org.apache.aries.application.utils.filesystem;version="${pom.version}",
                             org.apache.aries.application.utils.manifest;version="${pom.version}"
                         </Export-Package>
@@ -104,5 +100,5 @@
             </plugin>
         </plugins>
     </build>
-  
+
 </project>
