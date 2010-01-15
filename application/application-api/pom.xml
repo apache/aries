@@ -16,28 +16,30 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.apache.aries.application</groupId>
-    <artifactId>application</artifactId>
-    <version>1.0.0-incubating-SNAPSHOT</version>
-  </parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.aries.application</groupId>
+        <artifactId>application</artifactId>
+        <version>1.0.0-incubating-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>org.apache.aries.application.api</artifactId>
-  <packaging>bundle</packaging>
-  <name>Apache Aries Application API</name>
-  <description>
+    <artifactId>org.apache.aries.application.api</artifactId>
+    <packaging>bundle</packaging>
+    <name>Apache Aries Application API</name>
+    <description>
       Application API.
-  </description>
-  
-  <dependencies>
-      <dependency>
-          <groupId>org.osgi</groupId>
-          <artifactId>org.osgi.core</artifactId>
-          <scope>provided</scope>
-      </dependency> 
-  </dependencies>
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    
     <build>
         <plugins>
             <plugin>
@@ -46,7 +48,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.api</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
                             org.apache.aries.application;version="${pom.version}",
                             org.apache.aries.application.filesystem;version="${pom.version}",
@@ -59,5 +61,5 @@
             </plugin>
         </plugins>
     </build>
-  
+
 </project>

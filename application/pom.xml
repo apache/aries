@@ -16,13 +16,15 @@
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
  under the License.
---><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>1.0.0-incubating-SNAPSHOT</version>
-    </parent>  
+    </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.application</groupId>
@@ -40,17 +42,17 @@
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/application</developerConnection>
         <url>http://svn.apache.org/viewvc/incubator/aries/trunk/application</url>
     </scm>
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.apache.aries.testsupport</groupId>
-                <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                <version>${version}</version>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>4.2.0</version>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
+                <artifactId>org.osgi.compendium</artifactId>
                 <version>4.2.0</version>
             </dependency>
             <dependency>
@@ -58,9 +60,44 @@
                 <artifactId>junit</artifactId>
                 <version>4.5</version>
             </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.5.6</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.5.6</version>
+            </dependency>
+            <dependency>
+                <groupId>asm</groupId>
+                <artifactId>asm-all</artifactId>
+                <version>3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.api</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.utils</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.testsupport</groupId>
+                <artifactId>org.apache.aries.testsupport.unit</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.web</groupId>
+                <artifactId>org.apache.aries.web.urlhandler</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-    
+
     <build>
         <pluginManagement>
             <plugins>
@@ -76,7 +113,7 @@
                         <useReleaseProfile>false</useReleaseProfile>
                         <goals>deploy</goals>
                         <arguments>-Papache-release,deploy</arguments>
-                  </configuration>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -88,6 +125,6 @@
         <module>application-management</module>
         <module>application-converters</module>
         <module>application-runtime</module>
-  </modules>
+    </modules>
 
 </project>
