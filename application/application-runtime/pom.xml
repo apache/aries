@@ -25,7 +25,6 @@
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.aries.application</groupId>
     <artifactId>org.apache.aries.application.runtime</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries application runtime</name>
@@ -78,7 +77,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Private-Package>org.apache.aries.application.management.impl</Private-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
