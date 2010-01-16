@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to You under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
+<blueprint default-activation="eager" default-availability="optional"
+	default-timeout="300000" xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+	<description>Apache Aries Blueprint Sample - ID Verifier Client</description>
+	<type-converters>
+		<bean activation="eager"
+			class="org.apache.aries.samples.blueprint.idverifier.client.IDConverter"
+			id="idconverterbean" scope="singleton">
+			<description>ID Converter Bean</description>
+			<property name="verifier" ref="verifierservicereference" />
+		</bean>
+	</type-converters>
+
+	<reference id="verifierservicereference"
+		interface="org.apache.aries.samples.blueprint.idverifier.api.PersonIDVerifier"
+		availability="mandatory">
+		<reference-listener bind-method="bind" unbind-method="unbind">
+              	<bean class="org.apache.aries.samples.blueprint.idverifier.client.VerifierServiceReferenceListener"/>
+        </reference-listener>
+	</reference>	
+
+	<bean id="personbankbean"
+		class="org.apache.aries.samples.blueprint.idverifier.client.PersonBankBean"
+		scope="singleton" activation="eager" init-method="startUp">
+		<description>Personal Bank Bean</description>
+		
+		<!--<argument value="11010819541001366X" />-->
+		<argument index="0">
+			<bean class="org.apache.aries.samples.blueprint.idverifier.client.RandomIDChoice"></bean>
+		</argument>
+		
+		<property name="bankinfobeanid">
+			<idref component-id="bankinfo" />
+		</property>
+
+		<property name="svcreg4cro">
+			<service auto-export="disabled"
+				ranking="100">
+				<description>Inlined service about querying credit records.</description>
+				<interfaces>
+					<value>org.apache.aries.samples.blueprint.idverifier.api.CreditRecordOperation</value>
+				</interfaces>
+				<service-properties>
+					<entry key="mode" value="formal">						
+					</entry>
+				</service-properties>
+				<registration-listener 
+					registration-method="reg" unregistration-method="unreg">
+					<bean class="org.apache.aries.samples.blueprint.idverifier.client.CreditQueryRegistrationListener">
+						<description>Inlined service registration bean</description>						
+					</bean>
+				</registration-listener>
+				<bean class="org.apache.aries.samples.blueprint.idverifier.client.CreditRecordOperationImpl">
+					<description>Inlined bean for CreditRecordOperation interface implementation</description>
+					<argument index="0">
+						<description>inlined bean for CreditRecordStore</description>
+						<bean class="org.apache.aries.samples.blueprint.idverifier.client.CreditRecordStore">
+							<argument index="0">
+								<set>
+									<bean class="org.apache.aries.samples.blueprint.idverifier.client.CreditRecordFactory"
+										factory-method="staticCreateBean">
+										<argument>
+											<value>310115197011076874:003:2009-12-30:good:4rd donation to charity.</value>
+										</argument>
+									</bean>
+									<bean factory-ref="creditrecordfactory"	factory-method="dynamicCreateBean">
+              							<argument>
+											<value>310115197011076874:004:2009-12-18:good:3rd donation to charity.</value>
+										</argument>
+        							</bean>
+									<bean class="org.apache.aries.samples.blueprint.idverifier.client.CreditRecord">
+										<argument>
+											<value>310115197011277844:001:2009-12-29:good:Donation to charity</value>
+										</argument>
+									</bean>
+									<bean class="org.apache.aries.samples.blueprint.idverifier.client.CreditRecord">
+										<argument>
+											<value>310115197011277844:002:2009-12-01:bad:No pay to bill.</value>
+										</argument>
+									</bean>
+									<bean class="org.apache.aries.samples.blueprint.idverifier.client.CreditRecord">
+										<argument>
+											<value>110108197710016853:002:2009-12-02:good:Paied the bill.</value>
+										</argument>
+									</bean>
+									<bean class="org.apache.aries.samples.blueprint.idverifier.client.CreditRecord">
+										<argument>
+											<value>110108197710016853:001:1977-10-01:good:I'm born.</value>
+										</argument>
+									</bean>
+									<bean class="org.apache.aries.samples.blueprint.idverifier.client.CreditRecord">
+										<argument>
+											<value>11010819541001366X:001:1954-10-01:good:I'm born.</value>
+										</argument>
+									</bean>
+								</set>
+							</argument>
+						</bean>
+					</argument>
+				</bean>
+			</service>
+		</property>
+		<property name="bpcontainer" ref="blueprintContainer"/>
+		<property name="bpbundlecontext" ref="blueprintBundleContext"/>
+	</bean>
+
+	<bean id="bankinfo"
+		class="org.apache.aries.samples.blueprint.idverifier.client.BankInfo">
+		<property name="bankname" value="Bank of China" />
+		<property name="bankaddress">
+			<value type="java.lang.String">333, Huai Hai Zhong Road, Lu Wan District, Shanghai, China</value>
+		</property>
+		<property name="banklegalpersonname" value="Wang San"></property>
+		<property name="bankregistrationnumber" value="1000000000012345"></property>
+	</bean>
+	
+	<bean id="creditrecordfactory" class="org.apache.aries.samples.blueprint.idverifier.client.CreditRecordFactory" 
+		destroy-method="creationStatistics">
+		<argument value="CreditRecord"/>
+	</bean>
+
+</blueprint>
