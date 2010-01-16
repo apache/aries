@@ -16,34 +16,35 @@
     limitations under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    
     <modelVersion>4.0.0</modelVersion>
-    
-    <groupId>org.apache.aries.samples</groupId>
-    <version>1.0.0-incubating-SNAPSHOT</version>
-    <artifactId>samples</artifactId>
-    <name>Apache Aries Samples</name>
-    <packaging>pom</packaging>
-  
+    <parent>
+        <groupId>org.apache.aries.samples</groupId>
+    	<artifactId>blueprint-sample-idverifier</artifactId>
+    	<version>1.0.0-incubating-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>org.apache.aries.samples.blueprint.idverifier.api</artifactId>
+    <name>Apache Aries Blueprint Sample - ID Verifier API</name>
+    <packaging>bundle</packaging>
+    <description>
+        Example blueprint application to demo inlined managers definitions.
+    </description>
+
     <build>
-        <pluginManagement>
-            <plugins>    
-                <plugin>
-                   <groupId>org.apache.maven.plugins</groupId>
-                   <artifactId>maven-compiler-plugin</artifactId>
-                   <configuration>
-                       <source>1.5</source>
-                       <target>1.5</target>
-                   </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
-
-    <modules>
-        <module>helloworld-samples</module>
-        <module>blog-sample</module>
-        <module>blueprint-sample-idverifier</module>
-    </modules>
-
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+<!--
+                        <Bundle-Blueprint>/test.xml</Bundle-Blueprint>
+-->
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>    
 </project>
