@@ -118,12 +118,12 @@ public class WabConverterTest
   @Test
   public void testPropertySupport() throws Exception {
     Attributes attrs = convertWithProperties(
-        WarToWabConverterImpl.WEB_CONTEXT_PATH, "../WebFiles",
+        WarToWabConverterImpl.WEB_CONTEXT_PATH, "WebFiles",
         WarToWabConverterImpl.WEB_JSP_EXTRACT_LOCATION, "/jsp",
         Constants.BUNDLE_VERSION, "2.0",
         Constants.IMPORT_PACKAGE, "org.apache.aries.test;version=2.5,org.apache.aries.test.eba;version=1.0");
     
-    assertEquals("../WebFiles", attrs.getValue(WarToWabConverterImpl.WEB_CONTEXT_PATH));
+    assertEquals("/WebFiles", attrs.getValue(WarToWabConverterImpl.WEB_CONTEXT_PATH));
     assertEquals("/jsp", attrs.getValue(WarToWabConverterImpl.WEB_JSP_EXTRACT_LOCATION));
     assertEquals("2.0", attrs.getValue(Constants.BUNDLE_VERSION));
     assertEquals("org.apache.aries.test;version=2.5,org.apache.aries.test.eba;version=1.0,"+
