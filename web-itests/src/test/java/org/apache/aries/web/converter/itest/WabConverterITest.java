@@ -47,7 +47,9 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
+import org.osgi.service.url.URLStreamHandlerService;
 import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(JUnit4TestRunner.class)
@@ -74,9 +76,20 @@ public class WabConverterITest {
 
   
   @Test
-  public void getStarted() throws Exception {    
+  public void getStarted() throws Exception {
     Bundle warConverter = getBundle("org.apache.aries.web.urlhandler");
     assertEquals(Bundle.ACTIVE, warConverter.getState());
+    
+    // wait for the blueprint container to do its work
+    int maxRepetition = 100;
+    while (maxRepetition-- > 0) {
+      ServiceReference[] ref = bundleContext.getServiceReferences(URLStreamHandlerService.class.getName(),
+          "(url.handler.protocol=webbundle)");
+      if (ref != null)
+        break;
+      
+      Thread.sleep(100);
+    }
     
     File testWar = new File("test.war");
     Bundle converted = bundleContext.installBundle("webbundle:"+testWar.toURL().toExternalForm() 
