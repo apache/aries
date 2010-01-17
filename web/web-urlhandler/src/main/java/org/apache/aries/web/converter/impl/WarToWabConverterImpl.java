@@ -342,16 +342,17 @@ public class WarToWabConverterImpl {
     //
 
     String webCPath = manifest.getMainAttributes().getValue(WEB_CONTEXT_PATH);
-    if (webCPath != null)
-    {
-      if (!webCPath.startsWith(DEFAULT_WEB_CONTEXT_PATH))
-      {
-          webCPath = DEFAULT_WEB_CONTEXT_PATH + webCPath;
-          properties.put(WEB_CONTEXT_PATH, webCPath);
-      }
+    if (webCPath == null) {
+        webCPath = properties.getProperty(WEB_CONTEXT_PATH);
     }
-    else if ( !properties.containsKey(WEB_CONTEXT_PATH)) {
-      properties.put(WEB_CONTEXT_PATH, DEFAULT_WEB_CONTEXT_PATH);
+    if (webCPath == null) {
+        properties.put(WEB_CONTEXT_PATH, DEFAULT_WEB_CONTEXT_PATH);
+    } else {
+        // always ensure context path starts with slash
+        if (!webCPath.startsWith("/")) {
+            webCPath = "/" + webCPath;
+        }
+        properties.put(WEB_CONTEXT_PATH, webCPath);
     }
 
     //
