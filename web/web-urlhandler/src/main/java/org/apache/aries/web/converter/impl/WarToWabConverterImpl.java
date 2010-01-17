@@ -18,6 +18,9 @@
  */
 package org.apache.aries.web.converter.impl;
 
+import static org.apache.aries.web.converter.WarToWabConverter.WEB_CONTEXT_PATH;
+import static org.apache.aries.web.converter.WarToWabConverter.WEB_JSP_EXTRACT_LOCATION;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -56,12 +59,6 @@ public class WarToWabConverterImpl {
 
   private static final String DEFAULT_WEB_CONTEXT_PATH = "/";
   private static final String DEFAULT_WEB_JSP_EXTRACT_LOCATION = "/";
-
-  // TODO: These constants should be in the framework but at the time of write
-  // they
-  // do not exist. When they do we need to point at their values instead.
-  public static final String WEB_CONTEXT_PATH = "Web-ContextPath";
-  public static final String WEB_JSP_EXTRACT_LOCATION = "Web-JSPExtractLocation";
 
   private Properties properties;
 
