@@ -54,4 +54,25 @@
         <module>testsupport-unit</module>
     </modules>
 
+		<build>
+		    <pluginManagement>
+		        <plugins>
+		            <plugin>
+		                <groupId>org.apache.felix</groupId>
+		                <artifactId>maven-bundle-plugin</artifactId>
+		                <version>2.0.1</version>
+		            </plugin>
+		            <plugin>
+		                <groupId>org.apache.maven.plugins</groupId>
+		                <artifactId>maven-release-plugin</artifactId>
+		                <configuration>
+		                    <useReleaseProfile>false</useReleaseProfile>
+		                    <goals>deploy</goals>
+		                    <arguments>-Papache-release,deploy</arguments>
+		                </configuration>
+		            </plugin>
+		        </plugins>
+		    </pluginManagement>
+		</build>
+
 </project>
