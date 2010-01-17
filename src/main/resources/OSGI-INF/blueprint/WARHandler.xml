@@ -25,7 +25,7 @@
     <service-properties>
       <entry key="url.handler.protocol">
         <array value-type="java.lang.String">
-          <value>war</value>
+          <value>webbundle</value>
         </array>
       </entry>
     </service-properties>
