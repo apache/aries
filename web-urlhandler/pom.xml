@@ -59,7 +59,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.aries.application.converters.Activator</Bundle-Activator>
                         <Export-Package>
                             org.apache.aries.web.converter;version="${pom.version}",
                         </Export-Package>
