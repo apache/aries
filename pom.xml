@@ -33,6 +33,7 @@
 
     <modules>
         <module>web-urlhandler</module>
+        <module>web-itests</module>
     </modules>
 
     <dependencyManagement>
