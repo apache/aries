@@ -1,0 +1,166 @@
+package org.apache.aries.spifly;
+
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Collections;
+import java.util.Dictionary;
+
+import junit.framework.TestCase;
+
+import org.apache.aries.spifly.Activator;
+import org.apache.aries.spifly.SPIBundleTracker;
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+
+public class SPIBundleTrackerTest extends TestCase {
+    public void testSPIBundleTrackerClose() {
+        BundleContext bc = EasyMock.createMock(BundleContext.class);
+        EasyMock.replay(bc);
+        
+        ServiceRegistration sr = EasyMock.createMock(ServiceRegistration.class);
+        sr.unregister();
+        EasyMock.replay(sr);
+        
+        SPIBundleTracker sbt = new SPIBundleTracker(bc, new Activator());
+        sbt.registrations.add(sr);
+        
+        sbt.close();        
+        EasyMock.verify(sr);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void testAddingBundle() throws Exception {
+        BundleContext bc = EasyMock.createMock(BundleContext.class);
+        EasyMock.expect(bc.getBundle()).andReturn(EasyMock.createMock(Bundle.class));
+        EasyMock.replay(bc);
+        
+        SPIBundleTracker sbt = new SPIBundleTracker(bc, new Activator());
+
+        URL jarURL = getClass().getResource("TestSPIBundle_1.0.0.jar");
+        URL url = new URL("jar:" + jarURL + "!/META-INF/services/javax.xml.parsers.DocumentBuilderFactory");
+        final ClassLoader mockBundleLoader = new URLClassLoader(new URL[] {jarURL});  
+        
+        Bundle b = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(b.getSymbolicName()).andReturn("x.y.z");
+        EasyMock.expect(b.findEntries("META-INF/services", "*", false))
+            .andReturn(Collections.enumeration(Collections.singleton(url)));
+        EasyMock.expect(b.loadClass((String) EasyMock.anyObject())).andAnswer(new IAnswer<Class<?>>() {
+            public Class<?> answer() throws Throwable {
+                return mockBundleLoader.loadClass((String) EasyMock.getCurrentArguments()[0]);
+            }
+        });
+
+        BundleContext bc2 = EasyMock.createMock(BundleContext.class);
+        EasyMock.expect(bc2.registerService(EasyMock.eq("javax.xml.parsers.DocumentBuilderFactory"), 
+            EasyMock.anyObject(), (Dictionary) EasyMock.anyObject())).andAnswer(new IAnswer<ServiceRegistration>() {
+                public ServiceRegistration answer() throws Throwable {
+                    Object impl = EasyMock.getCurrentArguments()[1];
+                    assertEquals("org.example.test.TestDomBuilderFactory", impl.getClass().getName());
+                    assertNotNull(((Dictionary) EasyMock.getCurrentArguments()[2]).get(SPIBundleTracker.SPI_PROVIDER_URL)); 
+                    return EasyMock.createMock(ServiceRegistration.class);
+                }
+            });
+        EasyMock.replay(bc2);
+
+        EasyMock.expect(b.getBundleContext()).andReturn(bc2);
+        EasyMock.replay(b);
+        
+        assertEquals("Precondition failed", 0, sbt.registrations.size());
+        sbt.addingBundle(b, null);
+        assertEquals(1, sbt.registrations.size());
+        
+        EasyMock.verify(bc2);
+    }
+    
+    public void testAddingUnrelatedBundle() {
+        BundleContext bc = EasyMock.createMock(BundleContext.class);
+        EasyMock.expect(bc.getBundle()).andReturn(EasyMock.createMock(Bundle.class));
+        EasyMock.replay(bc);
+        
+        SPIBundleTracker sbt = new SPIBundleTracker(bc, new Activator());
+        
+        Bundle b = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(b.getSymbolicName()).andReturn("x.y.z");
+        EasyMock.expect(b.findEntries("META-INF/services", "*", false)).andReturn(null);
+        EasyMock.replay(b);
+
+        assertEquals("Precondition failed", 0, sbt.registrations.size());
+        sbt.addingBundle(b, null);
+        assertEquals(0, sbt.registrations.size());
+    }
+
+    public void testRemovedBundle() {
+        BundleContext bc = EasyMock.createMock(BundleContext.class);
+        EasyMock.replay(bc);
+        
+        SPIBundleTracker sbt = new SPIBundleTracker(bc, new Activator());
+        
+        Bundle b = EasyMock.createMock(Bundle.class);
+        EasyMock.replay(b);
+        ServiceReference sref = EasyMock.createMock(ServiceReference.class);
+        EasyMock.expect(sref.getBundle()).andReturn(b);
+        EasyMock.replay(sref);
+        
+        ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
+        EasyMock.expect(sreg.getReference()).andReturn(sref);
+        sreg.unregister();
+        EasyMock.replay(sreg);        
+        
+        sbt.registrations.add(sreg);
+        
+        assertEquals("Precondition failed", 1, sbt.registrations.size());
+        sbt.removedBundle(b, null, null);
+        assertEquals(0, sbt.registrations.size());
+        
+        EasyMock.verify(sreg);
+        EasyMock.verify(sref);
+    }
+    
+    public void testRemoveUnrelatedBundle() {
+        BundleContext bc = EasyMock.createMock(BundleContext.class);
+        EasyMock.replay(bc);
+        
+        SPIBundleTracker sbt = new SPIBundleTracker(bc, new Activator());
+        
+        Bundle b = EasyMock.createMock(Bundle.class);
+        EasyMock.replay(b);
+        ServiceReference sref = EasyMock.createMock(ServiceReference.class);
+        EasyMock.expect(sref.getBundle()).andReturn(b);
+        EasyMock.replay(sref);
+        
+        ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
+        EasyMock.expect(sreg.getReference()).andReturn(sref);
+        sreg.unregister();
+        EasyMock.replay(sreg);        
+        
+        sbt.registrations.add(sreg);
+        
+        Bundle b2 = EasyMock.createMock(Bundle.class);
+        EasyMock.replay(b2);
+        
+        assertEquals("Precondition failed", 1, sbt.registrations.size());
+        sbt.removedBundle(b2, null, null);
+        assertEquals(1, sbt.registrations.size());
+    }
+    
+    public void testAddingSelf() {
+        Bundle b = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(b.getSymbolicName()).andReturn("x.y.z");
+        EasyMock.replay(b);
+
+        BundleContext bc = EasyMock.createMock(BundleContext.class);
+        EasyMock.expect(bc.getBundle()).andReturn(b);
+        EasyMock.replay(bc);
+        
+        SPIBundleTracker sbt = new SPIBundleTracker(bc, new Activator());        
+
+        // This should not have any effect. Adding myself as a bundle.
+        sbt.addingBundle(b, null);
+        
+        EasyMock.verify(bc);
+    }
+}
