@@ -18,15 +18,22 @@
  */
 package org.apache.aries.application.runtime.itests;
 
+import static org.junit.Assert.assertEquals;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.File;
+import java.io.FileOutputStream;
 
-import org.apache.aries.application.filesystem.IDirectory;
+import org.apache.aries.application.management.ApplicationContext;
+import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.utils.filesystem.FileSystem;
+import org.apache.aries.sample.HelloWorld;
+import org.apache.aries.unittest.fixture.ArchiveFixture;
+import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -34,27 +41,64 @@ import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 
 @RunWith(JUnit4TestRunner.class)
 public class BasicAppManagerTest extends AbstractIntegrationTest {
-
-  @Test
-  public void getStarted() throws Exception {
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
-    
-    /**
-     * Now write some java code to generate an .eba that we can execute 
+  
+  @BeforeClass
+  public static void createApplications() throws Exception {
+    ZipFixture testEba = ArchiveFixture.newZip()
+      .jar("sample.jar")
+        .manifest().symbolicName("org.apache.aries.sample")
+          .attribute("Bundle-Version", "1.0.0")
+          .attribute("Import-Package", "org.apache.aries.sample")
+          .end()
+        .binary("org/apache/aries/sample/impl/HelloWorldImpl.class", 
+            BasicAppManagerTest.class.getClassLoader().getResourceAsStream("org/apache/aries/sample/impl/HelloWorldImpl.class"))
+        .binary("OSGI-INF/blueprint/sample-blueprint.xml", 
+            BasicAppManagerTest.class.getClassLoader().getResourceAsStream("sample-blueprint.xml"))
+        .end();
       
-        File hack = new File(
-     
-        "c:/svn/trunk/application/application-management/target/ariesApplicationManagerImplTest/stored.eba");
-    IDirectory ihack = FileSystem.getFSRoot(hack);
+    FileOutputStream fout = new FileOutputStream("test.eba");
+    testEba.writeOut(fout);
+    fout.close();
+
+    ZipFixture testEba2 = testEba.binary("META-INF/APPLICATION.MF", 
+        BasicAppManagerTest.class.getClassLoader().getResourceAsStream("APPLICATION.MF"))
+        .end();
+    fout = new FileOutputStream("test2.eba");
+    testEba2.writeOut(fout);
+    fout.close();
+  }
+  
+  @Test
+  public void testAppWithoutApplicationManifest() throws Exception {
+    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
+    ApplicationContext ctx = manager.install(app);
+    ctx.start();
     
-    if (ihack == null) { 
-      System.out.println ("** ihack is null");
-    } else { 
-      System.out.println ("** ihack is valid");
-    }
-    manager.createApplication(ihack); */
+    HelloWorld hw = getOsgiService(HelloWorld.class);
+    String result = hw.getMessage();
+    assertEquals (result, "hello world");
+    
+    ctx.stop();
+    manager.uninstall(ctx);
   }
 
+  @Test
+  public void testAppWithApplicationManifest() throws Exception {
+    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
+    ApplicationContext ctx = manager.install(app);
+    ctx.start();
+    
+    HelloWorld hw = getOsgiService(HelloWorld.class);
+    String result = hw.getMessage();
+    assertEquals (result, "hello world");
+    
+    ctx.stop();
+    manager.uninstall(ctx);
+  }
+
+  
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
     Option[] options = options(
@@ -75,9 +119,20 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
         mavenBundle("org.osgi", "org.osgi.compendium"),
+        mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
+        
+        /* For debugging, uncomment the next two lines
+        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
+        waitForFrameworkStartup(),
+        
+        and add these imports:
+        import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
+        import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+        */
 
         equinox().version("3.5.0"));
     options = updateOptions(options);
