@@ -22,14 +22,14 @@
 
 </HEAD>
 <BODY bgcolor="#ffffff" link="#000099" vlink="#000099">
-<%@ page import="java.util.Collection, java.util.Iterator, org.apache.aries.samples.daytrader.api.*, org.apache.aries.samples.daytrader.persistence.api.*, org.apache.aries.samples.daytrader.util.*" session="true" isThreadSafe="true" isErrorPage="false"%>
+<%@ page import="java.util.Collection, java.util.Iterator, org.apache.aries.samples.ariestrader.api.*, org.apache.aries.samples.ariestrader.persistence.api.*, org.apache.aries.samples.ariestrader.util.*" session="true" isThreadSafe="true" isErrorPage="false"%>
 <jsp:useBean id="results" scope="request" type="java.lang.String" />
 
 <TABLE height="54">
   <TBODY>
     <TR>
     			<TD bgcolor="#c93333" align="left" width="640" height="10" colspan=5><B><FONT
-				color="#ffffff">DayTrader New Orders</FONT></B></TD>
+				color="#ffffff">AriesTrader New Orders</FONT></B></TD>
 			<TD align="center" bgcolor="#ffffff" width="100" height="10">
 			    <IMG src="images/spacer.gif" width="45" height="19" border="0"></TD>
 		</TR>
@@ -177,7 +177,7 @@ if ( (closedOrders != null) && (closedOrders.size()>0) )
         </TR>
         <TR>
     			<TD bgcolor="#c93333" align="left" width="640" height="10"><B><FONT
-				color="#ffffff">DayTrader New Orders</FONT></B></TD>
+				color="#ffffff">AriesTrader New Orders</FONT></B></TD>
 			<TD align="center" bgcolor="#ffffff" width="100" height="10">
 			    <IMG src="images/spacer.gif" width="45" height="19" border="0"></TD>
 		</TR>

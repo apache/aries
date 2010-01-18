@@ -36,7 +36,7 @@ String results =   (String) request.getAttribute ( "results" );
 	<TBODY>
 		<TR>
 			<TD bgcolor="#c93333" align="left" width="640" height="10"><B><FONT
-				color="#ffffff">DayTrader Register</FONT></B></TD>
+				color="#ffffff">AriesTrader Register</FONT></B></TD>
 			<TD align="center" bgcolor="#ffffff" width="100" height="10"><IMG
 				src="images/spacer.gif" border="0" width="45" height="19" alt=""></TD>
 		</TR>
@@ -149,9 +149,9 @@ String results =   (String) request.getAttribute ( "results" );
 		</TR>
 		<TR>
 			<TD bgcolor="#c93333" align="left" width="640" height="10"><B><FONT
-				color="#ffffff">DayTrader Home</FONT></B></TD>
+				color="#ffffff">AriesTrader Home</FONT></B></TD>
 			<TD align="center" bgcolor="#000000" width="100" height="10"><FONT
-				color="#ffffff"><B>DayTrader</B></FONT></TD>
+				color="#ffffff"><B>AriesTrader</B></FONT></TD>
 		</TR>
 	</TBODY>
 </TABLE>

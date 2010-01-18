@@ -22,9 +22,9 @@
   <TBODY>
     <TR>
 			<TD bgcolor="#c93333" align="left" width="640" height="10"><B><FONT
-				color="#ffffff">DayTrader Error</FONT></B></TD>
+				color="#ffffff">AriesTrader Error</FONT></B></TD>
 			<TD align="center" bgcolor="#000000" width="100" height="10"><FONT
-				color="#ffffff"><B>DayTrader</B></FONT></TD>
+				color="#ffffff"><B>AriesTrader</B></FONT></TD>
         </TR>
 
 </TABLE>
@@ -40,7 +40,7 @@
         </TR>
     <TR>
             <TD bgcolor="#e7e4e7" rowspan="4" width="3"></TD>
-            <TD><B><FONT color="#000000">An Error has occured during DayTrader processing</FONT><FONT size="-2">.</FONT></B><BR>
+            <TD><B><FONT color="#000000">An Error has occured during AriesTrader processing</FONT><FONT size="-2">.</FONT></B><BR>
             The stack trace detailing the error follows.
             <p><b>Please consult the application server error logs for further details.</b></p>
             </TD>
@@ -117,9 +117,9 @@
   <TBODY>
     <TR>
 			<TD bgcolor="#c93333" align="left" width="640" height="10"><B><FONT
-				color="#ffffff">DayTrader Error</FONT></B></TD>
+				color="#ffffff">AriesTrader Error</FONT></B></TD>
 			<TD align="center" bgcolor="#000000" width="100" height="10"><FONT
-				color="#ffffff"><B>DayTrader</B></FONT></TD>
+				color="#ffffff"><B>AriesTrader</B></FONT></TD>
         </TR>
     </TBODY>
 </TABLE>

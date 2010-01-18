@@ -60,12 +60,12 @@
                         <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>
-                            org.apache.aries.samples.daytrader.beans;version="${pom.version}"
+                            org.apache.aries.samples.ariestrader.beans;version="${pom.version}"
                         </Export-Package>
                         <Import-Package>
-                            org.apache.aries.samples.daytrader.beans,
-                            org.apache.aries.samples.daytrader.util,
-                            org.apache.aries.samples.daytrader.persistence.api
+                            org.apache.aries.samples.ariestrader.beans,
+                            org.apache.aries.samples.ariestrader.util,
+                            org.apache.aries.samples.ariestrader.persistence.api
                         </Import-Package>
                     </instructions>
                 </configuration>

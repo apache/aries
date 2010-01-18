@@ -72,19 +72,19 @@
                         <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>
-                            <!--org.apache.aries.samples.daytrader.persist.jdbc;version="${pom.version}"-->
+                            <!--org.apache.aries.samples.ariestrader.persist.jdbc;version="${pom.version}"-->
                         </Export-Package>
                         <Import-Package>
-                            org.apache.aries.samples.daytrader.api,
-                            org.apache.aries.samples.daytrader.beans,
-                            org.apache.aries.samples.daytrader.persistence.api,
-                            org.apache.aries.samples.daytrader.util,
+                            org.apache.aries.samples.ariestrader.api,
+                            org.apache.aries.samples.ariestrader.beans,
+                            org.apache.aries.samples.ariestrader.persistence.api,
+                            org.apache.aries.samples.ariestrader.util,
                             javax.naming,
                             javax.sql,
                             org.apache.derby.jdbc
                         </Import-Package>
                         <Private-Package>
-                            org.apache.aries.samples.daytrader.persist.jdbc
+                            org.apache.aries.samples.ariestrader.persist.jdbc
                         </Private-Package>
                     </instructions>
                 </configuration>

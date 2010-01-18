@@ -78,12 +78,12 @@
                 <instructions>
                   <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
                   <Bundle-Version>${pom.version}</Bundle-Version>
-                  <Web-ContextPath>/daytrader</Web-ContextPath>
+                  <Web-ContextPath>/ariestrader</Web-ContextPath>
                   <Web-JSPExtractLocation>/</Web-JSPExtractLocation>
                   <Import-Package>
-                      org.apache.aries.samples.daytrader.api,
-                      org.apache.aries.samples.daytrader.persistence.api,
-                      org.apache.aries.samples.daytrader.util,
+                      org.apache.aries.samples.ariestrader.api,
+                      org.apache.aries.samples.ariestrader.persistence.api,
+                      org.apache.aries.samples.ariestrader.util,
                       javax.naming, 
                       javax.servlet, 
                       javax.servlet.http, 
