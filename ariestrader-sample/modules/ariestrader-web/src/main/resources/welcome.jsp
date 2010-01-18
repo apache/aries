@@ -26,9 +26,9 @@
 	<TBODY>
 		<TR>
 			<TD bgcolor="#c93333" align="left" width="640" height="10"><B><FONT
-				color="#ffffff">DayTrader Login</FONT></B></TD>
+				color="#ffffff">AriesTrader Login</FONT></B></TD>
 			<TD align="center" bgcolor="#000000" width="100" height="10"><FONT
-				color="#ffffff"><B>DayTrader</B></FONT></TD>
+				color="#ffffff"><B>AriesTrader</B></FONT></TD>
 		</TR>
 	</TBODY>
 </TABLE>
@@ -88,7 +88,7 @@ if ( results != null )out.print(results);
 		</TR>
 		<TR>
 			<TD align="right">
-			<BLOCKQUOTE><A href="register.jsp">Register&nbsp;With&nbsp;DayTrader</A>
+			<BLOCKQUOTE><A href="register.jsp">Register&nbsp;With&nbsp;AriesTrader</A>
 			</BLOCKQUOTE>
 			</TD>
 		</TR>
@@ -111,9 +111,9 @@ if ( results != null )out.print(results);
 		</TR>
 		<TR>
 			<TD bgcolor="#c93333" align="left" width="640" height="10"><B><FONT
-				color="#ffffff">DayTrader Login</FONT></B></TD>
+				color="#ffffff">AriesTrader Login</FONT></B></TD>
 			<TD align="center" bgcolor="#000000" width="100" height="10"><FONT
-				color="#ffffff"><B>DayTrader</B></FONT></TD>
+				color="#ffffff"><B>AriesTrader</B></FONT></TD>
 		</TR>
 	</TBODY>
 </TABLE>

@@ -23,7 +23,7 @@
 </HEAD>
 <BODY bgcolor="#ffffff" link="#000099" vlink="#000099">
 <%@ page
-	import="java.util.Collection, java.util.Iterator, java.util.HashMap, java.math.BigDecimal, org.apache.aries.samples.daytrader.api.*, org.apache.aries.samples.daytrader.persistence.api.*, org.apache.aries.samples.daytrader.util.*"
+	import="java.util.Collection, java.util.Iterator, java.util.HashMap, java.math.BigDecimal, org.apache.aries.samples.ariestrader.api.*, org.apache.aries.samples.ariestrader.persistence.api.*, org.apache.aries.samples.ariestrader.util.*"
 	session="true" isThreadSafe="true" isErrorPage="false"%>
 <jsp:useBean id="results" scope="request" type="java.lang.String" />
 <jsp:useBean id="holdingDataBeans" type="java.util.Collection"
@@ -34,9 +34,9 @@
 	<TBODY>
 		<TR>
 			<TD bgcolor="#c93333" align="left" width="640" height="10" colspan=5><B><FONT
-				color="#ffffff">DayTrader Portfolio</FONT></B></TD>
+				color="#ffffff">AriesTrader Portfolio</FONT></B></TD>
 			<TD align="center" bgcolor="#000000" width="100" height="10"><FONT
-				color="#ffffff"><B>DayTrader</B></FONT></TD>
+				color="#ffffff"><B>AriesTrader</B></FONT></TD>
 		</TR>
 		<TR align="left">
 			<TD><A href="app?action=home"><IMG src="images/menuHome.gif" width="80"
@@ -245,9 +245,9 @@ catch (Exception e)
 		</TR>
 		<TR>
 			<TD bgcolor="#c93333" align="left" width="640" height="10" colspan=5><B><FONT
-				color="#ffffff">DayTrader Portfolio</FONT></B></TD>
+				color="#ffffff">AriesTrader Portfolio</FONT></B></TD>
 			<TD align="center" bgcolor="#000000" width="100" height="10"><FONT
-				color="#ffffff"><B>DayTrader</B></FONT></TD>
+				color="#ffffff"><B>AriesTrader</B></FONT></TD>
 		</TR>
 	</TBODY>
 </TABLE>

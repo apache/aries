@@ -23,20 +23,20 @@
         
         <sys:environment>
             <sys:moduleId>
-                <sys:groupId>org.apache.aries.daytrader.modules</sys:groupId>
-                <sys:artifactId>daytrader-web</sys:artifactId>
+                <sys:groupId>org.apache.aries.ariestrader.modules</sys:groupId>
+                <sys:artifactId>ariestrader-web</sys:artifactId>
                 <sys:version>1.0.0-incubating-SNAPSHOT</sys:version>
             </sys:moduleId>
         
             <sys:dependencies>
                 <sys:dependency>
-                    <sys:groupId>org.apache.aries.daytrader.plugins</sys:groupId>
-                    <sys:artifactId>daytrader-derby-datasource</sys:artifactId>
+                    <sys:groupId>org.apache.aries.ariestrader.plugins</sys:groupId>
+                    <sys:artifactId>ariestrader-derby-datasource</sys:artifactId>
                 </sys:dependency>
             </sys:dependencies>
         </sys:environment>
     
-    <context-root>/daytrader</context-root>
+    <context-root>/ariestrader</context-root>
 
      <naming:resource-ref>
         <naming:ref-name>jdbc/TradeDataSource</naming:ref-name>

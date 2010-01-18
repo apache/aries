@@ -15,7 +15,7 @@
   limitations under the License.
 -->
 <%@ page
-	import="java.util.Collection, java.util.Iterator, org.apache.aries.samples.daytrader.api.*, org.apache.aries.samples.daytrader.persistence.api.*, org.apache.aries.samples.daytrader.util.*"
+	import="java.util.Collection, java.util.Iterator, org.apache.aries.samples.ariestrader.api.*, org.apache.aries.samples.ariestrader.persistence.api.*, org.apache.aries.samples.ariestrader.util.*"
 	session="true" isThreadSafe="true" isErrorPage="false"%>
 
 <%
@@ -37,7 +37,7 @@ MarketSummaryDataBean marketSummaryData = tradeServicesManager.getMarketSummary(
 		</TR>
 		<TR>
 			<TD align="right" bgcolor="#fafcb6" height="47" width="100"><A
-				href="docs/glossary.html">DayTrader Stock Index (TSIA)</A></TD>
+				href="docs/glossary.html">AriesTrader Stock Index (TSIA)</A></TD>
 			<TD align="center" valign="middle" bgcolor="#ffffff" height="47"
 				width="141"><%= marketSummaryData.getTSIA() %> <%= FinancialUtils.printGainPercentHTML(marketSummaryData.getGainPercent()) %></TD>
 		</TR>

@@ -18,19 +18,19 @@
 <HTML>
 <HEAD>
 <META http-equiv="Content-Style-Type" content="text/css">
-<TITLE>DayTrader Account Information</TITLE>
+<TITLE>AriesTrader Account Information</TITLE>
 <LINK rel="stylesheet" href="style.css" type="text/css" />
 </HEAD>
 <BODY bgcolor="#ffffff" link="#000099" vlink="#000099">
 <%@ page
-	import="java.util.Collection, java.util.Iterator, java.math.BigDecimal, org.apache.aries.samples.daytrader.api.*, org.apache.aries.samples.daytrader.persistence.api.*, org.apache.aries.samples.daytrader.util.*"
+	import="java.util.Collection, java.util.Iterator, java.math.BigDecimal, org.apache.aries.samples.ariestrader.api.*, org.apache.aries.samples.ariestrader.persistence.api.*, org.apache.aries.samples.ariestrader.util.*"
 	session="true" isThreadSafe="true" isErrorPage="false"%>
 <jsp:useBean id="results" scope="request" type="java.lang.String" />
 <jsp:useBean id="accountData"
-	type="org.apache.aries.samples.daytrader.persistence.api.AccountDataBean"
+	type="org.apache.aries.samples.ariestrader.persistence.api.AccountDataBean"
 	scope="request" />
 <jsp:useBean id="accountProfileData"
-	type="org.apache.aries.samples.daytrader.persistence.api.AccountProfileDataBean"
+	type="org.apache.aries.samples.ariestrader.persistence.api.AccountProfileDataBean"
 	scope="request" />
 <jsp:useBean id="orderDataBeans" type="java.util.Collection"
 	scope="request" />
@@ -38,9 +38,9 @@
 	<TBODY>
 		<TR>
 			<TD bgcolor="#c93333" align="left" width="640" height="10" colspan=5><B><FONT
-				color="#ffffff">DayTrader Account</FONT></B></TD>
+				color="#ffffff">AriesTrader Account</FONT></B></TD>
 			<TD align="center" bgcolor="#000000" width="100" height="10"><FONT
-				color="#ffffff"><B>DayTrader</B></FONT></TD>
+				color="#ffffff"><B>AriesTrader</B></FONT></TD>
 		</TR>
 		<TR align="left">
 			<TD><A href="app?action=home"><IMG src="images/menuHome.gif" width="80"
@@ -321,9 +321,9 @@ while (it.hasNext()) {
 		</TR>
 		<TR>
 			<TD bgcolor="#c93333" align="left" width="640" height="10"><B><FONT
-				color="#ffffff">DayTrader Account</FONT></B></TD>
+				color="#ffffff">AriesTrader Account</FONT></B></TD>
 			<TD align="center" bgcolor="#000000" width="100" height="10"><FONT
-				color="#ffffff"><B>DayTrader</B></FONT></TD>
+				color="#ffffff"><B>AriesTrader</B></FONT></TD>
 		</TR>
 		<TR>
 			<TD colspan="4" align="center"><IMG src="images/ticker-anim.gif"

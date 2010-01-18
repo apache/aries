@@ -18,10 +18,10 @@
 <HTML>
 <HEAD>
 <META http-equiv="Content-Style-Type" content="text/css">
-<TITLE>Welcome to DayTrader</TITLE>
+<TITLE>Welcome to AriesTrader</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff" link="#000099">
-<%@ page import="java.util.ArrayList, org.apache.aries.samples.daytrader.util.TradeConfig, org.apache.aries.samples.daytrader.api.*"
+<%@ page import="java.util.ArrayList, org.apache.aries.samples.ariestrader.util.TradeConfig, org.apache.aries.samples.ariestrader.api.*"
 	session="false" isThreadSafe="true" isErrorPage="false"%>
 
 <% 
@@ -36,9 +36,9 @@
 	<TBODY>
 		<TR>
 			<TD bgcolor="#c93333" align="left" width="640" height="10"><B><FONT
-				color="#ffffff">DayTrader Configuration</FONT></B></TD>
+				color="#ffffff">AriesTrader Configuration</FONT></B></TD>
 			<TD align="center" bgcolor="#000000" width="100" height="10"><FONT
-				color="#ffffff"><B>DayTrader</B></FONT></TD>
+				color="#ffffff"><B>AriesTrader</B></FONT></TD>
 		</TR>
 		<TR>
 			<TD colspan="6">
@@ -75,15 +75,15 @@ if (status != null) {
 <TABLE border="1" width="740">
 	<TBODY>
 		<TR>
-			<TD colspan="2">The current DayTrader runtime configuration is
+			<TD colspan="2">The current AriesTrader runtime configuration is
 			detailed below. View and optionally update run-time parameters.
 			&nbsp;<BR>
 			<BR>
 			<B>NOTE: </B>Parameters settings will return to default
 			on&nbsp;server restart. To make configuration settings persistent
 			across application server stop/starts, edit the servlet init
-			parameters for each DayTrader servlet. This is described in the <A
-				href="docs/tradeFAQ.html">DayTrader FAQ</A>.<BR>
+			parameters for each AriesTrader servlet. This is described in the <A
+				href="docs/tradeFAQ.html">AriesTrader FAQ</A>.<BR>
 			<HR>
 			</TD>
 		</TR>
@@ -118,9 +118,9 @@ if (status != null) {
 			</TD>
 			<TD><BR>
 			Run Time Mode determines server implementation of the TradeServices
-			to use in the DayTrader application Enterprise Java Beans including
+			to use in the AriesTrader application Enterprise Java Beans including
 			Session, Entity and Message beans or Direct mode which uses direct
-			database and JMS access. See <A href="docs/tradeFAQ.html">DayTrader
+			database and JMS access. See <A href="docs/tradeFAQ.html">AriesTrader
 			FAQ</A> for details.<BR>
 			</TD>
 		</TR>
@@ -160,9 +160,9 @@ if (status != null) {
                 %>
                 </P>
             </TD>
-            <TD>This setting determines the runtime workload mix of DayTrader
+            <TD>This setting determines the runtime workload mix of AriesTrader
             operations when driving the benchmark through TradeScenarioServlet.
-            See <A href="docs/tradeFAQ.html">DayTrader FAQ</A> for details.</TD>
+            See <A href="docs/tradeFAQ.html">AriesTrader FAQ</A> for details.</TD>
         </TR>
 
 
@@ -215,13 +215,13 @@ for (int i = 0; i < names.length; i++) {
 			<TD colspan="2" align="center"><B>Miscellaneous Settings</B></TD>
 		</TR>
 		<TR>
-			<TD align="left"><B>DayTrader Max Users </B><BR>
+			<TD align="left"><B>AriesTrader Max Users </B><BR>
 			<INPUT size="25" type="text" name="MaxUsers"
 				value="<%=TradeConfig.getMAX_USERS()%>"><BR>
 			<B>Trade Max Quotes</B><BR>
 			<INPUT size="25" type="text" name="MaxQuotes"
 				value="<%=TradeConfig.getMAX_QUOTES()%>"></TD>
-			<TD>By default the DayTrader database is populated with 200 users
+			<TD>By default the AriesTrader database is populated with 200 users
 			(uid:0 - uid:199) and 400 quotes (s:0 - s:399). <BR>
 			</TD>
 		</TR>
@@ -237,7 +237,7 @@ for (int i = 0; i < names.length; i++) {
 			<TD align="left"><B>Primitive Iteration</B><BR>
 			<INPUT size="25" type="text" name="primIterations"
 				value="<%=TradeConfig.getPrimIterations()%>"></TD>
-			<TD>By default the DayTrader primitives are execute one operation per
+			<TD>By default the AriesTrader primitives are execute one operation per
 			web request. Change this value to repeat operations multiple times
 			per web request.</TD>
 		</TR>
@@ -267,7 +267,7 @@ for (int i = 0; i < names.length; i++) {
 			<INPUT type="checkbox" <%=TradeConfig.getTrace() ? "checked" : ""%>
 				name="EnableTrace"> <B><FONT size="-1">Enable full trace</FONT></B>
 			</TD>
-			<TD>Enable DayTrader processing trace messages<BR>
+			<TD>Enable AriesTrader processing trace messages<BR>
 			</TD>
 		</TR>
 		<TR>
@@ -289,9 +289,9 @@ for (int i = 0; i < names.length; i++) {
 		</TR>
 		<TR>
 			<TD bgcolor="#c93333" align="left" width="640" height="10"><B><FONT
-				color="#ffffff">DayTrader Configuration</FONT></B></TD>
+				color="#ffffff">AriesTrader Configuration</FONT></B></TD>
 			<TD align="center" bgcolor="#000000" width="100" height="10"><FONT
-				color="#ffffff"><B>DayTrader</B></FONT></TD>
+				color="#ffffff"><B>AriesTrader</B></FONT></TD>
 		</TR>
 	</TBODY>
 </TABLE>

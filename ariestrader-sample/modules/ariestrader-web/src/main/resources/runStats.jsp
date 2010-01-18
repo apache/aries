@@ -21,11 +21,11 @@
 <TITLE>Welcome to Trade</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff" link="#000099">
-<%@ page import="org.apache.aries.samples.daytrader.util.*"
+<%@ page import="org.apache.aries.samples.ariestrader.util.*"
 	session="false" isThreadSafe="true" isErrorPage="false"%>
 
 <jsp:useBean
-	class="org.apache.aries.samples.daytrader.persistence.api.RunStatsDataBean"
+	class="org.apache.aries.samples.ariestrader.persistence.api.RunStatsDataBean"
 	id="runStatsData" scope="request" />
 <% 
 double loginPercentage = (double) ((TradeConfig.getScenarioMixes())[TradeConfig.workloadMix][TradeConfig.LOGOUT_OP]) / 100.0;
