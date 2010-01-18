@@ -20,45 +20,45 @@
     <modelVersion>4.0.0</modelVersion>
     
 	<parent>
-		<groupId>org.apache.geronimo.daytrader</groupId>
+		<groupId>org.apache.aries.ariestrader</groupId>
 		<artifactId>assemblies</artifactId>
 		<version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
     
-    <groupId>org.apache.geronimo.daytrader.assemblies</groupId>
+    <groupId>org.apache.aries.ariestrader.assemblies</groupId>
     <artifactId>daytrader-jdbc-eba</artifactId>    
     <packaging>pom</packaging>
-    <name>DayTrader :: Assemblies - EBA - JDBC</name>
-    <description>An EBA version of Daytrader JDBC</description>
+    <name>AriesTrader :: Assemblies - EBA - JDBC</name>
+    <description>An EBA version of AriesTrader JDBC</description>
     
     <dependencies>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-util</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-core</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-api</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-beans</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-persist-jdbc</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-web</artifactId>
             <version>${version}</version>
         </dependency>
@@ -80,32 +80,32 @@
                         <configuration>
                           <artifactItems>
                             <artifactItem>
-                              <groupId>org.apache.geronimo.daytrader.modules</groupId>
+                              <groupId>org.apache.aries.ariestrader.modules</groupId>
                               <artifactId>daytrader-util</artifactId>
                               <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
                             </artifactItem>
                             <artifactItem>
-                              <groupId>org.apache.geronimo.daytrader.modules</groupId>
+                              <groupId>org.apache.aries.ariestrader.modules</groupId>
                               <artifactId>daytrader-core</artifactId>
                               <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
                             </artifactItem>
                             <artifactItem>
-                              <groupId>org.apache.geronimo.daytrader.modules</groupId>
+                              <groupId>org.apache.aries.ariestrader.modules</groupId>
                               <artifactId>daytrader-api</artifactId>
                               <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
                             </artifactItem>
                             <artifactItem>
-                              <groupId>org.apache.geronimo.daytrader.modules</groupId>
+                              <groupId>org.apache.aries.ariestrader.modules</groupId>
                               <artifactId>daytrader-beans</artifactId>
                               <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
                             </artifactItem>
                             <artifactItem>
-                              <groupId>org.apache.geronimo.daytrader.modules</groupId>
+                              <groupId>org.apache.aries.ariestrader.modules</groupId>
                               <artifactId>daytrader-persist-jdbc</artifactId>
                               <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
                             </artifactItem>
                             <artifactItem>
-                                <groupId>org.apache.geronimo.daytrader.modules</groupId>
+                                <groupId>org.apache.aries.ariestrader.modules</groupId>
                                 <artifactId>daytrader-web</artifactId>
                                 <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
                             </artifactItem>

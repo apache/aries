@@ -19,26 +19,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.geronimo.daytrader</groupId>
+        <groupId>org.apache.aries.ariestrader</groupId>
         <artifactId>modules</artifactId>
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.geronimo.daytrader.modules</groupId>
+    <groupId>org.apache.aries.ariestrader.modules</groupId>
     <artifactId>daytrader-core</artifactId>
     <packaging>bundle</packaging>
-    <name>DayTrader :: Modules - Core</name>
-    <description>Daytrader Core Module</description>
+    <name>AriesTrader :: Modules - Core</name>
+    <description>AriesTrader Core Module</description>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-util</artifactId>
             <version>${pom.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-api</artifactId>
             <version>${pom.version}</version>
             <scope>provided</scope>

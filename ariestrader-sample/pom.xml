@@ -19,19 +19,16 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.apache.geronimo.daytrader</groupId>
+    <groupId>org.apache.aries.ariestrader</groupId>
     <version>1.0.0-incubating-SNAPSHOT</version>
-    <artifactId>daytrader-parent</artifactId>
-    <name>DayTrader :: Performance Benchmark Sample</name>
+    <artifactId>ariestrader-parent</artifactId>
+    <name>AriesTrader :: Performance Benchmark Sample</name>
     <packaging>pom</packaging>
     <description>Java EE 5.0 Performance Benchmark Sample Application</description>
 
     <properties>
-        <!-- This property is required by the car:package mojo -->
-        <!--<geronimoVersion>2.2</geronimoVersion>-->
-
         <!-- set siteId to artifactId for any "top level" project rooting a website -->
-        <siteId>daytrader</siteId>
+        <siteId>ariestrader</siteId>
     </properties>
 
     <dependencyManagement>
@@ -114,7 +111,7 @@
     </build>
 
     <modules>
-        <!-- Daytrader application components-->
+        <!-- AriesTrader application components-->
         <module>modules</module>
         <!-- Installable assemblies -->
         <module>assemblies</module>
