@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+	<parent>
+		<groupId>org.apache.geronimo.daytrader</groupId>
+		<artifactId>assemblies</artifactId>
+		<version>1.0.0-incubating-SNAPSHOT</version>
+	</parent>
+    
+    <groupId>org.apache.geronimo.daytrader.assemblies</groupId>
+    <artifactId>daytrader-jdbc-eba</artifactId>    
+    <packaging>pom</packaging>
+    <name>DayTrader :: Assemblies - EBA - JDBC</name>
+    <description>An EBA version of Daytrader JDBC</description>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <artifactId>daytrader-util</artifactId>
+            <version>${version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <artifactId>daytrader-core</artifactId>
+            <version>${version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <artifactId>daytrader-api</artifactId>
+            <version>${version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <artifactId>daytrader-beans</artifactId>
+            <version>${version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <artifactId>daytrader-persist-jdbc</artifactId>
+            <version>${version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <artifactId>daytrader-web</artifactId>
+            <version>${version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Copy dependencies for eba into a common location - eba-jars -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                          <artifactItems>
+                            <artifactItem>
+                              <groupId>org.apache.geronimo.daytrader.modules</groupId>
+                              <artifactId>daytrader-util</artifactId>
+                              <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
+                            </artifactItem>
+                            <artifactItem>
+                              <groupId>org.apache.geronimo.daytrader.modules</groupId>
+                              <artifactId>daytrader-core</artifactId>
+                              <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
+                            </artifactItem>
+                            <artifactItem>
+                              <groupId>org.apache.geronimo.daytrader.modules</groupId>
+                              <artifactId>daytrader-api</artifactId>
+                              <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
+                            </artifactItem>
+                            <artifactItem>
+                              <groupId>org.apache.geronimo.daytrader.modules</groupId>
+                              <artifactId>daytrader-beans</artifactId>
+                              <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
+                            </artifactItem>
+                            <artifactItem>
+                              <groupId>org.apache.geronimo.daytrader.modules</groupId>
+                              <artifactId>daytrader-persist-jdbc</artifactId>
+                              <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
+                            </artifactItem>
+                            <artifactItem>
+                                <groupId>org.apache.geronimo.daytrader.modules</groupId>
+                                <artifactId>daytrader-web</artifactId>
+                                <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
+                            </artifactItem>
+                          </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Use the maven-assembly-plugin to create the eba content as a jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create-eba-as-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${pom.basedir}/src/main/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Use the maven-antrun-plugin to copy the jar as an eba - NOTE: we can't move the file because maven still expects to install the artifact -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-jar-to-eba</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.build.directory}/${project.build.finalName}.eba"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>
