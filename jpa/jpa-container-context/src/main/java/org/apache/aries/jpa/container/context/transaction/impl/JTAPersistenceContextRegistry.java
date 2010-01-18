@@ -94,6 +94,14 @@ public class JTAPersistenceContextRegistry {
   }
 
   /**
+   * Provide a {@link TransactionSynchronizationRegistry} to use
+   * @param tranRegistry
+   */
+  public void setTranRegistry(TransactionSynchronizationRegistry tranRegistry) {
+    this.tranRegistry = tranRegistry;
+  }
+
+  /**
    * This class is used to close EntityManager instances once the transaction has committed,
    * and clear the persistenceContextRegistry of old persistence contexts.
    */
