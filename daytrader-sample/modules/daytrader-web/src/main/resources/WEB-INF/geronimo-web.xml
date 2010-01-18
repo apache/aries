@@ -25,7 +25,7 @@
             <sys:moduleId>
                 <sys:groupId>org.apache.geronimo.daytrader.modules</sys:groupId>
                 <sys:artifactId>daytrader-web</sys:artifactId>
-                <sys:version>1.0.0</sys:version>
+                <sys:version>1.0.0-incubating-SNAPSHOT</sys:version>
             </sys:moduleId>
         
             <sys:dependencies>
