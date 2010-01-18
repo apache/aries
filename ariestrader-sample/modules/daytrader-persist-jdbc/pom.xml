@@ -19,21 +19,39 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.geronimo.daytrader</groupId>
+        <groupId>org.apache.aries.ariestrader</groupId>
         <artifactId>modules</artifactId>
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.geronimo.daytrader.modules</groupId>
-    <artifactId>daytrader-util</artifactId>
+    <groupId>org.apache.aries.ariestrader.modules</groupId>
+    <artifactId>daytrader-persist-jdbc</artifactId>
     <packaging>bundle</packaging>
-    <name>DayTrader :: Modules - Util</name>
-    <description>Daytrader Util Module</description>
+    <name>AriesTrader :: Modules - Persist JDBC</name>
+    <description>AriesTrader Persist JDBC Module</description>
 
     <dependencies>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
+            <artifactId>daytrader-util</artifactId>
+            <version>${pom.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
+            <artifactId>daytrader-api</artifactId>
+            <version>${pom.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
+            <artifactId>daytrader-beans</artifactId>
+            <version>${pom.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -54,13 +72,20 @@
                         <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>
-                            org.apache.geronimo.samples.daytrader.util;version="${pom.version}"
+                            <!--org.apache.geronimo.samples.daytrader.persist.jdbc;version="${pom.version}"-->
                         </Export-Package>
                         <Import-Package>
-                            org.apache.geronimo.samples.daytrader.util;version=1.0,
-                            org.apache.commons.logging,
-                            javax.naming
+                            org.apache.geronimo.samples.daytrader.api,
+                            org.apache.geronimo.samples.daytrader.beans,
+                            org.apache.geronimo.samples.daytrader.persistence.api,
+                            org.apache.geronimo.samples.daytrader.util,
+                            javax.naming,
+                            javax.sql,
+                            org.apache.derby.jdbc
                         </Import-Package>
+                        <Private-Package>
+                            org.apache.geronimo.samples.daytrader.persist.jdbc
+                        </Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

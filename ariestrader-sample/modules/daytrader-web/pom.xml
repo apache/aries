@@ -20,69 +20,37 @@
     <modelVersion>4.0.0</modelVersion>
     
     <parent>
-        <groupId>org.apache.geronimo.daytrader</groupId>
+        <groupId>org.apache.aries.ariestrader</groupId>
         <artifactId>modules</artifactId>
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
     
-    <groupId>org.apache.geronimo.daytrader.modules</groupId>
+    <groupId>org.apache.aries.ariestrader.modules</groupId>
     <artifactId>daytrader-web</artifactId>    
     <packaging>bundle</packaging>
-    <name>DayTrader :: Modules - Web </name>
-    <description>A version of Daytrader for basic Web containers</description>
+    <name>AriesTrader :: Modules - Web </name>
+    <description>A version of AriesTrader for basic Web containers</description>
     
     <dependencies>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-util</artifactId>
             <version>${version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-core</artifactId>
             <version>${version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-api</artifactId>
             <version>${pom.version}</version>
             <scope>provided</scope>
         </dependency>
-<!--
-        <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
-            <artifactId>daytrader-beans</artifactId>
-            <version>${version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jpa_1.0_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-ejb_3.0_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jta_1.1_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jms_1.1_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-annotation_1.0_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
--->
+
         <!-- web container provided specs -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>

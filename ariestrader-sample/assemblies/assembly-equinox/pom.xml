@@ -19,14 +19,14 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.apache.geronimo.daytrader</groupId>
+		<groupId>org.apache.aries.ariestrader</groupId>
 		<artifactId>assemblies</artifactId>
 		<version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 
-    <groupId>org.apache.geronimo.daytrader.assemblies</groupId>
+    <groupId>org.apache.aries.ariestrader.assemblies</groupId>
 	<artifactId>assembly-equinox</artifactId>
-	<name>Apache Aries daytrader sample assembly</name>
+	<name>Apache Aries AriesTrader sample assembly</name>
 	<version>1.0.0-incubating-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
@@ -112,32 +112,32 @@
 
 
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-util</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-core</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-api</artifactId>
             <version>${pom.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-beans</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-persist-jdbc</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>daytrader-web</artifactId>
             <version>${version}</version>
         </dependency>

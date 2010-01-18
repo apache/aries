@@ -20,14 +20,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.geronimo.daytrader</groupId>
-        <artifactId>daytrader-parent</artifactId>
+        <groupId>org.apache.aries.ariestrader</groupId>
+        <artifactId>ariestrader-parent</artifactId>
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.geronimo.daytrader</groupId>
+    <groupId>org.apache.aries.ariestrader</groupId>
     <artifactId>modules</artifactId>
-    <name>DayTrader :: Modules</name>
+    <name>AriesTrader :: Modules</name>
     <packaging>pom</packaging>
 
     <modules>
