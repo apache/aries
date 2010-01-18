@@ -131,7 +131,7 @@ public class ArchiveFixture
      * @return
      */
     public ZipFixture end() {
-      return parent;
+      return (parent == null) ? (ZipFixture) this : parent;
     }
   }
 
@@ -452,17 +452,15 @@ public class ArchiveFixture
        * For better reuse this method delegate the writing to writeAllEntries, which
        * can be reused by the JarFixture.
        */
-      if (bytes == null) {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        ZipOutputStream zout = new ZipOutputStream(bout);
-        try {
-          writeAllEntries(zout);
-        } finally {
-          zout.close();
-        }
-        
-        bytes = bout.toByteArray();
+      ByteArrayOutputStream bout = new ByteArrayOutputStream();
+      ZipOutputStream zout = new ZipOutputStream(bout);
+      try {
+        writeAllEntries(zout);
+      } finally {
+        zout.close();
       }
+      
+      bytes = bout.toByteArray();
 
       ByteArrayInputStream bin = new ByteArrayInputStream(bytes);
       copy(bin, out);
