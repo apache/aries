@@ -18,10 +18,10 @@
  */
 package org.apache.aries.jpa.container.context;
 
-import java.util.Map;
+import java.util.HashMap;
 
 import org.osgi.framework.Bundle;
 
 public interface PersistenceManager {
-  void registerContext(String unitName, Bundle client, Map<String,Object> properties);
+  void registerContext(String unitName, Bundle client, HashMap<String,Object> properties);
 }
