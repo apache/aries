@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+    <display-name>DayTrader Web JDBC</display-name>
+    
+    <filter>
+        <display-name>OrdersAlertFilter</display-name>
+        <filter-name>OrdersAlertFilter</filter-name>
+        <filter-class>org.apache.geronimo.samples.daytrader.web.OrdersAlertFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>OrdersAlertFilter</filter-name>
+        <servlet-name>TradeAppServlet</servlet-name>
+    </filter-mapping>
+    
+    <servlet>
+        <display-name>TradeAppServlet</display-name>
+        <servlet-name>TradeAppServlet</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.TradeAppServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+<!-- JavaEE Only
+    <servlet>
+        <display-name>TestServlet</display-name>
+        <servlet-name>TestServlet</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.TestServlet</servlet-class>
+    </servlet>
+-->
+<!-- Not sure why this is a necessary and it's causing a problem for pax-web so temporarily removed    
+    <servlet>
+        <display-name>register</display-name>
+        <servlet-name>register</servlet-name>
+        <jsp-file>/register.jsp</jsp-file>
+    </servlet>   
+    <servlet>
+        <display-name>welcome</display-name>
+        <servlet-name>welcome</servlet-name>
+        <jsp-file>/welcome.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <display-name>order</display-name>
+        <servlet-name>order</servlet-name>
+        <jsp-file>/order.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <display-name>tradehome</display-name>
+        <servlet-name>tradehome</servlet-name>
+        <jsp-file>/tradehome.jsp</jsp-file>
+    </servlet>
+-->    
+    <servlet>
+        <display-name>TradeConfigServlet</display-name>
+        <servlet-name>TradeConfigServlet</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.TradeConfigServlet</servlet-class>
+    </servlet>
+    
+   <servlet>
+        <display-name>TradeScenarioServlet</display-name>
+        <servlet-name>TradeScenarioServlet</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.TradeScenarioServlet</servlet-class>
+        <init-param>
+            <description>Sets the default RuntimeMode. Legal values include Full EJB3, Direct (JDBC), Session (EJB3) To Direct, Web JDBC, and Web JPA</description>
+            <param-name>runTimeMode</param-name>
+            <param-value>Web JDBC</param-value>
+        </init-param>
+        <init-param>
+            <description>Sets the default Order Processing Mode. Legal values include Synchronous and Asynchronous_2-Phase</description>
+            <param-name>orderProcessingMode</param-name>
+            <param-value>Synchronous</param-value>
+        </init-param>
+        <init-param>
+            <description>
+                Sets the protocol the web application communicates with the server side services when driving with TradeScenarioServlet. Legal values incude Standard and WebServices.
+            </description>
+            <param-name>accessMode</param-name>
+            <param-value>Standard</param-value>
+        </init-param>
+        <init-param>
+            <description>Sets the WebServices endpoint when using WebServices accessMode when driving with TradeScenarioServlet.</description>
+            <param-name>webServicesEndpoint</param-name>
+            <param-value>http://localhost:8080/daytrader/services/TradeWSServices</param-value>
+        </init-param>
+        <init-param>
+            <description>Sets the default workloadMix used with TradeScenario servlet. Legal values include Standard and High-Volume</description>
+            <param-name>workloadMix</param-name>
+            <param-value>Standard</param-value>
+        </init-param>
+        <init-param>
+            <description>Sets the default WebInterface. Legal values include JSP and JSP-images</description>
+            <param-name>WebInterface</param-name>
+            <param-value>JSP</param-value>
+        </init-param>
+        <init-param>
+            <description>Sets the population of Trade users when driving with TradeScenarioServlet.</description>
+            <param-name>maxUsers</param-name>
+            <param-value>200</param-value>
+        </init-param>
+        <init-param>
+            <description>Sets the population of Stock quotes used when driving with TradeScenarioServlet.</description>
+            <param-name>maxQuotes</param-name>
+            <param-value>400</param-value>
+        </init-param>
+        <init-param>
+            <description>Sets the number of iterations on web/ejb primitives.</description>
+            <param-name>primIterations</param-name>
+            <param-value>1</param-value>
+        </init-param>
+        <init-param>
+            <description>Sets the data caching type, which can be DistributedMap, Command Caching and No Caching</description>
+            <param-name>cachingType</param-name>
+            <param-value>No Caching</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+<!-- JavaEE Only
+    <servlet>
+        <display-name>org_apache_geronimo_samples_daytrader_TradeWSAction</display-name>
+        <servlet-name>org_apache_geronimo_samples_daytrader_TradeWSAction</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.soap.TradeWSAction</servlet-class>
+    </servlet>
+-->
+    
+    <!-- Web container primitives -->
+    <servlet>
+        <display-name>ExplicitGC</display-name>
+        <servlet-name>ExplicitGC</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ExplicitGC</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>PingServlet</display-name>
+        <servlet-name>PingServlet</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>PingServletWriter</display-name>
+        <servlet-name>PingServletWriter</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServletWriter</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>PingServlet2Servlet</display-name>
+        <servlet-name>PingServlet2Servlet</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServlet2Servlet</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>PingServlet2ServletRcv</display-name>
+        <servlet-name>PingServlet2ServletRcv</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServlet2ServletRcv</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>PingServlet2Include</display-name>
+        <servlet-name>PingServlet2Include</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServlet2Include</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>PingServlet2IncludeRcv</display-name>
+        <servlet-name>PingServlet2IncludeRcv</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServlet2IncludeRcv</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>PingServlet2Jsp</display-name>
+        <servlet-name>PingServlet2Jsp</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServlet2Jsp</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>PingSession1</display-name>
+        <servlet-name>PingSession1</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingSession1</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>PingSession2</display-name>
+        <servlet-name>PingSession2</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingSession2</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>PingSession3</display-name>
+        <servlet-name>PingSession3</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingSession3</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>PingJDBCRead</display-name>
+        <servlet-name>PingJDBCRead</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingJDBCRead</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>PingJDBCWrite</display-name>
+        <servlet-name>PingJDBCWrite</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingJDBCWrite</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>PingServlet2JNDI</display-name>
+        <servlet-name>PingServlet2JNDI</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServlet2JNDI</servlet-class>
+    </servlet>
+    <!-- End of Web container primitives -->
+    
+    <!-- EJB container primitives (EJB3) -->   
+<!-- JavaEE Only
+    <servlet>
+        <servlet-name>ejb3.PingServlet2Session</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Session</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ejb3.PingServlet2Entity</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Entity</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ejb3.PingServlet2Session2Entity</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Session2Entity</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ejb3.PingServlet2Session2EntityCollection</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Session2EntityCollection</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ejb3.PingServlet2Session2CMROne2One</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Session2CMROne2One</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ejb3.PingServlet2Session2CMROne2Many</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Session2CMROne2Many</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ejb3.PingServlet2Session2JDBC</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Session2JDBC</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ejb3.PingServlet2Session2JDBCCollection</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Session2JDBCCollection</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ejb3.PingServlet2MDBQueue</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2MDBQueue</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ejb3.PingServlet2MDBTopic</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2MDBTopic</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ejb3.PingServlet2TwoPhase</servlet-name>
+        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2TwoPhase</servlet-class>
+    </servlet>
+-->
+    <!-- End of EJB container primitives (EJB3) -->
+    
+
+    <servlet-mapping>
+        <servlet-name>TradeAppServlet</servlet-name>
+        <url-pattern>/app</url-pattern>
+    </servlet-mapping>
+<!-- JavaEE Only
+    <servlet-mapping>
+        <servlet-name>TestServlet</servlet-name>
+        <url-pattern>/TestServlet</url-pattern>
+    </servlet-mapping>
+-->
+    <servlet-mapping>
+        <servlet-name>TradeConfigServlet</servlet-name>
+        <url-pattern>/config</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>TradeScenarioServlet</servlet-name>
+        <url-pattern>/scenario</url-pattern>
+    </servlet-mapping>
+<!-- JavaEE Only
+    <servlet-mapping>
+        <servlet-name>org_apache_geronimo_samples_daytrader_TradeWSAction</servlet-name>
+        <url-pattern>/services/TradeWSServices</url-pattern>
+    </servlet-mapping>
+-->
+    
+    
+    <!-- Web container primitives (Servlet Mappings) -->
+    <servlet-mapping>
+        <servlet-name>ExplicitGC</servlet-name>
+        <url-pattern>/servlet/ExplicitGC</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PingServlet</servlet-name>
+        <url-pattern>/servlet/PingServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PingServletWriter</servlet-name>
+        <url-pattern>/servlet/PingServletWriter</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PingServlet2Servlet</servlet-name>
+        <url-pattern>/servlet/PingServlet2Servlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PingServlet2ServletRcv</servlet-name>
+        <url-pattern>/servlet/PingServlet2ServletRcv</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PingServlet2Include</servlet-name>
+        <url-pattern>/servlet/PingServlet2Include</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PingServlet2IncludeRcv</servlet-name>
+        <url-pattern>/servlet/PingServlet2IncludeRcv</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PingServlet2Jsp</servlet-name>
+        <url-pattern>/servlet/PingServlet2Jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PingSession1</servlet-name>
+        <url-pattern>/servlet/PingSession1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PingSession2</servlet-name>
+        <url-pattern>/servlet/PingSession2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PingSession3</servlet-name>
+        <url-pattern>/servlet/PingSession3</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PingJDBCRead</servlet-name>
+        <url-pattern>/servlet/PingJDBCRead</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PingJDBCWrite</servlet-name>
+        <url-pattern>/servlet/PingJDBCWrite</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+	<servlet-name>PingServlet2JNDI</servlet-name>
+	<url-pattern>/servlet/PingServlet2JNDI</url-pattern>
+    </servlet-mapping>
+    <!-- End of Web container primitives (Servlet Mappings) -->
+
+    
+    <!-- EJB container primitives (Servlet Mappings) -->   
+<!-- JavaEE only
+    <servlet-mapping>
+        <servlet-name>ejb3.PingServlet2Session</servlet-name>
+        <url-pattern>/ejb3/PingServlet2Session</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ejb3.PingServlet2Entity</servlet-name>
+        <url-pattern>/ejb3/PingServlet2Entity</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ejb3.PingServlet2Session2Entity</servlet-name>
+        <url-pattern>/ejb3/PingServlet2Session2Entity</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ejb3.PingServlet2Session2EntityCollection</servlet-name>
+        <url-pattern>/ejb3/PingServlet2Session2EntityCollection</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ejb3.PingServlet2Session2CMROne2One</servlet-name>
+        <url-pattern>/ejb3/PingServlet2Session2CMROne2One</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ejb3.PingServlet2Session2CMROne2Many</servlet-name>
+        <url-pattern>/ejb3/PingServlet2Session2CMROne2Many</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ejb3.PingServlet2Session2JDBC</servlet-name>
+        <url-pattern>/ejb3/PingServlet2Session2JDBC</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ejb3.PingServlet2Session2JDBCCollection</servlet-name>
+        <url-pattern>/ejb3/PingServlet2Session2JDBCCollection</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ejb3.PingServlet2MDBQueue</servlet-name>
+        <url-pattern>/ejb3/PingServlet2MDBQueue</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ejb3.PingServlet2MDBTopic</servlet-name>
+        <url-pattern>/ejb3/PingServlet2MDBTopic</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ejb3.PingServlet2TwoPhase</servlet-name>
+        <url-pattern>/ejb3/PingServlet2TwoPhase</url-pattern>
+    </servlet-mapping>
+-->
+    <!-- End of EJB container primitives (Servlet Mappings) -->
+    
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+    <error-page>
+        <exception-type>java.lang.Exception</exception-type>
+        <location>/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error.jsp</location>
+    </error-page>
+    
+    <resource-ref>
+        <res-ref-name>jdbc/TradeDataSource</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+        <res-sharing-scope>Shareable</res-sharing-scope>
+    </resource-ref>
+<!-- JavaEE only
+    <resource-ref>
+        <res-ref-name>jms/QueueConnectionFactory</res-ref-name>
+        <res-type>javax.jms.QueueConnectionFactory</res-type>
+        <res-auth>Application</res-auth>
+        <res-sharing-scope>Shareable</res-sharing-scope>
+    </resource-ref>
+    <resource-ref>
+        <res-ref-name>jms/TopicConnectionFactory</res-ref-name>
+        <res-type>javax.jms.TopicConnectionFactory</res-type>
+        <res-auth>Application</res-auth>
+        <res-sharing-scope>Shareable</res-sharing-scope>
+    </resource-ref>
+    
+    <ejb-ref>
+        <ejb-ref-name>ejb/TradeSLSBBean</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <remote>org.apache.geronimo.samples.daytrader.ejb3.TradeSLSBRemote</remote>
+        <ejb-link>TradeSLSBBean</ejb-link>
+    </ejb-ref>
+    <ejb-ref>
+        <ejb-ref-name>ejb/DirectSLSBBean</ejb-ref-name>
+        <ejb-ref-type>Session</ejb-ref-type>
+        <remote>org.apache.geronimo.samples.daytrader.ejb3.DirectSLSBRemote</remote>
+        <ejb-link>DirectSLSBBean</ejb-link>
+    </ejb-ref>
+
+    <message-destination-ref>
+        <message-destination-ref-name>jms/TradeBrokerQueue</message-destination-ref-name>
+        <message-destination-type>javax.jms.Queue</message-destination-type>
+        <message-destination-usage>Produces</message-destination-usage>
+        <message-destination-link>dt-ejb.jar#jms/TradeBrokerQueue</message-destination-link>
+    </message-destination-ref>
+    <message-destination-ref>
+        <message-destination-ref-name>jms/TradeStreamerTopic</message-destination-ref-name>
+        <message-destination-type>javax.jms.Topic</message-destination-type>
+        <message-destination-usage>Produces</message-destination-usage>
+        <message-destination-link>dt-ejb.jar#jms/TradeStreamerTopic</message-destination-link>
+    </message-destination-ref>
+    
+    <service-ref>
+        <description>WSDL Service Trade</description>
+        <service-ref-name>service/Trade</service-ref-name>
+        <service-interface>org.apache.geronimo.samples.daytrader.client.ws.Trade</service-interface>
+        <wsdl-file>WEB-INF/wsdl/TradeServices.wsdl</wsdl-file>
+        <jaxrpc-mapping-file>WEB-INF/TradeServicesClient_mapping.xml</jaxrpc-mapping-file>
+        <service-qname xmlns:pfx="http://daytrader.samples.geronimo.apache.org">pfx:Trade</service-qname>
+        <port-component-ref>
+            <service-endpoint-interface>org.apache.geronimo.samples.daytrader.client.ws.TradeWSServices</service-endpoint-interface>
+        </port-component-ref>
+    </service-ref>
+-->
+</web-app>
