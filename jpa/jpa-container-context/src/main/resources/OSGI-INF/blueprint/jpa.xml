@@ -30,7 +30,9 @@
     </bean>
   </service>
   
-  <!-- TODO define persistenceManager bean -->
+  <bean id="persistenceManager" class="org.apache.aries.jpa.container.context">
+    <property name="registry" ref="JtaPersistenceContextRegistry" />
+  </bean>
   
   <bean id="JtaPersistenceContextRegistry" 
     class="org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry">
