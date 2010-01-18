@@ -25,15 +25,33 @@
     </parent>
 
     <groupId>org.apache.aries.ariestrader.modules</groupId>
-    <artifactId>daytrader-util</artifactId>
+    <artifactId>ariestrader-persist-jdbc</artifactId>
     <packaging>bundle</packaging>
-    <name>AriesTrader :: Modules - Util</name>
-    <description>AriesTrader Util Module</description>
+    <name>AriesTrader :: Modules - Persist JDBC</name>
+    <description>AriesTrader Persist JDBC Module</description>
 
     <dependencies>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
+            <artifactId>ariestrader-util</artifactId>
+            <version>${pom.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
+            <artifactId>ariestrader-api</artifactId>
+            <version>${pom.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
+            <artifactId>ariestrader-beans</artifactId>
+            <version>${pom.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -54,13 +72,20 @@
                         <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>
-                            org.apache.geronimo.samples.daytrader.util;version="${pom.version}"
+                            <!--org.apache.geronimo.samples.daytrader.persist.jdbc;version="${pom.version}"-->
                         </Export-Package>
                         <Import-Package>
-                            org.apache.geronimo.samples.daytrader.util;version=1.0,
-                            org.apache.commons.logging,
-                            javax.naming
+                            org.apache.geronimo.samples.daytrader.api,
+                            org.apache.geronimo.samples.daytrader.beans,
+                            org.apache.geronimo.samples.daytrader.persistence.api,
+                            org.apache.geronimo.samples.daytrader.util,
+                            javax.naming,
+                            javax.sql,
+                            org.apache.derby.jdbc
                         </Import-Package>
+                        <Private-Package>
+                            org.apache.geronimo.samples.daytrader.persist.jdbc
+                        </Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

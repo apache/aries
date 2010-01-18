@@ -25,25 +25,19 @@
     </parent>
 
     <groupId>org.apache.aries.ariestrader.modules</groupId>
-    <artifactId>daytrader-beans</artifactId>
+    <artifactId>ariestrader-util</artifactId>
     <packaging>bundle</packaging>
-    <name>AriesTrader :: Modules - Beans</name>
-    <description>AriesTrader UnEnhanced Enttities Module</description>
+    <name>AriesTrader :: Modules - Util</name>
+    <description>AriesTrader Util Module</description>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>daytrader-api</artifactId>
-            <version>${pom.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>daytrader-util</artifactId>
-            <version>${pom.version}</version>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
     <build>
         <resources>
             <resource>
@@ -60,12 +54,12 @@
                         <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>
-                            org.apache.geronimo.samples.daytrader.beans;version="${pom.version}"
+                            org.apache.geronimo.samples.daytrader.util;version="${pom.version}"
                         </Export-Package>
                         <Import-Package>
-                            org.apache.geronimo.samples.daytrader.beans,
-                            org.apache.geronimo.samples.daytrader.util,
-                            org.apache.geronimo.samples.daytrader.persistence.api
+                            org.apache.geronimo.samples.daytrader.util;version=1.0,
+                            org.apache.commons.logging,
+                            javax.naming
                         </Import-Package>
                     </instructions>
                 </configuration>

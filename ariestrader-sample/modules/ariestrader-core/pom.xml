@@ -25,7 +25,7 @@
     </parent>
 
     <groupId>org.apache.aries.ariestrader.modules</groupId>
-    <artifactId>daytrader-core</artifactId>
+    <artifactId>ariestrader-core</artifactId>
     <packaging>bundle</packaging>
     <name>AriesTrader :: Modules - Core</name>
     <description>AriesTrader Core Module</description>
@@ -33,13 +33,13 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>daytrader-util</artifactId>
+            <artifactId>ariestrader-util</artifactId>
             <version>${pom.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>daytrader-api</artifactId>
+            <artifactId>ariestrader-api</artifactId>
             <version>${pom.version}</version>
             <scope>provided</scope>
         </dependency>
