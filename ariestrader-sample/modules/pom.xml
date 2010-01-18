@@ -31,12 +31,12 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>daytrader-util</module>
-        <module>daytrader-beans</module>
-        <module>daytrader-api</module>
-        <module>daytrader-core</module>
-        <module>daytrader-persist-jdbc</module>
-        <module>daytrader-web</module>
+        <module>ariestrader-util</module>
+        <module>ariestrader-beans</module>
+        <module>ariestrader-api</module>
+        <module>ariestrader-core</module>
+        <module>ariestrader-persist-jdbc</module>
+        <module>ariestrader-web</module>
     </modules>
 
 </project>

@@ -25,8 +25,8 @@
 	</parent>
 
     <groupId>org.apache.aries.ariestrader.assemblies</groupId>
-	<artifactId>assembly-equinox</artifactId>
-	<name>Apache Aries AriesTrader sample assembly</name>
+	<artifactId>ariestrader-jdbc-equinox</artifactId>
+	<name>Apache Aries AriesTrader JDBC sample assembly using Equinox</name>
 	<version>1.0.0-incubating-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
@@ -113,32 +113,32 @@
 
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>daytrader-util</artifactId>
+            <artifactId>ariestrader-util</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>daytrader-core</artifactId>
+            <artifactId>ariestrader-core</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>daytrader-api</artifactId>
+            <artifactId>ariestrader-api</artifactId>
             <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>daytrader-beans</artifactId>
+            <artifactId>ariestrader-beans</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>daytrader-persist-jdbc</artifactId>
+            <artifactId>ariestrader-persist-jdbc</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>daytrader-web</artifactId>
+            <artifactId>ariestrader-web</artifactId>
             <version>${version}</version>
         </dependency>
 	</dependencies>
