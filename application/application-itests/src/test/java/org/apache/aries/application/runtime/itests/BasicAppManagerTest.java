@@ -74,22 +74,11 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
     fout = new FileOutputStream("test2.eba");
     testEba2.writeOut(fout);
     fout.close();
-    
-    //Debug
-    File f = new File(".");
-    String [] contents = f.list();
-    System.out.println ("#MN## createApplications(): " + f.getAbsolutePath() + " contains " + Arrays.toString(contents));
     createdApplications = true;
   }
   
   @Test
   public void testAppWithoutApplicationManifest() throws Exception {
-    
-    //Debug
-    File f = new File(".");
-    String [] contents = f.list();
-    System.out.println ("#MN## testAppWithoutApplicationManifest(): " + f.getAbsolutePath() + " contains " + Arrays.toString(contents));
-
     
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
