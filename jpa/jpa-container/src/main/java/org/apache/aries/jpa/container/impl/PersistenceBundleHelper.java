@@ -22,11 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
@@ -107,7 +105,7 @@ public class PersistenceBundleHelper
   {
     //There is nothing for an empty location
     InputStream is = null;
-    if(location == "") {
+    if("".equals(location)) {
       return null;
     }
     
