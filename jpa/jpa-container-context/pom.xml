@@ -68,6 +68,22 @@
       <version>${version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.aries.testsupport</groupId>
+      <artifactId>org.apache.aries.testsupport.unit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.5.6</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   
   
