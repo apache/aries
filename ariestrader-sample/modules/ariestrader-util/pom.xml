@@ -54,10 +54,10 @@
                         <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>
-                            org.apache.geronimo.samples.daytrader.util;version="${pom.version}"
+                            org.apache.aries.samples.daytrader.util;version="${pom.version}"
                         </Export-Package>
                         <Import-Package>
-                            org.apache.geronimo.samples.daytrader.util;version=1.0,
+                            org.apache.aries.samples.daytrader.util;version=1.0,
                             org.apache.commons.logging,
                             javax.naming
                         </Import-Package>

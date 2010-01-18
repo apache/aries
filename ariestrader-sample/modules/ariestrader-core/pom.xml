@@ -66,18 +66,18 @@
                         <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>
-                            <!--org.apache.geronimo.samples.daytrader.core;version="${pom.version}"-->
+                            <!--org.apache.aries.samples.daytrader.core;version="${pom.version}"-->
                         </Export-Package>
                         <Import-Package>
-                            org.apache.geronimo.samples.daytrader.api,
-                            org.apache.geronimo.samples.daytrader.persistence.api,
-                            org.apache.geronimo.samples.daytrader.util,
+                            org.apache.aries.samples.daytrader.api,
+                            org.apache.aries.samples.daytrader.persistence.api,
+                            org.apache.aries.samples.daytrader.util,
                             javax.naming,
                             javax.sql,
                            org.apache.derby.jdbc
                         </Import-Package>
                         <Private-Package>
-                            org.apache.geronimo.samples.daytrader.core
+                            org.apache.aries.samples.daytrader.core
                         </Private-Package>
                     </instructions>
                 </configuration>

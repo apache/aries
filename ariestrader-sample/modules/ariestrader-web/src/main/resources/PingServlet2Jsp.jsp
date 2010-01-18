@@ -25,7 +25,7 @@
 <BODY>
 <%! String initTime = (new java.util.Date()).toString(); 
  %>
-<jsp:useBean id="ab" type="org.apache.geronimo.samples.daytrader.web.prims.PingBean" scope="request" />
+<jsp:useBean id="ab" type="org.apache.aries.samples.daytrader.web.prims.PingBean" scope="request" />
 <HR>
 <FONT size="+2" color="#000066"><BR>
 Ping Servlet2JSP:<BR>
