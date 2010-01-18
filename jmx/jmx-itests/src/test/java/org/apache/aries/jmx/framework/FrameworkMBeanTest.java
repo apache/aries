@@ -20,11 +20,10 @@ import java.io.IOException;
 
 import javax.management.openmbean.CompositeData;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.apache.aries.jmx.codec.BatchActionResult;
-import org.junit.Assert;
 import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
@@ -51,18 +50,20 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testSetBundleStartLevels() throws IOException {
+    public void testMBeanInterface() throws IOException {
         FrameworkMBean framework = getMBean(FrameworkMBean.OBJECTNAME, FrameworkMBean.class);
         assertNotNull(framework);
+        
         long[] bundleIds = new long[]{1,2};
         int[] newlevels = new int[]{1,1};
         CompositeData compData = framework.setBundleStartLevels(bundleIds, newlevels);
         assertNotNull(compData);
+        
         BatchActionResult batch2 = BatchActionResult.from(compData);
-        Assert.assertNotNull(batch2.getCompleted());
-        Assert.assertTrue(batch2.isSuccess());
-        Assert.assertNull(batch2.getError());
-        Assert.assertNull(batch2.getRemainingItems());
+        assertNotNull(batch2.getCompleted());
+        assertTrue(batch2.isSuccess());
+        assertNull(batch2.getError());
+        assertNull(batch2.getRemainingItems());
     }
 
 }
