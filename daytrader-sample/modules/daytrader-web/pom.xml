@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>org.apache.geronimo.daytrader</groupId>
+        <artifactId>modules</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    
+    <groupId>org.apache.geronimo.daytrader.modules</groupId>
+    <artifactId>daytrader-web</artifactId>    
+    <packaging>bundle</packaging>
+    <name>DayTrader :: Modules - Web </name>
+    <description>A version of Daytrader for basic Web containers</description>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <artifactId>daytrader-util</artifactId>
+            <version>${version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <artifactId>daytrader-core</artifactId>
+            <version>${version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <artifactId>daytrader-api</artifactId>
+            <version>${pom.version}</version>
+            <scope>provided</scope>
+        </dependency>
+<!--
+        <dependency>
+            <groupId>org.apache.geronimo.daytrader.modules</groupId>
+            <artifactId>daytrader-beans</artifactId>
+            <version>${version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_1.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-ejb_3.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jms_1.1_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-annotation_1.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+-->
+        <!-- web container provided specs -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-servlet_2.5_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jsp_2.1_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+              <groupId>org.apache.felix</groupId>
+              <artifactId>maven-bundle-plugin</artifactId>
+              <configuration>
+                <instructions>
+                  <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
+                  <Bundle-Version>${pom.version}</Bundle-Version>
+                  <Web-ContextPath>/daytrader</Web-ContextPath>
+                  <Web-JSPExtractLocation>/</Web-JSPExtractLocation>
+                  <Import-Package>
+                      <!--org.apache.geronimo.samples.daytrader.beans;version=1.0,-->
+                      org.apache.geronimo.samples.daytrader.api;version=1.0,
+                      org.apache.geronimo.samples.daytrader.persistence.api;version=1.0,
+                      org.apache.geronimo.samples.daytrader.util;version=1.0,
+                      javax.naming, 
+                      javax.servlet, 
+                      javax.servlet.http, 
+                      javax.sql
+                  </Import-Package>
+                </instructions>
+              </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>
