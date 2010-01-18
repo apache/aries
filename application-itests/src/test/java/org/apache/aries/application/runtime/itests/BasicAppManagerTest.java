@@ -25,6 +25,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Arrays;
 
 import org.apache.aries.application.management.ApplicationContext;
 import org.apache.aries.application.management.AriesApplication;
@@ -33,7 +34,7 @@ import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.sample.HelloWorld;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -42,8 +43,15 @@ import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 @RunWith(JUnit4TestRunner.class)
 public class BasicAppManagerTest extends AbstractIntegrationTest {
   
-  @BeforeClass
+  /* Use @Before not @BeforeClass so as to ensure that these resources
+   * are created in the paxweb temp directory, and not in the svn tree 
+   */
+  static boolean createdApplications = false;
+  @Before
   public static void createApplications() throws Exception {
+    if (createdApplications) { 
+      return;
+    }
     ZipFixture testEba = ArchiveFixture.newZip()
       .jar("sample.jar")
         .manifest().symbolicName("org.apache.aries.sample")
@@ -59,17 +67,31 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
     FileOutputStream fout = new FileOutputStream("test.eba");
     testEba.writeOut(fout);
     fout.close();
-
+    
     ZipFixture testEba2 = testEba.binary("META-INF/APPLICATION.MF", 
         BasicAppManagerTest.class.getClassLoader().getResourceAsStream("APPLICATION.MF"))
         .end();
     fout = new FileOutputStream("test2.eba");
     testEba2.writeOut(fout);
     fout.close();
+    
+    //Debug
+    //File f = new File(".");
+    //String [] contents = f.list();
+    //System.out.println ("#MN## createApplications(): " + f.getAbsolutePath() + " contains " + Arrays.toString(contents));
+
+    createdApplications = true;
   }
   
   @Test
   public void testAppWithoutApplicationManifest() throws Exception {
+    
+    //Debug
+    //File f = new File(".");
+    //String [] contents = f.list();
+    //System.out.println ("#MN## testAppWithoutApplicationManifest(): " + f.getAbsolutePath() + " contains " + Arrays.toString(contents));
+
+    
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
     ApplicationContext ctx = manager.install(app);
