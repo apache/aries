@@ -24,6 +24,7 @@
 		<version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 
+    <groupId>org.apache.geronimo.daytrader.assemblies</groupId>
 	<artifactId>assembly-equinox</artifactId>
 	<name>Apache Aries daytrader sample assembly</name>
 	<version>1.0.0-incubating-SNAPSHOT</version>
