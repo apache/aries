@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Application-ManifestVersion: 1.0
+Application-Name: test application 2
+Application-SymbolicName: org.apache.aries.sample2
+Application-Version: 1.0
+Application-Content: org.apache.aries.sample; version=1.0.0
+

@@ -93,6 +93,11 @@
 				<version>${version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.aries.application</groupId>
+				<artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
+				<version>${version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.aries.testsupport</groupId>
 				<artifactId>org.apache.aries.testsupport.unit</artifactId>
 				<version>${version}</version>
@@ -181,6 +186,7 @@
 		<module>application-management</module>
 		<module>application-converters</module>
 		<module>application-runtime</module>
+		<module>application-itest-interface</module>
 		<module>application-itests</module>
 	</modules>
 

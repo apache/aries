@@ -254,7 +254,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
    * @throws IOException
    */
   private Manifest parseApplicationManifest (IDirectory source) throws IOException {
-    Manifest result = null;
+    Manifest result = new Manifest();
     IFile f = source.getFile(AppConstants.APPLICATION_MF);
     if (f != null) { 
       InputStream is = null;

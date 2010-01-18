@@ -60,6 +60,16 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		  <groupId>org.apache.aries.testsupport</groupId>
+		  <artifactId>org.apache.aries.testsupport.unit</artifactId>
+		  <scope>provided</scope>
+	    </dependency>
+		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
 			<scope>provided</scope>
