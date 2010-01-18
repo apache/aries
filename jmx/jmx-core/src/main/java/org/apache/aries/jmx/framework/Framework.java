@@ -24,6 +24,7 @@ import javax.management.openmbean.CompositeData;
 
 import org.apache.aries.jmx.codec.BatchActionResult;
 import org.apache.aries.jmx.codec.BatchInstallResult;
+import org.apache.aries.jmx.util.FrameworkUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -164,7 +165,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#refreshPackages(long)
      */
     public void refreshPackages(long bundleIdentifier) throws IOException {
-        Bundle bundle = getBundle(bundleIdentifier);
+        Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
         packageAdmin.refreshPackages(new Bundle[] { bundle });
 
     }
@@ -190,7 +191,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#resolveBundle(long)
      */
     public boolean resolveBundle(long bundleIdentifier) throws IOException {
-        Bundle bundle = getBundle(bundleIdentifier);
+        Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
         return packageAdmin.resolveBundles(new Bundle[] { bundle });
     }
 
@@ -203,7 +204,7 @@ public class Framework implements FrameworkMBean {
          }
         Bundle[] bundles = new Bundle[bundleIdentifiers.length];
         for (int i = 0; i < bundleIdentifiers.length; i++) {
-            bundles[i] = getBundle(bundleIdentifiers[i]);
+            bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]);
         }
 
         return packageAdmin.resolveBundles(bundles);
@@ -226,7 +227,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#setBundleStartLevel(long, int)
      */
     public void setBundleStartLevel(long bundleIdentifier, int newlevel) throws IOException {
-        Bundle bundle = getBundle(bundleIdentifier);
+        Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
         startLevel.setBundleStartLevel(bundle, newlevel);
 
     }
@@ -283,7 +284,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#startBundle(long)
      */
     public void startBundle(long bundleIdentifier) throws IOException {
-        Bundle bundle = getBundle(bundleIdentifier);
+        Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
         if (bundle != null) {
             try {
                 bundle.start();
@@ -314,7 +315,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#stopBundle(long)
      */
     public void stopBundle(long bundleIdentifier) throws IOException {
-        Bundle bundle = getBundle(bundleIdentifier);
+        Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
         if (bundle != null) {
             try {
                 bundle.stop();
@@ -345,7 +346,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#uninstallBundle(long)
      */
     public void uninstallBundle(long bundleIdentifier) throws IOException {
-        Bundle bundle = getBundle(bundleIdentifier);
+        Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
         if (bundle != null) {
             try {
                 bundle.uninstall();
@@ -377,7 +378,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#updateBundle(long)
      */
     public void updateBundle(long bundleIdentifier) throws IOException {
-        Bundle bundle = getBundle(bundleIdentifier);
+        Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
 
         try {
             bundle.update();
@@ -391,7 +392,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#updateBundle(long, java.lang.String)
      */
     public void updateBundle(long bundleIdentifier, String url) throws IOException {
-        Bundle bundle = getBundle(bundleIdentifier);
+        Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);;
         InputStream inputStream = null;
         try {
             inputStream = createStream(url);
@@ -451,7 +452,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#updateFramework()
      */
     public void updateFramework() throws IOException {
-        Bundle bundle = getBundle(0);
+        Bundle bundle = FrameworkUtils.resolveBundle(context, 0);
         try {
             bundle.update();
         } catch (BundleException be) {
@@ -474,20 +475,6 @@ public class Framework implements FrameworkMBean {
         long[] remaining = new long[bundleIdentifiers.length - i - 1];
         System.arraycopy(bundleIdentifiers, i + 1, remaining, 0, remaining.length);
         return new BatchActionResult(completed, t.toString(), remaining, bundleIdentifiers[i]).toCompositeData();
-    }
-    
-    /**
-     * Gets bundle with provided bundleId.
-     * 
-     * @param bundleIdentifier bundle id.
-     * @return {@link Bundle} instance.
-     */
-    private Bundle getBundle(long bundleIdentifier) {
-        Bundle bundle = context.getBundle(bundleIdentifier);
-        if (bundle != null) {
-            return bundle;
-        }
-        throw new IllegalArgumentException("Can't find bundle with id " + bundleIdentifier);
     }
 
 }
