@@ -55,12 +55,12 @@
                         <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>
-                            org.apache.geronimo.samples.daytrader.api;version="${pom.version}",
-                            org.apache.geronimo.samples.daytrader.persistence.api;version="${pom.version}"
+                            org.apache.aries.samples.daytrader.api;version="${pom.version}",
+                            org.apache.aries.samples.daytrader.persistence.api;version="${pom.version}"
                         </Export-Package>
                         <Import-Package>
-                            org.apache.geronimo.samples.daytrader.api,
-                            org.apache.geronimo.samples.daytrader.util
+                            org.apache.aries.samples.daytrader.api,
+                            org.apache.aries.samples.daytrader.util
                         </Import-Package>
                     </instructions>
                 </configuration>

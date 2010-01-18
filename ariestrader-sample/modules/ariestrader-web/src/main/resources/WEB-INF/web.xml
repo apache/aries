@@ -24,7 +24,7 @@
     <filter>
         <display-name>OrdersAlertFilter</display-name>
         <filter-name>OrdersAlertFilter</filter-name>
-        <filter-class>org.apache.geronimo.samples.daytrader.web.OrdersAlertFilter</filter-class>
+        <filter-class>org.apache.aries.samples.daytrader.web.OrdersAlertFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>OrdersAlertFilter</filter-name>
@@ -34,7 +34,7 @@
     <servlet>
         <display-name>TradeAppServlet</display-name>
         <servlet-name>TradeAppServlet</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.TradeAppServlet</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.TradeAppServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     
@@ -42,7 +42,7 @@
     <servlet>
         <display-name>TestServlet</display-name>
         <servlet-name>TestServlet</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.TestServlet</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.TestServlet</servlet-class>
     </servlet>
 -->
 <!-- Not sure why this is a necessary and it's causing a problem for pax-web so temporarily removed    
@@ -70,13 +70,13 @@
     <servlet>
         <display-name>TradeConfigServlet</display-name>
         <servlet-name>TradeConfigServlet</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.TradeConfigServlet</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.TradeConfigServlet</servlet-class>
     </servlet>
     
    <servlet>
         <display-name>TradeScenarioServlet</display-name>
         <servlet-name>TradeScenarioServlet</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.TradeScenarioServlet</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.TradeScenarioServlet</servlet-class>
         <init-param>
             <description>Sets the default RuntimeMode. Legal values include Full EJB3, Direct (JDBC), Session (EJB3) To Direct, Web JDBC, and Web JPA</description>
             <param-name>runTimeMode</param-name>
@@ -134,9 +134,9 @@
     
 <!-- JavaEE Only
     <servlet>
-        <display-name>org_apache_geronimo_samples_daytrader_TradeWSAction</display-name>
-        <servlet-name>org_apache_geronimo_samples_daytrader_TradeWSAction</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.soap.TradeWSAction</servlet-class>
+        <display-name>org_apache_aries_samples_daytrader_TradeWSAction</display-name>
+        <servlet-name>org_apache_aries_samples_daytrader_TradeWSAction</servlet-name>
+        <servlet-class>org.apache.aries.samples.daytrader.soap.TradeWSAction</servlet-class>
     </servlet>
 -->
     
@@ -144,72 +144,72 @@
     <servlet>
         <display-name>ExplicitGC</display-name>
         <servlet-name>ExplicitGC</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ExplicitGC</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.ExplicitGC</servlet-class>
     </servlet>
     <servlet>
         <display-name>PingServlet</display-name>
         <servlet-name>PingServlet</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServlet</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.PingServlet</servlet-class>
     </servlet>
     <servlet>
         <display-name>PingServletWriter</display-name>
         <servlet-name>PingServletWriter</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServletWriter</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.PingServletWriter</servlet-class>
     </servlet>
     <servlet>
         <display-name>PingServlet2Servlet</display-name>
         <servlet-name>PingServlet2Servlet</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServlet2Servlet</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.PingServlet2Servlet</servlet-class>
     </servlet>
     <servlet>
         <display-name>PingServlet2ServletRcv</display-name>
         <servlet-name>PingServlet2ServletRcv</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServlet2ServletRcv</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.PingServlet2ServletRcv</servlet-class>
     </servlet>
     <servlet>
         <display-name>PingServlet2Include</display-name>
         <servlet-name>PingServlet2Include</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServlet2Include</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.PingServlet2Include</servlet-class>
     </servlet>
     <servlet>
         <display-name>PingServlet2IncludeRcv</display-name>
         <servlet-name>PingServlet2IncludeRcv</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServlet2IncludeRcv</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.PingServlet2IncludeRcv</servlet-class>
     </servlet>
     <servlet>
         <display-name>PingServlet2Jsp</display-name>
         <servlet-name>PingServlet2Jsp</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServlet2Jsp</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.PingServlet2Jsp</servlet-class>
     </servlet>
     <servlet>
         <display-name>PingSession1</display-name>
         <servlet-name>PingSession1</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingSession1</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.PingSession1</servlet-class>
     </servlet>
     <servlet>
         <display-name>PingSession2</display-name>
         <servlet-name>PingSession2</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingSession2</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.PingSession2</servlet-class>
     </servlet>
     <servlet>
         <display-name>PingSession3</display-name>
         <servlet-name>PingSession3</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingSession3</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.PingSession3</servlet-class>
     </servlet>
     <servlet>
         <display-name>PingJDBCRead</display-name>
         <servlet-name>PingJDBCRead</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingJDBCRead</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.PingJDBCRead</servlet-class>
     </servlet>
     <servlet>
         <display-name>PingJDBCWrite</display-name>
         <servlet-name>PingJDBCWrite</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingJDBCWrite</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.PingJDBCWrite</servlet-class>
     </servlet>
     <servlet>
         <display-name>PingServlet2JNDI</display-name>
         <servlet-name>PingServlet2JNDI</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.PingServlet2JNDI</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.PingServlet2JNDI</servlet-class>
     </servlet>
     <!-- End of Web container primitives -->
     
@@ -217,47 +217,47 @@
 <!-- JavaEE Only
     <servlet>
         <servlet-name>ejb3.PingServlet2Session</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Session</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.ejb3.PingServlet2Session</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ejb3.PingServlet2Entity</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Entity</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.ejb3.PingServlet2Entity</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ejb3.PingServlet2Session2Entity</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Session2Entity</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.ejb3.PingServlet2Session2Entity</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ejb3.PingServlet2Session2EntityCollection</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Session2EntityCollection</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.ejb3.PingServlet2Session2EntityCollection</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ejb3.PingServlet2Session2CMROne2One</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Session2CMROne2One</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.ejb3.PingServlet2Session2CMROne2One</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ejb3.PingServlet2Session2CMROne2Many</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Session2CMROne2Many</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.ejb3.PingServlet2Session2CMROne2Many</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ejb3.PingServlet2Session2JDBC</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Session2JDBC</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.ejb3.PingServlet2Session2JDBC</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ejb3.PingServlet2Session2JDBCCollection</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2Session2JDBCCollection</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.ejb3.PingServlet2Session2JDBCCollection</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ejb3.PingServlet2MDBQueue</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2MDBQueue</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.ejb3.PingServlet2MDBQueue</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ejb3.PingServlet2MDBTopic</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2MDBTopic</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.ejb3.PingServlet2MDBTopic</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ejb3.PingServlet2TwoPhase</servlet-name>
-        <servlet-class>org.apache.geronimo.samples.daytrader.web.prims.ejb3.PingServlet2TwoPhase</servlet-class>
+        <servlet-class>org.apache.aries.samples.daytrader.web.prims.ejb3.PingServlet2TwoPhase</servlet-class>
     </servlet>
 -->
     <!-- End of EJB container primitives (EJB3) -->
@@ -283,7 +283,7 @@
     </servlet-mapping>
 <!-- JavaEE Only
     <servlet-mapping>
-        <servlet-name>org_apache_geronimo_samples_daytrader_TradeWSAction</servlet-name>
+        <servlet-name>org_apache_aries_samples_daytrader_TradeWSAction</servlet-name>
         <url-pattern>/services/TradeWSServices</url-pattern>
     </servlet-mapping>
 -->
@@ -437,13 +437,13 @@
     <ejb-ref>
         <ejb-ref-name>ejb/TradeSLSBBean</ejb-ref-name>
         <ejb-ref-type>Session</ejb-ref-type>
-        <remote>org.apache.geronimo.samples.daytrader.ejb3.TradeSLSBRemote</remote>
+        <remote>org.apache.aries.samples.daytrader.ejb3.TradeSLSBRemote</remote>
         <ejb-link>TradeSLSBBean</ejb-link>
     </ejb-ref>
     <ejb-ref>
         <ejb-ref-name>ejb/DirectSLSBBean</ejb-ref-name>
         <ejb-ref-type>Session</ejb-ref-type>
-        <remote>org.apache.geronimo.samples.daytrader.ejb3.DirectSLSBRemote</remote>
+        <remote>org.apache.aries.samples.daytrader.ejb3.DirectSLSBRemote</remote>
         <ejb-link>DirectSLSBBean</ejb-link>
     </ejb-ref>
 
@@ -463,12 +463,12 @@
     <service-ref>
         <description>WSDL Service Trade</description>
         <service-ref-name>service/Trade</service-ref-name>
-        <service-interface>org.apache.geronimo.samples.daytrader.client.ws.Trade</service-interface>
+        <service-interface>org.apache.aries.samples.daytrader.client.ws.Trade</service-interface>
         <wsdl-file>WEB-INF/wsdl/TradeServices.wsdl</wsdl-file>
         <jaxrpc-mapping-file>WEB-INF/TradeServicesClient_mapping.xml</jaxrpc-mapping-file>
-        <service-qname xmlns:pfx="http://daytrader.samples.geronimo.apache.org">pfx:Trade</service-qname>
+        <service-qname xmlns:pfx="http://daytrader.samples.aries.apache.org">pfx:Trade</service-qname>
         <port-component-ref>
-            <service-endpoint-interface>org.apache.geronimo.samples.daytrader.client.ws.TradeWSServices</service-endpoint-interface>
+            <service-endpoint-interface>org.apache.aries.samples.daytrader.client.ws.TradeWSServices</service-endpoint-interface>
         </port-component-ref>
     </service-ref>
 -->

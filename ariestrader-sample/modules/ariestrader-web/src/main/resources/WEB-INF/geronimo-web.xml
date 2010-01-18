@@ -23,14 +23,14 @@
         
         <sys:environment>
             <sys:moduleId>
-                <sys:groupId>org.apache.geronimo.daytrader.modules</sys:groupId>
+                <sys:groupId>org.apache.aries.daytrader.modules</sys:groupId>
                 <sys:artifactId>daytrader-web</sys:artifactId>
                 <sys:version>1.0.0-incubating-SNAPSHOT</sys:version>
             </sys:moduleId>
         
             <sys:dependencies>
                 <sys:dependency>
-                    <sys:groupId>org.apache.geronimo.daytrader.plugins</sys:groupId>
+                    <sys:groupId>org.apache.aries.daytrader.plugins</sys:groupId>
                     <sys:artifactId>daytrader-derby-datasource</sys:artifactId>
                 </sys:dependency>
             </sys:dependencies>

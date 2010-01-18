@@ -21,7 +21,7 @@
 <TITLE>Welcome to DayTrader</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff" link="#000099">
-<%@ page import="java.util.ArrayList, org.apache.geronimo.samples.daytrader.util.TradeConfig, org.apache.geronimo.samples.daytrader.api.*"
+<%@ page import="java.util.ArrayList, org.apache.aries.samples.daytrader.util.TradeConfig, org.apache.aries.samples.daytrader.api.*"
 	session="false" isThreadSafe="true" isErrorPage="false"%>
 
 <% 

@@ -3,10 +3,10 @@ Application-ManifestVersion: 1.0
 Application-Name: Daytrader EBA
 Application-SymbolicName: daytrader.eba
 Application-Version: 1.0
-Application-Content: org.apache.geronimo.daytrader.modules.daytrader-util;version=1.0.0-incubating-SNAPSHOT,
- org.apache.geronimo.daytrader.modules.daytrader-beans;version=1.0.0-incubating-SNAPSHOT,
- org.apache.geronimo.daytrader.modules.daytrader-core;version=1.0.0-incubating-SNAPSHOT,
- org.apache.geronimo.daytrader.modules.daytrader-persist-jdbc;version=1.0.0-incubating-SNAPSHOT,
- org.apache.geronimo.daytrader.modules.daytrader-web;version=1.0.0-incubating-SNAPSHOT
+Application-Content: org.apache.aries.daytrader.modules.daytrader-util;version=1.0.0-incubating-SNAPSHOT,
+ org.apache.aries.daytrader.modules.daytrader-beans;version=1.0.0-incubating-SNAPSHOT,
+ org.apache.aries.daytrader.modules.daytrader-core;version=1.0.0-incubating-SNAPSHOT,
+ org.apache.aries.daytrader.modules.daytrader-persist-jdbc;version=1.0.0-incubating-SNAPSHOT,
+ org.apache.aries.daytrader.modules.daytrader-web;version=1.0.0-incubating-SNAPSHOT
 
 

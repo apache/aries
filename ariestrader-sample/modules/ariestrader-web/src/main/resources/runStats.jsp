@@ -21,11 +21,11 @@
 <TITLE>Welcome to Trade</TITLE>
 </HEAD>
 <BODY bgcolor="#ffffff" link="#000099">
-<%@ page import="org.apache.geronimo.samples.daytrader.util.*"
+<%@ page import="org.apache.aries.samples.daytrader.util.*"
 	session="false" isThreadSafe="true" isErrorPage="false"%>
 
 <jsp:useBean
-	class="org.apache.geronimo.samples.daytrader.persistence.api.RunStatsDataBean"
+	class="org.apache.aries.samples.daytrader.persistence.api.RunStatsDataBean"
 	id="runStatsData" scope="request" />
 <% 
 double loginPercentage = (double) ((TradeConfig.getScenarioMixes())[TradeConfig.workloadMix][TradeConfig.LOGOUT_OP]) / 100.0;
@@ -72,9 +72,9 @@ String verify(int expected, int actual, int verifyPercent)
 	<TBODY>
 		<TR>
 			<TD bgcolor="#c93333" align="left" width="640" height="10" colspan=5><B><FONT
-				color="#ffffff">DayTrader Scenario Runtime Statistics</FONT></B></TD>
+				color="#ffffff">AriesTrader Scenario Runtime Statistics</FONT></B></TD>
 			<TD align="center" bgcolor="#000000" width="100" height="10"><FONT
-				color="#ffffff"><B>DayTrader</B></FONT></TD>
+				color="#ffffff"><B>AriesTrader</B></FONT></TD>
 		</TR>
 	</TBODY>
 </TABLE>
@@ -308,13 +308,13 @@ if ( status != null )out.print(status);
 		</TR>
 		<TR>
 			<TD bgcolor="#c93333" align="left" width="640" height="10" colspan=5><B><FONT
-				color="#ffffff">DayTrader Scenario Runtime Statistics</FONT></B></TD>
+				color="#ffffff">AriesTrader Scenario Runtime Statistics</FONT></B></TD>
 			<TD align="center" bgcolor="#000000" width="100" height="10"><FONT
-				color="#ffffff"><B>DayTrader</B></FONT></TD>
+				color="#ffffff"><B>AriesTrader</B></FONT></TD>
 		</TR>
 		<TR>
-			<TD colspan="2" align="center">Apache Geronimo Performance Benchmark
-			Sample DayTrader<BR>
+			<TD colspan="2" align="center">Apache Aries Performance Benchmark
+			Sample AriesTrader<BR>
 			Copyright 2005, Apache Software Foundation</TD>
 		</TR>
 	</TBODY>

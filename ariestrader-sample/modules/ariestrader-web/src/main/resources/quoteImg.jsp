@@ -24,7 +24,7 @@
 
 <BODY bgcolor="#ffffff" link="#000099" vlink="#000099">
 <%@ page
-	import="java.util.Collection, java.util.Iterator, org.apache.geronimo.samples.daytrader.api.*, org.apache.geronimo.samples.daytrader.persistence.api.*, org.apache.geronimo.samples.daytrader.util.*"
+	import="java.util.Collection, java.util.Iterator, org.apache.aries.samples.daytrader.api.*, org.apache.aries.samples.daytrader.persistence.api.*, org.apache.aries.samples.daytrader.util.*"
 	session="true" isThreadSafe="true" isErrorPage="false"%>
 
 <TABLE height="54">
