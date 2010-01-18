@@ -76,10 +76,9 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
     fout.close();
     
     //Debug
-    //File f = new File(".");
-    //String [] contents = f.list();
-    //System.out.println ("#MN## createApplications(): " + f.getAbsolutePath() + " contains " + Arrays.toString(contents));
-
+    File f = new File(".");
+    String [] contents = f.list();
+    System.out.println ("#MN## createApplications(): " + f.getAbsolutePath() + " contains " + Arrays.toString(contents));
     createdApplications = true;
   }
   
@@ -87,9 +86,9 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
   public void testAppWithoutApplicationManifest() throws Exception {
     
     //Debug
-    //File f = new File(".");
-    //String [] contents = f.list();
-    //System.out.println ("#MN## testAppWithoutApplicationManifest(): " + f.getAbsolutePath() + " contains " + Arrays.toString(contents));
+    File f = new File(".");
+    String [] contents = f.list();
+    System.out.println ("#MN## testAppWithoutApplicationManifest(): " + f.getAbsolutePath() + " contains " + Arrays.toString(contents));
 
     
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
