@@ -142,7 +142,7 @@ public class Framework implements FrameworkMBean {
             return new BatchInstallResult("Failed to install bundles arguments can't be null").toCompositeData(); 
         }
         
-        if(locations != null && locations != null && locations.length != urls.length){
+        if(locations != null && locations.length != urls.length){
             return new BatchInstallResult("Failed to install bundles size of arguments should be same").toCompositeData(); 
         }
         long[] ids = new long[locations.length];
