@@ -39,6 +39,7 @@ public class ApplicationContextImpl implements ApplicationContext {
   private BundleContext _bundleContext;
   
   public ApplicationContextImpl (BundleContext b, AriesApplication app) { 
+    _bundleContext = b;
     _application = app;
     _bundles = new HashMap<BundleInfo, Bundle>();
     _state = ApplicationState.INSTALLED;

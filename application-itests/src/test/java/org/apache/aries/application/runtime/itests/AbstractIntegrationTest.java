@@ -126,7 +126,8 @@ public class AbstractIntegrationTest {
       tracker.open();
       // Note that the tracker is not closed to keep the reference
       // This is buggy, has the service reference may change i think
-      Object svc = type.cast(tracker.waitForService(timeout));
+      Object x = tracker.waitForService(timeout);
+      Object svc = type.cast(x);
       if (svc == null) {
         throw new RuntimeException("Gave up waiting for service " + flt);
       }
