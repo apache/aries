@@ -91,6 +91,7 @@ public class PermissionAdmin implements PermissionAdminMBean {
         if(encodedPermissions == null){
             //default permissions are to be removed
             permAdmin.setDefaultPermissions(null);
+            return;
         }
         PermissionInfo[] permissions = new PermissionInfo[encodedPermissions.length];
         for (int i = 0; i < encodedPermissions.length; i++) {
@@ -108,6 +109,7 @@ public class PermissionAdmin implements PermissionAdminMBean {
         if(encodedPermissions == null){
             //default permissions are to be removed
             permAdmin.setPermissions(location, null);
+            return;
         }
         PermissionInfo[] permissions = new PermissionInfo[encodedPermissions.length];
         for (int i = 0; i < encodedPermissions.length; i++) {
