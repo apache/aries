@@ -31,4 +31,12 @@
   </service>
   
   <!-- TODO define persistenceManager bean -->
+  
+  <bean id="JtaPersistenceContextRegistry" 
+    class="org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry">
+    <property name="tranRegistry">
+      <reference interface="javax.transaction.TransactionSynchronizationRegistry"/>
+    </property>
+  </bean>
+  
 </blueprint>
