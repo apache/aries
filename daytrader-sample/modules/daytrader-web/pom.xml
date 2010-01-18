@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.geronimo.daytrader</groupId>
         <artifactId>modules</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
     
     <groupId>org.apache.geronimo.daytrader.modules</groupId>
@@ -113,10 +113,9 @@
                   <Web-ContextPath>/daytrader</Web-ContextPath>
                   <Web-JSPExtractLocation>/</Web-JSPExtractLocation>
                   <Import-Package>
-                      <!--org.apache.geronimo.samples.daytrader.beans;version=1.0,-->
-                      org.apache.geronimo.samples.daytrader.api;version=1.0,
-                      org.apache.geronimo.samples.daytrader.persistence.api;version=1.0,
-                      org.apache.geronimo.samples.daytrader.util;version=1.0,
+                      org.apache.geronimo.samples.daytrader.api,
+                      org.apache.geronimo.samples.daytrader.persistence.api,
+                      org.apache.geronimo.samples.daytrader.util,
                       javax.naming, 
                       javax.servlet, 
                       javax.servlet.http, 

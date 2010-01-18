@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apache.geronimo.daytrader</groupId>
-    <version>1.0.0</version>
+    <version>1.0.0-incubating-SNAPSHOT</version>
     <artifactId>daytrader-parent</artifactId>
     <name>DayTrader :: Performance Benchmark Sample</name>
     <packaging>pom</packaging>

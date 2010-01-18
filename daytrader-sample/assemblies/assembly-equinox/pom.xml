@@ -21,12 +21,12 @@
 	<parent>
 		<groupId>org.apache.geronimo.daytrader</groupId>
 		<artifactId>assemblies</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>assembly-equinox</artifactId>
 	<name>Apache Aries daytrader sample assembly</name>
-	<version>1.0.0</version>
+	<version>1.0.0-incubating-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<dependencies>

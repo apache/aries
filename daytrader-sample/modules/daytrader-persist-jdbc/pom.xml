@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.geronimo.daytrader</groupId>
         <artifactId>modules</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.geronimo.daytrader.modules</groupId>
@@ -79,13 +79,13 @@
                         <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>
-                            <!--org.apache.geronimo.samples.daytrader.persist.jdbc;version=1.0.0-->
+                            <!--org.apache.geronimo.samples.daytrader.persist.jdbc;version="${pom.version}"-->
                         </Export-Package>
                         <Import-Package>
-                            org.apache.geronimo.samples.daytrader.api;version=1.0,
-                            org.apache.geronimo.samples.daytrader.beans;version=1.0,
-                            org.apache.geronimo.samples.daytrader.persistence.api;version=1.0,
-                            org.apache.geronimo.samples.daytrader.util;version=1.0,
+                            org.apache.geronimo.samples.daytrader.api,
+                            org.apache.geronimo.samples.daytrader.beans,
+                            org.apache.geronimo.samples.daytrader.persistence.api,
+                            org.apache.geronimo.samples.daytrader.util,
                             javax.naming,
                             javax.sql,
                             org.apache.derby.jdbc
