@@ -30,6 +30,7 @@ import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
+import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -177,9 +178,9 @@ public class EntityManagerFactoryManager {
           throw new InvalidPersistenceUnitException();
         }
           
-        props.put("osgi.unit.name", unitName);
-        props.put("osgi.unit.provider", providerName);
-        props.put("org.apache.aries.jpa.container.managed", Boolean.TRUE);
+        props.put(PersistenceUnitConstants.OSGI_UNIT_NAME, unitName);
+        props.put(PersistenceUnitConstants.OSGI_UNIT_PROVIDER, providerName);
+        props.put(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT, Boolean.TRUE);
         try {
           registrations.add(bundle.getBundleContext().registerService(EntityManagerFactory.class.getCanonicalName(), entry.getValue(), props));
         } catch (Exception e) {
