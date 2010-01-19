@@ -34,7 +34,8 @@ public class TempBundleDelegatingClassLoader extends ClassLoader {
 
   private final Bundle bundle;
   
-  public TempBundleDelegatingClassLoader(Bundle b) {
+  public TempBundleDelegatingClassLoader(Bundle b, ClassLoader parent) {
+    super(parent);
     bundle = b;
   }
   

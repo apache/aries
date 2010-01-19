@@ -34,6 +34,7 @@ import javax.sql.DataSource;
 
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceReference;
 
 public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   
@@ -43,10 +44,13 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   
   private final BundleDelegatingClassLoader cl;
   
-  public PersistenceUnitInfoImpl (Bundle b, ParsedPersistenceUnit parsedData)
+  private final ServiceReference providerRef;
+  
+  public PersistenceUnitInfoImpl (Bundle b, ParsedPersistenceUnit parsedData, ServiceReference providerRef)
   {
     bundle = b;
     unit = parsedData;
+    this.providerRef = providerRef;
     cl = new BundleDelegatingClassLoader(b);
   }
   
@@ -98,7 +102,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   }
 
   public ClassLoader getNewTempClassLoader() {
-    return new TempBundleDelegatingClassLoader(bundle);
+    return new TempBundleDelegatingClassLoader(bundle, new BundleDelegatingClassLoader(providerRef.getBundle()));
   }
 
   public DataSource getNonJtaDataSource() {
