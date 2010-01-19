@@ -27,12 +27,9 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
 import junit.framework.TestCase;
 
-import org.apache.aries.spifly.Activator;
-import org.apache.aries.spifly.SPIBundleTracker;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.osgi.framework.Bundle;
@@ -102,7 +99,6 @@ public class SPIBundleTrackerTest extends TestCase {
         EasyMock.verify(bc2);
     }
 
-    @SuppressWarnings("unchecked")
     public void testAddingNonMarkedBundle() throws Exception {
         BundleContext bc = EasyMock.createMock(BundleContext.class);
         EasyMock.expect(bc.getBundle()).andReturn(EasyMock.createMock(Bundle.class));
