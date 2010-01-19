@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.container.context.namespace;
+package org.apache.aries.jpa.container.context.impl;
 
 import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
