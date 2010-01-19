@@ -26,7 +26,6 @@ import org.apache.aries.application.Content;
 
 /**
  * Information about a bundle
- *
  */
 public interface BundleInfo
 {

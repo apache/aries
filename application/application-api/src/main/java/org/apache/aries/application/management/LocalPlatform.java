@@ -25,10 +25,20 @@ import java.io.IOException;
 /**
  * This is a difficult interface to name properly. It holds methods that need to 
  * be implemented on a per-application server platform basis. 
- *
  */
 public interface LocalPlatform {
 
+  /**
+   * Obtain a temporary directory
+   * @return Temporary directory
+   * @throws IOException
+   */
   public File getTemporaryDirectory() throws IOException;
+
+  /**
+   * Obtain a temporary file
+   * @return Temporary directory
+   * @throws IOException
+   */
   public File getTemporaryFile() throws IOException;
 }

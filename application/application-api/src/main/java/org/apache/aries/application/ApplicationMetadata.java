@@ -26,7 +26,9 @@ import java.util.List;
 import org.osgi.framework.Version;
 
 /**
- * this interface describes the Application.mf file
+ * A representation of an APPLICATION.MF file. 
+ * @see <a href="http://incubator.apache.org/aries/applications.html">
+ * http://incubator.apache.org/aries/applications.html</a>. 
  *
  */
 public interface ApplicationMetadata
@@ -74,7 +76,17 @@ public interface ApplicationMetadata
    */
   public String getApplicationScope();
   
-  /** Stores any changes to disk using this implementation's storage form */
+  /** 
+   * Persist this metadata. 
+   * @param f The file to store this metadata to
+   * @throws IOException
+   */
   public void store(File f) throws IOException;
+  
+  /** 
+   * Persist this metadata. 
+   * @param out The output stream to store this metadata to
+   * @throws IOException
+   */
   public void store(OutputStream out) throws IOException;
 }

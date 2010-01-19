@@ -19,6 +19,9 @@
 
 package org.apache.aries.application.management;
 
+/**
+ * An Exception thrown by a BundleConverter
+ */
 public class ConversionException extends Exception {
 
   private static final long serialVersionUID = -5921912484821992252L;

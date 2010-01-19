@@ -25,7 +25,8 @@ import java.util.jar.Manifest;
 import org.osgi.framework.Version;
 
 /**
- * This service provides manages application metadata.
+ * Provides various means of generating {@link org.apache.aries.application.ApplicationMetadata  
+ * ApplicationMetadata} instances.  
  */
 public interface ApplicationMetadataFactory
 {
