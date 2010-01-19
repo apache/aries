@@ -30,5 +30,8 @@ public interface PersistenceUnitConstants {
   public static final String OSGI_UNIT_PROVIDER = "osgi.unit.provider";
   /** The service property key mapped to a Boolean indicating whether this persistence unit is container managed */ 
   public static final String CONTAINER_MANAGED_PERSISTENCE_UNIT = "org.apache.aries.jpa.container.managed";
-
+  /** The service property key mapped to a Boolean indicating whether this persistence unit has the default (empty string) unit name 
+   *  This allows clients to filter for empty string persistence unit names.
+   */
+  public static final String EMPTY_PERSISTENCE_UNIT_NAME = "org.apache.aries.jpa.default.unit.name";
 }

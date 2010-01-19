@@ -29,7 +29,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Dictionary;
@@ -945,6 +944,8 @@ public class PersistenceBundleLifecycleTest
         }
       }
       assertTrue("No emf expected with the name " + emf.getProperty("osgi.unit.name"), found);
+      assertEquals("".equals(emf.getProperty("osgi.unit.name")),
+          emf.getProperty(PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME));
       
       assertEquals("Wrong unit provider name registered", providerRef.getProperty("javax.persistence.provider"), emf.getProperty("osgi.unit.provider"));
       
