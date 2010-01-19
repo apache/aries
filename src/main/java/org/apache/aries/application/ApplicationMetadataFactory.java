@@ -27,7 +27,7 @@ import org.osgi.framework.Version;
 /**
  * This service provides manages application metadata.
  */
-public interface ApplicationMetadataManager
+public interface ApplicationMetadataFactory
 {
   /**
    * Parse from the input stream the application manifest. This method is more
@@ -61,31 +61,5 @@ public interface ApplicationMetadataManager
    *         registered.
    */
   public ApplicationMetadata getApplicationMetadata (String applicationSymbolicName, Version version);
-  
-  // MN: Dec 22: register, unregisterApplication probably will not be required
-  // as we implement AriesApplicationManager, so I'm not refactoring the method names. 
-  // Once we remove the methods, this interface should be renamed ApplicationMetadataFactory, since 
-  // it won't be managing anything anymore. 
-  
-  /**
-   * This method is used to register an application. The ApplicationMetadata
-   * passed in should be created via the createApplication or parseApplication
-   * methods on this service. A boolean is returned to indicate if the 
-   * registration was successful or not. The most likely reason for a registration
-   * failure is that the application is already registered. When this service is 
-   * released all registered applications will be removed from the service.
-   * 
-   * @param app the application to register.
-   * @return    true if the application was registered, false otherwise.
-   */
-  public boolean registerApplication(ApplicationMetadata app);
-  
-  /**
-   * This method is used to remove a previously registered application. An
-   * application can only be removed by the bundle that registered the application.
-   * 
-   * @param app the application to remove.
-   * @return    true if the application was removed, false otherwise.
-   */
-  public boolean unregisterApplication(ApplicationMetadata app);
+ 
 }
