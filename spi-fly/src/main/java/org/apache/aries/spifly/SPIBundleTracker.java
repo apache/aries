@@ -36,6 +36,7 @@ import org.osgi.util.tracker.BundleTracker;
 
 public class SPIBundleTracker extends BundleTracker {
     public static final String SPI_PROVIDER_URL = "spi.provider.url";
+    public static final String OPT_IN_HEADER = "SPI-Provider";
     
     final Activator activator;
     List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
@@ -51,6 +52,13 @@ public class SPIBundleTracker extends BundleTracker {
         log(LogService.LOG_INFO, "Bundle Considered for SPI providers: " + bundle.getSymbolicName());
         if (bundle.equals(context.getBundle())) {
             return rv;
+        }
+        
+        if (bundle.getHeaders().get(OPT_IN_HEADER) == null) {
+            log(LogService.LOG_INFO, "Skipping bundle for SPI provider consideration: " + bundle.getSymbolicName());
+            return rv;
+        } else {
+            log(LogService.LOG_INFO, "Considering bundle for SPI provider: " + bundle.getSymbolicName());
         }
         
         Enumeration<?> entries = bundle.findEntries("META-INF/services", "*", false);
