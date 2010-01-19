@@ -18,10 +18,16 @@
  */
 package org.apache.aries.spifly;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import junit.framework.TestCase;
 
@@ -58,14 +64,16 @@ public class SPIBundleTrackerTest extends TestCase {
         
         SPIBundleTracker sbt = new SPIBundleTracker(bc, new Activator());
 
-        URL jarURL = getClass().getResource("TestSPIBundle_1.0.0.jar");
+        URL jarURL = getClass().getResource("TestSPIBundle2_1.0.0.jar");
+        Dictionary<String, Object> headers = getManifestHeaders(jarURL);               
         URL url = new URL("jar:" + jarURL + "!/META-INF/services/javax.xml.parsers.DocumentBuilderFactory");
         final ClassLoader mockBundleLoader = new URLClassLoader(new URL[] {jarURL});  
         
         Bundle b = EasyMock.createMock(Bundle.class);
-        EasyMock.expect(b.getSymbolicName()).andReturn("x.y.z");
+        EasyMock.expect(b.getSymbolicName()).andReturn("x.y.z").anyTimes();
         EasyMock.expect(b.findEntries("META-INF/services", "*", false))
             .andReturn(Collections.enumeration(Collections.singleton(url)));
+        EasyMock.expect(b.getHeaders()).andReturn(headers).anyTimes();
         EasyMock.expect(b.loadClass((String) EasyMock.anyObject())).andAnswer(new IAnswer<Class<?>>() {
             public Class<?> answer() throws Throwable {
                 return mockBundleLoader.loadClass((String) EasyMock.getCurrentArguments()[0]);
@@ -77,7 +85,7 @@ public class SPIBundleTrackerTest extends TestCase {
             EasyMock.anyObject(), (Dictionary) EasyMock.anyObject())).andAnswer(new IAnswer<ServiceRegistration>() {
                 public ServiceRegistration answer() throws Throwable {
                     Object impl = EasyMock.getCurrentArguments()[1];
-                    assertEquals("org.example.test.TestDomBuilderFactory", impl.getClass().getName());
+                    assertEquals("org.example.test.Test2DomBuilderFactory", impl.getClass().getName());
                     assertNotNull(((Dictionary) EasyMock.getCurrentArguments()[2]).get(SPIBundleTracker.SPI_PROVIDER_URL)); 
                     return EasyMock.createMock(ServiceRegistration.class);
                 }
@@ -93,16 +101,58 @@ public class SPIBundleTrackerTest extends TestCase {
         
         EasyMock.verify(bc2);
     }
-    
-    public void testAddingUnrelatedBundle() {
+
+    @SuppressWarnings("unchecked")
+    public void testAddingNonMarkedBundle() throws Exception {
+        BundleContext bc = EasyMock.createMock(BundleContext.class);
+        EasyMock.expect(bc.getBundle()).andReturn(EasyMock.createMock(Bundle.class));
+        EasyMock.replay(bc);
+        
+        SPIBundleTracker sbt = new SPIBundleTracker(bc, new Activator());
+
+        URL jarURL = getClass().getResource("TestSPIBundle_1.0.0.jar");
+        Dictionary<String, Object> headers = getManifestHeaders(jarURL);               
+        URL url = new URL("jar:" + jarURL + "!/META-INF/services/javax.xml.parsers.DocumentBuilderFactory");
+        final ClassLoader mockBundleLoader = new URLClassLoader(new URL[] {jarURL});  
+        
+        Bundle b = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(b.getSymbolicName()).andReturn("x.y.z").anyTimes();
+        EasyMock.expect(b.findEntries("META-INF/services", "*", false))
+            .andReturn(Collections.enumeration(Collections.singleton(url)));
+        EasyMock.expect(b.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.expect(b.loadClass((String) EasyMock.anyObject())).andAnswer(new IAnswer<Class<?>>() {
+            public Class<?> answer() throws Throwable {
+                return mockBundleLoader.loadClass((String) EasyMock.getCurrentArguments()[0]);
+            }
+        });
+
+        BundleContext bc2 = EasyMock.createMock(BundleContext.class);
+        // no services are expected to be registered.
+        EasyMock.replay(bc2);
+
+        EasyMock.expect(b.getBundleContext()).andReturn(bc2);
+        EasyMock.replay(b);
+        
+        assertEquals("Precondition failed", 0, sbt.registrations.size());
+        sbt.addingBundle(b, null);
+        assertEquals(0, sbt.registrations.size());
+        
+        EasyMock.verify(bc2); // verify that bc2.registerService() was never called
+    }
+
+    public void testAddingUnrelatedButMarkedBundle() {
         BundleContext bc = EasyMock.createMock(BundleContext.class);
         EasyMock.expect(bc.getBundle()).andReturn(EasyMock.createMock(Bundle.class));
         EasyMock.replay(bc);
         
         SPIBundleTracker sbt = new SPIBundleTracker(bc, new Activator());
         
+        Dictionary<String, Object> headers = new Hashtable<String, Object>();
+        headers.put(SPIBundleTracker.OPT_IN_HEADER, "somevalue");
+
         Bundle b = EasyMock.createMock(Bundle.class);
-        EasyMock.expect(b.getSymbolicName()).andReturn("x.y.z");
+        EasyMock.expect(b.getSymbolicName()).andReturn("x.y.z").anyTimes();
+        EasyMock.expect(b.getHeaders()).andReturn(headers).anyTimes();
         EasyMock.expect(b.findEntries("META-INF/services", "*", false)).andReturn(null);
         EasyMock.replay(b);
 
@@ -181,4 +231,18 @@ public class SPIBundleTrackerTest extends TestCase {
         
         EasyMock.verify(bc);
     }
+    
+    private Dictionary<String, Object> getManifestHeaders(URL jarURL) throws IOException {
+        JarFile jf = new JarFile(jarURL.getFile());
+        try {
+            Attributes attrs = jf.getManifest().getMainAttributes();
+            Hashtable<String, Object> headers = new Hashtable<String, Object>(); 
+            for (Map.Entry<Object, Object> entry : attrs.entrySet()) {
+                headers.put(entry.getKey().toString(), entry.getValue());
+            }
+            return headers;
+        } finally {
+            jf.close();
+        }
+    }    
 }
