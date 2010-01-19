@@ -227,6 +227,7 @@ public class PersistenceContextManager extends ServiceTracker{
       props.put(PersistenceUnitConstants.OSGI_UNIT_NAME, name);
       props.put(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT, Boolean.TRUE);
       props.put(PersistenceUnitConstants.OSGI_UNIT_PROVIDER, unit.getProperty(PersistenceUnitConstants.OSGI_UNIT_PROVIDER));
+      props.put(PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME, "".equals(name));
       
       BundleContext persistenceBundleContext = unit.getBundle().getBundleContext();
       reg = persistenceBundleContext.registerService(
