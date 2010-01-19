@@ -210,8 +210,13 @@ public class NSHandler implements NamespaceHandler {
   }
   
   private String parseUnitName(Element element) {
-    return element.hasAttribute(ATTR_UNIT_NAME) ?
+    String result = element.hasAttribute(ATTR_UNIT_NAME) ? 
         element.getAttribute(ATTR_UNIT_NAME) : DEFAULT_UNIT_NAME;
+    
+    if ("".equals(result))
+      result = DEFAULT_UNIT_NAME;
+    
+    return result;
   }
   
   private Map<String, Object> parseJPAProperties(Element element, ParserContext context) {
