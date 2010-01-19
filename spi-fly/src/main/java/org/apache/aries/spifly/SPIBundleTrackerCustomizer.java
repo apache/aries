@@ -24,48 +24,46 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
-import org.osgi.util.tracker.BundleTracker;
+import org.osgi.util.tracker.BundleTrackerCustomizer;
 
-public class SPIBundleTracker extends BundleTracker {
+public class SPIBundleTrackerCustomizer implements BundleTrackerCustomizer {
     public static final String SPI_PROVIDER_URL = "spi.provider.url";
     public static final String OPT_IN_HEADER = "SPI-Provider";
     
     final Activator activator;
-    List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
+    final Bundle spiBundle;
     
-    public SPIBundleTracker(BundleContext context, Activator a) {
-        super(context, Bundle.ACTIVE, null);
+    public SPIBundleTrackerCustomizer(Activator a, Bundle b) {
         activator = a;
+        spiBundle = b;
     }
-    
-    @Override
+
     public Object addingBundle(Bundle bundle, BundleEvent event) {
-        Object rv = super.addingBundle(bundle, event);
         log(LogService.LOG_INFO, "Bundle Considered for SPI providers: " + bundle.getSymbolicName());
-        if (bundle.equals(context.getBundle())) {
-            return rv;
+        if (bundle.equals(spiBundle)) {
+            return null;
         }
         
         if (bundle.getHeaders().get(OPT_IN_HEADER) == null) {
-            log(LogService.LOG_INFO, "Skipping bundle for SPI provider consideration: " + bundle.getSymbolicName());
-            return rv;
+            log(LogService.LOG_INFO, "No '" + OPT_IN_HEADER + 
+                "' Manifest header. Skipping bundle: " + bundle.getSymbolicName());
+            return null;
         } else {
-            log(LogService.LOG_INFO, "Considering bundle for SPI provider: " + bundle.getSymbolicName());
+            log(LogService.LOG_INFO, "Examining bundle for SPI provider: " + bundle.getSymbolicName());
         }
         
         Enumeration<?> entries = bundle.findEntries("META-INF/services", "*", false);
         if (entries == null) {
-            return rv;
+            return null;
         }
-        
+
+        List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
         while(entries.hasMoreElements()) {
             URL url = (URL) entries.nextElement();
             log(LogService.LOG_INFO, "Found SPI resource: " + url);
@@ -89,43 +87,32 @@ public class SPIBundleTracker extends BundleTracker {
                     registrationClassName = s.substring(idx + 1);
                 }
                                 
-                synchronized (this) {
-                    registrations.add(bundle.getBundleContext().registerService(registrationClassName, o, props));
-                }
+                ServiceRegistration reg = bundle.getBundleContext().registerService(registrationClassName, o, props);
+                registrations.add(reg);
+                log(LogService.LOG_INFO, "Registered service: " + reg);
             } catch (Exception e) {
                 log(LogService.LOG_INFO, "Could not load SPI implementation referred from " + url, e);
-                e.printStackTrace();
             }
         }
         
-        return rv;
+        return registrations;
     }
 
-    @Override
+    public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
+        // nothing to do here
+    }
+
     public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
-        synchronized (this) {
-            for (Iterator<ServiceRegistration> it = registrations.iterator(); it.hasNext(); ) {
-                ServiceRegistration sr = it.next();
-                if (bundle.equals(sr.getReference().getBundle())) {
-                    sr.unregister();
-                    it.remove();
+        if (object instanceof List<?>) {
+            for (Object reg : (List<?>) object) {
+                if (reg instanceof ServiceRegistration) {
+                    ((ServiceRegistration) reg).unregister();
+                    log(LogService.LOG_INFO, "Unregistered: " + reg);
                 }
             }
         }
-        
-        super.removedBundle(bundle, event, object);
-    }        
-
-    @Override
-    public void close() {
-        super.close();
-        
-        for (ServiceRegistration sr : registrations) {
-            sr.unregister();
-        }
-        registrations.clear();        
     }
-
+    
     private void log(int level, String message) {
         activator.log(level, message);
     }

@@ -20,8 +20,6 @@ package org.apache.aries.spifly;
 
 import junit.framework.TestCase;
 
-import org.apache.aries.spifly.Activator;
-import org.apache.aries.spifly.SPIBundleTracker;
 import org.easymock.IAnswer;
 import org.easymock.classextension.EasyMock;
 import org.osgi.framework.BundleContext;
@@ -51,7 +49,7 @@ public class ActivatorTest extends TestCase {
         Activator a = new Activator();
         a.start(bc);
         
-        assertTrue(a.bt instanceof SPIBundleTracker);
+        assertNotNull(a.bt);
         assertNotNull(a.lst);
         assertEquals(0, a.logServices.size());
         
