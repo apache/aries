@@ -118,6 +118,18 @@ public class NSHandlerTest {
     assertEquals("(!(osgi.unit.name=*))", reference.getFilter());
   }
   
+  @Test
+  public void testEmptyUnitName() {
+    Element e = getTestElement("emptyUnitName");
+    BeanMetadata bean = 
+      (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), null);
+    BeanProperty property = (BeanProperty) bean.getProperties().get(0);
+    ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
+    
+    assertEquals("emf3", property.getName());
+    assertEquals("(!(osgi.unit.name=*))", reference.getFilter());
+  }
+  
   @Test 
   public void testBeanMetadataOverwrite() {
     Element e = getTestElement("unit");
