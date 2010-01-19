@@ -180,6 +180,7 @@ public class EntityManagerFactoryManager {
           
         props.put(PersistenceUnitConstants.OSGI_UNIT_NAME, unitName);
         props.put(PersistenceUnitConstants.OSGI_UNIT_PROVIDER, providerName);
+        props.put(PersistenceUnitConstants.OSGI_UNIT_VERSION, provider.getBundle().getVersion());
         props.put(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT, Boolean.TRUE);
         props.put(PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME, "".equals(unitName));
         try {

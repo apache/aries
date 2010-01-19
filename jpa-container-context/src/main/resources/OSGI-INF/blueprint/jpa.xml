@@ -30,7 +30,7 @@
     </bean>
   </service>
   
-  <bean id="persistenceManager" class="org.apache.aries.jpa.container.context">
+  <bean id="persistenceManager" class="org.apache.aries.jpa.container.context.GlobalPersistenceManager">
     <property name="registry" ref="JtaPersistenceContextRegistry" />
   </bean>
   
