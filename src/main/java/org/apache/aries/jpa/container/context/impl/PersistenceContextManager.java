@@ -233,6 +233,7 @@ public class PersistenceContextManager extends ServiceTracker{
       Hashtable<String, Object> props = new Hashtable<String, Object>();
       
       props.put(PersistenceUnitConstants.OSGI_UNIT_NAME, name);
+      props.put(PersistenceUnitConstants.OSGI_UNIT_VERSION, unit.getProperty(PersistenceUnitConstants.OSGI_UNIT_VERSION));
       props.put(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT, Boolean.TRUE);
       props.put(PersistenceUnitConstants.OSGI_UNIT_PROVIDER, unit.getProperty(PersistenceUnitConstants.OSGI_UNIT_PROVIDER));
       props.put(PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME, "".equals(name));

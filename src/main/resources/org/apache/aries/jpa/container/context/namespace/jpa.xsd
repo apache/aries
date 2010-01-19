@@ -32,11 +32,11 @@
   
   <xsd:complexType name="TcontextType">
     <xsd:sequence>
-      <xsd:element ref="osgi:map" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="map" type="osgi:Tmap" minOccurs="0" maxOccurs="1" />
     </xsd:sequence>
     <xsd:attribute name="property" type="xsd:string" use="required" />
     <xsd:attribute name="unitname" type="xsd:string" use="optional" />
-    <xsd:attribute name="type" type="contextScopeType" use="optional" />
+    <xsd:attribute name="type" type="TcontextScopeType" use="optional" />
   </xsd:complexType>
 
   <xsd:complexType name="TunitType">
