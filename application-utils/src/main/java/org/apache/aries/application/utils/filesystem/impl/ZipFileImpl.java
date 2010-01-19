@@ -95,7 +95,7 @@ public class ZipFileImpl implements IFile
     name = "";
     lastModified = fs.lastModified();
     size = fs.length();
-    url = fs.toURL().toExternalForm();
+    url = fs.toURI().toURL().toExternalForm();
   }
 
   public IDirectory convert()

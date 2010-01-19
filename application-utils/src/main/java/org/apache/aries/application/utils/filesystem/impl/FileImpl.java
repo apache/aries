@@ -112,7 +112,7 @@ public class FileImpl implements IFile
 
   public URL toURL() throws MalformedURLException
   {
-    URL result = file.toURL();
+    URL result = file.toURI().toURL();
     return result;
   }
 
