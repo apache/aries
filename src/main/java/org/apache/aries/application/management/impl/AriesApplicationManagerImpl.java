@@ -52,6 +52,7 @@ import org.apache.aries.application.management.ConversionException;
 import org.apache.aries.application.management.LocalPlatform;
 import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.ResolveConstraint;
+import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.management.internal.MessageUtil;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.FileSystem;
@@ -188,8 +189,10 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     } catch (IOException iox) { 
       _logger.error ("APPMANAGEMENT0006E", new Object []{ebaFile.getName(), iox});
       throw new ManagementException(iox);
+    } catch (ResolverException rx) { 
+      _logger.error ("APPMANAGEMENT0008E", new Object []{ebaFile.getName(), rx});
+      throw new ManagementException(rx);
     }
-    
     return application;
   }
 
