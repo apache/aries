@@ -23,8 +23,8 @@ import java.io.IOException;
 import junit.framework.Assert;
 
 import org.apache.aries.application.ApplicationMetadata;
-import org.apache.aries.application.ApplicationMetadataManager;
-import org.apache.aries.application.impl.ApplicationMetadataManagerImpl;
+import org.apache.aries.application.ApplicationMetadataFactory;
+import org.apache.aries.application.impl.ApplicationMetadataFactoryImpl;
 import org.junit.Test;
 
 public class ApplicationMetadataImplTest
@@ -32,7 +32,7 @@ public class ApplicationMetadataImplTest
   @Test
   public void testBasicMetadataCreation() throws IOException
   {
-    ApplicationMetadataManager manager = new ApplicationMetadataManagerImpl();
+    ApplicationMetadataFactory manager = new ApplicationMetadataFactoryImpl();
     ApplicationMetadata app = manager.parseApplicationMetadata(getClass().getResourceAsStream("/META-INF/APPLICATION.MF"));
     
     Assert.assertEquals("Travel Reservation", app.getApplicationName());

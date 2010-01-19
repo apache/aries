@@ -25,18 +25,13 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.jar.Manifest;
 
 import org.apache.aries.application.ApplicationMetadata;
-import org.apache.aries.application.ApplicationMetadataManager;
+import org.apache.aries.application.ApplicationMetadataFactory;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
 import org.osgi.framework.Version;
 
-/**
- * This class implements the application metadata manager. It is not directly
- * exposed outside of the bundle, their is a service facade in front of it which
- * is used by clients.
- */
-public class ApplicationMetadataManagerImpl implements ApplicationMetadataManager
+public class ApplicationMetadataFactoryImpl implements ApplicationMetadataFactory
 {
   /** The applications managed, keyed based on the app symbolic name and version */
   public ConcurrentMap<String, ApplicationMetadata> applications = new ConcurrentHashMap<String, ApplicationMetadata>();
