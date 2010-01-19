@@ -25,14 +25,17 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceReference;
 
 public class ManagedPersistenceUnitInfoImpl implements
     ManagedPersistenceUnitInfo {
 
   private final PersistenceUnitInfo info;
+  
   public ManagedPersistenceUnitInfoImpl(Bundle persistenceBundle,
-      ParsedPersistenceUnit unit) {
-    info = new PersistenceUnitInfoImpl(persistenceBundle, unit);
+      ParsedPersistenceUnit unit,
+      ServiceReference providerRef) {
+    info = new PersistenceUnitInfoImpl(persistenceBundle, unit, providerRef);
   }
 
   public Map<String, Object> getContainerProperties() {
