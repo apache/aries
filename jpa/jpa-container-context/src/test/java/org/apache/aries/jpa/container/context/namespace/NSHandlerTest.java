@@ -35,6 +35,7 @@ import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.container.Parser;
 import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
+import org.apache.aries.blueprint.reflect.ReferenceMetadataImpl;
 import org.apache.aries.jpa.container.context.PersistenceManager;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
@@ -44,6 +45,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -83,11 +85,19 @@ public class NSHandlerTest {
     parserCtx = Skeleton.newMock(new ParserContextMock(), ParserContext.class);
     Skeleton.getSkeleton(parserCtx).setReturnValue(
         new MethodCall(ParserContext.class,"getComponentDefinitionRegistry"), registry);
+    Skeleton.getSkeleton(parserCtx).setReturnValue(
+        new MethodCall(ParserContext.class, "getDefaultActivation"), "eager");
+    Skeleton.getSkeleton(parserCtx).setReturnValue(
+        new MethodCall(ParserContext.class, "getDefaultTimeout"), "5000");
   }
   
   private static class ParserContextMock {
     public<T> T parseElement(Class<T> type, ComponentMetadata enclosingComponent, Element element) {
       return new Parser().parseElement(type, enclosingComponent, element);
+    }
+    
+    public<T extends Metadata> T createMetadata(Class<T> clazz) {
+      return clazz.cast(new ReferenceMetadataImpl());
     }
   }
   
@@ -95,7 +105,7 @@ public class NSHandlerTest {
   public void testUnit() {
     Element e = getTestElement("unit");
     BeanMetadata bean = 
-      (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), null);
+      (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), parserCtx);
     BeanProperty property = (BeanProperty) bean.getProperties().get(0);
     ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
     
@@ -110,7 +120,7 @@ public class NSHandlerTest {
   public void testUnitNoName() {
     Element e = getTestElement("unitNoName");
     BeanMetadata bean = 
-      (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), null);
+      (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), parserCtx);
     BeanProperty property = (BeanProperty) bean.getProperties().get(0);
     ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
     
@@ -122,7 +132,7 @@ public class NSHandlerTest {
   public void testEmptyUnitName() {
     Element e = getTestElement("emptyUnitName");
     BeanMetadata bean = 
-      (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), null);
+      (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), parserCtx);
     BeanProperty property = (BeanProperty) bean.getProperties().get(0);
     ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
     
@@ -137,7 +147,7 @@ public class NSHandlerTest {
     oldBean.setId("myid");
     oldBean.setProperties(Arrays.asList(Skeleton.newMock(BeanProperty.class)));
     
-    BeanMetadata bean = (BeanMetadata) sut.decorate(e, oldBean, null);
+    BeanMetadata bean = (BeanMetadata) sut.decorate(e, oldBean, parserCtx);
 
     assertEquals("myid", bean.getId());
     assertEquals(2, bean.getProperties().size());

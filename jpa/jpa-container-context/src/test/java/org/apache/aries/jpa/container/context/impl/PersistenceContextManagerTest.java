@@ -28,7 +28,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
-import org.apache.aries.jpa.container.context.impl.PersistenceContextManager;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
 import org.apache.aries.unittest.mocks.Skeleton;
@@ -40,6 +39,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.Version;
 
 
 public class PersistenceContextManagerTest {
@@ -257,6 +257,7 @@ public class PersistenceContextManagerTest {
       props.put(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT, managed);
     
     props.put(PersistenceUnitConstants.OSGI_UNIT_PROVIDER, "some.provider.Name");
+    props.put(PersistenceUnitConstants.OSGI_UNIT_VERSION, new Version("1.0.0"));
     
     return context.registerService(
         EntityManagerFactory.class.getName(), emf, props);
@@ -272,6 +273,8 @@ public class PersistenceContextManagerTest {
     assertEquals("Wrong unit name", name, refs[0].getProperty(PersistenceUnitConstants.OSGI_UNIT_NAME));
     
     assertEquals("Wrong provider name", "some.provider.Name", refs[0].getProperty(PersistenceUnitConstants.OSGI_UNIT_PROVIDER));
+    
+    assertEquals("Wrong unit version", new Version("1.0.0"), refs[0].getProperty(PersistenceUnitConstants.OSGI_UNIT_VERSION));
     
     assertEquals("Unit should be managed", Boolean.TRUE, refs[0].getProperty(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT));
   }

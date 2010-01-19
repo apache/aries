@@ -87,6 +87,11 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.groupId}.container</Bundle-SymbolicName>
+                        <Import-Package>
+                            javax.persistence;version="[1.0.0,1.2.0)",
+                            javax.persistence.spi;version="[1.0.0,1.2.0)",
+                            *
+                        </Import-Package>
                         <Export-Package>
                             org.apache.aries.jpa.container.parsing;version="${pom.version}",
                             org.apache.aries.jpa.container;version="${pom.version}"

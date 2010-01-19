@@ -55,6 +55,7 @@ public class GlobalPersistenceManager implements PersistenceManager, Synchronous
         manager = managers.get(frameworkBundle);
       } else {
         manager = new PersistenceContextManager(frameworkBundle.getBundleContext(), registry);
+        manager.open();
         managers.put(frameworkBundle, manager);
         frameworkBundle.getBundleContext().addBundleListener(this);
       }

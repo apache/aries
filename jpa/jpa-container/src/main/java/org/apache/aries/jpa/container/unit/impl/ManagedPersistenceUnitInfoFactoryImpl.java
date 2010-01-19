@@ -39,7 +39,7 @@ public class ManagedPersistenceUnitInfoFactoryImpl implements
     Collection<ManagedPersistenceUnitInfo> managedUnits = new ArrayList<ManagedPersistenceUnitInfo>();
     
     for(ParsedPersistenceUnit unit : persistenceMetadata)
-      managedUnits.add(new ManagedPersistenceUnitInfoImpl(persistenceBundle, unit));
+      managedUnits.add(new ManagedPersistenceUnitInfoImpl(persistenceBundle, unit, providerReference));
     
     return managedUnits;
   }

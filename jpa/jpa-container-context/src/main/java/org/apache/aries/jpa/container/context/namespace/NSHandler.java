@@ -20,6 +20,7 @@ package org.apache.aries.jpa.container.context.namespace;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +33,7 @@ import javax.persistence.PersistenceContextType;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.PassThroughMetadata;
-import org.apache.aries.blueprint.mutable.MutableBeanProperty;
-import org.apache.aries.blueprint.reflect.BeanPropertyImpl;
-import org.apache.aries.blueprint.reflect.ReferenceMetadataImpl;
+import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.context.PersistenceManager;
 import org.osgi.framework.Bundle;
@@ -45,6 +44,7 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.w3c.dom.Element;
@@ -69,6 +69,8 @@ public class NSHandler implements NamespaceHandler {
   
   public static final String EMPTY_UNIT_NAME_FILTER = 
     "(" + PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME + "=true)";
+
+  private static final String ACTIVATION_EAGER = "EAGER";
   
   private PersistenceManager manager;
   
@@ -94,7 +96,8 @@ public class NSHandler implements NamespaceHandler {
       throw new IllegalArgumentException();
     
     final BeanProperty beanProperty = createInjectMetadata(element, 
-        TAG_UNIT.equals(element.getLocalName()) ? EntityManagerFactory.class : EntityManager.class);
+        TAG_UNIT.equals(element.getLocalName()) ? EntityManagerFactory.class : EntityManager.class,
+        context);
       
     if (TAG_CONTEXT.equals(element.getLocalName())) {
       Bundle client = getBlueprintBundle(context);
@@ -173,22 +176,34 @@ public class NSHandler implements NamespaceHandler {
     throw new UnsupportedOperationException();
   }
   
-  private BeanProperty createInjectMetadata(Element element, Class<?> clazz) {
+  private BeanProperty createInjectMetadata(Element element, Class<?> clazz, ParserContext ctx) {
     String unitName = parseUnitName(element);
-    String property = parseProperty(element);
+    final String property = parseProperty(element);
 
-    ReferenceMetadataImpl refMetadata = new ReferenceMetadataImpl();
-    refMetadata.setInterface(clazz.getName());
+    final MutableReferenceMetadata refMetadata = (MutableReferenceMetadata) ctx.createMetadata(ReferenceMetadata.class);
+    refMetadata.setActivation(ACTIVATION_EAGER.equalsIgnoreCase(ctx.getDefaultActivation()) ?
+        ReferenceMetadata.ACTIVATION_EAGER : ReferenceMetadata.ACTIVATION_LAZY);
+    refMetadata.setAvailability(ReferenceMetadata.AVAILABILITY_MANDATORY);
+    refMetadata.setInterface(clazz.getName());    
+    
     if (!"".equals(unitName))
       refMetadata.setFilter("(" + PersistenceUnitConstants.OSGI_UNIT_NAME + "=" + unitName + ")");
     else
       refMetadata.setFilter(EMPTY_UNIT_NAME_FILTER);
     
-    MutableBeanProperty propertyMetadata = new BeanPropertyImpl();
-    propertyMetadata.setName(property);
-    propertyMetadata.setValue(refMetadata);
-    
-    return propertyMetadata;
+    refMetadata.setTimeout(Integer.parseInt(ctx.getDefaultTimeout()));
+    refMetadata.setDependsOn((List<String>) Collections.EMPTY_LIST);
+    refMetadata.setId(ctx.generateId());
+        
+    return new BeanProperty() {      
+      public Metadata getValue() {
+        return refMetadata;
+      }
+      
+      public String getName() {
+        return property;
+      }
+    };
   }
   
   private Bundle getBlueprintBundle(ParserContext context) {
