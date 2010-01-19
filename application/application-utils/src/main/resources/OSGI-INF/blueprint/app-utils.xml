@@ -19,13 +19,8 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0">
   
-  <bean id="core-manager" class="org.apache.aries.application.impl.ApplicationMetadataManagerImpl" scope="singleton" activation="lazy"/>
-  
-  <bean id="manager-service" class="org.apache.aries.application.impl.ApplicationMetadataManagerServiceImpl" scope="singleton" activation="lazy">
-    <property name="manager" ref="core-manager"/>
-  </bean>
-  
-  <service interface="org.apache.aries.application.ApplicationMetadataManager" ref="manager-service" />
+  <bean id="applicationMf-factory" class="org.apache.aries.application.impl.ApplicationMetadataFactoryImpl" />
+  <service interface="org.apache.aries.application.ApplicationMetadataFactory" ref="applicationMf-factory" />
   
   <bean id="deploymentMf-factory" class="org.apache.aries.application.impl.DeploymentMetadataFactoryImpl" />
   <service interface="org.apache.aries.application.DeploymentMetadataFactory" ref="deploymentMf-factory" />

@@ -35,7 +35,7 @@ import java.util.Set;
 import java.util.jar.Manifest;
 
 import org.apache.aries.application.ApplicationMetadata;
-import org.apache.aries.application.ApplicationMetadataManager;
+import org.apache.aries.application.ApplicationMetadataFactory;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.DeploymentMetadataFactory;
 import org.apache.aries.application.filesystem.IDirectory;
@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
 
 public class AriesApplicationManagerImpl implements AriesApplicationManager {
 
-  private ApplicationMetadataManager _applicationMetadataManager;
+  private ApplicationMetadataFactory _applicationMetadataFactory;
   private DeploymentMetadataFactory _deploymentMetadataFactory;
   private List<BundleConverter> _bundleConverters;
   private AriesApplicationResolver _resolver;
@@ -76,8 +76,8 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
 
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.application.management.impl");
 
-  public void setApplicationMetadataManager (ApplicationMetadataManager amm) { 
-    _applicationMetadataManager = amm;
+  public void setApplicationMetadataFactory (ApplicationMetadataFactory amf) { 
+    _applicationMetadataFactory = amf;
   }
   
   public void setDeploymentMetadataFactory (DeploymentMetadataFactory dmf) { 
@@ -114,7 +114,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     try { 
       Manifest applicationManifest = parseApplicationManifest (ebaFile);
       ManifestDefaultsInjector.updateManifest(applicationManifest, ebaFile.getName(), ebaFile); 
-      applicationMetadata = _applicationMetadataManager.createApplicationMetadata(applicationManifest);
+      applicationMetadata = _applicationMetadataFactory.createApplicationMetadata(applicationManifest);
 
       IFile deploymentManifest = ebaFile.getFile(AppConstants.DEPLOYMENT_MF);
       if (deploymentManifest != null) { 
@@ -142,7 +142,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
         BundleManifest bm = getBundleManifest (f);
         if (bm != null) {
           if (bm.isValid()) {
-            extraBundlesInfo.add(new BundleInfoImpl(_applicationMetadataManager, bm, f.toURL().toExternalForm()));
+            extraBundlesInfo.add(new BundleInfoImpl(_applicationMetadataFactory, bm, f.toURL().toExternalForm()));
           } else if (deploymentMetadata != null) {
             throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0003E", f.getName(), ebaFile.getName()));
           } else { 
@@ -168,7 +168,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
             if (convertedBinary != null) { 
               modifiedBundles.put (f.getName(), convertedBinary);
               bm = BundleManifest.fromBundle(f);
-              extraBundlesInfo.add(new BundleInfoImpl(_applicationMetadataManager, bm, f.getName()));
+              extraBundlesInfo.add(new BundleInfoImpl(_applicationMetadataFactory, bm, f.getName()));
             }
           }
         } 
