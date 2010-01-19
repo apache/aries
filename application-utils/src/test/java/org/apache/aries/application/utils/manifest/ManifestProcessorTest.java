@@ -32,7 +32,7 @@ import java.util.jar.Manifest;
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.VersionRange;
-import org.apache.aries.application.impl.ApplicationMetadataManagerImpl;
+import org.apache.aries.application.impl.ApplicationMetadataFactoryImpl;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
 import org.junit.Test;
 import org.osgi.framework.Version;
@@ -84,7 +84,7 @@ public class ManifestProcessorTest
   @Test
   public void testManifestMetadata() throws Exception
   {
-    ApplicationMetadataManagerImpl manager = new ApplicationMetadataManagerImpl();
+    ApplicationMetadataFactoryImpl manager = new ApplicationMetadataFactoryImpl();
     InputStream in = getClass().getClassLoader().getResourceAsStream("META-INF/APPLICATION.MF");
     ApplicationMetadata am = manager.parseApplicationMetadata(in);
     assertNotNull(am);
@@ -113,7 +113,7 @@ public class ManifestProcessorTest
   @Test
   public void testManifestMetadataWithMultiLineEntries() throws Exception
   {
-    ApplicationMetadataManagerImpl manager = new ApplicationMetadataManagerImpl();
+    ApplicationMetadataFactoryImpl manager = new ApplicationMetadataFactoryImpl();
     
     InputStream in = getClass().getClassLoader().getResourceAsStream("META-INF/APPLICATION2.MF");
     
@@ -140,7 +140,7 @@ public class ManifestProcessorTest
   @Test
   public void testManifestWithoutEndingInNewLine() throws Exception
   {
-    ApplicationMetadataManagerImpl manager = new ApplicationMetadataManagerImpl();
+    ApplicationMetadataFactoryImpl manager = new ApplicationMetadataFactoryImpl();
     
     InputStream in = getClass().getClassLoader().getResourceAsStream("META-INF/APPLICATION3.MF");
     
