@@ -26,18 +26,25 @@ import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
 
+/**
+ * Methods for creating a DeploymentMetadata instance
+ */
 public interface DeploymentMetadataFactory {
 
   /** 
-   * Create a DeploymentMetadata instance
-   * @param app The AriesApplication in question
-   * @param bundleInfo A resolved set of BundleInfo objects
-   * @return
+   * Create a DeploymentMetadata from an AriesApplication and its by-value bundles. 
+   * @param  app The AriesApplication in question
+   * @param  bundleInfo A resolved set of BundleInfo objects
+   * @throws IOException
+   * @return DeploymentMetadata instance
    */
   public DeploymentMetadata createDeploymentMetadata (AriesApplication app, Set<BundleInfo> bundleInfo);
   
   /**
-   * Create a DeploymentMetadata instance from an IFile
+   * Extract a DeploymentMetadata instance from an IFile
+   * @param src DEPLOYMENT.MF file, either in an exploded directory or within a jar file. 
+   * @throws IOException
+   * @return DeploymentMetadata instance
    */
   public DeploymentMetadata createDeploymentMetadata (IFile src) throws IOException;
   

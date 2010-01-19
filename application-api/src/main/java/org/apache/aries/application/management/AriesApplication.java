@@ -30,19 +30,41 @@ import org.apache.aries.application.DeploymentMetadata;
 
 
 /**
- * Metadata about an Aries application - a representation of a .eba
- * file, as per http://incubator.apache.org/aries/applications.html
+ * Metadata about an Aries application
+ * @see <a href="http://incubator.apache.org/aries/applications.html">
+ * http://incubator.apache.org/aries/applications.html</a>. 
  *
  */
 public interface AriesApplication
 {
+  /**
+   * Get the application metadata, which is stored in META-INF/APPLICATION.MF.
+   * @return ApplicationMetadata
+   */
   public ApplicationMetadata getApplicationMetadata();
+  
+  /**
+   * Get the deployment metadata, which is stored in META-INF/DEPLOYMENT.MF.
+   * @return DeploymentMetadata
+   */
   public DeploymentMetadata getDeploymentMetadata();
 
-  /** the set of bundles included in the application by value */
+  /** 
+   * @return the set of bundles included in the application by value 
+   */
   public Set<BundleInfo> getBundleInfo();
 
-  /** Stores any changes to disk using this implementations storage form */
+  /** 
+   * Persist this metadata. 
+   * @param f The file to store this metadata to
+   * @throws IOException
+   */
   public void store(File f) throws FileNotFoundException, IOException;
+  
+  /** 
+   * Persist this metadata. 
+   * @param out The output stream to store this metadata to
+   * @throws IOException
+   */
   public void store(OutputStream out) throws FileNotFoundException, IOException;
 }

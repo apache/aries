@@ -22,7 +22,7 @@ import java.util.Map;
 
 
 /**
- * this interface describes the content metadata such as Application-Content, Import-Package, etc
+ * A representation of content metadata such as Application-Content, Import-Package, etc
  *
  */
 public interface Content
