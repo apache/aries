@@ -35,6 +35,7 @@ import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.mutable.MutableBeanProperty;
 import org.apache.aries.blueprint.reflect.BeanPropertyImpl;
 import org.apache.aries.blueprint.reflect.ReferenceMetadataImpl;
+import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.context.PersistenceManager;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.reflect.BeanArgument;
@@ -64,7 +65,10 @@ public class NSHandler implements NamespaceHandler {
   private static final String ATTR_UNIT_NAME = "unitname";
   
   private static final String TYPE_JTA = "TRANSACTION";
-  private static final String DEFAULT_UNIT_NAME = null;
+  private static final String DEFAULT_UNIT_NAME = "";
+  
+  public static final String EMPTY_UNIT_NAME_FILTER = 
+    "(" + PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME + "=true)";
   
   private PersistenceManager manager;
   
@@ -175,10 +179,10 @@ public class NSHandler implements NamespaceHandler {
 
     ReferenceMetadataImpl refMetadata = new ReferenceMetadataImpl();
     refMetadata.setInterface(clazz.getName());
-    if (unitName != null)
-      refMetadata.setFilter("(osgi.unit.name="+unitName+")");
+    if (!"".equals(unitName))
+      refMetadata.setFilter("(" + PersistenceUnitConstants.OSGI_UNIT_NAME + "=" + unitName + ")");
     else
-      refMetadata.setFilter("(!(osgi.unit.name=*))");
+      refMetadata.setFilter(EMPTY_UNIT_NAME_FILTER);
     
     MutableBeanProperty propertyMetadata = new BeanPropertyImpl();
     propertyMetadata.setName(property);
@@ -210,13 +214,8 @@ public class NSHandler implements NamespaceHandler {
   }
   
   private String parseUnitName(Element element) {
-    String result = element.hasAttribute(ATTR_UNIT_NAME) ? 
+    return element.hasAttribute(ATTR_UNIT_NAME) ? 
         element.getAttribute(ATTR_UNIT_NAME) : DEFAULT_UNIT_NAME;
-    
-    if ("".equals(result))
-      result = DEFAULT_UNIT_NAME;
-    
-    return result;
   }
   
   private Map<String, Object> parseJPAProperties(Element element, ParserContext context) {

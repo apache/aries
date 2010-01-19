@@ -115,7 +115,7 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
     
     assertEquals("emf2", property.getName());
-    assertEquals("(!(osgi.unit.name=*))", reference.getFilter());
+    assertEquals(NSHandler.EMPTY_UNIT_NAME_FILTER, reference.getFilter());
   }
   
   @Test
@@ -127,7 +127,7 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
     
     assertEquals("emf3", property.getName());
-    assertEquals("(!(osgi.unit.name=*))", reference.getFilter());
+    assertEquals(NSHandler.EMPTY_UNIT_NAME_FILTER, reference.getFilter());
   }
   
   @Test 
@@ -167,14 +167,14 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
     
     assertEquals(EntityManager.class.getName(), reference.getInterface());
-    assertEquals("(!(osgi.unit.name=*))", reference.getFilter());
+    assertEquals(NSHandler.EMPTY_UNIT_NAME_FILTER, reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
     props.put("type", PersistenceContextType.EXTENDED);
     props.put("one", "eins");
     props.put("two", "zwo");
     Skeleton.getSkeleton(manager).assertCalled(
-        new MethodCall(PersistenceManager.class, "registerContext", null, clientBundle, props));    
+        new MethodCall(PersistenceManager.class, "registerContext", "", clientBundle, props));    
   }
   
   private Element getTestElement(String beanName) {

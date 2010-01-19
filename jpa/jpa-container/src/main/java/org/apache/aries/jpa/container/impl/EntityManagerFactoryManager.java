@@ -181,6 +181,7 @@ public class EntityManagerFactoryManager {
         props.put(PersistenceUnitConstants.OSGI_UNIT_NAME, unitName);
         props.put(PersistenceUnitConstants.OSGI_UNIT_PROVIDER, providerName);
         props.put(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT, Boolean.TRUE);
+        props.put(PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME, "".equals(unitName));
         try {
           registrations.add(bundle.getBundleContext().registerService(EntityManagerFactory.class.getCanonicalName(), entry.getValue(), props));
         } catch (Exception e) {
