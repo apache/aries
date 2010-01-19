@@ -32,14 +32,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.aries.application.ApplicationMetadata;
-import org.apache.aries.application.ApplicationMetadataManager;
+import org.apache.aries.application.ApplicationMetadataFactory;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.DeploymentMetadataFactory;
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
-import org.apache.aries.application.impl.ApplicationMetadataManagerImpl;
+import org.apache.aries.application.impl.ApplicationMetadataFactoryImpl;
 import org.apache.aries.application.impl.ContentImpl;
 import org.apache.aries.application.impl.DeploymentContentImpl;
 import org.apache.aries.application.impl.DeploymentMetadataFactoryImpl;
@@ -101,19 +101,19 @@ public class AriesApplicationManagerImplTest {
   }
   
   AriesApplicationManagerImpl _appMgr;
-  ApplicationMetadataManager _appMetaMgr;
+  ApplicationMetadataFactory _appMetaFactory;
   DummyResolver _resolver;
   
   @Before
   public void setup() { 
     _appMgr = new AriesApplicationManagerImpl ();
-    _appMetaMgr = new ApplicationMetadataManagerImpl ();
+    _appMetaFactory = new ApplicationMetadataFactoryImpl ();
 
     DeploymentMetadataFactory dmf = new DeploymentMetadataFactoryImpl();
     List<BundleConverter> bundleConverters = new ArrayList<BundleConverter>();
     _resolver = new DummyResolver();
     
-    _appMgr.setApplicationMetadataManager(_appMetaMgr);
+    _appMgr.setApplicationMetadataFactory(_appMetaFactory);
     _appMgr.setDeploymentMetadataFactory(dmf);
     _appMgr.setBundleConverters(bundleConverters);
     _appMgr.setResolver(_resolver);
@@ -189,7 +189,7 @@ public class AriesApplicationManagerImplTest {
     String persistenceLibraryLocation = "../src/test/resources/bundles/repository/a.handy.persistence.library.jar";
     File persistenceLibrary = new File (persistenceLibraryLocation);
     BundleManifest mf = BundleManifest.fromBundle(persistenceLibrary);
-    BundleInfo resolvedPersistenceLibrary = new BundleInfoImpl(_appMetaMgr, mf, persistenceLibraryLocation); 
+    BundleInfo resolvedPersistenceLibrary = new BundleInfoImpl(_appMetaFactory, mf, persistenceLibraryLocation); 
     Field v = BundleInfoImpl.class.getDeclaredField("_version");
     v.setAccessible(true);
     v.set(resolvedPersistenceLibrary, new Version("1.1.0"));
