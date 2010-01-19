@@ -21,6 +21,7 @@ package org.apache.aries.spifly;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -38,7 +39,8 @@ public class Activator implements BundleActivator {
         lst = new LogServiceTracker(context, LogService.class.getName(), null);
         lst.open();
         
-	    bt = new SPIBundleTracker(context, this);
+	    bt = new BundleTracker(context, Bundle.ACTIVE, 
+	            new SPIBundleTrackerCustomizer(this, context.getBundle()));
 	    bt.open();
 	}
 
