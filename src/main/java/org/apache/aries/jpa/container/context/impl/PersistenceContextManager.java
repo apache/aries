@@ -90,13 +90,15 @@ public class PersistenceContextManager extends ServiceTracker{
   public Object addingService(ServiceReference reference) {
 
     String unitName = (String) reference.getProperty(PersistenceUnitConstants.OSGI_UNIT_NAME);
+    if(unitName == null)
+      unitName = "";
     boolean register;
     //Use a synchronized block to ensure that we get an atomic view of the persistenceUnits
     //and the persistenceContextDefinitions
     synchronized (this) {
       //If we already track a unit with the same name then we are in trouble!
       //only one unit with a given name should exist at a single scope
-      if(!!!persistenceUnits.containsKey(unitName)) {
+      if(persistenceUnits.containsKey(unitName)) {
         //TODO log a big warning here!
         //Stop tracking the duplicate unit.
         return null;
@@ -115,7 +117,9 @@ public class PersistenceContextManager extends ServiceTracker{
 
   public void removedService(ServiceReference ref, Object o)
   {
-    String unitName = (String) ref.getProperty(PersistenceUnitConstants.OSGI_UNIT_NAME);;
+    String unitName = (String) ref.getProperty(PersistenceUnitConstants.OSGI_UNIT_NAME);
+    if(unitName == null)
+      unitName = "";
     //Remove the persistence Unit service to prevent other people from trying to use it
     synchronized (this) {
       persistenceUnits.remove(unitName);
@@ -152,6 +156,7 @@ public class PersistenceContextManager extends ServiceTracker{
       if(oldProps != null) {
         if(!!!oldProps.equals(properties)) {
           //TODO log an error and use the old properties
+          persistenceContextDefinitions.put(name, oldProps);
         }
       }
       //We should only register if our persistence unit exists
@@ -199,13 +204,16 @@ public class PersistenceContextManager extends ServiceTracker{
     ServiceFactory entityManagerServiceFactory;
     ServiceReference unit;
     ServiceRegistration reg = null;
+    boolean alreadyRegistered = false;
     try
     {
       //Synchronize for an atomic view
       synchronized (this) {
         //Not our job to register if someone is already doing it, or has already done it
-        if(entityManagerRegistrations.containsKey(name))
+        if(entityManagerRegistrations.containsKey(name)){
+          alreadyRegistered = true;
           return;
+        }
         //Block other threads from trying to register by adding the key
         entityManagerRegistrations.put(name, null);
         
@@ -244,19 +252,21 @@ public class PersistenceContextManager extends ServiceTracker{
         //If we created a registration
         if(reg != null) {
           //If the key still exists then all is well
-          if(entityManagerRegistrations.containsKey(name))
+          if(entityManagerRegistrations.containsKey(name)) {
             entityManagerRegistrations.put(name, reg);
           //Else we were in a potential live-lock and the service could not be unregistered
           //earlier. This means we have to do it (but outside the synchronized. Make sure we
           //also remove the registration key!
-          else {
+          } else {
             entityManagerRegistrations.remove(name);
             recoverFromLiveLock = true;
           }
         }
-        //There was no registration created. Remove the key.
-        else
-          entityManagerRegistrations.remove(name);
+        //There was no registration created. Remove the key if we were registering.
+        else {
+          if(!!!alreadyRegistered)
+            entityManagerRegistrations.remove(name);
+        }
         
         //Notify any waiting unregistrations that they can proceed
         this.notifyAll();
