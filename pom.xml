@@ -44,6 +44,7 @@
         <module>application</module>
         <module>jmx</module>
         <module>jpa</module>
+        <module>spi-fly</module>
         <module>samples</module>
   </modules>
 
