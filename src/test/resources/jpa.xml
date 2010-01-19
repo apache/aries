@@ -26,6 +26,10 @@
     <jpa:unit property="emf2" />
   </bean>
   
+  <bean id="emptyUnitName">
+    <jpa:unit property="emf3" unitname="" />
+  </bean>
+  
   <bean id="context">
     <jpa:context property="em" unitname="myUnit"/>
   </bean>
