@@ -27,7 +27,16 @@ import org.osgi.framework.Version;
  * application. 
  */
 public interface ResolveConstraint {
+  /**
+   * The name of the newly required bundle
+   * @return Bundle name
+   */
   public String getBundleName();
+  
+  /** 
+   * The version of the newly required bundle
+   * @return Bundle version
+   */
   public Version getVersion();
 
 }

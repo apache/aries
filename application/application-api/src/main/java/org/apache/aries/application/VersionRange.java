@@ -20,6 +20,10 @@ package org.apache.aries.application;
 
 import org.osgi.framework.Version;
 
+/**
+ * A representation of a Version Range. @see <a href="http://www.osgi.org/Release4/HomePage">
+ * section 3.2.6</a> of the OSGi Service Platform Core Specification. 
+ */
 public interface VersionRange
 {
   /**

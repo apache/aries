@@ -20,11 +20,16 @@ package org.apache.aries.application;
 
 import org.osgi.framework.Filter;
 
+/**
+ * Represents a service imported or exported by an Aries application. 
+ * @see <a href="http://incubator.apache.org/aries/applications.html">
+ * http://incubator.apache.org/aries/applications.html</a>. 
+ */
 public interface ServiceDeclaration {
 
 	/**
 	 * get the interface name for the service
-	 * @return
+	 * @return The name of the service's interface class. 
 	 */
 	public abstract String getInterfaceName();
 

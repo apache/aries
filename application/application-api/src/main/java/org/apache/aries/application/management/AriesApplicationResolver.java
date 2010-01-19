@@ -27,7 +27,8 @@ public interface AriesApplicationResolver {
    * 
    * @param app The application to resolve
    * @return The additional bundles required to ensure that the application resolves. This
-   *         set will not include those provided by value within the application. 
+   *         set will not include those provided by value within the application.
+   * @throws ResolverException if the application cannot be resolved.  
    */
-  Set<BundleInfo> resolve (AriesApplication app);
+  Set<BundleInfo> resolve (AriesApplication app) throws ResolverException ;
 }

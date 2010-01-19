@@ -21,13 +21,23 @@ package org.apache.aries.application.management;
 
 import java.util.Set;
 
-/* We'll use this interface as a plug-point to the application-runtime */
+/**
+ * An ApplicationContextManager is responsible for managing Aries applications in the 
+ * server's OSGi runtime. We expect that many projects consuming this code will provide
+ * their own implementation of this service. 
+ */
 public interface ApplicationContextManager {
 
-  // Moved from AriesApplicationManager
+  /**
+   * Obtain an ApplicationContext for an AriesApplication. Applications are stopped and
+   * started via an ApplicationContext. 
+   * @param app The applicaton for which to obtain an ApplicationContext. 
+   * @return ApplicationContext
+   */
   public ApplicationContext getApplicationContext(AriesApplication app);
-  
-  // Not sure who needs this or for what, so don't yet know if it'll need to 
-  // be an immutable copy, or a live reference. 
+
+  /**
+   * @return The set of all ApplicationContexts.
+   */
   public Set<ApplicationContext> getApplicationContexts();
 }

@@ -19,6 +19,9 @@
 
 package org.apache.aries.application.management;
 
+/**
+ * A client that wishes to receive ApplicationEvents should implement this interface. 
+ */
 public interface ApplicationListener {
 
   /**

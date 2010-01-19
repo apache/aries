@@ -19,6 +19,9 @@
 
 package org.apache.aries.application.management;
 
+/**
+ * An exception thrown by various methods within this package.
+ */
 public class ManagementException extends Exception {
 
   private static final long serialVersionUID = 6472726820228618243L;

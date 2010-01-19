@@ -20,12 +20,20 @@
 package org.apache.aries.application.management;
 
 /**
- * Passed to ApplicationListener clients
- *
+ * Objects of this type are passed to ApplicationListener clients
  */
 public abstract class ApplicationEvent {
 
+  /**
+   * Get the type of the event
+   * @return
+   */
   abstract public ApplicationContext.ApplicationState getType();
+  
+  /**
+   * Get the associated AriesApplication
+   * @return
+   */
   abstract public AriesApplication getApplication();
   
 }
