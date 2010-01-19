@@ -22,7 +22,8 @@ package org.apache.aries.application.filesystem;
 import java.util.List;
 
 /**
- * A virtual directory in a file system.
+ * A virtual directory in a file system. Widely used to present a common view of regular 
+ * file sytems, jar and zip files. 
  */
 public interface IDirectory extends Iterable<IFile>, IFile
 {

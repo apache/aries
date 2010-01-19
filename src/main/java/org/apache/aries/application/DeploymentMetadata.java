@@ -51,13 +51,24 @@ public interface DeploymentMetadata {
   public List<DeploymentContent> getApplicationDeploymentContents();
   
   /**
-   * return the application this deployment metadata is associated with.
-   * 
-   * @return the application.
+   * Obtain the associated 
+   * {@link org.apache.aries.application.ApplicationMetadata ApplicationMetadata}. 
+   * @return The application metadata.
    */
   public ApplicationMetadata getApplicationMetadata();
   
-  /** Stores any changes to disk using this implementation's storage form */
+  /** 
+   * Persist this metadata as Manifest-formatted text. 
+   * @param f The file to store this metadata to
+   * @throws IOException
+   */
   public void store(File f) throws IOException;
-  public void store(OutputStream in) throws IOException;
+  
+  /** 
+   * Persist this metadata.  
+   * @param out The OutputStream to store this metadata to. 
+   * @throws IOException
+   */
+
+  public void store(OutputStream out) throws IOException;
 }

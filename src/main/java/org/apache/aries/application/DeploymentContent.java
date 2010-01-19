@@ -23,7 +23,6 @@ import org.osgi.framework.Version;
 
 /**
  * An entry in DEPLOYMENT.MF's Deployed-Content header
- *
  */
 public interface DeploymentContent extends Content {
 
