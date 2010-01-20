@@ -4,9 +4,10 @@ Application-Name: AriesTrader EBA
 Application-SymbolicName: ariestrader.eba
 Application-Version: 1.0
 Application-Content: org.apache.aries.ariestrader.modules.ariestrader-util;version=1.0.0-incubating-SNAPSHOT,
- org.apache.aries.ariestrader.modules.ariestrader-beans;version=1.0.0-incubating-SNAPSHOT,
+ org.apache.aries.ariestrader.modules.ariestrader-api;version=1.0.0-incubating-SNAPSHOT,
  org.apache.aries.ariestrader.modules.ariestrader-core;version=1.0.0-incubating-SNAPSHOT,
  org.apache.aries.ariestrader.modules.ariestrader-persist-jdbc;version=1.0.0-incubating-SNAPSHOT,
+ org.apache.aries.ariestrader.modules.ariestrader-beans;version=1.0.0-incubating-SNAPSHOT,
  org.apache.aries.ariestrader.modules.ariestrader-web;version=1.0.0-incubating-SNAPSHOT
 
 
