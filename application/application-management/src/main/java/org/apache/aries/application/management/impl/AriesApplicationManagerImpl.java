@@ -253,7 +253,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   /**
    * Locate and parse an application.mf in an eba
    * @param source An aries application file
-   * @return parsed manifest, or null
+   * @return parsed manifest, or an empty Manifest
    * @throws IOException
    */
   private Manifest parseApplicationManifest (IDirectory source) throws IOException {
