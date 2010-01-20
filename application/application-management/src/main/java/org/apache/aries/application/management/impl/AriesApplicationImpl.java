@@ -152,10 +152,13 @@ public class AriesApplicationImpl implements AriesApplication {
 
     // Write the migrated bundles out
     if (_modifiedBundles != null) { 
-      for (Map.Entry<String, InputStream> modifiedBundle : _modifiedBundles.entrySet()) { 
-        out = IOUtils.getOutputStream(tempDir, modifiedBundle.getKey());
-        IOUtils.copy(modifiedBundle.getValue(), out);
-        IOUtils.close(out);
+      for (Map.Entry<String, InputStream> modifiedBundle : _modifiedBundles.entrySet()) {
+        try { 
+          out = IOUtils.getOutputStream(tempDir, modifiedBundle.getKey());
+          IOUtils.copy(modifiedBundle.getValue(), out);
+        } finally { 
+          IOUtils.close(out);
+        }
       }
     }
     
