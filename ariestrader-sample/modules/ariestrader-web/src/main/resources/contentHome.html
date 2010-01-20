@@ -33,31 +33,41 @@
 	<TR>
 		<TD>
 		<P align="left"><FONT size="+1"><B>Overview</B></FONT></P>
-		<BLOCKQUOTE><FONT face="Times New Roman" size="-1">The Apache Aries<SUP>TM</SUP>
+		<BLOCKQUOTE><FONT face="Times New Roman" size="-1">
+        The Apache Aries<SUP>TM</SUP>
 		performance benchmark sample provides a suite of Apache developed
 		workloads for characterizing performance of an Aries enabled Java EE
-		Application Server. The workloads consist of an end to end web
+		Application Server. The workloads consist of an end-to-end web
 		application and a set of primitives. The applications are a
 		collection of Java classes, Java Servlets, Java Server Pages, and blueprint
 		beans built to open OSGi and Java EE APIs. Together
-		these provide versatile and portable test cases designed to measure
-		aspects of scalability and performance.</FONT></BLOCKQUOTE>
+		these provide versatile and portable test cases that can be used to measure
+		aspects of scalability and performance.
+        </FONT></BLOCKQUOTE>
 		<P align="center">
-        <FONT size="+1"><B>New overview image coming soon</B></FONT></P>
-        <!--<IMG src="images/tradeOverview.png" width="717" height="538" border="0" alt=""> -->
-        <!--<BR>-->
+        <!--<FONT size="+1"><B>New overview image coming soon</B></FONT></P>-->
+        <IMG src="images/ariesTraderOverview.png" width="717" height="430" border="0" alt="">
+        <BR>
 		<!--<B>AriesTrader Java EE Components </B><BR>-->
 		<!--<B>Model-View-Controller Architecture</B></P>-->
+        <P align="left">
+		<BLOCKQUOTE><FONT face="Times New Roman" size="-1">
+        There are multiple OSGi bundles that comprise the application.  Some of these OSGi
+        bundles expose blueprint beans and services.  Others expose just interface classes
+        or implement persistence beans.  The Web bundle is a Web Application Bundle (WAB)
+        and consists of the web user interface entities.  The relationships above represent
+        dependencies on packages that are exported from the various bundles.  Additional groupings
+        of Persistence bundles exposing different TradeServices implementations and bean implementations 
+        can be added as appropriate to support different persistence modes.
+        </FONT></BLOCKQUOTE>
 		<BLOCKQUOTE><FONT size="-1"><B>AriesTrader</B><BR>
 		AriesTrader is the Aries end-to-end benchmark and performance sample
-		application. The new AriesTrader benchmark has been re-designed and
-		developed to cover the application-focused specifications defined by the OSGi Alliance 
-        Enterprise Expert Group (EEG) as implemented and extended in Apache Aries.
-		This provides a real world workload driving an Aries's
-		implementation of Aries enabled application servers. 
-		<BR>
-		<BR>
-		AriesTrader's new design leverages the OSGi programming model for Java EE applications.
+		application. The new AriesTrader benchmark has been derived from the Apache Geronimo
+        DayTrader sample with significant modifications to reorganize the code into multiple 
+        OSGi bundles and to leverage the Aries programming model.  It is leverage portions of
+		the application-focused specifications defined by the OSGi Alliance Enterprise Expert 
+        Group (EEG) as implemented and extended in Apache Aries.  This provides a real world 
+        workload for driving implementations of Aries enabled application servers. 
 		<BR>
 		<BR>
 		<B>Primitives</B><BR>
