@@ -49,13 +49,17 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class locates, parses and manages persistence units defined in OSGi bundles.
  */
 public class PersistenceBundleManager extends MultiBundleTracker
 {
+  /** Logger */
+  private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
+  
   /** The bundle context for this bundle */
   private BundleContext ctx = null;
   /** 
@@ -87,20 +91,19 @@ public class PersistenceBundleManager extends MultiBundleTracker
     this.ctx = ctx;
   }
   
+  @SuppressWarnings("unchecked")
   @Override
   public void open() {
     //Create the pluggable ManagedPersistenceUnitInfoFactory
     String className = config.getProperty(ManagedPersistenceUnitInfoFactory.DEFAULT_PU_INFO_FACTORY_KEY);
-    Class<? extends ManagedPersistenceUnitInfoFactory> clazz = null;
     
     if(className != null) {
       try {
-        clazz = ctx.getBundle().loadClass(className);
+        Class<? extends ManagedPersistenceUnitInfoFactory> clazz = ctx.getBundle().loadClass(className);
         persistenceUnitFactory = clazz.newInstance();
       } catch (Exception e) {
-        // TODO Log the error
-        e.printStackTrace();
-        //clazz = default;
+        _logger.error("There was a problem creating the custom ManagedPersistenceUnitInfoFactory " + className 
+            + ". The default ManagedPersistenceUnitInfo factory will be used instead", e);
       }
     }
     
@@ -110,39 +113,8 @@ public class PersistenceBundleManager extends MultiBundleTracker
     super.open();
   }
   
-  
-  
-//  /**
-//   * If we have generated a resources for the supplied bundle, then
-//   * tidy them  up.
-//   * @param host
-//   */
-//  private void tidyUpPersistenceBundle(Bundle host)
-//  {
-//    
-//    Bundle fragment = hostToFragmentMap.remove(host);
-//    Set<ServiceRegistration> services = hostToPersistenceUnitMap.remove(host);
-//    
-//    if(services != null) {
-//      for(ServiceRegistration reg : services)
-//        reg.unregister();
-//    }
-//    
-//    if(fragment != null){
-//      try {
-//        fragment.uninstall();
-//      } catch (BundleException be) {
-//        //TODO log this error, then hope that we don't try to
-//        //recreate the fragment before restarting the framework!
-//      }
-//    }
-//  }
-
   public Object addingBundle(Bundle bundle, BundleEvent event) 
   {
-    if(bundle.getState() == Bundle.ACTIVE) {
-      //TODO LOG WARNING HERE
-    }
     EntityManagerFactoryManager mgr = null;
     mgr = setupManager(bundle, mgr);
     return mgr;
@@ -189,60 +161,21 @@ public class PersistenceBundleManager extends MultiBundleTracker
     URL u = ctx.getBundle().getResource(ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES);
     
     if(u != null) {
+      if(_logger.isInfoEnabled())
+        _logger.info("A {} file was found. The default properties {} will be overridden.",
+            new Object[] {ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES, config});
       try {
         config.load(u.openStream());
       } catch (IOException e) {
-        // TODO Log this error
-        e.printStackTrace();
+        _logger.error("There was an error reading from " 
+            + ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES, e);
       }
+    } else {
+      if(_logger.isInfoEnabled())
+        _logger.info("No {} file was found. The default properties {} will be used.",
+            new Object[] {ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES, config});
     }
   }
-     
-//      //If we can't find a provider then bomb out
-//      if (providerRef != null)
-//      {
-//        try 
-//          FragmentBuilder builder = new FragmentBuilder(b, ".jpa.fragment");
-//          builder.addImportsFromExports(providerRef.getBundle());
-//          fragment = builder.install(ctx);
-//        
-//          
-//          hostToFragmentMap.put(b, fragment);
-//          // If we successfully got a fragment then
-//          // set the provider reference and register the units
-//          Set<ServiceRegistration> registrations = new HashSet<ServiceRegistration>();
-//          Hashtable<String, Object> props = new Hashtable<String, Object>();
-//          
-//          props.put(PersistenceUnitInfoService.PERSISTENCE_BUNDLE_SYMBOLIC_NAME, b.getSymbolicName());
-//          props.put(PersistenceUnitInfoService.PERSISTENCE_BUNDLE_VERSION, b.getVersion());
-//          
-//          for(PersistenceUnitImpl unit : parsedPersistenceUnits){
-//            Hashtable<String, Object> serviceProps = new Hashtable<String, Object>(props);
-//            
-//            String unitName = (String) unit.getPersistenceXmlMetadata().get(PersistenceUnitInfoService.UNIT_NAME);
-//            if(unitName != null)
-//              serviceProps.put(PersistenceUnitInfoService.PERSISTENCE_UNIT_NAME, unitName);
-//            
-//            unit.setProviderReference(providerRef);
-//            registrations.add(ctx.registerService(PersistenceUnitInfoService.class.getName(), unit, serviceProps));
-//          }
-//          hostToPersistenceUnitMap.put(b, registrations);
-//        }
-//        catch (IOException e)
-//        {
-//          // TODO Fragment generation failed, log the error
-//          // No clean up because we didn't register the bundle yet
-//          e.printStackTrace();
-//        }
-//        catch (BundleException be) {
-//          //TODO log the failure to install the fragment, but return null
-//          // to show we didn't get a fragment installed
-//          // No clean up because we didn't register the bundle yet
-//        }
-//      }
-//    }
-//  }
-
 
   public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
 
@@ -257,7 +190,7 @@ public class PersistenceBundleManager extends MultiBundleTracker
       try {
         mgr.bundleStateChange();
       } catch (InvalidPersistenceUnitException e) {
-        // TODO log this
+        logInvalidPersistenceUnitException(bundle, e);
         mgr.destroy();
       }
     }
@@ -287,6 +220,12 @@ public class PersistenceBundleManager extends MultiBundleTracker
 
       //If we have no persistence units then our job is done
       if (!!!persistenceXmls.isEmpty()) {
+        
+        if(bundle.getState() == Bundle.ACTIVE) {
+          _logger.warn("The bundle {} is already active, it may not be possible to create managed persistence units for it.", 
+              new Object[] {bundle.getSymbolicName() + "_" + bundle.getVersion()});
+        }
+        
         Collection<ParsedPersistenceUnit> pUnits = new ArrayList<ParsedPersistenceUnit>();
         
         //Parse each descriptor
@@ -294,8 +233,9 @@ public class PersistenceBundleManager extends MultiBundleTracker
           try {
             pUnits.addAll(PersistenceDescriptorParser.parse(bundle, descriptor));
           } catch (PersistenceDescriptorParserException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            _logger.error("There was an error while parsing the persistence descriptor " 
+                + descriptor.getLocation() + " in bundle " + bundle.getSymbolicName() 
+                + "_" + bundle.getVersion() + ". No persistence units will be managed for this bundle", e);
           }
         }
         
@@ -323,7 +263,7 @@ public class PersistenceBundleManager extends MultiBundleTracker
             try {
               mgr.bundleStateChange();
             } catch (InvalidPersistenceUnitException e) {
-              // TODO Log this error
+              logInvalidPersistenceUnitException(bundle, e);
               mgr.destroy();
               persistenceUnitFactory.destroyPersistenceBundle(bundle);
             }
@@ -357,12 +297,12 @@ public class PersistenceBundleManager extends MultiBundleTracker
         
         if(props != null && props.containsKey(ParsedPersistenceUnit.JPA_PROVIDER_VERSION)) {
          
+          String versionRangeString = props.getProperty(ParsedPersistenceUnit.JPA_PROVIDER_VERSION, "0.0.0");
           try {
-            String versionRangeString = props.getProperty(ParsedPersistenceUnit.JPA_PROVIDER_VERSION, "0.0.0");
             versionRanges.add(ManifestHeaderProcessor.parseVersionRange(versionRangeString));
           } catch (IllegalArgumentException e) {
-            // TODO Log error. This is an invalid range and will be ignored.
-            e.printStackTrace();
+            _logger.warn("There was an error parsing the version range string {} for persistence unit {}. It will be ignored."
+                , new Object[] {versionRangeString, metadata.get(ParsedPersistenceUnit.UNIT_NAME)});
           }
         }
       }
@@ -374,15 +314,20 @@ public class PersistenceBundleManager extends MultiBundleTracker
       try {
         range = combineVersionRanges(versionRanges);
       } catch (InvalidRangeCombination e) {
-        // TODO Log this error
-        e.printStackTrace();
+        Bundle bundle = parsedPersistenceUnits.iterator().next().getDefiningBundle();
+        _logger.error("The bundle " + bundle.getSymbolicName() 
+            + "_" + bundle.getVersion() + " specified an invalid combination of provider version ranges",  e);
         return null;
       }
     }
     
     if(ppClassNames.size() > 1)
     {
-      //TODO log this error then(too many persistence providers specified)
+      Bundle bundle = parsedPersistenceUnits.iterator().next().getDefiningBundle();
+      _logger.error("The bundle " + bundle.getSymbolicName() 
+          + "_" + bundle.getVersion() + " specified more than one persistence provider: {}. "
+          + "This is not supported, so no persistence units will be created for this bundle.",
+          new Object[] {ppClassNames});
       return null;
     } else {
       //Get the best provider for the given filters
@@ -484,14 +429,15 @@ public class PersistenceBundleManager extends MultiBundleTracker
           //Return the "best" provider, i.e. the highest version
           return Collections.max(refs, new ProviderServiceComparator());
         } else {
-          //TODO no matching providers for matching criteria
+          _logger.warn("There are no suitable providers for the provider class name {} and version range {}.",
+              new Object[] {providerClass, matchingCriteria});
         }
       } else {
         //Return the "best" provider, i.e. the service OSGi would pick
         return (ServiceReference) Collections.max(persistenceProviders);
       }
     } else {
-      //TODO log no matching Providers for impl class
+      _logger.warn("There are no providers available.");
     }
     return null;
   }
@@ -513,5 +459,16 @@ public class PersistenceBundleManager extends MultiBundleTracker
       }
       return res;
     }
+  }
+  
+  /**
+   * Log a warning to indicate that the Persistence units state will be destroyed
+   * @param bundle
+   * @param e
+   */
+  private void logInvalidPersistenceUnitException(Bundle bundle,
+      InvalidPersistenceUnitException e) {
+    _logger.warn("The persistence units for bundle " + bundle.getSymbolicName() + "_" + bundle.getVersion()
+        + " became invalid and will be destroyed.", e);
   }
 }

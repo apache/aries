@@ -30,12 +30,17 @@ import java.util.jar.JarInputStream;
 
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
 import org.osgi.framework.Bundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This helper can be used to locate persistence.xml files in a bundle
  */
 public class PersistenceBundleHelper
 {
+  /** Logger */
+  private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
+  
   /** The persistence xml location */
   public static final String PERSISTENCE_XML = "META-INF/persistence.xml";
   /** The Meta-Persistence header */
@@ -69,24 +74,29 @@ public class PersistenceBundleHelper
         locations.add(s.trim());
     
       //Find the file and add it to our list
-      try {
-        for(String location : locations) {
-          InputStream file = locateFile(bundle, location);
-          if(file != null)
-            persistenceXmlFiles.add(new PersistenceDescriptorImpl(location, file));
+      for(String location : locations) {
+        try {
+            InputStream file = locateFile(bundle, location);
+            if(file != null)
+              persistenceXmlFiles.add(new PersistenceDescriptorImpl(location, file));
+            
+        } catch (Exception e) {
+            _logger.error("There was an exception while locating the persistence descriptor at location "
+                + location + " in bundle " + bundle.getSymbolicName() + "_" + bundle.getVersion()
+            		+ ". No persistence descriptors will be processed for this bundle.", e);
+          //If we get an exception, then go through closing all of our streams.
+          //It is better to fail completely than half succeed.
+          for (PersistenceDescriptor desc : persistenceXmlFiles) {
+            try {
+              desc.getInputStream().close();
+            } catch (IOException ioe) {
+              //We don't care about this exception, so swallow it
+            }
           }
-      } catch (Exception e) {
-          //TODO log
-        //If we get an exception, then go through closing all of our streams.
-        //It is better to fail completely than half succeed.
-        for (PersistenceDescriptor desc : persistenceXmlFiles) {
-          try {
-            desc.getInputStream().close();
-          } catch (IOException ioe) {
-            // TODO: log ioe
-          }
+          persistenceXmlFiles = Collections.emptySet();
+          //Exit the for loop
+          break;
         }
-        persistenceXmlFiles = Collections.emptySet();
       }
     }
    return persistenceXmlFiles;

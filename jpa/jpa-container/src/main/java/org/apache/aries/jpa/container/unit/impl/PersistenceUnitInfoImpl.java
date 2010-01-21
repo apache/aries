@@ -35,6 +35,8 @@ import javax.sql.DataSource;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   
@@ -46,6 +48,9 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   
   private final ServiceReference providerRef;
   
+  /** Logger */
+  private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
+  
   public PersistenceUnitInfoImpl (Bundle b, ParsedPersistenceUnit parsedData, ServiceReference providerRef)
   {
     bundle = b;
@@ -55,7 +60,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   }
   
   public void addTransformer(ClassTransformer arg0) {
-    // TODO Auto-generated method stub
+    // TODO Add support for class transformation from this method
   }
 
   public boolean excludeUnlistedClasses() {
@@ -81,12 +86,14 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   public DataSource getJtaDataSource() {
     String jndiString = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.NON_JTA_DATASOURCE);
     DataSource toReturn = null;
-    try {
-      InitialContext ctx = new InitialContext();
-      toReturn = (DataSource) ctx.lookup(jndiString);
-    } catch (NamingException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    if(jndiString != null) {
+      try {
+        InitialContext ctx = new InitialContext();
+        toReturn = (DataSource) ctx.lookup(jndiString);
+      } catch (NamingException e) {
+        _logger.error("No JTA datasource could be located using the JNDI name " + jndiString,
+            e);
+      }
     }
     return toReturn;
   }
@@ -109,12 +116,14 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     
     String jndiString = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.NON_JTA_DATASOURCE);
     DataSource toReturn = null;
-    try {
-      InitialContext ctx = new InitialContext();
-      toReturn = (DataSource) ctx.lookup(jndiString);
-    } catch (NamingException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    if(jndiString != null) {
+      try {
+        InitialContext ctx = new InitialContext();
+        toReturn = (DataSource) ctx.lookup(jndiString);
+      } catch (NamingException e) {
+        _logger.error("No Non JTA datasource could be located using the JNDI name " + jndiString,
+            e);
+      }
     }
     return toReturn;
   }
@@ -140,7 +149,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   }
 
   public SharedCacheMode getSharedCacheMode() {
-    // TODO Auto-generated method stub
+    // TODO This needs to be supported once we parse JPA 2.0 xml
     return null;
   }
 
@@ -150,7 +159,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   }
 
   public ValidationMode getValidationMode() {
-    // TODO Auto-generated method stub
+    // TODO This needs to be supported once we parse JPA 2.0 xml
     return null;
   }
   

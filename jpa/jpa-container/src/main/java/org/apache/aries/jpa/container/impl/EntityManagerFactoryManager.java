@@ -35,6 +35,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * This class manages the lifecycle of Persistence Units and their associated
  * {@link EntityManagerFactory} objects.
@@ -54,6 +56,9 @@ public class EntityManagerFactoryManager {
   /** The {@link ServiceRegistration} objects for the {@link EntityManagerFactory}s */
   private Collection<ServiceRegistration> registrations = null;
 
+  /** Logger */
+  private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
+  
   /**
    * Create an {@link EntityManagerFactoryManager} for
    * the supplied persistence bundle.
@@ -140,7 +145,8 @@ public class EntityManagerFactoryManager {
         try {
           reg.unregister();
         } catch (Exception e) {
-          //TODO log this
+          _logger.error("There was an error unregistering the EntityManagerFactory services for bundle " 
+              + bundle.getSymbolicName() + "_" + bundle.getVersion() , e);
         }
       }
       // remember to set registrations to be null
@@ -164,29 +170,29 @@ public class EntityManagerFactoryManager {
       registrations = new ArrayList<ServiceRegistration>();
       String providerName = (String) provider.getProperty("javax.persistence.provider");
       if(providerName == null) {
-        //TODO log this
-        throw new InvalidPersistenceUnitException();
+        _logger.warn("The PersistenceProvider for bundle {} did not specify a provider name in the \"javax.persistence.provider\" service property. " +
+        		"As a result EntityManagerFactory objects will not be registered with the " 
+            + PersistenceUnitConstants.OSGI_UNIT_PROVIDER + " property. " 
+            + "The Peristence Provider service was {}",
+            new Object[] {bundle.getSymbolicName() + "_" + bundle.getVersion(), provider});
       }
       //Register each EMF
       for(Entry<String, EntityManagerFactory> entry : emfs.entrySet())
       {
         Properties props = new Properties();
         String unitName = entry.getKey();
-        
-        if(unitName == null) {
-          //TODO log
-          throw new InvalidPersistenceUnitException();
-        }
           
         props.put(PersistenceUnitConstants.OSGI_UNIT_NAME, unitName);
-        props.put(PersistenceUnitConstants.OSGI_UNIT_PROVIDER, providerName);
+        if(providerName != null)
+          props.put(PersistenceUnitConstants.OSGI_UNIT_PROVIDER, providerName);
         props.put(PersistenceUnitConstants.OSGI_UNIT_VERSION, provider.getBundle().getVersion());
         props.put(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT, Boolean.TRUE);
         props.put(PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME, "".equals(unitName));
         try {
           registrations.add(bundle.getBundleContext().registerService(EntityManagerFactory.class.getCanonicalName(), entry.getValue(), props));
         } catch (Exception e) {
-          //TODO log
+          _logger.error("There was an error registering the persistence unit " 
+              + unitName + " defined by the bundle " + bundle.getSymbolicName() + "_" + bundle.getVersion(), e);
           throw new InvalidPersistenceUnitException(e);
         }
       }
@@ -208,7 +214,12 @@ public class EntityManagerFactoryManager {
           //Get hold of the provider
           PersistenceProvider providerService = (PersistenceProvider) containerContext.getService(provider);
 
-          if(providerService == null) throw new InvalidPersistenceUnitException();
+          if(providerService == null) {
+            _logger.warn("The PersistenceProvider service hosting persistence units in bundle " 
+                + bundle.getSymbolicName() + "_" + bundle.getVersion() + " is no longer available. " +
+                		"Persistence units defined by the bundle will not be available until the bundle is refreshed");
+            throw new InvalidPersistenceUnitException();
+          }
       
           for(ManagedPersistenceUnitInfo info : persistenceUnits){
             PersistenceUnitInfo pUnitInfo = info.getPersistenceUnitInfo();
@@ -263,7 +274,8 @@ public class EntityManagerFactoryManager {
         try {
           entry.getValue().close();
         } catch (Exception e) {
-          //TODO log this error
+          _logger.error("There was an exception when closing the EntityManagerFactory for persistence unit "
+              + entry.getKey() + " in bundle " + bundle.getSymbolicName() + "_" + bundle.getVersion(), e);
         }
       }
     }

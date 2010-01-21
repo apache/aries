@@ -70,6 +70,7 @@ public class PersistenceDescriptorParser {
     Collection<ParsedPersistenceUnit> persistenceUnits = new ArrayList<ParsedPersistenceUnit>();
     SAXParserFactory parserFactory = SAXParserFactory.newInstance();
     BufferedInputStream is = null;
+    boolean schemaFound = false;
     try {
       //Buffer the InputStream so we can mark it, though we'll be in 
       //trouble if we have to read more than 8192 characters before finding
@@ -85,6 +86,7 @@ public class PersistenceDescriptorParser {
         Schema s = epr.getSchema();
         
         if(s != null) {
+          schemaFound = true;
           parserFactory.setSchema(s);
           parserFactory.setNamespaceAware(true);
           parser = parserFactory.newSAXParser();
@@ -95,22 +97,22 @@ public class PersistenceDescriptorParser {
           JPAHandler handler = new JPAHandler(b, epr.getVersion());
           parser.parse(is, handler);
           persistenceUnits.addAll(handler.getPersistenceUnits());
-        } else {
-          //TODO Should we try without validation?
-        }
+        } 
       }
     } catch (Exception e) {
-      //TODO Log this error in parsing
-      System.out.println("Error parsing " + descriptor.getLocation() + " in bundle " + b.getSymbolicName() + "_" + b.getVersion());
-      e.printStackTrace();
-      throw new PersistenceDescriptorParserException(e);
+      throw new PersistenceDescriptorParserException("There was an error parsing " + descriptor.getLocation() 
+          + " in bundle " + b.getSymbolicName() + "_" + b.getVersion(), e);
     } finally {
       if(is != null) try {
         is.close();
       } catch (IOException e) {
-        //TODO Log this
-        e.printStackTrace();
+        //No logging necessary, just consume
       }
+    }
+    if(!!!schemaFound) {
+    throw new PersistenceDescriptorParserException("No Schema could be located for the" +
+        "persistence descriptor " + descriptor.getLocation() 
+        + " in bundle " + b.getSymbolicName() + "_" + b.getVersion());
     }
     return persistenceUnits;
   }
