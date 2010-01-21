@@ -51,9 +51,14 @@
       <version>1.0.0-incubating-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <artifactId>org.apache.aries.util</artifactId>
+      <groupId>org.apache.aries</groupId>
+      <version>1.0.0-incubating-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-jpa_2.0_spec</artifactId>
-    </dependency> 
+    </dependency>
     <dependency>
       <groupId>org.apache.aries.testsupport</groupId>
       <artifactId>org.apache.aries.testsupport.unit</artifactId>
