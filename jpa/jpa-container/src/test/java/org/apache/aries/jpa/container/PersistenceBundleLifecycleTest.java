@@ -29,6 +29,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Dictionary;
@@ -42,6 +43,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
 
+import org.apache.aries.jpa.container.impl.EntityManagerFactoryManager;
 import org.apache.aries.jpa.container.impl.PersistenceBundleManager;
 import org.apache.aries.jpa.container.util.FakeManagedPersistenceUnitFactory;
 import org.apache.aries.mocks.BundleContextMock;
@@ -143,7 +145,7 @@ public class PersistenceBundleLifecycleTest
     //Check we don't have an EMF
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
     
-    assertNull("We should not have an EntityManagerFactoryManager", mgr.getObject(persistenceBundle));
+    assertNull("We should not have an EntityManagerFactoryManager", getTrackedObject());
     
   }
   
@@ -164,7 +166,7 @@ public class PersistenceBundleLifecycleTest
     //Check we don't have an EMF
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
     
-    assertNull("We should not have an EntityManagerFactoryManager", mgr.getObject(persistenceBundle));
+    assertNull("We should not have an EntityManagerFactoryManager", getTrackedObject());
   }
 
   @Test
@@ -310,9 +312,10 @@ public class PersistenceBundleLifecycleTest
     //Clear the extender context to remove the previous get for the PersistenceProvider.
     Skeleton.getSkeleton(extenderContext).clearMethodCalls();
     
+    System.out.println(getTrackedObject());
     //Update the bundle
     Skeleton.getSkeleton(persistenceBundle).setReturnValue(new MethodCall(Bundle.class, "getState"), Bundle.INSTALLED);
-    mgr.modifiedBundle(persistenceBundle, new BundleEvent(BundleEvent.UPDATED, persistenceBundle), mgr.getObject(persistenceBundle));
+    mgr.modifiedBundle(persistenceBundle, new BundleEvent(BundleEvent.UPDATED, persistenceBundle), getTrackedObject());
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -326,7 +329,7 @@ public class PersistenceBundleLifecycleTest
     
     //Now resolve the bundle again and check we get another EMF created
     Skeleton.getSkeleton(persistenceBundle).setReturnValue(new MethodCall(Bundle.class, "getState"), Bundle.RESOLVED);
-    mgr.modifiedBundle(persistenceBundle, new BundleEvent(BundleEvent.RESOLVED, persistenceBundle), mgr.getObject(persistenceBundle));
+    mgr.modifiedBundle(persistenceBundle, new BundleEvent(BundleEvent.RESOLVED, persistenceBundle), getTrackedObject());
     
     //We will have created the EMF a total of 2 times
     testSuccessfulCreationEvent(ref, extenderContext, 2);
@@ -355,7 +358,7 @@ public class PersistenceBundleLifecycleTest
     Skeleton.getSkeleton(persistenceBundle).clearMethodCalls();
     
     Skeleton.getSkeleton(persistenceBundle).setReturnValue(new MethodCall(Bundle.class, "getState"), Bundle.INSTALLED);
-    mgr.modifiedBundle(persistenceBundle, new BundleEvent(BundleEvent.UNRESOLVED, persistenceBundle), mgr.getObject(persistenceBundle));
+    mgr.modifiedBundle(persistenceBundle, new BundleEvent(BundleEvent.UNRESOLVED, persistenceBundle), getTrackedObject());
     
     //Check we don't re-parse the xml
     Skeleton.getSkeleton(persistenceBundle).assertNotCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -392,7 +395,7 @@ public class PersistenceBundleLifecycleTest
     Skeleton.getSkeleton(pp).assertCalled(new MethodCall(EntityManagerFactory.class, "close"));
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());    
     
-    mgr.modifiedBundle(persistenceBundle, null, mgr.getObject(persistenceBundle));
+    mgr.modifiedBundle(persistenceBundle, null, getTrackedObject());
   }
   
   @Test
@@ -973,6 +976,14 @@ public class PersistenceBundleLifecycleTest
   private void assertCorrectPersistenceProviderUsed (BundleContext extenderContext, PersistenceProvider provider) throws InvalidSyntaxException
   {
     assertCorrectPersistenceProviderUsed(extenderContext, provider, 1); 
+  }
+  
+  private EntityManagerFactoryManager getTrackedObject() throws Exception {
+    Field f = mgr.getClass().getDeclaredField("bundleToManagerMap");
+    f.setAccessible(true);
+    Map<Bundle, EntityManagerFactoryManager> map = (Map<Bundle, EntityManagerFactoryManager>) f.get(mgr);
+    
+    return map.get(persistenceBundle);
   }
 }
 
