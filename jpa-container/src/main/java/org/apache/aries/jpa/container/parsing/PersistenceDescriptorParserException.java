@@ -26,12 +26,21 @@ public class PersistenceDescriptorParserException extends Exception {
 
   /**
    * Construct a PersistenceDescriptorException
+   * @param string 
    * @param e the exception to wrap
    */
-  public PersistenceDescriptorParserException(Exception e) {
-    super(e);
+  public PersistenceDescriptorParserException(String string, Exception e) {
+    super(string, e);
   }
 
+  /**
+   * Construct a PersistenceDescriptorException
+   * @param string 
+   */
+  public PersistenceDescriptorParserException(String string) {
+    super(string);
+  }
+  
   /**
    * For Serialization
    */
