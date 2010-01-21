@@ -22,7 +22,7 @@
       <property name="config"><props/></property>
     </bean>
 
-	<reference-list interface="javax.persistence.spi.PersistenceProvider">
+	<reference-list interface="javax.persistence.spi.PersistenceProvider" availability="optional">
 	  <reference-listener ref="container" bind-method="addingProvider" unbind-method="removingProvider"/>
 	</reference-list>
     
