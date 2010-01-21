@@ -32,7 +32,16 @@ public class InvalidRangeCombination extends Exception {
 
   public InvalidRangeCombination(Version minVersion, boolean minExclusive,
       Version maxVersion, boolean maxExclusive) {
-    // TODO Auto-generated constructor stub
+    super("There was no overlap between the specified version ranges. The combined version range" +
+    		"string would have been " + getVersionRangeString(minVersion, minExclusive, maxVersion, maxExclusive));
   }
 
+  private static String getVersionRangeString(Version minVersion,
+      boolean minExclusive, Version maxVersion, boolean maxExclusive) {
+    
+    if(maxVersion == null)
+      return minVersion.toString();
+    else
+    return ((minExclusive) ? "(" : "[") + minVersion + "," + maxVersion + ((maxExclusive) ? ")" : "]");
+  }
 }

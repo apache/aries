@@ -18,6 +18,7 @@
  */
 package org.apache.aries.jpa.container.unit.impl;
 
+import java.util.Collections;
 import java.util.Map;
 
 import javax.persistence.spi.PersistenceUnitInfo;
@@ -39,7 +40,7 @@ public class ManagedPersistenceUnitInfoImpl implements
   }
 
   public Map<String, Object> getContainerProperties() {
-    return null;
+    return Collections.emptyMap();
   }
 
   public PersistenceUnitInfo getPersistenceUnitInfo() {

@@ -72,6 +72,7 @@ public class TempBundleDelegatingClassLoader extends ClassLoader {
     return bundle.getResource(resName);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   protected Enumeration<URL> findResources(String resName) throws IOException {
     return bundle.getResources(resName);

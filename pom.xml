@@ -60,6 +60,15 @@
       <artifactId>geronimo-jpa_2.0_spec</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency> 
+    <dependency>
       <groupId>org.apache.aries.testsupport</groupId>
       <artifactId>org.apache.aries.testsupport.unit</artifactId>
       <scope>test</scope>
@@ -93,8 +102,8 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.groupId}.container</Bundle-SymbolicName>
                         <Import-Package>
-                            javax.persistence;version="[1.0.0,1.2.0)",
-                            javax.persistence.spi;version="[1.0.0,1.2.0)",
+                            javax.persistence;version="[1.0.0,2.1.0)",
+                            javax.persistence.spi;version="[1.0.0,2.1.0)",
                             *
                         </Import-Package>
                         <Export-Package>
