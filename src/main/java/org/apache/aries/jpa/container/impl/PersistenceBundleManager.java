@@ -42,19 +42,19 @@ import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParser;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParserException;
 import org.apache.aries.jpa.container.unit.impl.ManagedPersistenceUnitInfoFactoryImpl;
+import org.apache.aries.util.tracker.MultiBundleTracker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
-import org.osgi.util.tracker.BundleTracker;
 
 
 /**
  * This class locates, parses and manages persistence units defined in OSGi bundles.
  */
-public class PersistenceBundleManager extends BundleTracker
+public class PersistenceBundleManager extends MultiBundleTracker
 {
   /** The bundle context for this bundle */
   private BundleContext ctx = null;
@@ -83,7 +83,7 @@ public class PersistenceBundleManager extends BundleTracker
   public PersistenceBundleManager(BundleContext ctx) 
   {
 	  super(ctx, Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING |
-			  Bundle.ACTIVE | Bundle.STOPPING, null);
+			  Bundle.ACTIVE | Bundle.STOPPING);
     this.ctx = ctx;
   }
   
