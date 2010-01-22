@@ -126,6 +126,8 @@ public class PersistenceBundleManager extends MultiBundleTracker
    */
   public synchronized void addingProvider(ServiceReference ref)
   {
+    if(_logger.isDebugEnabled())
+      _logger.debug("Adding a provider: {}", new Object[] {ref});
     persistenceProviders.add(ref);
   }
   
@@ -139,6 +141,10 @@ public class PersistenceBundleManager extends MultiBundleTracker
     //We may get a null reference if the ref-list is empty to start with
     if(ref == null)
       return;
+    
+    if(_logger.isDebugEnabled())
+      _logger.debug("Removing a provider: {}", new Object[] {ref});
+    
     Map<Bundle, EntityManagerFactoryManager> mgrs;
     synchronized (this) {
       persistenceProviders.remove(ref);
@@ -221,6 +227,9 @@ public class PersistenceBundleManager extends MultiBundleTracker
       //If we have no persistence units then our job is done
       if (!!!persistenceXmls.isEmpty()) {
         
+        if(_logger.isDebugEnabled())
+          _logger.debug("Located Persistence descriptors: {} in bundle {}", new Object[] {persistenceXmls, bundle.getSymbolicName() + "_" + bundle.getVersion()});
+        
         if(bundle.getState() == Bundle.ACTIVE) {
           _logger.warn("The bundle {} is already active, it may not be possible to create managed persistence units for it.", 
               new Object[] {bundle.getSymbolicName() + "_" + bundle.getVersion()});
@@ -241,6 +250,10 @@ public class PersistenceBundleManager extends MultiBundleTracker
         
         //If we have any persistence units then find a provider to use
         if(!!!pUnits.isEmpty()) {
+          
+          if(_logger.isDebugEnabled())
+            _logger.debug("Located Persistence units: {}", new Object[] {pUnits});
+          
           ServiceReference ref = getProviderServiceReference(pUnits);
           //If we found a provider then create the ManagedPersistenceUnitInfo objects
           if(ref != null) {  
