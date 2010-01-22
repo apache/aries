@@ -20,6 +20,7 @@ package org.apache.aries.jpa.container.unit.impl;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -76,10 +77,15 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   public List<URL> getJarFileUrls() {
     List<String> jarFiles = (List<String>) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.JAR_FILES);
     List<URL> urls = new ArrayList<URL>();
-    
-    for(String jarFile : jarFiles)
-      urls.add(bundle.getResource(jarFile));
-    
+    if(jarFiles != null) {
+      for(String jarFile : jarFiles){
+        URL url = bundle.getResource(jarFile);
+        if(url == null)
+          _logger.error("The persistence unit {} in bundle {} listed the jar file {}, but " +
+          		"{} could not be found in the bundle", new Object[]{getPersistenceUnitName(),
+              bundle.getSymbolicName() + "_" + bundle.getVersion(), jarFile, jarFile});
+      }
+    }
     return urls;
   }
 
@@ -100,12 +106,20 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
 
   @SuppressWarnings("unchecked")
   public List<String> getManagedClassNames() {
-    return (List<String>) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.MANAGED_CLASSES);
+    List<String> classes = (List<String>) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.MANAGED_CLASSES);
+    if(classes == null)
+      classes = new ArrayList<String>();
+    
+    return Collections.unmodifiableList(classes);
   }
 
   @SuppressWarnings("unchecked")
   public List<String> getMappingFileNames() {
-    return (List<String>) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.MAPPING_FILES);
+    List<String> mappingFiles = (List<String>) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.MAPPING_FILES);
+    if(mappingFiles == null)
+      mappingFiles = new ArrayList<String>();
+    
+    return Collections.unmodifiableList(mappingFiles);
   }
 
   public ClassLoader getNewTempClassLoader() {
@@ -150,17 +164,22 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
 
   public SharedCacheMode getSharedCacheMode() {
     // TODO This needs to be supported once we parse JPA 2.0 xml
-    return null;
+    return SharedCacheMode.UNSPECIFIED;
   }
 
   public PersistenceUnitTransactionType getTransactionType() {
-    return PersistenceUnitTransactionType.valueOf(
-        (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.TRANSACTION_TYPE));
+    
+    String s = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.TRANSACTION_TYPE);
+
+    if(s == null)
+      return PersistenceUnitTransactionType.JTA;
+    else
+      return PersistenceUnitTransactionType.valueOf(s);
   }
 
   public ValidationMode getValidationMode() {
     // TODO This needs to be supported once we parse JPA 2.0 xml
-    return null;
+    return ValidationMode.AUTO;
   }
   
 }
