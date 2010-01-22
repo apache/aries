@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 import org.apache.aries.jpa.container.context.impl.PersistenceContextManager;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
@@ -31,12 +30,19 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.SynchronousBundleListener;
 
+/**
+ * Class that coordinates PersistenceContextManagers across multiple (nested) OSGi frameworks.
+ */
 public class GlobalPersistenceManager implements PersistenceManager, SynchronousBundleListener {
 
   private JTAPersistenceContextRegistry registry;
   
+  /** The list of persistence context managers. Each is valid for exactly one framework
+   *    as identified by the respective system bundle. This allows us to work properly in 
+   *    a multi (nested) framework environment without using the (deprecated) CompositeBundle API.
+   */
   private Map<Bundle, PersistenceContextManager> managers = 
-    new WeakHashMap<Bundle, PersistenceContextManager>();
+    new HashMap<Bundle, PersistenceContextManager>();
   
   private Map<Bundle, Set<String>> persistenceContexts = 
     new HashMap<Bundle, Set<String>>();
@@ -49,15 +55,17 @@ public class GlobalPersistenceManager implements PersistenceManager, Synchronous
   public void registerContext(String unitName, Bundle client, HashMap<String, Object> properties) {
     Bundle frameworkBundle = client.getBundleContext().getBundle(0);
     PersistenceContextManager manager = null;
+    boolean newManager = false;
     
     synchronized (this) {
       if (managers.containsKey(frameworkBundle)) {
         manager = managers.get(frameworkBundle);
       } else {
         manager = new PersistenceContextManager(frameworkBundle.getBundleContext(), registry);
-        manager.open();
         managers.put(frameworkBundle, manager);
         frameworkBundle.getBundleContext().addBundleListener(this);
+        
+        newManager = true;
       }
       
       if (!persistenceContexts.containsKey(client)) {
@@ -66,6 +74,9 @@ public class GlobalPersistenceManager implements PersistenceManager, Synchronous
       
       persistenceContexts.get(client).add(unitName);
     }
+    
+    if (newManager)
+      manager.open();
     
     manager.registerContext(unitName, client, properties);
   }
@@ -86,7 +97,10 @@ public class GlobalPersistenceManager implements PersistenceManager, Synchronous
           manager = managers.get(frameworkBundle);
           if (manager == null)
             throw new IllegalStateException();
-        }        
+        } else if (managers.containsKey(bundle)) {
+          managers.remove(bundle);
+          bundle.getBundleContext().removeBundleListener(this);
+        }
       }
       
       for (String context : contextsToBeRemoved) {
