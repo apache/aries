@@ -59,4 +59,12 @@ public class PersistenceDescriptorImpl implements PersistenceDescriptor {
     return inputStream;
   }
   
+  public String toString()
+  {
+    if(location != null)
+      return location;
+    else 
+      return super.toString();
+  }
+  
 }

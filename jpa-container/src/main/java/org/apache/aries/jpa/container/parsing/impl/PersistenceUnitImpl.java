@@ -44,7 +44,7 @@ public class PersistenceUnitImpl implements ParsedPersistenceUnit
    * The Service Reference for the provider to which this persistence
    * unit is tied
    */
-  ServiceReference provider;
+  private ServiceReference provider;
 
   
   /**
@@ -61,7 +61,10 @@ public class PersistenceUnitImpl implements ParsedPersistenceUnit
     this.bundle = b;
     metadata.put(SCHEMA_VERSION, version);
 
-    if (name != null)metadata.put(UNIT_NAME, name);
+    if (name == null)
+      name = "";
+      
+    metadata.put(UNIT_NAME, name);
     if (transactionType != null) metadata.put(TRANSACTION_TYPE, transactionType);
 
   }
@@ -179,5 +182,11 @@ public class PersistenceUnitImpl implements ParsedPersistenceUnit
   public void setProviderReference(ServiceReference providerRef)
   {
     provider = providerRef;
+  }
+  
+  public String toString()
+  {
+    return "Persistence unit " + metadata.get(UNIT_NAME) + " in bundle "
+    + bundle.getSymbolicName() + "_" + bundle.getVersion();
   }
 }
