@@ -42,6 +42,7 @@
 					<instructions>
 						<Bundle-SymbolicName>${pom.groupId}.blog-servlet</Bundle-SymbolicName>
 						<Export-Package>!org.apache.aries.samples.*</Export-Package>
+                                                <Web-ContextPath>/blog</Web-ContextPath>
 					</instructions>
 				</configuration>
 			</plugin>
