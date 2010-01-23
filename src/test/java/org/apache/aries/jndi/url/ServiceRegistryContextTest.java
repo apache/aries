@@ -21,6 +21,7 @@ package org.apache.aries.jndi.url;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
@@ -41,6 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -165,7 +167,7 @@ public class ServiceRegistryContextTest
     
     Skeleton skel = Skeleton.getSkeleton(mock.getBundleContext());
     
-    skel.assertCalled(new MethodCall(BundleContext.class, "getAllServiceReferences", "java.lang.Runnable", null));
+    skel.assertCalled(new MethodCall(BundleContext.class, "getServiceReferences", "java.lang.Runnable", null));
 
     mock = new BundleMock("scooby.doo", new Properties());
     
@@ -185,7 +187,7 @@ public class ServiceRegistryContextTest
     assertEquals("The SR did not return the object we expected", service, s);
 
     skel = Skeleton.getSkeleton(mock.getBundleContext());
-    skel.assertCalled(new MethodCall(BundleContext.class, "getAllServiceReferences", "java.lang.Runnable", null));
+    skel.assertCalled(new MethodCall(BundleContext.class, "getServiceReferences", "java.lang.Runnable", null));
   }
 
   /**
@@ -207,7 +209,7 @@ public class ServiceRegistryContextTest
     
     assertEquals("The SR did not return the object we expected", service, s);
     
-    Skeleton.getSkeleton(bc).assertCalled(new MethodCall(BundleContext.class, "getAllServiceReferences", "java.lang.Runnable", "(rubbish=smelly)"));
+    Skeleton.getSkeleton(bc).assertCalled(new MethodCall(BundleContext.class, "getServiceReferences", "java.lang.Runnable", "(rubbish=smelly)"));
   }
   
   /**
@@ -267,9 +269,42 @@ public class ServiceRegistryContextTest
     checkThreadRetrievedViaListMethod(serviceList);
     
     assertFalse("The repository contained more objects than we expected", serviceList.hasMoreElements());
-    
   }
 
+  @Test
+  public void checkServiceOrderObserved() throws NamingException
+  {
+    InitialContext ctx = new InitialContext();
+    
+    String className = Runnable.class.getName();
+    
+    Thread t = new Thread();
+    Thread t2 = new Thread();
+    
+    // we don't want the default service
+    reg.unregister();
+    
+    ServiceRegistration reg = bc.registerService(className, t, null);
+    ServiceRegistration reg2 = bc.registerService(className, t2, null);
+    
+    Runnable r = (Runnable) ctx.lookup("osgi:services/java.lang.Runnable");
+    
+    assertSame("The wrong runnable was returned", t, r);
+    
+    reg.unregister();
+    reg2.unregister();
+    
+    Hashtable<String, Object> props = new Hashtable<String, Object>();
+    props.put(Constants.SERVICE_RANKING, 55);
+    
+    reg = bc.registerService(className, t, null);
+    reg2 = bc.registerService(className, t2, props);
+    
+    r = (Runnable) ctx.lookup("osgi:services/java.lang.Runnable");
+    
+    assertSame("The wrong runnable was returned", t2, r);
+  }
+  
   /**
    * Check that the NamingEnumeration passed in has another element, which represents a java.lang.Thread
    * @param serviceList

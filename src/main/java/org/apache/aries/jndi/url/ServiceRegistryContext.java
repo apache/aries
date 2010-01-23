@@ -54,7 +54,7 @@ public class ServiceRegistryContext implements Context
    * 
    * @param environment
    */
-  public ServiceRegistryContext(@SuppressWarnings("unused") Hashtable<?, ?> environment)
+  public ServiceRegistryContext(Hashtable<?, ?> environment)
   {
     env = new HashMap<Object, Object>();
     env.putAll(environment);
