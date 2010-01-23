@@ -18,6 +18,8 @@
  */
 package org.apache.aries.jndi.services;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -146,9 +148,19 @@ public final class ServiceHelper
     Object service = null;
     try {
       BundleContext callerCtx = getBundleContext();
-      ServiceReference[] refs = callerCtx.getAllServiceReferences(className, filter);
+      ServiceReference[] refs = callerCtx.getServiceReferences(className, filter);
       
       if (refs != null) {
+        // we need to sort the references returned in case they are out of order
+        // we need to sort in the reverse natural order, services with higher 
+        // ranking or lower id should be processed first so should be earlier in the array.
+        Arrays.sort(refs, new Comparator<ServiceReference>() {
+          public int compare(ServiceReference o1, ServiceReference o2)
+          {
+            return o2.compareTo(o1);
+          }
+        });
+        
         for (ServiceReference ref : refs) {
           List<Object> services = getServices(callerCtx, className, filter, ref);
           if (!!!services.isEmpty()) {
