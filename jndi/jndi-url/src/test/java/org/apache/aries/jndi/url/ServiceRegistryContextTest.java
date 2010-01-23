@@ -247,7 +247,6 @@ public class ServiceRegistryContextTest
    * 
    * @throws NamingException
    */
-  @Test
   public void listRepositoryContents() throws NamingException
   {
     InitialContext ctx = new InitialContext();
@@ -332,7 +331,6 @@ public class ServiceRegistryContextTest
    * 
    * @throws NamingException
    */
-  @Test
   public void listRepositoryBindings() throws NamingException
   {
     InitialContext ctx = new InitialContext();
