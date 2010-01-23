@@ -20,7 +20,6 @@ package org.apache.aries.jndi.url;
 
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.naming.Binding;
@@ -154,49 +153,8 @@ public class ServiceRegistryContext implements Context
 
   public NamingEnumeration<NameClassPair> list(final Name name) throws NamingException
   {
-    int nameSize = validateName(name);
-    
-    String className = name.get(0);
-    String filter = null;
-    
-    if (nameSize == 2) {
-      filter = name.get(1);
-    }
-    
-    try {
-      final Iterator<?> it = ServiceHelper.getServices(className, filter).iterator();
-      
-      return new NamingEnumeration<NameClassPair>() {
-        public void close() throws NamingException
-        {
-          // TODO return stuff to the registry, maybe???
-        }
-
-        public boolean hasMore()
-        {
-          return it.hasNext();
-        }
-
-        public NameClassPair next()
-        {
-          return nextElement();
-        }
-
-        public boolean hasMoreElements()
-        {
-          return it.hasNext();
-        }
-
-        public NameClassPair nextElement()
-        {
-          return new NameClassPair(name.toString(), it.next().getClass().getCanonicalName(), false);
-        }
-      };
-    } catch (IllegalArgumentException e) {
-      NamingException ne = new NamingException(e.getMessage());
-      ne.initCause(e);
-      throw ne;
-    }  }
+    throw new NamingException("Not a Context");
+  }
 
   public NamingEnumeration<NameClassPair> list(String name) throws NamingException
   {
@@ -205,51 +163,7 @@ public class ServiceRegistryContext implements Context
 
   public NamingEnumeration<Binding> listBindings(final Name name) throws NamingException
   {
-    String className = null;
-    String filter = null;
-    
-    int nameSize = validateName(name);
-    
-    className = name.get(0);
-
-    if (nameSize == 2) {
-      filter = name.get(1);
-    }
-    
-    try {
-      final Iterator<?> it = ServiceHelper.getServices(className, filter).iterator();
-      
-      return new NamingEnumeration<Binding>() {
-        public void close() throws NamingException
-        {
-          // TODO return stuff to the registry, maybe???
-        }
-
-        public boolean hasMore()
-        {
-          return it.hasNext();
-        }
-
-        public Binding next()
-        {
-          return nextElement();
-        }
-
-        public boolean hasMoreElements()
-        {
-          return it.hasNext();
-        }
-
-        public Binding nextElement()
-        {
-          return new Binding(name.toString(), it.next(), false);
-        }
-      };
-    } catch (IllegalArgumentException e) {
-      NamingException ne = new NamingException(e.getMessage());
-      ne.initCause(e);
-      throw ne;
-    }
+    throw new NamingException("Not a Context");
   }
 
   public NamingEnumeration<Binding> listBindings(String name) throws NamingException
