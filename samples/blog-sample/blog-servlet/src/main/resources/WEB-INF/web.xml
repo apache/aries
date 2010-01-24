@@ -25,42 +25,36 @@
          <display-name>View Blog Author</display-name>
          <description>This Servlet loads and displays the details of a blog author.</description>
          <servlet-class>org.apache.aries.samples.blog.web.ViewAuthor</servlet-class>
-         <load-on-startup></load-on-startup>
       </servlet>
       <servlet id="Servlet_2">
          <servlet-name>Edit Blog Author</servlet-name>
          <display-name>Edit Blog Author</display-name>
          <description>This Servlet edits or creates the details of a blog author.</description>
          <servlet-class>org.apache.aries.samples.blog.web.EditAuthor</servlet-class>
-         <load-on-startup></load-on-startup>
       </servlet>
       <servlet id="Servlet_3">
          <servlet-name>Edit Blog Author Form</servlet-name>
          <display-name>Edit Blog Author Form</display-name>
          <description>This Servlet that displays the form for creating or updating the details of a blog author.</description>
          <servlet-class>org.apache.aries.samples.blog.web.EditAuthorForm</servlet-class>
-         <load-on-startup></load-on-startup>
       </servlet>
       <servlet id="Servlet_5">
          <servlet-name>Create Blog Post</servlet-name>
          <display-name>Create Blog Post</display-name>
          <description>This Servlet that creates a blog post.</description>
          <servlet-class>org.apache.aries.samples.blog.web.CreateBlogPost</servlet-class>
-         <load-on-startup></load-on-startup>
       </servlet>
       <servlet id="Servlet_6">
          <servlet-name>View Blog</servlet-name>
          <display-name>View Blog</display-name>
          <description>This Servlet that views the blog posts.</description>
          <servlet-class>org.apache.aries.samples.blog.web.ViewBlog</servlet-class>
-         <load-on-startup></load-on-startup>
       </servlet>     
       <servlet id="Servlet_8">
          <servlet-name>Create Blog Post Form</servlet-name>
          <display-name>Create Blog Post Form</display-name>
          <description>This Servlet that displays the form for creating a blog post.</description>
          <servlet-class>org.apache.aries.samples.blog.web.CreateBlogPostForm</servlet-class>
-         <load-on-startup></load-on-startup>
       </servlet>
       <servlet-mapping id="ServletMapping_1">
          <servlet-name>View Blog Author</servlet-name>
