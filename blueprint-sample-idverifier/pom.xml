@@ -49,21 +49,6 @@
         -->
     </repositories>
   
-    <build>
-        <pluginManagement>
-            <plugins>    
-                <plugin>
-                   <groupId>org.apache.maven.plugins</groupId>
-                   <artifactId>maven-compiler-plugin</artifactId>
-                   <configuration>
-                       <source>1.5</source>
-                       <target>1.5</target>
-                   </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
-
     <dependencyManagement>
     <dependencies>
         
@@ -87,7 +72,7 @@
         <module>blueprint-sample-idverifier-api</module>
         <module>blueprint-sample-idverifier-server</module>
 	<module>blueprint-sample-idverifier-client</module>
-<module>blueprint-sample-idverifier-assembly</module>
+        <module>blueprint-sample-idverifier-assembly</module>
     </modules>
 
 </project>
