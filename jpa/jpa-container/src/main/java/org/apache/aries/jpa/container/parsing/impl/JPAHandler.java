@@ -106,6 +106,10 @@ public class JPAHandler extends DefaultHandler
       pu.addClassName(s);
     else if("exclude-unlisted-classes".equals(elementName))
       pu.setExcludeUnlisted(Boolean.parseBoolean(s));
+    else if ("2.0".equals(jpaVersion) && "shared-cache-mode".equals(elementName))
+      pu.setSharedCacheMode(s);
+    else if ("2.0".equals(jpaVersion) && "validation-mode".equals(elementName))
+      pu.setValidationMode(s);
   }
 
   @Override

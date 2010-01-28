@@ -163,8 +163,12 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   }
 
   public SharedCacheMode getSharedCacheMode() {
-    // TODO This needs to be supported once we parse JPA 2.0 xml
-    return SharedCacheMode.UNSPECIFIED;
+    String s = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.SHARED_CACHE_MODE);
+    
+    if (s == null)
+      return SharedCacheMode.UNSPECIFIED;
+    else
+      return SharedCacheMode.valueOf(s);
   }
 
   public PersistenceUnitTransactionType getTransactionType() {
@@ -178,8 +182,13 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   }
 
   public ValidationMode getValidationMode() {
-    // TODO This needs to be supported once we parse JPA 2.0 xml
-    return ValidationMode.AUTO;
+    String s = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.VALIDATION_MODE);
+    
+    if (s == null)
+      return ValidationMode.AUTO;
+    else
+      return ValidationMode.valueOf(s);
+
   }
   
 }

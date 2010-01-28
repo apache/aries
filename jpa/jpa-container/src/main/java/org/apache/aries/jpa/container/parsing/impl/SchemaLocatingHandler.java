@@ -88,11 +88,19 @@ public class SchemaLocatingHandler extends DefaultHandler
     if("1.0".equals(type)) {
       try{
         schemaURL = new URL("http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd");
-      }catch(Exception e){
+      }catch(Exception e) {
     	//will not occur with fixed url above.
       }
+    } else if ("2.0".equals(type)) {
+      try {
+        //TODO use proper schema location
+        schemaURL = new URL("http://svn.apache.org/repos/asf/openjpa/trunk/openjpa-persistence/src/main/resources/org/apache/openjpa/persistence/persistence_2_0-xsd.rsrc");
+      } catch (Exception e) {
+        //will not occur with fixed url above
+      }
     }
-    //TODO handle JPA 2.0
+
+    
     if(schemaURL != null){
       schema = schemaFactory.newSchema(schemaURL);
     }

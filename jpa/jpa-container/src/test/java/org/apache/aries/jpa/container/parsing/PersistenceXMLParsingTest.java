@@ -235,6 +235,36 @@ public class PersistenceXMLParsingTest
         is.close();
     }
   }
+  
+  @Test
+  public void testJPA2() throws Exception
+  {
+    InputStream is = null;
+    try {
+      String location = "file22/META-INF/persistence.xml";
+      is = getClass().getClassLoader().getResourceAsStream(location);
+      PersistenceDescriptor descriptor = new PersistenceDescriptorImpl(location, is);
+      
+      Bundle b = Skeleton.newMock(Bundle.class);
+      List<ParsedPersistenceUnit> parsedUnits = getList(PersistenceDescriptorParser.parse(b, descriptor));
+      
+      assertEquals(2, parsedUnits.size());
+      
+      ParsedPersistenceUnit customUnit = parsedUnits.get(0);
+      assertEquals("ENABLE_SELECTIVE", customUnit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.SHARED_CACHE_MODE));
+      assertEquals("CALLBACK", customUnit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.VALIDATION_MODE));
+
+      
+      ParsedPersistenceUnit defaultUnit = parsedUnits.get(1);
+      assertNull(defaultUnit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.SHARED_CACHE_MODE));
+      assertNull(defaultUnit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.VALIDATION_MODE));
+        
+        
+    } finally {
+      if (is != null)
+        is.close();
+    }
+  }
 
   /**
    * Sort a Collection of ParsedPersistenceUnit into alphabetical order (by unit name)

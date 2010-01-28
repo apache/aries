@@ -49,7 +49,7 @@ public class JTAEntityManager implements EntityManager {
 
   public void clear()
   {
-    EntityManager em = reg.getCurrentPersistenceContext(emf, props);
+    EntityManager em = reg.getCurrentOrNoPersistenceContext(emf, props);
     if(em != null)
       em.clear();
   }
@@ -62,7 +62,7 @@ public class JTAEntityManager implements EntityManager {
 
   public boolean contains(Object arg0)
   {
-    EntityManager em = reg.getCurrentPersistenceContext(emf, props);
+    EntityManager em = reg.getCurrentOrNoPersistenceContext(emf, props);
     if(em != null)
      return em.contains(arg0);
     else
@@ -71,57 +71,33 @@ public class JTAEntityManager implements EntityManager {
 
   public Query createNamedQuery(String arg0)
   {
-    EntityManager em = reg.getCurrentPersistenceContext(emf, props);
-    if(em == null)
-      em = emf.createEntityManager(props);
-    
-    return em.createNamedQuery(arg0);
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).createNamedQuery(arg0);
   }
 
   public Query createNativeQuery(String arg0)
   {
-    EntityManager em = reg.getCurrentPersistenceContext(emf, props);
-    if(em == null)
-      em = emf.createEntityManager(props);
-    
-    return em.createNativeQuery(arg0);
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).createNativeQuery(arg0);
   }
 
   @SuppressWarnings("unchecked")
   public Query createNativeQuery(String arg0, Class arg1)
   {
-    EntityManager em = reg.getCurrentPersistenceContext(emf, props);
-    if(em == null)
-      em = emf.createEntityManager(props);
-    
-    return em.createNativeQuery(arg0, arg1);
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).createNativeQuery(arg0, arg1);
   }
 
   public Query createNativeQuery(String arg0, String arg1)
   {
-    EntityManager em = reg.getCurrentPersistenceContext(emf, props);
-    if(em == null)
-      em = emf.createEntityManager(props);
-    
-    return em.createNativeQuery(arg0, arg1);
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).createNativeQuery(arg0, arg1);
   }
 
   public Query createQuery(String arg0)
   {
-    EntityManager em = reg.getCurrentPersistenceContext(emf, props);
-    if(em == null)
-      em = emf.createEntityManager(props);
-    
-    return em.createQuery(arg0);
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).createQuery(arg0);
   }
 
   public <T> T find(Class<T> arg0, Object arg1)
   {
-    EntityManager em = reg.getCurrentPersistenceContext(emf, props);
-    if(em == null)
-      em = emf.createEntityManager(props);
-    
-    return em.find(arg0, arg1);
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).find(arg0, arg1);
   }
 
   public void flush()
@@ -131,29 +107,17 @@ public class JTAEntityManager implements EntityManager {
 
   public Object getDelegate()
   {
-    EntityManager em = reg.getCurrentPersistenceContext(emf, props);
-    if(em == null)
-      em = emf.createEntityManager(props);
-    
-    return em.getDelegate();
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).getDelegate();
   }
 
   public FlushModeType getFlushMode()
   {
-    EntityManager em = reg.getCurrentPersistenceContext(emf, props);
-    if(em == null)
-      em = emf.createEntityManager(props);
-    
-    return em.getFlushMode();
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).getFlushMode();
   }
 
   public <T> T getReference(Class<T> arg0, Object arg1)
   {
-    EntityManager em = reg.getCurrentPersistenceContext(emf, props);
-    if(em == null)
-      em = emf.createEntityManager(props);
-    
-    return em.getReference(arg0, arg1);
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).getReference(arg0, arg1);
   }
 
   public EntityTransaction getTransaction()
@@ -199,118 +163,104 @@ public class JTAEntityManager implements EntityManager {
 
   public void setFlushMode(FlushModeType arg0)
   {
-    EntityManager em = reg.getCurrentPersistenceContext(emf, props);
-    if(em == null)
-      em = emf.createEntityManager(props);
-    
-    em.setFlushMode(arg0);
+    reg.getCurrentOrDetachedPersistenceContext(emf, props).setFlushMode(arg0);
   }
 
   public <T> TypedQuery<T> createNamedQuery(String arg0, Class<T> arg1)
   {
-    // TODO Auto-generated method stub
-    return null;
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).createNamedQuery(arg0, arg1);
   }
 
   public <T> TypedQuery<T> createQuery(CriteriaQuery<T> arg0)
   {
-    // TODO Auto-generated method stub
-    return null;
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).createQuery(arg0);
   }
 
   public <T> TypedQuery<T> createQuery(String arg0, Class<T> arg1)
   {
-    // TODO Auto-generated method stub
-    return null;
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).createQuery(arg0, arg1);
   }
 
   public void detach(Object arg0)
   {
-    // TODO Auto-generated method stub
-    
+    reg.getCurrentOrDetachedPersistenceContext(emf, props).detach(arg0);
   }
 
   public <T> T find(Class<T> arg0, Object arg1, Map<String, Object> arg2)
   {
-    // TODO Auto-generated method stub
-    return null;
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).find(arg0, arg1, arg2);
   }
 
   public <T> T find(Class<T> arg0, Object arg1, LockModeType arg2)
   {
-    // TODO Auto-generated method stub
-    return null;
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).find(arg0, arg1, arg2);
   }
 
   public <T> T find(Class<T> arg0, Object arg1, LockModeType arg2, Map<String, Object> arg3)
   {
-    // TODO Auto-generated method stub
-    return null;
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).find(arg0, arg1, arg2, arg3);
   }
 
   public CriteriaBuilder getCriteriaBuilder()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).getCriteriaBuilder();
   }
 
   public EntityManagerFactory getEntityManagerFactory()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return emf;
   }
 
   public LockModeType getLockMode(Object arg0)
   {
-    // TODO Auto-generated method stub
-    return null;
+    return reg.getCurrentPersistenceContext(emf, props).getLockMode(arg0);
   }
 
   public Metamodel getMetamodel()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).getMetamodel();
   }
 
   public Map<String, Object> getProperties()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).getProperties();
   }
 
   public void lock(Object arg0, LockModeType arg1, Map<String, Object> arg2)
   {
-    // TODO Auto-generated method stub
-    
+    reg.getCurrentPersistenceContext(emf, props).lock(arg0, arg1, arg2);
   }
 
   public void refresh(Object arg0, Map<String, Object> arg1)
   {
-    // TODO Auto-generated method stub
-    
+    reg.getCurrentPersistenceContext(emf, props).refresh(arg0, arg1);
   }
 
   public void refresh(Object arg0, LockModeType arg1)
   {
-    // TODO Auto-generated method stub
-    
+    reg.getCurrentPersistenceContext(emf, props).refresh(arg0, arg1);
   }
 
   public void refresh(Object arg0, LockModeType arg1, Map<String, Object> arg2)
   {
-    // TODO Auto-generated method stub
-    
+    reg.getCurrentPersistenceContext(emf, props).refresh(arg0, arg1, arg2);
   }
 
   public void setProperty(String arg0, Object arg1)
-  {
-    // TODO Auto-generated method stub
-    
+  {    
+    /*
+     * TODO: check this
+     * We don't update props because the changed property should only be visible to the 
+     * EntityManager of the current transaction !?
+     */
+    EntityManager em = reg.getCurrentOrNoPersistenceContext(emf, props);
+    if (em != null) {
+      em.setProperty(arg0, arg1);
+    }
   }
 
   public <T> T unwrap(Class<T> arg0)
   {
-    // TODO Auto-generated method stub
-    return null;
+    return reg.getCurrentOrDetachedPersistenceContext(emf, props).unwrap(arg0);
   }
 }
