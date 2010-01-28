@@ -184,6 +184,22 @@ public class PersistenceUnitImpl implements ParsedPersistenceUnit
     provider = providerRef;
   }
   
+  /**
+   * @param sharedCacheMode
+   */
+  public void setSharedCacheMode(String sharedCacheMode)
+  {
+    metadata.put(SHARED_CACHE_MODE, sharedCacheMode);
+  }
+  
+  /**
+   * @param validationMode
+   */
+  public void setValidationMode(String validationMode)
+  {
+    metadata.put(VALIDATION_MODE, validationMode);
+  }
+  
   public String toString()
   {
     return "Persistence unit " + metadata.get(UNIT_NAME) + " in bundle "

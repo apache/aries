@@ -62,6 +62,14 @@ public interface ParsedPersistenceUnit {
   /** A {@link Boolean} indicating whether unlisted classes should be excluded */
   public static final String EXCLUDE_UNLISTED_CLASSES = "org.apache.aries.jpa.exclude.unlisted";
   
+  /* JPA 2 extensions */
+  
+  /** The caching type of the persistence unit. This will only be available for JPA2 persistence units. */
+  public static final String SHARED_CACHE_MODE = "org.apache.aries.jpa2.shared.cache.mode";
+  /** The validation mode of the persistence unit. This will only be available for JPA2 persistence units. */
+  public static final String VALIDATION_MODE = "org.apache.aries.jpa2.validation.mode";
+  
+  
   /* End of Map keys */
   
   /** This property is used in the JPA properties to indicate a provider version range */
