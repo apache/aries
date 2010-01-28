@@ -53,7 +53,8 @@ public class JTAPersistenceContextRegistry {
    * automatically be closed when the transaction completes.
    * 
    * @param persistenceUnit The peristence unit to create the persitence context from
-   * @param properties  Any properties that should be passed on the call to {@code createEntityManager()}
+   * @param properties  Any properties that should be passed on the call to {@code createEntityManager()}. 
+   * The properties are NOT used for retrieving an already created persistence context.
    * 
    * @return A persistence context associated with the current transaction. Note that this will
    *         need to be wrappered to obey the JPA spec by throwing the correct exceptions
@@ -92,7 +93,45 @@ public class JTAPersistenceContextRegistry {
     
     return toReturn;
   }
+  
+  /**
+   * Get the persistence context for the current transaction if a transaction is active. 
+   * {@link getCurrentPersistenceContext}
+   * 
+   * Otherwise return a freshly created persistence context that is not associated with any
+   * transaction.
+   * 
+   * @param persistenceUnit
+   * @param properties
+   * @return An {@link EntityManager} object
+   */
+  public EntityManager getCurrentOrDetachedPersistenceContext(EntityManagerFactory persistenceUnit, Map<?,?> properties) 
+  {
+    if (tranRegistry.getTransactionKey() != null)
+      return getCurrentPersistenceContext(persistenceUnit, properties);
+    else 
+      return persistenceUnit.createEntityManager(properties);
+  }
 
+  /**
+   * Get the persistence context for the current transaction if a transaction is active. 
+   * {@link getCurrentPersistenceContext}
+   * 
+   * Otherwise return null;
+   * 
+   * @param persistenceUnit
+   * @param properties
+   * @return The {@link EntityManager} object or null if there is no active transaction.
+   */
+  public EntityManager getCurrentOrNoPersistenceContext(EntityManagerFactory persistenceUnit, Map<?,?> properties) 
+  {
+    if (tranRegistry.getTransactionKey() != null)
+      return getCurrentPersistenceContext(persistenceUnit, properties);
+    else 
+      return null;
+  }
+
+  
   /**
    * Provide a {@link TransactionSynchronizationRegistry} to use
    * @param tranRegistry
