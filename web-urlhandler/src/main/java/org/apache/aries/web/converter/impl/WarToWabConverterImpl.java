@@ -71,7 +71,6 @@ public class WarToWabConverterImpl {
   private boolean converted = false;
 
   // State used for updating the manifest
-  private ArrayList<String> fileNames;
   private Set<String> importPackages;
   private Set<String> exemptPackages;
   private Map<String, Manifest> manifests; 
@@ -79,7 +78,6 @@ public class WarToWabConverterImpl {
 
   public WarToWabConverterImpl(InputStreamProvider warFile, String name, Properties properties) throws IOException {
     this.properties = properties;
-    fileNames = new ArrayList<String>();
     classPath = new ArrayList<String>();
     importPackages = new HashSet<String>();
     exemptPackages = new HashSet<String>();
@@ -97,8 +95,8 @@ public class WarToWabConverterImpl {
       scanForDependencies(jarInput);
 
       // Add the new properties to the manifest byte stream
-      wabManifest = jarInput.getManifest();
-      wabManifest = updateManifest(wabManifest);
+      Manifest manifest = jarInput.getManifest();
+      wabManifest = updateManifest(manifest);
     } 
     finally {
       try { if (jarInput != null) jarInput.close(); } catch (IOException e) { e.printStackTrace(); }
@@ -136,7 +134,6 @@ public class WarToWabConverterImpl {
     ZipEntry entry;
     
     while ((entry = jarInput.getNextEntry()) != null) {
-      fileNames.add(entry.getName());
       if (entry.getName().endsWith(".class")) {
         PackageFinder pkgFinder = new PackageFinder();
         new ClassReader(jarInput).accept(pkgFinder, ClassReader.SKIP_DEBUG);
@@ -182,7 +179,7 @@ public class WarToWabConverterImpl {
     // Process manifests from jars in order to work out classpath dependencies
     ClassPathBuilder classPathBuilder = new ClassPathBuilder(manifests);
     for (String fileName : manifests.keySet())
-      if (fileName.startsWith("WEB-INF/lib")) {
+      if (fileName.startsWith(CLASSPATH_LIB_PREFIX)) {
         classPath.add(fileName);
         classPath = classPathBuilder.updatePath(fileName, classPath);
       }
@@ -244,10 +241,6 @@ public class WarToWabConverterImpl {
     // Add any files from the WEB-INF/lib directory + their dependencies
     classpath.addAll(classPath);
     
-    for (String s : fileNames)
-      if (s.startsWith(CLASSPATH_LIB_PREFIX) && !classpath.contains(s))
-        classpath.add(s);
-
     // Get the list from the URL and add to classpath (removing duplicates)
     mergePathList(properties.getProperty(Constants.BUNDLE_CLASSPATH),
         classpath, ",");
@@ -338,9 +331,9 @@ public class WarToWabConverterImpl {
     // Web-ContextPath
     //
 
-    String webCPath = manifest.getMainAttributes().getValue(WEB_CONTEXT_PATH);
+    String webCPath = properties.getProperty(WEB_CONTEXT_PATH);
     if (webCPath == null) {
-        webCPath = properties.getProperty(WEB_CONTEXT_PATH);
+        webCPath = manifest.getMainAttributes().getValue(WEB_CONTEXT_PATH);
     }
     if (webCPath == null) {
         properties.put(WEB_CONTEXT_PATH, DEFAULT_WEB_CONTEXT_PATH);
