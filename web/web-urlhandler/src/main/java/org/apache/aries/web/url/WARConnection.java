@@ -41,9 +41,10 @@ public class WARConnection extends URLConnection
     
     // Validate properties
     
-    String bundleManifestVersion = (String)properties.get(Constants.BUNDLE_VERSION);
-    if (bundleManifestVersion != null && !bundleManifestVersion.equals("2"))
-      throw new MalformedURLException("Incorrect bundle version supplied in URL : "+bundleManifestVersion);
+    String bundleManifestVersion = (String) properties.get(Constants.BUNDLE_MANIFESTVERSION);
+    if (bundleManifestVersion != null && !bundleManifestVersion.equals("2")) {
+      throw new MalformedURLException("Incorrect bundle version supplied in URL : " + bundleManifestVersion);
+    }
     
   }
 
