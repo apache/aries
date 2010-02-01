@@ -30,6 +30,7 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -272,8 +273,9 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                                     unregisterServices();
                                     untrackServiceReferences();
                                     destroyComponents();
-                                    LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName(), t);
-                                    eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundleContext().getBundle(), getExtenderBundle(), getMissingDependencies(), t));
+                                    String[] missingDependecies = getMissingDependencies();
+                                    LOGGER.error("Unable to start blueprint container for bundle " + bundleContext.getBundle().getSymbolicName() + " due to unresolved dependencies " + Arrays.asList(missingDependecies), t);
+                                    eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundleContext().getBundle(), getExtenderBundle(), missingDependecies, t));
                                 }
                             }
                         };
