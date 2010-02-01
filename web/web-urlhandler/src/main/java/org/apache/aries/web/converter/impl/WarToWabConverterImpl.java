@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -242,13 +243,11 @@ public class WarToWabConverterImpl {
     classpath.addAll(classPath);
     
     // Get the list from the URL and add to classpath (removing duplicates)
-    mergePathList(properties.getProperty(Constants.BUNDLE_CLASSPATH),
-        classpath, ",");
+    mergePathList(properties.getProperty(Constants.BUNDLE_CLASSPATH), classpath, ",");
 
     // Get the existing list from the manifest file and add to classpath
     // (removing duplicates)
-    mergePathList(manifest.getMainAttributes().getValue(
-        Constants.BUNDLE_CLASSPATH), classpath, ",");
+    mergePathList(manifest.getMainAttributes().getValue(Constants.BUNDLE_CLASSPATH), classpath, ",");
 
     // Construct the classpath string and set it into the properties
     StringBuffer classPathValue = new StringBuffer();
@@ -257,9 +256,9 @@ public class WarToWabConverterImpl {
       classPathValue.append(entry);
     }
 
-    if (!classpath.isEmpty())
-      properties.put(Constants.BUNDLE_CLASSPATH, classPathValue.toString()
-          .substring(1));
+    if (!classpath.isEmpty()) {
+      properties.put(Constants.BUNDLE_CLASSPATH, classPathValue.toString().substring(1));
+    }
 
     ArrayList<String> packages = new ArrayList<String>() {
       @Override
@@ -293,13 +292,11 @@ public class WarToWabConverterImpl {
     packages.clear();
     
     // Get the list from the URL and add to classpath (removing duplicates)
-    mergePathList(properties.getProperty(Constants.IMPORT_PACKAGE), packages,
-        ",");
+    mergePathList(properties.getProperty(Constants.IMPORT_PACKAGE), packages, ",");
 
     // Get the existing list from the manifest file and add to classpath
     // (removing duplicates)
-    mergePathList(manifest.getMainAttributes().getValue(
-        Constants.IMPORT_PACKAGE), packages, ",");
+    mergePathList(manifest.getMainAttributes().getValue(Constants.IMPORT_PACKAGE), packages, ",");
 
     // Add the default set of packages
     mergePathList(DEFAULT_IMPORT_PACKAGE_LIST, packages, ",");
@@ -323,10 +320,10 @@ public class WarToWabConverterImpl {
       importValues.append(",");
       importValues.append(entry);
     }
-    if (!packages.isEmpty())
-      properties.put(Constants.IMPORT_PACKAGE, importValues.toString()
-          .substring(1));
-
+    if (!packages.isEmpty()) {
+      properties.put(Constants.IMPORT_PACKAGE, importValues.toString().substring(1));
+    }
+    
     //
     // Web-ContextPath
     //
@@ -363,18 +360,67 @@ public class WarToWabConverterImpl {
   }
 
   // pathlist = A "delim" delimitted list of path entries
-  public static void mergePathList(String pathlist, ArrayList<String> classpath,
-      String delim) {
-    if (pathlist != null) {
-      StringTokenizer tok = new StringTokenizer(pathlist, delim);
-      while (tok.hasMoreTokens()) {
-        String token = tok.nextToken().trim();
-        if (!classpath.contains(token))
-          classpath.add(token);
+  private static void mergePathList(String pathlist, ArrayList<String> paths, String delim) {
+      if (pathlist != null) {
+          List<String> tokens = parseDelimitedString(pathlist, delim, true);
+          for (String token : tokens) {
+              if (!paths.contains(token)) {
+                  paths.add(token);
+              }
+          }
       }
-    }
   }
+  
+  private static List<String> parseDelimitedString(String value, String delim, boolean includeQuotes) {   
+      if (value == null) {       
+          value = "";
+      }
 
+      List<String> list = new ArrayList<String>();
+
+      int CHAR = 1;
+      int DELIMITER = 2;
+      int STARTQUOTE = 4;
+      int ENDQUOTE = 8;
+
+      StringBuffer sb = new StringBuffer();
+
+      int expecting = (CHAR | DELIMITER | STARTQUOTE);
+
+      for (int i = 0; i < value.length(); i++) {        
+          char c = value.charAt(i);
+
+          boolean isDelimiter = (delim.indexOf(c) >= 0);
+          boolean isQuote = (c == '"');
+
+          if (isDelimiter && ((expecting & DELIMITER) > 0)) {            
+              list.add(sb.toString().trim());
+              sb.delete(0, sb.length());
+              expecting = (CHAR | DELIMITER | STARTQUOTE);
+          } else if (isQuote && ((expecting & STARTQUOTE) > 0)) { 
+              if (includeQuotes) {
+                  sb.append(c);
+              }
+              expecting = CHAR | ENDQUOTE;
+          } else if (isQuote && ((expecting & ENDQUOTE) > 0)) {    
+              if (includeQuotes) {
+                  sb.append(c);
+              }
+              expecting = (CHAR | STARTQUOTE | DELIMITER);
+          } else if ((expecting & CHAR) > 0) {            
+              sb.append(c);
+          } else {
+              throw new IllegalArgumentException("Invalid delimited string: " + value);
+          }
+      }
+
+      if (sb.length() > 0) {        
+          list.add(sb.toString().trim());
+      }
+
+      return list;
+  }
+  
   public InputStream getWAB() throws IOException {
     ensureConverted();
     return new ByteArrayInputStream(wabFile);
