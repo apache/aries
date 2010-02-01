@@ -81,8 +81,7 @@ public class WabConverterTest
         "javax.servlet.jsp.tagext;version=2.1",
         attrs.getValue("Import-Package"));
   }
-  
-  
+    
   @Test
   public void testAcceptNoManifest() throws Exception
   {
@@ -113,7 +112,7 @@ public class WabConverterTest
         "javax.servlet.jsp;version=2.1,javax.servlet.jsp.el;version=2.1," +
         "javax.servlet.jsp.tagext;version=2.1",
         attrs.getValue(Constants.IMPORT_PACKAGE));
-    assertEquals("WEB-INF/classes/",attrs.getValue(Constants.BUNDLE_CLASSPATH));
+    assertEquals("WEB-INF/classes",attrs.getValue(Constants.BUNDLE_CLASSPATH));
   }
   
   @Test
@@ -141,18 +140,18 @@ public class WabConverterTest
     attrs.putValue(Constants.BUNDLE_SYMBOLICNAME, "org.apache.test");
     attrs.putValue(Constants.BUNDLE_VERSION, "1.0");
     attrs.putValue(Constants.IMPORT_PACKAGE, "org.apache.util,org.apache.test;version=1.0");
-    attrs.putValue(Constants.BUNDLE_CLASSPATH, "jsp/classes/");
+    attrs.putValue(Constants.BUNDLE_CLASSPATH, "jsp/classes");
     
     attrs = convertWithProperties(m, Constants.BUNDLE_VERSION, "2.0",
         Constants.IMPORT_PACKAGE, "org.apache.wab,org.apache.test;version=2.0",
-        Constants.BUNDLE_CLASSPATH, "aries/generated/");
+        Constants.BUNDLE_CLASSPATH, "aries/generated");
     
     assertEquals("org.apache.test", attrs.getValue(Constants.BUNDLE_SYMBOLICNAME));
     assertEquals("2.0", attrs.getValue(Constants.BUNDLE_VERSION));
     assertTrue(attrs.getValue(Constants.IMPORT_PACKAGE).contains("org.apache.util"));
     assertTrue(attrs.getValue(Constants.IMPORT_PACKAGE).contains("org.apache.test;version=2.0"));    
     assertTrue(attrs.getValue(Constants.IMPORT_PACKAGE).contains("org.apache.wab"));
-    assertEquals("WEB-INF/classes/,aries/generated/,jsp/classes/", attrs.getValue(Constants.BUNDLE_CLASSPATH));
+    assertEquals("WEB-INF/classes,aries/generated,jsp/classes", attrs.getValue(Constants.BUNDLE_CLASSPATH));
   }
   
   private Attributes convertWithProperties(Manifest m, String ... props) throws Exception {
