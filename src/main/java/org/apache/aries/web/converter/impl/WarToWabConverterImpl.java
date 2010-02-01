@@ -48,7 +48,7 @@ import org.osgi.framework.Constants;
 public class WarToWabConverterImpl {
   private static final String DEFAULT_BUNDLE_VERSION = "1.0";
   private static final String DEFAULT_BUNDLE_MANIFESTVERSION = "2";
-  private static final String INITIAL_CLASSPATH_ENTRY = "WEB-INF/classes/";
+  private static final String INITIAL_CLASSPATH_ENTRY = "WEB-INF/classes";
   private static final String CLASSPATH_LIB_PREFIX = "WEB-INF/lib/";
   private static final String DEFAULT_IMPORT_PACKAGE_LIST = "javax.servlet;version=2.5,"
       + "javax.servlet.http;version=2.5,"
@@ -236,7 +236,7 @@ public class WarToWabConverterImpl {
     ArrayList<String> classpath = new ArrayList<String>();
 
     // Set initial entry into classpath
-    classpath.add(0, INITIAL_CLASSPATH_ENTRY);
+    classpath.add(INITIAL_CLASSPATH_ENTRY);
 
     // Add any files from the WEB-INF/lib directory + their dependencies
     classpath.addAll(classPath);
@@ -291,7 +291,7 @@ public class WarToWabConverterImpl {
     // Import-Package
     //
     packages.clear();
-
+    
     // Get the list from the URL and add to classpath (removing duplicates)
     mergePathList(properties.getProperty(Constants.IMPORT_PACKAGE), packages,
         ",");
