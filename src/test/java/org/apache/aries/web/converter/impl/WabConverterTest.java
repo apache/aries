@@ -83,6 +83,24 @@ public class WabConverterTest
   }
     
   @Test
+  public void testImportPackageWithAttributesMerge() throws Exception
+  {
+      Attributes attrs = convertWithProperties(
+                Constants.IMPORT_PACKAGE, "javax.servlet.jsp; version=\"[2.0,2.1]\",javax.servlet.jsp.tagext; version=\"[2.0,2.1]\"");
+      
+      String actual = attrs.getValue("Import-Package");
+      System.out.println(actual);
+      assertEquals(
+           "javax.servlet.jsp; version=\"[2.0,2.1]\"," +
+           "javax.servlet.jsp.tagext; version=\"[2.0,2.1]\"," +
+           "javax.servlet;version=2.5," +
+           "javax.servlet.http;version=2.5," +
+           "javax.el;version=2.1," +
+           "javax.servlet.jsp.el;version=2.1",
+          actual);
+  }
+
+  @Test
   public void testAcceptNoManifest() throws Exception
   {
     final ByteArrayOutputStream bout = new ByteArrayOutputStream();
