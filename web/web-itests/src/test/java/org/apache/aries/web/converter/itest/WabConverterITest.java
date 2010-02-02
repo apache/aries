@@ -93,12 +93,13 @@ public class WabConverterITest {
     
     File testWar = new File("test.war");
     Bundle converted = bundleContext.installBundle("webbundle:"+testWar.toURL().toExternalForm() 
-        + "?Bundle-SymbolicName=test.war.bundle");
+        + "?Bundle-SymbolicName=test.war.bundle&Web-ContextPath=foo");
     
     assertNotNull(converted);
     Dictionary<String,String> man = converted.getHeaders();
     
-    assertEquals("test.war.bundle", man.get(Constants.BUNDLE_SYMBOLICNAME));   
+    assertEquals("test.war.bundle", man.get(Constants.BUNDLE_SYMBOLICNAME)); 
+    assertEquals("/foo", man.get("Web-ContextPath"));
     assertTrue(man.get(Constants.IMPORT_PACKAGE).contains("javax.naming"));
   }
 
