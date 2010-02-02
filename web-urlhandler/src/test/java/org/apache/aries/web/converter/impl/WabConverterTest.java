@@ -124,7 +124,6 @@ public class WabConverterTest
     Attributes attrs = convertWithProperties();
     
     assertTrue(attrs.getValue(Constants.BUNDLE_SYMBOLICNAME).startsWith(WAR_FILE_NAME_WO_SUFFIX));
-    assertEquals("/", attrs.getValue(WarToWabConverter.WEB_JSP_EXTRACT_LOCATION));    
     assertEquals("1.0", attrs.getValue(Constants.BUNDLE_VERSION));
     assertEquals("javax.servlet;version=2.5,javax.servlet.http;version=2.5,javax.el;version=2.1," +
         "javax.servlet.jsp;version=2.1,javax.servlet.jsp.el;version=2.1," +
@@ -137,12 +136,10 @@ public class WabConverterTest
   public void testPropertySupport() throws Exception {
     Attributes attrs = convertWithProperties(
         WarToWabConverter.WEB_CONTEXT_PATH, "WebFiles",
-        WarToWabConverter.WEB_JSP_EXTRACT_LOCATION, "/jsp",
         Constants.BUNDLE_VERSION, "2.0",
         Constants.IMPORT_PACKAGE, "org.apache.aries.test;version=2.5,org.apache.aries.test.eba;version=1.0");
     
     assertEquals("/WebFiles", attrs.getValue(WarToWabConverter.WEB_CONTEXT_PATH));
-    assertEquals("/jsp", attrs.getValue(WarToWabConverter.WEB_JSP_EXTRACT_LOCATION));
     assertEquals("2.0", attrs.getValue(Constants.BUNDLE_VERSION));
     assertEquals("org.apache.aries.test;version=2.5,org.apache.aries.test.eba;version=1.0,"+
         "javax.servlet;version=2.5,javax.servlet.http;version=2.5,javax.el;version=2.1," +
