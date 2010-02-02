@@ -92,6 +92,13 @@
                     <include>*.xml</include>
                 </includes>
             </resource>
+            <resource>
+              <includes>
+                <include>*.rsrc</include>
+              </includes>
+              <targetPath>org/apache/aries/jpa/container/parsing/impl</targetPath>
+              <directory>${basedir}/src/main/resources/org/apache/aries/jpa/container/parsing/impl</directory>
+            </resource>
         </resources>
         <plugins>
             <plugin>
