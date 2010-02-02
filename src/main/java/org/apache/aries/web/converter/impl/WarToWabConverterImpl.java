@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
@@ -56,9 +55,6 @@ public class WarToWabConverterImpl {
       + "javax.servlet.jsp;version=2.1,"
       + "javax.servlet.jsp.el;version=2.1,"
       + "javax.servlet.jsp.tagext;version=2.1";
-
-  private static final String DEFAULT_WEB_CONTEXT_PATH = "/";
-  private static final String DEFAULT_WEB_JSP_EXTRACT_LOCATION = "/";
 
   private Properties properties;
 
@@ -92,11 +88,14 @@ public class WarToWabConverterImpl {
 
     try {
       jarInput = new JarInputStream(input.getInputStream());
-      scanForDependencies(jarInput);
-
-      // Add the new properties to the manifest byte stream
       Manifest manifest = jarInput.getManifest();
-      wabManifest = updateManifest(manifest);
+      if (isBundle(manifest)) {
+          wabManifest = updateBundleManifest(manifest);
+      } else {
+          scanForDependencies(jarInput);
+          // Add the new properties to the manifest byte stream
+          wabManifest = updateManifest(manifest);
+      }
     } 
     finally {
       try { if (jarInput != null) jarInput.close(); } catch (IOException e) { e.printStackTrace(); }
@@ -129,6 +128,18 @@ public class WarToWabConverterImpl {
     wabFile = output.toByteArray();
   }
 
+  private boolean isBundle(Manifest manifest)  {
+      if (manifest == null) {
+          return false;          
+      }
+      Attributes attributes = manifest.getMainAttributes();
+      // TODO: need to check for other headers too
+      if (attributes.getValue(Constants.BUNDLE_SYMBOLICNAME) != null) {
+          return true;
+      }
+      return false;
+  }
+  
   private void scanRecursive(final JarInputStream jarInput, boolean topLevel) throws IOException 
   {
     ZipEntry entry;
@@ -190,6 +201,36 @@ public class WarToWabConverterImpl {
         importPackages.remove(s);
   }
 
+  protected Manifest updateBundleManifest(Manifest manifest) throws IOException {
+      String webCPath = properties.getProperty(WEB_CONTEXT_PATH);
+      if (webCPath == null) {
+          webCPath = manifest.getMainAttributes().getValue(WEB_CONTEXT_PATH);
+      }
+      if (webCPath == null) {
+          throw new IOException("Must specify " + WEB_CONTEXT_PATH + " parameter. The " + 
+                                WEB_CONTEXT_PATH + " header is not defined in the source bundle.");
+      } else {
+          webCPath = addSlash(webCPath);
+          manifest.getMainAttributes().put(new Attributes.Name(WEB_CONTEXT_PATH), webCPath);
+      }
+      
+      // converter is not allowed to specify and override the following properties
+      // when source is already a bundle
+      checkParameter(Constants.BUNDLE_VERSION);
+      checkParameter(Constants.BUNDLE_MANIFESTVERSION);
+      checkParameter(Constants.BUNDLE_SYMBOLICNAME);
+      checkParameter(Constants.IMPORT_PACKAGE);
+      checkParameter(Constants.BUNDLE_CLASSPATH);
+              
+      return manifest;
+  }
+  
+  private void checkParameter(String parameter) throws IOException {
+      if (properties.containsKey(parameter)) {
+          throw new IOException("Cannot override " + parameter + " parameter when converting a bundle");
+      }
+  }
+  
   protected Manifest updateManifest(Manifest manifest) throws IOException
   {
     // If for some reason no manifest was generated, we start our own so that we don't null pointer later on
@@ -199,6 +240,16 @@ public class WarToWabConverterImpl {
     }
     
     // Compare the manifest and the supplied properties
+    
+    //
+    // Web-ContextPath
+    //
+
+    String webCPath = properties.getProperty(WEB_CONTEXT_PATH);
+    if (webCPath == null) {
+        throw new IOException(WEB_CONTEXT_PATH + " parameter is required.");
+    }
+    properties.put(WEB_CONTEXT_PATH, addSlash(webCPath));  
 
     //
     // Bundle-Version
@@ -215,8 +266,7 @@ public class WarToWabConverterImpl {
 
     if (manifest.getMainAttributes().getValue(Constants.BUNDLE_MANIFESTVERSION) == null
         && !properties.containsKey(Constants.BUNDLE_MANIFESTVERSION)) {
-      properties.put(Constants.BUNDLE_MANIFESTVERSION,
-          DEFAULT_BUNDLE_MANIFESTVERSION);
+      properties.put(Constants.BUNDLE_MANIFESTVERSION, DEFAULT_BUNDLE_MANIFESTVERSION);
     }
 
     //
@@ -225,8 +275,7 @@ public class WarToWabConverterImpl {
 
     if (manifest.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME) == null
         && !properties.containsKey(Constants.BUNDLE_SYMBOLICNAME)) {
-      properties.put(Constants.BUNDLE_SYMBOLICNAME, warName + "_"
-          + manifest.hashCode());
+      properties.put(Constants.BUNDLE_SYMBOLICNAME, warName + "_" + manifest.hashCode());
     }
 
     // 
@@ -322,32 +371,24 @@ public class WarToWabConverterImpl {
     if (!packages.isEmpty()) {
       properties.put(Constants.IMPORT_PACKAGE, importValues.toString().substring(1));
     }
-    
-    //
-    // Web-ContextPath
-    //
-
-    String webCPath = properties.getProperty(WEB_CONTEXT_PATH);
-    if (webCPath == null) {
-        webCPath = manifest.getMainAttributes().getValue(WEB_CONTEXT_PATH);
-    }
-    if (webCPath == null) {
-        properties.put(WEB_CONTEXT_PATH, DEFAULT_WEB_CONTEXT_PATH);
-    } else {
-        // always ensure context path starts with slash
-        if (!webCPath.startsWith("/")) {
-            webCPath = "/" + webCPath;
-        }
-        properties.put(WEB_CONTEXT_PATH, webCPath);
-    }
-
+     
     // Take the properties map and add them to the manifest file
-    for (Object s : properties.keySet())
-      manifest.getMainAttributes().put(new Attributes.Name((String) s), properties.get(s));
+    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+        String key = entry.getKey().toString();
+        String value = entry.getValue().toString();
+        manifest.getMainAttributes().put(new Attributes.Name(key), value);
+    }
     
     return manifest;
   }
 
+  private static String addSlash(String contextPath) {
+      if (!contextPath.startsWith("/")) {
+          contextPath = "/" + contextPath;
+      }
+      return contextPath;
+  }
+  
   // pathlist = A "delim" delimitted list of path entries
   private static void mergePathList(String pathlist, ArrayList<String> paths, String delim) {
       if (pathlist != null) {

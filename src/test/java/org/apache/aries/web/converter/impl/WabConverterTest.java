@@ -20,6 +20,7 @@ package org.apache.aries.web.converter.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -52,7 +53,9 @@ public class WabConverterTest
   @Test
   public void testNullManifest() throws Exception
   {
-    WarToWabConverterImpl sut = new WarToWabConverterImpl(makeTestFile(new byte[0]), WAR_FILE_NAME, new Properties());
+    Properties properties = new Properties();
+    properties.put(WarToWabConverter.WEB_CONTEXT_PATH, "/test");
+    WarToWabConverterImpl sut = new WarToWabConverterImpl(makeTestFile(new byte[0]), WAR_FILE_NAME, properties);
     
     Manifest res = sut.updateManifest(null);
     Attributes attrs = res.getMainAttributes();
@@ -63,7 +66,9 @@ public class WabConverterTest
   @Test
   public void testImportPackageMerge() throws Exception
   {
-    WarToWabConverterImpl sut = new WarToWabConverterImpl(makeTestFile(new byte[0]), WAR_FILE_NAME, new Properties());
+    Properties properties = new Properties();
+    properties.put(WarToWabConverter.WEB_CONTEXT_PATH, "/test");
+    WarToWabConverterImpl sut = new WarToWabConverterImpl(makeTestFile(new byte[0]), WAR_FILE_NAME, properties);
     
     Manifest input = new Manifest();
     input.getMainAttributes().putValue("Import-Package", "com.ibm.test,javax.servlet.http");
@@ -86,6 +91,7 @@ public class WabConverterTest
   public void testImportPackageWithAttributesMerge() throws Exception
   {
       Attributes attrs = convertWithProperties(
+                WarToWabConverter.WEB_CONTEXT_PATH, "/test",
                 Constants.IMPORT_PACKAGE, "javax.servlet.jsp; version=\"[2.0,2.1]\",javax.servlet.jsp.tagext; version=\"[2.0,2.1]\"");
       
       String actual = attrs.getValue("Import-Package");
@@ -112,6 +118,7 @@ public class WabConverterTest
     InputStreamProvider input = makeTestFile(bout.toByteArray());
     
     Properties props = new Properties();
+    props.put(WarToWabConverter.WEB_CONTEXT_PATH, "/test");
     props.put(Constants.BUNDLE_SYMBOLICNAME, "test.bundle");
     WarToWabConverterImpl sut = new WarToWabConverterImpl(input, WAR_FILE_NAME, props);
     
@@ -121,7 +128,8 @@ public class WabConverterTest
   
   @Test 
   public void testDefaultProperties() throws Exception {
-    Attributes attrs = convertWithProperties();
+    Attributes attrs = convertWithProperties(
+            WarToWabConverter.WEB_CONTEXT_PATH, "/test");
     
     assertTrue(attrs.getValue(Constants.BUNDLE_SYMBOLICNAME).startsWith(WAR_FILE_NAME_WO_SUFFIX));
     assertEquals("1.0", attrs.getValue(Constants.BUNDLE_VERSION));
@@ -149,7 +157,7 @@ public class WabConverterTest
   }
   
   @Test
-  public void testManifestAndPropertyOverwrites() throws Exception {
+  public void testBundleContextPathOverride() throws Exception {
     Manifest m = new Manifest();
     Attributes attrs = m.getMainAttributes();
     attrs.putValue(Constants.BUNDLE_SYMBOLICNAME, "org.apache.test");
@@ -157,16 +165,56 @@ public class WabConverterTest
     attrs.putValue(Constants.IMPORT_PACKAGE, "org.apache.util,org.apache.test;version=1.0");
     attrs.putValue(Constants.BUNDLE_CLASSPATH, "jsp/classes");
     
-    attrs = convertWithProperties(m, Constants.BUNDLE_VERSION, "2.0",
-        Constants.IMPORT_PACKAGE, "org.apache.wab,org.apache.test;version=2.0",
-        Constants.BUNDLE_CLASSPATH, "aries/generated");
-    
+    attrs = convertWithProperties(m, 
+        WarToWabConverter.WEB_CONTEXT_PATH, "WebFiles");
+       
     assertEquals("org.apache.test", attrs.getValue(Constants.BUNDLE_SYMBOLICNAME));
-    assertEquals("2.0", attrs.getValue(Constants.BUNDLE_VERSION));
+    assertEquals("1.0", attrs.getValue(Constants.BUNDLE_VERSION));
     assertTrue(attrs.getValue(Constants.IMPORT_PACKAGE).contains("org.apache.util"));
-    assertTrue(attrs.getValue(Constants.IMPORT_PACKAGE).contains("org.apache.test;version=2.0"));    
-    assertTrue(attrs.getValue(Constants.IMPORT_PACKAGE).contains("org.apache.wab"));
-    assertEquals("WEB-INF/classes,aries/generated,jsp/classes", attrs.getValue(Constants.BUNDLE_CLASSPATH));
+    assertTrue(attrs.getValue(Constants.IMPORT_PACKAGE).contains("org.apache.test;version=1.0"));    
+    assertEquals("jsp/classes", attrs.getValue(Constants.BUNDLE_CLASSPATH));
+    assertEquals("/WebFiles", attrs.getValue(WarToWabConverter.WEB_CONTEXT_PATH));
+  }
+  
+  @Test
+  public void testBundleContextPathManifestOverride() throws Exception {
+    Manifest m = new Manifest();
+    Attributes attrs = m.getMainAttributes();
+    attrs.putValue(Constants.BUNDLE_SYMBOLICNAME, "org.apache.test");
+    attrs.putValue(WarToWabConverter.WEB_CONTEXT_PATH, "test");
+    attrs.putValue(Constants.BUNDLE_VERSION, "1.0");
+    attrs.putValue(Constants.IMPORT_PACKAGE, "org.apache.util,org.apache.test;version=1.0");
+    attrs.putValue(Constants.BUNDLE_CLASSPATH, "jsp/classes");
+    
+    attrs = convertWithProperties(m, 
+        WarToWabConverter.WEB_CONTEXT_PATH, "WebFiles");
+       
+    assertEquals("org.apache.test", attrs.getValue(Constants.BUNDLE_SYMBOLICNAME));
+    assertEquals("1.0", attrs.getValue(Constants.BUNDLE_VERSION));
+    assertTrue(attrs.getValue(Constants.IMPORT_PACKAGE).contains("org.apache.util"));
+    assertTrue(attrs.getValue(Constants.IMPORT_PACKAGE).contains("org.apache.test;version=1.0"));    
+    assertEquals("jsp/classes", attrs.getValue(Constants.BUNDLE_CLASSPATH));
+    assertEquals("/WebFiles", attrs.getValue(WarToWabConverter.WEB_CONTEXT_PATH));
+  }
+  
+  @Test
+  public void testBundleManifestOverride() throws Exception {
+    Manifest m = new Manifest();
+    Attributes attrs = m.getMainAttributes();
+    attrs.putValue(Constants.BUNDLE_SYMBOLICNAME, "org.apache.test");
+    attrs.putValue(WarToWabConverter.WEB_CONTEXT_PATH, "test");
+    attrs.putValue(Constants.BUNDLE_VERSION, "1.0");
+    attrs.putValue(Constants.IMPORT_PACKAGE, "org.apache.util,org.apache.test;version=1.0");
+    attrs.putValue(Constants.BUNDLE_CLASSPATH, "jsp/classes");
+    
+    try {
+        convertWithProperties(m, 
+                WarToWabConverter.WEB_CONTEXT_PATH, "WebFiles",
+                Constants.BUNDLE_SYMBOLICNAME, "foobar");
+        fail("Conversion did not fail as expected");
+    } catch (IOException e) {
+        // that's expected
+    }
   }
   
   private Attributes convertWithProperties(Manifest m, String ... props) throws Exception {
