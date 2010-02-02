@@ -83,24 +83,15 @@ public class SchemaLocatingHandler extends DefaultHandler
   private final Schema getSchema(String type) throws SAXException
   {
     SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
     URL schemaURL = null;
-    Schema schema = null;
     if("1.0".equals(type)) {
-      try{
-        schemaURL = new URL("http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd");
-      }catch(Exception e) {
-    	//will not occur with fixed url above.
-      }
+      schemaURL = this.getClass().getResource("persistence.xsd.rsrc");
     } else if ("2.0".equals(type)) {
-      try {
-        //TODO use proper schema location
-        schemaURL = new URL("http://svn.apache.org/repos/asf/openjpa/trunk/openjpa-persistence/src/main/resources/org/apache/openjpa/persistence/persistence_2_0-xsd.rsrc");
-      } catch (Exception e) {
-        //will not occur with fixed url above
-      }
+      schemaURL = this.getClass().getResource("persistence_2_0.xsd.rsrc");
     }
 
-    
+    Schema schema = null;    
     if(schemaURL != null){
       schema = schemaFactory.newSchema(schemaURL);
     }
