@@ -19,7 +19,6 @@
 package org.apache.aries.web.converter.impl;
 
 import static org.apache.aries.web.converter.WarToWabConverter.WEB_CONTEXT_PATH;
-import static org.apache.aries.web.converter.WarToWabConverter.WEB_JSP_EXTRACT_LOCATION;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -340,16 +339,6 @@ public class WarToWabConverterImpl {
             webCPath = "/" + webCPath;
         }
         properties.put(WEB_CONTEXT_PATH, webCPath);
-    }
-
-    //
-    // Web-JSPExtractLocation
-    //
-
-    if (manifest.getMainAttributes().getValue(WEB_JSP_EXTRACT_LOCATION) == null
-        && !properties.containsKey(WEB_JSP_EXTRACT_LOCATION)) {
-      properties
-          .put(WEB_JSP_EXTRACT_LOCATION, DEFAULT_WEB_JSP_EXTRACT_LOCATION);
     }
 
     // Take the properties map and add them to the manifest file
