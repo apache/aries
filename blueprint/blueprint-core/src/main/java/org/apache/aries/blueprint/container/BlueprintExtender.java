@@ -89,6 +89,11 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         }
         bt.open();
 
+        // Create and publish a ParserService
+        parserServiceReg = context.registerService(ParserService.class.getName(), 
+            new ParserServiceImpl (handlers), 
+            new Hashtable<Object, Object>()); 
+        
         LOGGER.debug("Blueprint extender started");
     }
 
@@ -112,12 +117,6 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
             }
         }
         
-        // Create and publish a ParserService
-        parserServiceReg = context.registerService(ParserService.class.getName(), 
-            new ParserServiceImpl (handlers), 
-            new Hashtable<Object, Object>()); 
-        
-        LOGGER.debug("Blueprint extender started");
     }
 
     public void stop(BundleContext context) {
