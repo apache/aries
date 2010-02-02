@@ -70,8 +70,7 @@ public class TradeJDBCDirect implements TradeServices {
 
     private static String dsName = TradeConfig.DATASOURCE;
 
-//    private static DataSource dataSource = null;
-    private DataSource dataSource;
+    private DataSource dataSource= null;
 
     private static BigDecimal ZERO = new BigDecimal(0.0);
 
@@ -1480,12 +1479,12 @@ public class TradeJDBCDirect implements TradeServices {
     /*
      * Lookup the TradeData DataSource
      */
-//  private void getDataSource() throws Exception {
-//      if (dataSource == null) {
-//          context = new InitialContext();
-//          dataSource = (DataSource) context.lookup(dsName);
-//      }
-//  }
+    private void lookupDataSource() throws Exception {
+        if (dataSource == null) {
+            context = new InitialContext();
+            dataSource = (DataSource) context.lookup(dsName);
+        }
+    }
 
     /*
      * Allocate a new connection to the datasource
@@ -1493,7 +1492,7 @@ public class TradeJDBCDirect implements TradeServices {
     private Connection getConn() throws Exception {
 
         Connection conn = null;
-//        getDataSource();
+        lookupDataSource();
         conn = dataSource.getConnection();
         conn.setAutoCommit(false);
         if (Log.doTrace()) {

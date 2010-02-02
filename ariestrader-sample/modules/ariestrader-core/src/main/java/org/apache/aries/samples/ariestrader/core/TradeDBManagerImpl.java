@@ -47,8 +47,7 @@ public class TradeDBManagerImpl implements TradeDBManager {
 
     private static String dsName = TradeConfig.DATASOURCE;
 
-//    private static DataSource dataSource = null;
-    private DataSource dataSource;
+    private DataSource dataSource = null;
 
     private static InitialContext context;
 
@@ -384,12 +383,12 @@ public class TradeDBManagerImpl implements TradeDBManager {
     /*
      * Lookup the TradeData DataSource
      */
-//  private void getDataSource() throws Exception {
-//      if (dataSource == null) {
-//          context = new InitialContext();
-//          dataSource = (DataSource) context.lookup(dsName);
-//      }
-//  }
+    private void lookupDataSource() throws Exception {
+        if (dataSource == null) {
+            context = new InitialContext();
+            dataSource = (DataSource) context.lookup(dsName);
+        }
+    }
 
     /*
      * Allocate a new connection to the datasource
@@ -397,7 +396,7 @@ public class TradeDBManagerImpl implements TradeDBManager {
     private Connection getConn() throws Exception {
 
         Connection conn = null;
-//        getDataSource();
+        lookupDataSource();
         conn = dataSource.getConnection();
         conn.setAutoCommit(false);
         if (Log.doTrace()) {
