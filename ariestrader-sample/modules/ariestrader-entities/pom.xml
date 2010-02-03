@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.aries.ariestrader</groupId>
         <artifactId>modules</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.aries.ariestrader.modules</groupId>
@@ -62,19 +62,16 @@
         <dependency>
             <groupId>net.sourceforge.serp</groupId>
             <artifactId>serp</artifactId>
-            <version>1.13.1</version>
             <scope>provided</scope>
         </dependency> 
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
-            <version>3.2.1</version>
             <scope>provided</scope>
         </dependency>
         <!-- end OpenJPA PCEnhancer depends -->
