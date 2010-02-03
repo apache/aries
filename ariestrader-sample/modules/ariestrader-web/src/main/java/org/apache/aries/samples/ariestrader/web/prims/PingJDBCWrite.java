@@ -61,7 +61,7 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
 		symbol = TradeConfig.rndSymbol();
 		newPrice = TradeConfig.getRandomPriceChangeFactor();
 
-		//TradeJDBCDirect via TradeServices makes use of prepared statements so I am going to reuse the existing code.
+		//TradeJdbc via TradeServices makes use of prepared statements so I am going to reuse the existing code.
                 TradeServices tradeServices = TradeServiceUtilities.getTradeServices("(mode=jdbc)");
 
 		//update the price of our symbol
@@ -95,7 +95,7 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
  **/
 public String getServletInfo()
 {
-	return "Basic JDBC Write using a prepared statment makes use of TradeJDBCDirect code.";
+	return "Basic JDBC Write using a prepared statment makes use of TradeJdbc code.";
 }            
 /**
 * called when the class is loaded to initialize the servlet

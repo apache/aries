@@ -65,7 +65,7 @@ public class PingJDBCRead extends HttpServlet
 
 		try
 			{
-			//TradeJDBCDirect (via TradeServices) uses prepared statements so I am going to make use of it's code.
+			//TradeJdbc (via TradeServices) uses prepared statements so I am going to make use of it's code.
                         TradeServices tradeServices = TradeServiceUtilities.getTradeServices("(mode=jdbc)");
 			symbol = TradeConfig.rndSymbol();
 			
@@ -103,7 +103,7 @@ public class PingJDBCRead extends HttpServlet
 	 **/
 	public String getServletInfo()
 	{
-		return "Basic JDBC Read using a prepared statment, makes use of TradeJDBCDirect class via TradeServices";
+		return "Basic JDBC Read using a prepared statment, makes use of TradeJdbc class via TradeServices";
 	}
 	/**
 	* called when the class is loaded to initialize the servlet

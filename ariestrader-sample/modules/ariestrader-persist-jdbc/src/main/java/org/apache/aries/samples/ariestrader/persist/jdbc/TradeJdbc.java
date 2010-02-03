@@ -50,7 +50,7 @@ import java.sql.Timestamp;
 
 
 /**
- * TradeJDBCDirect uses direct JDBC access to a
+ * TradeJdbc uses direct JDBC access to a
  * <code>javax.sql.DataSource</code> to implement the business methods of the
  * Trade online broker application. These business methods represent the
  * features and operations that can be performed by customers of the brokerage
@@ -66,7 +66,7 @@ import java.sql.Timestamp;
  * 
  */
 
-public class TradeJDBCDirect implements TradeServices {
+public class TradeJdbc implements TradeServices {
 
     private static String dsName = TradeConfig.DATASOURCE;
 
@@ -87,12 +87,12 @@ public class TradeJDBCDirect implements TradeServices {
     private static boolean initialized = false;
 
     /**
-     * Zero arg constructor for TradeJDBCDirect
+     * Zero arg constructor for TradeJdbc
      */
-    public TradeJDBCDirect() {
+    public TradeJdbc() {
     }
 
-    public TradeJDBCDirect(boolean inSession) {
+    public TradeJdbc(boolean inSession) {
         this.inSession = inSession;
     }
 
@@ -119,7 +119,7 @@ public class TradeJDBCDirect implements TradeServices {
 
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:getMarketSummary - inSession(" + this.inSession + ")");
+                Log.trace("TradeJdbc:getMarketSummary - inSession(" + this.inSession + ")");
 
             conn = getConn();
             PreparedStatement stmt =
@@ -161,7 +161,7 @@ public class TradeJDBCDirect implements TradeServices {
                 rs = stmt.executeQuery();
 
                 if (!rs.next())
-                    Log.error("TradeJDBCDirect:getMarketSummary -- error w/ getTSIASQL -- no results");
+                    Log.error("TradeJdbc:getMarketSummary -- error w/ getTSIASQL -- no results");
                 else
                     TSIA = rs.getBigDecimal("TSIA");
                 stmt.close();
@@ -170,7 +170,7 @@ public class TradeJDBCDirect implements TradeServices {
                 rs = stmt.executeQuery();
 
                 if (!rs.next())
-                    Log.error("TradeJDBCDirect:getMarketSummary -- error w/ getOpenTSIASQL -- no results");
+                    Log.error("TradeJdbc:getMarketSummary -- error w/ getOpenTSIASQL -- no results");
                 else
                     openTSIA = rs.getBigDecimal("openTSIA");
                 stmt.close();
@@ -179,7 +179,7 @@ public class TradeJDBCDirect implements TradeServices {
                 rs = stmt.executeQuery();
 
                 if (!rs.next())
-                    Log.error("TradeJDBCDirect:getMarketSummary -- error w/ getTSIATotalVolumeSQL -- no results");
+                    Log.error("TradeJdbc:getMarketSummary -- error w/ getTSIATotalVolumeSQL -- no results");
                 else
                     volume = rs.getDouble("totalVolume");
                 stmt.close();
@@ -191,7 +191,7 @@ public class TradeJDBCDirect implements TradeServices {
         }
 
         catch (Exception e) {
-            Log.error("TradeJDBCDirect:getMarketSummary -- error getting summary", e);
+            Log.error("TradeJdbc:getMarketSummary -- error getting summary", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -215,7 +215,7 @@ public class TradeJDBCDirect implements TradeServices {
 
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:buy - inSession(" + this.inSession + ")", userID, symbol, new Double(quantity));
+                Log.trace("TradeJdbc:buy - inSession(" + this.inSession + ")", userID, symbol, new Double(quantity));
 
             conn = getConn();
 
@@ -240,7 +240,7 @@ public class TradeJDBCDirect implements TradeServices {
             commit(conn);
 
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:buy error - rolling back", e);
+            Log.error("TradeJdbc:buy error - rolling back", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -268,7 +268,7 @@ public class TradeJDBCDirect implements TradeServices {
 
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:sell - inSession(" + this.inSession + ")", userID, holdingID);
+                Log.trace("TradeJdbc:sell - inSession(" + this.inSession + ")", userID, holdingID);
 
             conn = getConn();
 
@@ -280,7 +280,7 @@ public class TradeJDBCDirect implements TradeServices {
 
             if ((accountData == null) || (holdingData == null) || (quoteData == null)) {
                 String error =
-                    "TradeJDBCDirect:sell -- error selling stock -- unable to find:  \n\taccount=" + accountData
+                    "TradeJdbc:sell -- error selling stock -- unable to find:  \n\taccount=" + accountData
                         + "\n\tholding=" + holdingData + "\n\tquote=" + quoteData + "\nfor user: " + userID
                         + " and holdingID: " + holdingID;
                 Log.error(error);
@@ -310,7 +310,7 @@ public class TradeJDBCDirect implements TradeServices {
             commit(conn);
 
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:sell error", e);
+            Log.error("TradeJdbc:sell error", e);
             rollBack(conn, e);
 
         } finally {
@@ -342,14 +342,14 @@ public class TradeJDBCDirect implements TradeServices {
         try { // twoPhase
 
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:completeOrder - inSession(" + this.inSession + ")", orderID);
+                Log.trace("TradeJdbc:completeOrder - inSession(" + this.inSession + ")", orderID);
             setInGlobalTxn(!inSession && twoPhase);
             conn = getConn();
             orderData = completeOrder(conn, orderID);
             commit(conn);
 
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:completeOrder -- error completing order", e);
+            Log.error("TradeJdbc:completeOrder -- error completing order", e);
             rollBack(conn, e);
             cancelOrder(orderID, twoPhase);
         } finally {
@@ -364,7 +364,7 @@ public class TradeJDBCDirect implements TradeServices {
 
         OrderDataBean orderData = null;
         if (Log.doTrace())
-            Log.trace("TradeJDBCDirect:completeOrderInternal - inSession(" + this.inSession + ")", orderID);
+            Log.trace("TradeJdbc:completeOrderInternal - inSession(" + this.inSession + ")", orderID);
 
         PreparedStatement stmt = getStatement(conn, getOrderSQL);
         stmt.setInt(1, orderID.intValue());
@@ -372,7 +372,7 @@ public class TradeJDBCDirect implements TradeServices {
         ResultSet rs = stmt.executeQuery();
 
         if (!rs.next()) {
-            Log.error("TradeJDBCDirect:completeOrder -- unable to find order: " + orderID);
+            Log.error("TradeJdbc:completeOrder -- unable to find order: " + orderID);
             stmt.close();
             return orderData;
         }
@@ -385,7 +385,7 @@ public class TradeJDBCDirect implements TradeServices {
         if ((orderStatus.compareToIgnoreCase("completed") == 0)
             || (orderStatus.compareToIgnoreCase("alertcompleted") == 0)
             || (orderStatus.compareToIgnoreCase("cancelled") == 0))
-            throw new Exception("TradeJDBCDirect:completeOrder -- attempt to complete Order that is already completed");
+            throw new Exception("TradeJdbc:completeOrder -- attempt to complete Order that is already completed");
 
         int accountID = rs.getInt("account_accountID");
         String quoteID = rs.getString("quote_symbol");
@@ -407,7 +407,7 @@ public class TradeJDBCDirect implements TradeServices {
         HoldingDataBean holdingData = null;
 
         if (Log.doTrace())
-            Log.trace("TradeJDBCDirect:completeOrder--> Completing Order " + orderData.getOrderID() + "\n\t Order info: "
+            Log.trace("TradeJdbc:completeOrder--> Completing Order " + orderData.getOrderID() + "\n\t Order info: "
                 + orderData + "\n\t Account info: " + accountID + "\n\t Quote info: " + quoteID);
 
         // if (order.isBuy())
@@ -429,7 +429,7 @@ public class TradeJDBCDirect implements TradeServices {
              */
             holdingData = getHoldingData(conn, holdingID);
             if (holdingData == null)
-                Log.debug("TradeJDBCDirect:completeOrder:sell -- user: " + userID + " already sold holding: " + holdingID);
+                Log.debug("TradeJdbc:completeOrder:sell -- user: " + userID + " already sold holding: " + holdingID);
             else
                 removeHolding(conn, holdingID, orderID.intValue());
 
@@ -438,7 +438,7 @@ public class TradeJDBCDirect implements TradeServices {
         updateOrderStatus(conn, orderData.getOrderID(), "closed");
 
         if (Log.doTrace())
-            Log.trace("TradeJDBCDirect:completeOrder--> Completed Order " + orderData.getOrderID() + "\n\t Order info: "
+            Log.trace("TradeJdbc:completeOrder--> Completed Order " + orderData.getOrderID() + "\n\t Order info: "
                 + orderData + "\n\t Account info: " + accountID + "\n\t Quote info: " + quoteID + "\n\t Holding info: "
                 + holdingData);
 
@@ -460,14 +460,14 @@ public class TradeJDBCDirect implements TradeServices {
         Connection conn = null;
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:cancelOrder - inSession(" + this.inSession + ")", orderID);
+                Log.trace("TradeJdbc:cancelOrder - inSession(" + this.inSession + ")", orderID);
             setInGlobalTxn(!inSession && twoPhase);
             conn = getConn();
             cancelOrder(conn, orderID);
             commit(conn);
 
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:cancelOrder -- error cancelling order: " + orderID, e);
+            Log.error("TradeJdbc:cancelOrder -- error cancelling order: " + orderID, e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -479,7 +479,7 @@ public class TradeJDBCDirect implements TradeServices {
     }
 
     public void orderCompleted(String userID, Integer orderID) throws Exception {
-//        throw new UnsupportedOperationException("TradeJDBCDirect:orderCompleted method not supported");
+//        throw new UnsupportedOperationException("TradeJdbc:orderCompleted method not supported");
         if (Log.doTrace())
             Log.trace("OrderCompleted", userID, orderID);
     }
@@ -561,7 +561,7 @@ public class TradeJDBCDirect implements TradeServices {
 
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:getOrders - inSession(" + this.inSession + ")", userID);
+                Log.trace("TradeJdbc:getOrders - inSession(" + this.inSession + ")", userID);
 
             conn = getConn();
             PreparedStatement stmt = getStatement(conn, getOrdersByUserSQL);
@@ -582,7 +582,7 @@ public class TradeJDBCDirect implements TradeServices {
             commit(conn);
 
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:getOrders -- error getting user orders", e);
+            Log.error("TradeJdbc:getOrders -- error getting user orders", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -600,7 +600,7 @@ public class TradeJDBCDirect implements TradeServices {
 
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:getClosedOrders - inSession(" + this.inSession + ")", userID);
+                Log.trace("TradeJdbc:getClosedOrders - inSession(" + this.inSession + ")", userID);
 
             conn = getConn();
             PreparedStatement stmt = getStatement(conn, getClosedOrdersSQL);
@@ -619,7 +619,7 @@ public class TradeJDBCDirect implements TradeServices {
             stmt.close();
             commit(conn);
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:getOrders -- error getting user orders", e);
+            Log.error("TradeJdbc:getOrders -- error getting user orders", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -637,7 +637,7 @@ public class TradeJDBCDirect implements TradeServices {
 
         try {
             if (Log.doTrace())
-                Log.traceEnter("TradeJDBCDirect:createQuote - inSession(" + this.inSession + ")");
+                Log.traceEnter("TradeJdbc:createQuote - inSession(" + this.inSession + ")");
 
             price = price.setScale(FinancialUtils.SCALE, FinancialUtils.ROUND);
             double volume = 0.0, change = 0.0;
@@ -659,9 +659,9 @@ public class TradeJDBCDirect implements TradeServices {
 
             quoteData = new QuoteDataBeanImpl(symbol, companyName, volume, price, price, price, price, change);
             if (Log.doTrace())
-                Log.traceExit("TradeJDBCDirect:createQuote");
+                Log.traceExit("TradeJdbc:createQuote");
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:createQuote -- error creating quote", e);
+            Log.error("TradeJdbc:createQuote -- error creating quote", e);
         } finally {
             releaseConn(conn);
         }
@@ -679,20 +679,20 @@ public class TradeJDBCDirect implements TradeServices {
 
         if ((symbol == null) || (symbol.length() == 0) || (symbol.length() > 10)) {
             if (Log.doTrace()) {
-                Log.trace("TradeJDBCDirect:getQuote   ---  primitive workload");
+                Log.trace("TradeJdbc:getQuote   ---  primitive workload");
             }
             return new QuoteDataBeanImpl("Invalid symbol", "", 0.0, FinancialUtils.ZERO, FinancialUtils.ZERO, FinancialUtils.ZERO, FinancialUtils.ZERO, 0.0);
         }
 
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:getQuote - inSession(" + this.inSession + ")", symbol);
+                Log.trace("TradeJdbc:getQuote - inSession(" + this.inSession + ")", symbol);
 
             conn = getConn();
             quoteData = getQuote(conn, symbol);
             commit(conn);
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:getQuote -- error getting quote", e);
+            Log.error("TradeJdbc:getQuote -- error getting quote", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -708,7 +708,7 @@ public class TradeJDBCDirect implements TradeServices {
         ResultSet rs = stmt.executeQuery();
 
         if (!rs.next())
-            Log.error("TradeJDBCDirect:getQuote -- failure no result.next() for symbol: " + symbol);
+            Log.error("TradeJdbc:getQuote -- failure no result.next() for symbol: " + symbol);
 
         else
             quoteData = getQuoteDataFromResultSet(rs);
@@ -726,7 +726,7 @@ public class TradeJDBCDirect implements TradeServices {
         ResultSet rs = stmt.executeQuery();
 
         if (!rs.next())
-            Log.error("TradeJDBCDirect:getQuote -- failure no result.next()");
+            Log.error("TradeJdbc:getQuote -- failure no result.next()");
 
         else
             quoteData = getQuoteDataFromResultSet(rs);
@@ -746,7 +746,7 @@ public class TradeJDBCDirect implements TradeServices {
         Connection conn = null;
 
         if (Log.doTrace())
-            Log.trace("TradeJDBCDirect:getAllQuotes");
+            Log.trace("TradeJdbc:getAllQuotes");
 
         try {
             conn = getConn();
@@ -762,7 +762,7 @@ public class TradeJDBCDirect implements TradeServices {
 
             stmt.close();
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:getAllQuotes", e);
+            Log.error("TradeJdbc:getAllQuotes", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -781,7 +781,7 @@ public class TradeJDBCDirect implements TradeServices {
 
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:getHoldings - inSession(" + this.inSession + ")", userID);
+                Log.trace("TradeJdbc:getHoldings - inSession(" + this.inSession + ")", userID);
 
             conn = getConn();
             PreparedStatement stmt = getStatement(conn, getHoldingsForUserSQL);
@@ -798,7 +798,7 @@ public class TradeJDBCDirect implements TradeServices {
             commit(conn);
 
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:getHoldings -- error getting user holings", e);
+            Log.error("TradeJdbc:getHoldings -- error getting user holings", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -816,7 +816,7 @@ public class TradeJDBCDirect implements TradeServices {
 
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:getHolding - inSession(" + this.inSession + ")", holdingID);
+                Log.trace("TradeJdbc:getHolding - inSession(" + this.inSession + ")", holdingID);
 
             conn = getConn();
             holdingData = getHoldingData(holdingID.intValue());
@@ -824,7 +824,7 @@ public class TradeJDBCDirect implements TradeServices {
             commit(conn);
 
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:getHolding -- error getting holding " + holdingID + "", e);
+            Log.error("TradeJdbc:getHolding -- error getting holding " + holdingID + "", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -842,14 +842,14 @@ public class TradeJDBCDirect implements TradeServices {
             Connection conn = null;
             try {
                 if (Log.doTrace())
-                    Log.trace("TradeJDBCDirect:getAccountData - inSession(" + this.inSession + ")", userID);
+                    Log.trace("TradeJdbc:getAccountData - inSession(" + this.inSession + ")", userID);
 
                 conn = getConn();
                 accountData = getAccountData(conn, userID);
                 commit(conn);
 
             } catch (Exception e) {
-                Log.error("TradeJDBCDirect:getAccountData -- error getting account data", e);
+                Log.error("TradeJdbc:getAccountData -- error getting account data", e);
                 rollBack(conn, e);
             } finally {
                 releaseConn(conn);
@@ -886,14 +886,14 @@ public class TradeJDBCDirect implements TradeServices {
         Connection conn = null;
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:getAccountData - inSession(" + this.inSession + ")", new Integer(accountID));
+                Log.trace("TradeJdbc:getAccountData - inSession(" + this.inSession + ")", new Integer(accountID));
 
             conn = getConn();
             accountData = getAccountData(accountID, conn);
             commit(conn);
 
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:getAccountData -- error getting account data", e);
+            Log.error("TradeJdbc:getAccountData -- error getting account data", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -927,7 +927,7 @@ public class TradeJDBCDirect implements TradeServices {
             quoteData = getQuoteData(conn, symbol);
             commit(conn);
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:getQuoteData -- error getting data", e);
+            Log.error("TradeJdbc:getQuoteData -- error getting data", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -941,7 +941,7 @@ public class TradeJDBCDirect implements TradeServices {
         stmt.setString(1, symbol);
         ResultSet rs = stmt.executeQuery();
         if (!rs.next())
-            Log.error("TradeJDBCDirect:getQuoteData -- could not find quote for symbol=" + symbol);
+            Log.error("TradeJdbc:getQuoteData -- could not find quote for symbol=" + symbol);
         else
             quoteData = getQuoteDataFromResultSet(rs);
         stmt.close();
@@ -956,7 +956,7 @@ public class TradeJDBCDirect implements TradeServices {
             holdingData = getHoldingData(conn, holdingID);
             commit(conn);
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:getHoldingData -- error getting data", e);
+            Log.error("TradeJdbc:getHoldingData -- error getting data", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -970,7 +970,7 @@ public class TradeJDBCDirect implements TradeServices {
         stmt.setInt(1, holdingID);
         ResultSet rs = stmt.executeQuery();
         if (!rs.next())
-            Log.error("TradeJDBCDirect:getHoldingData -- no results -- holdingID=" + holdingID);
+            Log.error("TradeJdbc:getHoldingData -- no results -- holdingID=" + holdingID);
         else
             holdingData = getHoldingDataFromResultSet(rs);
 
@@ -986,7 +986,7 @@ public class TradeJDBCDirect implements TradeServices {
             orderData = getOrderData(conn, orderID);
             commit(conn);
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:getOrderData -- error getting data", e);
+            Log.error("TradeJdbc:getOrderData -- error getting data", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -997,12 +997,12 @@ public class TradeJDBCDirect implements TradeServices {
     private OrderDataBean getOrderData(Connection conn, int orderID) throws Exception {
         OrderDataBean orderData = null;
         if (Log.doTrace())
-            Log.trace("TradeJDBCDirect:getOrderData(conn, " + orderID + ")");
+            Log.trace("TradeJdbc:getOrderData(conn, " + orderID + ")");
         PreparedStatement stmt = getStatement(conn, getOrderSQL);
         stmt.setInt(1, orderID);
         ResultSet rs = stmt.executeQuery();
         if (!rs.next())
-            Log.error("TradeJDBCDirect:getOrderData -- no results for orderID:" + orderID);
+            Log.error("TradeJdbc:getOrderData -- no results for orderID:" + orderID);
         else
             orderData = getOrderDataFromResultSet(rs);
         stmt.close();
@@ -1019,13 +1019,13 @@ public class TradeJDBCDirect implements TradeServices {
 
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:getAccountProfileData - inSession(" + this.inSession + ")", userID);
+                Log.trace("TradeJdbc:getAccountProfileData - inSession(" + this.inSession + ")", userID);
 
             conn = getConn();
             accountProfileData = getAccountProfileData(conn, userID);
             commit(conn);
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:getAccountProfileData -- error getting profile data", e);
+            Log.error("TradeJdbc:getAccountProfileData -- error getting profile data", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -1050,13 +1050,13 @@ public class TradeJDBCDirect implements TradeServices {
 
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:getAccountProfileData", accountID);
+                Log.trace("TradeJdbc:getAccountProfileData", accountID);
 
             conn = getConn();
             accountProfileData = getAccountProfileData(conn, accountID);
             commit(conn);
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:getAccountProfileData -- error getting profile data", e);
+            Log.error("TradeJdbc:getAccountProfileData -- error getting profile data", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -1085,7 +1085,7 @@ public class TradeJDBCDirect implements TradeServices {
 
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:updateAccountProfileData - inSession(" + this.inSession + ")", userID);
+                Log.trace("TradeJdbc:updateAccountProfileData - inSession(" + this.inSession + ")", userID);
 
             conn = getConn();
             updateAccountProfile(conn, userID, password, fullName, address, email, creditcard);
@@ -1093,7 +1093,7 @@ public class TradeJDBCDirect implements TradeServices {
             accountProfileData = getAccountProfileData(conn, userID);
             commit(conn);
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:getAccountProfileData -- error getting profile data", e);
+            Log.error("TradeJdbc:getAccountProfileData -- error getting profile data", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -1171,7 +1171,7 @@ public class TradeJDBCDirect implements TradeServices {
         throws Exception {
 
         if (Log.doTrace())
-            Log.trace("TradeJDBCDirect:updateQuotePriceVolume", symbol, changeFactor, new Double(sharesTraded));
+            Log.trace("TradeJdbc:updateQuotePriceVolume", symbol, changeFactor, new Double(sharesTraded));
 
         return updateQuotePriceVolumeInt(symbol, changeFactor, sharesTraded, TradeConfig.getPublishQuotePriceChange());
     }
@@ -1200,7 +1200,7 @@ public class TradeJDBCDirect implements TradeServices {
 
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:updateQuotePriceVolume - inSession(" + this.inSession + ")", symbol,
+                Log.trace("TradeJdbc:updateQuotePriceVolume - inSession(" + this.inSession + ")", symbol,
                     changeFactor, new Double(sharesTraded));
 
             conn = getConn();
@@ -1223,7 +1223,7 @@ public class TradeJDBCDirect implements TradeServices {
             commit(conn);
 
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:updateQuotePriceVolume -- error updating quote price/volume for symbol:" + symbol);
+            Log.error("TradeJdbc:updateQuotePriceVolume -- error updating quote price/volume for symbol:" + symbol);
             rollBack(conn, e);
             throw e;
         } finally {
@@ -1250,8 +1250,8 @@ public class TradeJDBCDirect implements TradeServices {
         double sharesTraded) throws Exception {
         if (!TradeConfig.getPublishQuotePriceChange())
             return;
-        Log.error("TradeJDBCDirect:publishQuotePriceChange - is not implemented for this runtime mode");
-        throw new UnsupportedOperationException("TradeJDBCDirect:publishQuotePriceChange-  is not implemented for this runtime mode");
+        Log.error("TradeJdbc:publishQuotePriceChange - is not implemented for this runtime mode");
+        throw new UnsupportedOperationException("TradeJdbc:publishQuotePriceChange-  is not implemented for this runtime mode");
     }
 
     /**
@@ -1265,7 +1265,7 @@ public class TradeJDBCDirect implements TradeServices {
 
         try {
             if (Log.doTrace())
-                Log.trace("TradeJDBCDirect:login - inSession(" + this.inSession + ")", userID, password);
+                Log.trace("TradeJdbc:login - inSession(" + this.inSession + ")", userID, password);
 
             conn = getConn();
             PreparedStatement stmt = getStatement(conn, getAccountProfileSQL);
@@ -1273,7 +1273,7 @@ public class TradeJDBCDirect implements TradeServices {
 
             ResultSet rs = stmt.executeQuery();
             if (!rs.next()) {
-                Log.error("TradeJDBCDirect:login -- failure to find account for" + userID);
+                Log.error("TradeJdbc:login -- failure to find account for" + userID);
                 throw new RuntimeException("Cannot find account for" + userID);
             }
 
@@ -1281,7 +1281,7 @@ public class TradeJDBCDirect implements TradeServices {
             stmt.close();
             if ((pw == null) || (pw.equals(password) == false)) {
                 String error =
-                    "TradeJDBCDirect:Login failure for user: " + userID + "\n\tIncorrect password-->" + userID + ":"
+                    "TradeJdbc:Login failure for user: " + userID + "\n\tIncorrect password-->" + userID + ":"
                         + password;
                 Log.error(error);
                 throw new Exception(error);
@@ -1305,7 +1305,7 @@ public class TradeJDBCDirect implements TradeServices {
 
             commit(conn);
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:login -- error logging in user", e);
+            Log.error("TradeJdbc:login -- error logging in user", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -1325,7 +1325,7 @@ public class TradeJDBCDirect implements TradeServices {
         Connection conn = null;
 
         if (Log.doTrace())
-            Log.trace("TradeJDBCDirect:logout - inSession(" + this.inSession + ")", userID);
+            Log.trace("TradeJdbc:logout - inSession(" + this.inSession + ")", userID);
         try {
             conn = getConn();
             PreparedStatement stmt = getStatement(conn, logoutSQL);
@@ -1335,7 +1335,7 @@ public class TradeJDBCDirect implements TradeServices {
 
             commit(conn);
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:logout -- error logging out user", e);
+            Log.error("TradeJdbc:logout -- error logging out user", e);
             rollBack(conn, e);
         } finally {
             releaseConn(conn);
@@ -1354,7 +1354,7 @@ public class TradeJDBCDirect implements TradeServices {
 
         try {
             if (Log.doTrace())
-                Log.traceEnter("TradeJDBCDirect:register - inSession(" + this.inSession + ")");
+                Log.traceEnter("TradeJdbc:register - inSession(" + this.inSession + ")");
 
             conn = getConn();
             PreparedStatement stmt = getStatement(conn, createAccountSQL);
@@ -1393,9 +1393,9 @@ public class TradeJDBCDirect implements TradeServices {
                 new AccountDataBeanImpl(accountID, loginCount, logoutCount, lastLogin, creationDate, balance, openBalance,
                     userID);
             if (Log.doTrace())
-                Log.traceExit("TradeJDBCDirect:register");
+                Log.traceExit("TradeJdbc:register");
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:register -- error registering new user", e);
+            Log.error("TradeJdbc:register -- error registering new user", e);
         } finally {
             releaseConn(conn);
         }
@@ -1406,7 +1406,7 @@ public class TradeJDBCDirect implements TradeServices {
         AccountDataBean accountData = null;
 
         if (!rs.next())
-            Log.error("TradeJDBCDirect:getAccountDataFromResultSet -- cannot find account data");
+            Log.error("TradeJdbc:getAccountDataFromResultSet -- cannot find account data");
 
         else
             accountData =
@@ -1420,7 +1420,7 @@ public class TradeJDBCDirect implements TradeServices {
         AccountProfileDataBean accountProfileData = null;
 
         if (!rs.next())
-            Log.error("TradeJDBCDirect:getAccountProfileDataFromResultSet -- cannot find accountprofile data");
+            Log.error("TradeJdbc:getAccountProfileDataFromResultSet -- cannot find accountprofile data");
         else
             accountProfileData =
                 new AccountProfileDataBeanImpl(rs.getString("userID"), rs.getString("passwd"), rs.getString("fullName"), rs
@@ -1468,11 +1468,11 @@ public class TradeJDBCDirect implements TradeServices {
                     synchronized (lock) {
                         connCount--;
                     }
-                    Log.trace("TradeJDBCDirect:releaseConn -- connection closed, connCount=" + connCount);
+                    Log.trace("TradeJdbc:releaseConn -- connection closed, connCount=" + connCount);
                 }
             }
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:releaseConnection -- failed to close connection", e);
+            Log.error("TradeJdbc:releaseConnection -- failed to close connection", e);
         }
     }
 
@@ -1499,7 +1499,7 @@ public class TradeJDBCDirect implements TradeServices {
             synchronized (lock) {
                 connCount++;
             }
-            Log.trace("TradeJDBCDirect:getConn -- new connection allocated, IsolationLevel="
+            Log.trace("TradeJdbc:getConn -- new connection allocated, IsolationLevel="
                 + conn.getTransactionIsolation() + " connectionCount = " + connCount);
         }
 
@@ -1522,7 +1522,7 @@ public class TradeJDBCDirect implements TradeServices {
      */
     private void rollBack(Connection conn, Exception e) throws Exception {
         if (!inSession) {
-            Log.log("TradeJDBCDirect:rollBack -- rolling back conn due to previously caught exception -- inGlobalTxn="
+            Log.log("TradeJdbc:rollBack -- rolling back conn due to previously caught exception -- inGlobalTxn="
                 + getInGlobalTxn());
             if ((getInGlobalTxn() == false) && (conn != null))
                 conn.rollback();
@@ -1654,10 +1654,10 @@ public class TradeJDBCDirect implements TradeServices {
         if (initialized)
             return;
         if (Log.doTrace())
-            Log.trace("TradeJDBCDirect:init -- *** initializing");
+            Log.trace("TradeJdbc:init -- *** initializing");
 
         if (Log.doTrace())
-            Log.trace("TradeJDBCDirect:init -- +++ initialized");
+            Log.trace("TradeJdbc:init -- +++ initialized");
 
         initialized = true;
     }
@@ -1666,9 +1666,9 @@ public class TradeJDBCDirect implements TradeServices {
         try {
             if (!initialized)
                 return;
-            Log.trace("TradeJDBCDirect:destroy");
+            Log.trace("TradeJdbc:destroy");
         } catch (Exception e) {
-            Log.error("TradeJDBCDirect:destroy", e);
+            Log.error("TradeJdbc:destroy", e);
         }
     }
 
