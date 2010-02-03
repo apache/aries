@@ -29,19 +29,12 @@ import org.apache.aries.samples.ariestrader.api.TradeServices;
 
 
 /**
- * TradeJDBCDirect uses direct JDBC access to a
- * <code>javax.sql.DataSource</code> to implement the business methods of the
- * Trade online broker application. These business methods represent the
- * features and operations that can be performed by customers of the brokerage
- * such as login, logout, get a stock quote, buy or sell a stock, etc. and are
- * specified in the {@link org.apache.aries.samples.ariestrader.TradeServices}
- * interface
+ * TradeServicesManagerImpl coordinates access to the currently
+ * selected TradeServices implementation and manages the list of
+ * currently available TradeServices implementations.
  * 
- * Note: In order for this class to be thread-safe, a new TradeJDBC must be
- * created for each call to a method from the TradeInterface interface.
- * Otherwise, pooled connections may not be released.
- * 
- * @see org.apache.aries.samples.ariestrader.TradeServices
+ * @see
+ *      org.apache.geronimo.samples.daytrader.api.TradeServicesManager
  * 
  */
 

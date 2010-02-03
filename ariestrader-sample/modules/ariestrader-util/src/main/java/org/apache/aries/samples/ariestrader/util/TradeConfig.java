@@ -32,12 +32,18 @@ public class TradeConfig {
 	/* Trade Runtime Configuration Parameters */
 
 	/* Trade Runtime Mode parameters */
-    public static String[] runTimeModeNames = {"Full EJB3", "Direct (JDBC)", "Session (EJB3) To Direct", "Web JDBC", "Web JPA"};
+    public static String[] runTimeModeNames = { "Full EJB3", 
+                                                "Direct (JDBC)", 
+                                                "Session (EJB3) To Direct", 
+                                                "JDBC", 
+                                                "JPA App Managed",
+                                                "JPA Container Managed"};
     public static final int EJB3 = 0;
     public static final int DIRECT = 1;
     public static final int SESSION3 = 2;
     public static final int JDBC = 3;
-    public static final int JPA = 4;
+    public static final int JPA_AM = 4;
+    public static final int JPA_CM = 5;
     public static int runTimeMode = JDBC;
 	
     /* Trade JPA Layer parameters */

@@ -167,7 +167,7 @@ public class TradeDBManagerImpl implements TradeDBManager {
         Connection conn = null;
         try {
             if (Log.doTrace())
-                Log.traceEnter("TradeJDBCDirect:resetTrade deleteAll rows=" + deleteAll);
+                Log.traceEnter("TradeDBManagerImpl:resetTrade deleteAll rows=" + deleteAll);
 
             conn = getConn();
             PreparedStatement stmt = null;
@@ -202,7 +202,7 @@ public class TradeDBManagerImpl implements TradeDBManager {
                     commit(conn);
                 }
                 catch (Exception e) {
-                    Log.error(e, "TradeJDBCDirect:resetTrade(deleteAll) -- Error deleting Trade users and stock from the Trade database");
+                    Log.error(e, "TradeDBManagerImpl:resetTrade(deleteAll) -- Error deleting Trade users and stock from the Trade database");
                 }
                 return runStatsData;
             }
@@ -349,7 +349,7 @@ public class TradeDBManagerImpl implements TradeDBManager {
 
             commit(conn);
 
-            System.out.println("TradeJDBCDirect:reset Run stats data\n\n" + runStatsData);
+            System.out.println("TradeDBManagerImpl:reset Run stats data\n\n" + runStatsData);
         }
         catch (Exception e) {
             Log.error(e, "Failed to reset Trade");

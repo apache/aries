@@ -7,7 +7,7 @@
       <property name="databaseName" value="tradeDB"/>
    </bean>
 
-  <bean id="tradeServicesBeanJDBC" class="org.apache.aries.samples.ariestrader.persist.jdbc.TradeJDBCDirect" init-method="init">
+  <bean id="tradeServicesBeanJDBC" class="org.apache.aries.samples.ariestrader.persist.jdbc.TradeJdbc" init-method="init">
       <!--<property name="inSession" value="true"/>-->
       <property name="dataSource" ref="datasource" />
   </bean>
