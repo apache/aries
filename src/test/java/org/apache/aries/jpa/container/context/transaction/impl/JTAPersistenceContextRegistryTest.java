@@ -18,15 +18,14 @@
  */
 package org.apache.aries.jpa.container.context.transaction.impl;
 
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.TransactionSynchronizationRegistry;
 
@@ -55,9 +54,9 @@ public class JTAPersistenceContextRegistryTest {
       syncs.put(key, arg0);
     }
     
-    public void afterCompletion(String s)
+    public void beforeCompletion(String s)
     {
-      syncs.get(s).afterCompletion(Status.STATUS_COMMITTED);
+      syncs.get(s).beforeCompletion();
     }
   }
   
@@ -74,11 +73,27 @@ public class JTAPersistenceContextRegistryTest {
   public void setup() 
   {
     reg = new TranSyncRegistryMock();
+
+    props1 = new HashMap<Object, Object>();
+    props1.put("prop1", "value1");
+    
+    props2 = new HashMap<Object, Object>();
+    props2.put("prop2", "value2");
     
     emf1 = Skeleton.newMock(EntityManagerFactory.class);
-    props1 = new HashMap<Object, Object>();
+    
+    Skeleton.getSkeleton(emf1).setReturnValue(new MethodCall(EntityManagerFactory.class, 
+        "createEntityManager", props1), Skeleton.newMock(EntityManager.class));
+    Skeleton.getSkeleton(emf1).setReturnValue(new MethodCall(EntityManagerFactory.class, 
+        "createEntityManager", props2), Skeleton.newMock(EntityManager.class));
+    
     emf2 = Skeleton.newMock(EntityManagerFactory.class);
-    props2 = new HashMap<Object, Object>();
+
+    Skeleton.getSkeleton(emf2).setReturnValue(new MethodCall(EntityManagerFactory.class, 
+        "createEntityManager", props1), Skeleton.newMock(EntityManager.class));
+    Skeleton.getSkeleton(emf2).setReturnValue(new MethodCall(EntityManagerFactory.class, 
+        "createEntityManager", props2), Skeleton.newMock(EntityManager.class));
+
     
     contexts = new JTAPersistenceContextRegistry();
     contexts.setTranRegistry(Skeleton.newMock(reg, TransactionSynchronizationRegistry.class));
@@ -105,12 +120,13 @@ public class JTAPersistenceContextRegistryTest {
     Skeleton.getSkeleton(em2a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
     assertSame("We should get the same delegate!", em2a, em2b);
     
-    reg.afterCompletion("");
+    reg.beforeCompletion("");
     
     Skeleton.getSkeleton(em1a).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"),1);
     Skeleton.getSkeleton(em2a).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"),1);
   }
   
+  @Test
   public void testMultiGetsMultiTrans()
   {
     reg.setTransactionKey("a");
@@ -121,7 +137,7 @@ public class JTAPersistenceContextRegistryTest {
     Skeleton.getSkeleton(emf1).assertCalledExactNumberOfTimes(new MethodCall(EntityManagerFactory.class, "createEntityManager", props1), 1);
     Skeleton.getSkeleton(emf1).assertCalledExactNumberOfTimes(new MethodCall(EntityManagerFactory.class, "createEntityManager", props2), 1);
    
-    assertNotSame("We should get the same delegate!", em1a, em1b);
+    assertNotSame("We should not get the same delegate!", em1a, em1b);
     
     Skeleton.getSkeleton(em1a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
     Skeleton.getSkeleton(em1b).assertNotCalled(new MethodCall(EntityManager.class, "close"));
@@ -140,14 +156,14 @@ public class JTAPersistenceContextRegistryTest {
     Skeleton.getSkeleton(em2b).assertNotCalled(new MethodCall(EntityManager.class, "close"));
     
     
-    reg.afterCompletion("b");
+    reg.beforeCompletion("b");
     
     Skeleton.getSkeleton(em1a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
     Skeleton.getSkeleton(em1b).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"), 1);
     Skeleton.getSkeleton(em2a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
     Skeleton.getSkeleton(em2b).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"), 1);
 
-    reg.afterCompletion("a");
+    reg.beforeCompletion("a");
     
     Skeleton.getSkeleton(em1a).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"), 1);
     Skeleton.getSkeleton(em1b).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"), 1);
