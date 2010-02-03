@@ -27,7 +27,6 @@
     <groupId>org.apache.aries.ariestrader.assemblies</groupId>
 	<artifactId>ariestrader-jdbc-equinox</artifactId>
 	<name>Apache Aries AriesTrader JDBC sample assembly using Equinox</name>
-	<version>1.0.0-incubating-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<dependencies>
@@ -94,19 +93,19 @@
 		<dependency>
 			<groupId>org.apache.aries.blueprint</groupId>
 			<artifactId>org.apache.aries.blueprint</artifactId>
-			<version>1.0.0-incubating-SNAPSHOT</version>
+			<version>${ariesVersion}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries</groupId>
 			<artifactId>org.apache.aries.util</artifactId>
-			<version>1.0.0-incubating-SNAPSHOT</version>
+			<version>${ariesVersion}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.jndi</groupId>
 			<artifactId>org.apache.aries.jndi</artifactId>
-			<version>1.0.0-incubating-SNAPSHOT</version>
+			<version>${ariesVersion}</version>
 		</dependency>
 
 
@@ -114,12 +113,12 @@
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-util</artifactId>
-            <version>${version}</version>
+            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-core</artifactId>
-            <version>${version}</version>
+            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
@@ -129,17 +128,17 @@
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-beans</artifactId>
-            <version>${version}</version>
+            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-persist-jdbc</artifactId>
-            <version>${version}</version>
+            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-web</artifactId>
-            <version>${version}</version>
+            <version>${pom.version}</version>
         </dependency>
 	</dependencies>
 
