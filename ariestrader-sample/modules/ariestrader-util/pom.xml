@@ -57,7 +57,7 @@
                             org.apache.aries.samples.ariestrader.util;version="${pom.version}"
                         </Export-Package>
                         <Import-Package>
-                            org.apache.aries.samples.ariestrader.util;version=1.0,
+                            org.apache.aries.samples.ariestrader.util,
                             org.apache.commons.logging,
                             javax.naming
                         </Import-Package>

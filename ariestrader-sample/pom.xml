@@ -25,7 +25,6 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.ariestrader</groupId>
-    <version>1.0.0-incubating-SNAPSHOT</version>
     <artifactId>ariestrader-parent</artifactId>
     <name>AriesTrader :: Performance Benchmark Sample</name>
     <packaging>pom</packaging>
@@ -34,6 +33,7 @@
     <properties>
         <!-- set siteId to artifactId for any "top level" project rooting a website -->
         <siteId>ariestrader</siteId>
+        <ariesVersion>1.0.0-incubating-SNAPSHOT</ariesVersion>
     </properties>
 
     <dependencyManagement>
