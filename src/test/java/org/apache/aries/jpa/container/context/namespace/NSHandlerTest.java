@@ -19,12 +19,14 @@
 package org.apache.aries.jpa.container.context.namespace;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContextType;
 import javax.xml.parsers.DocumentBuilder;
@@ -35,6 +37,7 @@ import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.container.Parser;
 import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
+import org.apache.aries.blueprint.reflect.RefMetadataImpl;
 import org.apache.aries.blueprint.reflect.ReferenceMetadataImpl;
 import org.apache.aries.jpa.container.context.PersistenceManager;
 import org.apache.aries.unittest.mocks.MethodCall;
@@ -46,6 +49,7 @@ import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -58,9 +62,12 @@ public class NSHandlerTest {
   private PersistenceManager manager;
   private ParserContext parserCtx;
   private Bundle clientBundle;
+  private List<ComponentMetadata> registeredComponents = new ArrayList<ComponentMetadata>();
   
   @Before
   public void setup() throws Exception {
+    registeredComponents.clear();
+    
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setNamespaceAware(true);
     DocumentBuilder builder = factory.newDocumentBuilder();
@@ -72,15 +79,9 @@ public class NSHandlerTest {
     sut.setManager(manager);
     
     clientBundle = Skeleton.newMock(Bundle.class);
-    
-    PassThroughMetadata bundleMeta =  Skeleton.newMock(PassThroughMetadata.class);
-    Skeleton.getSkeleton(bundleMeta).setReturnValue(
-        new MethodCall(PassThroughMetadata.class, "getObject"), clientBundle);
-    
-    ComponentDefinitionRegistry registry = Skeleton.newMock(ComponentDefinitionRegistry.class);
-    Skeleton.getSkeleton(registry).setReturnValue(
-        new MethodCall(ComponentDefinitionRegistry.class, "getComponentDefinition", "blueprintBundle"), 
-        bundleMeta);
+        
+    ComponentDefinitionRegistry registry = Skeleton.newMock(new ComponentDefinitionRegistryMock(), 
+        ComponentDefinitionRegistry.class);
     
     parserCtx = Skeleton.newMock(new ParserContextMock(), ParserContext.class);
     Skeleton.getSkeleton(parserCtx).setReturnValue(
@@ -97,7 +98,25 @@ public class NSHandlerTest {
     }
     
     public<T extends Metadata> T createMetadata(Class<T> clazz) {
-      return clazz.cast(new ReferenceMetadataImpl());
+      if (clazz.isAssignableFrom(ReferenceMetadata.class))
+        return clazz.cast(new ReferenceMetadataImpl());
+      else if (clazz.isAssignableFrom(RefMetadata.class))
+        return clazz.cast(new RefMetadataImpl());
+      else
+        return clazz.cast(new BeanMetadataImpl());
+    }
+  }
+  
+  private class ComponentDefinitionRegistryMock {
+    public ComponentMetadata getComponentDefinition(String id) {
+      PassThroughMetadata bundleMeta =  Skeleton.newMock(PassThroughMetadata.class);
+      Skeleton.getSkeleton(bundleMeta).setReturnValue(
+          new MethodCall(PassThroughMetadata.class, "getObject"), clientBundle);
+      return bundleMeta;
+    }
+    
+    public void registerComponentDefinition(ComponentMetadata component) {
+      registeredComponents.add(component);
     }
   }
   
@@ -111,9 +130,11 @@ public class NSHandlerTest {
     
     assertEquals("emf", property.getName());
     assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
-    assertEquals("(osgi.unit.name=myUnit)", reference.getFilter());
+    assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))(osgi.unit.name=myUnit))", reference.getFilter());
     
     Skeleton.getSkeleton(manager).assertSkeletonNotCalled();
+    
+    assertTrue(registeredComponents.isEmpty());
   }
   
   @Test
@@ -125,7 +146,10 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
     
     assertEquals("emf2", property.getName());
-    assertEquals(NSHandler.EMPTY_UNIT_NAME_FILTER, reference.getFilter());
+    assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))"+NSHandler.EMPTY_UNIT_NAME_FILTER+")", 
+        reference.getFilter());
+
+    assertTrue(registeredComponents.isEmpty());
   }
   
   @Test
@@ -137,7 +161,10 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
     
     assertEquals("emf3", property.getName());
-    assertEquals(NSHandler.EMPTY_UNIT_NAME_FILTER, reference.getFilter());
+    assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))"+NSHandler.EMPTY_UNIT_NAME_FILTER+")",
+        reference.getFilter());
+    
+    assertTrue(registeredComponents.isEmpty());
   }
   
   @Test 
@@ -151,6 +178,8 @@ public class NSHandlerTest {
 
     assertEquals("myid", bean.getId());
     assertEquals(2, bean.getProperties().size());
+    
+    assertTrue(registeredComponents.isEmpty());
   }
 
   @Test
@@ -158,10 +187,15 @@ public class NSHandlerTest {
     Element e = getTestElement("context");
     BeanMetadata bean = 
       (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), parserCtx);
-    ReferenceMetadata reference = (ReferenceMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
+    BeanMetadata innerBean = (BeanMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
+
+    assertEquals("createEntityManager", innerBean.getFactoryMethod());
+
+    assertEquals(1, registeredComponents.size());
+    ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
     
-    assertEquals(EntityManager.class.getName(), reference.getInterface());
-    assertEquals("(osgi.unit.name=myUnit)", reference.getFilter());
+    assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
+    assertEquals("(&(org.apache.aries.jpa.proxy.factory=*)(osgi.unit.name=myUnit))", reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
     props.put("type", PersistenceContextType.TRANSACTION);
@@ -174,10 +208,16 @@ public class NSHandlerTest {
     Element e = getTestElement("contextWithProps");
     BeanMetadata bean = 
       (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), parserCtx);
-    ReferenceMetadata reference = (ReferenceMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
+    BeanMetadata innerBean = (BeanMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
     
-    assertEquals(EntityManager.class.getName(), reference.getInterface());
-    assertEquals(NSHandler.EMPTY_UNIT_NAME_FILTER, reference.getFilter());
+    assertEquals("createEntityManager", innerBean.getFactoryMethod());
+    
+    assertEquals(1, registeredComponents.size());
+    ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
+    
+    assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
+    assertEquals("(&(org.apache.aries.jpa.proxy.factory=*)"+NSHandler.EMPTY_UNIT_NAME_FILTER+")", 
+        reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
     props.put("type", PersistenceContextType.EXTENDED);

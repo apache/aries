@@ -26,13 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContextType;
 
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.PassThroughMetadata;
+import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
+import org.apache.aries.blueprint.mutable.MutableRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.context.PersistenceManager;
@@ -44,6 +45,7 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.MapEntry;
 import org.osgi.service.blueprint.reflect.MapMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
@@ -69,6 +71,8 @@ public class NSHandler implements NamespaceHandler {
   
   public static final String EMPTY_UNIT_NAME_FILTER = 
     "(" + PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME + "=true)";
+  
+  public static final String PROXY_FACTORY_EMF_ATTRIBUTE = "org.apache.aries.jpa.proxy.factory";
 
   private static final String ACTIVATION_EAGER = "EAGER";
   
@@ -96,7 +100,7 @@ public class NSHandler implements NamespaceHandler {
       throw new IllegalArgumentException();
     
     final BeanProperty beanProperty = createInjectMetadata(element, 
-        TAG_UNIT.equals(element.getLocalName()) ? EntityManagerFactory.class : EntityManager.class,
+        TAG_UNIT.equals(element.getLocalName()),
         context);
       
     if (TAG_CONTEXT.equals(element.getLocalName())) {
@@ -176,7 +180,7 @@ public class NSHandler implements NamespaceHandler {
     throw new UnsupportedOperationException();
   }
   
-  private BeanProperty createInjectMetadata(Element element, Class<?> clazz, ParserContext ctx) {
+  private BeanProperty createInjectMetadata(Element element, boolean isPersistenceUnit, ParserContext ctx) {
     String unitName = parseUnitName(element);
     final String property = parseProperty(element);
 
@@ -184,26 +188,52 @@ public class NSHandler implements NamespaceHandler {
     refMetadata.setActivation(ACTIVATION_EAGER.equalsIgnoreCase(ctx.getDefaultActivation()) ?
         ReferenceMetadata.ACTIVATION_EAGER : ReferenceMetadata.ACTIVATION_LAZY);
     refMetadata.setAvailability(ReferenceMetadata.AVAILABILITY_MANDATORY);
-    refMetadata.setInterface(clazz.getName());    
+    refMetadata.setInterface(EntityManagerFactory.class.getName());    
     
-    if (!"".equals(unitName))
-      refMetadata.setFilter("(" + PersistenceUnitConstants.OSGI_UNIT_NAME + "=" + unitName + ")");
+    StringBuilder filter = new StringBuilder("(&");
+    if (isPersistenceUnit)
+      filter.append("(!(").append(PROXY_FACTORY_EMF_ATTRIBUTE).append("=*))");
     else
-      refMetadata.setFilter(EMPTY_UNIT_NAME_FILTER);
+      filter.append("(").append(PROXY_FACTORY_EMF_ATTRIBUTE).append("=*)");      
+      
+    if (!"".equals(unitName))
+      filter.append("(" + PersistenceUnitConstants.OSGI_UNIT_NAME + "=" + unitName + ")");
+    else
+      filter.append(EMPTY_UNIT_NAME_FILTER);
     
+    filter.append(")");
+    
+    refMetadata.setFilter(filter.toString());
     refMetadata.setTimeout(Integer.parseInt(ctx.getDefaultTimeout()));
     refMetadata.setDependsOn((List<String>) Collections.EMPTY_LIST);
     refMetadata.setId(ctx.generateId());
-        
+            
+    final Metadata target = isPersistenceUnit ? refMetadata 
+        : createInjectionBeanMetedata(ctx, refMetadata);
+    
     return new BeanProperty() {      
       public Metadata getValue() {
-        return refMetadata;
+        return target;
       }
       
       public String getName() {
         return property;
       }
     };
+  }
+  
+  private Metadata createInjectionBeanMetedata(ParserContext ctx, ReferenceMetadata factory) {
+    ctx.getComponentDefinitionRegistry().registerComponentDefinition(factory);
+    
+    MutableBeanMetadata meta = (MutableBeanMetadata) ctx.createMetadata(BeanMetadata.class);
+    MutableRefMetadata ref = (MutableRefMetadata) ctx.createMetadata(RefMetadata.class);
+    ref.setComponentId(factory.getId());
+    meta.setFactoryComponent(ref);
+    meta.setActivation(factory.getActivation());
+    meta.setFactoryMethod("createEntityManager");
+    meta.setScope(BeanMetadata.SCOPE_PROTOTYPE);
+    
+    return meta;
   }
   
   private Bundle getBlueprintBundle(ParserContext context) {
