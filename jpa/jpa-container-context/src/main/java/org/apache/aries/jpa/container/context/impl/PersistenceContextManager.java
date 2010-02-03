@@ -24,10 +24,11 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContextType;
 
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
+import org.apache.aries.jpa.container.context.namespace.NSHandler;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -35,7 +36,6 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
@@ -194,14 +194,14 @@ public class PersistenceContextManager extends ServiceTracker{
   }
 
   /**
-   * Register a {@link ManagedPersistenceContextServiceFactory} for the named persistence context
+   * Register a {@link ManagedPersistenceContextFactory} for the named persistence context
    * 
    * This must <b>never</b> be called from a <code>synchronized</code> block.
    * @param name
    */
   private void registerEM(String name) {
     
-    ServiceFactory entityManagerServiceFactory;
+    EntityManagerFactory entityManagerServiceFactory;
     ServiceReference unit;
     ServiceRegistration reg = null;
     boolean alreadyRegistered = false;
@@ -226,7 +226,7 @@ public class PersistenceContextManager extends ServiceTracker{
           return;
 
         //Create the service factory
-        entityManagerServiceFactory = new ManagedPersistenceContextServiceFactory(unit, props, persistenceContextRegistry);
+        entityManagerServiceFactory = new ManagedPersistenceContextFactory(unit, props, persistenceContextRegistry);
       }
      
       //Always register from outside a synchronized 
@@ -237,10 +237,11 @@ public class PersistenceContextManager extends ServiceTracker{
       props.put(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT, Boolean.TRUE);
       props.put(PersistenceUnitConstants.OSGI_UNIT_PROVIDER, unit.getProperty(PersistenceUnitConstants.OSGI_UNIT_PROVIDER));
       props.put(PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME, "".equals(name));
+      props.put(NSHandler.PROXY_FACTORY_EMF_ATTRIBUTE, "true");
       
       BundleContext persistenceBundleContext = unit.getBundle().getBundleContext();
       reg = persistenceBundleContext.registerService(
-          EntityManager.class.getName(), entityManagerServiceFactory, props);
+          EntityManagerFactory.class.getName(), entityManagerServiceFactory, props);
     } finally {
       //As we have to register from outside a synchronized then someone may be trying to
       //unregister us. They will try to wait for us to finish, but in order to prevent 
