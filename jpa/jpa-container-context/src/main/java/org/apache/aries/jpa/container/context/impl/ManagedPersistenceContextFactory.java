@@ -20,28 +20,27 @@ package org.apache.aries.jpa.container.context.impl;
 
 import java.util.Map;
 
+import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContextType;
+import javax.persistence.PersistenceUnitUtil;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.metamodel.Metamodel;
 
 import org.apache.aries.jpa.container.context.transaction.impl.JTAEntityManager;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
 /**
  * A service factory that can lazily create persistence contexts
  */
-public class ManagedPersistenceContextServiceFactory implements ServiceFactory {
+public class ManagedPersistenceContextFactory implements EntityManagerFactory {
 
   private final ServiceReference emf;
   private final Map<String, Object> properties;
   private final JTAPersistenceContextRegistry registry;
-  
-  private EntityManager em;
-  
-  public ManagedPersistenceContextServiceFactory(ServiceReference unit,
+    
+  public ManagedPersistenceContextFactory(ServiceReference unit,
       Map<String, Object> props, JTAPersistenceContextRegistry contextRegistry) {
 
       emf = unit;
@@ -50,29 +49,49 @@ public class ManagedPersistenceContextServiceFactory implements ServiceFactory {
       
   }
 
-  public Object getService(Bundle bundle, ServiceRegistration registration) {
+  public EntityManager createEntityManager() {
+    EntityManagerFactory factory = (EntityManagerFactory) emf.getBundle().getBundleContext().getService(emf);
     
-    if(em == null) {
-      EntityManagerFactory factory = (EntityManagerFactory) emf.getBundle().getBundleContext().getService(emf);
-      
-      synchronized(this) {
-        if (em == null) {
-          PersistenceContextType type = (PersistenceContextType) properties.get(PersistenceContextManager.PERSISTENCE_CONTEXT_TYPE);
-          if(type == PersistenceContextType.TRANSACTION || type == null)
-            em = new JTAEntityManager(factory, properties, registry);
-          else {
-            //TODO add support, or log the failure
-          }
-        }
-      }
+    PersistenceContextType type = (PersistenceContextType) properties.get(PersistenceContextManager.PERSISTENCE_CONTEXT_TYPE);
+    if(type == PersistenceContextType.TRANSACTION || type == null)
+      return new JTAEntityManager(factory, properties, registry);
+    else {
+      //TODO add support, or log the failure
+      return null;
     }
-    return em;
+
   }
 
-  public void ungetService(Bundle bundle, ServiceRegistration registration,
-      Object service) {
-    //No-op
+  public void close() {
+    throw new UnsupportedOperationException();
+  }
+  
+  public EntityManager createEntityManager(Map arg0) {
+    throw new UnsupportedOperationException();
+  }
 
+  public Cache getCache() {
+    throw new UnsupportedOperationException();
+  }
+
+  public CriteriaBuilder getCriteriaBuilder() {
+    throw new UnsupportedOperationException();
+  }
+
+  public Metamodel getMetamodel() {
+    throw new UnsupportedOperationException();
+  }
+
+  public PersistenceUnitUtil getPersistenceUnitUtil() {
+    throw new UnsupportedOperationException();
+  }
+
+  public Map<String, Object> getProperties() {
+    throw new UnsupportedOperationException();
+  }
+
+  public boolean isOpen() {
+    throw new UnsupportedOperationException();
   }
 
 }
