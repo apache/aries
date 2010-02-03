@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.geronimo.samples.daytrader.beans;
+package org.apache.aries.samples.ariestrader.beans;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -34,11 +34,11 @@ import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 
-import org.apache.geronimo.samples.daytrader.util.Log;
-import org.apache.geronimo.samples.daytrader.util.TradeConfig;
-import org.apache.geronimo.samples.daytrader.persistence.api.AccountDataBean;
-import org.apache.geronimo.samples.daytrader.persistence.api.HoldingDataBean;
-import org.apache.geronimo.samples.daytrader.persistence.api.QuoteDataBean;
+import org.apache.aries.samples.ariestrader.util.Log;
+import org.apache.aries.samples.ariestrader.util.TradeConfig;
+import org.apache.aries.samples.ariestrader.persistence.api.AccountDataBean;
+import org.apache.aries.samples.ariestrader.persistence.api.HoldingDataBean;
+import org.apache.aries.samples.ariestrader.persistence.api.QuoteDataBean;
 
 @Entity(name = "holdingejb")
 @Table(name = "holdingejb")

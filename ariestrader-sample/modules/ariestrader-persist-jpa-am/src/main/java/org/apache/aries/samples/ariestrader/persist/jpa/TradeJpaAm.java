@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.geronimo.samples.daytrader.persist.jpa;
+package org.apache.aries.samples.ariestrader.persist.jpa;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -28,21 +28,21 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 
-import org.apache.geronimo.samples.daytrader.api.TradeServices;
-import org.apache.geronimo.samples.daytrader.beans.AccountDataBeanImpl;
-import org.apache.geronimo.samples.daytrader.beans.AccountProfileDataBeanImpl;
-import org.apache.geronimo.samples.daytrader.beans.HoldingDataBeanImpl;
-import org.apache.geronimo.samples.daytrader.beans.OrderDataBeanImpl;
-import org.apache.geronimo.samples.daytrader.beans.QuoteDataBeanImpl;
-import org.apache.geronimo.samples.daytrader.persistence.api.AccountDataBean;
-import org.apache.geronimo.samples.daytrader.persistence.api.AccountProfileDataBean;
-import org.apache.geronimo.samples.daytrader.persistence.api.HoldingDataBean;
-import org.apache.geronimo.samples.daytrader.persistence.api.MarketSummaryDataBean;
-import org.apache.geronimo.samples.daytrader.persistence.api.OrderDataBean;
-import org.apache.geronimo.samples.daytrader.persistence.api.QuoteDataBean;
-import org.apache.geronimo.samples.daytrader.util.FinancialUtils;
-import org.apache.geronimo.samples.daytrader.util.Log;
-import org.apache.geronimo.samples.daytrader.util.TradeConfig;
+import org.apache.aries.samples.ariestrader.api.TradeServices;
+import org.apache.aries.samples.ariestrader.beans.AccountDataBeanImpl;
+import org.apache.aries.samples.ariestrader.beans.AccountProfileDataBeanImpl;
+import org.apache.aries.samples.ariestrader.beans.HoldingDataBeanImpl;
+import org.apache.aries.samples.ariestrader.beans.OrderDataBeanImpl;
+import org.apache.aries.samples.ariestrader.beans.QuoteDataBeanImpl;
+import org.apache.aries.samples.ariestrader.persistence.api.AccountDataBean;
+import org.apache.aries.samples.ariestrader.persistence.api.AccountProfileDataBean;
+import org.apache.aries.samples.ariestrader.persistence.api.HoldingDataBean;
+import org.apache.aries.samples.ariestrader.persistence.api.MarketSummaryDataBean;
+import org.apache.aries.samples.ariestrader.persistence.api.OrderDataBean;
+import org.apache.aries.samples.ariestrader.persistence.api.QuoteDataBean;
+import org.apache.aries.samples.ariestrader.util.FinancialUtils;
+import org.apache.aries.samples.ariestrader.util.Log;
+import org.apache.aries.samples.ariestrader.util.TradeConfig;
 
 /**
  * TradeJpaAm uses JPA via a Application Managed (AM)
@@ -52,16 +52,16 @@ import org.apache.geronimo.samples.daytrader.util.TradeConfig;
  * by customers of the brokerage such as login, logout, get a
  * stock quote, buy or sell a stock, etc. and are specified in
  * the {@link
- * org.apache.geronimo.samples.daytrader.TradeServices}
+ * org.apache.aries.samples.ariestrader.TradeServices}
  * interface
  * 
- * @see org.apache.geronimo.samples.daytrader.TradeServices
+ * @see org.apache.aries.samples.ariestrader.TradeServices
  * 
  */
 
 public class TradeJpaAm implements TradeServices {
 
-    @PersistenceUnit(unitName="daytrader-am")
+    @PersistenceUnit(unitName="ariestrader-am")
     private static EntityManagerFactory emf;
 
     private static BigDecimal ZERO = new BigDecimal(0.0);
@@ -515,7 +515,7 @@ public class TradeJpaAm implements TradeServices {
                                                         + "a.OPENBALANCE, "
                                                         + "a.PROFILE_USERID "
                                                         + "from accountejb a where a.profile_userid = ?",
-                                                        org.apache.geronimo.samples.daytrader.beans.AccountDataBeanImpl.class);
+                                                        org.apache.aries.samples.ariestrader.beans.AccountDataBeanImpl.class);
                 findaccountid.setParameter(1, userID);
                 AccountDataBeanImpl account = (AccountDataBeanImpl) findaccountid.getSingleResult();
                 Integer accountid = account.getAccountID();

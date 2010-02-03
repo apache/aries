@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.geronimo.samples.daytrader.beans;
+package org.apache.aries.samples.ariestrader.beans;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -28,9 +28,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-import org.apache.geronimo.samples.daytrader.util.Log;
-import org.apache.geronimo.samples.daytrader.util.TradeConfig;
-import org.apache.geronimo.samples.daytrader.persistence.api.QuoteDataBean;
+import org.apache.aries.samples.ariestrader.util.Log;
+import org.apache.aries.samples.ariestrader.util.TradeConfig;
+import org.apache.aries.samples.ariestrader.persistence.api.QuoteDataBean;
 
 @Entity(name = "quoteejb")
 @Table(name = "quoteejb")
@@ -47,7 +47,7 @@ import org.apache.geronimo.samples.daytrader.persistence.api.QuoteDataBean;
     @NamedQuery(name = "quoteejb.findByChange1", query = "SELECT q FROM quoteejb q WHERE q.change1 = :change1")
 })
 @NamedNativeQueries({
-    @NamedNativeQuery(name="quoteejb.quoteForUpdate", query="select * from quoteejb q where q.symbol=? for update",resultClass=org.apache.geronimo.samples.daytrader.beans.QuoteDataBeanImpl.class)
+    @NamedNativeQuery(name="quoteejb.quoteForUpdate", query="select * from quoteejb q where q.symbol=? for update",resultClass=org.apache.aries.samples.ariestrader.beans.QuoteDataBeanImpl.class)
 })
 
 public class QuoteDataBeanImpl implements QuoteDataBean, Serializable {

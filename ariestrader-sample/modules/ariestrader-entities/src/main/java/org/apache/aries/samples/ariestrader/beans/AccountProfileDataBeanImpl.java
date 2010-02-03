@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.geronimo.samples.daytrader.beans;
+package org.apache.aries.samples.ariestrader.beans;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,10 +25,10 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.apache.geronimo.samples.daytrader.util.Log;
-import org.apache.geronimo.samples.daytrader.util.TradeConfig;
-import org.apache.geronimo.samples.daytrader.persistence.api.AccountDataBean;
-import org.apache.geronimo.samples.daytrader.persistence.api.AccountProfileDataBean;
+import org.apache.aries.samples.ariestrader.util.Log;
+import org.apache.aries.samples.ariestrader.util.TradeConfig;
+import org.apache.aries.samples.ariestrader.persistence.api.AccountDataBean;
+import org.apache.aries.samples.ariestrader.persistence.api.AccountProfileDataBean;
 
 @Entity(name = "accountprofileejb")
 @Table(name =  "accountprofileejb")
