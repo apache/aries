@@ -80,6 +80,7 @@
                             !org.apache.geronimo.transaction*,
                             javax.resource.spi;version="1.5";resolution:=optional,
                             org.osgi.framework;version="1.4",
+                            org.osgi.service.cm;version="[1.2.0,2.0.0)",
                             *
                         </Import-Package>
                         <Export-Package>
