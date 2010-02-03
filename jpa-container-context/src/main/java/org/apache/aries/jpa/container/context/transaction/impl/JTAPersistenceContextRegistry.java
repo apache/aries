@@ -64,13 +64,14 @@ public class JTAPersistenceContextRegistry {
   {
     //There will only ever be one thread associated with a transaction at a given time
     //As a result, it is only the outer map that needs to be thread safe.
+    
     Object transactionKey = tranRegistry.getTransactionKey();
     
     //TODO Globalize and log this problem
     //Throw the error on to the client
-    if(transactionKey == null)
+    if(transactionKey == null) {
       throw new TransactionRequiredException();
-    
+    }
     //Get hold of the Map. If there is no Map already registered then add one.
     //We don't need to worry about a race condition, as no other thread will
     //share our transaction
@@ -80,7 +81,13 @@ public class JTAPersistenceContextRegistry {
     if(contextsForTransaction == null) {
       contextsForTransaction = new IdentityHashMap<EntityManagerFactory, EntityManager>();
       persistenceContextRegistry.put(transactionKey, contextsForTransaction);
-      tranRegistry.registerInterposedSynchronization(new EntityManagerClearUp(transactionKey));
+      try {
+        tranRegistry.registerInterposedSynchronization(new EntityManagerClearUp(transactionKey));
+      } catch (IllegalStateException e) {
+        persistenceContextRegistry.remove(transactionKey);
+        //TODO add a message
+        throw new TransactionRequiredException();
+      }
     }
     
     //Still only one thread for this transaction, so don't worry about any race conditions
@@ -89,6 +96,8 @@ public class JTAPersistenceContextRegistry {
     if(toReturn == null) {
       toReturn = (properties == null) ? persistenceUnit.createEntityManager() : persistenceUnit.createEntityManager(properties);
       contextsForTransaction.put(persistenceUnit, toReturn);
+    } else {
+      //TODO maybe add debug
     }
     
     return toReturn;
@@ -113,6 +122,7 @@ public class JTAPersistenceContextRegistry {
       return persistenceUnit.createEntityManager(properties);
   }
 
+  
   /**
    * Get the persistence context for the current transaction if a transaction is active. 
    * {@link getCurrentPersistenceContext}
@@ -153,15 +163,20 @@ public class JTAPersistenceContextRegistry {
     }
     
     public void afterCompletion(int arg0) {
-      Map<EntityManagerFactory, EntityManager> tidyUp = persistenceContextRegistry.remove(key);
-      if(tidyUp != null) {
-        for(EntityManager em : tidyUp.values())
-          em.close();
-      }
+      //This is a no-op;
     }
 
     public void beforeCompletion() {
-      //This is a no-op;
+      Map<EntityManagerFactory, EntityManager> tidyUp = persistenceContextRegistry.remove(key);
+      if(tidyUp != null) {
+        for(EntityManager em : tidyUp.values()) {
+          try {
+            em.close();
+          } catch (Exception e) {
+            //TODO Log this, but continue
+          }
+        }
+      }
     }
   }
 }
