@@ -20,14 +20,15 @@ package org.apache.aries.jpa.container.context.impl;
 
 import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
 import java.util.Hashtable;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
+import org.apache.aries.jpa.container.context.namespace.NSHandler;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
 import org.apache.aries.unittest.mocks.Skeleton;
@@ -87,7 +88,7 @@ public class PersistenceContextManagerTest {
     
     reg1 = registerUnit(emf1, unitName, TRUE);
     
-    BundleContextMock.assertNoServiceExists(EntityManager.class.getName());
+    assertNoContextRegistered();
     
     mgr.registerContext(unitName, client1, new HashMap<String, Object>());
     
@@ -106,7 +107,7 @@ public class PersistenceContextManagerTest {
     testUnitThenContext();
     mgr.unregisterContext("unit", client1);
     
-    BundleContextMock.assertNoServiceExists(EntityManager.class.getName());
+    assertNoContextRegistered();
   }
   
   /**
@@ -121,7 +122,7 @@ public class PersistenceContextManagerTest {
     testUnitThenContext();
     reg1.unregister();
     
-    BundleContextMock.assertNoServiceExists(EntityManager.class.getName());
+    assertNoContextRegistered();
   }
   
   /**
@@ -137,7 +138,7 @@ public class PersistenceContextManagerTest {
     
     mgr.registerContext(unitName, client1, new HashMap<String, Object>());
     
-    BundleContextMock.assertNoServiceExists(EntityManager.class.getName());
+    assertNoContextRegistered();
     
     reg1 = registerUnit(emf1, unitName, TRUE);
     
@@ -156,7 +157,7 @@ public class PersistenceContextManagerTest {
     testContextThenUnit();
     mgr.unregisterContext("unit", client1);
     
-    BundleContextMock.assertNoServiceExists(EntityManager.class.getName());
+    assertNoContextRegistered();
   }
   
   /**
@@ -171,7 +172,7 @@ public class PersistenceContextManagerTest {
     testContextThenUnit();
     reg1.unregister();
     
-    BundleContextMock.assertNoServiceExists(EntityManager.class.getName());
+    assertNoContextRegistered();
   }
   
   /**
@@ -179,15 +180,15 @@ public class PersistenceContextManagerTest {
    * context don't match
    */
   @Test
-  public void testAddDifferentContext()
+  public void testAddDifferentContext() throws InvalidSyntaxException
   {
     reg1 = registerUnit(emf1, "unit", TRUE);
     
-    BundleContextMock.assertNoServiceExists(EntityManager.class.getName());
+    assertNoContextRegistered();
     
     mgr.registerContext("context", client1, new HashMap<String, Object>());
     
-    BundleContextMock.assertNoServiceExists(EntityManager.class.getName());
+    assertNoContextRegistered();
   }
   
   /**
@@ -223,7 +224,7 @@ public class PersistenceContextManagerTest {
     reg1.unregister();
     assertContextRegistered("context");
     reg2.unregister();
-    BundleContextMock.assertNoServiceExists(EntityManager.class.getName());
+    assertNoContextRegistered();
   }
   
   /**
@@ -242,7 +243,7 @@ public class PersistenceContextManagerTest {
     assertContextRegistered("unit");
     
     mgr.unregisterContext("unit", client2);
-    BundleContextMock.assertNoServiceExists(EntityManager.class.getName());
+    assertNoContextRegistered();
   }
   
   
@@ -263,12 +264,18 @@ public class PersistenceContextManagerTest {
         EntityManagerFactory.class.getName(), emf, props);
   }
   
+  private void assertNoContextRegistered() throws InvalidSyntaxException {
+    ServiceReference[] refs = context.getServiceReferences(EntityManagerFactory.class.getName(), "("+NSHandler.PROXY_FACTORY_EMF_ATTRIBUTE+"=*)");
+
+    assertNull(refs);
+  }
+  
   private void assertContextRegistered(String name) throws InvalidSyntaxException {
-    BundleContextMock.assertServiceExists(EntityManager.class.getName());
+    BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
     
-    ServiceReference[] refs = context.getServiceReferences(EntityManager.class.getName(), null);
+    ServiceReference[] refs = context.getServiceReferences(EntityManagerFactory.class.getName(), "("+NSHandler.PROXY_FACTORY_EMF_ATTRIBUTE+"=*)");
     
-    assertEquals("Too many EntityManagers", 1, refs.length);
+    assertEquals("Too many EntityManagerFactories", 1, refs.length);
     
     assertEquals("Wrong unit name", name, refs[0].getProperty(PersistenceUnitConstants.OSGI_UNIT_NAME));
     

@@ -72,6 +72,7 @@ public class JTAPersistenceContextRegistry {
     if(transactionKey == null) {
       throw new TransactionRequiredException();
     }
+    
     //Get hold of the Map. If there is no Map already registered then add one.
     //We don't need to worry about a race condition, as no other thread will
     //share our transaction
@@ -104,43 +105,13 @@ public class JTAPersistenceContextRegistry {
   }
   
   /**
-   * Get the persistence context for the current transaction if a transaction is active. 
-   * {@link getCurrentPersistenceContext}
-   * 
-   * Otherwise return a freshly created persistence context that is not associated with any
-   * transaction.
-   * 
-   * @param persistenceUnit
-   * @param properties
-   * @return An {@link EntityManager} object
+   * Determine whether there is an active transaction on the thread
+   * @return
    */
-  public EntityManager getCurrentOrDetachedPersistenceContext(EntityManagerFactory persistenceUnit, Map<?,?> properties) 
+  public boolean isTransactionActive()
   {
-    if (tranRegistry.getTransactionKey() != null)
-      return getCurrentPersistenceContext(persistenceUnit, properties);
-    else 
-      return persistenceUnit.createEntityManager(properties);
+    return tranRegistry.getTransactionKey() != null;
   }
-
-  
-  /**
-   * Get the persistence context for the current transaction if a transaction is active. 
-   * {@link getCurrentPersistenceContext}
-   * 
-   * Otherwise return null;
-   * 
-   * @param persistenceUnit
-   * @param properties
-   * @return The {@link EntityManager} object or null if there is no active transaction.
-   */
-  public EntityManager getCurrentOrNoPersistenceContext(EntityManagerFactory persistenceUnit, Map<?,?> properties) 
-  {
-    if (tranRegistry.getTransactionKey() != null)
-      return getCurrentPersistenceContext(persistenceUnit, properties);
-    else 
-      return null;
-  }
-
   
   /**
    * Provide a {@link TransactionSynchronizationRegistry} to use
