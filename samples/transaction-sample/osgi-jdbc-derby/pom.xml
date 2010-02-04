@@ -28,7 +28,7 @@
 
 	<groupId>org.apache.aries.samples</groupId>
 	<artifactId>osgi-jdbc-derby</artifactId>
-        <name>OSGi Enterprice API for JDBC Access</name>
+        <name>Apache Aries sample Derby ODGi JDBC driver</name>
 	<version>1.0.0</version>
 	<packaging>bundle</packaging>
 	<dependencies>
