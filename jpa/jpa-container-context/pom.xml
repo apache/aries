@@ -42,11 +42,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.aries.jpa</groupId>
-      <artifactId>jpa-container</artifactId>
-      <version>1.0.0-incubating-SNAPSHOT</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-jpa_2.0_spec</artifactId>
     </dependency> 
@@ -65,6 +60,10 @@
       <artifactId>jpa-container</artifactId>
       <version>${version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

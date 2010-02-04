@@ -29,11 +29,16 @@ import javax.persistence.TransactionRequiredException;
 import javax.transaction.Synchronization;
 import javax.transaction.TransactionSynchronizationRegistry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class is used to manage the lifecycle of JTA peristence contexts
  */
 public class JTAPersistenceContextRegistry {
-
+  /** Logger */
+  private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container.context");
+  
   /** 
    * The transaction synchronization registry, used to determine the currently
    * active transaction, and to register for post-commit cleanup. 
@@ -67,10 +72,9 @@ public class JTAPersistenceContextRegistry {
     
     Object transactionKey = tranRegistry.getTransactionKey();
     
-    //TODO Globalize and log this problem
     //Throw the error on to the client
     if(transactionKey == null) {
-      throw new TransactionRequiredException();
+      throw new TransactionRequiredException("No transaction currently active");
     }
     
     //Get hold of the Map. If there is no Map already registered then add one.
@@ -86,8 +90,7 @@ public class JTAPersistenceContextRegistry {
         tranRegistry.registerInterposedSynchronization(new EntityManagerClearUp(transactionKey));
       } catch (IllegalStateException e) {
         persistenceContextRegistry.remove(transactionKey);
-        //TODO add a message
-        throw new TransactionRequiredException();
+        throw new TransactionRequiredException("Unable to synchronize with transaction " + transactionKey);
       }
     }
     
@@ -98,9 +101,9 @@ public class JTAPersistenceContextRegistry {
       toReturn = (properties == null) ? persistenceUnit.createEntityManager() : persistenceUnit.createEntityManager(properties);
       contextsForTransaction.put(persistenceUnit, toReturn);
     } else {
-      //TODO maybe add debug
+      if(_logger.isDebugEnabled())
+        _logger.debug("Re-using a persistence context for transaction " + transactionKey);
     }
-    
     return toReturn;
   }
   
@@ -144,7 +147,7 @@ public class JTAPersistenceContextRegistry {
           try {
             em.close();
           } catch (Exception e) {
-            //TODO Log this, but continue
+            _logger.warn("There was an error when the container closed an EntityManager", em);
           }
         }
       }

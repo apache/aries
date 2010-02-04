@@ -39,12 +39,18 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This class is responsible for managing all of the persistence contexts at a defined scope
- * It will automatically manage the lifecycle of all registered persistence contexts
+ * This class is responsible for managing all of the persistence contexts at a defined scope,
+ * i.e. for a single framework or composite. It will automatically manage the lifecycle of all
+ * registered persistence contexts.
  */
 public class PersistenceContextManager extends ServiceTracker{
+  /** Logger */
+  private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container.context");
+  
   /** The key to use when storing the {@link PersistenceContextType} for this context */
   public static final String PERSISTENCE_CONTEXT_TYPE = "org.apache.aries.jpa.context.type";
   /** The filter this tracker uses to select Persistence Units. */
@@ -52,12 +58,15 @@ public class PersistenceContextManager extends ServiceTracker{
   static {
     Filter f = null;
     try {
+      //Create a filter to select container managed persistence units that 
+      //are not proxies for managed persistence contexts 
       f = FrameworkUtil.createFilter("(&(" + Constants.OBJECTCLASS
         + "=" + "javax.persistence.EntityManagerFactory" + ")(" + 
-        PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))" );
+        PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)(!("
+        + NSHandler.PROXY_FACTORY_EMF_ATTRIBUTE + "=*)))" );
     } catch (InvalidSyntaxException e) {
-      // TODO This should never ever happen!
-      e.printStackTrace();
+      _logger.error("There was an exception creating the EntityManagerFactory filter. This should never happen.", e);
+      throw new RuntimeException(e);
     }
     filter = f;
   }
@@ -101,6 +110,10 @@ public class PersistenceContextManager extends ServiceTracker{
   @Override
   public Object addingService(ServiceReference reference) {
 
+    if(_logger.isDebugEnabled()) {
+      _logger.debug("A new managed persistence unit, {}, has been detected.", new Object[] {reference});
+    }
+    
     String unitName = (String) reference.getProperty(PersistenceUnitConstants.OSGI_UNIT_NAME);
     if(unitName == null)
       unitName = "";
@@ -111,8 +124,8 @@ public class PersistenceContextManager extends ServiceTracker{
       //If we already track a unit with the same name then we are in trouble!
       //only one unit with a given name should exist at a single scope
       if(persistenceUnits.containsKey(unitName)) {
-        //TODO log a big warning here!
-        //Stop tracking the duplicate unit.
+        _logger.warn("The persistence unit {} exists twice at the same framework scope. " +
+        		"The second service will be ignored", new Object[] {reference});
         return null;
       }
       //If this is a new unit, then add it, and check whether we have any waiting
@@ -129,6 +142,10 @@ public class PersistenceContextManager extends ServiceTracker{
 
   public void removedService(ServiceReference ref, Object o)
   {
+    if(_logger.isDebugEnabled()) {
+      _logger.debug("A managed persistence unit, {}, has been unregistered.", new Object[] {ref});
+    }
+    
     String unitName = (String) ref.getProperty(PersistenceUnitConstants.OSGI_UNIT_NAME);
     if(unitName == null)
       unitName = "";
@@ -148,7 +165,10 @@ public class PersistenceContextManager extends ServiceTracker{
    *                   This must contain the {@link PersistenceContextType}
    */
   public void registerContext(String name, Bundle client, HashMap<String, Object> properties) {
-    
+    if (_logger.isDebugEnabled()) {
+      _logger.debug("Registering bundle {} as a client of persistence unit {} with properties {}.", 
+          new Object[] {client.getSymbolicName() + "_" + client.getVersion(), name, properties});
+    }
     HashMap<String, Object> oldProps;
     boolean register;
     //Use a synchronized to get an atomic view
@@ -167,7 +187,8 @@ public class PersistenceContextManager extends ServiceTracker{
       oldProps = persistenceContextDefinitions.put(name, properties);
       if(oldProps != null) {
         if(!!!oldProps.equals(properties)) {
-          //TODO log an error and use the old properties
+          _logger.warn("The bundle {} depends on a managed persistence context {} with properties {}, but the context already exists with properties {}. The existing properties will be used.", 
+          new Object[] {client.getSymbolicName() + "_" + client.getVersion(), name, properties, oldProps});
           persistenceContextDefinitions.put(name, oldProps);
         }
       }
@@ -187,6 +208,10 @@ public class PersistenceContextManager extends ServiceTracker{
    */
   public void unregisterContext(String name, Bundle client)
   {
+    if (_logger.isDebugEnabled()) {
+      _logger.debug("Unregistering the bundle {} as a client of persistence unit {}.", 
+          new Object[] {client.getSymbolicName() + "_" + client.getVersion(), name});
+    }
     boolean unregister = false;
     //Keep an atomic view of our state
     synchronized (this) {
@@ -226,6 +251,9 @@ public class PersistenceContextManager extends ServiceTracker{
           alreadyRegistered = true;
           return;
         }
+        if(_logger.isDebugEnabled()) {
+          _logger.debug("Registering a managed persistence context for persistence unit {}", new Object[] {name});
+        }
         //Block other threads from trying to register by adding the key
         entityManagerRegistrations.put(name, null);
         
@@ -234,8 +262,12 @@ public class PersistenceContextManager extends ServiceTracker{
         Map<String, Object> props = persistenceContextDefinitions.get(name);
         
         //If either of these things is undefined then the context cannot be registered
-        if(props == null || unit == null)
+        if(props == null || unit == null) {
+          _logger.error("The managed persistence context {} cannot be registered for persistence unit {} and properties {}.",
+              new Object[] {name, unit, props});
+          //The finally block will clear the entityManagerRegistrations key
           return;
+        }
 
         //Create the service factory
         entityManagerServiceFactory = new ManagedPersistenceContextFactory(unit, props, persistenceContextRegistry);
@@ -268,10 +300,12 @@ public class PersistenceContextManager extends ServiceTracker{
           //If the key still exists then all is well
           if(entityManagerRegistrations.containsKey(name)) {
             entityManagerRegistrations.put(name, reg);
-          //Else we were in a potential live-lock and the service could not be unregistered
-          //earlier. This means we have to do it (but outside the synchronized. Make sure we
-          //also remove the registration key!
           } else {
+            //Else we were in a potential live-lock and the service could not be unregistered
+            //earlier. This means we have to do it (but outside the synchronized. Make sure we
+            //also remove the registration key!
+            _logger.warn("Recovering from a potential live-lock registering a container managed peristence context for persistence unit {}.",
+                new Object[] {name});
             entityManagerRegistrations.remove(name);
             recoverFromLiveLock = true;
           }
@@ -329,8 +363,7 @@ public class PersistenceContextManager extends ServiceTracker{
           try {
             this.wait(500);
           } catch (InterruptedException e) {
-            // TODO Log this properly
-            e.printStackTrace();
+            _logger.warn("The Aries JPA container was interrupted when waiting for managed persistence context {} to be unregistered", new Object[] {unitName});
           }
         //Increment the loop to prevent us from live-locking
         tries++;
@@ -341,7 +374,8 @@ public class PersistenceContextManager extends ServiceTracker{
       if(!found) {
         //Possible Live lock, just remove the key
         entityManagerRegistrations.remove(unitName);
-        //TODO log the potential issue
+        _logger.warn("The JPA container detected a possible live lock whilst unregistering the managed persistence context {}. The service cannot be unregistered immediately so the context may become unusable before being unregistered.",
+            new Object[] {unitName});
       }
     }
     //If we found the registration then unregister it outside the synchronized.

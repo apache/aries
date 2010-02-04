@@ -23,5 +23,13 @@ import java.util.HashMap;
 import org.osgi.framework.Bundle;
 
 public interface PersistenceManager {
+  /**
+   * This method will be called whenever a persistence context element is processed by the jpa
+   * blueprint namespace handler.
+   * 
+   * @param unitName   The name of the persistence unit
+   * @param client     The blueprint bundle that declares the dependency
+   * @param properties Properties that should be used to create the persistence unit
+   */
   void registerContext(String unitName, Bundle client, HashMap<String,Object> properties);
 }
