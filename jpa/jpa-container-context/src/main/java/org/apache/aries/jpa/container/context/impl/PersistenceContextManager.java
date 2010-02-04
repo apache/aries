@@ -85,6 +85,18 @@ public class PersistenceContextManager extends ServiceTracker{
     super(ctx, filter, null);
     persistenceContextRegistry = registry;
   }
+  
+  @Override
+  public void close() {
+    super.close();
+    for (ServiceRegistration reg : entityManagerRegistrations.values()) {
+      try {
+        reg.unregister();
+      } catch (IllegalStateException ise) {
+        //This is no worry, the framework has done our job for us
+      }
+    }
+  }
 
   @Override
   public Object addingService(ServiceReference reference) {

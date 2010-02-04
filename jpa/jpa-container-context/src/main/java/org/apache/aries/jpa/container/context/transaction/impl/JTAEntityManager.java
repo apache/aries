@@ -82,6 +82,21 @@ public class JTAEntityManager implements EntityManager {
     }
   }
   
+  /**
+   * Called reflectively by blueprint
+   */
+  public void internalClose() {
+    EntityManager temp = null;
+    
+    synchronized (this) {
+      temp = detachedManager;
+      detachedManager = null;
+    }
+    
+    if (temp != null)
+      temp.close();
+  }
+  
   public void clear()
   {
     getPersistenceContext(false).clear();
