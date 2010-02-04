@@ -88,6 +88,7 @@ public class GlobalPersistenceManager implements PersistenceManager, Synchronous
       Set<String> contextsToBeRemoved = Collections.emptySet();
       Bundle frameworkBundle = bundle.getBundleContext().getBundle(0);
       PersistenceContextManager manager = null;
+      boolean removeManager = false;
       
       synchronized (this) {
         if (persistenceContexts.containsKey(bundle)) {
@@ -98,13 +99,18 @@ public class GlobalPersistenceManager implements PersistenceManager, Synchronous
           if (manager == null)
             throw new IllegalStateException();
         } else if (managers.containsKey(bundle)) {
-          managers.remove(bundle);
+          removeManager = true;
+          manager = managers.remove(bundle);
           bundle.getBundleContext().removeBundleListener(this);
         }
       }
       
-      for (String context : contextsToBeRemoved) {
-        manager.unregisterContext(context, bundle);
+      if (removeManager) {
+        manager.close();
+      } else {
+        for (String context : contextsToBeRemoved) {
+          manager.unregisterContext(context, bundle);
+        }
       }
     }
   }
