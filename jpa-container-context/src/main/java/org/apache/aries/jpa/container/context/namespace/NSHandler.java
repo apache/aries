@@ -232,6 +232,7 @@ public class NSHandler implements NamespaceHandler {
     meta.setActivation(factory.getActivation());
     meta.setFactoryMethod("createEntityManager");
     meta.setScope(BeanMetadata.SCOPE_PROTOTYPE);
+    meta.setDestroyMethod("internalClose");
     
     return meta;
   }

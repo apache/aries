@@ -190,6 +190,7 @@ public class NSHandlerTest {
     BeanMetadata innerBean = (BeanMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
 
     assertEquals("createEntityManager", innerBean.getFactoryMethod());
+    assertEquals("internalClose", innerBean.getDestroyMethod());
 
     assertEquals(1, registeredComponents.size());
     ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
