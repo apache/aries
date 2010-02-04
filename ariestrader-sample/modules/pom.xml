@@ -34,11 +34,11 @@
         <module>ariestrader-util</module>
         <module>ariestrader-api</module>
         <module>ariestrader-core</module>
-        <module>ariestrader-beans</module>
-        <module>ariestrader-persist-jdbc</module>
-        <module>ariestrader-entities</module>
-        <module>ariestrader-persist-jpa-am</module>
         <module>ariestrader-web</module>
+        <module>ariestrader-beans</module>
+        <module>ariestrader-entities</module>
+        <module>ariestrader-persist-jdbc</module>
+        <module>ariestrader-persist-jpa-am</module>
     </modules>
 
 </project>

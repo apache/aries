@@ -45,7 +45,7 @@ import java.sql.Statement;
 
 public class TradeDBManagerImpl implements TradeDBManager {
 
-    private static String dsName = TradeConfig.DATASOURCE;
+    private static String dsName = TradeConfig.DS_NAME;
 
     private DataSource dataSource = null;
 
