@@ -31,11 +31,18 @@ import javax.persistence.metamodel.Metamodel;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAEntityManager;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
- * A service factory that can lazily create persistence contexts
+ * A factory that can lazily create managed persistence contexts.
+ * This is registered in the Service registry to be looked up by blueprint.
+ * The EntityManagerFactory interface is used to ensure a shared class space
+ * with the client. Only the createEntityManager() method is supported.
  */
 public class ManagedPersistenceContextFactory implements EntityManagerFactory {
-
+  /** Logger */
+  private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container.context");
+  
   private final ServiceReference emf;
   private final Map<String, Object> properties;
   private final JTAPersistenceContextRegistry registry;
@@ -50,13 +57,17 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory {
   }
 
   public EntityManager createEntityManager() {
+    if(_logger.isDebugEnabled()) {
+      _logger.debug("Creating a container managed entity manager for the perstence unit {} with the following properties {}",
+          new Object[] {emf, properties});
+    }
     EntityManagerFactory factory = (EntityManagerFactory) emf.getBundle().getBundleContext().getService(emf);
     
     PersistenceContextType type = (PersistenceContextType) properties.get(PersistenceContextManager.PERSISTENCE_CONTEXT_TYPE);
     if(type == PersistenceContextType.TRANSACTION || type == null)
       return new JTAEntityManager(factory, properties, registry);
     else {
-      //TODO add support, or log the failure
+      _logger.error("There is currently no support for extended scope EntityManagers");
       return null;
     }
 
