@@ -22,7 +22,7 @@
     <groupId>org.apache.aries.transaction-sample</groupId>
     <version>1.0.0</version>
     <artifactId>transaction-sample</artifactId>
-    <name>Apache Aries transaction sample</name>
+    <name>Apache Aries Transaction sample</name>
     <packaging>pom</packaging>
 	
 	<parent>

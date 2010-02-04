@@ -25,7 +25,7 @@
 	</parent>
 
 	<artifactId>transaction-assembly</artifactId>
-	<name>Apache Aries transaction sample assembly</name>
+	<name>Apache Aries Transaction sample assembly</name>
 	<version>1.0.0</version>
 	<packaging>pom</packaging>
 

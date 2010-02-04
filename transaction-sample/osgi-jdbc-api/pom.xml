@@ -28,7 +28,7 @@
 
 	<groupId>org.apache.aries.samples</groupId>
 	<artifactId>osgi-jdbc-api</artifactId>
-        <name>OSGi enterprise API or JDBC access</name>
+        <name>Apache Aries OSGi API for JDBC access</name>
 	<version>1.0.0</version>
 	<packaging>bundle</packaging>
 
