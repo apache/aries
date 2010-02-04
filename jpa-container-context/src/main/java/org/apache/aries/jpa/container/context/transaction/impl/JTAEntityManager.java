@@ -37,9 +37,16 @@ import javax.persistence.metamodel.Metamodel;
  */
 public class JTAEntityManager implements EntityManager {
 
+  /** The {@link EntityManagerFactory} that can create new {@link EntityManager} instances */
   private final EntityManagerFactory emf;
+  /** The map of properties to pass when creating EntityManagers */
   private final Map<String, Object> props;
+  /** A registry for creating new persistence contexts */
   private final JTAPersistenceContextRegistry reg;
+  /** 
+   * The entity manager to use when there is no transaction. Note that there is one of these
+   * per injection site.
+   */
   private EntityManager detachedManager = null;
   
   public JTAEntityManager(EntityManagerFactory factory,
@@ -76,7 +83,6 @@ public class JTAEntityManager implements EntityManager {
           if (temp != null)
             temp.close();
         }
-        
         return detachedManager;
       }
     }
@@ -105,7 +111,7 @@ public class JTAEntityManager implements EntityManager {
   public void close()
   {
     //TODO add a message here
-    throw new IllegalStateException();
+    throw new IllegalStateException("It is forbidden to call close on a container managed EntityManager");
   }
 
   public boolean contains(Object arg0)
@@ -169,8 +175,7 @@ public class JTAEntityManager implements EntityManager {
 
   public EntityTransaction getTransaction()
   {
-    //TODO add a message here
-    throw new IllegalStateException();
+    throw new IllegalStateException("Transaction management is not available for container managed EntityManagers");
   }
 
   public boolean isOpen()
@@ -331,9 +336,6 @@ public class JTAEntityManager implements EntityManager {
 
   public void setProperty(String arg0, Object arg1)
   {
-    /*
-     * TODO check whether we need to change the properies as well
-     */
     getPersistenceContext(false).setProperty(arg0, arg1);
   }
 
