@@ -26,6 +26,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.ariestrader</groupId>
     <artifactId>ariestrader-parent</artifactId>
+    <version>1.0.0-incubating-SNAPSHOT</version>
     <name>AriesTrader :: Performance Benchmark Sample</name>
     <packaging>pom</packaging>
     <description>Java EE 5.0 Performance Benchmark Sample Application</description>
@@ -97,6 +98,11 @@
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
                 <version>3.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse</groupId>
+                <artifactId>osgi</artifactId>
+                <version>3.5.0.v20090520</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

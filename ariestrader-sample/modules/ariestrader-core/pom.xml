@@ -43,11 +43,6 @@
             <version>${pom.version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -73,8 +68,7 @@
                             org.apache.aries.samples.ariestrader.persistence.api,
                             org.apache.aries.samples.ariestrader.util,
                             javax.naming,
-                            javax.sql,
-                           org.apache.derby.jdbc
+                            javax.sql
                         </Import-Package>
                         <Private-Package>
                             org.apache.aries.samples.ariestrader.core
