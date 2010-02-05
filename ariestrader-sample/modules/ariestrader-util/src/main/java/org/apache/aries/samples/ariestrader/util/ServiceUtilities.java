@@ -26,9 +26,6 @@ import javax.naming.NamingException;
  */
 public class ServiceUtilities {
 
-    private static String prefix = "aries:services/";
-
-
     /**
      * Lookup and return an osgi service
      * 
@@ -53,7 +50,7 @@ public class ServiceUtilities {
     public static final Object getOSGIService(String serviceName, String filter) {
         if (Log.doTrace())
             Log.trace("ServiceUtilities:getOSGIService()", serviceName, filter);
-        String name = prefix + serviceName;
+        String name = TradeConfig.OSGI_SERVICE_PREFIX + serviceName;
         if (filter != null) {
             name = name + "/" + filter;
         }
