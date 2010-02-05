@@ -91,6 +91,10 @@ public class TradeConfig {
 	public static String JDBC_PWD = null;
 	public static String DS_NAME = "java:comp/env/jdbc/TradeDataSource";
 
+        /* OSGi specific parameters */
+	public static String OSGI_SERVICE_PREFIX = "aries:services/";
+	public static String OSGI_DS_NAME_FILTER = "(osgi.jndi.serviceName=jdbc/TradeDataSource)";
+
 	/*Trade SOAP specific parameters */
 	private static String SoapURL =
 		"http://localhost:8080/ariestrader/services/TradeWSServices";
