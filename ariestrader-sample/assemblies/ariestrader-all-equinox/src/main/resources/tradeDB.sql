@@ -1,4 +1,4 @@
-connect 'jdbc:derby:tradeDB;create=true';
+connect 'jdbc:derby:tradedb;create=true';
 create table holdingejb
   (purchaseprice decimal(10, 2),
    holdingid integer not null,
