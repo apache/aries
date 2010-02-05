@@ -25,39 +25,25 @@
     </parent>
 
     <groupId>org.apache.aries.ariestrader.modules</groupId>
-    <artifactId>ariestrader-persist-jdbc</artifactId>
+    <artifactId>ariestrader-derby-ds</artifactId>
     <packaging>bundle</packaging>
-    <name>AriesTrader :: Modules - Persist JDBC</name>
-    <description>AriesTrader Persist JDBC Module</description>
+    <name>AriesTrader :: Modules - Derby DataSource</name>
+    <description>AriesTrader Derby DataSource</description>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-util</artifactId>
-            <version>${pom.version}</version>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-api</artifactId>
-            <version>${pom.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-beans</artifactId>
-            <version>${pom.version}</version>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>${basedir}/src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -66,19 +52,21 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
+                        <Bundle-Activator>org.apache.aries.ariestrader.datasource.derby.DerbyActivator</Bundle-Activator>
+						<Export-Service>javax.sql.DataSource</Export-Service>
+
                         <Export-Package>
-                            <!--org.apache.aries.samples.ariestrader.persist.jdbc;version="${pom.version}"-->
+                            <!--org.apache.aries.samples.ariestrader.datasource.derby;version="${pom.version}"-->
                         </Export-Package>
                         <Import-Package>
-                            org.apache.aries.samples.ariestrader.api,
-                            org.apache.aries.samples.ariestrader.beans,
-                            org.apache.aries.samples.ariestrader.persistence.api,
-                            org.apache.aries.samples.ariestrader.util,
-                            javax.naming,
-                            javax.sql
+                            <!--org.apache.aries.samples.ariestrader.datasource.derby,-->
+                            org.osgi.framework,
+                            javax.sql,
+                            org.apache.derby.jdbc
                         </Import-Package>
                         <Private-Package>
-                            org.apache.aries.samples.ariestrader.persist.jdbc
+                            org.apache.aries.ariestrader.datasource.derby
+                            <!--org.apache.aries.samples.ariestrader.datasource.derby"-->
                         </Private-Package>
                     </instructions>
                 </configuration>

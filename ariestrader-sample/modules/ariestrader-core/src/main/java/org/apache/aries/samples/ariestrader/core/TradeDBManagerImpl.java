@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import org.apache.aries.samples.ariestrader.persistence.api.RunStatsDataBean;
 import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.MDBStats;
+import org.apache.aries.samples.ariestrader.util.ServiceUtilities;
 import org.apache.aries.samples.ariestrader.util.TradeConfig;
 import org.apache.aries.samples.ariestrader.api.TradeDBManager;
 
@@ -385,8 +386,8 @@ public class TradeDBManagerImpl implements TradeDBManager {
      */
     private void lookupDataSource() throws Exception {
         if (dataSource == null) {
-            context = new InitialContext();
-            dataSource = (DataSource) context.lookup(dsName);
+//            dataSource = (DataSource) ServiceUtilities.getOSGIService(DataSource.class.getName(),"(osgi.jndi.serviceName=jdbc/TradeDataSource)");
+            dataSource = (DataSource) ServiceUtilities.getOSGIService(DataSource.class.getName(),TradeConfig.OSGI_DS_NAME_FILTER);
         }
     }
 

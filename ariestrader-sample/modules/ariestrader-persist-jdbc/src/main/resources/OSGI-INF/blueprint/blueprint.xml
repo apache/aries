@@ -3,13 +3,8 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-   <bean id="datasource" class="org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource">
-      <property name="databaseName" value="tradeDB"/>
-   </bean>
-
   <bean id="tradeServicesBeanJDBC" class="org.apache.aries.samples.ariestrader.persist.jdbc.TradeJdbc" init-method="init">
       <!--<property name="inSession" value="true"/>-->
-      <property name="dataSource" ref="datasource" />
   </bean>
 
   <service id="tradeServicesJDBC" ref="tradeServicesBeanJDBC" interface="org.apache.aries.samples.ariestrader.api.TradeServices">
