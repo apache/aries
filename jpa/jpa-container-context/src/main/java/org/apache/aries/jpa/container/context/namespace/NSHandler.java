@@ -40,6 +40,7 @@ import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.context.GlobalPersistenceManager;
 import org.apache.aries.jpa.container.context.PersistenceManager;
+import org.apache.aries.jpa.container.context.impl.PersistenceContextManager;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -145,7 +146,9 @@ public class NSHandler implements NamespaceHandler {
       String unitName = parseUnitName(element);
 
       HashMap<String,Object> properties = new HashMap<String, Object>();
-      properties.put(ATTR_TYPE, parseType(element));
+      //Remember to add the PersistenceContextType so that we can create the correct type of
+      //EntityManager
+      properties.put(PersistenceContextManager.PERSISTENCE_CONTEXT_TYPE, parseType(element));
       properties.putAll(parseJPAProperties(element, context));
 
       manager.registerContext(unitName, client, properties);      
