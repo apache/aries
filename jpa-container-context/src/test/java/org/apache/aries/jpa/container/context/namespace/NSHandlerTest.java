@@ -40,6 +40,7 @@ import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
 import org.apache.aries.blueprint.reflect.RefMetadataImpl;
 import org.apache.aries.blueprint.reflect.ReferenceMetadataImpl;
 import org.apache.aries.jpa.container.context.PersistenceManager;
+import org.apache.aries.jpa.container.context.impl.PersistenceContextManager;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.Before;
@@ -199,7 +200,7 @@ public class NSHandlerTest {
     assertEquals("(&(org.apache.aries.jpa.proxy.factory=*)(osgi.unit.name=myUnit))", reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
-    props.put("type", PersistenceContextType.TRANSACTION);
+    props.put(PersistenceContextManager.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
     Skeleton.getSkeleton(manager).assertCalled(
         new MethodCall(PersistenceManager.class, "registerContext", "myUnit", clientBundle, props));
   }
@@ -221,7 +222,7 @@ public class NSHandlerTest {
         reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
-    props.put("type", PersistenceContextType.EXTENDED);
+    props.put(PersistenceContextManager.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.EXTENDED);
     props.put("one", "eins");
     props.put("two", "zwo");
     Skeleton.getSkeleton(manager).assertCalled(
