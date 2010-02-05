@@ -18,7 +18,9 @@
  */
 package org.apache.aries.jpa.container.context.impl;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.persistence.Cache;
 import javax.persistence.EntityManager;
@@ -46,14 +48,17 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory {
   private final ServiceReference emf;
   private final Map<String, Object> properties;
   private final JTAPersistenceContextRegistry registry;
+  private final PersistenceContextType type;
     
   public ManagedPersistenceContextFactory(ServiceReference unit,
       Map<String, Object> props, JTAPersistenceContextRegistry contextRegistry) {
 
       emf = unit;
-      properties = props;
+      //Take a copy of the Map so that we don't modify the original
+      properties = new HashMap<String, Object>(props);
       registry = contextRegistry;
-      
+      //Remove our internal property so that it doesn't get passed on the createEntityManager call
+      type = (PersistenceContextType) properties.remove(PersistenceContextManager.PERSISTENCE_CONTEXT_TYPE);
   }
 
   public EntityManager createEntityManager() {
@@ -63,7 +68,6 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory {
     }
     EntityManagerFactory factory = (EntityManagerFactory) emf.getBundle().getBundleContext().getService(emf);
     
-    PersistenceContextType type = (PersistenceContextType) properties.get(PersistenceContextManager.PERSISTENCE_CONTEXT_TYPE);
     if(type == PersistenceContextType.TRANSACTION || type == null)
       return new JTAEntityManager(factory, properties, registry);
     else {
