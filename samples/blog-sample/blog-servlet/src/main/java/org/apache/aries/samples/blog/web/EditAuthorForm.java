@@ -27,6 +27,7 @@ import org.apache.aries.samples.blog.api.BlogAuthor;
 import org.apache.aries.samples.blog.api.BloggingService;
 import org.apache.aries.samples.blog.web.util.FormServlet;
 import org.apache.aries.samples.blog.web.util.HTMLOutput;
+import org.apache.aries.samples.blog.web.util.JNDIHelper;
 
 
 public class EditAuthorForm extends FormServlet
@@ -50,7 +51,7 @@ public class EditAuthorForm extends FormServlet
   {
     String pageTitle = "Create Author";
     
-    BloggingService service = HTMLOutput.getBloggingService();
+    BloggingService service = JNDIHelper.getBloggingService();
     String email = getEmail(req);
     
     if (email != null && !!!"".equals(email)) {
@@ -81,7 +82,7 @@ public class EditAuthorForm extends FormServlet
     String dob = retrieveOrEmpty(req, "dob");
     String email = getEmail(req);
     
-    BloggingService service = HTMLOutput.getBloggingService();
+    BloggingService service = JNDIHelper.getBloggingService();
     
     if (email != null && !!!"".equals(email)) {
       BlogAuthor author = service.getBlogAuthor(email);

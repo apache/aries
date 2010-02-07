@@ -26,12 +26,12 @@ import org.apache.aries.samples.blog.web.util.FormServlet;
 import org.apache.aries.samples.blog.web.util.HTMLOutput;
 
 
-public class CreateBlogPostForm extends FormServlet
+public class CreateBlogEntryForm extends FormServlet
 {
   private static final long serialVersionUID = -6484228320837122235L;
   public static final String ID = "post";
   
-  public CreateBlogPostForm()
+  public CreateBlogEntryForm()
   {
     super(ID);
   }
@@ -50,7 +50,7 @@ public class CreateBlogPostForm extends FormServlet
     String text = retrieveOrEmpty(req, "text");
     String tags = retrieveOrEmpty(req, "tags");
     
-    out.println("<form name=\"createPost\" method=\"post\" action=\"CreateBlogPost\">");
+    out.println("<form name=\"createPost\" method=\"post\" action=\"CreateBlogEntry\">");
 
     out.println("<div class=\"textEntry\"><label>Title <input dojoType=\"dijit.form.TextBox\" type=\"text\" name=\"title\" value=\"" + title + "\"/></label></div>");
     out.println("<div class=\"textEntry\"><textarea dojoType=\"dijit.Editor\" id=\"text\" name=\"text\">" + text + "</textarea></div>");

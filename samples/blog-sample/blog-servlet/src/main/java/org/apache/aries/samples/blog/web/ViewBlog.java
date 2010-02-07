@@ -24,16 +24,18 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.aries.samples.blog.api.Blog;
-import org.apache.aries.samples.blog.api.BlogPost;
+import org.apache.aries.samples.blog.api.BlogComment;
+import org.apache.aries.samples.blog.api.BlogEntry;
 import org.apache.aries.samples.blog.api.BloggingService;
 import org.apache.aries.samples.blog.web.util.HTMLOutput;
+import org.apache.aries.samples.blog.web.util.JNDIHelper;
 
 
 
@@ -48,20 +50,20 @@ public class ViewBlog extends HttpServlet
   {
     PrintWriter out = resp.getWriter();
 
-    BloggingService service = HTMLOutput.getBloggingService();
+    BloggingService service = JNDIHelper.getBloggingService();
     
-    Blog blog = service.getBlog();
+    String blogTitle = service.getBlogTitle();
 
     // TODO cope with the service being null, redirect elsewhere.
 
-    HTMLOutput.writeHTMLHeaderPartOne(out, blog.getBlogTitle());
+    HTMLOutput.writeHTMLHeaderPartOne(out, blogTitle);
     HTMLOutput.writeDojoUses(out, "dojo.parser");
     
     
 
 		HTMLOutput.writeHTMLHeaderPartTwo(out);
 
-    int maxPage = (blog.getNoOfPosts()-1) / POSTS_PER_PAGE;
+    int maxPage = (service.getNoOfEntries()-1) / POSTS_PER_PAGE;
     int pageNoInt = 0;
     
     String pageNo = req.getParameter("page");
@@ -79,14 +81,14 @@ public class ViewBlog extends HttpServlet
       }
     }
   
-    Iterator<BlogPost> posts = blog.getPosts(pageNoInt * POSTS_PER_PAGE, POSTS_PER_PAGE).iterator();
+    Iterator<? extends BlogEntry> posts = service.getBlogEntries(pageNoInt * POSTS_PER_PAGE, POSTS_PER_PAGE).iterator();
     
-    out.println("<div class=\"links\"><a href=\"CreateBlogPostForm\">Create New Post</a> <a href=\"EditAuthorForm\">Create Author</a></div>");
+    out.println("<div class=\"links\"><a href=\"CreateBlogEntryForm\">Create New Post</a> <a href=\"EditAuthorForm\">Create Author</a></div>");
     
     Date currentDate = null;
 
     for (int i = 0; posts.hasNext(); i++) {
-      BlogPost post = posts.next();
+      BlogEntry post = posts.next();
       
       if (doesNotMatch(post.getPublishDate(), currentDate)) {
         currentDate = post.getPublishDate();
@@ -112,9 +114,53 @@ public class ViewBlog extends HttpServlet
       out.print("\t\t\t<div class=\"postAuthor\"><a href=\"ViewAuthor?email=");
       out.print(post.getAuthorEmail());
       out.print("\">");
-      out.print(post.getAuthor());
+      out.print(post.getAuthor().getFullName());
       out.println("</a></div>");
       
+      if (service.isCommentingAvailable()) {
+
+			out.print("<div class=\"links\"><a href=\"AddCommentForm?postId=");
+			out.print(post.getId());
+			out.print("\">Add Comment</a></div>");
+
+			List<? extends BlogComment> comments = service
+					.getCommentsForEntry(post);
+			int size = comments.size();
+			out.print("<div class=\"commentTitle\"");
+			if (size > 0) {
+				out.print("onclick=\"expand(");
+				out.print(post.getId());
+				out.print(")\"");
+			}
+			out.print(" style=\"cursor: pointer;\">Comments (");
+			out.print(size);
+			out.println(")</div>");
+
+			if (size > 0) {
+
+				out.print("<div id=\"comments");
+				out.print(post.getId());
+				out.println("\">");
+
+				for (BlogComment comment : comments) {
+					out.println("<div class=\"comment\">");
+
+					out.println(comment.getComment());
+
+					out.println("</div>");
+					out
+							.print("\t\t\t<div class=\"commentAuthor\"><a href=\"ViewAuthor?email=");
+					out.print(comment.getAuthor().getEmailAddress());
+					out.print("\">");
+					out.print(
+						comment.getAuthor().getName());
+					out.println("</a></div>");
+				}
+
+				out.println("</div>");
+			}
+		}
+
      
       out.println("\t\t</div>");
     }
