@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.aries.samples.blog.api.BloggingService;
 import org.apache.aries.samples.blog.web.util.FormServlet;
-import org.apache.aries.samples.blog.web.util.HTMLOutput;
+import org.apache.aries.samples.blog.web.util.JNDIHelper;
 
 public class EditAuthor extends HttpServlet
 {
@@ -67,14 +67,14 @@ public class EditAuthor extends HttpServlet
       FormServlet.addError(req, "The email field is required.");
       resp.sendRedirect("EditAuthorForm");
     } else {
-      BloggingService service = HTMLOutput.getBloggingService();
+      BloggingService service = JNDIHelper.getBloggingService();
 
       if (service.getBlogAuthor(email) != null) {
         // do an update
-        service.updateAuthor(email, nickName, name, bio, dob);
+        service.updateBlogAuthor(email, nickName, name, bio, dob);
       } else {
         // do a create
-        service.createAuthor(email, nickName, name, bio, dob);
+        service.createBlogAuthor(email, nickName, name, bio, dob);
       } 
       RequestDispatcher dispatch = getServletContext().getRequestDispatcher("/ViewAuthor");
       dispatch.forward(req, resp);

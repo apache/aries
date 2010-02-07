@@ -16,8 +16,7 @@
     limitations under the License.
 -->
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
-
-   <web-app id="Blog">
+   <web-app id="Blog">   
       <display-name>Blog Application</display-name>
       <description>This is the Blog Sample Application.</description>
       <servlet id="Servlet_1">
@@ -25,37 +24,57 @@
          <display-name>View Blog Author</display-name>
          <description>This Servlet loads and displays the details of a blog author.</description>
          <servlet-class>org.apache.aries.samples.blog.web.ViewAuthor</servlet-class>
+         <load-on-startup></load-on-startup>
       </servlet>
       <servlet id="Servlet_2">
          <servlet-name>Edit Blog Author</servlet-name>
          <display-name>Edit Blog Author</display-name>
          <description>This Servlet edits or creates the details of a blog author.</description>
          <servlet-class>org.apache.aries.samples.blog.web.EditAuthor</servlet-class>
+         <load-on-startup></load-on-startup>
       </servlet>
       <servlet id="Servlet_3">
          <servlet-name>Edit Blog Author Form</servlet-name>
          <display-name>Edit Blog Author Form</display-name>
          <description>This Servlet that displays the form for creating or updating the details of a blog author.</description>
          <servlet-class>org.apache.aries.samples.blog.web.EditAuthorForm</servlet-class>
+         <load-on-startup></load-on-startup>
+      </servlet>
+      <servlet id="Servlet_4">
+         <servlet-name>Add Comment Form Servlet</servlet-name>
+         <display-name>Add Comment Form Servlet</display-name>
+         <description>This Servlet shows a form for adding comments.</description>
+         <servlet-class>org.apache.aries.samples.blog.web.AddCommentForm</servlet-class>
+         <load-on-startup></load-on-startup>
       </servlet>
       <servlet id="Servlet_5">
-         <servlet-name>Create Blog Post</servlet-name>
-         <display-name>Create Blog Post</display-name>
-         <description>This Servlet that creates a blog post.</description>
-         <servlet-class>org.apache.aries.samples.blog.web.CreateBlogPost</servlet-class>
+         <servlet-name>Create Blog Entry</servlet-name>
+         <display-name>Create Blog Entry</display-name>
+         <description>This Servlet that creates a blog entry.</description>
+         <servlet-class>org.apache.aries.samples.blog.web.CreateBlogEntry</servlet-class>
+         <load-on-startup></load-on-startup>
       </servlet>
       <servlet id="Servlet_6">
          <servlet-name>View Blog</servlet-name>
          <display-name>View Blog</display-name>
          <description>This Servlet that views the blog posts.</description>
          <servlet-class>org.apache.aries.samples.blog.web.ViewBlog</servlet-class>
-      </servlet>     
-      <servlet id="Servlet_8">
-         <servlet-name>Create Blog Post Form</servlet-name>
-         <display-name>Create Blog Post Form</display-name>
-         <description>This Servlet that displays the form for creating a blog post.</description>
-         <servlet-class>org.apache.aries.samples.blog.web.CreateBlogPostForm</servlet-class>
+         <load-on-startup></load-on-startup>
       </servlet>
+      <servlet id="Servlet_7">
+         <servlet-name>Add Comment Servlet</servlet-name>
+         <display-name>Add Comment Servlet</display-name>
+         <description>This Servlet adds a comments.</description>
+         <servlet-class>org.apache.aries.samples.blog.web.AddComment</servlet-class>
+         <load-on-startup></load-on-startup>
+      </servlet>
+      <servlet id="Servlet_8">
+         <servlet-name>Create Blog Entry Form</servlet-name>
+         <display-name>Create Blog Entry Form</display-name>
+         <description>This Servlet that displays the form for creating a blog post.</description>
+         <servlet-class>org.apache.aries.samples.blog.web.CreateBlogEntryForm</servlet-class>
+         <load-on-startup></load-on-startup>
+      </servlet>      
       <servlet-mapping id="ServletMapping_1">
          <servlet-name>View Blog Author</servlet-name>
          <url-pattern>/ViewAuthor</url-pattern>
@@ -68,21 +87,28 @@
          <servlet-name>Edit Blog Author Form</servlet-name>
          <url-pattern>/EditAuthorForm</url-pattern>
       </servlet-mapping>
+      <servlet-mapping id="ServletMapping_4">
+         <servlet-name>Add Comment Form Servlet</servlet-name>
+         <url-pattern>/AddCommentForm</url-pattern>
+      </servlet-mapping>
       <servlet-mapping id="ServletMapping_5">
-         <servlet-name>Create Blog Post</servlet-name>
-         <url-pattern>/CreateBlogPost</url-pattern>
+         <servlet-name>Create Blog Entry</servlet-name>
+         <url-pattern>/CreateBlogEntry</url-pattern>
+      </servlet-mapping>
+      <servlet-mapping id="ServletMapping_7">
+         <servlet-name>Add Comment Servlet</servlet-name>
+         <url-pattern>/AddComment</url-pattern>
       </servlet-mapping>
       <servlet-mapping id="ServletMapping_6">
          <servlet-name>View Blog</servlet-name>
          <url-pattern>/ViewBlog</url-pattern>
       </servlet-mapping>
       <servlet-mapping id="ServletMapping_8">
-         <servlet-name>Create Blog Post Form</servlet-name>
-         <url-pattern>/CreateBlogPostForm</url-pattern>
+         <servlet-name>Create Blog Entry Form</servlet-name>
+         <url-pattern>/CreateBlogEntryForm</url-pattern>      	
       </servlet-mapping>
-          <welcome-file-list>
-            <welcome-file>index.html</welcome-file>
-          </welcome-file-list>
+	  <welcome-file-list>
+	    <welcome-file>index.html</welcome-file>
+	  </welcome-file-list>
    </web-app>
-
 

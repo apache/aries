@@ -18,15 +18,9 @@
  */
 package org.apache.aries.samples.blog.web.util;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
-import org.apache.aries.samples.blog.api.BloggingService;
 
 /**
  * Utility class to provide html headers, footers, dojo use and blogging
@@ -206,17 +200,4 @@ public class HTMLOutput {
 
 	}
 
-	public static final BloggingService getBloggingService() throws IOException {
-		try {
-			InitialContext ic = new InitialContext();
-			return (BloggingService) ic.lookup("aries:services/"
-					+ BloggingService.class.getName());
-		} catch (NamingException e) {
-			e.printStackTrace();
-			IOException ioe = new IOException(
-					"Blogging service resolution failed");
-			ioe.initCause(e);
-			throw ioe;
-		}
-	}
 }

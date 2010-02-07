@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.aries.samples.blog.api.BlogAuthor;
 import org.apache.aries.samples.blog.api.BloggingService;
 import org.apache.aries.samples.blog.web.util.HTMLOutput;
+import org.apache.aries.samples.blog.web.util.JNDIHelper;
 
 
 
@@ -47,7 +48,7 @@ public class ViewAuthor extends HttpServlet
     } else {
       PrintWriter out = resp.getWriter();
       
-      BloggingService service = HTMLOutput.getBloggingService();
+      BloggingService service = JNDIHelper.getBloggingService();
       
       BlogAuthor author = service.getBlogAuthor(email);
       
