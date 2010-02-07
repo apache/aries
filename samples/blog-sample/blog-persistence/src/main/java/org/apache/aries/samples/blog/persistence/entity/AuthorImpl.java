@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.aries.samples.blog.persistence.api.Author;
-import org.apache.aries.samples.blog.persistence.api.BlogEntry;
 
 
 
@@ -49,7 +48,7 @@ public class AuthorImpl implements Author
 
   /** The blog entries posted by this user */
 
-  private List<BlogEntry> posts;
+  private List<EntryImpl> posts;
 
   /** Get the author's email address */
   public String getEmail()
@@ -112,13 +111,13 @@ public class AuthorImpl implements Author
   }
 
   /** Get the author's blog posts */
-  public List<BlogEntry> getPosts()
+  public List<EntryImpl> getEntries()
   {
     return posts;
   }
 
   /** Set the author's blog posts */
-  public void setPosts(List<BlogEntry> posts)
+  public void setEntries(List<EntryImpl> posts)
   {
     this.posts = posts;
   }

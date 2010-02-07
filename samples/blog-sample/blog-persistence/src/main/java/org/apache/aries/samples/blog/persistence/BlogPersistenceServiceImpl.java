@@ -29,11 +29,9 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.aries.samples.blog.persistence.api.Author;
-import org.apache.aries.samples.blog.persistence.api.BlogEntry;
 import org.apache.aries.samples.blog.persistence.api.BlogPersistenceService;
 import org.apache.aries.samples.blog.persistence.entity.AuthorImpl;
-import org.apache.aries.samples.blog.persistence.entity.BlogEntryImpl;
+import org.apache.aries.samples.blog.persistence.entity.EntryImpl;
 
 /**
  * This class is the implementation of the blogPersistenceService
@@ -100,9 +98,10 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	 * @param tags
 	 * 
 	 */
-	public void createBlogPost(Author a, String title, String blogText,
+	public void createBlogPost(String authorEmail, String title, String blogText,
 			List<String> tags) {
 		
+		AuthorImpl a = getAuthor(authorEmail);
 		
 		if(title == null) title = "";
 		Date publishDate = new Date(System.currentTimeMillis());
@@ -172,14 +171,14 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	 * @param The title to be searched
 	 * @return The blogEntry record
 	 */
-	public BlogEntry findBlogEntryByTitle(String title) {
+	public EntryImpl findBlogEntryByTitle(String title) {
 
-		BlogEntry be = null;
+		EntryImpl be = null;
 
 		String sql = "SELECT * FROM BlogEntry e WHERE e.title = '" + title
 				+ "'";
 
-		List<BlogEntry> blogEntries = findBlogs(sql);
+		List<EntryImpl> blogEntries = findBlogs(sql);
 		
 		// just return the first blog entry for the time being
 		if ((blogEntries != null) && (blogEntries.size() > 0))
@@ -192,10 +191,10 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	 * 
 	 * @return the list of Author records
 	 */
-	public List<Author> getAllAuthors() {
+	public List<AuthorImpl> getAllAuthors() {
 		String sql = "SELECT * FROM Author";
 
-		List<Author> list = findAuthors(sql);
+		List<AuthorImpl> list = findAuthors(sql);
 
 		return list;
 	}
@@ -206,10 +205,10 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	 * 
 	 * @return a list of blogEntry object
 	 */
-	public List<BlogEntry> getAllBlogEntries() {
+	public List<EntryImpl> getAllBlogEntries() {
 		String sql = "SELECT * FROM BlogEntry b ORDER BY b.publishDate DESC";
 
-		List<BlogEntry> list = findBlogs(sql);
+		List<EntryImpl> list = findBlogs(sql);
 
 		return list;
 	}
@@ -249,10 +248,10 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	 *            The number of blog entry to be returned
 	 * @return The list of the blog entry record
 	 */
-	public List<BlogEntry> getBlogEntries(int firstPostIndex, int noOfPosts) {
+	public List<EntryImpl> getBlogEntries(int firstPostIndex, int noOfPosts) {
 		String sql = "SELECT * FROM BlogEntry b ORDER BY b.publishDate DESC";
-		List<BlogEntry> emptyList = new ArrayList<BlogEntry>();
-		List<BlogEntry> blogs = findBlogs(sql);
+		List<EntryImpl> emptyList = new ArrayList<EntryImpl>();
+		List<EntryImpl> blogs = findBlogs(sql);
 		// we only return a portion of the list
 		if (blogs == null)
 			return emptyList;
@@ -283,10 +282,10 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	 *            The email address
 	 * @return The author record
 	 */
-	public Author getAuthor(String emailAddress) {
+	public AuthorImpl getAuthor(String emailAddress) {
 		String sql = "SELECT * FROM AUTHOR a where a.email='" + emailAddress
 				+ "'";
-		List<Author> authors = findAuthors(sql);
+		List<AuthorImpl> authors = findAuthors(sql);
 
 		if (authors.size() == 0)
 			return null;
@@ -306,7 +305,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	 *            The end date
 	 * @return The list of blog entries
 	 */
-	public List<BlogEntry> getBlogEntriesModifiedBetween(Date start, Date end) {
+	public List<EntryImpl> getBlogEntriesModifiedBetween(Date start, Date end) {
 
 		// String sql = "SELECT * FROM BlogEntry b WHERE (b.updatedDate >= " +
 		// startTS +" AND b.updatedDate <= " + endTS + ") OR (b.publishDate >= "
@@ -333,7 +332,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	 *            the author's email address
 	 * @return The list of blog entries
 	 */
-	public List<BlogEntry> getBlogsForAuthor(String emailAddress) {
+	public List<EntryImpl> getBlogsForAuthor(String emailAddress) {
 
 		String sql = "SELECT * FROM BlogEntry b WHERE b.AUTHOR_EMAIL='"
 				+ emailAddress + "'";
@@ -387,15 +386,15 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	/**
 	 * Update the blog entry record
 	 * 
-	 * @param b
-	 *            The blog entry record to replace the existing record
+	 * 
 	 */
-	public void updateBlogPost(BlogEntry b) {
+	public void updateBlogEntry(long id, String email, String title, String blogText, List<String> tags, Date updatedDate) {
 		
-		if (b.getId() == -1)
+		if (id == -1)
 			throw new IllegalArgumentException(
 					"Not a BlogEntry returned by this interface");
-		String sql_se = "SELECT * FROM BLOGENTRY bp WHERE bp.id = " + b.getId();
+		EntryImpl b = getBlogEntryById(id);
+		String sql_se = "SELECT * FROM BLOGENTRY bp WHERE bp.id = " + id;
 		String email_old = null;
 		// let's find out the email address for the blog post to see whether the
 		// table Author_BlogEntry needs to be updated
@@ -414,13 +413,13 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 			sqle.printStackTrace();
 		}
 		String sql = "UPDATE BLOGENTRY bp SET bp.blogText = ?, bp.publishDate = ?, bp.title = ?, bp.updatedDate = ?, bp.AUTHOR_EMAIL = ? where bp.id = "
-				+ b.getId();
+				+ id;
 		int updatedRows = 0;
-		String email = b.getAuthor().getEmail();
+		
 		try {
 			Connection connection = dataSource.getConnection();
 			PreparedStatement ppsm = connection.prepareStatement(sql);
-			ppsm.setString(1, b.getBlogText());
+			ppsm.setString(1, blogText);
 			if (b.getPublishDate() != null)
 				ppsm
 						.setDate(2, new java.sql.Date(b.getPublishDate()
@@ -517,14 +516,14 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	 * @param blogEntry
 	 *            the blog entry record to be deleted
 	 */
-	public void removeBlogEntry(BlogEntry blogEntry) {
-		if (blogEntry.getId() == -1)
+	public void removeBlogEntry(long id) {
+		if (id == -1)
 			throw new IllegalArgumentException(
 					"Not a BlogEntry returned by this interface");
 
 		try {
 			String sql = "DELETE FROM BLOGENTRY bp WHERE bp.id = "
-					+ blogEntry.getId();
+					+ id;
 			Connection connection = dataSource.getConnection();
 			PreparedStatement ppsm = connection.prepareStatement(sql);
 			ppsm.executeUpdate();
@@ -532,7 +531,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 			// We also need to delete the records from Author_BlogEntry, as this
 			// table is a kind of link between author and blogentry record
 			sql = "DELETE FROM Author_BlogEntry ab WHERE ab.POSTS_ID = "
-					+ blogEntry.getId();
+					+ id;
 			ppsm = connection.prepareStatement(sql);
 			ppsm.executeUpdate();
 			ppsm.close();
@@ -550,9 +549,9 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	 * @param postId
 	 *            The blogEntry record id
 	 */
-	public BlogEntry getBlogEntryById(long postId) {
+	public EntryImpl getBlogEntryById(long postId) {
 		String sql = "SELECT * FROM BlogEntry b WHERE b.id = " + postId;
-		List<BlogEntry> blogs = findBlogs(sql);
+		List<EntryImpl> blogs = findBlogs(sql);
 		if (blogs.size() == 0)
 			return null;
 		if (blogs.size() > 1)
@@ -567,8 +566,8 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	 *            The SQL query
 	 * @return A list of author records
 	 */
-	private List<Author> findAuthors(String sql) {
-		List<Author> authorList = new ArrayList<Author>();
+	private List<AuthorImpl> findAuthors(String sql) {
+		List<AuthorImpl> authorList = new ArrayList<AuthorImpl>();
 
 		try {
 			Connection connection = dataSource.getConnection();
@@ -577,7 +576,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 			ResultSet ars = ppsm.executeQuery();
 
 			while (ars.next()) {
-				Author ar = new AuthorImpl();
+				AuthorImpl ar = new AuthorImpl();
 				ar.setBio(ars.getString("bio"));
 				ar.setDisplayName(ars.getString("displayName"));
 				ar.setDob(ars.getDate("dob"));
@@ -591,9 +590,9 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 				PreparedStatement ppsm2 = connection.prepareStatement(sql_be);
 				ResultSet rs = ppsm2.executeQuery();
 
-				List<BlogEntry> blogs = new ArrayList<BlogEntry>();
+				List<EntryImpl> blogs = new ArrayList<EntryImpl>();
 				while (rs.next()) {
-					BlogEntry blog = new BlogEntryImpl();
+					EntryImpl blog = new EntryImpl();
 					blog.setAuthor(ar);
 					blog.setId(rs.getLong("id"));
 					blog.setBlogText(rs.getString("blogText"));
@@ -602,7 +601,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 					blog.setUpdatedDate(rs.getDate("updatedDate"));
 					blogs.add(blog);
 				}
-				ar.setPosts(blogs);
+				ar.setEntries(blogs);
 				authorList.add(ar);
 				ppsm2.close();
 			}
@@ -621,8 +620,8 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	 *            The sql query to be executed
 	 * @return a list of blogEntry records
 	 */
-	private List<BlogEntry> findBlogs(String sql) {
-		List<BlogEntry> blogEntryList = new ArrayList<BlogEntry>();
+	private List<EntryImpl> findBlogs(String sql) {
+		List<EntryImpl> blogEntryList = new ArrayList<EntryImpl>();
 
 		try {
 			Connection connection = dataSource.getConnection();
@@ -630,7 +629,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 			ResultSet blogrs = ppsm.executeQuery();
 
 			while (blogrs.next()) {
-				BlogEntry be = new BlogEntryImpl();
+				EntryImpl be = new EntryImpl();
 				be.setId(blogrs.getLong("id"));
 				be.setBlogText(blogrs.getString("blogText"));
 				be.setPublishDate(blogrs.getDate("publishDate"));
@@ -640,7 +639,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 				String author_email = blogrs.getString("AUTHOR_EMAIL");
 				String author_sql = "SELECT * FROM Author a WHERE a.email ='"
 						+ author_email + "'";
-				List<Author> authors = findAuthors(author_sql);
+				List<AuthorImpl> authors = findAuthors(author_sql);
 				// there should be just one entry, as email is the primary key
 				// for the Author table
 				if (authors.size() != 1)
