@@ -56,23 +56,23 @@ public class ViewAuthor extends HttpServlet
       
       HTMLOutput.writeHTMLHeaderPartTwo(out);
 
-      out.println("<h2 class=\"header\">Name</h2>");
+      out.println("<h3>Name</h3>");
       out.print("<div class=\"text\">");
       out.print(author.getFullName());
       out.println("</div>");
-      out.println("<h2 class=\"header\">Nick Name</h2>");
+      out.println("<h3>Nick Name</h3>");
       out.print("<div class=\"text\">");
       out.print(author.getName());
       out.println("</div>");
-      out.println("<h2 class=\"header\">Email</h2>");
+      out.println("<h3>Email</h3>");
       out.print("<div class=\"text\">");
       out.print(author.getEmailAddress());
       out.println("</div>");
-      out.println("<h2 class=\"header\">DOB</h2>");
+      out.println("<h3>DOB</h3>");
       out.print("<div class=\"text\">");
       out.print(author.getDateOfBirth());
       out.println("</div>");
-      out.println("<h2 class=\"header\">Bio</h2>");
+      out.println("<h3>Bio</h3>");
       out.print("<div class=\"text\">");
       out.print(author.getBio());
       out.println("</div>");
