@@ -20,9 +20,12 @@ package org.apache.aries.samples.blog;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.aries.samples.blog.api.BlogAuthor;
+import org.apache.aries.samples.blog.api.BlogEntry;
 import org.apache.aries.samples.blog.persistence.api.Author;
+import org.apache.aries.samples.blog.persistence.api.Entry;
 
 
 
@@ -30,12 +33,10 @@ public class BlogAuthorImpl implements BlogAuthor
 {
   private static Calendar cal = Calendar.getInstance();
   private Author author;
-  private BloggingServiceImpl bloggingService;
   
-  public BlogAuthorImpl(Author a, BloggingServiceImpl bs)
+  public BlogAuthorImpl(Author a)
   {
     author = a;
-    bloggingService = bs;
   }
 
   public String getBio()
@@ -75,4 +76,13 @@ public class BlogAuthorImpl implements BlogAuthor
     
     return year + "-" + month + "-" + date;
   }
+  
+	public List<? extends BlogEntry> getEntries() {
+		return adapt(author.getEntries());
+	}
+	
+	private List<? extends BlogEntry> adapt (List<? extends Entry> list) {
+		List<BlogEntryImpl> bei = null;;
+		return bei;
+	}
 }

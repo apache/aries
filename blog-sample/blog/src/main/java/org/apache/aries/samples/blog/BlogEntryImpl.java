@@ -20,31 +20,25 @@ package org.apache.aries.samples.blog;
 
 import java.util.Date;
 
-import org.apache.aries.samples.blog.api.BlogPost;
-import org.apache.aries.samples.blog.api.BlogPostManager;
-import org.apache.aries.samples.blog.persistence.api.BlogEntry;
+import org.apache.aries.samples.blog.api.BlogAuthor;
+import org.apache.aries.samples.blog.api.BlogEntry;
+import org.apache.aries.samples.blog.persistence.api.Entry;
 
 
 /** Implementation of a BlogPast */
-public class BlogPostImpl implements BlogPost
+public class BlogEntryImpl implements BlogEntry
 {
-  public BlogEntry theEntry;
-  
-  private BlogPostManager postManager;
+  public Entry theEntry;
 
-  public BlogPostImpl(BlogEntry blogEntry, BlogPostManager pManager)
+  public BlogEntryImpl(Entry blogEntry)
   {
     theEntry = blogEntry;
-    postManager = pManager;
   }
 
-  public String getAuthor()
+  public BlogAuthor getAuthor()
   {
-    String result = theEntry.getAuthor().getDisplayName();
+    return new BlogAuthorImpl(theEntry.getAuthor());
     
-    if (result == null || result.length() == 0) result = theEntry.getAuthor().getEmail();
-    
-    return result;
   }
 
   public String getBody()
@@ -55,11 +49,6 @@ public class BlogPostImpl implements BlogPost
   public String getTitle()
   {
     return theEntry.getTitle();
-  }
-
-  protected BlogEntry getBlogEntry()
-  {
-    return theEntry;
   }
 
   public String getAuthorEmail()

@@ -19,21 +19,31 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-  <bean id="authorManager" class="org.apache.aries.samples.blog.AuthorManagerImpl" activation="lazy">
+  <bean id="blogAuthorManager" class="org.apache.aries.samples.blog.BlogAuthorManagerImpl">
     <property name="persistenceService" ref="persistenceManager"/>
   </bean>
-
-  <bean id="blogPostManager" class="org.apache.aries.samples.blog.BlogPostManagerImpl" activation="lazy">
+  
+  <bean id="blogEntryManager" class="org.apache.aries.samples.blog.BlogEntryManagerImpl">
     <property name="persistenceService" ref="persistenceManager"/>
   </bean>
-
-  <bean id="bloggingServiceComponent" class="org.apache.aries.samples.blog.BloggingServiceImpl" activation="lazy">
-    <property name="blogPostManager" ref="blogPostManager"/>
-    <property name="authorManager" ref="authorManager"/>
+  
+  <bean id="blogCommentManager" class="org.apache.aries.samples.blog.BlogCommentManagerImpl">
+    <property name="commentService" ref="commentPersistenceService"/>
   </bean>
-
-  <service id="bloggingService" ref="bloggingServiceComponent" interface="org.apache.aries.samples.blog.api.BloggingService"/>
+ 
+  
+  <bean id="bloggingServiceComponent" class="org.apache.aries.samples.blog.BloggingServiceImpl">
+    <property name="blogEntryManager" ref="blogEntryManager"/>
+    <property name="blogAuthorManager" ref="blogAuthorManager"/>
+  <property name="blogCommentManager" ref="blogCommentManager"/>
+  </bean>
+  
+  <service ref="bloggingServiceComponent" interface="org.apache.aries.samples.blog.api.BloggingService"/>
 
   <reference id="persistenceManager" interface="org.apache.aries.samples.blog.persistence.api.BlogPersistenceService"/>
 
+  <reference id="commentPersistenceService" availability="optional" interface="org.apache.aries.samples.blog.comment.persistence.api.BlogCommentService">
+    <reference-listener ref="blogCommentManager" bind-method="blogServiceBound" unbind-method="blogServiceUnbound"/>
+  </reference>
+ 
 </blueprint>
