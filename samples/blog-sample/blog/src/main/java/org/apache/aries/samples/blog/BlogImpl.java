@@ -18,53 +18,15 @@
  */
 package org.apache.aries.samples.blog;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.aries.samples.blog.api.*;
-import org.apache.aries.samples.blog.persistence.api.Author;
-import org.apache.aries.samples.blog.persistence.api.BlogEntry;
+import org.apache.aries.samples.blog.api.Blog;
 
 
 /** Implementation of Blog */
 public class BlogImpl implements Blog
 {
-  private BlogPostManager postManager;
-  private AuthorManager authorManager;
   
-  public BlogImpl(AuthorManager aManager, BlogPostManager bManager)
-  {
-    postManager = bManager;
-    authorManager = aManager;
-  }
-
   public String getBlogTitle()
   {
     return "Sample Blog";
-  }
-
-  public int getNoOfPosts()
-  {
-    return postManager.getNoOfPosts();
-  }
-  
-  public List<BlogPost> getPosts(int firstPostIndex, int noOfPosts)
-  {
-    List<BlogEntry> entries = postManager.getBlogEntries(firstPostIndex, noOfPosts);
-    List<BlogPost> posts = new ArrayList<BlogPost>();
-    
-    for (BlogEntry entry : entries) {
-      posts.add(new BlogPostImpl(entry, postManager));
-    }
-    
-    return posts;
-  }
-
-  public void createPost(String email, String title, String text, String tags)
-  {
-    Author author = authorManager.getAuthor(email);
-    
-    postManager.createBlogPost(author, title, text, Arrays.asList(tags.split(",")));
   }
 }
