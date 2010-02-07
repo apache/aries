@@ -20,7 +20,7 @@ package org.apache.aries.samples.blog.api;
 
 import java.util.Date;
 
-public interface BlogPost
+public interface BlogEntry
 {
   /** 
    * Get the title of the blog posting.
@@ -38,7 +38,7 @@ public interface BlogPost
    * Get the author of the blog entry.
    * @return the author's display name or email address if display name is null
    */
-  String getAuthor();
+  BlogAuthor getAuthor();
 
   /**
    * Get the email address of the author of the blog posting.

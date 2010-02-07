@@ -23,55 +23,30 @@ import java.util.List;
 
 
 
-public interface BlogEntry {
+public interface Entry {
 
 	/** Get the author of this blog post */
 	public Author getAuthor();
 
-	/** Set the author of this blog post */
-	public void setAuthor(Author author);
-
 	/** Get the publish date of this blog post */
 	public Date getPublishDate();
-
-	/** Set the publish date of this blog post */
-	public void setPublishDate(Date publishDate);
-
+	
 	/** Get the title of this blog post */
 	public String getTitle();
-
-	/** Set the title of this blog post */
-	public void setTitle(String title);
-
+	
 	/** Get the tags for this blog post */
 	public List<String> getTags();
-
-	/** Set the tags for this blog post */
-	public void setTags(List<String> tags);
-
+	
 	/** Get the text for this blog post */
 	public String getBlogText();
-
-	/** Set the text for this blog post */
-	public void setBlogText(String blogText);
-
+	
 	/** get the Blog post id */
-	public Long getId();
-
-	/** Set the id */
-	public void setId(Long id);
+	public long getId();
 
 	/**
 	 * @return The date of the last update to this blog or null if it has never
 	 *         been modified
 	 */
 	public Date getUpdatedDate();
-
-	/**
-	 * Set the date that the blog post was last updated
-	 * 
-	 * @param updatedDate
-	 */
-	public void setUpdatedDate(Date updatedDate);
 
 }

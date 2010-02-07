@@ -21,41 +21,40 @@ package org.apache.aries.samples.blog.api;
 import java.text.ParseException;
 import java.util.List;
 
-import org.apache.aries.samples.blog.persistence.api.Author;
-import org.apache.aries.samples.blog.persistence.api.BlogEntry;
+import org.apache.aries.samples.blog.persistence.api.Entry;
 
 
 
-public interface BlogPostManager
+public interface BlogEntryManager
 {
   /**
    * Create a blog posting.
-   * @param a the author of the entry
+   * @param email the author's email
    * @param title the title of the entry
    * @param blogText the text of the entry
    * @param tags tags associated with the blog entry
    */
-  public void createBlogPost(Author a, String title, String blogText, List<String> tags);
+  public void createBlogPost(String email, String title, String blogText, List<String> tags);
   
   /**
    * Find a specific blog entry by title.
    * @param title the title to search for
    * @return the blog entry
    */
-  public BlogEntry findBlogEntryByTitle(String title);
+  public Entry findBlogEntryByTitle(String title);
   
   /**
    * Retrieve all blog entries.
    * @return a List<BlogEntry> of all blog entries
    */
-  public List<BlogEntry> getAllBlogEntries();
+  public List<? extends BlogEntry> getAllBlogEntries();
   
   /**
    * Retrieve all blog entries for a specific author.
    * @param emailAddress the email address of the author in question
    * @return a List<BlogEntry>
    */
-  public List<BlogEntry> getBlogsForAuthor(String emailAddress);
+  public List<? extends BlogEntry> getBlogsForAuthor(String emailAddress);
   
   /**
    * Retrieve all blog entries created between a specified date range.
@@ -64,7 +63,7 @@ public interface BlogPostManager
    * @return a List<BlogEntry>
    * @throws ParseException
    */
-  public List<BlogEntry> getBlogEntriesModifiedBetween(String startDate, String endDate) throws ParseException;
+  public List<?extends BlogEntry> getBlogEntriesModifiedBetween(String startDate, String endDate) throws ParseException;
 
   /**
    * Get N posts from the database starting at post number X
@@ -73,7 +72,7 @@ public interface BlogPostManager
    * @param noOfPosts the number of posts to retrieve in total
    * @return a List<BlogEntry> of N posts
    */
-  public List<BlogEntry> getBlogEntries(int firstPostIndex, int noOfPosts);
+  public List<? extends BlogEntry> getBlogEntries(int firstPostIndex, int noOfPosts);
   
   /**
    * Get the total number of blog entries in the database
@@ -88,7 +87,7 @@ public interface BlogPostManager
    * @param publishDate the publication date of the blog entry
    * @throws ParseException
    */
-  public void removeBlogEntry(Author a, String title, String publishDate) throws ParseException;
+  public void removeBlogEntry(BlogAuthor author, String title, String publishDate) throws ParseException;
   
   /**
    * Update a blog entry.
@@ -100,7 +99,7 @@ public interface BlogPostManager
    * @param tags any assocaited tags for the blog entry
    * @throws ParseException
    */
-  public void updateBlogEntry(BlogEntry originalEntry, Author a, String title, String publishDate, String blogText, List<String> tags) throws ParseException;
+  public void updateBlogEntry(BlogEntry originalEntry, BlogAuthor a, String title, String publishDate, String blogText, List<String> tags) throws ParseException;
 
   
   /**
@@ -108,5 +107,5 @@ public interface BlogPostManager
    * @param id the id of the blog posting
    * @return the blog post
    */
-  public BlogPost getBlogPost(long id);
+  public BlogEntry getBlogPost(long id);
 }

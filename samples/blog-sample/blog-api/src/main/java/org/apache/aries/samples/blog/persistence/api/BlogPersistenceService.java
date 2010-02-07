@@ -36,7 +36,7 @@ public interface BlogPersistenceService
    * Get all the blog entries in the data store
    * @return a list of BlogEntry objects
    */
-  public List<BlogEntry> getAllBlogEntries();
+  public List<? extends Entry> getAllBlogEntries();
 
   /**
    * Get the number of blog entries in the data store
@@ -49,7 +49,7 @@ public interface BlogPersistenceService
    * @param firstPostIndex - The index of the first post to be retrieved
    * @param no - The number of posts to be retrieved starting from firstPostIndex
    */
-  public List<BlogEntry> getBlogEntries(int firstPostIndex, int no);
+  public List<? extends Entry> getBlogEntries(int firstPostIndex, int no);
 
   /**
    * Get all the blog entries made by a particular
@@ -58,7 +58,7 @@ public interface BlogPersistenceService
    * @param emailAddress the author's email address
    * @return a list of BlogEntry objects
    */
-  public List<BlogEntry> getBlogsForAuthor(String emailAddress);
+  public List<? extends Entry> getBlogsForAuthor(String emailAddress);
 
   /**
    * Get a BlogEntry that has a given title
@@ -66,7 +66,7 @@ public interface BlogPersistenceService
    * @return A BlogEntry with a specific title (or null if no entry exists in the
    *         data store)
    */
-  public BlogEntry findBlogEntryByTitle(String title);
+  public Entry findBlogEntryByTitle(String title);
 
   /**
    * Get BlogEntries created or modified between two specified dates
@@ -74,7 +74,7 @@ public interface BlogPersistenceService
    * @param end    The Date defining the end of the time period
    * @return  A list of BlogEntry objects
    */
-  public List<BlogEntry> getBlogEntriesModifiedBetween(Date start, Date end);
+  public List<? extends Entry> getBlogEntriesModifiedBetween(Date start, Date end);
 
   /**
    * Obtain a given Blog post using its unique id.
@@ -82,7 +82,7 @@ public interface BlogPersistenceService
    * @param postId the posts unique id.
    * @return the Blog post.
    */
-  public BlogEntry getBlogEntryById(long postId);
+  public Entry getBlogEntryById(long postId);
 
   /**
    * Get the details for an author
@@ -95,7 +95,7 @@ public interface BlogPersistenceService
    * Get all authors in the database
    * @return a List of Authors
    */
-  public List<Author> getAllAuthors();
+  public List<? extends Author> getAllAuthors();
 
   /**
    * Create an author in the database
@@ -125,7 +125,7 @@ public interface BlogPersistenceService
    * @param tags
    * 			??
    */
-  public void createBlogPost(Author a, String title, String blogText, List<String> tags);
+  public void createBlogPost(String email, String title, String blogText, List<String> tags);
 
   /**
    * Update an author in the database
@@ -136,10 +136,13 @@ public interface BlogPersistenceService
   /**
    * Update an post in the database
    * 
-   * @param b  The updated BlogEntry object. This object must be a modified BlogEntry
-   *           previously returned by this service.
+   * @param email The author's email
+   * @param title The title of the post
+   * @param blogText The text of the blog
+   * @param tags The list of tags
+   * @param updatedDate The date the update was made
    */
-  public void updateBlogPost(BlogEntry b);
+  public void updateBlogEntry(long id, String email, String title, String blogText, List<String> tags, Date updatedDate);
 
   /**
    * Remove the author with the specified email address
@@ -152,8 +155,8 @@ public interface BlogPersistenceService
    * Remove the specified BlogEntry, note that this must be a BlogEntry returned by
    * this service.
    * 
-   * @param blogEntry the blog entry to remove
+   * @param id the unique id of the blog entry to remove
    */
-  public void removeBlogEntry(BlogEntry blogEntry);
+  public void removeBlogEntry(long id);
 
 }
