@@ -19,72 +19,109 @@
 package org.apache.aries.samples.blog;
 
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
 
-import org.apache.aries.samples.blog.api.AuthorManager;
-import org.apache.aries.samples.blog.api.Blog;
 import org.apache.aries.samples.blog.api.BlogAuthor;
-import org.apache.aries.samples.blog.api.BlogPost;
-import org.apache.aries.samples.blog.api.BlogPostManager;
+import org.apache.aries.samples.blog.api.BlogAuthorManager;
+import org.apache.aries.samples.blog.api.BlogComment;
+import org.apache.aries.samples.blog.api.BlogCommentManager;
+import org.apache.aries.samples.blog.api.BlogEntry;
+import org.apache.aries.samples.blog.api.BlogEntryManager;
 import org.apache.aries.samples.blog.api.BloggingService;
-import org.apache.aries.samples.blog.persistence.api.Author;
-
-
 
 /** Implementation of the BloggingService */
-public class BloggingServiceImpl implements BloggingService
-{
-  private BlogPostManager blogPostManager;
-  private AuthorManager authorManager;
-  
-  // Injected via blueprint
-  public void setBlogPostManager(BlogPostManager blogPostManager)
-  {
-    this.blogPostManager = blogPostManager;
-  }
-  
-  // Injected via blueprint
-  public void setAuthorManager(AuthorManager authorManager)
-  {
-    this.authorManager = authorManager;
-  }
+public class BloggingServiceImpl implements BloggingService {
+	private BlogEntryManager blogEntryManager;
+	private BlogAuthorManager blogAuthorManager;
+	private BlogCommentManager blogCommentManager;
 
-  public Blog getBlog()
-  {
-    return new BlogImpl(authorManager, blogPostManager);
-  }
+	// Injected via blueprint
+	public void setBlogEntryManager(BlogEntryManager blogPostManager) {
+		this.blogEntryManager = blogPostManager;
+	}
 
-  public BlogAuthor getBlogAuthor(String email)
-  {
-    Author a = authorManager.getAuthor(email);
-    if (a != null)
-      return new BlogAuthorImpl(a, this);
-    else
-      return null;
-  }
-
-  public void createAuthor(String email, String nickName, String name, String bio, String dob)
-  {
-    try {
-      authorManager.createAuthor(email, dob, name, nickName, bio);
-    } catch (ParseException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
-
-  public void updateAuthor(String email, String nickName, String name, String bio, String dob)
-  {
-    try {
-      authorManager.updateAuthor(email, dob, name, nickName, bio);
-    } catch (ParseException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
+	// Injected via blueprint
+	public void setBlogAuthorManager(BlogAuthorManager authorManager) {
+		this.blogAuthorManager = authorManager;
+	}
+	
+	// Injected via blueprint
+	public void setBlogCommentManager(BlogCommentManager commentManager) {
+		this.blogCommentManager = commentManager;
+	}
 
 
-  public BlogPost getPost(long id)
-  {
-    return blogPostManager.getBlogPost(id);
-  }
+	public String getBlogTitle() {
+		return new BlogImpl().getBlogTitle();
+	}
+
+	public BlogAuthor getBlogAuthor(String email) {
+		return blogAuthorManager.getAuthor(email);
+	}
+
+	public void createBlogAuthor(String email, String nickName, String name,
+			String bio, String dob) {
+		try {
+			blogAuthorManager.createAuthor(email, dob, name, nickName, bio);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void updateBlogAuthor(String email, String nickName, String name,
+			String bio, String dob) {
+		try {
+			blogAuthorManager.updateAuthor(email, dob, name, nickName, bio);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public BlogEntry getPost(long id) {
+		return blogEntryManager.getBlogPost(id);
+	}
+
+	public List<? extends BlogEntry> getBlogEntries(int firstPostIndex,
+			int noOfPosts) {
+		return blogEntryManager.getBlogEntries(firstPostIndex, noOfPosts);
+
+	}
+
+	public List<? extends BlogEntry> getAllBlogEntries() {
+		return blogEntryManager.getAllBlogEntries();
+	}
+
+	public int getNoOfEntries() {
+		return blogEntryManager.getNoOfPosts();
+	}
+
+	public void createBlogEntry(String email, String title, String blogText,
+			String tags) {
+		blogEntryManager.createBlogPost(email, title, blogText, Arrays
+				.asList(tags.split(",")));
+	}
+
+	public void createBlogComment(String comment, String authorEmail, long id) {
+		blogCommentManager.createComment(comment, authorEmail, id);
+	}
+
+	public void deleteBlogComment(BlogComment comment) {
+		blogCommentManager.deleteComment(comment.getId());
+	}
+
+	public List<? extends BlogComment> getCommentsForEntry(BlogEntry entry) {
+		return blogCommentManager.getCommentsForPost(entry.getId());
+	}
+
+	public BlogEntry getBlogEntry(long id) {
+		return blogEntryManager.getBlogPost(id);
+	}
+	
+	public boolean isCommentingAvailable() {
+		return blogCommentManager.isCommentingAvailable();
+
+	}
 }

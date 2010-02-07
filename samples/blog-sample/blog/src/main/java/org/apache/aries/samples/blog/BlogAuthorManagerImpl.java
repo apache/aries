@@ -20,7 +20,9 @@ package org.apache.aries.samples.blog;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.aries.samples.blog.api.*;
@@ -29,7 +31,7 @@ import org.apache.aries.samples.blog.persistence.api.BlogPersistenceService;
 
 
 
-public class AuthorManagerImpl implements AuthorManager
+public class BlogAuthorManagerImpl implements BlogAuthorManager
 {
   private BlogPersistenceService persistenceService;
 
@@ -50,15 +52,20 @@ public class AuthorManagerImpl implements AuthorManager
     persistenceService.createAuthor(email, dateOfBirth, name, displayName, bio);
   }
   
-  public List<Author> getAllAuthors()
+  public List<? extends BlogAuthor> getAllAuthors()
   {
-    return persistenceService.getAllAuthors();
+	  List<? extends Author> authors = persistenceService.getAllAuthors();
+		return adaptAuthor(authors);
   }
   
-  public Author getAuthor(String emailAddress)
+  public BlogAuthor getAuthor(String emailAddress)
   {
     if(emailAddress == null) throw new IllegalArgumentException("Email must not be null");
-    return persistenceService.getAuthor(emailAddress);
+    Author a = persistenceService.getAuthor(emailAddress);
+    if (a != null)
+		return new BlogAuthorImpl(a);
+	else
+		return null;
   }
   
   public void removeAuthor(String emailAddress)
@@ -68,16 +75,24 @@ public class AuthorManagerImpl implements AuthorManager
   }
   
   public void updateAuthor(String email, String dob, String name, String displayName, String bio) throws ParseException
-  {    
+  { 
+	  if (email == null)
+			throw new IllegalArgumentException("Email must not be null");
     Date dateOfBirth = (dob == null) ? null : new SimpleDateFormat("yyyy-MM-dd").parse(dob);
-    updateAuthor(email, dateOfBirth, name, displayName, bio);
+    persistenceService.updateAuthor(email, dateOfBirth, name, displayName, bio);
   }
   
-  public void updateAuthor(String email, Date dob, String name, String displayName, String bio) throws ParseException
-  {
-    if(email == null) throw new IllegalArgumentException("Email must not be null");   
-    
-    persistenceService.updateAuthor(email, dob, name, displayName, bio);
-  }
+	private List<? extends BlogAuthor> adaptAuthor(
+			List<? extends Author> authors) {
+		List<BlogAuthorImpl> list = new ArrayList<BlogAuthorImpl>();
+
+		Iterator<? extends Author> a = authors.iterator();
+		while (a.hasNext()) {
+			list.add(new BlogAuthorImpl(a.next()));
+		}
+
+		return list;
+
+	}
   
 }
