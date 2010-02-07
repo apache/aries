@@ -27,37 +27,19 @@ public interface Author {
 	/** Get the author's email address */
 	public String getEmail();
 
-	/** Set the author's email address */
-	public void setEmail(String email);
-
 	/** Get the author's full name */
 	public String getName();
-
-	/** Set the author's full name */
-	public void setName(String name);
 
 	/** Get the author's displayed name */
 	public String getDisplayName();
 
-	/** Set the author's displayed name */
-	public void setDisplayName(String displayName);
-
 	/** Get the author's biographical information */
 	public String getBio();
-
-	/** Set the author's biographical information */
-	public void setBio(String bio);
 
 	/** Get the author's date of birth */
 	public Date getDob();
 
-	/** Set the author's date of birth */
-	public void setDob(Date dob);
-
 	/** Get the author's blog posts */
-	public List<BlogEntry> getPosts();
-
-	/** Set the author's blog posts */
-	public void setPosts(List<BlogEntry> posts);
+	public List<? extends Entry> getEntries();
 
 }

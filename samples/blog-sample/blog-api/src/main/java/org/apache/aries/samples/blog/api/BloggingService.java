@@ -18,13 +18,15 @@
  */
 package org.apache.aries.samples.blog.api;
 
+import java.util.List;
+
 public interface BloggingService
 {
   /**
    *  Get the blog
-   *  @return the blog with all entries
+   *  @return the title of the Blog
    */
-  Blog getBlog();
+  String getBlogTitle();
 
   /** 
    * Get the author associated with a given email address.
@@ -40,7 +42,8 @@ public interface BloggingService
    * @param id the blog entry id
    * @return the blog post
    */
-  BlogPost getPost(long id);
+  BlogEntry getBlogEntry(long id);
+
 
   /**
    * Update the attributes of an author.
@@ -51,7 +54,27 @@ public interface BloggingService
    * @param bio the biography for this author
    * @param dob the date of birth for this author
    */
-  void updateAuthor(String email, String nickName, String name, String bio, String dob);
+  void updateBlogAuthor(String email, String nickName, String name, String bio, String dob);
+  
+  /**
+   * Get the number of entries(posts) in the blog
+   * @return the number of posts.
+   */
+  public int getNoOfEntries(); 
+  
+  /**
+   * Get the a number of entries starting at the teh first index
+   * @param firstPostIndex
+   * @param noOfPosts
+   * @return a list of BlogEntries
+   */
+  public List<? extends BlogEntry> getBlogEntries(int firstPostIndex, int noOfPosts);
+  
+  /**
+   * Get all the blog entries
+   * @return a lost of BlogEntrys
+   */
+  public List<? extends BlogEntry> getAllBlogEntries();
 
   /**
    * Create a new author.
@@ -62,6 +85,40 @@ public interface BloggingService
    * @param bio the author's biography
    * @param dob the author's date of birth
    */
-  void createAuthor(String email, String nickName, String name, String bio, String dob);
+  void createBlogAuthor(String email, String nickName, String name, String bio, String dob);
+  
+  /**
+   * 
+   * @param email the email address of the author
+   * @param title the title of the post
+   * @param blogText the test of the post
+   * @param tags list of tags associated with the post
+   */
+  void createBlogEntry(String email, String title, String blogText, String tags); 
+  
+  /**
+   * Retrieve the state of the blog commenting service
+   * 
+   * @return true if available else false
+   */
+  boolean isCommentingAvailable();
+  
+  /**
+   * Create a comment
+   * @param text
+   * @param email
+   * @param entryId
+   */
+  void createBlogComment(String text, String email, long entryId);
+  
+  /**
+   * Get the comments associated with an entry
+   * @param entry
+   * @return a list of comments for an entry (post)
+   */
+  List <? extends BlogComment> getCommentsForEntry(BlogEntry entry);
+  
+  
+  
   
 }
