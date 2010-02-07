@@ -27,9 +27,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.aries.samples.blog.api.BloggingService;
 import org.apache.aries.samples.blog.web.util.FormServlet;
-import org.apache.aries.samples.blog.web.util.HTMLOutput;
+import org.apache.aries.samples.blog.web.util.JNDIHelper;
 
-public class CreateBlogPost extends HttpServlet
+public class CreateBlogEntry extends HttpServlet
 {
   private static final long serialVersionUID = -6484228320837122235L;
 
@@ -49,10 +49,10 @@ public class CreateBlogPost extends HttpServlet
     String text = req.getParameter("text");
     String tags = req.getParameter("tags");
     
-    BloggingService service = HTMLOutput.getBloggingService();
+    BloggingService service = JNDIHelper.getBloggingService();
     
     if (service.getBlogAuthor(email) != null) {
-      service.getBlog().createPost(email, title, text, tags);
+      service.createBlogEntry(email, title, text, tags);
       resp.sendRedirect("ViewBlog");
     } else {
       storeParam(req, "email", email);
@@ -65,12 +65,12 @@ public class CreateBlogPost extends HttpServlet
       else
         FormServlet.addError(req, "The author's email is not valid.");
       
-      resp.sendRedirect("CreateBlogPostForm");
+      resp.sendRedirect("CreateBlogEntryForm");
     }
   }
   
   private void storeParam(HttpServletRequest req, String param, String value) 
   {
-    FormServlet.storeParam(req, CreateBlogPostForm.ID, param, value);
+    FormServlet.storeParam(req, CreateBlogEntryForm.ID, param, value);
   }
 }
