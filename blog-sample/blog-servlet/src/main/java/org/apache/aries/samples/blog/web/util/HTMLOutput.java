@@ -27,7 +27,6 @@ import java.util.Collection;
  * service.
  */
 public class HTMLOutput {
-	private static final String cssBaseURL = "incubator.apache.org/aries/";
 
 	public static final void writeHTMLHeaderPartOne(PrintWriter out,
 			String pageTitle) {
@@ -35,9 +34,7 @@ public class HTMLOutput {
 		out.println(" <head>");
 
 		out
-				.println("  <link type=\"text/css\" rel=\"stylesheet\" href=\"http://" + cssBaseURL + "resources/site.css\"></link>");
-		out
-				.println("  <script src=\"http://" + cssBaseURL + "resources/space.js\"></script>");
+				.println("  <link type=\"text/css\" rel=\"stylesheet\" href=\"style/blog.css\"></link>");
 		out.println("  <meta name=\"keywords\" content=\"...\">");
 		out.println("  <meta name=\"description\" content=\"...\">");
 
