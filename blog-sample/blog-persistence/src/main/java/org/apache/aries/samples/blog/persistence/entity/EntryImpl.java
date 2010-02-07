@@ -21,8 +21,7 @@ package org.apache.aries.samples.blog.persistence.entity;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.aries.samples.blog.persistence.api.Author;
-import org.apache.aries.samples.blog.persistence.api.BlogEntry;
+import org.apache.aries.samples.blog.persistence.api.Entry;
 
 
 
@@ -30,7 +29,7 @@ import org.apache.aries.samples.blog.persistence.api.BlogEntry;
  * This class represents a blog entry
  */
 
-public class BlogEntryImpl implements BlogEntry
+public class EntryImpl implements Entry
 {
   /** An auto-generated primary key */
 
@@ -38,7 +37,7 @@ public class BlogEntryImpl implements BlogEntry
 
   /** The author of the blog post */
 
-  private Author author;
+  private AuthorImpl author;
 
   /** The date the post was published */
   private Date publishDate;
@@ -53,13 +52,13 @@ public class BlogEntryImpl implements BlogEntry
   private String blogText;
 
   /** Get the author of this blog post */
-  public Author getAuthor()
+  public AuthorImpl getAuthor()
   {
     return author;
   }
 
   /** Set the author of this blog post */
-  public void setAuthor(Author author)
+  public void setAuthor(AuthorImpl author)
   {
     this.author = author;
   }
@@ -114,7 +113,7 @@ public class BlogEntryImpl implements BlogEntry
   }
 
   /** get the Blog post id */
-  public Long getId()
+  public long getId()
   {
     return id;
   }

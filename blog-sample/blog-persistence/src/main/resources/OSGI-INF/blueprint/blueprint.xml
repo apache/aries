@@ -28,7 +28,7 @@
    <property name="dataSource" ref="datasource" />
   </bean>
 
-  <service id="persistence" ref="persistenceImpl" interface="org.apache.aries.samples.blog.persistence.api.BlogPersistenceService"/>
+  <service ref="persistenceImpl" interface="org.apache.aries.samples.blog.persistence.api.BlogPersistenceService"/>
  
  
 </blueprint>
