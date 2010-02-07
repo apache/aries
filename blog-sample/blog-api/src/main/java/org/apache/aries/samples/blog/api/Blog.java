@@ -18,7 +18,6 @@
  */
 package org.apache.aries.samples.blog.api;
 
-import java.util.List;
 
 public interface Blog
 {
@@ -27,29 +26,4 @@ public interface Blog
    * @return currently returns the fixed value of "Aries Sample Blog"
    */
   String getBlogTitle();
-
-  /**
-   * Get the total number of blog entries in the database.
-   * @return an int representing the number of entries
-   */
-  int getNoOfPosts();
-  
-  /**
-   * Get N posts from the database starting with post number X.
-   * @param firstPostIndex index of the first post to retrieve
-   * @param noOfPosts number of posts to retrieve
-   * @return a List<BlogPost> containing N posts
-   */
-  List<BlogPost> getPosts(int firstPostIndex, int noOfPosts);
-
-  /**
-   * Creates a new blog posting
-   * 
-   * @param email the author's email address
-   * @param title the title for the blog entry
-   * @param text the text of the entry
-   * @param tags keyword tags for the blog entry
-   */
-  void createPost(String email, String title, String text, String tags);
-
 }

@@ -18,6 +18,8 @@
  */
 package org.apache.aries.samples.blog.api;
 
+import java.util.List;
+
 
 public interface BlogAuthor
 {
@@ -45,4 +47,10 @@ public interface BlogAuthor
    *  @return the date of birth String (dd-mm-yyyy) 
    */
   String getDateOfBirth();
+  
+  /**
+   * 
+   * @return a list of Blog Entries
+   */
+  List <? extends BlogEntry> getEntries();
 }

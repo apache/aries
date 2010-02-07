@@ -19,14 +19,10 @@
 package org.apache.aries.samples.blog.api;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
-import org.apache.aries.samples.blog.persistence.api.Author;
 
-
-
-public interface AuthorManager
+public interface BlogAuthorManager
 {
   /**
    * Create an author.
@@ -43,14 +39,14 @@ public interface AuthorManager
    * Get all authors from the database.
    * @return a List<Author> of all authors in the database
    */
-  public List<Author> getAllAuthors();
+  public List<? extends BlogAuthor> getAllAuthors();
   
   /**
    * Get an individual author.
    * @param emailAddress - the email address of the author to retrieve
    * @return the author
    */
-  public Author getAuthor(String emailAddress);
+  public BlogAuthor getAuthor(String emailAddress);
   
   /**
    * Delete an author from the database.
@@ -69,14 +65,4 @@ public interface AuthorManager
    */
   public void updateAuthor(String email, String dob, String name, String displayName, String bio) throws ParseException;
   
-  /**
-   * Update a specific author.
-   * @param email the email address of the author being updated.
-   * @param dob the new date of birth (as a Date)
-   * @param name the new full name
-   * @param displayName the new display name
-   * @param bio the new biography
-   * @throws ParseException
-   */
-  public void updateAuthor(String email, Date dob, String name, String displayName, String bio) throws ParseException;
 }
