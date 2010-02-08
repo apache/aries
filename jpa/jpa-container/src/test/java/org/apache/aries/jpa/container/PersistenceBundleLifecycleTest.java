@@ -64,8 +64,6 @@ import org.osgi.framework.Version;
 
 public class PersistenceBundleLifecycleTest
 {
-  private static final String FRAGMENT_SYM_NAME = "scooby.doo.jpa.fragment";
-  
   private Bundle persistenceBundle;
   private BundleContext persistenceBundleContext;
   
@@ -166,6 +164,29 @@ public class PersistenceBundleLifecycleTest
     //Check we don't have an EMF
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
     
+    assertNull("We should not have an EntityManagerFactoryManager", getTrackedObject());
+  }
+  
+  @Test
+  public void testManager_WABandJPABundle() throws Exception 
+  {
+    preExistingBundleSetup();
+    setupPersistenceBundle("file23", "");
+    persistenceBundle.getHeaders().put("Web-ContextPath", "/test");
+
+    // make sure we don't succeed because of not having a provider
+    Hashtable<String,Object> hash1 = new Hashtable<String, Object>();
+    hash1.put("javax.persistence.provider", "use.this.Provider");
+    hash1.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE);
+    ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
+        pp, hash1 );
+    ServiceReference ppRef = reg.getReference();
+        
+    mgr.addingProvider(ppRef);
+
+    mgr.open();
+    
+    BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
     assertNull("We should not have an EntityManagerFactoryManager", getTrackedObject());
   }
 
