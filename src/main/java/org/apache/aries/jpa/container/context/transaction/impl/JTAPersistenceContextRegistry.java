@@ -20,8 +20,6 @@ package org.apache.aries.jpa.container.context.transaction.impl;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -35,9 +33,28 @@ import org.slf4j.LoggerFactory;
 /**
  * This class is used to manage the lifecycle of JTA peristence contexts
  */
-public class JTAPersistenceContextRegistry {
+public final class JTAPersistenceContextRegistry {
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container.context");
+  /** The unique key we use to find our Map */
+  private static final TSRKey EMF_MAP_KEY = new TSRKey();
+  
+  /** 
+   * A simple class to avoid key collisions in the TransactionSynchronizationRegistry. 
+   * As recommended by {@link TransactionSynchronizationRegistry#putResource(Object, Object)}
+   */
+  private final static class TSRKey {
+
+    @Override
+    public final boolean equals(Object o) {
+      return (this == o);
+    }
+
+    @Override
+    public final int hashCode() {
+      return 0xDEADBEEF;
+    }
+  }
   
   /** 
    * The transaction synchronization registry, used to determine the currently
@@ -45,14 +62,6 @@ public class JTAPersistenceContextRegistry {
    */
   private TransactionSynchronizationRegistry tranRegistry;
 
-  /**
-   * The registry of active persistence contexts. The outer map must be thread safe, as
-   * multiple threads can request persistence contexts. The inner Map does not need to
-   * be thread safe as only one thread can be in a transaction. As a result the inner
-   * Map will never be accessed concurrently.
-   */
-  private final ConcurrentMap<Object, Map<EntityManagerFactory, EntityManager>> persistenceContextRegistry = new ConcurrentHashMap<Object, Map<EntityManagerFactory,EntityManager>>();
-  
   /**
    * Get a PersistenceContext for the current transaction. The persistence context will 
    * automatically be closed when the transaction completes.
@@ -65,44 +74,52 @@ public class JTAPersistenceContextRegistry {
    *         need to be wrappered to obey the JPA spec by throwing the correct exceptions
    * @throws {@link TransactionRequiredException} if there is no active transaction.
    */
-  public EntityManager getCurrentPersistenceContext(EntityManagerFactory persistenceUnit, Map<?,?> properties) throws TransactionRequiredException
+  @SuppressWarnings("unchecked")
+  public final EntityManager getCurrentPersistenceContext(EntityManagerFactory persistenceUnit, Map<?,?> properties) throws TransactionRequiredException
   {
     //There will only ever be one thread associated with a transaction at a given time
     //As a result, it is only the outer map that needs to be thread safe.
     
-    Object transactionKey = tranRegistry.getTransactionKey();
-    
     //Throw the error on to the client
-    if(transactionKey == null) {
+    if(!!!isTransactionActive()) {
       throw new TransactionRequiredException("No transaction currently active");
     }
+    EntityManager toReturn = null;
     
     //Get hold of the Map. If there is no Map already registered then add one.
     //We don't need to worry about a race condition, as no other thread will
-    //share our transaction
-    Map<EntityManagerFactory, EntityManager> contextsForTransaction = persistenceContextRegistry.get(transactionKey);
+    //share our transaction and be able to access our Map
+    Map<EntityManagerFactory, EntityManager> contextsForTransaction = (Map<EntityManagerFactory, EntityManager>) tranRegistry.getResource(EMF_MAP_KEY);
     
-    //If we need to, create a new Map add it to the registry, and register it for cleanup
-    if(contextsForTransaction == null) {
+    //If we have a map then find an EntityManager, else create a new Map add it to the registry, and register for cleanup
+    if(contextsForTransaction != null) {
+      toReturn = contextsForTransaction.get(persistenceUnit);
+    } else {
       contextsForTransaction = new IdentityHashMap<EntityManagerFactory, EntityManager>();
-      persistenceContextRegistry.put(transactionKey, contextsForTransaction);
       try {
-        tranRegistry.registerInterposedSynchronization(new EntityManagerClearUp(transactionKey));
+        tranRegistry.putResource(EMF_MAP_KEY, contextsForTransaction);
       } catch (IllegalStateException e) {
-        persistenceContextRegistry.remove(transactionKey);
-        throw new TransactionRequiredException("Unable to synchronize with transaction " + transactionKey);
+        _logger.warn("Unable to create a persistence context for the transaction {} because the is not active", new Object[] {tranRegistry.getTransactionKey()});
+        throw new TransactionRequiredException("Unable to assiociate resources with transaction " + tranRegistry.getTransactionKey());
       }
     }
     
-    //Still only one thread for this transaction, so don't worry about any race conditions
-    EntityManager toReturn = contextsForTransaction.get(persistenceUnit);
-    
+    //If we have no previously created EntityManager
     if(toReturn == null) {
       toReturn = (properties == null) ? persistenceUnit.createEntityManager() : persistenceUnit.createEntityManager(properties);
+      if(_logger.isDebugEnabled())
+        _logger.debug("Created a new persistence context {} for transaction {}.", new Object[] {toReturn, tranRegistry.getTransactionKey()});
+      try {
+        tranRegistry.registerInterposedSynchronization(new EntityManagerClearUp(toReturn));
+      } catch (IllegalStateException e) {
+        _logger.warn("No persistence context could be created as the JPA container could not register a synchronization with the transaction {}.", new Object[] {tranRegistry.getTransactionKey()});
+        toReturn.close();
+        throw new TransactionRequiredException("Unable to synchronize with transaction " + tranRegistry.getTransactionKey());
+      }
       contextsForTransaction.put(persistenceUnit, toReturn);
     } else {
       if(_logger.isDebugEnabled())
-        _logger.debug("Re-using a persistence context for transaction " + transactionKey);
+        _logger.debug("Re-using a persistence context for transaction " + tranRegistry.getTransactionKey());
     }
     return toReturn;
   }
@@ -111,7 +128,7 @@ public class JTAPersistenceContextRegistry {
    * Determine whether there is an active transaction on the thread
    * @return
    */
-  public boolean isTransactionActive()
+  public final boolean isTransactionActive()
   {
     return tranRegistry.getTransactionKey() != null;
   }
@@ -120,7 +137,7 @@ public class JTAPersistenceContextRegistry {
    * Provide a {@link TransactionSynchronizationRegistry} to use
    * @param tranRegistry
    */
-  public void setTranRegistry(TransactionSynchronizationRegistry tranRegistry) {
+  public final void setTranRegistry(TransactionSynchronizationRegistry tranRegistry) {
     this.tranRegistry = tranRegistry;
   }
 
@@ -128,28 +145,31 @@ public class JTAPersistenceContextRegistry {
    * This class is used to close EntityManager instances once the transaction has committed,
    * and clear the persistenceContextRegistry of old persistence contexts.
    */
-  private class EntityManagerClearUp implements Synchronization {
+  private final static class EntityManagerClearUp implements Synchronization {
 
-    private final Object key;
+    private final EntityManager context;
     
-    public EntityManagerClearUp(Object transactionKey) {
-      key = transactionKey;
+    /**
+     * Create a Synchronization to clear up our EntityManagers
+     * @param em
+     */
+    public EntityManagerClearUp(EntityManager em)
+    {
+      context = em;
     }
     
-    public void afterCompletion(int arg0) {
+    public final void beforeCompletion() {
       //This is a no-op;
     }
 
-    public void beforeCompletion() {
-      Map<EntityManagerFactory, EntityManager> tidyUp = persistenceContextRegistry.remove(key);
-      if(tidyUp != null) {
-        for(EntityManager em : tidyUp.values()) {
-          try {
-            em.close();
-          } catch (Exception e) {
-            _logger.warn("There was an error when the container closed an EntityManager", em);
-          }
-        }
+    @SuppressWarnings("unchecked")
+    public final void afterCompletion(int arg0) {
+      if(_logger.isDebugEnabled())
+        _logger.debug("Clearing up EntityManager {} as the transaction has completed.", new Object[] {context});
+      try {
+        context.close();
+      } catch (Exception e) {
+        _logger.warn("There was an error when the container closed an EntityManager", context);
       }
     }
   }
