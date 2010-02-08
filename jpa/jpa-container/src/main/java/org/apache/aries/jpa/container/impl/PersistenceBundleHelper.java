@@ -11,7 +11,7 @@
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIESOR CONDITIONS OF ANY
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
@@ -45,6 +45,8 @@ public class PersistenceBundleHelper
   public static final String PERSISTENCE_XML = "META-INF/persistence.xml";
   /** The Meta-Persistence header */
   public static final String PERSISTENCE_UNIT_HEADER = "Meta-Persistence";
+  /** The Web-ContextPath header (as defined in the web application bundle spec) */
+  public static final String WEB_CONTEXT_PATH_HEADER = "Web-ContextPath";
 
   /**
    * This method locates persistence descriptor files based on a combination of
@@ -52,12 +54,13 @@ public class PersistenceBundleHelper
    * header.
    * 
    * Note that getEntry is used to ensure we do not alter the state of the bundle
+   * Note also that web application bundles will never return persistence descriptors
    * 
    * @param bundle The bundle to search
    * @return
    */
   public static Collection<PersistenceDescriptor> findPersistenceXmlFiles(Bundle bundle)
-  {
+  {    
     //The files we have found
     Collection<PersistenceDescriptor> persistenceXmlFiles = new ArrayList<PersistenceDescriptor>();
     
@@ -69,6 +72,15 @@ public class PersistenceBundleHelper
     String header = (String) bundle.getHeaders().get(PERSISTENCE_UNIT_HEADER);
     
     if(header != null) {
+      // Do not scan WABs
+      if (bundle.getHeaders().get(WEB_CONTEXT_PATH_HEADER) != null) {
+        _logger.warn("The bundle " + bundle.getSymbolicName() + " specifies both the " + 
+                    PERSISTENCE_UNIT_HEADER + " and the " + WEB_CONTEXT_PATH_HEADER + " header. WABs that use JPA " +
+            		"are not supported as part of the OSGi JPA specification. No persistence descriptors will be processed" +
+            		"for this bundle.");
+        return Collections.emptySet();
+      }
+      
       //Split apart the header to get the individual entries
       for(String s : header.split(","))
         locations.add(s.trim());
