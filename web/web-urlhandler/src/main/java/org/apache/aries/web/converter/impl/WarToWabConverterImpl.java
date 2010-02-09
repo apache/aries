@@ -49,12 +49,19 @@ public class WarToWabConverterImpl {
   private static final String DEFAULT_BUNDLE_MANIFESTVERSION = "2";
   private static final String INITIAL_CLASSPATH_ENTRY = "WEB-INF/classes";
   private static final String CLASSPATH_LIB_PREFIX = "WEB-INF/lib/";
-  private static final String DEFAULT_IMPORT_PACKAGE_LIST = "javax.servlet;version=2.5,"
-      + "javax.servlet.http;version=2.5,"
-      + "javax.el;version=2.1,"
-      + "javax.servlet.jsp;version=2.1,"
-      + "javax.servlet.jsp.el;version=2.1,"
-      + "javax.servlet.jsp.tagext;version=2.1";
+  
+  private static final String SERVLET_IMPORTS = 
+      "javax.servlet;version=2.5," +
+      "javax.servlet.http;version=2.5";
+  
+  private static final String JSP_IMPORTS =
+      "javax.servlet.jsp;version=2.1," +
+      "javax.servlet.jsp.el;version=2.1," +
+      "javax.servlet.jsp.tagext;version=2.1," +
+      "javax.servlet.jsp.resources;version=2.1";
+    
+  private static final String DEFAULT_IMPORT_PACKAGE_LIST = 
+      SERVLET_IMPORTS + "," + JSP_IMPORTS;
 
   private Properties properties;
 
@@ -111,10 +118,11 @@ public class WarToWabConverterImpl {
     try {
       jarOutput = new JarOutputStream(output, wabManifest);
       jarInput = new JarInputStream(input.getInputStream());
+      byte[] buffer = new byte[2048];
       while ((entry = jarInput.getNextEntry()) != null) {
-        jarOutput.putNextEntry(entry);
-        while ((val = jarInput.read()) != -1)
-          jarOutput.write(val);
+        jarOutput.putNextEntry(entry);        
+        while ((val = jarInput.read(buffer)) > 0)
+          jarOutput.write(buffer, 0, val);
       }
     }
     finally {
@@ -132,9 +140,13 @@ public class WarToWabConverterImpl {
       if (manifest == null) {
           return false;          
       }
+      // Presence of _any_ of these headers indicates a bundle...
       Attributes attributes = manifest.getMainAttributes();
-      // TODO: need to check for other headers too
-      if (attributes.getValue(Constants.BUNDLE_SYMBOLICNAME) != null) {
+      if (attributes.getValue(Constants.BUNDLE_SYMBOLICNAME) != null ||
+          attributes.getValue(Constants.BUNDLE_VERSION) != null ||
+          attributes.getValue(Constants.BUNDLE_MANIFESTVERSION) != null ||
+          attributes.getValue(Constants.IMPORT_PACKAGE) != null ||
+          attributes.getValue(WEB_CONTEXT_PATH) != null) {
           return true;
       }
       return false;
@@ -264,10 +276,16 @@ public class WarToWabConverterImpl {
     // Bundle-ManifestVersion
     //
 
-    if (manifest.getMainAttributes().getValue(Constants.BUNDLE_MANIFESTVERSION) == null
-        && !properties.containsKey(Constants.BUNDLE_MANIFESTVERSION)) {
-      properties.put(Constants.BUNDLE_MANIFESTVERSION, DEFAULT_BUNDLE_MANIFESTVERSION);
+    String manifestVersion = properties.getProperty(Constants.BUNDLE_MANIFESTVERSION);
+    if (manifestVersion == null) {
+        manifestVersion = manifest.getMainAttributes().getValue(Constants.BUNDLE_MANIFESTVERSION);
+        if (manifestVersion == null) {
+            manifestVersion = DEFAULT_BUNDLE_MANIFESTVERSION;
+        }
+    } else if (!manifestVersion.equals("2")) {
+        throw new IOException("Unsupported bundle manifest version " + manifestVersion);
     }
+    properties.put(Constants.BUNDLE_MANIFESTVERSION, manifestVersion);
 
     //
     // Bundle-SymbolicName
