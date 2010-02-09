@@ -28,7 +28,7 @@
     <artifactId>ariestrader-entities</artifactId>
     <packaging>bundle</packaging>
     <name>AriesTrader :: Modules - Entities</name>
-    <description>AriesTrader JPA Enhanced Enttities Module</description>
+    <description>AriesTrader JPA Enhanced Entities Module</description>
 
     <dependencies>
         <dependency>
@@ -48,9 +48,16 @@
             <artifactId>geronimo-jta_1.1_spec</artifactId>
             <scope>provided</scope>
         </dependency>    
+<!--
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_1.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+-->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -131,9 +138,9 @@
                             org.apache.aries.samples.ariestrader.beans,
                             org.apache.aries.samples.ariestrader.util,
                             org.apache.aries.samples.ariestrader.persistence.api,
-                            org.apache.openjpa.enhance,
-                            org.apache.openjpa.util,
-                            javax.persistence
+                            org.apache.openjpa.enhance;version="[1.0.0,2.1.0)",
+                            org.apache.openjpa.util;version="[1.0.0,2.1.0)",
+                            javax.persistence;version="[1.0.0,2.1.0)"
                         </Import-Package>
                     </instructions>
                 </configuration>
