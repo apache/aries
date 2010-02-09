@@ -23,17 +23,17 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Properties;
 
 import org.apache.aries.web.converter.WarToWabConverter.InputStreamProvider;
+import org.apache.aries.web.converter.impl.CaseInsensitiveMap;
 import org.apache.aries.web.converter.impl.WarToWabConverterImpl;
 
 public class WARConnection extends URLConnection
 {
   private WarToWabConverterImpl converter = null;
-  private Properties properties;
+  private CaseInsensitiveMap properties;
   
-  protected WARConnection(URL url, Properties properties) throws MalformedURLException
+  protected WARConnection(URL url, CaseInsensitiveMap properties) throws MalformedURLException
   {
     super(url);
     this.properties = properties;
