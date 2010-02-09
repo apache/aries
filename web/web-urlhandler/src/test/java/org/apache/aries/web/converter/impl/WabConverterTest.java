@@ -47,6 +47,19 @@ public class WabConverterTest
   public static final String WAR_FILE_NAME_WO_SUFFIX = "test";
   public static final String WAR_FILE_NAME = WAR_FILE_NAME_WO_SUFFIX + ".war";
   
+  private static final String SERVLET_IMPORTS = 
+      "javax.servlet;version=2.5," +
+      "javax.servlet.http;version=2.5";
+  
+  private static final String JSP_IMPORTS =
+      "javax.servlet.jsp;version=2.1," +
+      "javax.servlet.jsp.el;version=2.1," +
+      "javax.servlet.jsp.tagext;version=2.1," +
+      "javax.servlet.jsp.resources;version=2.1";
+      
+  private static final String DEFAULT_IMPORTS = 
+      SERVLET_IMPORTS + "," + JSP_IMPORTS;
+  
   /**
    * Test that we can handle a null manifest (in case a jar archive was created without manifest)
    */
@@ -80,10 +93,7 @@ public class WabConverterTest
         "com.ibm.test,"+
         "javax.servlet.http,"+
         "javax.servlet;version=2.5,"+
-        "javax.el;version=2.1,"+
-        "javax.servlet.jsp;version=2.1,"+
-        "javax.servlet.jsp.el;version=2.1,"+
-        "javax.servlet.jsp.tagext;version=2.1",
+        JSP_IMPORTS,
         attrs.getValue("Import-Package"));
   }
     
@@ -101,8 +111,8 @@ public class WabConverterTest
            "javax.servlet.jsp.tagext; version=\"[2.0,2.1]\"," +
            "javax.servlet;version=2.5," +
            "javax.servlet.http;version=2.5," +
-           "javax.el;version=2.1," +
-           "javax.servlet.jsp.el;version=2.1",
+           "javax.servlet.jsp.el;version=2.1," +
+           "javax.servlet.jsp.resources;version=2.1",
           actual);
   }
 
@@ -133,10 +143,7 @@ public class WabConverterTest
     
     assertTrue(attrs.getValue(Constants.BUNDLE_SYMBOLICNAME).startsWith(WAR_FILE_NAME_WO_SUFFIX));
     assertEquals("1.0", attrs.getValue(Constants.BUNDLE_VERSION));
-    assertEquals("javax.servlet;version=2.5,javax.servlet.http;version=2.5,javax.el;version=2.1," +
-        "javax.servlet.jsp;version=2.1,javax.servlet.jsp.el;version=2.1," +
-        "javax.servlet.jsp.tagext;version=2.1",
-        attrs.getValue(Constants.IMPORT_PACKAGE));
+    assertEquals(DEFAULT_IMPORTS, attrs.getValue(Constants.IMPORT_PACKAGE));
     assertEquals("WEB-INF/classes",attrs.getValue(Constants.BUNDLE_CLASSPATH));
   }
   
@@ -149,11 +156,8 @@ public class WabConverterTest
     
     assertEquals("/WebFiles", attrs.getValue(WarToWabConverter.WEB_CONTEXT_PATH));
     assertEquals("2.0", attrs.getValue(Constants.BUNDLE_VERSION));
-    assertEquals("org.apache.aries.test;version=2.5,org.apache.aries.test.eba;version=1.0,"+
-        "javax.servlet;version=2.5,javax.servlet.http;version=2.5,javax.el;version=2.1," +
-        "javax.servlet.jsp;version=2.1,javax.servlet.jsp.el;version=2.1," +
-        "javax.servlet.jsp.tagext;version=2.1",
-        attrs.getValue(Constants.IMPORT_PACKAGE));
+    assertEquals("org.apache.aries.test;version=2.5,org.apache.aries.test.eba;version=1.0," + DEFAULT_IMPORTS,
+                 attrs.getValue(Constants.IMPORT_PACKAGE));
   }
   
   @Test
