@@ -38,6 +38,7 @@
         <module>ariestrader-beans</module>
         <module>ariestrader-entities</module>
         <module>ariestrader-derby-ds</module>
+        <module>ariestrader-openjpa-provider</module>
         <module>ariestrader-persist-jdbc</module>
         <module>ariestrader-persist-jpa-am</module>
     </modules>

@@ -61,7 +61,7 @@ import org.apache.aries.samples.ariestrader.util.TradeConfig;
 
 public class TradeJpaAm implements TradeServices {
 
-    @PersistenceUnit(unitName="ariestrader-am")
+//    @PersistenceUnit(unitName="ariestrader-am")
     private static EntityManagerFactory emf;
 
     private static BigDecimal ZERO = new BigDecimal(0.0);
@@ -74,8 +74,8 @@ public class TradeJpaAm implements TradeServices {
     public TradeJpaAm() {
     }
 
-    public void setEmf (EntityManagerFactory em) { 
-        emf = em;
+    public void setEmf (EntityManagerFactory emf) { 
+        this.emf = emf;
     }
 
     public void init() {

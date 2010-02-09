@@ -1,115 +1,163 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
-		* Licensed to the Apache Software Foundation (ASF) under one * or more
-		contributor license agreements. See the NOTICE file * distributed with
-		this work for additional information * regarding copyright ownership.
-		The ASF licenses this file * to you under the Apache License, Version
-		2.0 (the * "License"); you may not use this file except in compliance
-		* with the License. You may obtain a copy of the License at * *
-		http://www.apache.org/licenses/LICENSE-2.0 * * Unless required by
-		applicable law or agreed to in writing, * software distributed under
-		the License is distributed on an * "AS IS" BASIS, WITHOUT WARRANTIES
-		OR CONDITIONS OF ANY * KIND, either express or implied. See the
-		License for the * specific language governing permissions and
-		limitations * under the License.
-	-->
+<!--
+    * Licensed to the Apache Software Foundation (ASF) under one * or more
+    contributor license agreements. See the NOTICE file * distributed with
+    this work for additional information * regarding copyright ownership.
+    The ASF licenses this file * to you under the Apache License, Version
+    2.0 (the * "License"); you may not use this file except in compliance
+    * with the License. You may obtain a copy of the License at * *
+    http://www.apache.org/licenses/LICENSE-2.0 * * Unless required by
+    applicable law or agreed to in writing, * software distributed under
+    the License is distributed on an * "AS IS" BASIS, WITHOUT WARRANTIES
+    OR CONDITIONS OF ANY * KIND, either express or implied. See the
+    License for the * specific language governing permissions and
+    limitations * under the License.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.apache.aries.ariestrader</groupId>
-		<artifactId>assemblies</artifactId>
-		<version>1.0.0-incubating-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>org.apache.aries.ariestrader</groupId>
+        <artifactId>assemblies</artifactId>
+        <version>1.0.0-incubating-SNAPSHOT</version>
+    </parent>
 
     <groupId>org.apache.aries.ariestrader.assemblies</groupId>
-	<artifactId>ariestrader-all-equinox</artifactId>
-	<name>Apache Aries AriesTrader ALL sample assembly using Equinox</name>
-	<packaging>pom</packaging>
+    <artifactId>ariestrader-all-equinox</artifactId>
+    <name>Apache Aries AriesTrader ALL sample assembly using Equinox</name>
+    <packaging>pom</packaging>
 
-	<dependencies>
+    <dependencies>
 
-		<dependency>
-			<groupId>org.eclipse</groupId>
-			<artifactId>osgi</artifactId>
-			<version>3.5.0.v20090520</version>
-		</dependency>
+        <!--
+            External Dependencies
+        -->
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <version>3.5.0.v20090520</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>cm</artifactId>
+            <version>3.2.0-v20070116</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.osgi</groupId>
+            <artifactId>services</artifactId>
+            <version>3.1.200-v20070605</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-service</artifactId>
+            <version>1.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.web</groupId>
+            <artifactId>pax-web-extender-war</artifactId>
+            <version>0.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.web</groupId>
+            <artifactId>pax-web-jetty-bundle</artifactId>
+            <version>0.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.web</groupId>
+            <artifactId>pax-web-jsp</artifactId>
+            <version>0.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-pool</groupId>
+            <artifactId>commons-pool</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.eclipse.equinox</groupId>
-			<artifactId>cm</artifactId>
-			<version>3.2.0-v20070116</version>
-		</dependency>
 
-		<dependency>
-			<groupId>org.eclipse.osgi</groupId>
-			<artifactId>services</artifactId>
-			<version>3.1.200-v20070605</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.ops4j.pax.logging</groupId>
-			<artifactId>pax-logging-api</artifactId>
-			<version>1.4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.ops4j.pax.logging</groupId>
-			<artifactId>pax-logging-service</artifactId>
-			<version>1.4</version>
-			<exclusions>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>org.ops4j.pax.web</groupId>
-			<artifactId>pax-web-extender-war</artifactId>
-			<version>0.7.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.ops4j.pax.web</groupId>
-			<artifactId>pax-web-jetty-bundle</artifactId>
-			<version>0.7.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.ops4j.pax.web</groupId>
-			<artifactId>pax-web-jsp</artifactId>
-			<version>0.7.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.derby</groupId>
-			<artifactId>derby</artifactId>
-			<version>10.5.3.0_1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.aries.blueprint</groupId>
-			<artifactId>org.apache.aries.blueprint</artifactId>
-			<version>${ariesVersion}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.aries</groupId>
-			<artifactId>org.apache.aries.util</artifactId>
-			<version>${ariesVersion}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.aries.jndi</groupId>
-			<artifactId>org.apache.aries.jndi</artifactId>
-			<version>${ariesVersion}</version>
-		</dependency>
+        <!--
+            Aries Dependencies
+        -->
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint</artifactId>
+            <version>${ariesVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries</groupId>
+            <artifactId>org.apache.aries.util</artifactId>
+            <version>${ariesVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.jndi</groupId>
+            <artifactId>org.apache.aries.jndi</artifactId>
+            <version>${ariesVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.jpa</groupId>
+            <artifactId>jpa-container</artifactId>
+            <version>${ariesVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.jpa</groupId>
+            <artifactId>jpa-container-context</artifactId>
+            <version>${ariesVersion}</version>
+        </dependency>
+        <dependency>
+            <artifactId>org.apache.aries.application.api</artifactId>
+            <groupId>org.apache.aries.application</groupId>
+            <version>${ariesVersion}</version>
+        </dependency>
+        <dependency>
+            <artifactId>org.apache.aries.application.utils</artifactId>
+            <groupId>org.apache.aries.application</groupId>
+            <version>${ariesVersion}</version>
+        </dependency>
 
 
-
+        <!--
+            Aries Trader Dependencies
+        -->
+        <dependency>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
+            <artifactId>ariestrader-openjpa-provider</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-derby-ds</artifactId>
@@ -150,55 +198,55 @@
             <artifactId>ariestrader-persist-jpa-am</artifactId>
             <version>${pom.version}</version>
         </dependency>
-	</dependencies>
+    </dependencies>
 
-	<build>
+    <build>
 
-		<resources>
-			<resource>
-				<directory>${pom.basedir}/src/main/resources</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>**/*</include>
-				</includes>
-			</resource>
-		</resources>
+        <resources>
+            <resource>
+                <directory>${pom.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
 
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<configuration>
-					<outputDirectory>${project.build.directory}</outputDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<id>filter</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>resources</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>filter</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<excludeTransitive>true</excludeTransitive>
-							<outputDirectory>${project.build.directory}</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <excludeTransitive>true</excludeTransitive>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -49,9 +49,16 @@
             <version>${pom.version}</version>
             <scope>provided</scope>
         </dependency>
+<!--
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_1.0_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+-->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -80,7 +87,7 @@
                             org.apache.aries.samples.ariestrader.beans,
                             org.apache.aries.samples.ariestrader.persistence.api,
                             org.apache.aries.samples.ariestrader.util,
-                            javax.persistence
+                            javax.persistence;version="[1.0.0,2.1.0)"
                         </Import-Package>
                         <Private-Package>
                             org.apache.aries.samples.ariestrader.persist.jpa
