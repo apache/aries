@@ -63,7 +63,7 @@ public class WarToWabConverterImpl {
   private static final String DEFAULT_IMPORT_PACKAGE_LIST = 
       SERVLET_IMPORTS + "," + JSP_IMPORTS;
 
-  private Properties properties;
+  private CaseInsensitiveMap properties;
 
   // InputStream for the new WAB file
   private byte[] wabFile;
@@ -80,6 +80,10 @@ public class WarToWabConverterImpl {
   private ArrayList<String> classPath;
 
   public WarToWabConverterImpl(InputStreamProvider warFile, String name, Properties properties) throws IOException {
+      this(warFile, name, new CaseInsensitiveMap(properties));
+  }
+  
+  public WarToWabConverterImpl(InputStreamProvider warFile, String name, CaseInsensitiveMap properties) throws IOException {
     this.properties = properties;
     classPath = new ArrayList<String>();
     importPackages = new HashSet<String>();
@@ -87,7 +91,7 @@ public class WarToWabConverterImpl {
     input = warFile;
     this.warName = name;
   }
-  
+    
   private void convert() throws IOException {
 
     ZipEntry entry;
@@ -214,7 +218,7 @@ public class WarToWabConverterImpl {
   }
 
   protected Manifest updateBundleManifest(Manifest manifest) throws IOException {
-      String webCPath = properties.getProperty(WEB_CONTEXT_PATH);
+      String webCPath = properties.get(WEB_CONTEXT_PATH);
       if (webCPath == null) {
           webCPath = manifest.getMainAttributes().getValue(WEB_CONTEXT_PATH);
       }
@@ -239,7 +243,7 @@ public class WarToWabConverterImpl {
   
   private void checkParameter(String parameter) throws IOException {
       if (properties.containsKey(parameter)) {
-          throw new IOException("Cannot override " + parameter + " parameter when converting a bundle");
+          throw new IOException("Cannot override " + parameter + " header when converting a bundle");
       }
   }
   
@@ -257,9 +261,9 @@ public class WarToWabConverterImpl {
     // Web-ContextPath
     //
 
-    String webCPath = properties.getProperty(WEB_CONTEXT_PATH);
+    String webCPath = properties.get(WEB_CONTEXT_PATH);
     if (webCPath == null) {
-        throw new IOException(WEB_CONTEXT_PATH + " parameter is required.");
+        throw new IOException(WEB_CONTEXT_PATH + " parameter is missing.");
     }
     properties.put(WEB_CONTEXT_PATH, addSlash(webCPath));  
 
@@ -276,7 +280,7 @@ public class WarToWabConverterImpl {
     // Bundle-ManifestVersion
     //
 
-    String manifestVersion = properties.getProperty(Constants.BUNDLE_MANIFESTVERSION);
+    String manifestVersion = properties.get(Constants.BUNDLE_MANIFESTVERSION);
     if (manifestVersion == null) {
         manifestVersion = manifest.getMainAttributes().getValue(Constants.BUNDLE_MANIFESTVERSION);
         if (manifestVersion == null) {
@@ -309,7 +313,7 @@ public class WarToWabConverterImpl {
     classpath.addAll(classPath);
     
     // Get the list from the URL and add to classpath (removing duplicates)
-    mergePathList(properties.getProperty(Constants.BUNDLE_CLASSPATH), classpath, ",");
+    mergePathList(properties.get(Constants.BUNDLE_CLASSPATH), classpath, ",");
 
     // Get the existing list from the manifest file and add to classpath
     // (removing duplicates)
@@ -358,7 +362,7 @@ public class WarToWabConverterImpl {
     packages.clear();
     
     // Get the list from the URL and add to classpath (removing duplicates)
-    mergePathList(properties.getProperty(Constants.IMPORT_PACKAGE), packages, ",");
+    mergePathList(properties.get(Constants.IMPORT_PACKAGE), packages, ",");
 
     // Get the existing list from the manifest file and add to classpath
     // (removing duplicates)
@@ -391,9 +395,9 @@ public class WarToWabConverterImpl {
     }
      
     // Take the properties map and add them to the manifest file
-    for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-        String key = entry.getKey().toString();
-        String value = entry.getValue().toString();
+    for (Map.Entry<String, String> entry : properties.entrySet()) {
+        String key = entry.getKey();
+        String value = entry.getValue();
         manifest.getMainAttributes().put(new Attributes.Name(key), value);
     }
     

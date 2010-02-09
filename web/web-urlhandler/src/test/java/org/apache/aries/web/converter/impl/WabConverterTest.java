@@ -84,7 +84,7 @@ public class WabConverterTest
     WarToWabConverterImpl sut = new WarToWabConverterImpl(makeTestFile(new byte[0]), WAR_FILE_NAME, properties);
     
     Manifest input = new Manifest();
-    input.getMainAttributes().putValue("Import-Package", "com.ibm.test,javax.servlet.http");
+    input.getMainAttributes().putValue(Constants.IMPORT_PACKAGE, "com.ibm.test,javax.servlet.http");
     
     Manifest res = sut.updateManifest(input);
     Attributes attrs = res.getMainAttributes();
@@ -94,7 +94,7 @@ public class WabConverterTest
         "javax.servlet.http,"+
         "javax.servlet;version=2.5,"+
         JSP_IMPORTS,
-        attrs.getValue("Import-Package"));
+        attrs.getValue(Constants.IMPORT_PACKAGE));
   }
     
   @Test
@@ -104,7 +104,7 @@ public class WabConverterTest
                 WarToWabConverter.WEB_CONTEXT_PATH, "/test",
                 Constants.IMPORT_PACKAGE, "javax.servlet.jsp; version=\"[2.0,2.1]\",javax.servlet.jsp.tagext; version=\"[2.0,2.1]\"");
       
-      String actual = attrs.getValue("Import-Package");
+      String actual = attrs.getValue(Constants.IMPORT_PACKAGE);
       System.out.println(actual);
       assertEquals(
            "javax.servlet.jsp; version=\"[2.0,2.1]\"," +
@@ -156,6 +156,19 @@ public class WabConverterTest
     
     assertEquals("/WebFiles", attrs.getValue(WarToWabConverter.WEB_CONTEXT_PATH));
     assertEquals("2.0", attrs.getValue(Constants.BUNDLE_VERSION));
+    assertEquals("org.apache.aries.test;version=2.5,org.apache.aries.test.eba;version=1.0," + DEFAULT_IMPORTS,
+                 attrs.getValue(Constants.IMPORT_PACKAGE));
+  }
+  
+  @Test
+  public void testPropertyCaseInsensitiveSupport() throws Exception {
+    Attributes attrs = convertWithProperties(
+        "web-contextpath", "WebFiles",
+        "bundle-VErsion", "1.0",
+        "import-PACKAGE", "org.apache.aries.test;version=2.5,org.apache.aries.test.eba;version=1.0");
+    
+    assertEquals("/WebFiles", attrs.getValue(WarToWabConverter.WEB_CONTEXT_PATH));
+    assertEquals("1.0", attrs.getValue(Constants.BUNDLE_VERSION));
     assertEquals("org.apache.aries.test;version=2.5,org.apache.aries.test.eba;version=1.0," + DEFAULT_IMPORTS,
                  attrs.getValue(Constants.IMPORT_PACKAGE));
   }

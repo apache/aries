@@ -23,9 +23,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Properties;
 import java.util.StringTokenizer;
 
+import org.apache.aries.web.converter.impl.CaseInsensitiveMap;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.url.AbstractURLStreamHandlerService;
@@ -46,7 +46,7 @@ public class WAR_URLServiceHandler extends AbstractURLStreamHandlerService imple
   public URLConnection openConnection(URL url) throws IOException
   {
     // Create properties object
-    Properties properties = new Properties();
+    CaseInsensitiveMap properties = new CaseInsensitiveMap();
     if (url.getQuery() != null)
     {
       String propString = url.getQuery();
