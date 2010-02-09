@@ -27,7 +27,6 @@ import java.util.Properties;
 
 import org.apache.aries.web.converter.WarToWabConverter.InputStreamProvider;
 import org.apache.aries.web.converter.impl.WarToWabConverterImpl;
-import org.osgi.framework.Constants;
 
 public class WARConnection extends URLConnection
 {
@@ -38,14 +37,6 @@ public class WARConnection extends URLConnection
   {
     super(url);
     this.properties = properties;
-    
-    // Validate properties
-    
-    String bundleManifestVersion = (String) properties.get(Constants.BUNDLE_MANIFESTVERSION);
-    if (bundleManifestVersion != null && !bundleManifestVersion.equals("2")) {
-      throw new MalformedURLException("Incorrect bundle version supplied in URL : " + bundleManifestVersion);
-    }
-    
   }
 
   @Override
