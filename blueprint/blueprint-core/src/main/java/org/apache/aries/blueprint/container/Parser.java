@@ -35,7 +35,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
-
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.reflect.BeanArgumentImpl;
@@ -77,8 +76,6 @@ import org.osgi.service.blueprint.reflect.ServiceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Comment;
@@ -176,11 +173,9 @@ public class Parser {
     public static final String ACTIVATION_LAZY = "lazy";
     public static final String ACTIVATION_DEFAULT = ACTIVATION_EAGER;
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
-
     private static DocumentBuilderFactory documentBuilderFactory;
 
-    private List<Document> documents = new ArrayList<Document>();
+    private final List<Document> documents = new ArrayList<Document>();
     private ComponentDefinitionRegistry registry;
     private NamespaceHandlerRegistry.NamespaceHandlerSet handlers;
     private String idPrefix = "component-";
@@ -201,7 +196,7 @@ public class Parser {
     /**
      * Parse an input stream for blueprint xml. 
      * @param inputStream The data to parse. The caller is responsible for closing the stream afterwards. 
-     * @throws Exception
+     * @throws Exception on parse error
      */
     public void parse(InputStream inputStream) throws Exception { 
       InputSource inputSource = new InputSource(inputStream);
@@ -213,7 +208,7 @@ public class Parser {
     /**
      * Parse blueprint xml referred to by a list of URLs
      * @param urls URLs to blueprint xml to parse
-     * @throws Exception
+     * @throws Exception on parse error
      */
     public void parse(List<URL> urls) throws Exception {
         // Create document builder factory
@@ -230,9 +225,6 @@ public class Parser {
 
     public Set<URI> getNamespaces() {
         if (this.namespaces == null) {
-            if (documents == null) {
-                throw new IllegalStateException("Documents should be parsed before retrieving required namespaces");
-            }
             Set<URI> namespaces = new LinkedHashSet<URI>();
             for (Document doc : documents) {
                 findNamespaces(namespaces, doc);
@@ -440,11 +432,11 @@ public class Parser {
     /**
      * Takes an Attribute Node containing a namespace prefix qualified attribute value, and resolves the namespace using the DOM Node.<br> 
      *  
-     * @param attr The DOM Node with the qualified attribute value.
+     * @param attrNode The DOM Node with the qualified attribute value.
      * @return The URI if one is resolvable, or null if the attr is null, or not namespace prefixed. (or not a DOM Attribute Node)
-     * @throws ComponentDefinitonException if the namespace prefix in the attribute value cannot be resolved.
+     * @throws ComponentDefinitionException if the namespace prefix in the attribute value cannot be resolved.
      */
-    private URI getNamespaceForAttributeValue(Node attrNode){
+    private URI getNamespaceForAttributeValue(Node attrNode) throws ComponentDefinitionException {
         URI uri = null;
         if(attrNode!=null && (attrNode instanceof Attr)){
             Attr attr = (Attr)attrNode;
@@ -474,7 +466,6 @@ public class Parser {
      *  
      * @param scope Value of scope attribute
      * @param bean DOM element for bean associated to this scope 
-     * @param cm Metadata for bean associated to this scope
      * @return Metadata as processed by NS Handler.
      * @throws ComponentDefinitionException if an undeclared prefix is used, 
      *           if a namespace handler is unavailable for a resolved prefix, 
@@ -482,7 +473,7 @@ public class Parser {
      */
     private ComponentMetadata handleCustomScope(Node scope, Element bean, ComponentMetadata metadata){
         URI scopeNS = getNamespaceForAttributeValue(scope);
-        if(scopeNS!=null && !BLUEPRINT_NAMESPACE.equals(scopeNS)){
+        if(scopeNS!=null && !BLUEPRINT_NAMESPACE.equals(scopeNS.toString())){
             NamespaceHandler nsHandler = getNamespaceHandler(scopeNS);
             ParserContextImpl context = new ParserContextImpl(this, registry, metadata, scope);
             metadata = nsHandler.decorate(scope, metadata, context);
@@ -739,7 +730,7 @@ public class Parser {
         if (!element.hasAttribute(KEY_ATTRIBUTE)) {
             throw new ComponentDefinitionException(KEY_ATTRIBUTE + " attribute is required");
         }
-        String value = null;
+        String value;
         if (element.hasAttribute(VALUE_ATTRIBUTE)) {
             value = element.getAttribute(VALUE_ATTRIBUTE);
         } else {
@@ -1176,7 +1167,7 @@ public class Parser {
     }
 
     private ValueMetadata parseValue(Element element, String collectionType) {
-        String type = null;
+        String type;
         if (element.hasAttribute(TYPE_ATTRIBUTE)) {
             type = element.getAttribute(TYPE_ATTRIBUTE);
         } else {
@@ -1255,8 +1246,7 @@ public class Parser {
 
     private NamespaceHandler getNamespaceHandler(Node node) {
         URI ns = URI.create(node.getNamespaceURI());
-        NamespaceHandler handler = getNamespaceHandler(ns);
-        return handler;
+        return getNamespaceHandler(ns);
     }
 
     private NamespaceHandler getNamespaceHandler(URI uri) {
