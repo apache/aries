@@ -52,12 +52,32 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
   
-  public PersistenceUnitInfoImpl (Bundle b, ParsedPersistenceUnit parsedData, ServiceReference providerRef)
+  public PersistenceUnitInfoImpl (Bundle b, ParsedPersistenceUnit parsedData, final ServiceReference providerRef)
   {
     bundle = b;
     unit = parsedData;
     this.providerRef = providerRef;
-    cl = new BundleDelegatingClassLoader(b);
+    //Override the default behaviour until OPENJPA-1491 is fixed, remove the inner class when
+    //it is
+    cl = new BundleDelegatingClassLoader(b){
+
+      @Override
+      protected Class<?> findClass(String className)
+          throws ClassNotFoundException {
+        try {
+         return super.findClass(className);
+        } catch (ClassNotFoundException cnfe) {
+          if("org.apache.openjpa.jdbc.kernel.JDBCBrokerFactory".equals(className))
+            try{
+              return providerRef.getBundle().loadClass(className);
+            } catch (ClassNotFoundException cnfe2) {
+              
+            }
+            throw cnfe;
+        }
+      }
+    };
+    //End temporary fix for OPENJPA-1491
   }
   
   public void addTransformer(ClassTransformer arg0) {
