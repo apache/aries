@@ -375,6 +375,8 @@ public class Parser {
             return type.cast(parseValue(element, null));
         } else if (ReferenceListener.class.isAssignableFrom(type)) {
             return type.cast(parseServiceListener(element, enclosingComponent));
+        } else if (Metadata.class.isAssignableFrom(type)) {
+            return type.cast(parseValueGroup(element, enclosingComponent, null, true));
         } else {
             throw new ComponentDefinitionException("Unknown type to parse element: " + type.getName());
         }
