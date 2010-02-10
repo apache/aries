@@ -8,6 +8,7 @@
   <groupId>org.apache.aries.jpa</groupId>
   <artifactId>jpa-container-itest</artifactId>
   <version>1.0.0-incubating-SNAPSHOT</version>
+  <name>Aries JPA iTests - Managed Persistence Units</name>
 <!--   
 
 	For adding EclipseLink as a provider
@@ -128,7 +129,12 @@
     <dependency>
       <groupId>org.apache.openjpa</groupId>
       <artifactId>openjpa</artifactId>
-      <version>2.0.0-M3</version>
+      <version>2.0.0-beta</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.1_spec</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -148,6 +154,11 @@
       <version>1.5.3</version>
       <scope>test</scope>
     </dependency>  
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId> 
+      <artifactId>org.apache.servicemix.bundles.serp</artifactId> 
+      <version>1.13.1_2</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.aries.jpa</groupId>
       <artifactId>jpa-container-testbundle</artifactId>
