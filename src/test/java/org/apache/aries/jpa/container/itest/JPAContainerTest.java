@@ -56,7 +56,7 @@ public class JPAContainerTest {
   @Before
   public void setupApplication() throws Exception
   {
-    Bundle openJPA = getBundle("org.apache.openjpa.openjpa");
+    Bundle openJPA = getBundle("org.apache.openjpa");
     
     Class<? extends PersistenceProvider> clz = openJPA.loadClass("org.apache.openjpa.persistence.PersistenceProviderImpl");
     
@@ -78,7 +78,6 @@ public class JPAContainerTest {
   }
   
   //This test will run once there is an updated OpenJPA bundle that uses the latest JPA API
-  @Ignore
   @Test
   public void findEntityManagerFactory() throws Exception {
     EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(osgi.unit.name=test-unit)", DEFAULT_TIMEOUT);
@@ -109,9 +108,11 @@ public class JPAContainerTest {
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
         mavenBundle("org.apache.geronimo.specs", "geronimo-jpa_2.0_spec"),
         mavenBundle("org.apache.aries.jpa", "jpa-container"),
+        mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
         mavenBundle("commons-lang", "commons-lang"),
         mavenBundle("commons-collections", "commons-collections"),
         mavenBundle("commons-pool", "commons-pool"),
+        mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.serp"),
         mavenBundle("org.apache.openjpa", "openjpa"),
 
 //        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.jpa"),
