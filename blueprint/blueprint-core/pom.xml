@@ -102,7 +102,11 @@
                         <Export-Package>
                             org.apache.aries.blueprint*;version="${pom.version}"
                         </Export-Package>
-                        <Import-Package>!org.apache.aries.blueprint*,org.apache.aries.util.tracker;resolution:=optional,org.osgi.service.framework;resolution:=optional,*</Import-Package>
+                        <Import-Package>!org.apache.aries.blueprint*,
+                          org.apache.aries.util.tracker;resolution:=optional,
+                          org.osgi.service.event*;resolution:=optional,
+                          org.osgi.service.framework;resolution:=optional,
+                          *</Import-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
