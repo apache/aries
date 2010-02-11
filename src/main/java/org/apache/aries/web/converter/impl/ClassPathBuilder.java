@@ -78,7 +78,7 @@ public class ClassPathBuilder
           if (entry.endsWith(".jar") && 
               manifests.keySet().contains(path) && 
               !classPath.contains(path) && 
-              !path.startsWith("WEB-INF/lib"))
+              !path.startsWith("WEB-INF/lib/"))
           {
             classPath.add(path);
             
