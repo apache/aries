@@ -9,6 +9,7 @@
   <artifactId>jpa-container-testbundle</artifactId>
   <packaging>bundle</packaging>
   <version>1.0.0-incubating-SNAPSHOT</version>
+  <name>Test Bundle for Aries JPA Container iTests</name>
   <dependencies>
   	<dependency>
       <groupId>org.apache.geronimo.specs</groupId>
