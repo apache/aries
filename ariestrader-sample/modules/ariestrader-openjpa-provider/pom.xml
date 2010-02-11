@@ -53,7 +53,8 @@
                         <Import-Package>
                             <!--org.apache.aries.samples.ariestrader.openjpa.provider;version="${pom.version}"-->
                             javax.persistence.spi,
-                            org.apache.openjpa.persistence
+                            org.apache.openjpa.persistence,
+                            org.apache.openjpa.jdbc.kernel
                         </Import-Package>
                         <Private-Package>
                             <!--org.apache.aries.samples.ariestrader.openjpa.provider;version="${pom.version}"-->
