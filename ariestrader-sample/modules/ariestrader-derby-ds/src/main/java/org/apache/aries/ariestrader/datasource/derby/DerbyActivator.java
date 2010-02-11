@@ -104,28 +104,44 @@ public class DerbyActivator implements BundleActivator {
         return embeddedXADataSource;
     }
 
-    public Driver getDriver(Properties props) {
-        EmbeddedDriver embeddedDriver = new EmbeddedDriver();
-        return embeddedDriver;
-    }
+//  public Driver getDriver(Properties props) {
+//      EmbeddedDriver embeddedDriver = new EmbeddedDriver();
+//      return embeddedDriver;
+//  }
 
     public void start(BundleContext context) throws Exception {
         new EmbeddedDriver();   
 
-        // Set the needed properties for the database connection
-        Properties db_props = new Properties();
-        db_props.put(JDBC_DATASOURCE_NAME, "TradeDataSource");
-        db_props.put(JDBC_DATABASE_NAME, "tradedb");
-        db_props.put(JDBC_USER, "");
-        db_props.put(JDBC_PASSWORD, "");
-        db_props.put(JDBC_CREATE_DATABASE, "create");
+        // Set the needed properties for the TradeDataSource
+        Properties tds_props = new Properties();
+        tds_props.put(JDBC_DATASOURCE_NAME, "TradeDataSource");
+        tds_props.put(JDBC_DATABASE_NAME, "tradedb");
+        tds_props.put(JDBC_USER, "");
+        tds_props.put(JDBC_PASSWORD, "");
+        tds_props.put(JDBC_CREATE_DATABASE, "create");
 
-        ConnectionPoolDataSource dataSource = createConnectionPoolDataSource(db_props);
+        ConnectionPoolDataSource tds_datasource = createConnectionPoolDataSource(tds_props);
 
-        Properties service_props = new Properties();
-        service_props.put(OSGI_JNDI_SERVICE_NAME, "jdbc/TradeDataSource");
+        Properties tds_service_props = new Properties();
+        tds_service_props.put(OSGI_JNDI_SERVICE_NAME, "jdbc/TradeDataSource");
 
-        context.registerService(DataSource.class.getName(), dataSource, service_props);
+        context.registerService(DataSource.class.getName(), tds_datasource, tds_service_props);
+
+
+        // Set the needed properties for the NoTxTradeDataSource
+        Properties ntds_props = new Properties();
+        ntds_props.put(JDBC_DATASOURCE_NAME, "NoTxTradeDataSource");
+        ntds_props.put(JDBC_DATABASE_NAME, "tradedb");
+        ntds_props.put(JDBC_USER, "");
+        ntds_props.put(JDBC_PASSWORD, "");
+        ntds_props.put(JDBC_CREATE_DATABASE, "create");
+
+        ConnectionPoolDataSource ntds_datasource = createConnectionPoolDataSource(ntds_props);
+
+        Properties ntds_services_props = new Properties();
+        ntds_services_props.put(OSGI_JNDI_SERVICE_NAME, "jdbc/NoTxTradeDataSource");
+
+        context.registerService(DataSource.class.getName(), ntds_datasource, ntds_services_props);
     }
 
     public void stop(BundleContext context) throws Exception {
