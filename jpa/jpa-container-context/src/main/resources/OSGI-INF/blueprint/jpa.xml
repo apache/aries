@@ -37,7 +37,7 @@
   <bean id="JtaPersistenceContextRegistry" 
     class="org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry">
     <property name="tranRegistry">
-      <reference interface="javax.transaction.TransactionSynchronizationRegistry"/>
+      <reference interface="javax.transaction.TransactionSynchronizationRegistry"  availability="optional" />
     </property>
   </bean>
   
