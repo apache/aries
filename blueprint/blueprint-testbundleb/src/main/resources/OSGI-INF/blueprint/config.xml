@@ -58,5 +58,9 @@
   
   <!--  causes injection of a bean processor, which understands this sort of bean.. -->
   <bean id="ProcessedBean" class="org.apache.aries.blueprint.testbundleb.BeanForBeanProcessorTest" three:attribone="true"/>
+  
+  <reference activation="eager" 
+    availability="optional" 
+    interface="org.apache.aries.blueprint.testbundlea.InterfaceWithDependency" />
 </blueprint>
 
