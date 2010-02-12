@@ -1,202 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
 
-	<!--
-		Licensed to the Apache Software Foundation (ASF) under one or more
-		contributor license agreements. See the NOTICE file distributed with
-		this work for additional information regarding copyright ownership.
-		The ASF licenses this file to You under the Apache License, Version
-		2.0 (the "License"); you may not use this file except in compliance
-		with the License. You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
 
-		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
-		applicable law or agreed to in writing, software distributed under the
-		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-		CONDITIONS OF ANY KIND, either express or implied. See the License for
-		the specific language governing permissions and limitations under the
-		License.
-	-->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.apache.aries.application</groupId>
-		<artifactId>application</artifactId>
-		<version>1.0.0-incubating-SNAPSHOT</version>
-	</parent>
-
-	<artifactId>org.apache.aries.application.runtime.itests</artifactId>
-	<version>1.0.0-incubating-SNAPSHOT</version>
-	<packaging>jar</packaging>
-	<name>Apache Aries application runtime integration tests</name>
-	<description>
-       Integration tests for the Application runtime
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+-->
+<project>
+    <parent>
+        <artifactId>application</artifactId>
+        <groupId>org.apache.aries.application</groupId>
+        <version>1.0.0-incubating-SNAPSHOT</version>
+    </parent>
+    
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.apache.aries.application.runtime.itests</artifactId>
+    <version>1.0.0-incubating-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Apache Aries application runtime integration tests</name>
+    <description>
+        Integration tests for the Application runtime
     </description>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.api</artifactId>
+        </dependency>
 
-	<!--
-		pluginRepositories> <pluginRepository> <id>ops4j.releases</id>
-		<url>http://repository.ops4j.org/maven2</url> <snapshots>
-		<enabled>false</enabled> </snapshots> </pluginRepository>
-		</pluginRepositories
-	-->
+        <!-- Dependencies needed at test compile time -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+            <scope>test</scope>
+        </dependency>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.aries.application</groupId>
-			<artifactId>org.apache.aries.application.api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.application</groupId>
-			<artifactId>org.apache.aries.application.utils</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.application</groupId>
-			<artifactId>org.apache.aries.application.management</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.application</groupId>
-			<artifactId>org.apache.aries.application.runtime</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.application</groupId>
-			<artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-		  <groupId>org.apache.aries.testsupport</groupId>
-		  <artifactId>org.apache.aries.testsupport.unit</artifactId>
-		  <scope>provided</scope>
-	    </dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.core</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.compendium</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.blueprint</groupId>
-			<artifactId>org.apache.aries.blueprint.sample</artifactId>
-			<version>${version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.configadmin</artifactId>
-			<version>1.2.4</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries</groupId>
-			<artifactId>org.apache.aries.util</artifactId>
-			<version>${version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.blueprint</groupId>
-			<artifactId>org.apache.aries.blueprint</artifactId>
-			<version>${version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ops4j.pax.logging</groupId>
-			<artifactId>pax-logging-api</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ops4j.pax.logging</groupId>
-			<artifactId>pax-logging-service</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ops4j.pax.exam</groupId>
-			<artifactId>pax-exam</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ops4j.pax.exam</groupId>
-			<artifactId>pax-exam-junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ops4j.pax.exam</groupId>
-			<artifactId>pax-exam-container-default</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ops4j.pax.swissbox</groupId>
-			<artifactId>pax-swissbox-tinybundles</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.ops4j.pax.url</groupId>
-			<artifactId>pax-url-mvn</artifactId>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-junit</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.servicemix.tooling</groupId>
-				<artifactId>depends-maven-plugin</artifactId>
-				<version>1.1</version>
-				<executions>
-					<execution>
-						<id>generate-depends-file</id>
-						<goals>
-							<goal>generate-depends-file</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-container-default</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<forkMode>pertest</forkMode>
-					<excludes>
-						<exclude>**/*$*</exclude>
-						<exclude>**/Abstract*.java</exclude>
-					</excludes>
-					<includes>
-						<include>**/Test*.java</include>
-						<include>**/*Test.java</include>
-					</includes>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>4.2.0</version>
+            <scope>test</scope>
+        </dependency>
 
-	<profiles>
-		<profile>
-			<id>ci-build-profile</id>
-			<activation>
-				<property>
-					<name>maven.repo.local</name>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<!--
-								when the local repo location has been specified, we need to pass
-								on this information to PAX mvn url
-							-->
-							<argLine>-Dorg.ops4j.pax.url.mvn.localRepository=${maven.repo.local}</argLine>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
+            <scope>test</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.utils</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Dependencies needed at test runtime -->
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-service</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.configadmin</artifactId>
+            <version>1.2.4</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ops4j.pax.url</groupId>
+            <artifactId>pax-url-mvn</artifactId>
+            <scope>provided</scope>
+        </dependency>
+     
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.management</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.runtime</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.aries</groupId>
+            <artifactId>org.apache.aries.util</artifactId>
+            <version>${version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint</artifactId>
+            <version>${version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.servicemix.tooling</groupId>
+                <artifactId>depends-maven-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <id>generate-depends-file</id>
+                        <goals>
+                            <goal>generate-depends-file</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <forkMode>pertest</forkMode>
+                    <excludes>
+                        <exclude>**/*$*</exclude>
+                        <exclude>**/Abstract*.java</exclude>
+                        <!-- Remove the following exclude to test for ARIES-159 -->
+                        <exclude>**/MinimumImportsTest.java</exclude>
+                    </excludes>
+                    <includes>
+                        <include>**/Test*.java</include>
+                        <include>**/*Test.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>ci-build-profile</id>
+            <activation>
+                <property>
+                    <name>maven.repo.local</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <!--
+                                when the local repo location has been specified, we need to pass
+                                on this information to PAX mvn url
+                            -->
+                            <argLine>-Dorg.ops4j.pax.url.mvn.localRepository=${maven.repo.local}</argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
