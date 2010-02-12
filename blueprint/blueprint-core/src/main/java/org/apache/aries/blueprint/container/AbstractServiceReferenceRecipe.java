@@ -21,6 +21,9 @@ package org.apache.aries.blueprint.container;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,27 +33,28 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.sf.cglib.proxy.Dispatcher;
 import net.sf.cglib.proxy.Enhancer;
+
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.ExtendedServiceReferenceMetadata;
 import org.apache.aries.blueprint.di.AbstractRecipe;
-import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
+import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.utils.BundleDelegatingClassLoader;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
@@ -99,18 +103,67 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         this.metadata = metadata;
         this.listenersRecipe = listenersRecipe;
         this.explicitDependencies = explicitDependencies;
-        // Create a ClassLoader delegating to the bundle, but also being able to see our bundle classes
-        // so that the created proxy can access cglib classes.
-        // TODO: use a doPrivileged block
-        // TODO: we should be able to get rid of this classloader when using JDK 1.4 proxies with a single interface
-        //         (the case defined by the spec) and use the interface classloader instead
-        this.proxyClassLoader = new BundleDelegatingClassLoader(blueprintContainer.getBundleContext().getBundle(),
-                                                                getClass().getClassLoader());
+        
+        
+        this.proxyClassLoader = makeProxyClassLoader(blueprintContainer, metadata);
 
         this.optional = (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL);
         this.filter = createOsgiFilter(metadata);
     }
 
+
+
+    // Create a ClassLoader delegating to the bundle, but also being able to see our bundle classes
+    // so that the created proxy can access cglib classes.
+    // TODO: we should be able to get rid of this classloader when using JDK 1.4 proxies with a single interface
+    //         (the case defined by the spec) and use the interface classloader instead
+    private ClassLoader makeProxyClassLoader(
+        final ExtendedBlueprintContainer blueprintContainer,
+        ServiceReferenceMetadata metadata) {
+      
+      String typeName = metadata.getInterface();
+      
+      if (typeName == null) {
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+          public ClassLoader run() {
+            return new BundleDelegatingClassLoader(blueprintContainer.getBundleContext().getBundle(),
+                AbstractServiceReferenceRecipe.class.getClassLoader());
+          }      
+        });
+      }
+      
+      final ClassLoader interfaceClassLoader;
+      try {
+        Bundle clientBundle = blueprintContainer.getBundleContext().getBundle();
+        interfaceClassLoader = clientBundle.loadClass(typeName).getClassLoader();
+      } catch (ClassNotFoundException cnfe) {
+        throw new ComponentDefinitionException("Unable to load class " + typeName + " from recipe " + this, cnfe);
+      }
+      
+      final ClassLoader blueprintClassLoader = AbstractServiceReferenceRecipe.class.getClassLoader();
+      class DualClassloader extends ClassLoader {
+        DualClassloader() {
+          super(interfaceClassLoader);
+        }
+        
+        @Override
+        protected Class<?> findClass(String name) throws ClassNotFoundException {
+          return blueprintClassLoader.loadClass(name);
+        }
+
+        @Override
+        protected URL findResource(String name) {
+          return blueprintClassLoader.getResource(name);
+        }
+      }
+      
+      return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+        public ClassLoader run() {
+          return new DualClassloader();
+        }      
+      });
+    }
+    
     public CollectionRecipe getListenersRecipe() {
         return listenersRecipe;
     }
