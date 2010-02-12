@@ -140,28 +140,27 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         throw new ComponentDefinitionException("Unable to load class " + typeName + " from recipe " + this, cnfe);
       }
       
-      final ClassLoader blueprintClassLoader = AbstractServiceReferenceRecipe.class.getClassLoader();
-      class DualClassloader extends ClassLoader {
-        DualClassloader() {
-          super(interfaceClassLoader);
-        }
-        
-        @Override
-        protected Class<?> findClass(String name) throws ClassNotFoundException {
-          return blueprintClassLoader.loadClass(name);
-        }
-
-        @Override
-        protected URL findResource(String name) {
-          return blueprintClassLoader.getResource(name);
-        }
-      }
-      
       return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
         public ClassLoader run() {
-          return new DualClassloader();
+          return new DualClassloader(interfaceClassLoader);
         }      
       });
+    }
+
+    private static class DualClassloader extends ClassLoader {
+      DualClassloader(ClassLoader parent) {
+        super(parent);
+      }
+      
+      @Override
+      protected Class<?> findClass(String name) throws ClassNotFoundException {
+        return getClass().getClassLoader().loadClass(name);
+      }
+
+      @Override
+      protected URL findResource(String name) {
+        return getClass().getClassLoader().getResource(name);
+      }
     }
     
     public CollectionRecipe getListenersRecipe() {
