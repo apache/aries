@@ -61,8 +61,6 @@ public class MinimumImportsTest extends AbstractIntegrationTest {
         .manifest().symbolicName("org.apache.aries.application.itests.minimports")
           .attribute("Bundle-Version", "1.0.0")
           .attribute("Import-Package", "org.apache.aries.application.management")
-// use this line instead of the one above to workaround ARIES-159
-//          .attribute("Import-Package", "org.apache.aries.application.management,org.apache.aries.application.filesystem")
           .end()
         .binary("org/apache/aries/application/sample/appmgrclient/AppMgrClient.class", 
             MinimumImportsTest.class.getClassLoader().getResourceAsStream("org/apache/aries/application/sample/appmgrclient/AppMgrClient.class"))
