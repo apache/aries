@@ -108,7 +108,41 @@
 			<version>1.0.0-incubating-SNAPSHOT</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.install</artifactId>
+			<version>1.0.0-incubating-SNAPSHOT</version>
+		</dependency>
 
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.fileinstall</artifactId>
+			<version>2.0.8</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.api</artifactId>
+			<version>1.0.0-incubating-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.management</artifactId>
+			<version>1.0.0-incubating-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.runtime</artifactId>
+			<version>1.0.0-incubating-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.aries.application</groupId>
+			<artifactId>org.apache.aries.application.utils</artifactId>
+			<version>1.0.0-incubating-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.samples</groupId>
@@ -184,15 +218,40 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<zip basedir="${project.build.directory}"
+								     destfile="${project.build.directory}/blog.eba"
+								     includes="blog*.jar"/>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+                        <plugin>
+                                <groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+                                <executions>
+					<execution>
+					<configuration>
+						<artifact>
+							<file>${project.build.directory}/blog.eba</file>
+							<type>zip</type>
+						</artifact>
+					</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
 </project>
-
-        
-
-        
-        
-        
-        
-        
