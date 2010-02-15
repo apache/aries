@@ -44,4 +44,11 @@ public interface ApplicationContextManager {
    * @return The set of all ApplicationContexts.
    */
   public Set<ApplicationContext> getApplicationContexts();
+
+  /**
+   * Remove the provided ApplicationContext from the running system.
+   * 
+   * @param app the application to remove.
+   */
+  public void remove(ApplicationContext app);
 }
