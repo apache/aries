@@ -21,6 +21,8 @@ package org.apache.aries.application.management;
 
 import java.util.Set;
 
+import org.osgi.framework.BundleException;
+
 /**
  * An ApplicationContextManager is responsible for managing Aries applications in the 
  * server's OSGi runtime. We expect that many projects consuming this code will provide
@@ -33,8 +35,10 @@ public interface ApplicationContextManager {
    * started via an ApplicationContext. 
    * @param app The applicaton for which to obtain an ApplicationContext. 
    * @return ApplicationContext
+   * @throws BundleException 
+   * @throws ManagementException 
    */
-  public ApplicationContext getApplicationContext(AriesApplication app);
+  public ApplicationContext getApplicationContext(AriesApplication app) throws BundleException, ManagementException;
 
   /**
    * @return The set of all ApplicationContexts.
