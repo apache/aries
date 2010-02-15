@@ -28,7 +28,9 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.aries.application.management.ApplicationContext;
 import org.apache.aries.application.management.ApplicationContextManager;
 import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.ManagementException;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 
 public class ApplicationContextManagerImpl implements ApplicationContextManager {
 
@@ -43,7 +45,7 @@ public class ApplicationContextManagerImpl implements ApplicationContextManager 
     _bundleContext = b;
   }
   
-  public ApplicationContext getApplicationContext(AriesApplication app) {
+  public ApplicationContext getApplicationContext(AriesApplication app) throws BundleException, ManagementException {
     ApplicationContext result;
     if (_appToContextMap.containsKey(app)) { 
       result = _appToContextMap.get(app);
