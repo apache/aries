@@ -20,6 +20,7 @@
 package org.apache.aries.application.runtime.impl;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,16 +30,17 @@ import org.apache.aries.application.management.ApplicationContext;
 import org.apache.aries.application.management.ApplicationContextManager;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.ManagementException;
+import org.apache.aries.application.management.ApplicationContext.ApplicationState;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 
 public class ApplicationContextManagerImpl implements ApplicationContextManager {
 
-  ConcurrentMap<AriesApplication, ApplicationContext> _appToContextMap;
-  BundleContext _bundleContext;
+  private ConcurrentMap<AriesApplication, ApplicationContextImpl> _appToContextMap;
+  private BundleContext _bundleContext;
   
   public ApplicationContextManagerImpl () { 
-    _appToContextMap = new ConcurrentHashMap<AriesApplication, ApplicationContext>();
+    _appToContextMap = new ConcurrentHashMap<AriesApplication, ApplicationContextImpl>();
   }
   
   public void setBundleContext (BundleContext b) { 
@@ -46,12 +48,12 @@ public class ApplicationContextManagerImpl implements ApplicationContextManager 
   }
   
   public ApplicationContext getApplicationContext(AriesApplication app) throws BundleException, ManagementException {
-    ApplicationContext result;
+    ApplicationContextImpl result;
     if (_appToContextMap.containsKey(app)) { 
       result = _appToContextMap.get(app);
     } else { 
       result = new ApplicationContextImpl (_bundleContext, app);
-      ApplicationContext previous = _appToContextMap.putIfAbsent(app, result);
+      ApplicationContextImpl previous = _appToContextMap.putIfAbsent(app, result);
       if (previous != null) { 
         result = previous;
       }
@@ -61,10 +63,28 @@ public class ApplicationContextManagerImpl implements ApplicationContextManager 
 
   public Set<ApplicationContext> getApplicationContexts() {
     Set<ApplicationContext> result = new HashSet<ApplicationContext>();
-    for (Map.Entry<AriesApplication, ApplicationContext> entry: _appToContextMap.entrySet()) {
+    for (Map.Entry<AriesApplication, ApplicationContextImpl> entry: _appToContextMap.entrySet()) {
       result.add (entry.getValue());
     }
     return result;
   }
 
+  public void remove(ApplicationContext app)
+  {
+    Iterator<Map.Entry<AriesApplication, ApplicationContextImpl>> it = _appToContextMap.entrySet().iterator();
+    
+    while (it.hasNext()) {
+      Map.Entry<AriesApplication, ApplicationContextImpl> entry = it.next();
+      
+      ApplicationContextImpl potentialMatch = entry.getValue();
+      
+      if (potentialMatch == app) {
+        it.remove();
+        
+        potentialMatch.setState(ApplicationState.UNINSTALLED);
+        
+        break;
+      }
+    }
+  }
 }
