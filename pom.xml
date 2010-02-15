@@ -162,8 +162,6 @@
                     <excludes>
                         <exclude>**/*$*</exclude>
                         <exclude>**/Abstract*.java</exclude>
-                        <!-- Remove the following exclude to test for ARIES-159 -->
-                        <exclude>**/MinimumImportsTest.java</exclude>
                     </excludes>
                     <includes>
                         <include>**/Test*.java</include>
