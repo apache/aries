@@ -6,10 +6,8 @@
   <service>
       <interfaces>
           <value>javax.persistence.spi.PersistenceProvider</value>
-          <value>org.apache.openjpa.persistence.PersistenceProviderImpl</value>
       </interfaces>
       <service-properties>
-          <entry key="osgi.jpa.provider.version" value="1.0.0" />
           <entry key="javax.persistence.provider" value="org.apache.openjpa.persistence.PersistenceProviderImpl" />
       </service-properties>    
       <bean class="org.apache.openjpa.persistence.PersistenceProviderImpl" />
