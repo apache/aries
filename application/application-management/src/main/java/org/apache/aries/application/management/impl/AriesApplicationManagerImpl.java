@@ -226,7 +226,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     return null;
   } 
 
-  public ApplicationContext install(AriesApplication app) {
+  public ApplicationContext install(AriesApplication app) throws BundleException, ManagementException {
     ApplicationContext result = _applicationContextManager.getApplicationContext(app);
     return result;
   }

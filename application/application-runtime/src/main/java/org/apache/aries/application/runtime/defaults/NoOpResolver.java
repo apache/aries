@@ -23,6 +23,7 @@ import java.util.Set;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleInfo;
+import org.osgi.framework.Version;
 
 /** AriesApplicationManager requires that there be at least one 
  * AriesApplicationResolver service present. This class provides a null 
@@ -36,4 +37,8 @@ public class NoOpResolver implements AriesApplicationResolver {
     return app.getBundleInfo();
   }
 
+  public BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion)
+  {
+    return null;
+  }
 }

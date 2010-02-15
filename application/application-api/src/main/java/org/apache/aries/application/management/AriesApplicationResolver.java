@@ -21,6 +21,8 @@ package org.apache.aries.application.management;
 
 import java.util.Set;
 
+import org.osgi.framework.Version;
+
 public interface AriesApplicationResolver {
 
   /** Resolve an AriesApplication 
@@ -31,4 +33,14 @@ public interface AriesApplicationResolver {
    * @throws ResolverException if the application cannot be resolved.  
    */
   Set<BundleInfo> resolve (AriesApplication app) throws ResolverException ;
+
+  /** 
+   * Return the info for the requested bundle. If no matching bundle exists in the
+   * resolver runtime then null is returned.
+   * 
+   * @param bundleSymbolicName the bundle symbolic name.
+   * @param bundleVersion      the version of the bundle
+   * @return the BundleInfo for the requested bundle, or null if none could be found.
+   */
+  BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion);
 }

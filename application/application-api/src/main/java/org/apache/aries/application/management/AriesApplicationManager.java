@@ -53,8 +53,9 @@ public interface AriesApplicationManager
    * @param app Application to install 
    * @return ApplicationContext, a handle to an application in the runtime
    * @throws BundleException
+   * @throws ManagementException 
    */
-  public ApplicationContext install(AriesApplication app) throws BundleException;
+  public ApplicationContext install(AriesApplication app) throws BundleException, ManagementException;
   
   /**
    * Uninstall an AriesApplication - i.e. unload its bundles from the runtime. 

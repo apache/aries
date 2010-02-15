@@ -74,6 +74,10 @@ public class AriesApplicationManagerImplTest {
     void setNextResult (Set<BundleInfo> r) { 
       nextResult = r;
     }
+    public BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion)
+    {
+      return null;
+    }
   }
   
   static class DummyLocalPlatform implements LocalPlatform {
