@@ -160,4 +160,9 @@ public class ApplicationContextImpl implements ApplicationContext {
     }
     _state = ApplicationState.RESOLVED;
   }
+
+  public void setState(ApplicationState state)
+  {
+    _state = state;
+  }
 }
