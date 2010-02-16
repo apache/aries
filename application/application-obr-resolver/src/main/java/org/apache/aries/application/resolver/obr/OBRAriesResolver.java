@@ -22,8 +22,11 @@ package org.apache.aries.application.resolver.obr;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -79,16 +82,15 @@ public class OBRAriesResolver implements AriesApplicationResolver
       }
       return result;
     } else {
-      throw new ResolverException("Could not resolve requirements: " + toString(obrResolver.getUnsatisfiedRequirements()));
+      throw new ResolverException("Could not resolve requirements: " + getUnsatifiedRequirements(obrResolver));
     }
   }
 
   public BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion)
   {
     Map<String, String> attribs = new HashMap<String, String>();
-    attribs.put("BundleSymbolic-Name", bundleSymbolicName);
-    attribs.put("Bundle-Version", bundleVersion.toString());
-    String filterString = ManifestHeaderProcessor.generateFilter("bundle", bundleSymbolicName, attribs);
+    attribs.put(Resource.VERSION, bundleVersion.toString());
+    String filterString = ManifestHeaderProcessor.generateFilter(Resource.SYMBOLIC_NAME, bundleSymbolicName, attribs);
     Resource[] resources = repositoryAdmin.discoverResources(filterString);
     if (resources != null && resources.length > 0) {
       return toBundleInfo(resources[0]);
@@ -97,8 +99,20 @@ public class OBRAriesResolver implements AriesApplicationResolver
     }
   }
 
-  private String toString(Requirement[] unsatisfiedRequirements)
+  private String getUnsatifiedRequirements(Resolver resolver)
   {
+    Requirement[] reqs = resolver.getUnsatisfiedRequirements();
+    if (reqs != null) {
+      StringBuilder sb = new StringBuilder();
+      for (int reqIdx = 0; reqIdx < reqs.length; reqIdx++) {
+        sb.append("   " + reqs[reqIdx].getFilter()).append("\n");
+        Resource[] resources = resolver.getResources(reqs[reqIdx]);
+        for (int resIdx = 0; resIdx < resources.length; resIdx++) {
+          sb.append("      " + resources[resIdx].getPresentationName()).append("\n");
+        }
+      }
+      return sb.toString();
+    }
     return null;
   }
 
@@ -110,14 +124,20 @@ public class OBRAriesResolver implements AriesApplicationResolver
             location,
             null,
             null,
+            null,
+            null,
             null);
   }
 
   private Resource toResource(BundleInfo bundleInfo) throws ResolverException
   {
     String id = bundleInfo.getSymbolicName() + "_" + bundleInfo.getVersion();
-    Requirement[] requirements = toRequirements(bundleInfo.getImportPackage());
-    Capability[] capabilities = toCapabilities(bundleInfo.getExportPackage());
+    List<Requirement> requirements = new ArrayList<Requirement>();
+    requirements.addAll(toRequirements(bundleInfo.getImportPackage(), "package"));
+    requirements.addAll(toRequirements(bundleInfo.getImportService(), "service"));
+    List<Capability> capabilities = new ArrayList<Capability>();
+    capabilities.addAll(toPackageCapabilities(bundleInfo.getExportPackage()));
+    capabilities.addAll(toServiceCapabilities(bundleInfo.getExportService()));
     URL url;
     try {
       url = new URL(bundleInfo.getLocation());
@@ -130,23 +150,22 @@ public class OBRAriesResolver implements AriesApplicationResolver
             bundleInfo.getVersion(),
             id,
             url,
-            requirements,
-            capabilities,
+            requirements.toArray(new Requirement[requirements.size()]),
+            capabilities.toArray(new Capability[capabilities.size()]),
             null,
             null);
   }
 
-  private Requirement[] toRequirements(Set<Content> importPackage) throws ResolverException
+  private Collection<Requirement> toRequirements(Set<Content> imports, String type) throws ResolverException
   {
-    Requirement[] requirements = new Requirement[importPackage.size()];
-    int i = 0;
-    for (Content content: importPackage) {
-      requirements[i++] = toRequirement(content);
+    Collection<Requirement> requirements = new ArrayList<Requirement>(imports.size());
+    for (Content content: imports) {
+      requirements.add(toRequirement(content, type));
     }
     return requirements;
   }
 
-  private Requirement toRequirement(Content content) throws ResolverException
+  private Requirement toRequirement(Content content, String type) throws ResolverException
   {
     Map<String, String> attributes = new HashMap<String, String>();
     for (Map.Entry<String, String> entry: content.getNameValueMap().entrySet()) {
@@ -155,7 +174,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
         attributes.put(entry.getKey(), entry.getValue());
       }
     }
-    String filterString = ManifestHeaderProcessor.generateFilter("package", content.getContentName(), attributes);
+    String filterString = ManifestHeaderProcessor.generateFilter(type, content.getContentName(), attributes);
     Filter filter = null;
     try {
       filter = FrameworkUtil.createFilter(filterString);
@@ -173,18 +192,37 @@ public class OBRAriesResolver implements AriesApplicationResolver
             null);
   }
 
-  private Capability[] toCapabilities(Set<Content> exportPackage)
+  private Collection<Capability> toPackageCapabilities(Set<Content> exportPackage)
   {
-    Capability[] capabilities = new Capability[exportPackage.size()];
-    int i = 0;
+    Collection<Capability> capabilities = new ArrayList<Capability>(exportPackage.size());
     for (Content content: exportPackage) {
-      capabilities[i++] = toCapability(content);
+      capabilities.add(toPackageCapability(content));
     }
     return capabilities;
   }
 
-  private Capability toCapability(Content content)
+  private Capability toPackageCapability(Content content)
   {
-    return new CapabilityImpl(content.getContentName(), content.getNameValueMap());
+    Map<String,String> props = new HashMap<String,String>();
+    props.put("package", content.getContentName());
+    props.put("version", content.getVersion() != null ? content.getVersion().getMinimumVersion().toString() : Version.emptyVersion.toString());
+    return new CapabilityImpl("package", props);
   }
+
+  private Collection<Capability> toServiceCapabilities(Set<Content> exportPackage)
+  {
+    Collection<Capability> capabilities = new ArrayList<Capability>(exportPackage.size());
+    for (Content content: exportPackage) {
+      capabilities.add(toServiceCapability(content));
+    }
+    return capabilities;
+  }
+
+  private Capability toServiceCapability(Content content)
+  {
+    Map<String,String> props = new HashMap<String,String>();
+    props.put("service", content.getContentName());
+    return new CapabilityImpl("service", props);
+  }
+
 }

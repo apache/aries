@@ -38,15 +38,22 @@ public class OBRBundleInfo implements BundleInfo
   private final String location;
   private final Set<Content> importPackage;
   private final Set<Content> exportPackage;
+  private final Set<Content> importService;
+  private final Set<Content> exportService;
   private final Map<String, String> headers;
 
-  public OBRBundleInfo(String symbolicName, Version version, String location, Set<Content> importPackage, Set<Content> exportPackage, Map<String, String> headers)
+  public OBRBundleInfo(String symbolicName, Version version, String location,
+                       Set<Content> importPackage, Set<Content> exportPackage,
+                       Set<Content> importService, Set<Content> exportService,
+                       Map<String, String> headers)
   {
     this.symbolicName = symbolicName;
     this.version = version;
     this.location = location;
     this.importPackage = importPackage;
     this.exportPackage = exportPackage;
+    this.importService = importService;
+    this.exportService = exportService;
     this.headers = headers;
   }
 
@@ -77,14 +84,12 @@ public class OBRBundleInfo implements BundleInfo
 
   public Set<Content> getImportService()
   {
-    //TODO NYI
-    return null;
+    return importService;
   }
 
   public Set<Content> getExportService()
   {
-    //TODO NYI
-    return null;
+    return exportService;
   }
 
   public Map<String, String> getHeaders()
