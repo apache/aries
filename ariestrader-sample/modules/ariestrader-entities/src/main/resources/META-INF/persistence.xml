@@ -36,8 +36,29 @@
             <property name="openjpa.Sequence" value="table(Table=OPENJPASEQ, Increment=100)"/>
             <property name="openjpa.jdbc.UpdateManager" value="org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager"/>
         </properties>
+    </persistence-unit>
         
-        
+    <persistence-unit transaction-type="JTA" name="ariestrader-cm">
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <!--<jta-data-source>javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/TradeDataSource)</jta-data-source>-->
+        <!--<non-jta-data-source>javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/NoTxTradeDataSource)</non-jta-data-source>-->
+        <jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/TradeDataSource)</jta-data-source>
+        <non-jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/NoTxTradeDataSource)</non-jta-data-source>
+         
+        <class>org.apache.aries.samples.ariestrader.beans.AccountDataBeanImpl</class>
+        <class>org.apache.aries.samples.ariestrader.beans.AccountProfileDataBeanImpl</class>
+        <class>org.apache.aries.samples.ariestrader.beans.HoldingDataBeanImpl</class>
+        <class>org.apache.aries.samples.ariestrader.beans.OrderDataBeanImpl</class>
+        <class>org.apache.aries.samples.ariestrader.beans.QuoteDataBeanImpl</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+       
+        <properties>
+            <property name="openjpa.BrokerImpl" value="non-finalizing" /> 
+            <property name="openjpa.Sequence" value="table(Table=OPENJPASEQ, Increment=100)"/>
+            <property name="openjpa.jdbc.UpdateManager" value="org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager"/>
+        </properties>
+    </persistence-unit>
+
         <!-- 
         <properties>
             <property name="openjpa.jdbc.DBDictionary" value="derby" />
@@ -50,5 +71,4 @@
             <property name="openjpa.jdbc.UpdateManager" value="com.ibm.ws.persistence.jdbc.kernel.OperationOrderUpdateManager(batchLimit=0)" /> 
         </properties>
         -->
-    </persistence-unit>
 </persistence>
