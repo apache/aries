@@ -46,6 +46,7 @@
         <module>jpa</module>
         <module>spi-fly</module>
         <module>samples</module>
+        <module>ariestrader-sample</module>
   </modules>
 
 </project>
