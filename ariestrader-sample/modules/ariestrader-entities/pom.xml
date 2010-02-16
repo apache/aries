@@ -131,6 +131,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
+                        <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
                         <Export-Package>
                             org.apache.aries.samples.ariestrader.beans;version="${pom.version}"
                         </Export-Package>
