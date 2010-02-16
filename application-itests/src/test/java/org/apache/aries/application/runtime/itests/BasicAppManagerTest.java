@@ -25,7 +25,6 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Arrays;
 
 import org.apache.aries.application.management.ApplicationContext;
 import org.apache.aries.application.management.AriesApplication;
@@ -61,7 +60,7 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
         .binary("org/apache/aries/sample/impl/HelloWorldImpl.class", 
             BasicAppManagerTest.class.getClassLoader().getResourceAsStream("org/apache/aries/sample/impl/HelloWorldImpl.class"))
         .binary("OSGI-INF/blueprint/sample-blueprint.xml", 
-            BasicAppManagerTest.class.getClassLoader().getResourceAsStream("sample-blueprint.xml"))
+            BasicAppManagerTest.class.getClassLoader().getResourceAsStream("basic/sample-blueprint.xml"))
         .end();
       
     FileOutputStream fout = new FileOutputStream("test.eba");
@@ -69,7 +68,7 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
     fout.close();
     
     ZipFixture testEba2 = testEba.binary("META-INF/APPLICATION.MF", 
-        BasicAppManagerTest.class.getClassLoader().getResourceAsStream("APPLICATION.MF"))
+        BasicAppManagerTest.class.getClassLoader().getResourceAsStream("basic/APPLICATION.MF"))
         .end();
     fout = new FileOutputStream("test2.eba");
     testEba2.writeOut(fout);
