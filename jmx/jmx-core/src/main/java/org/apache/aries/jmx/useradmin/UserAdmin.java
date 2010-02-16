@@ -255,7 +255,7 @@ public class UserAdmin implements UserAdminMBean {
         try {
             roles = userAdmin.getRoles(filter);
         } catch (InvalidSyntaxException ise) {
-            throw new IOException("Operation fails illegal filter provided" + ise);
+            throw new IOException("Operation fails illegal filter provided: " + filter, ise);
         }
 
         if (roles == null) {
@@ -358,7 +358,7 @@ public class UserAdmin implements UserAdminMBean {
         try {
             roles = userAdmin.getRoles(filter);
         } catch (InvalidSyntaxException ise) {
-            throw new IOException("Operation fails illegal filter provided" + ise);
+            throw new IOException("Operation fails illegal filter provided: " + filter, ise);
         }
         if (roles == null) {
             return null;
@@ -397,7 +397,7 @@ public class UserAdmin implements UserAdminMBean {
         try {
             roles = userAdmin.getRoles(filter);
         } catch (InvalidSyntaxException ise) {
-            throw new IOException("Operation fails illegal filter provided" + ise);
+            throw new IOException("Operation fails illegal filter provided: " + filter, ise);
         }
         if (roles == null) {
             return null;

@@ -81,7 +81,7 @@ public class Framework implements FrameworkMBean {
             Bundle bundle = context.installBundle(location);
             return bundle.getBundleId();
         } catch (BundleException e) {
-            throw new IOException("Can't install bundle with location" + location);
+            throw new IOException("Can't install bundle with location " + location, e);
         }
     }
 
@@ -102,7 +102,7 @@ public class Framework implements FrameworkMBean {
 
                 }
             }
-            throw new IOException("Can't install bundle with location" + location);
+            throw new IOException("Can't install bundle with location " + location, e);
         }
     }
 
@@ -218,7 +218,7 @@ public class Framework implements FrameworkMBean {
         try {
             bundle.update();
         } catch (BundleException be) {
-            throw new IOException("Failed to restart framework " + be);
+            throw new IOException("Failed to restart framework", be);
         }
 
     }
@@ -275,7 +275,7 @@ public class Framework implements FrameworkMBean {
         try {
             bundle.stop();
         } catch (BundleException be) {
-            throw new IOException("Failed to shutdown framework " + be);
+            throw new IOException("Failed to shutdown framework", be);
         }
 
     }
@@ -289,7 +289,7 @@ public class Framework implements FrameworkMBean {
             try {
                 bundle.start();
             } catch (BundleException be) {
-                throw new IOException("Failed to start bundle with id " + bundleIdentifier);
+                throw new IOException("Failed to start bundle with id " + bundleIdentifier, be);
             }
         }
     }
@@ -320,7 +320,7 @@ public class Framework implements FrameworkMBean {
             try {
                 bundle.stop();
             } catch (BundleException e) {
-                throw new IOException("Failed to stop bundle with id " + bundleIdentifier);
+                throw new IOException("Failed to stop bundle with id " + bundleIdentifier, e);
             }
         }
     }
@@ -351,7 +351,7 @@ public class Framework implements FrameworkMBean {
             try {
                 bundle.uninstall();
             } catch (BundleException be) {
-                throw new IOException("Failed to uninstall bundle with id " + bundleIdentifier);
+                throw new IOException("Failed to uninstall bundle with id " + bundleIdentifier, be);
             }
         }
 
@@ -383,7 +383,7 @@ public class Framework implements FrameworkMBean {
         try {
             bundle.update();
         } catch (BundleException be) {
-            throw new IOException("Failed to update bundle with id " + bundleIdentifier);
+            throw new IOException("Failed to update bundle with id " + bundleIdentifier, be);
         }
 
     }
@@ -405,7 +405,7 @@ public class Framework implements FrameworkMBean {
 
                 }
             }
-            throw new IOException("Can't update system bundle " + be);
+            throw new IOException("Can't update system bundle", be);
         }
 
     }
@@ -456,7 +456,7 @@ public class Framework implements FrameworkMBean {
         try {
             bundle.update();
         } catch (BundleException be) {
-            throw new IOException("Failed to update system bundle " + be);
+            throw new IOException("Failed to update system bundle", be);
         }
 
     }
