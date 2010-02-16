@@ -37,8 +37,12 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Activator implements BundleActivator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("org.apache.aries.jmx.blueprint");
 
     protected BundleContext bundleContext;
 
@@ -62,7 +66,7 @@ public class Activator implements BundleActivator {
         // if there has been already a MBeanServer Service in place, this MBeanServerServiceTracker won't miss it
         mbeanServiceTracker = new ServiceTracker(bundleContext, MBeanServer.class.getCanonicalName(),
                 new MBeanServerServiceTracker());
-        System.out.println("Awaiting MBeanServer service registration"); // Fine
+        LOGGER.debug("Awaiting MBeanServer service registration");
         mbeanServiceTracker.open();
     }
 
@@ -78,25 +82,25 @@ public class Activator implements BundleActivator {
 
         public Object addingService(ServiceReference servicereference) {
             try {
-                System.out.println("Adding MBeanServer: " + servicereference); // Fine
+                LOGGER.debug("Adding MBeanServer: {}", servicereference);
                 final MBeanServer mbeanServer = (MBeanServer) bundleContext.getService(servicereference);
                 Activator.this.mbeanServers.add(mbeanServer);
                 Activator.this.processRegister(mbeanServer);
                 return mbeanServer;
             } catch (RuntimeException e) {
-                System.out.println("uncaught exception in addingService" + e); // Severe
+                LOGGER.error("uncaught exception in addingService", e);
                 throw e;
             }
         }
 
         public void removedService(ServiceReference servicereference, Object obj) {
             try {
-                System.out.println("Removing MBeanServer: " + servicereference); // Fine
+                LOGGER.debug("Removing MBeanServer: {}", servicereference);
                 final MBeanServer mbeanServer = (MBeanServer) bundleContext.getService(servicereference);
                 Activator.this.mbeanServers.remove(mbeanServer);
                 Activator.this.processDeregister(mbeanServer);
             } catch (Throwable e) {
-                System.out.println("uncaught exception in removedService"); // Fine
+                LOGGER.debug("uncaught exception in removedService", e);
             }
         }
 
@@ -136,41 +140,41 @@ public class Activator implements BundleActivator {
         try {
             blueprintState = new RegistrationStandardMBean(new BlueprintState(bundleContext), BlueprintStateMBean.class);
         } catch (NotCompliantMBeanException e) {
-            System.out.println("Unable to create StandardMBean for BlueprintState" + e); // Severe
+            LOGGER.error("Unable to create StandardMBean for BlueprintState", e);
             return;
         }
 
         // register BlueprintStateMBean to MBean server
-        System.out.println("Registering bundle state monitor with MBeanServer: " + mbeanServer + " with name: "
-                + blueprintStateName); // Fine
+        LOGGER.debug("Registering bundle state monitor with MBeanServer: {} with name: {}",
+                        mbeanServer, blueprintStateName);
         try {
             mbeanServer.registerMBean(blueprintState, blueprintStateName);
         } catch (InstanceAlreadyExistsException e) {
-            System.out.println("Cannot register BlueprintStateMBean"); // Fine
+            LOGGER.debug("Cannot register BlueprintStateMBean");
         } catch (MBeanRegistrationException e) {
-            System.out.println("Cannot register BlueprintStateMBean" + e); // Severe
+            LOGGER.error("Cannot register BlueprintStateMBean", e);
         } catch (NotCompliantMBeanException e) {
-            System.out.println("Cannot register BlueprintStateMBean" + e); // Severe
+            LOGGER.error("Cannot register BlueprintStateMBean", e);
         }
 
         // create BlueprintMetadataMBean
         try {
             blueprintMetadata = new StandardMBean(new BlueprintMetadata(bundleContext), BlueprintMetadataMBean.class);
         } catch (NotCompliantMBeanException e) {
-            System.out.println("Unable to create StandardMBean for BlueprintMetadata" + e); // Severe
+            LOGGER.error("Unable to create StandardMBean for BlueprintMetadata", e);
             return;
         }
         // register BlueprintMetadataMBean to MBean server
-        System.out.println("Registering bundle metadata monitor with MBeanServer: " + mbeanServer + " with name: "
-                + blueprintMetadataName); // Fine
+        LOGGER.debug("Registering bundle metadata monitor with MBeanServer: {} with name: {}",
+                    mbeanServer, blueprintMetadataName);
         try {
             mbeanServer.registerMBean(blueprintMetadata, blueprintMetadataName);
         } catch (InstanceAlreadyExistsException e) {
-            System.out.println("Cannot register BlueprintMetadataMBean"); // Fine
+            LOGGER.debug("Cannot register BlueprintMetadataMBean");
         } catch (MBeanRegistrationException e) {
-            System.out.println("Cannot register BlueprintMetadataMBean" + e); // Severe
+            LOGGER.error("Cannot register BlueprintMetadataMBean", e);
         } catch (NotCompliantMBeanException e) {
-            System.out.println("Cannot register BlueprintMetadataMBean" + e); // Severe
+            LOGGER.error("Cannot register BlueprintMetadataMBean", e);
         }
 
         servicesRegistered.set(true);
@@ -184,9 +188,9 @@ public class Activator implements BundleActivator {
         try {
             mbeanServer.unregisterMBean(blueprintStateName);
         } catch (InstanceNotFoundException e) {
-            System.out.println("BlueprintStateMBean not found on deregistration"); // Finest
+            LOGGER.debug("BlueprintStateMBean not found on deregistration");
         } catch (MBeanRegistrationException e) {
-            System.out.println("BlueprintStateMBean deregistration problem"); // Fine
+            LOGGER.error("BlueprintStateMBean deregistration problem");
         }
         blueprintState = null;
 
@@ -194,9 +198,9 @@ public class Activator implements BundleActivator {
         try {
             mbeanServer.unregisterMBean(blueprintMetadataName);
         } catch (InstanceNotFoundException e) {
-            System.out.println("BlueprintMetadataMBean not found on deregistration"); // Finest
+            LOGGER.debug("BlueprintMetadataMBean not found on deregistration");
         } catch (MBeanRegistrationException e) {
-            System.out.println("BlueprintMetadataMBean deregistration problem"); // Fine
+            LOGGER.error("BlueprintMetadataMBean deregistration problem");
         }
         blueprintMetadata = null;
 
