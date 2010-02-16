@@ -355,7 +355,7 @@ public class ManifestHeaderProcessor
    * <p>
    * Result is returned as a list, as export does allow duplicate package exports.
    * 
-   * @param s The data to parse.
+   * @param list The data to parse.
    * @return List of NameValuePairs, where each Name in the list is an exported package, 
    *         with its associated Value being a NameValueMap of any attributes declared. 
    */
