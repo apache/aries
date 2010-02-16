@@ -19,15 +19,20 @@
 package org.apache.aries.blueprint.utils;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,7 +46,7 @@ import java.util.WeakHashMap;
 public class ReflectionUtils {
 
     // TODO: MLK: PropertyDescriptor holds a reference to Method which holds a reference to the Class itself
-    private static Map<Class, PropertyDescriptor[]> beanInfos = Collections.synchronizedMap(new WeakHashMap<Class, PropertyDescriptor[]>());
+    private static Map<Class<?>, PropertyDescriptor[][]> beanInfos = Collections.synchronizedMap(new WeakHashMap<Class<?>, PropertyDescriptor[][]>());
 
     public static boolean hasDefaultConstructor(Class type) {
         if (!Modifier.isPublic(type.getModifiers())) {
@@ -114,74 +119,97 @@ public class ReflectionUtils {
         return methods;
     }
 
-    public static PropertyDescriptor[] getPropertyDescriptors(Class clazz) {
-        PropertyDescriptor[] properties = beanInfos.get(clazz);
+    public static PropertyDescriptor[] getPropertyDescriptors(Class clazz, boolean allowFieldInjection) {
+        PropertyDescriptor[][] properties = beanInfos.get(clazz);
+        int index = allowFieldInjection ? 0 : 1;
+        
         if (properties == null) {
-            List<PropertyDescriptor> props = new ArrayList<PropertyDescriptor>();
+            properties = new PropertyDescriptor[2][];
+            beanInfos.put(clazz, properties);
+        }
+        
+        if (properties[index] == null) {
+            Map<String,PropertyDescriptor> props = new HashMap<String, PropertyDescriptor>();
             for (Method method : clazz.getMethods()) {
                 if (Modifier.isStatic(method.getModifiers()) || method.isBridge()) {
                     continue;
                 }
                 String name = method.getName();
-                Class argTypes[] = method.getParameterTypes();
-                Class resultType = method.getReturnType();
+                Class<?> argTypes[] = method.getParameterTypes();
+                Class<?> resultType = method.getReturnType();
+                
+                Class<?> argType = resultType;
+                Method getter = null;
+                Method setter = null;
+                
                 if (name.length() > 3 && name.startsWith("set") && resultType == Void.TYPE && argTypes.length == 1) {
-                    props.add(new PropertyDescriptor(decapitalize(name.substring(3)), argTypes[0], null, method));
-
+                    name = decapitalize(name.substring(3));
+                    setter = method;
+                    argType = argTypes[0];
                 } else if (name.length() > 3 && name.startsWith("get") && argTypes.length == 0) {
-                    props.add(new PropertyDescriptor(decapitalize(name.substring(3)), resultType, method, null));
+                    name = decapitalize(name.substring(3));
+                    getter = method;
                 } else if (name.length() > 2 && name.startsWith("is") && argTypes.length == 0 && resultType == boolean.class) {
-                    props.add(new PropertyDescriptor(decapitalize(name.substring(2)), resultType, method, null));
+                    name = decapitalize(name.substring(2));
+                    getter = method;
+                } else {
+                    continue;
+                }
+                
+                if (props.containsKey(name)) {
+                    PropertyDescriptor pd = props.get(name);
+                    if (pd != INVALID_PROPERTY) {
+                        if (!argType.equals(pd.type)) {
+                            props.put(name, INVALID_PROPERTY);
+                        } else if (getter != null) {
+                            if (pd.getter == null || pd.getter.equals(getter))
+                                pd.getter = getter;
+                            else
+                                props.put(name, INVALID_PROPERTY);
+                        } else if (setter != null) {
+                            if (pd.setter == null || pd.setter.equals(setter)) 
+                                pd.setter = setter;
+                            else
+                                props.put(name, INVALID_PROPERTY);
+                        }
+                    }
+                } else {
+                    props.put(name, new PropertyDescriptor(name, argType, getter, setter));
                 }
             }
-            PropertyDescriptor[] pds = props.toArray(new PropertyDescriptor[props.size()]);
-            for (int i = 0; i < pds.length - 1; i++) {
-                boolean remove = false;
-                for (int j = i + 1; j < pds.length; j++) {
-                    if (pds[i] != null && pds[j] != null) {
-                        if (pds[i].name.equals(pds[j].name)) {
-                            if (remove || !pds[i].type.equals(pds[j].type)) {
-                                remove = true;
-                                pds[j] = null;
-                                continue;
-                            } else {
-                                if (pds[j].getter != null) {
-                                    if (pds[i].getter == null) {
-                                        pds[i].getter = pds[j].getter;
-                                    } else if (pds[i].getter != pds[j].getter) {
-                                        remove = true;
-                                        pds[j] = null;
-                                        continue;
-                                    }
-                                }
-                                if (pds[j].setter != null) {
-                                    if (pds[i].setter == null) {
-                                        pds[i].setter = pds[j].setter;
-                                    } else if (pds[i].setter != pds[j].setter) {
-                                        remove = true;
-                                        pds[j] = null;
-                                        continue;
-                                    }
-                                }
-                            }
+            
+            if (allowFieldInjection) {
+                for (Field field : clazz.getDeclaredFields()) {
+                    if (Modifier.isStatic(field.getModifiers())) {
+                        continue;
+                    }
+                    
+                    String name = decapitalize(field.getName());
+                    if (!props.containsKey(name)) {
+                        props.put(name, new PropertyDescriptor(name, field.getType(), field));
+                    } else {
+                        PropertyDescriptor pd = props.get(name);
+                        if (pd != INVALID_PROPERTY) {
+                            if (pd.type.equals(field.getType())) {
+                                pd.field = field;
+                            } 
+                            // no else, we don't require field implementations to have the same
+                            // type as the getter and setter
                         }
                     }
                 }
-                if (remove) {
-                    pds[i] = null;
-                }
             }
-            props.clear();
-            for (int i = 0; i < pds.length - 1; i++) {
-                if (pds[i] != null) {
-                    pds[i].type = null;
-                    props.add(pds[i]);
-                }
+            
+            Iterator<PropertyDescriptor> it = props.values().iterator();
+            while (it.hasNext()) {
+                if (it.next() == INVALID_PROPERTY)
+                    it.remove();
             }
-            properties = props.toArray(new PropertyDescriptor[props.size()]);
-            beanInfos.put(clazz, properties);
+            
+            Collection<PropertyDescriptor> tmp = props.values();
+            properties[index] = tmp.toArray(new PropertyDescriptor[tmp.size()]); 
         }
-        return properties;
+        return properties[index];
     }
 
     private static String decapitalize(String name) {
@@ -245,29 +273,112 @@ public class ReflectionUtils {
         }
     }
     
+    private static final PropertyDescriptor INVALID_PROPERTY = new PropertyDescriptor(null, null, null, null);
+
     public static class PropertyDescriptor {
         private String name;
-        private Class type;
+        private Class<?> type;
         private Method getter;
         private Method setter;
+        private Field field;
 
-        public PropertyDescriptor(String name, Class type, Method getter, Method setter) {
+        public PropertyDescriptor(String name, Class<?> type, Method getter, Method setter) {
             this.name = name;
             this.type = type;
             this.getter = getter;
             this.setter = setter;
         }
+        
+        public PropertyDescriptor(String name, Class<?> type, Field field) {
+            this.name = name;
+            this.type = type;
+            this.field = field;
+            this.getter = null;
+            this.setter = null;
+        }
 
         public String getName() {
             return name;
         }
-
-        public Method getGetter() {
-            return getter;
+        
+        public boolean allowsGet() {
+            return getter != null || field != null;
+        }
+        
+        public boolean allowsSet() {
+            return setter != null || field != null;
+        }
+        
+        public Object get(final Object instance, AccessControlContext acc) throws Exception {            
+            if (acc == null) {
+                return internalGet(instance);
+            } else {
+                try {
+                    return AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+                        public Object run() throws Exception {
+                            return internalGet(instance);
+                        }            
+                    }, acc);
+                } catch (PrivilegedActionException e) {
+                    throw e.getException();
+                }
+            }
+        }
+            
+        private Object internalGet(Object instance) 
+                throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+            if (getter != null) {
+                return getter.invoke(instance);
+            } else if (field != null) {
+                field.setAccessible(true);
+                return field.get(instance);
+            } else {
+                throw new UnsupportedOperationException();
+            }
         }
 
-        public Method getSetter() {
-            return setter;
+        public void set(final Object instance, final Object value, AccessControlContext acc) throws Exception {
+            if (acc == null) {
+                internalSet(instance, value);
+            } else {
+                try {
+                    AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+                        public Object run() throws Exception {
+                            internalSet(instance, value);
+                            return null;
+                        }            
+                    }, acc);
+                } catch (PrivilegedActionException e) {
+                    throw e.getException();
+                }
+            }            
+        }
+        
+        private void internalSet(Object instance, Object value) 
+                throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+            if (setter != null) {
+                setter.invoke(instance, value);
+            } else if (field != null) {
+                field.setAccessible(true);
+                field.set(instance, value);
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        }
+        
+        public Type getGenericType() {
+            if (setter != null)
+                return setter.getGenericParameterTypes()[0];
+            else if (getter != null)
+                return getter.getGenericReturnType();
+            else 
+                return field.getGenericType();
+                
+        }
+        
+        public String toString() {
+            return "PropertyDescriptor <name: "+name+", getter: "+getter+", setter: "+setter+
+                ", field: "+field+">";
         }
     }
 

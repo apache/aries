@@ -41,6 +41,7 @@ import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.proxy.AsmInterceptorWrapper;
 import org.apache.aries.blueprint.proxy.CgLibInterceptorWrapper;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
+import org.apache.aries.blueprint.utils.ReflectionUtils.PropertyDescriptor;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -70,12 +71,14 @@ public class BeanRecipe extends AbstractRecipe {
     private List<Object> arguments;
     private List<String> argTypes;
     private boolean reorderArguments;
+    private final boolean allowsFieldInjection;
 
 
-    public BeanRecipe(String name, ExtendedBlueprintContainer blueprintContainer, Object type) {
+    public BeanRecipe(String name, ExtendedBlueprintContainer blueprintContainer, Object type, boolean allowsFieldInjection) {
         super(name);
         this.blueprintContainer = blueprintContainer;
         this.type = type;
+        this.allowsFieldInjection = allowsFieldInjection;
     }
 
     public Object getProperty(String name) {
@@ -744,10 +747,10 @@ public class BeanRecipe extends AbstractRecipe {
     private void setProperty(Object instance, Class clazz, String propertyName, Object propertyValue) {
         String[] names = propertyName.split("\\.");
         for (int i = 0; i < names.length - 1; i++) {
-            Method getter = getPropertyDescriptor(clazz, names[i]).getGetter();
-            if (getter != null) {
+            PropertyDescriptor pd = getPropertyDescriptor(clazz, names[i]);
+            if (pd.allowsGet()) {
                 try {
-                    instance = invoke(getter, instance, (Object[]) null);
+                    instance = pd.get(instance, blueprintContainer.getAccessControlContext());
                 } catch (Exception e) {
                     throw new ComponentDefinitionException("Error getting property: " + names[i] + " on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName(), getRealCause(e));
                 }
@@ -759,10 +762,10 @@ public class BeanRecipe extends AbstractRecipe {
                 throw new ComponentDefinitionException("No getter for " + names[i] + " property on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName());
             }
         }
-        Method setter = getPropertyDescriptor(clazz, names[names.length - 1]).getSetter();
-        if (setter != null) {
+        final PropertyDescriptor pd = getPropertyDescriptor(clazz, names[names.length - 1]);
+        if (pd.allowsSet()) {
             // convert the value to type of setter/field
-            Type type = setter.getGenericParameterTypes()[0];
+            Type type = pd.getGenericType();
             // Instanciate value
             if (propertyValue instanceof Recipe) {
                 propertyValue = ((Recipe) propertyValue).create();
@@ -775,21 +778,20 @@ public class BeanRecipe extends AbstractRecipe {
                 throw new ComponentDefinitionException("Unable to convert property value" +
                         " from " + valueType +
                         " to " + memberType +
-                        " for injection " + setter, e);
+                        " for injection " + pd, e);
             }
             try {
-                // set value
-                invoke(setter, instance, propertyValue);
+                pd.set(instance, propertyValue, blueprintContainer.getAccessControlContext());
             } catch (Exception e) {
-                throw new ComponentDefinitionException("Error setting property: " + setter, getRealCause(e));
+                throw new ComponentDefinitionException("Error setting property: " + pd, getRealCause(e));
             }
         } else {
             throw new ComponentDefinitionException("No setter for " + names[names.length - 1] + " property");
         }
     }
 
-    private ReflectionUtils.PropertyDescriptor getPropertyDescriptor(Class clazz, String name) {
-        for (ReflectionUtils.PropertyDescriptor pd : ReflectionUtils.getPropertyDescriptors(clazz)) {
+    private ReflectionUtils.PropertyDescriptor getPropertyDescriptor(Class<?> clazz, String name) {
+        for (ReflectionUtils.PropertyDescriptor pd : ReflectionUtils.getPropertyDescriptors(clazz, allowsFieldInjection)) {
             if (pd.getName().equals(name)) {
                 return pd;
             }
