@@ -41,4 +41,10 @@ public interface ExtendedBeanMetadata extends BeanMetadata {
     
     Class<?> getRuntimeClass();
 
+    /**
+     * Whether the bean allows properties to be injected directly into its fields in the case
+     * where an appropriate setter method is not available.
+     * @return Whether field injection is allowed
+     */
+    boolean getFieldInjection();
 }

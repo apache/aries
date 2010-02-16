@@ -114,5 +114,7 @@
             </xsd:restriction>
         </xsd:simpleType>
     </xsd:attribute>
+    
+    <xsd:attribute name="field-injection" type="xsd:boolean" default="false" />
 
 </xsd:schema>
