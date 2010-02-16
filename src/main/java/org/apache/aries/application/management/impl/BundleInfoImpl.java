@@ -41,6 +41,8 @@ public class BundleInfoImpl implements BundleInfo {
   private Attributes _attributes;
   private Set<Content> _exportPackages = null;
   private Set<Content> _importPackages = null;
+  private Set<Content> _exportServices = null;
+  private Set<Content> _importServices = null;
   private String _location;
   private ApplicationMetadataFactory _applicationMetadataFactory;
   
@@ -55,11 +57,17 @@ public class BundleInfoImpl implements BundleInfo {
   public Set<Content> getExportPackage() {
     if (_exportPackages == null) { 
       _exportPackages = getContentSetFromHeader (_attributes, Constants.EXPORT_PACKAGE);
-    
     }
     return _exportPackages;
   }
   
+  public Set<Content> getExportService() {
+    if (_exportServices == null) {
+      _exportServices = getContentSetFromHeader (_attributes, Constants.EXPORT_SERVICE);
+    }
+    return _exportPackages;
+  }
+
   public Map<String, String> getHeaders() {
     Set<Entry<Object, Object>> headers = _attributes.entrySet();
     Map<String, String> result = new HashMap<String, String>();
@@ -72,9 +80,15 @@ public class BundleInfoImpl implements BundleInfo {
   public Set<Content> getImportPackage() {
     if (_importPackages == null) { 
       _importPackages = getContentSetFromHeader (_attributes, Constants.IMPORT_PACKAGE);
-    
     }
     return _importPackages;
+  }
+
+  public Set<Content> getImportService() {
+    if (_importServices == null) {
+      _importServices = getContentSetFromHeader (_attributes, Constants.IMPORT_SERVICE);
+    }
+    return _importServices;
   }
 
   public String getLocation() {
