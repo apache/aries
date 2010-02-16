@@ -56,18 +56,6 @@ public class JPAContainerTest {
   @Before
   public void setupApplication() throws Exception
   {
-    Bundle openJPA = getBundle("org.apache.openjpa");
-    
-    Class<? extends PersistenceProvider> clz = openJPA.loadClass("org.apache.openjpa.persistence.PersistenceProviderImpl");
-    
-    PersistenceProvider provider = clz.newInstance();
-    
-    Hashtable props = new Hashtable();
-    
-    props.put("javax.persistence.provider", "org.apache.openjpa.persistence.PersistenceProviderImpl");
-    
-    openJPA.getBundleContext().registerService(PersistenceProvider.class.getName(), provider, props);
-    
     //Wait for everything to be started then refresh the app
     Thread.sleep(3000);
     
@@ -77,7 +65,6 @@ public class JPAContainerTest {
     pa.refreshPackages(new Bundle[] {app});
   }
   
-  //This test will run once there is an updated OpenJPA bundle that uses the latest JPA API
   @Test
   public void findEntityManagerFactory() throws Exception {
     EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(osgi.unit.name=test-unit)", DEFAULT_TIMEOUT);
