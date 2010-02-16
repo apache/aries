@@ -173,20 +173,20 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
             }
           }
         } 
-        if (deploymentMetadata != null) { 
-          application = new AriesApplicationImpl (applicationMetadata, deploymentMetadata, extraBundlesInfo, _localPlatform);
-        } else { 
-          application = new AriesApplicationImpl (applicationMetadata, extraBundlesInfo, _localPlatform);
-          Set<BundleInfo> additionalBundlesRequired = _resolver.resolve(application);
-          deploymentMetadata = _deploymentMetadataFactory.createDeploymentMetadata(application, additionalBundlesRequired);
-          application.setDeploymentMetadata(deploymentMetadata);
-        
-          // Store a reference to any modified bundles
-          application.setModifiedBundles (modifiedBundles);
-        }
-        
       }
-    } catch (IOException iox) { 
+
+      if (deploymentMetadata != null) { 
+        application = new AriesApplicationImpl (applicationMetadata, deploymentMetadata, extraBundlesInfo, _localPlatform);
+      } else {
+        application = new AriesApplicationImpl (applicationMetadata, extraBundlesInfo, _localPlatform);
+        Set<BundleInfo> additionalBundlesRequired = _resolver.resolve(application);
+        deploymentMetadata = _deploymentMetadataFactory.createDeploymentMetadata(application, additionalBundlesRequired);
+        application.setDeploymentMetadata(deploymentMetadata);
+
+        // Store a reference to any modified bundles
+        application.setModifiedBundles (modifiedBundles);
+      }
+    } catch (IOException iox) {
       _logger.error ("APPMANAGEMENT0006E", new Object []{ebaFile.getName(), iox});
       throw new ManagementException(iox);
     } catch (ResolverException rx) { 
