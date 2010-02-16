@@ -21,16 +21,11 @@ package org.apache.aries.application.runtime.itests;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-
 import org.apache.aries.application.management.ApplicationContext;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.utils.filesystem.FileSystem;
+import org.apache.aries.sample.HelloWorld;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.junit.Before;
@@ -38,86 +33,79 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.blueprint.container.BlueprintEvent;
-import org.osgi.service.blueprint.container.BlueprintListener;
+import org.osgi.service.obr.RepositoryAdmin;
 
+import static org.junit.Assert.assertEquals;
+import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
 @RunWith(JUnit4TestRunner.class)
-public class MinimumImportsTest extends AbstractIntegrationTest {
-  
+public class OBRAppManagerTest extends AbstractIntegrationTest {
+
   /* Use @Before not @BeforeClass so as to ensure that these resources
-   * are created in the paxweb temp directory, and not in the svn tree 
+   * are created in the paxweb temp directory, and not in the svn tree
    */
   static boolean createdApplications = false;
   @Before
   public static void createApplications() throws Exception {
-
-    if (createdApplications) { 
+    if (createdApplications) {
       return;
     }
-    ZipFixture testEba = ArchiveFixture.newZip()
-      .jar("org.apache.aries.application.itests.minimports.jar")
-        .manifest().symbolicName("org.apache.aries.application.itests.minimports")
+    ZipFixture testBundle = ArchiveFixture.newZip()
+        .manifest().symbolicName("org.apache.aries.sample")
           .attribute("Bundle-Version", "1.0.0")
-          .attribute("Import-Package", "org.apache.aries.application.management")
+          .attribute("Export-Package", "org.apache.aries.sample.impl")
           .end()
-        .binary("org/apache/aries/application/sample/appmgrclient/AppMgrClient.class", 
-            MinimumImportsTest.class.getClassLoader().getResourceAsStream("org/apache/aries/application/sample/appmgrclient/AppMgrClient.class"))
-        .binary("OSGI-INF/blueprint/app-mgr-client.xml", 
-            MinimumImportsTest.class.getClassLoader().getResourceAsStream("app-mgr-client.xml"))
+        .binary("org/apache/aries/sample/impl/HelloWorldImpl.class",
+            OBRAppManagerTest.class.getClassLoader().getResourceAsStream("org/apache/aries/sample/impl/HelloWorldImpl.class"))
         .end();
-      
-    FileOutputStream fout = new FileOutputStream("appmgrclienttest.eba");
+
+    FileOutputStream fout = new FileOutputStream("bundle.jar");
+    testBundle.writeOut(fout);
+    fout.close();
+
+    ZipFixture testEba = ArchiveFixture.newZip()
+      .jar("sample.jar")
+        .manifest().symbolicName("org.apache.aries.sample")
+          .attribute("Bundle-Version", "1.0.0")
+          .attribute("Import-Package", "org.apache.aries.sample.impl")
+          .end()
+        .binary("OSGI-INF/blueprint/sample-blueprint.xml",
+            OBRAppManagerTest.class.getClassLoader().getResourceAsStream("basic/sample-blueprint.xml"))
+        .end()
+         .binary("META-INF/APPLICATION.MF",
+        OBRAppManagerTest.class.getClassLoader().getResourceAsStream("basic/APPLICATION.MF"))
+        .end();
+    fout = new FileOutputStream("test.eba");
     testEba.writeOut(fout);
     fout.close();
-    
+
     createdApplications = true;
   }
-  
-  public static class AppMgrClientBlueprintListener implements BlueprintListener {
-    
-    Boolean success = null;
-    
-    public void blueprintEvent(BlueprintEvent event) {
-      if (event.getBundle().getSymbolicName().equals(
-          "org.apache.aries.application.itests.minimports")) {
-        if (event.getType() == event.FAILURE) {
-          success = Boolean.FALSE;
-        }
-        if (event.getType() == event.CREATED) {
-          success = Boolean.TRUE;
-        }
-      }
-    }
-  }
-  
+
   @Test
-  public void testAppUsingAriesApplicationManager() throws Exception {
-    
-    // Register a BlueprintListener to listen for the events from the BlueprintContainer for the bundle in the appmgrclienttest.eba
-    
-    AppMgrClientBlueprintListener acbl = new AppMgrClientBlueprintListener();
-    ServiceRegistration sr = bundleContext.registerService("org.osgi.service.blueprint.container.BlueprintListener", acbl, null);
-    
+  public void testAppWithApplicationManifest() throws Exception {
+    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+    repositoryAdmin.addRepository(OBRAppManagerTest.class.getClassLoader().getResource("obr/repository.xml"));
+
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
-    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("appmgrclienttest.eba")));
-    ApplicationContext ctx = manager.install(app);
-    ctx.start();
-    
-    int sleepfor = 3000;
-    while ((acbl.success == null || acbl.success == false) && sleepfor > 0) {
-      Thread.sleep(100);
-      sleepfor-=100;
-    }
-    assertNotNull("Timed out - didn't receive Blueprint CREATED or FAILURE event", acbl.success);
-    assertTrue("Received Blueprint FAILURE event", acbl.success);
-    
-    ctx.stop();
-    manager.uninstall(ctx);
-    sr.unregister();
+    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
+    //installing requires a valid url for the bundle in repository.xml.
+//    ApplicationContext ctx = manager.install(app);
+//    ctx.start();
+
+//    HelloWorld hw = getOsgiService(HelloWorld.class);
+//    String result = hw.getMessage();
+//    assertEquals (result, "hello world");
+//
+//    ctx.stop();
+//    manager.uninstall(ctx);
   }
-  
+
+
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
     Option[] options = options(
@@ -138,16 +126,19 @@ public class MinimumImportsTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
+        mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
+        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
-        
+
+//        /* For debugging, uncomment the next two lines
+//        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+//        waitForFrameworkStartup(),
+
         /* For debugging, uncomment the next two lines
-        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
-        waitForFrameworkStartup(),
-        
         and add these imports:
         import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
         import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
