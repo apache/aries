@@ -74,6 +74,9 @@
                         <Export-Package>
                             org.apache.aries.jmx.blueprint
                         </Export-Package>
+                        <Private-Package>
+                            org.apache.aries.jmx.blueprint.impl*
+                        </Private-Package>
                         <Bundle-Activator>org.apache.aries.jmx.blueprint.impl.Activator</Bundle-Activator>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
