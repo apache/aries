@@ -25,14 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.CharacterData;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Element;
-import org.w3c.dom.EntityReference;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
@@ -50,12 +42,19 @@ import org.osgi.service.blueprint.reflect.CollectionMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.IdRefMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
 import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
 import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Attr;
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Element;
+import org.w3c.dom.EntityReference;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * A namespace handler for Aries blueprint extensions
@@ -91,6 +90,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
 
     public static final String ROLE_ATTRIBUTE = "role";
     public static final String ROLE_PROCESSOR = "processor";
+    
+    public static final String FIELD_INJECTION_ATTRIBUTE = "field-injection";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtNamespaceHandler.class);
 
@@ -120,9 +121,25 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             return decorateProxyMethod(node, component, context);
         } else if (node instanceof Attr && nodeNameEquals(node, ROLE_ATTRIBUTE)) {
             return decorateRole(node, component, context);
+        } else if (node instanceof Attr && nodeNameEquals(node, FIELD_INJECTION_ATTRIBUTE)) {
+            return decorateFieldInjection(node, component, context);
         } else {
             throw new ComponentDefinitionException("Unsupported node: " + node.getNodeName());
         }
+    }
+    
+    private ComponentMetadata decorateFieldInjection(Node node, ComponentMetadata component, ParserContext context) {
+        if (!(component instanceof BeanMetadata)) {
+            throw new ComponentDefinitionException("Attribute " + node.getNodeName() + " can only be used on a <bean> element");
+        }
+        
+        if (!(component instanceof MutableBeanMetadata)) {
+            throw new ComponentDefinitionException("Expected an instanceof MutableBeanMetadata");
+        }
+        
+        String value = ((Attr) node).getValue();
+        ((MutableBeanMetadata) component).setFieldInjection("true".equals(value) || "1".equals(value));
+        return component;
     }
 
     private ComponentMetadata decorateRole(Node node, ComponentMetadata component, ParserContext context) {

@@ -58,5 +58,7 @@ public interface MutableBeanMetadata extends ExtendedBeanMetadata, MutableCompon
     void setRuntimeClass(Class runtimeClass);
 
     void setProcessor(boolean processor);
+    
+    void setFieldInjection(boolean allowFieldInjection);
 
 }

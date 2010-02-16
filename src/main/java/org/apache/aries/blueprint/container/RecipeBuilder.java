@@ -210,11 +210,19 @@ public class RecipeBuilder {
         return beanMetadata.getClassName();        
     }
     
+    private boolean allowsFieldInjection(BeanMetadata beanMetadata) {
+        if (beanMetadata instanceof ExtendedBeanMetadata) {
+            return ((ExtendedBeanMetadata) beanMetadata).getFieldInjection();
+        }
+        return false;
+    }
+    
     private BeanRecipe createBeanRecipe(BeanMetadata beanMetadata) {
         BeanRecipe recipe = new BeanRecipe(
                 getName(beanMetadata.getId()),
                 blueprintContainer,
-                getBeanClass(beanMetadata));
+                getBeanClass(beanMetadata),
+                allowsFieldInjection(beanMetadata));
         // Create refs for explicit dependencies
         recipe.setExplicitDependencies(getDependencies(beanMetadata));
         recipe.setPrototype(MetadataUtil.isPrototypeScope(beanMetadata));
@@ -251,7 +259,7 @@ public class RecipeBuilder {
     }
 
     private Recipe createRecipe(RegistrationListener listener) {
-        BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, ServiceListener.class);
+        BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, ServiceListener.class, false);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         if (listener.getRegistrationMethod() != null) {
             recipe.setProperty("registerMethod", listener.getRegistrationMethod());
@@ -264,7 +272,7 @@ public class RecipeBuilder {
     }
 
     private Recipe createRecipe(ReferenceListener listener) {
-        BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, AbstractServiceReferenceRecipe.Listener.class);
+        BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, AbstractServiceReferenceRecipe.Listener.class, false);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         recipe.setProperty("metadata", listener);
         recipe.setProperty("blueprintContainer", blueprintContainer);
