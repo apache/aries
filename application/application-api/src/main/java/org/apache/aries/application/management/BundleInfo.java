@@ -43,6 +43,12 @@ public interface BundleInfo
   
   /** Export-Package */
   public Set<Content> getExportPackage();
+
+  /** Import-Service */
+  public Set<Content> getImportService();
+
+  /** Export-Service */
+  public Set<Content> getExportService();
   
   /** All the headers in the MANIFEST.MF file */
   public Map<String, String> getHeaders();
