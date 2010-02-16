@@ -69,10 +69,11 @@ public class BundleInfoImpl implements BundleInfo {
   }
 
   public Map<String, String> getHeaders() {
-    Set<Entry<Object, Object>> headers = _attributes.entrySet();
     Map<String, String> result = new HashMap<String, String>();
-    for (Entry<Object, Object> h: headers) { 
-      result.put((String)h.getKey(), (String)h.getValue());
+    for (Entry<Object, Object> h: _attributes.entrySet()) {
+      Attributes.Name name = (Attributes.Name) h.getKey();
+      String value = (String) h.getValue();
+      result.put(name.toString(), value);
     }
     return result;
   }
@@ -103,7 +104,7 @@ public class BundleInfoImpl implements BundleInfo {
     return _version;
   }
 
-  private Set<Content> getContentSetFromHeader (Attributes attributes, String key) { 
+  private Set<Content> getContentSetFromHeader (Attributes attributes, String key) {
     String header = _attributes.getValue(key);
     List<String> splitHeader = ManifestHeaderProcessor.split(header, ",");
     HashSet<Content> result = new HashSet<Content>();
