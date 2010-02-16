@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import junit.framework.Assert;
+
 import org.apache.aries.blueprint.CallbackTracker.Callback;
 import org.apache.aries.blueprint.container.BlueprintRepository;
 import org.apache.aries.blueprint.di.CircularDependencyException;
@@ -35,6 +37,7 @@ import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.pojos.BeanD;
 import org.apache.aries.blueprint.pojos.BeanF;
+import org.apache.aries.blueprint.pojos.FITestBean;
 import org.apache.aries.blueprint.pojos.Multiple;
 import org.apache.aries.blueprint.pojos.PojoA;
 import org.apache.aries.blueprint.pojos.PojoB;
@@ -133,6 +136,35 @@ public class WiringTest extends AbstractBlueprintTest {
         
         // test destroy-method
         assertEquals(true, pojob.getDestroyCalled());
+    }
+    
+    public void testFieldInjection() throws Exception {
+      ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
+      Repository repository = new TestBlueprintContainer(registry).getRepository();
+      
+      Object fiTestBean = repository.create("FITestBean");
+      assertNotNull(fiTestBean);
+      assertTrue(fiTestBean instanceof FITestBean);
+      
+      FITestBean bean = (FITestBean) fiTestBean;
+      // single field injection
+      assertEquals("value", bean.getAttr());
+      // prefer setter injection to field injection
+      assertEquals("IS_LOWER", bean.getUpperCaseAttr());
+      // support cascaded injection 'bean.name' via fields
+      assertEquals("aName", bean.getBeanName());
+      
+      // fail if field-injection is not specified
+      try {
+          repository.create("FIFailureTestBean");
+          Assert.fail("Expected exception");
+      } catch (ComponentDefinitionException cde) {}
+      
+      // fail if field-injection is false
+      try {
+          repository.create("FIFailureTest2Bean");
+          Assert.fail("Expected exception");
+      } catch (ComponentDefinitionException cde) {}
     }
     
     public void testCompoundProperties() throws Exception {

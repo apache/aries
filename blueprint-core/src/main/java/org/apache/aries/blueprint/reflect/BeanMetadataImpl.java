@@ -48,8 +48,10 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     private String scope;
     private Class runtimeClass;
     private boolean processor;
-
+    private boolean fieldInjection;
+    
     public BeanMetadataImpl() {
+        this.fieldInjection = false;
     }
 
     public BeanMetadataImpl(BeanMetadata source) {
@@ -70,6 +72,9 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         this.dependsOn = new ArrayList<String>(source.getDependsOn());
         if (source instanceof ExtendedBeanMetadata) {
             this.runtimeClass = ((ExtendedBeanMetadata) source).getRuntimeClass();
+            this.fieldInjection = ((ExtendedBeanMetadata) source).getFieldInjection();
+        } else {
+            this.fieldInjection = false;
         }
     }
     
@@ -199,6 +204,14 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         this.processor = processor;
     }
 
+    public boolean getFieldInjection() {
+        return fieldInjection;
+    }
+    
+    public void setFieldInjection(boolean fieldInjection) {
+        this.fieldInjection = fieldInjection;
+    }
+    
     @Override
     public String toString() {
         return "BeanMetadata[" +
@@ -214,6 +227,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
                 ", factoryComponent=" + factoryComponent +
                 ", scope='" + scope + '\'' +
                 ", runtimeClass=" + runtimeClass +
+                ", fieldInjection=" + fieldInjection + 
                 ']';
     }
 }
