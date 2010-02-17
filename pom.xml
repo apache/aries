@@ -27,7 +27,7 @@
 
     <artifactId>org.apache.aries.application.management</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Aries application management</name>
+    <name>Apache Aries Application Management</name>
     <description>
       Implementation of the application management API
     </description>
