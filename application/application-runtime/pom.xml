@@ -27,7 +27,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.aries.application.runtime</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Aries application runtime</name>
+    <name>Apache Aries Application Runtime</name>
     <description>
         A very basic runtime implementation
     </description>

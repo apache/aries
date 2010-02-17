@@ -28,7 +28,7 @@
     <artifactId>org.apache.aries.application.install</artifactId>
     <version>1.0.0-incubating-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>Apache Aries application installer</name>
+    <name>Apache Aries Application Installer</name>
     <description>
         A very basic application installer
     </description>
