@@ -225,7 +225,7 @@
 		<module>application-runtime</module>
 		<module>application-itest-interface</module>
 		<module>application-itests</module>
-        <module>application-obr-resolver</module>
+		<module>application-obr-resolver</module>
 		<module>application-install</module>
 	</modules>
 
