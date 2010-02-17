@@ -27,7 +27,7 @@
 
     <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
     <packaging>bundle</packaging>
-    <name>application-runtime itest sample application interface</name>
+    <name>Apache Aries Application itests sample application interface</name>
     <description>
       Interface class(es) for aplication runtime itests.
     </description>

@@ -28,7 +28,7 @@
     <artifactId>org.apache.aries.application.runtime.itests</artifactId>
     <version>1.0.0-incubating-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Apache Aries application runtime integration tests</name>
+    <name>Apache Aries Application integration tests</name>
     <description>
         Integration tests for the Application runtime
     </description>
