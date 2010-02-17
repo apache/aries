@@ -10,7 +10,7 @@
     </parent>
     <artifactId>org.apache.aries.application.resolver.obr</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Aries application OBR integration</name>
+    <name>Apache Aries Application OBR Resolver</name>
     <description>
       Implementation of the AriesApplicationResolver using OBR
     </description>
