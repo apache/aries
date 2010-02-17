@@ -29,7 +29,6 @@ import org.osgi.service.obr.Requirement;
  */
 public class RequirementImpl implements Requirement
 {
-
   private final String name;
   private final Filter filter;
   private final boolean multiple;

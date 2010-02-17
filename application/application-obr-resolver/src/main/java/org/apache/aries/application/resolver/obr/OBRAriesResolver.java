@@ -20,31 +20,22 @@
 
 package org.apache.aries.application.resolver.obr;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolverException;
-import org.apache.aries.application.resolver.obr.impl.CapabilityImpl;
+import org.apache.aries.application.resolver.obr.impl.ApplicationResourceImpl;
 import org.apache.aries.application.resolver.obr.impl.OBRBundleInfo;
-import org.apache.aries.application.resolver.obr.impl.RequirementImpl;
-import org.apache.aries.application.resolver.obr.impl.ResourceImpl;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
-import org.osgi.framework.Filter;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
-import org.osgi.service.obr.Capability;
 import org.osgi.service.obr.RepositoryAdmin;
 import org.osgi.service.obr.Requirement;
 import org.osgi.service.obr.Resolver;
@@ -66,10 +57,18 @@ public class OBRAriesResolver implements AriesApplicationResolver
   public Set<BundleInfo> resolve(AriesApplication app) throws ResolverException
   {
     Resolver obrResolver = repositoryAdmin.resolver();
-    for (BundleInfo bundleInfo: app.getBundleInfo()) {
-      Resource resource = toResource(bundleInfo);
-      obrResolver.add(resource);
-    }
+    
+    ApplicationMetadata appMeta = app.getApplicationMetadata();
+    
+    String appName = appMeta.getApplicationSymbolicName();
+    Version appVersion = appMeta.getApplicationVersion();
+    List<Content> appContent = appMeta.getApplicationContents();
+
+    // add a resource describing the requirements of the application metadata.
+    obrResolver.add(new ApplicationResourceImpl(appName, appVersion, appContent));
+    
+    // TODO we need to resolve against the app content so we need to generate an OBR.xml for the content
+    
     if (obrResolver.resolve()) {
       Set<BundleInfo> result = new HashSet<BundleInfo>(app.getBundleInfo());
       for (Resource resource: obrResolver.getRequiredResources()) {
@@ -128,101 +127,4 @@ public class OBRAriesResolver implements AriesApplicationResolver
             null,
             null);
   }
-
-  private Resource toResource(BundleInfo bundleInfo) throws ResolverException
-  {
-    String id = bundleInfo.getSymbolicName() + "_" + bundleInfo.getVersion();
-    List<Requirement> requirements = new ArrayList<Requirement>();
-    requirements.addAll(toRequirements(bundleInfo.getImportPackage(), "package"));
-    requirements.addAll(toRequirements(bundleInfo.getImportService(), "service"));
-    List<Capability> capabilities = new ArrayList<Capability>();
-    capabilities.addAll(toPackageCapabilities(bundleInfo.getExportPackage()));
-    capabilities.addAll(toServiceCapabilities(bundleInfo.getExportService()));
-    URL url;
-    try {
-      url = new URL(bundleInfo.getLocation());
-    } catch (MalformedURLException e) {
-      throw new ResolverException(e);
-    }
-    return new ResourceImpl(bundleInfo.getHeaders(),
-            bundleInfo.getSymbolicName(),
-            bundleInfo.getSymbolicName(),
-            bundleInfo.getVersion(),
-            id,
-            url,
-            requirements.toArray(new Requirement[requirements.size()]),
-            capabilities.toArray(new Capability[capabilities.size()]),
-            null,
-            null);
-  }
-
-  private Collection<Requirement> toRequirements(Set<Content> imports, String type) throws ResolverException
-  {
-    Collection<Requirement> requirements = new ArrayList<Requirement>(imports.size());
-    for (Content content: imports) {
-      requirements.add(toRequirement(content, type));
-    }
-    return requirements;
-  }
-
-  private Requirement toRequirement(Content content, String type) throws ResolverException
-  {
-    Map<String, String> attributes = new HashMap<String, String>();
-    for (Map.Entry<String, String> entry: content.getNameValueMap().entrySet()) {
-      //leave out resolution:=optional, etc
-      if (!entry.getKey().endsWith(":")) {
-        attributes.put(entry.getKey(), entry.getValue());
-      }
-    }
-    String filterString = ManifestHeaderProcessor.generateFilter(type, content.getContentName(), attributes);
-    Filter filter = null;
-    try {
-      filter = FrameworkUtil.createFilter(filterString);
-    } catch (InvalidSyntaxException e) {
-      throw new ResolverException(e);
-    }
-    boolean multiple = false;
-    boolean optional = "optional".equals(content.getNameValueMap().get("resolution:"));
-    boolean extend = false;
-    return new RequirementImpl("package",
-            filter,
-            multiple,
-            optional,
-            extend,
-            null);
-  }
-
-  private Collection<Capability> toPackageCapabilities(Set<Content> exportPackage)
-  {
-    Collection<Capability> capabilities = new ArrayList<Capability>(exportPackage.size());
-    for (Content content: exportPackage) {
-      capabilities.add(toPackageCapability(content));
-    }
-    return capabilities;
-  }
-
-  private Capability toPackageCapability(Content content)
-  {
-    Map<String,String> props = new HashMap<String,String>();
-    props.put("package", content.getContentName());
-    props.put("version", content.getVersion() != null ? content.getVersion().getMinimumVersion().toString() : Version.emptyVersion.toString());
-    return new CapabilityImpl("package", props);
-  }
-
-  private Collection<Capability> toServiceCapabilities(Set<Content> exportPackage)
-  {
-    Collection<Capability> capabilities = new ArrayList<Capability>(exportPackage.size());
-    for (Content content: exportPackage) {
-      capabilities.add(toServiceCapability(content));
-    }
-    return capabilities;
-  }
-
-  private Capability toServiceCapability(Content content)
-  {
-    Map<String,String> props = new HashMap<String,String>();
-    props.put("service", content.getContentName());
-    return new CapabilityImpl("service", props);
-  }
-
 }
