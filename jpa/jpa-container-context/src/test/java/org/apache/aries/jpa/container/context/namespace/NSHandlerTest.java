@@ -33,6 +33,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.container.Parser;
@@ -227,6 +228,13 @@ public class NSHandlerTest {
     props.put("two", "zwo");
     Skeleton.getSkeleton(manager).assertCalled(
         new MethodCall(PersistenceManager.class, "registerContext", "", clientBundle, props));    
+  }
+  
+  @Test
+  public void testExtendedMetadataProxying() {
+      Element e = getTestElement("contextWithProps");
+      Object res = sut.decorate(e, Skeleton.newMock(ExtendedBeanMetadata.class), parserCtx);
+      assertTrue(res instanceof ExtendedBeanMetadata);
   }
   
   private Element getTestElement(String beanName) {
