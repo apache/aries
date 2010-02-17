@@ -300,15 +300,6 @@ public class WarToWabConverterImpl {
     }
     properties.put(Constants.BUNDLE_MANIFESTVERSION, manifestVersion);
 
-    //
-    // Bundle-SymbolicName
-    //
-
-    if (manifest.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME) == null
-        && !properties.containsKey(Constants.BUNDLE_SYMBOLICNAME)) {
-      properties.put(Constants.BUNDLE_SYMBOLICNAME, warName + "_" + manifest.hashCode());
-    }
-
     // 
     // Bundle-ClassPath
     //
@@ -407,7 +398,15 @@ public class WarToWabConverterImpl {
     for (Map.Entry<String, String> entry : properties.entrySet()) {
         String key = entry.getKey();
         String value = entry.getValue();
-        manifest.getMainAttributes().put(new Attributes.Name(key), value);
+        manifest.getMainAttributes().putValue(key, value);
+    }
+    
+    //
+    // Bundle-SymbolicName
+    //
+
+    if (manifest.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME) == null) {
+        manifest.getMainAttributes().putValue(Constants.BUNDLE_SYMBOLICNAME, warName + "_" + manifest.hashCode());
     }
     
     return manifest;
