@@ -20,8 +20,6 @@ package org.apache.aries.web.converter.impl;
 
 import static org.apache.aries.web.converter.WarToWabConverter.WEB_CONTEXT_PATH;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -66,13 +64,11 @@ public class WarToWabConverterImpl {
   private CaseInsensitiveMap properties;
 
   // InputStream for the new WAB file
-  private byte[] wabFile;
+  private CachedOutputStream wab;
   private Manifest wabManifest;
   private String warName;
   private InputStreamProvider input;
   
-  private boolean converted = false;
-
   // State used for updating the manifest
   private Set<String> importPackages;
   private Set<String> exemptPackages;
@@ -92,11 +88,13 @@ public class WarToWabConverterImpl {
     this.warName = name;
   }
     
-  private void convert() throws IOException {
-
-    ZipEntry entry;
+  private void generateManifest() throws IOException {
+    if (wabManifest != null) {
+        // WAB manifest is already generated
+        return;
+    }
+    
     JarInputStream jarInput = null;
-
     try {
       jarInput = new JarInputStream(input.getInputStream());
       Manifest manifest = jarInput.getManifest();
@@ -111,11 +109,20 @@ public class WarToWabConverterImpl {
     finally {
       try { if (jarInput != null) jarInput.close(); } catch (IOException e) { e.printStackTrace(); }
     }
+  }
 
-    // Create a new jar file in memory with the new manifest and the old data
-    ByteArrayOutputStream output = new ByteArrayOutputStream();
+  private void convert() throws IOException {
+    if (wab != null) {
+        // WAB is already converted
+        return;
+    }
+    
+    generateManifest();
+    
+    CachedOutputStream output = new CachedOutputStream();
     JarOutputStream jarOutput = null;
-    jarInput = null;
+    JarInputStream jarInput = null;
+    ZipEntry entry = null;
 
     // Copy across all entries from the original jar
     int val;
@@ -125,19 +132,21 @@ public class WarToWabConverterImpl {
       byte[] buffer = new byte[2048];
       while ((entry = jarInput.getNextEntry()) != null) {
         jarOutput.putNextEntry(entry);        
-        while ((val = jarInput.read(buffer)) > 0)
+        while ((val = jarInput.read(buffer)) > 0) {
           jarOutput.write(buffer, 0, val);
+        }
       }
     }
     finally {
-      if (jarOutput != null)
+      if (jarOutput != null) {
         jarOutput.close();
-      if (jarInput != null)
+      }
+      if (jarInput != null) {
         jarInput.close();
+      }
     }
-
-    // Create a stream to the in-memory jar
-    wabFile = output.toByteArray();
+    
+    wab = output;
   }
 
   private boolean isBundle(Manifest manifest)  {
@@ -474,25 +483,18 @@ public class WarToWabConverterImpl {
   }
   
   public InputStream getWAB() throws IOException {
-    ensureConverted();
-    return new ByteArrayInputStream(wabFile);
+    convert();
+    return wab.getInputStream();
   }
   
   public Manifest getWABManifest() throws IOException {
-    ensureConverted();
+    generateManifest();
     return wabManifest;
   }
 
   public int getWabLength() throws IOException {
-    ensureConverted();
-    return wabFile.length;
+    convert();
+    return wab.size();
   }
   
-  private void ensureConverted() throws IOException {
-    if (!!!converted) {
-      convert();
-      converted = true;
-    }
-  }
-
 }
