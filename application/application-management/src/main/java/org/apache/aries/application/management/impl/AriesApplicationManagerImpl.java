@@ -240,11 +240,6 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   
   public void uninstall(ApplicationContext app) throws BundleException 
   {
-    Set<Bundle> bundles = app.getApplicationContent();
-    for (Bundle b : bundles) { 
-      b.uninstall();
-    }
-
     _applicationContextManager.remove(app);
   }
 
