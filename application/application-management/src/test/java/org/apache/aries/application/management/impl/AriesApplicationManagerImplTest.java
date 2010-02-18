@@ -50,6 +50,7 @@ import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.LocalPlatform;
 import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.ResolveConstraint;
+import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.management.impl.AriesApplicationManagerImpl;
 import org.apache.aries.application.management.impl.BundleInfoImpl;
 import org.apache.aries.application.utils.filesystem.FileSystem;
@@ -142,7 +143,7 @@ public class AriesApplicationManagerImplTest {
     
     DeploymentMetadata dm = app.getDeploymentMetadata();
     List<DeploymentContent> dcList = dm.getApplicationDeploymentContents();
-    
+
     assertEquals (dcList.size(), 3);
     DeploymentContent dc1 = new DeploymentContentImpl ("foo.bar.widgets;deployed-version=1.0.0");
     DeploymentContent dc2 = new DeploymentContentImpl ("my.business.logic;deployed-version=1.0.0");
@@ -150,7 +151,7 @@ public class AriesApplicationManagerImplTest {
     assertTrue (dcList.contains(dc1));
     assertTrue (dcList.contains(dc2));
     assertTrue (dcList.contains(dc3));
-  
+
   }
   
   @Test
@@ -185,7 +186,7 @@ public class AriesApplicationManagerImplTest {
     assertEquals (dm.getApplicationVersion(), app.getApplicationMetadata().getApplicationVersion());
   }
   
-  private AriesApplication createApplication (String fileName) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ManagementException  { 
+  private AriesApplication createApplication (String fileName) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ManagementException, ResolverException {
     // This next block is a very long winded way of constructing a BundleInfoImpl
     // against the existing (BundleManifest bm, String location) constructor. If we 
     // find we need a String-based BundleInfoImpl constructor for other reasons, 
@@ -203,6 +204,7 @@ public class AriesApplicationManagerImplTest {
     
     IDirectory testEba = FileSystem.getFSRoot(new File(TEST_EBA));
     AriesApplication app = _appMgr.createApplication(testEba);
+    app = _appMgr.resolve(app);
     return app;
   }
 }
