@@ -66,6 +66,12 @@ public class GlobalPersistenceManager implements PersistenceManager, Synchronous
       _logger.debug("Registering bundle {} as a client of persistence unit {} with properties {}.", 
           new Object[] {client.getSymbolicName() + "_" + client.getVersion(), unitName, properties});
     }
+    
+    if(!!!registry.jtaIntegrationAvailable())
+      _logger.warn("No JTA integration is currently available. The managed persistence context {} used by the bundle {} will operate " +
+      		"with no transaction context and be read only until a JTA Transaction Services implementation is available in" +
+      		"the runtime", new Object[] {unitName, client.getSymbolicName() + "_" + client.getVersion()});
+    
     //Find the framework for this bundle (we may be in a composite)
     Bundle frameworkBundle = client.getBundleContext().getBundle(0);
     PersistenceContextManager manager = null;

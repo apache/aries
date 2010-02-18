@@ -20,6 +20,7 @@ package org.apache.aries.jpa.container.context.transaction.impl;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -27,6 +28,7 @@ import javax.persistence.TransactionRequiredException;
 import javax.transaction.Synchronization;
 import javax.transaction.TransactionSynchronizationRegistry;
 
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +63,12 @@ public final class JTAPersistenceContextRegistry {
    * active transaction, and to register for post-commit cleanup. 
    */
   private TransactionSynchronizationRegistry tranRegistry;
+  
+  /** 
+   * A flag to indicate whether the {@link TransactionSynchronizationRegistry} is available. 
+   * The initial value is false, as defined by {@link AtomicBoolean#AtomicBoolean()}.
+   */
+  private final AtomicBoolean registryAvailable = new AtomicBoolean();
 
   /**
    * Get a PersistenceContext for the current transaction. The persistence context will 
@@ -82,7 +90,12 @@ public final class JTAPersistenceContextRegistry {
     
     //Throw the error on to the client
     if(!!!isTransactionActive()) {
-      throw new TransactionRequiredException("No transaction currently active");
+      if(jtaIntegrationAvailable())
+        throw new TransactionRequiredException("No transaction currently active");
+      else {
+        throw new TransactionRequiredException("No JTA transaction services implementation is currently available. As a result the" +
+        		" JPA container cannot integrate with JTA transactions.");
+      }
     }
     EntityManager toReturn = null;
     
@@ -130,7 +143,7 @@ public final class JTAPersistenceContextRegistry {
    */
   public final boolean isTransactionActive()
   {
-    return tranRegistry.getTransactionKey() != null;
+    return registryAvailable.get() && tranRegistry.getTransactionKey() != null;
   }
   
   /**
@@ -141,6 +154,43 @@ public final class JTAPersistenceContextRegistry {
     this.tranRegistry = tranRegistry;
   }
 
+  /**
+   * Returns true if we have access to a {@link TransactionSynchronizationRegistry} and
+   * can manage persistence contexts
+   * @return
+   */
+  public final boolean jtaIntegrationAvailable()
+  {
+    return registryAvailable.get();
+  }
+  
+  /**
+   * Called by the blueprint container to indicate that a new {@link TransactionSynchronizationRegistry}
+   * will be used by the runtime
+   * @param ref
+   */
+  public final void addRegistry(ServiceReference ref) {
+    boolean oldValue = registryAvailable.getAndSet(true);
+    if(oldValue) {
+      _logger.warn("The TransactionSynchronizationRegistry used to manage persistence contexts has been replaced." +
+      		" The new TransactionSynchronizationRegistry, {}, will now be used to manage persistence contexts." +
+      		" Managed persistence contexts may not work correctly unless the runtime uses the new JTA Transaction services implementation" +
+      		" to manage transactions.", new Object[] {ref});
+    } else {
+        _logger.info("A TransactionSynchronizationRegistry service is now available in the runtime. Managed persistence contexts will now" +
+        		"integrate with JTA transactions using {}.", new Object[] {ref});
+    }
+  }
+  
+  public final void removeRegistry(ServiceReference ref) {
+    registryAvailable.set(false);
+    _logger.warn("The TransactionSynchronizationRegistry used to manage persistence contexts is no longer available." +
+        " Managed persistence contexts will no longer be able to integrate with JTA transactions, and will behave as if" +
+        " no there is no transaction context at all times until a new TransactionSynchronizationRegistry is available." +
+        " Applications using managed persistence contexts may not work correctly until a new JTA Transaction services" +
+        " implementation is available.");
+  }
+  
   /**
    * This class is used to close EntityManager instances once the transaction has committed,
    * and clear the persistenceContextRegistry of old persistence contexts.
