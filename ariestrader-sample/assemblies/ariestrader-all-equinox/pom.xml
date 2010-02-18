@@ -145,13 +145,13 @@
             <version>${ariesVersion}</version>
         </dependency>
         <dependency>
-            <artifactId>org.apache.aries.application.api</artifactId>
             <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.api</artifactId>
             <version>${ariesVersion}</version>
         </dependency>
         <dependency>
-            <artifactId>org.apache.aries.application.utils</artifactId>
             <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.utils</artifactId>
             <version>${ariesVersion}</version>
         </dependency>
 
@@ -186,12 +186,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-entities</artifactId>
+            <artifactId>ariestrader-beans</artifactId>
             <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-persist-jdbc</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
+            <artifactId>ariestrader-entities</artifactId>
             <version>${pom.version}</version>
         </dependency>
         <dependency>

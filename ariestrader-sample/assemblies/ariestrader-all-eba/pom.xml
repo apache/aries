@@ -54,6 +54,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
+            <artifactId>ariestrader-beans</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-persist-jdbc</artifactId>
             <version>${pom.version}</version>
         </dependency>
@@ -65,6 +70,11 @@
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-persist-jpa-am</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.ariestrader.modules</groupId>
+            <artifactId>ariestrader-persist-jpa-cm</artifactId>
             <version>${pom.version}</version>
         </dependency>
     </dependencies>
@@ -106,6 +116,11 @@
                             </artifactItem>
                             <artifactItem>
                               <groupId>org.apache.aries.ariestrader.modules</groupId>
+                              <artifactId>ariestrader-beans</artifactId>
+                              <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
+                            </artifactItem>
+                            <artifactItem>
+                              <groupId>org.apache.aries.ariestrader.modules</groupId>
                               <artifactId>ariestrader-persist-jdbc</artifactId>
                               <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
                             </artifactItem>
@@ -117,6 +132,11 @@
                             <artifactItem>
                               <groupId>org.apache.aries.ariestrader.modules</groupId>
                               <artifactId>ariestrader-persist-jpa-am</artifactId>
+                              <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
+                            </artifactItem>
+                            <artifactItem>
+                              <groupId>org.apache.aries.ariestrader.modules</groupId>
+                              <artifactId>ariestrader-persist-jpa-cm</artifactId>
                               <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
                             </artifactItem>
                           </artifactItems>

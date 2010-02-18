@@ -24,11 +24,11 @@
         <jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/TradeDataSource)</jta-data-source>
         <non-jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/NoTxTradeDataSource)</non-jta-data-source>
          
-        <class>org.apache.aries.samples.ariestrader.beans.AccountDataBeanImpl</class>
-        <class>org.apache.aries.samples.ariestrader.beans.AccountProfileDataBeanImpl</class>
-        <class>org.apache.aries.samples.ariestrader.beans.HoldingDataBeanImpl</class>
-        <class>org.apache.aries.samples.ariestrader.beans.OrderDataBeanImpl</class>
-        <class>org.apache.aries.samples.ariestrader.beans.QuoteDataBeanImpl</class>
+        <class>org.apache.aries.samples.ariestrader.entities.AccountDataBeanImpl</class>
+        <class>org.apache.aries.samples.ariestrader.entities.AccountProfileDataBeanImpl</class>
+        <class>org.apache.aries.samples.ariestrader.entities.HoldingDataBeanImpl</class>
+        <class>org.apache.aries.samples.ariestrader.entities.OrderDataBeanImpl</class>
+        <class>org.apache.aries.samples.ariestrader.entities.QuoteDataBeanImpl</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
        
         <properties>
@@ -45,11 +45,11 @@
         <jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/TradeDataSource)</jta-data-source>
         <non-jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/NoTxTradeDataSource)</non-jta-data-source>
          
-        <class>org.apache.aries.samples.ariestrader.beans.AccountDataBeanImpl</class>
-        <class>org.apache.aries.samples.ariestrader.beans.AccountProfileDataBeanImpl</class>
-        <class>org.apache.aries.samples.ariestrader.beans.HoldingDataBeanImpl</class>
-        <class>org.apache.aries.samples.ariestrader.beans.OrderDataBeanImpl</class>
-        <class>org.apache.aries.samples.ariestrader.beans.QuoteDataBeanImpl</class>
+        <class>org.apache.aries.samples.ariestrader.entities.AccountDataBeanImpl</class>
+        <class>org.apache.aries.samples.ariestrader.entities.AccountProfileDataBeanImpl</class>
+        <class>org.apache.aries.samples.ariestrader.entities.HoldingDataBeanImpl</class>
+        <class>org.apache.aries.samples.ariestrader.entities.OrderDataBeanImpl</class>
+        <class>org.apache.aries.samples.ariestrader.entities.QuoteDataBeanImpl</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
        
         <properties>

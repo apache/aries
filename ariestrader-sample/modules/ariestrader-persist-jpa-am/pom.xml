@@ -83,7 +83,7 @@
                         </Export-Package>
                         <Import-Package>
                             org.apache.aries.samples.ariestrader.api,
-                            org.apache.aries.samples.ariestrader.beans,
+                            org.apache.aries.samples.ariestrader.entities,
                             org.apache.aries.samples.ariestrader.persistence.api,
                             org.apache.aries.samples.ariestrader.util,
                             javax.persistence;version="[1.0.0,2.1.0)",
