@@ -49,6 +49,7 @@ import org.apache.aries.application.management.BundleConverter;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.LocalPlatform;
 import org.apache.aries.application.management.ManagementException;
+import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.impl.AriesApplicationManagerImpl;
 import org.apache.aries.application.management.impl.BundleInfoImpl;
 import org.apache.aries.application.utils.filesystem.FileSystem;
@@ -68,7 +69,7 @@ public class AriesApplicationManagerImplTest {
   
   static class DummyResolver implements AriesApplicationResolver {
     Set<BundleInfo> nextResult;
-    public Set<BundleInfo> resolve(AriesApplication app) {
+    public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) {
       return nextResult;
     } 
     void setNextResult (Set<BundleInfo> r) { 
