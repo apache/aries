@@ -23,6 +23,7 @@ import java.util.Set;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.ResolveConstraint;
 import org.osgi.framework.Version;
 
 /** AriesApplicationManager requires that there be at least one 
@@ -33,7 +34,7 @@ import org.osgi.framework.Version;
  */
 public class NoOpResolver implements AriesApplicationResolver {
 
-  public Set<BundleInfo> resolve(AriesApplication app) {
+  public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) {
     return app.getBundleInfo();
   }
 
