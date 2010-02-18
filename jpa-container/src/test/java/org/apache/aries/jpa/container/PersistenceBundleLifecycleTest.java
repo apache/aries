@@ -22,6 +22,7 @@ package org.apache.aries.jpa.container;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -164,7 +165,7 @@ public class PersistenceBundleLifecycleTest
     //Check we don't have an EMF
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
     
-    assertNull("We should not have an EntityManagerFactoryManager", getTrackedObject());
+    assertNotNull("We should have an EntityManagerFactoryManager", getTrackedObject());
   }
   
   @Test
@@ -214,6 +215,94 @@ public class PersistenceBundleLifecycleTest
     
     testSuccessfulCreationEvent(ref, extenderContext, 1);
     testSuccessfulRegistrationEvent(ref, extenderContext, 1);
+  }
+  
+  @Test
+  public void testManager_OnePreExistingPersistenceBundle_OneProviderLater() throws Exception
+  {
+    BundleContext extenderContext = preExistingBundleSetup();
+    
+    setupPersistenceBundle("file4", "");
+    
+    mgr.open();
+    
+    //Check the persistence.xml was looked for
+    Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
+    //Check we didn't use getResource()
+    Skeleton.getSkeleton(persistenceBundle).assertNotCalled(new MethodCall(Bundle.class, "getResource", String.class));
+    
+    BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
+    assertNotNull("We should have an EntityManagerFactoryManager", getTrackedObject());
+    
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
+    hash1.put("javax.persistence.provider", "no.such.Provider");
+    ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
+        pp, hash1 );
+    ServiceReference ref = reg.getReference();
+    
+    mgr.addingProvider(ref);
+    
+    BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
+    
+    testSuccessfulCreationEvent(ref, extenderContext, 1);
+    testSuccessfulRegistrationEvent(ref, extenderContext, 1);
+  }
+  
+  @Test
+  public void testManager_OnePersistenceBundle_SwitchProviders() throws Exception
+  {
+    BundleContext extenderContext = preExistingBundleSetup();
+    
+    setupPersistenceBundle("file4", "");
+    
+    mgr.open();
+    
+    //Check the persistence.xml was looked for
+    Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
+    //Check we didn't use getResource()
+    Skeleton.getSkeleton(persistenceBundle).assertNotCalled(new MethodCall(Bundle.class, "getResource", String.class));
+    
+    BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
+    assertNotNull("We should have an EntityManagerFactoryManager", getTrackedObject());
+    
+    Hashtable<String,String> hash1 = new Hashtable<String, String>();
+    hash1.put("javax.persistence.provider", "no.such.Provider");
+    ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
+        pp, hash1 );
+    ServiceReference ref = reg.getReference();
+    
+    mgr.addingProvider(ref);
+    
+    BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
+    
+    testSuccessfulCreationEvent(ref, extenderContext, 1);
+    testSuccessfulRegistrationEvent(ref, extenderContext, 1);
+    
+    Hashtable<String,String> hash2 = new Hashtable<String, String>();
+    hash2.put("javax.persistence.provider", "no.such.Provider");
+    hash2.put("key", "value");
+    ServiceRegistration reg2 = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
+        pp, hash2 );
+    ServiceReference ref2 = reg2.getReference();
+    
+    mgr.addingProvider(ref2);
+    
+    BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
+    
+    testSuccessfulCreationEvent(ref, extenderContext, 1);
+    testSuccessfulRegistrationEvent(ref, extenderContext, 1);
+    //Clear the call to createContainerEntityManagerFactory so that we can check nothing
+    //was done with the new reference
+    Skeleton.getSkeleton(pp).clearMethodCalls();
+    testSuccessfulCreationEvent(ref2, extenderContext, 0);
+    
+    //Clear the registration call
+    Skeleton.getSkeleton(persistenceBundleContext).clearMethodCalls();
+    mgr.removingProvider(ref);
+    
+    BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
+    testSuccessfulCreationEvent(ref2, extenderContext, 1);
+    testSuccessfulRegistrationEvent(ref2, extenderContext, 1);
   }
   
   @Test
@@ -938,8 +1027,8 @@ public class PersistenceBundleLifecycleTest
   private void testSuccessfulCreationEvent(ServiceReference providerRef, BundleContext extenderContext, int numberOfPersistenceUnits)
   {
   //Check we loaded the Provider service
-    Skeleton.getSkeleton(extenderContext).assertCalledExactNumberOfTimes(new MethodCall(BundleContext.class, "getService", providerRef), 1);
-    Skeleton.getSkeleton(extenderContext).assertCalledExactNumberOfTimes(new MethodCall(BundleContext.class, "ungetService", providerRef), 1);
+    Skeleton.getSkeleton(extenderContext).assertCalledExactNumberOfTimes(new MethodCall(BundleContext.class, "getService", providerRef), (numberOfPersistenceUnits == 0) ? 0 : 1);
+    Skeleton.getSkeleton(extenderContext).assertCalledExactNumberOfTimes(new MethodCall(BundleContext.class, "ungetService", providerRef), (numberOfPersistenceUnits == 0) ? 0 : 1);
     Skeleton.getSkeleton(pp).assertCalledExactNumberOfTimes(new MethodCall(PersistenceProvider.class, "createContainerEntityManagerFactory", PersistenceUnitInfo.class, Map.class), numberOfPersistenceUnits);
   }
   
@@ -947,7 +1036,8 @@ public class PersistenceBundleLifecycleTest
   {
     Skeleton.getSkeleton(persistenceBundleContext).assertCalledExactNumberOfTimes(new MethodCall(BundleContext.class, "registerService", EntityManagerFactory.class.getName(), EntityManagerFactory.class, Dictionary.class), numberOfPersistenceUnits);
     
-    BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
+    if(numberOfPersistenceUnits != 0)
+      BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
     
     ServiceReference[] emfs = extenderContext.getServiceReferences(EntityManagerFactory.class.getName(), null);
     

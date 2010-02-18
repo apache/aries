@@ -31,6 +31,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
+import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -51,6 +52,8 @@ public class EntityManagerFactoryManager {
   private ServiceReference provider;
   /** The persistence units to manage */
   private Collection<ManagedPersistenceUnitInfo> persistenceUnits;
+  /** The original parsed data */
+  private Collection<ParsedPersistenceUnit> parsedData;
   /** A Map of created {@link EntityManagerFactory}s */
   private Map<String, EntityManagerFactory> emfs = null;
   /** The {@link ServiceRegistration} objects for the {@link EntityManagerFactory}s */
@@ -71,12 +74,14 @@ public class EntityManagerFactoryManager {
    * @param b
    * @param infos 
    * @param ref 
+   * @param parsedUnits 
    */
-  public EntityManagerFactoryManager(BundleContext containerCtx, Bundle b, ServiceReference ref, Collection<ManagedPersistenceUnitInfo> infos) {
+  public EntityManagerFactoryManager(BundleContext containerCtx, Bundle b, Collection<ParsedPersistenceUnit> parsedUnits, ServiceReference ref, Collection<ManagedPersistenceUnitInfo> infos) {
     containerContext = containerCtx;
     bundle = b;
     provider = ref;
     persistenceUnits = infos;
+    parsedData = parsedUnits;
   }
 
   /**
@@ -250,6 +255,23 @@ public class EntityManagerFactoryManager {
     provider = ref;
     persistenceUnits = infos;
   }
+  
+  /**
+   * Manage the EntityManagerFactories for the following
+   * provider, updated persistence xmls and {@link PersistenceUnitInfo}s
+   * 
+   * This method should only be called when not holding any locks
+   * 
+   * @param parsedUnits The updated {@link ParsedPersistenceUnit}s for this bundle 
+   * @param ref The {@link PersistenceProvider} {@link ServiceReference}
+   * @param infos The {@link PersistenceUnitInfo}s defined by our bundle
+   */
+  public synchronized void manage(Collection<ParsedPersistenceUnit> parsedUnits, ServiceReference ref,
+      Collection<ManagedPersistenceUnitInfo> infos)  throws IllegalStateException{
+    parsedData = parsedUnits;
+    provider = ref;
+    persistenceUnits = infos;
+  }
 
   /**
    * Stop managing any {@link EntityManagerFactory}s 
@@ -282,5 +304,13 @@ public class EntityManagerFactoryManager {
     emfs = null;
   }
 
+  public Bundle getBundle() {
+    return bundle;
+  }
+
+  public Collection<ParsedPersistenceUnit> getParsedPersistenceUnits()
+  {
+    return parsedData;
+  }
 
 }
