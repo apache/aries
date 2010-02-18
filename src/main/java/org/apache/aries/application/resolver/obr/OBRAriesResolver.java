@@ -31,6 +31,7 @@ import org.apache.aries.application.Content;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.resolver.obr.impl.ApplicationResourceImpl;
 import org.apache.aries.application.resolver.obr.impl.OBRBundleInfo;
@@ -57,7 +58,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
     this.repositoryAdmin = repositoryAdmin;
   }
 
-  public Set<BundleInfo> resolve(AriesApplication app) throws ResolverException
+  public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) throws ResolverException
   {
     log.trace("resolving {}", app);
     Resolver obrResolver = repositoryAdmin.resolver();
