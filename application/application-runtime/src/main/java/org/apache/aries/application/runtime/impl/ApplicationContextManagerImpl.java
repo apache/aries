@@ -31,6 +31,7 @@ import org.apache.aries.application.management.ApplicationContextManager;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.ApplicationContext.ApplicationState;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 
@@ -69,7 +70,7 @@ public class ApplicationContextManagerImpl implements ApplicationContextManager 
     return result;
   }
 
-  public void remove(ApplicationContext app)
+  public void remove(ApplicationContext app) throws BundleException
   {
     Iterator<Map.Entry<AriesApplication, ApplicationContextImpl>> it = _appToContextMap.entrySet().iterator();
     
@@ -80,11 +81,21 @@ public class ApplicationContextManagerImpl implements ApplicationContextManager 
       
       if (potentialMatch == app) {
         it.remove();
-        
-        potentialMatch.setState(ApplicationState.UNINSTALLED);
-        
+
+        uninstall(potentialMatch);
+
         break;
       }
     }
+  }
+
+  protected void uninstall(ApplicationContextImpl app) throws BundleException
+  {
+      Set<Bundle> bundles = app.getApplicationContent();
+      for (Bundle b : bundles) {
+        b.uninstall();
+      }
+      app.setState(ApplicationState.UNINSTALLED);
+
   }
 }
