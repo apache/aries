@@ -133,11 +133,13 @@ public class AriesApplicationImpl implements AriesApplication {
     } finally {
       IOUtils.close(out);
     }
-    try {
-      out = IOUtils.getOutputStream(tempDir, AppConstants.DEPLOYMENT_MF);
-      _deploymentMetadata.store(out);
-    } finally {
-      IOUtils.close(out);
+    if (_deploymentMetadata != null) {
+      try {
+        out = IOUtils.getOutputStream(tempDir, AppConstants.DEPLOYMENT_MF);
+        _deploymentMetadata.store(out);
+      } finally {
+        IOUtils.close(out);
+      }
     }
     
     // Write the by-value eba files out
