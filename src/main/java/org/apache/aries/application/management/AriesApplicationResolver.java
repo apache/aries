@@ -32,7 +32,7 @@ public interface AriesApplicationResolver {
    *         set will not include those provided by value within the application.
    * @throws ResolverException if the application cannot be resolved.  
    */
-  Set<BundleInfo> resolve (AriesApplication app) throws ResolverException ;
+  Set<BundleInfo> resolve (AriesApplication app, ResolveConstraint... constraints) throws ResolverException ;
 
   /** 
    * Return the info for the requested bundle. If no matching bundle exists in the
