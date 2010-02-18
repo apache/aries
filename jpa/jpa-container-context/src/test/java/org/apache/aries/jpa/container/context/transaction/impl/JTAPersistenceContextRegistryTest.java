@@ -20,6 +20,8 @@ package org.apache.aries.jpa.container.context.transaction.impl;
 
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +30,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.TransactionRequiredException;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.TransactionSynchronizationRegistry;
@@ -129,6 +132,19 @@ public class JTAPersistenceContextRegistryTest {
     
     contexts = new JTAPersistenceContextRegistry();
     contexts.setTranRegistry(Skeleton.newMock(reg, TransactionSynchronizationRegistry.class));
+    contexts.addRegistry(null);
+  }
+  
+  @Test
+  public void testIsTranActive()
+  {
+    reg.setTransactionKey(null);
+    
+    assertFalse(contexts.isTransactionActive());
+    
+    reg.setTransactionKey("");
+    
+    assertTrue(contexts.isTransactionActive());
   }
   
   @Test
@@ -202,7 +218,41 @@ public class JTAPersistenceContextRegistryTest {
     Skeleton.getSkeleton(em1b).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"), 1);
     Skeleton.getSkeleton(em2a).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"), 1);
     Skeleton.getSkeleton(em2b).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"), 1);
+  }
+  
+  @Test
+  public void testNoTranSyncRegistry() {
+    JTAPersistenceContextRegistry registry = new JTAPersistenceContextRegistry();
+    //blueprint will still call our setter
+    TransactionSynchronizationRegistry tranSyncReg = Skeleton.newMock(reg, TransactionSynchronizationRegistry.class);
+    registry.setTranRegistry(tranSyncReg);
     
+    reg.setTransactionKey(null);
+    
+    assertFalse(registry.jtaIntegrationAvailable());
+    assertFalse(registry.isTransactionActive());
+    
+    Skeleton.getSkeleton(tranSyncReg).assertSkeletonNotCalled();
+    
+    reg.setTransactionKey("");
+    
+    assertFalse(registry.jtaIntegrationAvailable());
+    assertFalse(registry.isTransactionActive());
+    
+    Skeleton.getSkeleton(tranSyncReg).assertSkeletonNotCalled();
+  }
+  
+  @Test(expected=TransactionRequiredException.class)
+  public void testGetNoTran() {
+    reg.setTransactionKey(null);
+    contexts.getCurrentPersistenceContext(emf1, props1);
+  }
+  
+  @Test(expected=TransactionRequiredException.class)
+  public void testGetNoTranSyncRegistry() {
+    reg.setTransactionKey("");
+    contexts.removeRegistry(null);
+    contexts.getCurrentPersistenceContext(emf1, props1);
   }
   
 }
