@@ -21,11 +21,35 @@ package org.apache.aries.application.management;
 
 import java.util.Set;
 
+import org.apache.aries.application.ApplicationMetadata;
 import org.osgi.framework.Version;
 
+/**
+ * An {@code AriesApplicationResolver} is a service used by the {@link AriesApplicationManager} when one of the
+ * {@code createApplication} methods are called. It is used to "deploy" the application. The "deploy" process
+ * generates an Aries Deployment manifest <a href="http://incubator.apache.org/aries/applications.html"/>See
+ * the design documentation</a>.
+ * 
+ * <p>The {@code AriesApplicationManager} calls the resolve method in order to determine which bundles are required.
+ * </p>
+ */
 public interface AriesApplicationResolver {
 
-  /** Resolve an AriesApplication 
+  /** 
+   * Resolve an AriesApplication. The implementation of this method is expected to do the following:
+   * 
+   * <ol>
+   *   <li>Extract from the {@link AriesApplication}'s the application's content. This is performed
+   *     using the {@link AriesApplication#getApplicationMetadata()} method following by calling 
+   *     {@link ApplicationMetadata#getApplicationContents()}.
+   *   </li>
+   *   <li>Resolve the application content using any configured repositories for bundles, and the
+   *     bundles that are contained by value inside the application. These bundles can be obtained
+   *     by calling {@link AriesApplication#getBundleInfo()}.
+   *   </li>
+   * </ol>
+   * 
+   * The method returns the set of bundle info objects that should be used.
    * 
    * @param app The application to resolve
    * @return The additional bundles required to ensure that the application resolves. This
@@ -35,8 +59,10 @@ public interface AriesApplicationResolver {
   Set<BundleInfo> resolve (AriesApplication app, ResolveConstraint... constraints) throws ResolverException ;
 
   /** 
-   * Return the info for the requested bundle. If no matching bundle exists in the
-   * resolver runtime then null is returned.
+   * Return the info for the requested bundle. This method is called when installing
+   * an application to determine where the bundle is located in order to install it.
+   * 
+   * <p>If no matching bundle exists in the resolver runtime then null is returned.</p>
    * 
    * @param bundleSymbolicName the bundle symbolic name.
    * @param bundleVersion      the version of the bundle
