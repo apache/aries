@@ -90,6 +90,12 @@ public class MapToDictionary extends Dictionary
     return m_map.size();
   }
 
+  @Override
+  public String toString()
+  {
+    return m_map != null ? m_map.toString() : "null";
+  }
+
   private static class IteratorToEnumeration implements Enumeration
   {
     private final Iterator m_iter;
