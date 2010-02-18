@@ -171,11 +171,9 @@ public class PersistenceBundleManager extends MultiBundleTracker
         mgr.destroy();
         if(infos != null)
           persistenceUnitFactory.destroyPersistenceBundle(mgr.getBundle());
-        //Put the manager into the list of managers waiting for a new
-        //provider, one that might work!
-        synchronized (this) {
-          managersAwaitingProviders.add(mgr);
-        }
+        
+        //Something better may have come along while we weren't synchronized
+        setupManager(mgr.getBundle(), mgr, false);
       }
     }
   }
@@ -250,7 +248,15 @@ public class PersistenceBundleManager extends MultiBundleTracker
       setupManager(bundle, mgr, true);
     } else {
       try {
-        mgr.bundleStateChange();
+        boolean reassign;
+        synchronized (this) {
+          reassign = managersAwaitingProviders.contains(mgr);
+        }
+        if(reassign) {
+          setupManager(bundle, mgr, false);
+        } else {
+          mgr.bundleStateChange();
+        }
       } catch (InvalidPersistenceUnitException e) {
         logInvalidPersistenceUnitException(bundle, e);
         mgr.destroy();
