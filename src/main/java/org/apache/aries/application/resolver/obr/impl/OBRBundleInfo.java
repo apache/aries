@@ -41,11 +41,15 @@ public class OBRBundleInfo implements BundleInfo
   private final Set<Content> importService;
   private final Set<Content> exportService;
   private final Map<String, String> headers;
+  private final Set<Content> requireBundle;
+  private final Map<String, String> attributes;
+  private final Map<String, String> directives;
 
   public OBRBundleInfo(String symbolicName, Version version, String location,
                        Set<Content> importPackage, Set<Content> exportPackage,
                        Set<Content> importService, Set<Content> exportService,
-                       Map<String, String> headers)
+                       Set<Content> requireBundle, Map<String, String> attributes,
+                       Map<String, String> directives, Map<String, String> headers)
   {
     this.symbolicName = symbolicName;
     this.version = version;
@@ -55,6 +59,9 @@ public class OBRBundleInfo implements BundleInfo
     this.importService = importService;
     this.exportService = exportService;
     this.headers = headers;
+    this.requireBundle = requireBundle;
+    this.attributes = attributes;
+    this.directives = directives;
   }
 
   public String getSymbolicName()
@@ -95,5 +102,20 @@ public class OBRBundleInfo implements BundleInfo
   public Map<String, String> getHeaders()
   {
     return headers;
+  }
+
+  public Map<String, String> getBundleAttributes()
+  {
+    return attributes;
+  }
+
+  public Map<String, String> getBundleDirectives()
+  {
+    return directives;
+  }
+
+  public Set<Content> getRequireBundle()
+  {
+    return requireBundle;
   }
 }

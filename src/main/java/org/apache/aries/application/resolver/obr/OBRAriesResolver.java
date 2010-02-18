@@ -20,11 +20,17 @@
 
 package org.apache.aries.application.resolver.obr;
 
+import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
@@ -33,6 +39,7 @@ import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.resolver.obr.generator.RepositoryDescriptorGenerator;
 import org.apache.aries.application.resolver.obr.impl.ApplicationResourceImpl;
 import org.apache.aries.application.resolver.obr.impl.OBRBundleInfo;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
@@ -43,6 +50,7 @@ import org.osgi.service.obr.Resolver;
 import org.osgi.service.obr.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 /**
  * @version $Rev$ $Date$
@@ -58,6 +66,10 @@ public class OBRAriesResolver implements AriesApplicationResolver
     this.repositoryAdmin = repositoryAdmin;
   }
 
+  /**
+   * This method is synchronized because it changes the repositories understood by OBR, and we don't
+   * want one apps by value content being used to resolve another. I'll ask for an OBR enhancement.
+   */
   public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) throws ResolverException
   {
     log.trace("resolving {}", app);
@@ -71,22 +83,42 @@ public class OBRAriesResolver implements AriesApplicationResolver
 
     // add a resource describing the requirements of the application metadata.
     obrResolver.add(new ApplicationResourceImpl(appName, appVersion, appContent));
+
+    URL appRepoURL = null;
     
-    // TODO we need to resolve against the app content so we need to generate an OBR.xml for the content
+    try {
+      Document doc = RepositoryDescriptorGenerator.generateRepositoryDescriptor(appName + "_" + appVersion, app.getBundleInfo());
+      
+      File f = File.createTempFile(appName + "_" + appVersion, "repository.xml");
+      TransformerFactory.newInstance().newTransformer().transform(new DOMSource(doc), new StreamResult(f));
+      
+      appRepoURL = f.toURI().toURL();
+      
+      repositoryAdmin.addRepository(appRepoURL);
+      f.delete();
+    } catch (Exception e) {
+      throw new ResolverException(e);
+    } 
     
-    if (obrResolver.resolve()) {
-      Set<BundleInfo> result = new HashSet<BundleInfo>(app.getBundleInfo());
-      for (Resource resource: obrResolver.getRequiredResources()) {
-        BundleInfo bundleInfo = toBundleInfo(resource);
-        result.add(bundleInfo);
+    try {
+      if (obrResolver.resolve()) {
+        Set<BundleInfo> result = new HashSet<BundleInfo>(app.getBundleInfo());
+        for (Resource resource: obrResolver.getRequiredResources()) {
+          BundleInfo bundleInfo = toBundleInfo(resource);
+          result.add(bundleInfo);
+        }
+        for (Resource resource: obrResolver.getOptionalResources()) {
+          BundleInfo bundleInfo = toBundleInfo(resource);
+          result.add(bundleInfo);
+        }
+        return result;
+      } else {
+        throw new ResolverException("Could not resolve requirements: " + getUnsatifiedRequirements(obrResolver));
       }
-      for (Resource resource: obrResolver.getOptionalResources()) {
-        BundleInfo bundleInfo = toBundleInfo(resource);
-        result.add(bundleInfo);
+    } finally {
+      if (appRepoURL != null) {
+        repositoryAdmin.removeRepository(appRepoURL);
       }
-      return result;
-    } else {
-      throw new ResolverException("Could not resolve requirements: " + getUnsatifiedRequirements(obrResolver));
     }
   }
 
@@ -128,6 +160,9 @@ public class OBRAriesResolver implements AriesApplicationResolver
             location,
             null,
             null,
+            null,
+            null,
+            null, 
             null,
             null,
             null);
