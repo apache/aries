@@ -212,7 +212,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
 
   public AriesApplication resolve(AriesApplication originalApp, ResolveConstraint... constraints) throws ResolverException {
     AriesApplicationImpl application = new AriesApplicationImpl(originalApp.getApplicationMetadata(), originalApp.getBundleInfo(), _localPlatform);
-    Set<BundleInfo> additionalBundlesRequired = _resolver.resolve(application);
+    Set<BundleInfo> additionalBundlesRequired = _resolver.resolve(application, constraints);
     DeploymentMetadata deploymentMetadata = _deploymentMetadataFactory.createDeploymentMetadata(application, additionalBundlesRequired);
     application.setDeploymentMetadata(deploymentMetadata);
     // Store a reference to any modified bundles
