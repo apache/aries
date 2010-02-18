@@ -36,18 +36,20 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 
 public class BundleInfoImpl implements BundleInfo {
-  private String _symbolicName;
+  private Content _symbolicName;
   private Version _version;
   private Attributes _attributes;
   private Set<Content> _exportPackages = null;
   private Set<Content> _importPackages = null;
   private Set<Content> _exportServices = null;
   private Set<Content> _importServices = null;
+  private Set<Content> _requireBundle = null;
+  
   private String _location;
   private ApplicationMetadataFactory _applicationMetadataFactory;
   
   public BundleInfoImpl (ApplicationMetadataFactory amf, BundleManifest bm, String location) { 
-    _symbolicName = bm.getSymbolicName();
+    _symbolicName = amf.parseContent(bm.getSymbolicName());
     _version = bm.getVersion();
     _attributes = bm.getRawAttributes();
     _location = location;
@@ -97,7 +99,7 @@ public class BundleInfoImpl implements BundleInfo {
   }
 
   public String getSymbolicName() {
-    return _symbolicName;
+    return _symbolicName.getContentName();
   }
 
   public Version getVersion() {
@@ -113,5 +115,24 @@ public class BundleInfoImpl implements BundleInfo {
       result.add(c);
     }
     return result;
+  }
+
+  public Map<String, String> getBundleAttributes()
+  {
+    return _symbolicName.getAttributes();
+  }
+
+  public Map<String, String> getBundleDirectives()
+  {
+    return _symbolicName.getDirectives();
+  }
+
+  public Set<Content> getRequireBundle()
+  {
+    if (_requireBundle == null) {
+      _requireBundle = getContentSetFromHeader(_attributes, Constants.REQUIRE_BUNDLE);
+    }
+    
+    return _requireBundle;
   }
 }
