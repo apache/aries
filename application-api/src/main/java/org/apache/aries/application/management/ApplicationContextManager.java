@@ -50,5 +50,5 @@ public interface ApplicationContextManager {
    * 
    * @param app the application to remove.
    */
-  public void remove(ApplicationContext app);
+  public void remove(ApplicationContext app) throws BundleException;
 }
