@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.aries.samples.ariestrader.beans;
+package org.apache.aries.samples.ariestrader.entities;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -47,7 +47,7 @@ import org.apache.aries.samples.ariestrader.persistence.api.QuoteDataBean;
     @NamedQuery(name = "quoteejb.findByChange1", query = "SELECT q FROM quoteejb q WHERE q.change1 = :change1")
 })
 @NamedNativeQueries({
-    @NamedNativeQuery(name="quoteejb.quoteForUpdate", query="select * from quoteejb q where q.symbol=? for update",resultClass=org.apache.aries.samples.ariestrader.beans.QuoteDataBeanImpl.class)
+    @NamedNativeQuery(name="quoteejb.quoteForUpdate", query="select * from quoteejb q where q.symbol=? for update",resultClass=org.apache.aries.samples.ariestrader.entities.QuoteDataBeanImpl.class)
 })
 
 public class QuoteDataBeanImpl implements QuoteDataBean, Serializable {

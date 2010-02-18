@@ -27,11 +27,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.aries.samples.ariestrader.api.TradeServices;
-import org.apache.aries.samples.ariestrader.beans.AccountDataBeanImpl;
-import org.apache.aries.samples.ariestrader.beans.AccountProfileDataBeanImpl;
-import org.apache.aries.samples.ariestrader.beans.HoldingDataBeanImpl;
-import org.apache.aries.samples.ariestrader.beans.OrderDataBeanImpl;
-import org.apache.aries.samples.ariestrader.beans.QuoteDataBeanImpl;
+import org.apache.aries.samples.ariestrader.entities.AccountDataBeanImpl;
+import org.apache.aries.samples.ariestrader.entities.AccountProfileDataBeanImpl;
+import org.apache.aries.samples.ariestrader.entities.HoldingDataBeanImpl;
+import org.apache.aries.samples.ariestrader.entities.OrderDataBeanImpl;
+import org.apache.aries.samples.ariestrader.entities.QuoteDataBeanImpl;
 import org.apache.aries.samples.ariestrader.persistence.api.AccountDataBean;
 import org.apache.aries.samples.ariestrader.persistence.api.AccountProfileDataBean;
 import org.apache.aries.samples.ariestrader.persistence.api.HoldingDataBean;
@@ -422,7 +422,7 @@ public class TradeJpaCm implements TradeServices {
                                                         + "a.OPENBALANCE, "
                                                         + "a.PROFILE_USERID "
                                                         + "from accountejb a where a.profile_userid = ?",
-                                                        org.apache.aries.samples.ariestrader.beans.AccountDataBeanImpl.class);
+                                                        org.apache.aries.samples.ariestrader.entities.AccountDataBeanImpl.class);
                 findaccountid.setParameter(1, userID);
                 AccountDataBeanImpl account = (AccountDataBeanImpl) findaccountid.getSingleResult();
                 Integer accountid = account.getAccountID();

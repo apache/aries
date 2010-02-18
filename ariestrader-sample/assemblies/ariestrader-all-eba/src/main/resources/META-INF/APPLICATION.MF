@@ -7,8 +7,10 @@ Application-Content: org.apache.aries.ariestrader.modules.ariestrader-util;versi
  org.apache.aries.ariestrader.modules.ariestrader-api;version=1.0.0.incubating-SNAPSHOT,
  org.apache.aries.ariestrader.modules.ariestrader-core;version=1.0.0.incubating-SNAPSHOT,
  org.apache.aries.ariestrader.modules.ariestrader-web;version=1.0.0.incubating-SNAPSHOT,
- org.apache.aries.ariestrader.modules.ariestrader-entities;version=1.0.0.incubating-SNAPSHOT,
+ org.apache.aries.ariestrader.modules.ariestrader-beans;version=1.0.0.incubating-SNAPSHOT,
  org.apache.aries.ariestrader.modules.ariestrader-persist-jdbc;version=1.0.0.incubating-SNAPSHOT,
- org.apache.aries.ariestrader.modules.ariestrader-persist-jpa-am;version=1.0.0.incubating-SNAPSHOT
+ org.apache.aries.ariestrader.modules.ariestrader-entities;version=1.0.0.incubating-SNAPSHOT,
+ org.apache.aries.ariestrader.modules.ariestrader-persist-jpa-am;version=1.0.0.incubating-SNAPSHOT,
+ org.apache.aries.ariestrader.modules.ariestrader-persist-jpa-cm;version=1.0.0.incubating-SNAPSHOT
 
 

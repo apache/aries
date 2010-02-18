@@ -40,6 +40,7 @@
         <module>ariestrader-derby-ds</module>
         <module>ariestrader-persist-jdbc</module>
         <module>ariestrader-persist-jpa-am</module>
+        <module>ariestrader-persist-jpa-cm</module>
     </modules>
 
 </project>
