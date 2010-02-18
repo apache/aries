@@ -217,13 +217,23 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     return app;
   }
 
-  public AriesApplication resolve(AriesApplication originalApp,
-      ResolveConstraint... constraints) {
-    // TODO Auto-generated method stub
-    return null;
+  public AriesApplication resolve(AriesApplication originalApp, ResolveConstraint... constraints) throws ResolverException {
+    AriesApplicationImpl application = new AriesApplicationImpl(originalApp.getApplicationMetadata(), originalApp.getBundleInfo(), _localPlatform);
+    Set<BundleInfo> additionalBundlesRequired = _resolver.resolve(application);
+    DeploymentMetadata deploymentMetadata = _deploymentMetadataFactory.createDeploymentMetadata(application, additionalBundlesRequired);
+    application.setDeploymentMetadata(deploymentMetadata);
+    // Store a reference to any modified bundles
+    if (originalApp instanceof AriesApplicationImpl) {
+        // TODO: are we really passing streams around ?
+        application.setModifiedBundles(((AriesApplicationImpl) originalApp).getModifiedBundles());
+    }
+    return application;
   } 
 
-  public ApplicationContext install(AriesApplication app) throws BundleException, ManagementException {
+  public ApplicationContext install(AriesApplication app) throws BundleException, ManagementException, ResolverException {
+    if (!app.isResolved()) {
+        app = resolve(app);
+    }
     ApplicationContext result = _applicationContextManager.getApplicationContext(app);
     return result;
   }
