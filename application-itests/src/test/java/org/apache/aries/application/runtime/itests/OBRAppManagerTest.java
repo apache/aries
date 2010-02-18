@@ -18,14 +18,19 @@
  */
 package org.apache.aries.application.runtime.itests;
 
+import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
 
-import org.apache.aries.application.management.ApplicationContext;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.utils.filesystem.FileSystem;
-import org.apache.aries.sample.HelloWorld;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.junit.Before;
@@ -33,14 +38,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.osgi.service.obr.Capability;
+import org.osgi.service.obr.Repository;
 import org.osgi.service.obr.RepositoryAdmin;
-
-import static org.junit.Assert.assertEquals;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+import org.osgi.service.obr.Resource;
 
 @RunWith(JUnit4TestRunner.class)
 public class OBRAppManagerTest extends AbstractIntegrationTest {
@@ -82,15 +83,48 @@ public class OBRAppManagerTest extends AbstractIntegrationTest {
     fout = new FileOutputStream("test.eba");
     testEba.writeOut(fout);
     fout.close();
-
+    
+    StringBuilder repositoryXML = new StringBuilder();
+    
+    BufferedReader reader = new BufferedReader(new InputStreamReader(OBRAppManagerTest.class.getResourceAsStream("/obr/repository.xml")));
+    String line;
+    
+    while ((line = reader.readLine()) != null) {
+      repositoryXML.append(line);
+      repositoryXML.append("\r\n");
+    }
+    
+    String repo = repositoryXML.toString().replaceAll("bundle_location", new File("bundle.jar").getAbsolutePath());
+    
+    System.out.println(repo);
+    
+    FileWriter writer = new FileWriter("repository.xml");
+    writer.write(repo);
+    writer.close();
+    
     createdApplications = true;
   }
 
   @Test
   public void testAppWithApplicationManifest() throws Exception {
     RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
-    repositoryAdmin.addRepository(OBRAppManagerTest.class.getClassLoader().getResource("obr/repository.xml"));
+    
+    repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
+    Repository[] repos = repositoryAdmin.listRepositories();
+    
+    for (Repository repo : repos) {
+      Resource[] resources = repo.getResources();
+      
+      for (Resource r : resources) {
+        Capability[] cs = r.getCapabilities();
+        
+        for (Capability c : cs) {
+          System.out.println(c.getName() + " : " + c.getProperties());
+        }
+      }
+    }
+    
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
     //installing requires a valid url for the bundle in repository.xml.

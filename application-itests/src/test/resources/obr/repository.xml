@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <repository name="Geronimo Framework, Configs :: J2EE System">
-    <resource version="1.3.0.3" uri="mvn:org.apache.aries.sample/org.apache.aries.sample/1.0"
+    <resource version="1.3.0.3" uri="file:/bundle_location"
               symbolicname="org.apache.aries.sample"
               presentationname="org.apache.aries.sample" id="1266103855623">
         <description>sample</description>
         <license>http://www.apache.org/licenses/LICENSE-2.0.txt</license>
         <capability name="bundle">
             <p v="org.apache.aries.sample" n="symbolicname"/>
-            <p v="1.0" t="version" n="version"/>
+            <p v="1.3.0" t="version" n="version"/>
             <p v="2" t="version" n="manifestversion"/>
         </capability>
         <capability name="package">
             <p v="org.apache.aries.sample.impl" n="package"/>
             <p v="1.0" t="version" n="version"/>
+            <p n='mandatory' v=''/>
         </capability>
     </resource>
 
