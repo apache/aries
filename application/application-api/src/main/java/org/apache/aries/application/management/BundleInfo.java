@@ -32,6 +32,12 @@ public interface BundleInfo
   /** Bundle-SymbolicName */
   public String getSymbolicName();
   
+  /** Returns the directives specified on the symbolic name */
+  public Map<String, String> getBundleDirectives();
+  
+  /** Returns the attributes specified on the symbolic name */
+  public Map<String, String> getBundleAttributes();
+  
   /** Bundle-Version: */
   public Version getVersion();
   
@@ -40,6 +46,9 @@ public interface BundleInfo
   
   /** Import-Package */
   public Set<Content> getImportPackage();
+  
+  /** Require-Bundle */
+  public Set<Content> getRequireBundle();
   
   /** Export-Package */
   public Set<Content> getExportPackage();
