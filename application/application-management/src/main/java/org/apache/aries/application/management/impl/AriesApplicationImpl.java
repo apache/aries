@@ -86,13 +86,21 @@ public class AriesApplicationImpl implements AriesApplication {
   public void setDeploymentMetadata (DeploymentMetadata dm) { 
     _deploymentMetadata = dm;
   }
-  
+
+  public Map<String, InputStream> getModifiedBundles() {
+    return _modifiedBundles;
+  }
+
   public void setModifiedBundles (Map<String, InputStream> modifiedBundles) {
     _modifiedBundles = modifiedBundles;
   }
   
   public void setLocalPlatform (LocalPlatform lp) { 
     _localPlatform = lp;
+  }
+
+  public boolean isResolved() {
+    return getDeploymentMetadata() != null;
   }
 
   public void store(File f) throws FileNotFoundException, IOException {

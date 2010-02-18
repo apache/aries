@@ -54,6 +54,19 @@ public interface AriesApplication
    */
   public Set<BundleInfo> getBundleInfo();
 
+
+  /**
+   * Check if the application is resolved or not.
+   * An application is said to be resolved if it has a valid deployment metadata.
+   * During the installation process, an application will be automatically
+   * resolved if it is not already.
+   *
+   * @return if the appplication is resolved or not.
+   * @see org.apache.aries.application.management.AriesApplicationManager#install(AriesApplication)  
+   * @see org.apache.aries.application.management.AriesApplicationManager#resolve(AriesApplication, ResolveConstraint...)
+   */
+  public boolean isResolved();
+
   /** 
    * Persist this metadata. 
    * @param f The file to store this metadata to
