@@ -53,18 +53,6 @@ public class JPAContainerTest {
   @Inject
   protected BundleContext bundleContext;
  
-  @Before
-  public void setupApplication() throws Exception
-  {
-    //Wait for everything to be started then refresh the app
-    Thread.sleep(3000);
-    
-    Bundle app = getBundle("org.apache.aries.jpa.jpa-container-testbundle");
-    
-    PackageAdmin pa = getOsgiService(PackageAdmin.class);
-    pa.refreshPackages(new Bundle[] {app});
-  }
-  
   @Test
   public void findEntityManagerFactory() throws Exception {
     EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(osgi.unit.name=test-unit)", DEFAULT_TIMEOUT);

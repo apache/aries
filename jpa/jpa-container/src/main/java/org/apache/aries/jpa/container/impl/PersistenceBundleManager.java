@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -74,6 +75,12 @@ public class PersistenceBundleManager extends MultiBundleTracker
    * synchronized on {@code this}. Use a Set for constant access and add times.
    */
   private Set<ServiceReference> persistenceProviders = new HashSet<ServiceReference>();
+  /** 
+   * Managers that do not have a suitable provider yet
+   * should only ever be accessed when synchronized on {@code this} 
+   * Use a set so we don't have to be careful about adding multiple times!
+   */
+  private Collection<EntityManagerFactoryManager> managersAwaitingProviders = new ArrayList<EntityManagerFactoryManager>();
   /** Plug-point for persistence unit providers */
   private ManagedPersistenceUnitInfoFactory persistenceUnitFactory; 
   /** Configuration for this extender */
@@ -115,8 +122,7 @@ public class PersistenceBundleManager extends MultiBundleTracker
   
   public Object addingBundle(Bundle bundle, BundleEvent event) 
   {
-    EntityManagerFactoryManager mgr = null;
-    mgr = setupManager(bundle, mgr);
+    EntityManagerFactoryManager mgr = setupManager(bundle, null, true);
     return mgr;
   }
 
@@ -124,11 +130,54 @@ public class PersistenceBundleManager extends MultiBundleTracker
    * A provider is being added, add it to our Set
    * @param ref
    */
-  public synchronized void addingProvider(ServiceReference ref)
+  public void addingProvider(ServiceReference ref)
   {
-    if(_logger.isDebugEnabled())
-      _logger.debug("Adding a provider: {}", new Object[] {ref});
-    persistenceProviders.add(ref);
+    Map<EntityManagerFactoryManager, ServiceReference> managersToManage = new HashMap<EntityManagerFactoryManager, ServiceReference>();
+    synchronized (this) {
+      if(_logger.isDebugEnabled())
+        _logger.debug("Adding a provider: {}", new Object[] {ref});
+      
+      persistenceProviders.add(ref);
+    
+      Iterator<EntityManagerFactoryManager> it = managersAwaitingProviders.iterator();
+      while(it.hasNext()) {
+        EntityManagerFactoryManager mgr = it.next();
+        ServiceReference reference = getProviderServiceReference(mgr.getParsedPersistenceUnits());
+        if(ref != null) {
+          managersToManage.put(mgr, reference);
+          it.remove();
+        }
+      }
+    }
+    
+    for(Entry<EntityManagerFactoryManager, ServiceReference> entry 
+        : managersToManage.entrySet()) {
+      EntityManagerFactoryManager mgr = entry.getKey();
+      ServiceReference reference = entry.getValue();
+      Collection<ManagedPersistenceUnitInfo> infos = null;
+      try {
+         infos = persistenceUnitFactory.createManagedPersistenceUnitMetadata(
+             ctx, mgr.getBundle(), reference, mgr.getParsedPersistenceUnits());
+      
+        mgr.manage(reference, infos);
+        mgr.bundleStateChange();
+      } catch (Exception e) {
+        if(e instanceof InvalidPersistenceUnitException) {
+          logInvalidPersistenceUnitException(mgr.getBundle(), (InvalidPersistenceUnitException)e);
+        } else {
+          _logger.warn("An error occured whilst trying to manage persistence units for bundle " 
+              + mgr.getBundle().getSymbolicName() + "_" + mgr.getBundle().getVersion(), e);
+        }
+        mgr.destroy();
+        if(infos != null)
+          persistenceUnitFactory.destroyPersistenceBundle(mgr.getBundle());
+        //Put the manager into the list of managers waiting for a new
+        //provider, one that might work!
+        synchronized (this) {
+          managersAwaitingProviders.add(mgr);
+        }
+      }
+    }
   }
   
   /**
@@ -152,8 +201,14 @@ public class PersistenceBundleManager extends MultiBundleTracker
     }
     //If the entry is removed then make sure we notify the persistenceUnitFactory
     for(Entry<Bundle, EntityManagerFactoryManager> entry : mgrs.entrySet()) {
-      if(entry.getValue().providerRemoved(ref))
-        persistenceUnitFactory.destroyPersistenceBundle(entry.getKey());
+      EntityManagerFactoryManager mgr = entry.getValue();
+      if(mgr.providerRemoved(ref)) {
+        Bundle bundle = entry.getKey();
+        persistenceUnitFactory.destroyPersistenceBundle(bundle);
+        //Allow the manager to re-initialize with a new provider
+        //No change to the units
+        setupManager(bundle, mgr, false);
+      }
     }
   }
   
@@ -191,13 +246,19 @@ public class PersistenceBundleManager extends MultiBundleTracker
     if(event != null && event.getType() == BundleEvent.UPDATED) {
       mgr.destroy();
       persistenceUnitFactory.destroyPersistenceBundle(bundle);
-      setupManager(bundle, mgr);
+      //Don't add to the managersAwaitingProviders, the setupManager will do it
+      setupManager(bundle, mgr, true);
     } else {
       try {
         mgr.bundleStateChange();
       } catch (InvalidPersistenceUnitException e) {
         logInvalidPersistenceUnitException(bundle, e);
         mgr.destroy();
+        persistenceUnitFactory.destroyPersistenceBundle(bundle);
+        
+        //Try re-initializing the manager immediately, this wasn't an
+        //update so the units don't need to be re-parsed
+        setupManager(bundle, mgr, false);
       }
     }
   }
@@ -212,6 +273,38 @@ public class PersistenceBundleManager extends MultiBundleTracker
     }
   }
   
+  private Collection<ParsedPersistenceUnit> parseBundle(Bundle b) {
+    
+    Collection<ParsedPersistenceUnit> pUnits = new ArrayList<ParsedPersistenceUnit>();
+    
+    Collection <PersistenceDescriptor> persistenceXmls = PersistenceBundleHelper.findPersistenceXmlFiles(b);
+
+    //If we have no persistence units then our job is done
+    if (!!!persistenceXmls.isEmpty()) {
+      
+      if(_logger.isDebugEnabled())
+        _logger.debug("Located Persistence descriptors: {} in bundle {}", new Object[] {persistenceXmls, b.getSymbolicName() + "_" + b.getVersion()});
+      
+      if(b.getState() == Bundle.ACTIVE) {
+        _logger.warn("The bundle {} is already active, it may not be possible to create managed persistence units for it.", 
+            new Object[] {b.getSymbolicName() + "_" + b.getVersion()});
+      }
+      
+      
+      
+      //Parse each descriptor
+      for(PersistenceDescriptor descriptor : persistenceXmls) {
+        try {
+          pUnits.addAll(PersistenceDescriptorParser.parse(b, descriptor));
+        } catch (PersistenceDescriptorParserException e) {
+          _logger.error("There was an error while parsing the persistence descriptor " 
+              + descriptor.getLocation() + " in bundle " + b.getSymbolicName() 
+              + "_" + b.getVersion() + ". No persistence units will be managed for this bundle", e);
+        }
+      }
+    }
+    return pUnits;
+  }
   /**
    * Set up an {@link EntityManagerFactoryManager} for the supplied bundle
    * 
@@ -220,66 +313,53 @@ public class PersistenceBundleManager extends MultiBundleTracker
    * @return The manager to use, or null if no persistence units can be managed for this bundle
    */
   private EntityManagerFactoryManager setupManager(Bundle bundle,
-      EntityManagerFactoryManager mgr) {
-    //Find Persistence descriptors
-    Collection <PersistenceDescriptor> persistenceXmls = PersistenceBundleHelper.findPersistenceXmlFiles(bundle);
+      EntityManagerFactoryManager mgr, boolean reParse) {
 
-      //If we have no persistence units then our job is done
-      if (!!!persistenceXmls.isEmpty()) {
+    
+    Collection<ParsedPersistenceUnit> pUnits = 
+        (mgr == null ||reParse) ? parseBundle(bundle) : mgr.getParsedPersistenceUnits();
+ 
+      
+      //If we have any persistence units then find a provider to use
+      if(!!!pUnits.isEmpty()) {
         
         if(_logger.isDebugEnabled())
-          _logger.debug("Located Persistence descriptors: {} in bundle {}", new Object[] {persistenceXmls, bundle.getSymbolicName() + "_" + bundle.getVersion()});
+          _logger.debug("Located Persistence units: {}", new Object[] {pUnits});
         
-        if(bundle.getState() == Bundle.ACTIVE) {
-          _logger.warn("The bundle {} is already active, it may not be possible to create managed persistence units for it.", 
-              new Object[] {bundle.getSymbolicName() + "_" + bundle.getVersion()});
+        ServiceReference ref = getProviderServiceReference(pUnits);
+        //If we found a provider then create the ManagedPersistenceUnitInfo objects
+        Collection<ManagedPersistenceUnitInfo> infos = null;
+        if(ref != null) {  
+          infos = persistenceUnitFactory.
+              createManagedPersistenceUnitMetadata(ctx, bundle, ref, pUnits);
         }
-        
-        Collection<ParsedPersistenceUnit> pUnits = new ArrayList<ParsedPersistenceUnit>();
-        
-        //Parse each descriptor
-        for(PersistenceDescriptor descriptor : persistenceXmls) {
-          try {
-            pUnits.addAll(PersistenceDescriptorParser.parse(bundle, descriptor));
-          } catch (PersistenceDescriptorParserException e) {
-            _logger.error("There was an error while parsing the persistence descriptor " 
-                + descriptor.getLocation() + " in bundle " + bundle.getSymbolicName() 
-                + "_" + bundle.getVersion() + ". No persistence units will be managed for this bundle", e);
+        //Either update the existing manager or create a new one
+        if(mgr != null)
+          mgr.manage(pUnits, ref, infos);
+        else 
+          mgr = new EntityManagerFactoryManager(ctx, bundle, pUnits, ref, infos);
+          
+        //Register the manager (this may re-add, but who cares)
+        synchronized (this) {
+          bundleToManagerMap.put(bundle, mgr);
+          //If the provider is gone then we need to wait
+          if(ref == null) {
+            managersAwaitingProviders.add(mgr);
           }
         }
-        
-        //If we have any persistence units then find a provider to use
-        if(!!!pUnits.isEmpty()) {
           
-          if(_logger.isDebugEnabled())
-            _logger.debug("Located Persistence units: {}", new Object[] {pUnits});
-          
-          ServiceReference ref = getProviderServiceReference(pUnits);
-          //If we found a provider then create the ManagedPersistenceUnitInfo objects
-          if(ref != null) {  
-            Collection<ManagedPersistenceUnitInfo> infos = persistenceUnitFactory.
-                createManagedPersistenceUnitMetadata(ctx, bundle, ref, pUnits);
-            //Either update the existing manager or create a new one
-            if(mgr != null)
-              mgr.manage(ref, infos);
-            else {
-              synchronized (this) {
-                if(persistenceProviders.contains(ref)) {
-                    mgr = new EntityManagerFactoryManager(ctx, bundle, ref, infos);
-                    bundleToManagerMap.put(bundle, mgr);
-                }
-              }
-            }
-          }
-          //If we have a manager then prod it to get it into the right state
-          if(mgr != null) {
-            try {
-              mgr.bundleStateChange();
-            } catch (InvalidPersistenceUnitException e) {
-              logInvalidPersistenceUnitException(bundle, e);
-              mgr.destroy();
-              persistenceUnitFactory.destroyPersistenceBundle(bundle);
-            }
+        //prod the manager to get it into the right state
+        try {
+          mgr.bundleStateChange();
+        } catch (InvalidPersistenceUnitException e) {
+          logInvalidPersistenceUnitException(bundle, e);
+          mgr.destroy();
+          if(infos != null)
+            persistenceUnitFactory.destroyPersistenceBundle(bundle);
+          //Put the manager into the list of managers waiting for a new
+          //provider, one that might work!
+          synchronized (this) {
+            managersAwaitingProviders.add(mgr);
           }
         }
       }
@@ -292,7 +372,7 @@ public class PersistenceBundleManager extends MultiBundleTracker
    * @param parsedPersistenceUnits
    * @return A service reference or null if no suitable reference is available
    */
-  private ServiceReference getProviderServiceReference(Collection<ParsedPersistenceUnit> parsedPersistenceUnits)
+  private synchronized ServiceReference getProviderServiceReference(Collection<ParsedPersistenceUnit> parsedPersistenceUnits)
   {
     Set<String> ppClassNames = new HashSet<String>();
     List<VersionRange> versionRanges = new ArrayList<VersionRange>();
