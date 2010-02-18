@@ -62,7 +62,6 @@ public interface Content
   /**
    * get the version info for the version attribute
    * @return null if there is no version associated with this content
-   * ASK ALASDAIR: should we return default version 0.0.0 instead of null?
    */
   public VersionRange getVersion();
   
