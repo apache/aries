@@ -19,6 +19,7 @@
 
 package org.apache.aries.application.management;
 
+import org.apache.aries.application.VersionRange;
 import org.osgi.framework.Version;
 
 /**
@@ -34,9 +35,9 @@ public interface ResolveConstraint {
   public String getBundleName();
   
   /** 
-   * The version of the newly required bundle
-   * @return Bundle version
+   * The version range of the newly required bundle
+   * @return allowed range
    */
-  public Version getVersion();
+  public VersionRange getVersionRange();
 
 }
