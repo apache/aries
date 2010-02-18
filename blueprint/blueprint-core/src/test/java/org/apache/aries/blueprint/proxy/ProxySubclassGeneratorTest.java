@@ -18,7 +18,10 @@
  */
 package org.apache.aries.blueprint.proxy;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -28,10 +31,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import org.apache.aries.blueprint.proxy.FinalModifierException;
-import org.apache.aries.blueprint.proxy.ProxySubclassGenerator;
-import org.apache.aries.blueprint.proxy.ProxySubclassMethodHashSet;
 
 public class ProxySubclassGeneratorTest
 {
@@ -67,7 +66,7 @@ public class ProxySubclassGeneratorTest
    * either
    * 
    * Test method for
-   * {@link com.ibm.osgi.blueprint.internal.proxy.ProxySubclassGenerator#generateAndLoadSubclass()}
+   * {@link org.apache.aries.blueprint.proxy.ProxySubclassGenerator#generateAndLoadSubclass()}
    * .
    */
   @Test

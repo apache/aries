@@ -187,7 +187,7 @@ public class ProxySubclassGenerator
     String newClassName = "$" + aClass.getSimpleName() + aClass.hashCode();
     String packageName = aClass.getPackage().getName();
     if (packageName.startsWith("java.") || packageName.startsWith("javax.")) {
-      packageName = "com.ibm.osgi.blueprint.proxy." + packageName;
+      packageName = "org.apache.aries.blueprint.proxy." + packageName;
     }
     String fullNewClassName = (packageName + "." + newClassName).replaceAll("\\.", "/");
 
