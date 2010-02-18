@@ -32,11 +32,16 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.metamodel.Metamodel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A <code>PersistenceContextType.TRANSACTION</code> {@link EntityManager} instance
  */
 public class JTAEntityManager implements EntityManager {
-
+  /** Logger */
+  private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container.context");
+  
   /** The {@link EntityManagerFactory} that can create new {@link EntityManager} instances */
   private final EntityManagerFactory emf;
   /** The map of properties to pass when creating EntityManagers */
@@ -70,6 +75,9 @@ public class JTAEntityManager implements EntityManager {
       if (reg.isTransactionActive()) {
         return reg.getCurrentPersistenceContext(emf, props);
       } else {
+        if(!!!reg.jtaIntegrationAvailable() && _logger.isDebugEnabled())
+          _logger.debug("No integration with JTA transactions is available. No transaction context is active.");
+        
         if (detachedManager == null) {
           EntityManager temp = emf.createEntityManager(props);
           
