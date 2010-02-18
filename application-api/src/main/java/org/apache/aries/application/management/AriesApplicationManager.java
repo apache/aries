@@ -32,7 +32,10 @@ import org.osgi.framework.BundleException;
 public interface AriesApplicationManager
 {
   /**
-   * Create an AriesApplication from a local resource
+   * Create an AriesApplication from a local resource.
+   * The application won't be automatically resolved if the
+   * archive does not contain a deployment manifest.
+   *
    * @param source .eba file, or exploded directory
    * @return AriesApplication
    * @throws ManagementException
@@ -40,7 +43,10 @@ public interface AriesApplicationManager
   public AriesApplication createApplication(IDirectory source) throws ManagementException;
   
   /**
-   * Create an AriesApplication from a remote resource
+   * Create an AriesApplication from a remote resource.
+   * The application won't be automatically resolved if the
+   * archive does not contain a deployment manifest.
+   *
    * @param url
    * @return
    * @throws ManagementException
@@ -49,13 +55,18 @@ public interface AriesApplicationManager
   
   /**
    * Install an AriesApplication - i.e. load its bundles into the runtime, but do 
-   * not start them. 
+   * not start them.
+   * If the application is not resolved, a call to {@link #resolve(AriesApplication, ResolveConstraint...)}
+   * will be performed and the resolved application will be installed.  In such a case the resolved
+   * application can be obtained by calling {@link org.apache.aries.application.management.ApplicationContext#getApplication()}
+   * on the returned ApplicationContext.
+   *
    * @param app Application to install 
    * @return ApplicationContext, a handle to an application in the runtime
    * @throws BundleException
    * @throws ManagementException 
    */
-  public ApplicationContext install(AriesApplication app) throws BundleException, ManagementException;
+  public ApplicationContext install(AriesApplication app) throws BundleException, ManagementException, ResolverException;
   
   /**
    * Uninstall an AriesApplication - i.e. unload its bundles from the runtime. 
@@ -77,8 +88,10 @@ public interface AriesApplicationManager
   public void removeApplicationListener(ApplicationListener l);
   
   /**
-   * Re-resolve an AriesApplication against a set of constraints. Each ResolveConstraint
-   * represents a single proposed change to the content of an 
+   * Resolve an AriesApplication against a set of constraints. Each ResolveConstraint
+   * represents a single proposed change to the content of an application.
+   * If no constraints are given, a default resolution will be performed.
+   *
    * @param originalApp Original application
    * @param constraints Constraints
    * @throws ResolverException
