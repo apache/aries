@@ -40,12 +40,15 @@ import org.osgi.service.obr.RepositoryAdmin;
 import org.osgi.service.obr.Requirement;
 import org.osgi.service.obr.Resolver;
 import org.osgi.service.obr.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @version $Rev$ $Date$
  */
 public class OBRAriesResolver implements AriesApplicationResolver
 {
+  private static Logger log = LoggerFactory.getLogger(OBRAriesResolver.class);
 
   private final RepositoryAdmin repositoryAdmin;
 
@@ -56,6 +59,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
 
   public Set<BundleInfo> resolve(AriesApplication app) throws ResolverException
   {
+    log.trace("resolving {}", app);
     Resolver obrResolver = repositoryAdmin.resolver();
     
     ApplicationMetadata appMeta = app.getApplicationMetadata();
