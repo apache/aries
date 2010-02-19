@@ -18,14 +18,9 @@
  */
 package org.apache.aries.application.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import org.apache.aries.application.VersionRange;
-import org.apache.aries.application.impl.VersionRangeImpl;
 import org.junit.Test;
 import org.osgi.framework.Version;
 
@@ -184,6 +179,26 @@ public class VersionRangeTest
     
     vr = new VersionRangeImpl("[1.0.0, 1.0.0]");
     assertTrue(vr.isExactVersion());
+
+    vr = new VersionRangeImpl("1.0.0", true);
+    assertEquals(new Version("1.0.0"), vr.getMinimumVersion());
+    assertTrue(vr.isExactVersion());
+    
+    vr = new VersionRangeImpl("1.0.0", false);
+    assertEquals(new Version("1.0.0"), vr.getMinimumVersion());
+    assertNull(vr.getMaximumVersion());
+    assertFalse(vr.isExactVersion());
+    
+    // don't throw any silly exceptions
+    vr = new VersionRangeImpl("[1.0.0,2.0.0)", false);
+    assertFalse(vr.isExactVersion());
+    
+    vr = new VersionRangeImpl("[1.0.0, 2.0.0]");
+    assertFalse(vr.isExactVersion());
+
+    vr = new VersionRangeImpl("[1.0.0, 1.0.0]");
+    assertTrue(vr.isExactVersion());
+
   }
   
   @Test
@@ -220,4 +235,62 @@ public class VersionRangeTest
     assertFalse(vr.matches(new Version(1,5,0)));
     assertFalse(vr.matches(new Version(1,9,9)));
   }
+  
+  @Test
+  public void testIntersectVersionRange_Valid1()
+  {
+    VersionRange v1 = new VersionRangeImpl("[1.0.0,3.0.0]");
+    VersionRange v2 = new VersionRangeImpl("[2.0.0,3.0.0)");
+    VersionRange result = v1.intersect(v2);
+    assertNotNull(result);
+    assertEquals("[2.0.0,3.0.0)", result.toString());
+  }
+  
+  @Test
+  public void testIntersectVersionRange_Valid2()
+  {
+    VersionRange v1 = new VersionRangeImpl("[1.0.0,3.0.0)");
+    VersionRange v2 = new VersionRangeImpl("(2.0.0,3.0.0]");
+    VersionRange result = v1.intersect(v2);
+    assertNotNull(result);
+    assertEquals("(2.0.0,3.0.0)", result.toString());
+  }
+
+  @Test
+  public void testIntersectVersionRange_Valid3()
+  {
+    VersionRange v1 = new VersionRangeImpl("[2.0.0,2.0.0]");
+    VersionRange v2 = new VersionRangeImpl("[1.0.0,3.0.0]");
+    VersionRange result = v1.intersect(v2);
+    assertNotNull(result);
+    assertEquals("[2.0.0,2.0.0]", result.toString());
+  }
+  
+  @Test
+  public void testIntersectVersionRange_Invalid1()
+  {
+    VersionRange v1 = new VersionRangeImpl("[1.0.0,2.0.0]");
+    VersionRange v2 = new VersionRangeImpl("(2.0.0,3.0.0]");
+    VersionRange result = v1.intersect(v2);
+    assertNull(result);
+  }
+
+  @Test
+  public void testIntersectVersionRange_Invalid2()
+  {
+    VersionRange v1 = new VersionRangeImpl("[1.0.0,2.0.0)");
+    VersionRange v2 = new VersionRangeImpl("[2.0.0,3.0.0]");
+    VersionRange result = v1.intersect(v2);
+    assertNull(result);
+  }
+
+  @Test
+  public void testIntersectVersionRange_Invalid3()
+  {
+    VersionRange v1 = new VersionRangeImpl("[1.0.0,1.0.0]");
+    VersionRange v2 = new VersionRangeImpl("[2.0.0,2.0.0]");
+    VersionRange result = v1.intersect(v2);
+    assertNull(result);
+  }
+
 }
