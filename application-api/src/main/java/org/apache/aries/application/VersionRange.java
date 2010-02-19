@@ -76,4 +76,13 @@ public interface VersionRange
    * @return        true if the version matches, false otherwise.
    */
   public boolean matches(Version version);
+  
+  /**
+   * Create a new version range that is the intersection of {@code this} and the argument.
+   * In other words, the largest version range that lies within both {@code this} and
+   * the parameter.
+   * @param range a version range to be intersected with {@code this}.
+   * @return a new version range, or {@code null} if no intersection is possible.
+   */
+  public VersionRange intersect(VersionRange range);
 }
