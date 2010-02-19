@@ -65,7 +65,10 @@ public class ApplicationContextImpl implements ApplicationContext {
     }
     
     try {
-      for (DeploymentContent content : meta.getApplicationDeploymentContents()) {
+      List<DeploymentContent> bundlesToInstall = new ArrayList<DeploymentContent>(meta.getApplicationDeploymentContents());
+      bundlesToInstall.addAll(meta.getApplicationProvisionBundles());
+      
+      for (DeploymentContent content : bundlesToInstall) {
         String bundleSymbolicName = content.getContentName();
         Version bundleVersion = content.getExactVersion();
         
