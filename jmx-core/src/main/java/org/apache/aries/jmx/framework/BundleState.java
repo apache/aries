@@ -262,8 +262,10 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
     public TabularData listBundles() throws IOException {
         Bundle[] containerBundles = bundleContext.getBundles();
         List<BundleData> bundleDatas = new ArrayList<BundleData>();
-        for (Bundle containerBundle : containerBundles) {
-            bundleDatas.add(new BundleData(bundleContext, containerBundle, packageAdmin, startLevel));
+        if (containerBundles != null) {
+            for (Bundle containerBundle : containerBundles) {
+                bundleDatas.add(new BundleData(bundleContext, containerBundle, packageAdmin, startLevel));
+            } 
         }
         TabularData bundleTable = new TabularDataSupport(BUNDLES_TYPE);
         for (BundleData bundleData : bundleDatas) {
