@@ -27,7 +27,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -36,31 +38,46 @@ import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
+import org.apache.aries.application.VersionRange;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.ManagementException;
+import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
 import org.osgi.framework.Version;
 
 public class DeploymentMetadataImpl implements DeploymentMetadata {
+  private ApplicationMetadata _applicationMetadata;
+  private List<DeploymentContent> _deploymentContent = new ArrayList<DeploymentContent>();
+  private List<DeploymentContent> _provisionSharedContent = new ArrayList<DeploymentContent>();
   
-  ApplicationMetadata _applicationMetadata;
-  List<DeploymentContent> _deploymentContent;
-  
-  public DeploymentMetadataImpl (AriesApplication app, Set<BundleInfo> additionalBundlesRequired) {
+  public DeploymentMetadataImpl (AriesApplication app, Set<BundleInfo> bundlesRequired) throws ResolverException
+  {
     _applicationMetadata = app.getApplicationMetadata();
     _deploymentContent = new ArrayList<DeploymentContent>();
+    _provisionSharedContent = new ArrayList<DeploymentContent>();
     
-    // DeploymentContent needs to list everything in the application content
-    // plus all the bundles in additonalBundlesRequired
-    for (Content c: _applicationMetadata.getApplicationContents()) { 
-      _deploymentContent.add(new DeploymentContentImpl(c.getContentName(), c.getVersion().getMinimumVersion()));
+    Map<String, VersionRange> appContent = new HashMap<String, VersionRange>();
+    
+    for (Content c : app.getApplicationMetadata().getApplicationContents()) {
+      appContent.put(c.getContentName(), c.getVersion());
     }
-    for (BundleInfo bundleInfo : additionalBundlesRequired) { 
-      DeploymentContentImpl dci = new DeploymentContentImpl(bundleInfo.getSymbolicName(), 
-          bundleInfo.getVersion()); 
-      _deploymentContent.add(dci);
+    
+    for (BundleInfo info : bundlesRequired) {
+      
+      VersionRange range = appContent.get(info.getSymbolicName());
+      
+      DeploymentContent dp = new DeploymentContentImpl(info.getSymbolicName(), info.getVersion());
+      
+      if (range == null) {
+        _provisionSharedContent.add(dp);
+      } else if (range.matches(info.getVersion())) {
+        _deploymentContent.add(dp);
+      } else {
+        throw new ResolverException("Bundle " + info.getSymbolicName() + " at version " + info.getVersion() + " is not in the range " + range);
+      }
     }
   }
   
@@ -77,12 +94,10 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
       _applicationMetadata = new ApplicationMetadataImpl (mf);
 
       Attributes attributes = mf.getMainAttributes();
-      String deploymentContent = attributes.getValue(AppConstants.DEPLOYMENT_CONTENT);
-      List<String> dcList = ManifestProcessor.split(deploymentContent, ",");
-      _deploymentContent = new ArrayList<DeploymentContent>();
-      for (String s : dcList) { 
-        _deploymentContent.add(new DeploymentContentImpl(s));
-      }
+      
+      parseContent(attributes.getValue(AppConstants.DEPLOYMENT_CONTENT), _deploymentContent);
+      parseContent(attributes.getValue(AppConstants.PROVISION_CONTENT), _provisionSharedContent);
+      
     } finally { 
       is.close();
     }
@@ -90,6 +105,10 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
 
   public List<DeploymentContent> getApplicationDeploymentContents() {
     return Collections.unmodifiableList(_deploymentContent);
+  }
+  
+  public List<DeploymentContent> getApplicationProvisionBundles() {
+    return Collections.unmodifiableList(_provisionSharedContent);
   }
 
   public ApplicationMetadata getApplicationMetadata() {
@@ -118,15 +137,16 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
     attributes.putValue(Attributes.Name.MANIFEST_VERSION.toString(), AppConstants.MANIFEST_VERSION);
     attributes.putValue(AppConstants.APPLICATION_VERSION, getApplicationVersion().toString());
     attributes.putValue(AppConstants.APPLICATION_SYMBOLIC_NAME, getApplicationSymbolicName());
-    attributes.putValue(AppConstants.DEPLOYMENT_CONTENT, getDeploymentContentsAsString());
+    attributes.putValue(AppConstants.DEPLOYMENT_CONTENT, getDeploymentContentsAsString(_deploymentContent));
+    attributes.putValue(AppConstants.PROVISION_CONTENT, getDeploymentContentsAsString(_provisionSharedContent));
     mf.write(out);
   }
   
   
   
-  private String getDeploymentContentsAsString () { 
+  private String getDeploymentContentsAsString (List<DeploymentContent> content) { 
     StringBuilder builder = new StringBuilder();
-    for (DeploymentContent dc : getApplicationDeploymentContents()) {
+    for (DeploymentContent dc : content) {
       builder.append(dc.getContentName());
       builder.append(';' + AppConstants.DEPLOYMENT_BUNDLE_VERSION + "=");
       builder.append(dc.getExactVersion());
@@ -138,4 +158,11 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
     return builder.toString();
   }
 
+  private void parseContent(String content, List<DeploymentContent> contents)
+  {
+    List<String> pcList = ManifestProcessor.split(content, ",");
+    for (String s : pcList) {
+      contents.add(new DeploymentContentImpl(s));
+    }
+  }
 }

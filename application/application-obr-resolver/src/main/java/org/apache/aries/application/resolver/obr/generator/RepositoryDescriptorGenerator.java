@@ -76,6 +76,7 @@ public final class RepositoryDescriptorGenerator
     
     requirement.setAttribute("extend", "false");
     requirement.setAttribute("multiple", "false");
+    requirement.setAttribute("optional", "false");
     
     requirement.setAttribute("filter", ManifestHeaderProcessor.generateFilter("bundle", p.getContentName(), p.getAttributes()));
     
