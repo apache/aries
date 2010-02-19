@@ -99,8 +99,17 @@ public final class DeploymentContentImpl implements DeploymentContent {
       return false;
     }
   }
+  
+  public int hashCode() {
+    return _content.hashCode();
+  }
 
   public Map<String, String> getNameValueMap() {
     return _content.getNameValueMap();
+  }
+  
+  public String toString()
+  {
+    return _content.toString();
   }
 }
