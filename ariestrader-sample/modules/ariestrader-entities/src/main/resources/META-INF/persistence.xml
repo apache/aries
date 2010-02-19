@@ -56,6 +56,7 @@
             <property name="openjpa.BrokerImpl" value="non-finalizing" /> 
             <property name="openjpa.Sequence" value="table(Table=OPENJPASEQ, Increment=100)"/>
             <property name="openjpa.jdbc.UpdateManager" value="org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager"/>
+            <property name="openjpa.ManagedRuntime" value="jndi(TransactionManagerName=aries:services/javax.transaction.TransactionManager)"/>
         </properties>
     </persistence-unit>
 
