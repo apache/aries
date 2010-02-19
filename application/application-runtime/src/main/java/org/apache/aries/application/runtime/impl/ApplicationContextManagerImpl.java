@@ -70,7 +70,7 @@ public class ApplicationContextManagerImpl implements ApplicationContextManager 
     return result;
   }
 
-  public void remove(ApplicationContext app) throws BundleException
+  public void remove(ApplicationContext app)
   {
     Iterator<Map.Entry<AriesApplication, ApplicationContextImpl>> it = _appToContextMap.entrySet().iterator();
     
@@ -89,13 +89,25 @@ public class ApplicationContextManagerImpl implements ApplicationContextManager 
     }
   }
 
-  protected void uninstall(ApplicationContextImpl app) throws BundleException
+  private void uninstall(ApplicationContextImpl app)
   {
-      Set<Bundle> bundles = app.getApplicationContent();
-      for (Bundle b : bundles) {
+    Set<Bundle> bundles = app.getApplicationContent();
+    for (Bundle b : bundles) {
+      try {
         b.uninstall();
+      } catch (BundleException be) {
+        // TODO ignoring this feels wrong, but I'm not sure how to communicate to the caller multiple failures. 
       }
-      app.setState(ApplicationState.UNINSTALLED);
-
+    }
+    app.setState(ApplicationState.UNINSTALLED);
+  }
+  
+  public void close()
+  {
+    for (ApplicationContextImpl ctx : _appToContextMap.values()) {
+      uninstall(ctx);
+    }
+    
+    _appToContextMap.clear();
   }
 }
