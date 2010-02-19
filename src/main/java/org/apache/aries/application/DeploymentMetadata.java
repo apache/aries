@@ -51,6 +51,12 @@ public interface DeploymentMetadata {
   public List<DeploymentContent> getApplicationDeploymentContents();
   
   /**
+   * get the value of the Provision-Bundle header
+   * @return
+   */
+  public List<DeploymentContent> getApplicationProvisionBundles();
+
+  /**
    * Obtain the associated 
    * {@link org.apache.aries.application.ApplicationMetadata ApplicationMetadata}. 
    * @return The application metadata.
@@ -71,4 +77,5 @@ public interface DeploymentMetadata {
    */
 
   public void store(OutputStream out) throws IOException;
+
 }
