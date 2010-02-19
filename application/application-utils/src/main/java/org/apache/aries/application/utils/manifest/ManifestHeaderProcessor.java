@@ -36,6 +36,8 @@ import org.osgi.framework.Constants;
 
 public class ManifestHeaderProcessor
 {
+  public static final String NESTED_FILTER_ATTRIBUTE = "org.apache.aries.application.filter.attribute";
+
   /**
    * A simple class to associate two types.
    *
@@ -66,6 +68,7 @@ public class ManifestHeaderProcessor
     {
       this.value = value;
     }
+    @Override
     public String toString(){
       return "{"+name.toString()+"::"+value.toString()+"}";
     }
@@ -84,7 +87,7 @@ public class ManifestHeaderProcessor
       if (this == obj) return true;
       if (obj == null) return false;
       if (getClass() != obj.getClass()) return false;
-      final NameValuePair other = (NameValuePair) obj;
+      final NameValuePair<?, ?> other = (NameValuePair<?, ?>) obj;
       if (name == null) {
         if (other.name != null) return false;
       } else if (!name.equals(other.name)) return false;
@@ -118,10 +121,12 @@ public class ManifestHeaderProcessor
    * @param <V> Type of 'Value'
    */
   public static class NameValueMap<N,V> extends HashMap<N,V> implements NameValueCollection<N,V>, Map<N,V>{
-    public void addToCollection(N n,V v){
+	    
+   public void addToCollection(N n,V v){
       this.put(n,v);
     }
-    public String toString(){
+   @Override
+   public String toString(){
       StringBuffer sb = new StringBuffer();
       sb.append("{");
       boolean first=true;
@@ -142,9 +147,11 @@ public class ManifestHeaderProcessor
    * @param <V> Type of 'Value'
    */
   public static class NameValueList<N,V> extends ArrayList<NameValuePair<N,V>> implements NameValueCollection<N,V>, List<NameValuePair<N,V>>{    
-    public void addToCollection(N n,V v){
+
+	public void addToCollection(N n,V v){
       this.add(new NameValuePair<N,V>(n,v));
     } 
+	@Override
     public String toString(){
       StringBuffer sb = new StringBuffer();
       sb.append("{");
@@ -337,7 +344,7 @@ public class ManifestHeaderProcessor
    * <p>
    * Result is returned as a list, as export does allow duplicate package exports.
    * 
-   * @param s The data to parse.
+   * @param list The data to parse.
    * @return List of NameValuePairs, where each Name in the list is an exported package, 
    *         with its associated Value being a NameValueMap of any attributes declared. 
    */
@@ -423,7 +430,7 @@ public class ManifestHeaderProcessor
   }
 
   /**
-   * This method is temporary here, until VersionRange becomes it's own top level class.
+   * We may wish to consider moving this method to VersionRange.
    * 
    * @param type
    * @param name
@@ -474,7 +481,19 @@ public class ManifestHeaderProcessor
           }
           filter.append(")"); 
           
-        }else{
+       } else if (NESTED_FILTER_ATTRIBUTE.equals(attribName)) {
+          // Filters go in whole, no formatting needed
+          realAttrib = true;
+          filter.append(attrib.getValue());
+
+       } else if (Constants.OBJECTCLASS.equals(attribName)) {
+          realAttrib = true;
+          // objectClass has a "," separated list of interfaces
+          String[] values = attrib.getValue().split(",");
+          for (String s : values)
+            filter.append("(" + Constants.OBJECTCLASS + "=" + s + ")");
+          
+      }else{
           //attribName was not version.. 
           realAttrib = true;
           
@@ -486,7 +505,7 @@ public class ManifestHeaderProcessor
             realAttribs.append(", ");
           }
         }     
-      }
+      }      
       // tidy up realAttribs - remove the final ,
       
       if (realAttribs.length() > 0) {
