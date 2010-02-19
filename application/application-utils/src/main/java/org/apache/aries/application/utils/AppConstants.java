@@ -26,6 +26,9 @@ public interface AppConstants
 {
   /** Trace group for this bundle */
   public String TRACE_GROUP = "Aries.app.utils";
+
+  /** The Provision-Content header for the deployment.mf */
+  public static final String PROVISION_CONTENT = "Provision-Bundle";
   
   /** The application scope (used to find the applications bundle repository */
   public static final String APPLICATION_SCOPE = "Application-Scope";

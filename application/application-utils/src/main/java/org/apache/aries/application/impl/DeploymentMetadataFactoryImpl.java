@@ -27,11 +27,13 @@ import org.apache.aries.application.DeploymentMetadataFactory;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.ManagementException;
+import org.apache.aries.application.management.ResolverException;
 
 public class DeploymentMetadataFactoryImpl implements DeploymentMetadataFactory {
 
   public DeploymentMetadata createDeploymentMetadata(AriesApplication app,
-      Set<BundleInfo> additionalBundlesRequired) {
+      Set<BundleInfo> additionalBundlesRequired) throws ResolverException {
     return new DeploymentMetadataImpl (app, additionalBundlesRequired);
   }
   

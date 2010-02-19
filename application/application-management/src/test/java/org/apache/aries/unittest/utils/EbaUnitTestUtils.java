@@ -43,33 +43,37 @@ private static final String TEMP_DIR = "unittest/tmpEbaContent";
   
   private static void createEbaRecursive(File folder, File tempDir, String prefix) throws IOException
   {
-    for (File f : folder.listFiles())
-    {
-      if ((f.getName().endsWith(".jar") || f.getName().endsWith(".war")) && f.isDirectory())
+    File[] files = folder.listFiles();
+    
+    if (files != null) {
+      for (File f : files)
       {
-        File manifestFile = new File(f, "META-INF/MANIFEST.MF");
-        Manifest m;
-        
-        if (manifestFile.isFile())
-          m = new Manifest(new FileInputStream(manifestFile));
-        else
+        if ((f.getName().endsWith(".jar") || f.getName().endsWith(".war")) && f.isDirectory())
         {
-          m = new Manifest();
-          m.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        }
+          File manifestFile = new File(f, "META-INF/MANIFEST.MF");
+          Manifest m;
           
-        File jarFile = new File(tempDir, prefix + f.getName());
-        jarFile.getParentFile().mkdirs();
-        
-        IOUtils.jarUp(f, jarFile, m); 
-      }
-      else if (f.isFile())
-      {
-        IOUtils.writeOut(tempDir, prefix + f.getName(), new FileInputStream(f));
-      }
-      else if (f.isDirectory())
-      {
-        createEbaRecursive(f, tempDir, prefix + f.getName() + File.separator);
+          if (manifestFile.isFile())
+            m = new Manifest(new FileInputStream(manifestFile));
+          else
+          {
+            m = new Manifest();
+            m.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+          }
+            
+          File jarFile = new File(tempDir, prefix + f.getName());
+          jarFile.getParentFile().mkdirs();
+          
+          IOUtils.jarUp(f, jarFile, m); 
+        }
+        else if (f.isFile())
+        {
+          IOUtils.writeOut(tempDir, prefix + f.getName(), new FileInputStream(f));
+        }
+        else if (f.isDirectory())
+        {
+          createEbaRecursive(f, tempDir, prefix + f.getName() + File.separator);
+        }
       }
     }
   }

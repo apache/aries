@@ -71,7 +71,11 @@ public class AriesApplicationManagerImplTest {
   static class DummyResolver implements AriesApplicationResolver {
     Set<BundleInfo> nextResult;
     public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) {
-      return nextResult;
+      Set<BundleInfo> info = new HashSet<BundleInfo>(nextResult);
+      
+      info.addAll(app.getBundleInfo());
+      
+      return info;
     } 
     void setNextResult (Set<BundleInfo> r) { 
       nextResult = r;
@@ -144,12 +148,16 @@ public class AriesApplicationManagerImplTest {
     DeploymentMetadata dm = app.getDeploymentMetadata();
     List<DeploymentContent> dcList = dm.getApplicationDeploymentContents();
 
-    assertEquals (dcList.size(), 3);
-    DeploymentContent dc1 = new DeploymentContentImpl ("foo.bar.widgets;deployed-version=1.0.0");
-    DeploymentContent dc2 = new DeploymentContentImpl ("my.business.logic;deployed-version=1.0.0");
+    assertEquals (2, dcList.size());
+    DeploymentContent dc1 = new DeploymentContentImpl ("foo.bar.widgets;deployed-version=1.1.0");
+    DeploymentContent dc2 = new DeploymentContentImpl ("my.business.logic;deployed-version=1.1.0");
     DeploymentContent dc3 = new DeploymentContentImpl ("a.handy.persistence.library;deployed-version=1.1.0");
     assertTrue (dcList.contains(dc1));
     assertTrue (dcList.contains(dc2));
+    
+    dcList = dm.getApplicationProvisionBundles();
+    
+    assertEquals(1, dcList.size());
     assertTrue (dcList.contains(dc3));
 
   }
@@ -181,7 +189,8 @@ public class AriesApplicationManagerImplTest {
     
     AriesApplication newApp = _appMgr.createApplication(storedEba);
     DeploymentMetadata dm = newApp.getDeploymentMetadata();
-    assertEquals (dm.getApplicationDeploymentContents().size(), 3);
+    assertEquals (2, dm.getApplicationDeploymentContents().size());
+    assertEquals(1, dm.getApplicationProvisionBundles().size());
     assertEquals (dm.getApplicationSymbolicName(), app.getApplicationMetadata().getApplicationSymbolicName());
     assertEquals (dm.getApplicationVersion(), app.getApplicationMetadata().getApplicationVersion());
   }

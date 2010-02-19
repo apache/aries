@@ -25,6 +25,8 @@ import java.util.Set;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.ManagementException;
+import org.apache.aries.application.management.ResolverException;
 
 /**
  * Methods for creating a DeploymentMetadata instance
@@ -35,10 +37,11 @@ public interface DeploymentMetadataFactory {
    * Create a DeploymentMetadata from an AriesApplication and its by-value bundles. 
    * @param  app The AriesApplication in question
    * @param  bundleInfo A resolved set of BundleInfo objects
-   * @throws IOException
+   * @throws ResolverException
    * @return DeploymentMetadata instance
    */
-  public DeploymentMetadata createDeploymentMetadata (AriesApplication app, Set<BundleInfo> bundleInfo);
+  public DeploymentMetadata createDeploymentMetadata (AriesApplication app, Set<BundleInfo> bundleInfo)
+    throws ResolverException;
   
   /**
    * Extract a DeploymentMetadata instance from an IFile
