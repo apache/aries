@@ -64,9 +64,56 @@
             <version>2.5.6</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+          <groupId>org.apache.aries.blueprint</groupId>
+          <artifactId>org.apache.aries.blueprint</artifactId>
+          <version>${version}</version>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>4.7</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.aries.testsupport</groupId>
+          <artifactId>org.apache.aries.testsupport.unit</artifactId>
+          <version>${version}</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+          <version>1.5.6</version>
+        </dependency>
+        <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+          <version>1.5.6</version>
+          <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
+       <resources>
+            <resource>
+                <targetPath>OSGI-INF/blueprint</targetPath>
+                <filtering>false</filtering>
+                <directory>${basedir}/src/main/resources/OSGI-INF/blueprint</directory>
+                <includes>
+                    <include>*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <targetPath>org/apache/aries/transaction/parsing</targetPath>
+                <filtering>false</filtering>
+                <directory>${basedir}/src/main/resources/org/apache/aries/transaction/parsing</directory>
+                <includes>
+                  <include>*.xsd</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -79,17 +126,19 @@
                             org.springframework.*;resolution:=optional,
                             !org.apache.geronimo.transaction*,
                             javax.resource.spi;version="1.5";resolution:=optional,
-                            org.osgi.framework;version="1.4",
+                            org.osgi.framework;version="1.5",
                             org.osgi.service.cm;version="[1.2.0,2.0.0)",
                             *
                         </Import-Package>
                         <Export-Package>
                             org.apache.geronimo.transaction*;version="${geronimo-transaction-version}",
-                            javax.transaction*;version="1.1"
+                            javax.transaction*;version="1.1",
+                            org.apache.aries.transaction.exception
                         </Export-Package>
                         <Private-Package>
                             org.objectweb.howl.log*,
-                            org.apache.aries.transaction
+                            org.apache.aries.transaction,
+                            org.apache.aries.transaction.parsing
                         </Private-Package>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Activator>org.apache.aries.transaction.Activator</Bundle-Activator>
