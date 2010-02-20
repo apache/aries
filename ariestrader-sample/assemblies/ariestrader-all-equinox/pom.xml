@@ -140,12 +140,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
-            <artifactId>jpa-container</artifactId>
+            <artifactId>org.apache.aries.jpa.container</artifactId>
             <version>${ariesVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
-            <artifactId>jpa-container-context</artifactId>
+            <artifactId>org.apache.aries.jpa.container.context</artifactId>
             <version>${ariesVersion}</version>
         </dependency>
         <dependency>
