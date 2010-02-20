@@ -24,8 +24,7 @@
     <version>1.0.0-incubating-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.apache.aries.jpa</groupId>
-  <artifactId>jpa-container-context</artifactId>
+  <artifactId>org.apache.aries.jpa.container.context</artifactId>
   <name>Aries JPA Container Managed Contexts</name>
   <packaging>bundle</packaging>
   <version>1.0.0-incubating-SNAPSHOT</version>
