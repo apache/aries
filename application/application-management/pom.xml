@@ -78,6 +78,16 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Import-Service>
+                            org.apache.aries.application.ApplicationMetadataFactory,
+                            org.apache.aries.application.DeploymentMetadataFactory,
+                            org.apache.aries.application.management.AriesApplicationResolver,
+                            org.apache.aries.application.management.LocalPlatform,
+                            org.apache.aries.application.management.ApplicationContextManager
+                        </Import-Service>
+                        <Export-Service>
+                            org.apache.aries.application.management.AriesApplicationManager
+                        </Export-Service>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>

@@ -106,7 +106,13 @@
                             org.apache.aries.transaction.parsing
                         </Private-Package>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-						<Export-Service></Export-Service>
+                        <Import-Service>
+                           javax.transaction.TransactionManager
+                        </Import-Service>
+                        <Export-Service>
+                            org.apache.aries.blueprint.Interceptor,
+                            org.apache.aries.blueprint.NamespaceHandler;osgi.service.blueprint.namespace=http://aries.apache.org/xmlns/transactions/v1.0.0
+                        </Export-Service>
                     </instructions>
                 </configuration>
             </plugin>
