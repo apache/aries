@@ -24,8 +24,7 @@
     <version>1.0.0-incubating-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.apache.aries.jpa</groupId>
-  <artifactId>jpa-container</artifactId>
+  <artifactId>org.apache.aries.jpa.container</artifactId>
   <packaging>bundle</packaging>
   <name>Aries JPA Container</name>
   <version>1.0.0-incubating-SNAPSHOT</version>
