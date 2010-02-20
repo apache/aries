@@ -111,7 +111,12 @@
                         </Private-Package>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Activator>org.apache.aries.transaction.Activator</Bundle-Activator>
-                        <Export-Service>javax.transaction.TransactionManager,javax.transaction.TransactionSynchronizationRegistry,javax.transaction.UserTransaction,org.apache.geronimo.transaction.manager.RecoverableTransactionManager</Export-Service>
+                        <Export-Service>
+                            javax.transaction.TransactionManager,
+                            javax.transaction.TransactionSynchronizationRegistry,
+                            javax.transaction.UserTransaction,
+                            org.apache.geronimo.transaction.manager.RecoverableTransactionManager
+                        </Export-Service>
                         <Include-Resource>
                             {maven-resources},
                             javax/resource/spi/XATerminator.class=target/classes/javax/resource/spi/XATerminator.class
