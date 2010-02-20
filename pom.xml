@@ -5,8 +5,7 @@
     <version>1.0.0-incubating-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.apache.aries.jpa</groupId>
-  <artifactId>jpa-container-testbundle</artifactId>
+  <artifactId>org.apache.aries.jpa.container.itest.bundle</artifactId>
   <packaging>bundle</packaging>
   <version>1.0.0-incubating-SNAPSHOT</version>
   <name>Test Bundle for Aries JPA Container iTests</name>
