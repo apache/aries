@@ -160,7 +160,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
-            <artifactId>org.apache.aries.transaction</artifactId>
+            <artifactId>org.apache.aries.transaction.blueprint</artifactId>
+            <version>${ariesVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.transaction</groupId>
+            <artifactId>org.apache.aries.transaction.manager</artifactId>
             <version>${ariesVersion}</version>
         </dependency>
 
