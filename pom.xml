@@ -62,6 +62,10 @@
                         <Export-Package>
                             org.apache.aries.web.converter;version="${pom.version}",
                         </Export-Package>
+                        <Export-Service>
+                            org.apache.aries.web.converter.WarToWabConverter,
+                            org.osgi.service.url.URLStreamHandlerService;url.handler.protocol=webbundle
+                        </Export-Service>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
