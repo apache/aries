@@ -5,8 +5,7 @@
     <version>1.0.0-incubating-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.apache.aries.jpa</groupId>
-  <artifactId>jpa-container-itest</artifactId>
+  <artifactId>org.apache.aries.jpa.container.itest</artifactId>
   <version>1.0.0-incubating-SNAPSHOT</version>
   <name>Aries JPA iTests - Managed Persistence Units</name>
 <!--   
@@ -99,7 +98,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.aries.jpa</groupId>
-      <artifactId>jpa-container</artifactId>
+      <artifactId>org.apache.aries.jpa.container</artifactId>
       <version>1.0.0-incubating-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
@@ -161,7 +160,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.aries.jpa</groupId>
-      <artifactId>jpa-container-testbundle</artifactId>
+      <artifactId>org.apache.aries.jpa.container.itest.bundle</artifactId>
       <version>1.0.0-incubating-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
