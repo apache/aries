@@ -102,6 +102,11 @@
                             org.apache.aries.util.tracker,
                             OSGI-INF*
                         </Private-Package>
+                        <Export-Service>
+                            org.apache.aries.blueprint.ParserService,
+                            org.apache.aries.blueprint.NamespaceHandler;osgi.service.blueprint.namespace=http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0,
+                            org.apache.aries.blueprint.NamespaceHandler;osgi.service.blueprint.namespace=http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0
+                        </Export-Service>
                         <!-- include the right NOTICE with attribution to the OSGi alliance -->
                         <Include-Resource>{maven-resources},META-INF/NOTICE=../NOTICE</Include-Resource>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
