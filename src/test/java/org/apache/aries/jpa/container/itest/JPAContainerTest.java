@@ -82,7 +82,7 @@ public class JPAContainerTest {
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
         mavenBundle("org.apache.geronimo.specs", "geronimo-jpa_2.0_spec"),
-        mavenBundle("org.apache.aries.jpa", "jpa-container"),
+        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container"),
         mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
         mavenBundle("commons-lang", "commons-lang"),
         mavenBundle("commons-collections", "commons-collections"),
@@ -94,7 +94,7 @@ public class JPAContainerTest {
 //        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.core"),
 //        mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.asm"),
         
-        mavenBundle("org.apache.aries.jpa", "jpa-container-testbundle"),
+        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.itest.bundle"),
         
         equinox().version("3.5.0"));
     options = updateOptions(options);
