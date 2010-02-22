@@ -21,32 +21,24 @@ package org.apache.aries.samples.blog.persistence.entity;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.apache.aries.samples.blog.persistence.api.Entry;
+
+
 
 /**
  * This class represents a blog entry
  */
-@Entity(name = "BLOGENTRY")
-@Table(name = "BLOGENTRY")
+
 public class EntryImpl implements Entry
 {
   /** An auto-generated primary key */
-  @Id
-  @GeneratedValue
-  private long id;
-  
+
+  private Long id;
+
   /** The author of the blog post */
-  @ManyToOne(fetch = FetchType.EAGER)
+
   private AuthorImpl author;
-  
+
   /** The date the post was published */
   private Date publishDate;
   /** The date the post was last updated */
@@ -56,45 +48,80 @@ public class EntryImpl implements Entry
   /** Tags associated with the post */
   private List<String> tags;
   /** The text of the blog */
-  @Column(length=10000)
+
   private String blogText;
-  
+
   /** Get the author of this blog post */
   public AuthorImpl getAuthor()
   {
     return author;
   }
-  
+
+  /** Set the author of this blog post */
+  public void setAuthor(AuthorImpl author)
+  {
+    this.author = author;
+  }
+
   /** Get the publish date of this blog post */
   public Date getPublishDate()
   {
     return publishDate;
   }
-  
+
+  /** Set the publish date of this blog post */
+  public void setPublishDate(Date publishDate)
+  {
+    this.publishDate = publishDate;
+  }
+
   /** Get the title of this blog post */
   public String getTitle()
   {
     return title;
   }
-  
+
+  /** Set the title of this blog post */ 
+  public void setTitle(String title)
+  {
+    this.title = title;
+  }
+
+
   /** Get the tags for this blog post */
   public List<String> getTags()
   {
     return tags;
   }
- 
-  
+
+  /** Set the tags for this blog post */
+  public void setTags(List<String> tags)
+  {
+    this.tags = tags;
+  }
+
   /** Get the text for this blog post */
   public String getBlogText()
   {
     return blogText;
   }
-  
+
+  /** Set the text for this blog post */
+  public void setBlogText(String blogText)
+  {
+    this.blogText = blogText;
+  }
 
   /** get the Blog post id */
   public long getId()
   {
     return id;
+  }
+
+  /** Set the id */
+  public void setId(Long id)
+  {
+    this.id = id;
   }
 
   /**
@@ -104,42 +131,6 @@ public class EntryImpl implements Entry
   public Date getUpdatedDate()
   {
     return updatedDate;
-  }
-  
-  
-  //set methods are only defined in implementation class. Not part of interface.
-  
-  
-  /** Set the author of this blog post */
-  public void setAuthor(AuthorImpl author)
-  {
-    this.author = author;
-  }
-  
-  
-  /** Set the publish date of this blog post */
-  public void setPublishDate(Date publishDate)
-  {
-    this.publishDate = publishDate;
-  }
-  
-  /** Set the title of this blog post */
-  public void setTitle(String title)
-  {
-    this.title = title;
-  }
-  
-  /** Set the text for this blog post */
-  public void setBlogText(String blogText)
-  {
-    this.blogText = blogText;
-  }
-  
-  
-  /** Set the tags for this blog post */
-  public void setTags(List<String> tags)
-  {
-    this.tags = tags;
   }
 
   /**
@@ -151,6 +142,6 @@ public class EntryImpl implements Entry
   {
     this.updatedDate = updatedDate;
   }
-  
-}
 
+
+}
