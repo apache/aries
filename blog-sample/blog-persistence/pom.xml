@@ -29,7 +29,7 @@
     
 	<groupId>org.apache.aries.samples</groupId>
 	<artifactId>blog-persistence</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	<name>Apache Aries blog sample persistence</name>
 	<packaging>bundle</packaging>
 	
@@ -43,6 +43,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.groupId}.blog-persistence</Bundle-SymbolicName>
                         <Export-Package>!org.apache.aries.samples.*</Export-Package>
+                        <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
                     </instructions>
                 </configuration>
             </plugin>
@@ -65,6 +66,11 @@
             <artifactId>derby</artifactId>
             <version>10.5.3.0_1</version>
         </dependency> 
+        <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jpa_2.0_spec</artifactId>
+      <version>1.0</version>
+    </dependency>
     </dependencies>
        
 </project>
