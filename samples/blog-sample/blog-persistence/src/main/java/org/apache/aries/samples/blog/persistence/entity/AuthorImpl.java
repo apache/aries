@@ -16,36 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.samples.blog.persistence.entity;
 
+package org.apache.aries.samples.blog.persistence.entity;
 
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-
 import org.apache.aries.samples.blog.persistence.api.Author;
+
+
 
 /**
  * This class represents a blog post Author
  */
 
-@Entity(name = "AUTHOR")
-@Table(name = "AUTHOR")
 public class AuthorImpl implements Author
 {
   /** The author's email address */
-  @Id
-  @Column(nullable = false, unique = true)
+
+
   private String email;
-  
+
   /** The author's full name */
   private String name;
   /** The display name for this author */
@@ -56,8 +47,7 @@ public class AuthorImpl implements Author
   private Date dob;
 
   /** The blog entries posted by this user */
-  @OneToMany(cascade = {CascadeType.REMOVE}, fetch = FetchType.EAGER)
-  @OrderBy("publishDate DESC")
+
   private List<EntryImpl> posts;
 
   /** Get the author's email address */
@@ -66,16 +56,34 @@ public class AuthorImpl implements Author
     return email;
   }
 
+  /** Set the author's email address */
+  public void setEmail(String email)
+  {
+    this.email = email;
+  }
+
   /** Get the author's full name */
   public String getName()
   {
     return name;
-  } 
-  
+  }
+
+  /** Set the author's full name */
+  public void setName(String name)
+  {
+    this.name = name;
+  }
+
   /** Get the author's displayed name */
   public String getDisplayName()
   {
     return displayName;
+  }
+
+  /** Set the author's displayed name */
+  public void setDisplayName(String displayName)
+  {
+    this.displayName = displayName;
   }
 
   /** Get the author's biographical information */
@@ -84,61 +92,34 @@ public class AuthorImpl implements Author
     return bio;
   }
 
-  /** Get the author's date of birth */
-  public Date getDob()
-  {
-    return dob;
-  } 
-
-  /** Get the author's blog posts */
-  public List<EntryImpl> getEntries()
-  {
-    return posts;
-  }
-  
-  // Set methods are not defined in the interface
-  
-  /** Set the author's email address */
-  public void setEmail(String email)
-  {
-    this.email = email;
-  }
-  
-  /** Set the author's full name */
-  public void setName(String name)
-  {
-    this.name = name;
-  }
-  
-  /** Set the author's displayed name */
-  public void setDisplayName(String displayName)
-  {
-    this.displayName = displayName;
-  }
-  
   /** Set the author's biographical information */
   public void setBio(String bio)
   {
     this.bio = bio;
   }
-  
+
+  /** Get the author's date of birth */
+  public Date getDob()
+  {
+    return dob;
+  }
+
   /** Set the author's date of birth */
   public void setDob(Date dob)
   {
     this.dob = dob;
   }
 
-  /** Update  the author's blog posts */
-  public void updateEntries(EntryImpl b)
+  /** Get the author's blog posts */
+  public List<EntryImpl> getEntries()
   {
-    this.posts.add(b);
+    return posts;
   }
-  
-  /** set  the author's blog posts */
-  public void setEntries(List<EntryImpl> lb)
-  {
-    this.posts = lb;
-  }
-  
-}
 
+  /** Set the author's blog posts */
+  public void setEntries(List<EntryImpl> posts)
+  {
+    this.posts = posts;
+  }
+
+}
