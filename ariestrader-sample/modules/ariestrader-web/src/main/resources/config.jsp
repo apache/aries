@@ -118,10 +118,10 @@ if (status != null) {
 			</TD>
 			<TD><BR>
 			Run Time Mode determines server implementation of the TradeServices
-			to use in the AriesTrader application Enterprise Java Beans including
-			Session, Entity and Message beans or Direct mode which uses direct
-			database and JMS access. See <A href="docs/tradeFAQ.html">AriesTrader
-			FAQ</A> for details.<BR>
+			to use in the AriesTrader application JDBC, JPA Direct using Application Managed
+            Entity Managers, JPA Direct using Container Managed Entity Managers and 
+            Declarative transaction support, etc...
+			See <A href="docs/tradeFAQ.html">AriesTrader FAQ</A> for details.<BR>
 			</TD>
 		</TR>
 
@@ -241,7 +241,7 @@ for (int i = 0; i < names.length; i++) {
 			web request. Change this value to repeat operations multiple times
 			per web request.</TD>
 		</TR>
-		<TR>
+<!--		<TR>
 			<TD align="left"><INPUT type="checkbox"
                 <%=TradeConfig.getPublishQuotePriceChange() ? "checked" : ""%>
                 name="EnablePublishQuotePriceChange"> <B><FONT size="-1">Publish Quote Updates</FONT></B><BR>
@@ -249,7 +249,7 @@ for (int i = 0; i < names.length; i++) {
             <TD>
                 Publish quote price changes to a JMS topic.<BR>
             </TD>
-        </TR>
+        </TR> -->
 		<TR>
 			<TD align="left"><INPUT type="checkbox"
                 <%=TradeConfig.getLongRun() ? "checked" : ""%>

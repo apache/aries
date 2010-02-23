@@ -36,10 +36,11 @@
 </TABLE>
 
 <P>The Apache Software Foundation<SUP>&reg;</SUP> AriesTrader Performance Benchmark Sample
-provides a suite of workloads for characterizing performance of J2EE 1.4 Application 
+provides a suite of workloads for characterizing performance of Apache Aries enabled JavaEE Application 
 Servers. The workloads consist of an end-to-end Web application and a full set of Web
 primitives. The applications are a collection of Java<SUP>TM</SUP> classes, Java servlets,
-Java ServerPages<SUP>TM</SUP> (JSP<SUP>TM</SUP>) files and Enterprise JavaBeans<SUP>TM</SUP> (EJB<SUP>TM</SUP>) built to open Java 2 Platform, Enterprise Edition (J2EE<SUP>TM</SUP>) APIs. Together, the Trade application and Web primitives provide versatile and portable test cases that are designed to measure aspects
+Java ServerPages<SUP>TM</SUP> (JSP<SUP>TM</SUP>) files and Enterprise JavaBeans<SUP>TM</SUP> using JPA for the Java 2 Platform, Enterprise Edition (J2EE<SUP>TM</SUP>) APIs. 
+Together, the Trade application and Web primitives provide versatile and portable test cases that are designed to measure aspects
 of scalability and performance.</P><HR>
 
 <P><FONT size="+1" color="#000099"><B>Application Design</B></FONT></P>
@@ -94,12 +95,13 @@ servlet init parameters of the TradeApp servlet and the TradeScenario servlet. M
 servlet init parameters in the web.xml file of the Trade Web application to change these parameters.</P>
 
 <P><B>What are the run-time modes?</B></P>
-<P>AriesTrader provides two server implementations of the emulated AriesTrader brokerage services.</P>
+<P>AriesTrader provides three server implementations of the emulated AriesTrader brokerage services.</P>
 <UL>
-    <LI><B>EJB</B> - Database access uses EJB 2.1 technology to drive transactional trading operations.</LI>
-    <LI><B>Direct</B> - This mode uses database and messaging access through direct JDBC and JMS code.</LI>
+    <LI><B>JDBC</B> - Database access uses JDBC technology to drive transactional trading operations.</LI>
+    <LI><B>JPA App Managed</B> - Database access uses Direct JPA technology with application managed entity managers and transactions to drive trading operations.</LI>
+    <LI><B>JPA Container Managed</B> - Database access uses Direct JPA technology with container managed entity managers and declarative transactions to drive rading operations.</LI>
 </UL>
-
+<!--
 <P><B>What are the order processing modes?</B></P>
 <P>AriesTrader provides an asynchronous order processing mode through messaging with MDBs. The order 
 processing mode determines the mode for completing stock purchase and sell operations. Synchronous 
@@ -122,7 +124,7 @@ database and messaging transactions.</P>
     operation (login, quote, buy, and son on) is available as a SOAP service.</LI>
 	
 </UL>
-
+-->
 <P><B>What is the Primitive Iteration setting?</B></P>
 <P>By default, the AriesTrader primitives run one operation per Web request. Setting this value alters
 the number of operations performed per client request. This is useful for reducing the amount of work
@@ -153,7 +155,7 @@ database is populated, you can us the AriesTrader application to collect perform
 The following list provides the typical process for gathering performance measurements with AriesTrader.</P>
 <OL>
     <LI>Select the AriesTrader run-time configuration parameters from the <A HREF="../config">configuration 
-    page</A> (EJB, synchronous, and so on).</LI>
+    page</A> (JDBC, JPA Application Managed, JPA Container Managed, and so on).</LI>
     <LI>Reset the AriesTrader run-time using the <A HREF="../config?action=resetTrade">Reset AriesTrader link</A>.</LI>
     <LI>Warm-up the application server JVM<SUP>TM</SUP> by applying load for a short period of time. The load generation tool  
     may access the TradeScenario servlet, 
