@@ -113,7 +113,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
         }
         return result;
       } else {
-        throw new ResolverException("Could not resolve requirements: " + getUnsatifiedRequirements(obrResolver));
+        throw new ResolverException("Could not resolve requirements: " + getUnsatisfiedRequirements(obrResolver));
       }
     } finally {
       if (appRepoURL != null) {
@@ -135,7 +135,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
     }
   }
 
-  private String getUnsatifiedRequirements(Resolver resolver)
+  private String getUnsatisfiedRequirements(Resolver resolver)
   {
     Requirement[] reqs = resolver.getUnsatisfiedRequirements();
     if (reqs != null) {
