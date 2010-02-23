@@ -111,7 +111,7 @@
                         </Import-Service>
                         <Export-Service>
                             org.apache.aries.blueprint.Interceptor,
-                            org.apache.aries.blueprint.NamespaceHandler;osgi.service.blueprint.namespace=http://aries.apache.org/xmlns/transactions/v1.0.0
+                            org.apache.aries.blueprint.NamespaceHandler
                         </Export-Service>
                     </instructions>
                 </configuration>
