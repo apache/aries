@@ -72,7 +72,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.aries.application.converters.Activator</Bundle-Activator>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>

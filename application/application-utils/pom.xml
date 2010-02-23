@@ -67,6 +67,12 @@
     <build>
         <resources>
             <resource>
+                <directory>${basedir}</directory>
+                <includes>
+                    <include>obr.xml</include>
+                </includes>
+            </resource>
+            <resource>
                 <targetPath>OSGI-INF/blueprint</targetPath>
                 <filtering>false</filtering>
                 <directory>${basedir}/src/main/resources/OSGI-INF/blueprint</directory>
