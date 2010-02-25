@@ -116,9 +116,6 @@
                            javax.persistence.metamodel;version="[1.1.0,2.1.0)";resolution:=optional,
                            *
                         </Import-Package>
-                        <Export-Service>
-                            org.apache.aries.blueprint.NamespaceHandler;osgi.service.blueprint.namespace=http://aries.apache.org/xmlns/jpa/v1.0.0
-                        </Export-Service>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
