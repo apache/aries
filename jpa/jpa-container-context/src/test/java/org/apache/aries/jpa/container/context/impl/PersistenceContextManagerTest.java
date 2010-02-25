@@ -28,7 +28,7 @@ import java.util.Hashtable;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
-import org.apache.aries.jpa.container.context.namespace.NSHandler;
+import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
 import org.apache.aries.unittest.mocks.Skeleton;
@@ -265,7 +265,7 @@ public class PersistenceContextManagerTest {
   }
   
   private void assertNoContextRegistered() throws InvalidSyntaxException {
-    ServiceReference[] refs = context.getServiceReferences(EntityManagerFactory.class.getName(), "("+NSHandler.PROXY_FACTORY_EMF_ATTRIBUTE+"=*)");
+    ServiceReference[] refs = context.getServiceReferences(EntityManagerFactory.class.getName(), "("+PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE+"=*)");
 
     assertNull(refs);
   }
@@ -273,7 +273,7 @@ public class PersistenceContextManagerTest {
   private void assertContextRegistered(String name) throws InvalidSyntaxException {
     BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
     
-    ServiceReference[] refs = context.getServiceReferences(EntityManagerFactory.class.getName(), "("+NSHandler.PROXY_FACTORY_EMF_ATTRIBUTE+"=*)");
+    ServiceReference[] refs = context.getServiceReferences(EntityManagerFactory.class.getName(), "("+PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE+"=*)");
     
     assertEquals("Too many EntityManagerFactories", 1, refs.length);
     
