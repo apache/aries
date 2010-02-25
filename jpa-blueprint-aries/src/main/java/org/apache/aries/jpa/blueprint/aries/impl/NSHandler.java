@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.container.context.namespace;
+package org.apache.aries.jpa.blueprint.aries.impl;
 
 import java.net.URL;
 import java.util.ArrayList;
