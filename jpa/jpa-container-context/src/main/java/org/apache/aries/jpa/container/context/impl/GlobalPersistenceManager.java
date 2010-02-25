@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.container.context;
+package org.apache.aries.jpa.container.context.impl;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.aries.jpa.container.context.impl.PersistenceContextManager;
+import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class that coordinates PersistenceContextManagers across multiple (nested) OSGi frameworks.
  */
-public class GlobalPersistenceManager implements PersistenceManager, SynchronousBundleListener {
+public class GlobalPersistenceManager implements PersistenceContextProvider, SynchronousBundleListener {
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container.context");
   
