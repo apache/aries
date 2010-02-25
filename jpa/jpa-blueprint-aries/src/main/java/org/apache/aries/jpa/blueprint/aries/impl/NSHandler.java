@@ -100,12 +100,6 @@ public class NSHandler implements NamespaceHandler {
     public static final String EMPTY_UNIT_NAME_FILTER = "("
             + PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME + "=true)";
 
-    /**
-     * The service property indicating that a registered EMF is used to create
-     * managed persistence contexts
-     */
-    public static final String PROXY_FACTORY_EMF_ATTRIBUTE = "org.apache.aries.jpa.proxy.factory";
-
     /** The blueprint attribute value to make a bean eager */
     private static final String ACTIVATION_EAGER = "EAGER";
     /** The {@link PersistenceManager} to register contexts with */
@@ -268,10 +262,10 @@ public class NSHandler implements NamespaceHandler {
         StringBuilder filter = new StringBuilder("(&");
         // Persistence units do not have the property, persistence contexts do
         if (isPersistenceUnit)
-            filter.append("(!(").append(PROXY_FACTORY_EMF_ATTRIBUTE).append(
-                    "=*))");
+            filter.append("(!(").append(PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE)
+            .append("=*))");
         else
-            filter.append("(").append(PROXY_FACTORY_EMF_ATTRIBUTE)
+            filter.append("(").append(PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE)
                     .append("=*)");
 
         // Add the empty name filter if necessary
