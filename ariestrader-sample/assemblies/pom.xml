@@ -33,8 +33,7 @@
     <modules>
         <module>ariestrader-jdbc-eba</module>
         <module>ariestrader-all-eba</module>
-        <module>ariestrader-jdbc-equinox</module>
-        <module>ariestrader-all-equinox</module>
+        <module>equinox-test-harness</module>
     </modules>
 
 </project>
