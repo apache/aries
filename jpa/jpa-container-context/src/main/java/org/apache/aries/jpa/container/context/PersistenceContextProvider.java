@@ -30,6 +30,12 @@ public interface PersistenceContextProvider {
   public static final String PERSISTENCE_CONTEXT_TYPE = "org.apache.aries.jpa.context.type";
   
   /**
+   * The service property key indicating that a registered EMF is used to create
+   * managed persistence contexts
+   */
+  public static final String PROXY_FACTORY_EMF_ATTRIBUTE = "org.apache.aries.jpa.proxy.factory";
+  
+  /**
    * This method will be called whenever a persistence context element is processed by the jpa
    * blueprint namespace handler.
    * 

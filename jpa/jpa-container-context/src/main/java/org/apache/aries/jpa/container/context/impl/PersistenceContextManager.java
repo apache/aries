@@ -28,7 +28,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContextType;
 
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
-import org.apache.aries.jpa.container.context.namespace.NSHandler;
+import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -61,7 +61,7 @@ public class PersistenceContextManager extends ServiceTracker{
       f = FrameworkUtil.createFilter("(&(" + Constants.OBJECTCLASS
         + "=" + "javax.persistence.EntityManagerFactory" + ")(" + 
         PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)(!("
-        + NSHandler.PROXY_FACTORY_EMF_ATTRIBUTE + "=*)))" );
+        + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*)))" );
     } catch (InvalidSyntaxException e) {
       _logger.error("There was an exception creating the EntityManagerFactory filter. This should never happen.", e);
       throw new RuntimeException(e);
@@ -279,7 +279,7 @@ public class PersistenceContextManager extends ServiceTracker{
       props.put(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT, Boolean.TRUE);
       props.put(PersistenceUnitConstants.OSGI_UNIT_PROVIDER, unit.getProperty(PersistenceUnitConstants.OSGI_UNIT_PROVIDER));
       props.put(PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME, "".equals(name));
-      props.put(NSHandler.PROXY_FACTORY_EMF_ATTRIBUTE, "true");
+      props.put(PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE, "true");
       
       BundleContext persistenceBundleContext = unit.getBundle().getBundleContext();
       reg = persistenceBundleContext.registerService(
