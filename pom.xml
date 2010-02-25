@@ -56,7 +56,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.aries.jpa</groupId>
-      <artifactId>jpa-container</artifactId>
+      <artifactId>org.apache.aries.jpa.container</artifactId>
       <version>${version}</version>
       <scope>provided</scope>
     </dependency>
