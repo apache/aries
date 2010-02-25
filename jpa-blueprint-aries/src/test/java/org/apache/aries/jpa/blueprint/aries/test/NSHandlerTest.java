@@ -19,6 +19,8 @@
 package org.apache.aries.jpa.blueprint.aries.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -79,6 +81,7 @@ public class NSHandlerTest {
     sut = new NSHandler();
     manager = Skeleton.newMock(PersistenceContextProvider.class);
     sut.setManager(manager);
+    sut.contextAvailable(null);
     
     clientBundle = Skeleton.newMock(Bundle.class);
         
@@ -207,6 +210,30 @@ public class NSHandlerTest {
   }
   
   @Test
+  public void testContextNoPersistenceContextProvider() {
+    
+    sut.contextUnavailable(null);
+    Element e = getTestElement("context");
+    BeanMetadata bean = 
+      (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), parserCtx);
+    BeanMetadata innerBean = (BeanMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
+
+    assertEquals("createEntityManager", innerBean.getFactoryMethod());
+    assertEquals("internalClose", innerBean.getDestroyMethod());
+
+    assertEquals(1, registeredComponents.size());
+    ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
+    
+    assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
+    assertEquals("(&(org.apache.aries.jpa.proxy.factory=*)(osgi.unit.name=myUnit))", reference.getFilter());
+    
+    Map<String,Object> props = new HashMap<String, Object>();
+    props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
+    Skeleton.getSkeleton(manager).assertNotCalled(
+        new MethodCall(PersistenceContextProvider.class, "registerContext", String.class, Bundle.class, Map.class));
+  }
+  
+  @Test
   public void testContextWithProps() {
     Element e = getTestElement("contextWithProps");
     BeanMetadata bean = 
@@ -257,5 +284,12 @@ public class NSHandlerTest {
     }
     
     return null;
+  }
+  
+  @Test
+  public void testgetSchemaLocation()
+  {
+    assertNotNull("No schema found", sut.getSchemaLocation(NSHandler.NS_URI));
+    assertNull("No schema expected", sut.getSchemaLocation("http://maven.apache.org/POM/4.0.0"));
   }
 }
