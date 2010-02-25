@@ -41,7 +41,6 @@ import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
 import org.apache.aries.blueprint.reflect.RefMetadataImpl;
 import org.apache.aries.blueprint.reflect.ReferenceMetadataImpl;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
-import org.apache.aries.jpa.container.context.impl.PersistenceContextManager;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.Before;
