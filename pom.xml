@@ -35,6 +35,7 @@
   	<module>jpa-blueprint-aries</module>
   	<module>jpa-container-itest</module>
   	<module>jpa-container-testbundle</module>
+  	<module>jpa-context-itest</module>
   </modules>
   <dependencyManagement>
     <dependencies>
