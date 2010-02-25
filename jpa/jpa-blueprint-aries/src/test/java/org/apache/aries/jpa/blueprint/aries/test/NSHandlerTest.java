@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.container.context.namespace;
+package org.apache.aries.jpa.blueprint.aries.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -40,6 +40,7 @@ import org.apache.aries.blueprint.container.Parser;
 import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
 import org.apache.aries.blueprint.reflect.RefMetadataImpl;
 import org.apache.aries.blueprint.reflect.ReferenceMetadataImpl;
+import org.apache.aries.jpa.blueprint.aries.impl.NSHandler;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
