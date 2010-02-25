@@ -23,9 +23,11 @@
     <groupId>org.apache.aries.jpa</groupId>
     <version>1.0.0-incubating-SNAPSHOT</version>
   </parent>
+  <name>Aries JPA Container blueprint integration for Aries blueprint</name>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
   <version>1.0.0-incubating-SNAPSHOT</version>
+  <packaging>bundle</packaging>
   
   <dependencies>
     <dependency>
@@ -50,19 +52,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.aries.jpa</groupId>
-      <artifactId>jpa-container</artifactId>
-      <version>${version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.aries.jpa</groupId>
       <artifactId>org.apache.aries.jpa.container</artifactId>
-      <version>${version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.aries.jpa</groupId>
-      <artifactId>org.apache.aries.jpa.container.context</artifactId>
       <version>${version}</version>
       <scope>provided</scope>
     </dependency>
@@ -114,6 +104,15 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Import-Package>
+                            javax.persistence;version="[1.0.0,3.0.0)",
+                            org.apache.aries.jpa.container.context;version="[1.0.0,2.0.0)",
+                            org.apache.aries.blueprint;version="[1.0.0,1.1.0)",
+                            *
+                        </Import-Package>
+                        <Export-Package>
+                            org.apache.aries.jpa.container.context;versions="1.0.0"
+                        </Export-Package>
                         <Export-Service>
                             org.apache.aries.blueprint.NamespaceHandler;osgi.service.blueprint.namespace=http://aries.apache.org/xmlns/jpa/v1.0.0
                         </Export-Service>
