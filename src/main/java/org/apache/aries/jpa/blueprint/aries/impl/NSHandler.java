@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -42,6 +43,7 @@ import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -104,7 +106,9 @@ public class NSHandler implements NamespaceHandler {
     private static final String ACTIVATION_EAGER = "EAGER";
     /** The {@link PersistenceManager} to register contexts with */
     private PersistenceContextProvider manager;
-
+    /** Used to indicate whether the PersistenceContextProvider is available */
+    private final AtomicBoolean contextsAvailable = new AtomicBoolean();
+    
     public void setManager(PersistenceContextProvider manager) {
         this.manager = manager;
     }
@@ -168,8 +172,13 @@ public class NSHandler implements NamespaceHandler {
             properties.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE,
                     parseType(element));
             properties.putAll(parseJPAProperties(element, context));
-
-            manager.registerContext(unitName, client, properties);
+            if(contextsAvailable.get()) {
+                manager.registerContext(unitName, client, properties);
+            } else {
+                _logger.warn("The bundle {} is a client of persistence unit {} with properties {}, but no PersistenceContextProvider is available in the runtime. " +
+                		"The blueprint for this bundle will not start correctly unless the managed persistence context is registered through some other mechanism",
+                		new Object[] {client.getSymbolicName() + "_" + client.getVersion(), unitName, properties});
+            }
         }
 
         // Create a new Bean to replace the one passed in
@@ -217,7 +226,27 @@ public class NSHandler implements NamespaceHandler {
                 .error("The JPA namespace handler was called to parse a top level element.");
         throw new UnsupportedOperationException();
     }
+    
+    /**
+     * Called when a {@link PersistenceContextProvider} is available
+     * @param ref
+     */
+    public void contextAvailable(ServiceReference ref) {
+        boolean log = contextsAvailable.compareAndSet(false, true);
+      
+        if(log && _logger.isDebugEnabled())
+            _logger.debug("Managed persistence context support is now available for use with the Aries Blueprint container");
+    }
 
+    /**
+     * Called when a {@link PersistenceContextProvider} is no longer available
+     * @param ref
+     */
+    public void contextUnavailable(ServiceReference ref) {
+        contextsAvailable.set(false);
+        _logger.warn("Managed persistence context support is no longer available for use with the Aries Blueprint container");
+    }
+    
     /**
      * Create a BeanProperty that will inject a JPA resource into a bean
      * 
@@ -469,6 +498,5 @@ public class NSHandler implements NamespaceHandler {
         public boolean isProcessor() {
             return delegate.isProcessor();
         }
-        
     }
 }
