@@ -114,8 +114,12 @@
                            javax.persistence;version="[1.0.0,2.1.0)",
                            javax.persistence.criteria;version="[1.1.0,2.1.0)";resolution:=optional,
                            javax.persistence.metamodel;version="[1.1.0,2.1.0)";resolution:=optional,
+                           org.apache.aries.jpa.container.context;version="[1.0.0,1.1.0)",
                            *
                         </Import-Package>
+                        <Export-Package>
+                            org.apache.aries.jpa.container.context;versions="1.0.0"
+                        </Export-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
