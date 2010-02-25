@@ -30,6 +30,7 @@ import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 
+import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAEntityManager;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
 import org.osgi.framework.ServiceReference;
@@ -58,7 +59,7 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory {
       properties = new HashMap<String, Object>(props);
       registry = contextRegistry;
       //Remove our internal property so that it doesn't get passed on the createEntityManager call
-      type = (PersistenceContextType) properties.remove(PersistenceContextManager.PERSISTENCE_CONTEXT_TYPE);
+      type = (PersistenceContextType) properties.remove(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE);
   }
 
   public EntityManager createEntityManager() {

@@ -51,8 +51,6 @@ public class PersistenceContextManager extends ServiceTracker{
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container.context");
   
-  /** The key to use when storing the {@link PersistenceContextType} for this context */
-  public static final String PERSISTENCE_CONTEXT_TYPE = "org.apache.aries.jpa.context.type";
   /** The filter this tracker uses to select Persistence Units. */
   private static final Filter filter; 
   static {

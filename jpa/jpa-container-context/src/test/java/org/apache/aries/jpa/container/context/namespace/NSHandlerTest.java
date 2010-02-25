@@ -40,7 +40,7 @@ import org.apache.aries.blueprint.container.Parser;
 import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
 import org.apache.aries.blueprint.reflect.RefMetadataImpl;
 import org.apache.aries.blueprint.reflect.ReferenceMetadataImpl;
-import org.apache.aries.jpa.container.context.PersistenceManager;
+import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.apache.aries.jpa.container.context.impl.PersistenceContextManager;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
@@ -61,7 +61,7 @@ import org.w3c.dom.NodeList;
 public class NSHandlerTest {
   private Element root;
   private NSHandler sut;
-  private PersistenceManager manager;
+  private PersistenceContextProvider manager;
   private ParserContext parserCtx;
   private Bundle clientBundle;
   private List<ComponentMetadata> registeredComponents = new ArrayList<ComponentMetadata>();
@@ -77,7 +77,7 @@ public class NSHandlerTest {
     root = doc.getDocumentElement();
     
     sut = new NSHandler();
-    manager = Skeleton.newMock(PersistenceManager.class);
+    manager = Skeleton.newMock(PersistenceContextProvider.class);
     sut.setManager(manager);
     
     clientBundle = Skeleton.newMock(Bundle.class);
@@ -201,9 +201,9 @@ public class NSHandlerTest {
     assertEquals("(&(org.apache.aries.jpa.proxy.factory=*)(osgi.unit.name=myUnit))", reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
-    props.put(PersistenceContextManager.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
+    props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
     Skeleton.getSkeleton(manager).assertCalled(
-        new MethodCall(PersistenceManager.class, "registerContext", "myUnit", clientBundle, props));
+        new MethodCall(PersistenceContextProvider.class, "registerContext", "myUnit", clientBundle, props));
   }
   
   @Test
@@ -223,11 +223,11 @@ public class NSHandlerTest {
         reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
-    props.put(PersistenceContextManager.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.EXTENDED);
+    props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.EXTENDED);
     props.put("one", "eins");
     props.put("two", "zwo");
     Skeleton.getSkeleton(manager).assertCalled(
-        new MethodCall(PersistenceManager.class, "registerContext", "", clientBundle, props));    
+        new MethodCall(PersistenceContextProvider.class, "registerContext", "", clientBundle, props));    
   }
   
   @Test

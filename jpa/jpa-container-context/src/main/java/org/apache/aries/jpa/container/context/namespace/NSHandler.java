@@ -40,9 +40,7 @@ import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.apache.aries.blueprint.mutable.MutableRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
-import org.apache.aries.jpa.container.context.GlobalPersistenceManager;
-import org.apache.aries.jpa.container.context.PersistenceManager;
-import org.apache.aries.jpa.container.context.impl.PersistenceContextManager;
+import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -111,9 +109,9 @@ public class NSHandler implements NamespaceHandler {
     /** The blueprint attribute value to make a bean eager */
     private static final String ACTIVATION_EAGER = "EAGER";
     /** The {@link PersistenceManager} to register contexts with */
-    private PersistenceManager manager;
+    private PersistenceContextProvider manager;
 
-    public void setManager(PersistenceManager manager) {
+    public void setManager(PersistenceContextProvider manager) {
         this.manager = manager;
     }
 
@@ -173,7 +171,7 @@ public class NSHandler implements NamespaceHandler {
             // Remember to add the PersistenceContextType so that we can create
             // the correct type of
             // EntityManager
-            properties.put(PersistenceContextManager.PERSISTENCE_CONTEXT_TYPE,
+            properties.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE,
                     parseType(element));
             properties.putAll(parseJPAProperties(element, context));
 
