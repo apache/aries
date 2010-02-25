@@ -20,9 +20,15 @@ package org.apache.aries.jpa.container.context;
 
 import java.util.HashMap;
 
+import javax.persistence.PersistenceContextType;
+
 import org.osgi.framework.Bundle;
 
-public interface PersistenceManager {
+public interface PersistenceContextProvider {
+  
+  /** The key to use when storing the {@link PersistenceContextType} for this context */
+  public static final String PERSISTENCE_CONTEXT_TYPE = "org.apache.aries.jpa.context.type";
+  
   /**
    * This method will be called whenever a persistence context element is processed by the jpa
    * blueprint namespace handler.
