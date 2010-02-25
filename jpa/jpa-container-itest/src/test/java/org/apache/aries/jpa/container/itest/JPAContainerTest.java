@@ -26,6 +26,7 @@ import java.util.Hashtable;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 
+import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -55,7 +56,7 @@ public class JPAContainerTest {
  
   @Test
   public void findEntityManagerFactory() throws Exception {
-    EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(osgi.unit.name=test-unit)", DEFAULT_TIMEOUT);
+    EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
   }
 
   @org.ops4j.pax.exam.junit.Configuration
