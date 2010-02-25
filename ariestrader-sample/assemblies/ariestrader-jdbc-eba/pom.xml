@@ -78,38 +78,38 @@
                             <goal>copy</goal>
                         </goals>
                         <configuration>
-                          <artifactItems>
-                            <artifactItem>
-                              <groupId>org.apache.aries.ariestrader.modules</groupId>
-                              <artifactId>ariestrader-util</artifactId>
-                              <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                            </artifactItem>
-                            <artifactItem>
-                              <groupId>org.apache.aries.ariestrader.modules</groupId>
-                              <artifactId>ariestrader-core</artifactId>
-                              <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                            </artifactItem>
-                            <artifactItem>
-                              <groupId>org.apache.aries.ariestrader.modules</groupId>
-                              <artifactId>ariestrader-api</artifactId>
-                              <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                            </artifactItem>
-                            <artifactItem>
-                              <groupId>org.apache.aries.ariestrader.modules</groupId>
-                              <artifactId>ariestrader-beans</artifactId>
-                              <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                            </artifactItem>
-                            <artifactItem>
-                              <groupId>org.apache.aries.ariestrader.modules</groupId>
-                              <artifactId>ariestrader-persist-jdbc</artifactId>
-                              <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                            </artifactItem>
-                            <artifactItem>
-                                <groupId>org.apache.aries.ariestrader.modules</groupId>
-                                <artifactId>ariestrader-web</artifactId>
-                                <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                            </artifactItem>
-                          </artifactItems>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
+                                    <artifactId>ariestrader-util</artifactId>
+                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
+                                    <artifactId>ariestrader-core</artifactId>
+                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
+                                    <artifactId>ariestrader-api</artifactId>
+                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
+                                    <artifactId>ariestrader-beans</artifactId>
+                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
+                                    <artifactId>ariestrader-persist-jdbc</artifactId>
+                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
+                                    <artifactId>ariestrader-web</artifactId>
+                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
                         </configuration>
                     </execution>
                 </executions>
@@ -155,6 +155,28 @@
                 </executions>
             </plugin>
 
+            <!-- Use the build-helper-maven-plugin to push the eba to the maven repo  -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/${project.build.finalName}.eba</file>
+                                    <type>eba</type>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
