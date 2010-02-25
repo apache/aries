@@ -31,6 +31,12 @@
     <packaging>pom</packaging>
     <description>Java EE 5.0 Performance Benchmark Sample Application</description>
 
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/ariestrader-sample</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/ariestrader-sample</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/ariestrader-sample</url>
+    </scm>
+
     <properties>
         <!-- set siteId to artifactId for any "top level" project rooting a website -->
         <siteId>ariestrader</siteId>
@@ -136,20 +142,8 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <extensions>true</extensions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
     <modules>
-        <!-- AriesTrader application components-->
+        <!-- application components-->
         <module>modules</module>
         <!-- Installable assemblies -->
         <module>assemblies</module>
