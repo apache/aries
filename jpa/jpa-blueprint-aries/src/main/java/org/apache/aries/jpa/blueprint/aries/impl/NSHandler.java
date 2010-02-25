@@ -69,7 +69,7 @@ import org.w3c.dom.NodeList;
 public class NSHandler implements NamespaceHandler {
     /** Logger */
     private static final Logger _logger = LoggerFactory
-            .getLogger("org.apache.aries.jpa.container.context");
+            .getLogger("org.apache.aries.jpa.blueprint.aries");
 
     /** The JPA namespace */
     public static final String NS_URI = "http://aries.apache.org/xmlns/jpa/v1.0.0";
@@ -214,7 +214,11 @@ public class NSHandler implements NamespaceHandler {
     }
 
     public URL getSchemaLocation(String namespace) {
-        return getClass().getResource("jpa.xsd");
+        if(NS_URI.equals(namespace))
+            return getClass().getResource(
+                "/org/apache/aries/jpa/blueprint/namespace/jpa.xsd");
+        else
+            return null;
     }
 
     public Metadata parse(Element element, ParserContext context) {
