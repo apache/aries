@@ -162,29 +162,28 @@ public class Framework implements FrameworkMBean {
     }
 
     /**
-     * @see org.osgi.jmx.framework.FrameworkMBean#refreshPackages(long)
+     * @see org.osgi.jmx.framework.FrameworkMBean#refreshBundle(long)
      */
-    public void refreshPackages(long bundleIdentifier) throws IOException {
+    public void refreshBundle(long bundleIdentifier) throws IOException {
         Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
         packageAdmin.refreshPackages(new Bundle[] { bundle });
-
     }
 
     /**
-     * @see org.osgi.jmx.framework.FrameworkMBean#refreshPackages(long[])
+     * @see org.osgi.jmx.framework.FrameworkMBean#refreshBundles(long[])
      */
-    public CompositeData refreshPackages(long[] bundleIdentifiers) throws IOException {
-        if(bundleIdentifiers == null){
-            return new BatchActionResult("Failed to refresh packages  bundle id's can't be null").toCompositeData(); 
-         }
-        for (int i = 0; i < bundleIdentifiers.length; i++) {
-            try {
-                refreshPackages(bundleIdentifiers[i]);
-            } catch (Throwable t) {
-                return createFailedBatchActionResult(bundleIdentifiers, i, t);
-            }
-        }
-        return new BatchActionResult(bundleIdentifiers).toCompositeData();
+    public void refreshBundles(long[] bundleIdentifiers) throws IOException 
+    {
+       Bundle[] bundles = null;
+       if(bundleIdentifiers != null)
+       {
+          bundles = new Bundle[bundleIdentifiers.length];
+          for (int i = 0; i < bundleIdentifiers.length; i++) 
+          {
+             bundles[i] = context.getBundle(bundleIdentifiers[i]);
+          }
+       }
+       packageAdmin.refreshPackages(bundles);
     }
 
     /**
@@ -199,15 +198,16 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#resolveBundles(long[])
      */
     public boolean resolveBundles(long[] bundleIdentifiers) throws IOException {
-        if(bundleIdentifiers == null){
-            throw new IllegalArgumentException("Failed to resolve  bundles id's can't be null"); 
-         }
-        Bundle[] bundles = new Bundle[bundleIdentifiers.length];
-        for (int i = 0; i < bundleIdentifiers.length; i++) {
-            bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]);
-        }
-
-        return packageAdmin.resolveBundles(bundles);
+       Bundle[] bundles = null;
+       if(bundleIdentifiers != null)
+       {
+          bundles = new Bundle[bundleIdentifiers.length];
+          for (int i = 0; i < bundleIdentifiers.length; i++) 
+          {
+             bundles[i] = context.getBundle(bundleIdentifiers[i]);
+          }
+       }
+       return packageAdmin.resolveBundles(bundles);
     }
 
     /**
