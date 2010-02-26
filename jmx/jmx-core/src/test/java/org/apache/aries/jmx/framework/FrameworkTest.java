@@ -175,15 +175,15 @@ public class FrameworkTest {
     }
 
     @Test
-    public void testRefreshPackagesLong() throws Exception {
+    public void testRefreshBundleLong() throws Exception {
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.getBundle(1)).thenReturn(bundle);
 
-        mbean.refreshPackages(1);
+        mbean.refreshBundle(1);
         Mockito.verify(admin).refreshPackages((Bundle[]) Mockito.any());
 
         try {
-            mbean.refreshPackages(2);
+            mbean.refreshBundle(2);
             Assert.fail("Shouldn't happen illegal argument");
         } catch (IllegalArgumentException iae) {
             // expected
@@ -191,23 +191,15 @@ public class FrameworkTest {
     }
 
     @Test
-    public void testRefreshPackagesLongArray() throws IOException {
+    public void testRefreshBundlesLongArray() throws IOException {
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.getBundle(1)).thenReturn(bundle);
 
-        mbean.refreshPackages(new long[] { 1 });
+        mbean.refreshBundles(new long[] { 1 });
         Mockito.verify(admin).refreshPackages((Bundle[]) Mockito.any());
 
-        CompositeData data = mbean.refreshPackages(new long[] { 2 });
-        // shouldn't found bundle whith id 2
-        Assert.assertNotNull(data);
-        BatchActionResult batch = BatchActionResult.from(data);
-        Assert.assertEquals(0, batch.getCompleted().length);
-        Assert.assertFalse(batch.isSuccess());
-        Assert.assertNotNull(batch.getError());
-        Assert.assertNotNull(batch.getRemainingItems());
-        Assert.assertEquals(2, batch.getBundleInError());
-
+        mbean.refreshBundles(null);
+        Mockito.verify(admin).refreshPackages(null);
     }
 
     @Test
@@ -226,6 +218,9 @@ public class FrameworkTest {
 
         mbean.resolveBundles(new long[] { 1 });
         Mockito.verify(admin).resolveBundles(new Bundle[] { bundle });
+
+        mbean.resolveBundles(null);
+        Mockito.verify(admin).resolveBundles(null);
     }
 
     @Test
