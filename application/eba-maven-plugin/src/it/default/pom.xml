@@ -20,29 +20,28 @@ under the License.
 -->
 
 <project>
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.apache.aries.its.it0070</groupId>
-  <artifactId>maven-it-it0070</artifactId>
-  <version>1.0</version>
-  <packaging>eba</packaging>
+    <groupId>org.apache.aries.its.it0070</groupId>
+    <artifactId>maven-it-it0070</artifactId>
+    <version>1.0</version>
+    <packaging>eba</packaging>
 
-  <name>Maven Integration Test :: it0070</name> 
-  <description>Test an eba generation.</description>
+    <name>Maven Integration Test :: it0070</name>
+    <description>Test an eba generation.</description>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.aries.application</groupId>
-        <artifactId>eba-maven-plugin</artifactId>
-        <version>1.0.0-incubating-SNAPSHOT</version>
-          <extensions>true</extensions>
-        <!--<version>@project.version@</version>-->
-        <configuration>
-          <includeJar>false</includeJar>
-          <applicationManifestFile>src/main/custom/application.mf</applicationManifestFile>            
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>eba-maven-plugin</artifactId>
+                <version>@project.version@</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <includeJar>false</includeJar>
+                    <applicationManifestFile>src/main/custom/application.mf</applicationManifestFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
