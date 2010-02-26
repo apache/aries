@@ -74,50 +74,13 @@ public class EbaMojoTest
 
         mojo.execute();
 
-        //check the working directory
-        File workDirectory = new File( workDir );
-
-        assertTrue( workDirectory.exists() );
-
-        assertTrue( workDirectory.isDirectory() );
-
-        File[] fileNames = workDirectory.listFiles();
-
-        List expectedFiles = new ArrayList();
-        
-        expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
-        expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
-        expectedFiles.add( "test-eba.jar" );
-        
-        assertEquals( "Files in working directory", expectedFiles.size(), fileNames.length );
-
-        
-        for( int i=0; i<fileNames.length; i++ )
-        {
-            String fileName = fileNames[i].getName();
-            
-            assertTrue( expectedFiles.contains( fileName ) );
-            
-            if( expectedFiles.contains( fileName ) )
-            {
-                expectedFiles.remove( fileName );
-                assertFalse( expectedFiles.contains( fileName ) );
-            }
-            else
-            {
-                fail( fileName + " is not included in expected files." );
-            }
-        }
-
-        assertEquals( 0, expectedFiles.size() );
-
         //check the generated eba file
         File ebaFile = new File( outputDir, finalName + ".eba" );
 
         assertTrue( ebaFile.exists() );
 
         //expected files/directories inside the eba file
-        expectedFiles = new ArrayList();
+        List expectedFiles = new ArrayList();
 
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/pom.properties" );
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/pom.xml" );
@@ -157,39 +120,13 @@ public class EbaMojoTest
 
         mojo.execute();
 
-        //check the working directory
-        File workDirectory = new File( workDir );
-
-        assertTrue( workDirectory.exists() );
-
-        assertTrue( workDirectory.isDirectory() );
-
-        File[] fileNames = workDirectory.listFiles();
-
-        List expectedFiles = new ArrayList();
-        List fileList = new ArrayList();
-
-        for( int i=0; i<fileNames.length; i++ )
-        {
-            addFileToList( fileNames[i], fileList );
-        }
-
-        expectedFiles.add( "application.mf" );
-        expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
-        expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
-        expectedFiles.add( "META-INF" );
-
-        assertEquals( expectedFiles.size(), fileList.size() );
-
-        assertEquals( 0, getSizeOfExpectedFiles( fileList, expectedFiles ) );
-
         //check the generated eba file
         File ebaFile = new File( outputDir, finalName + ".eba" );
 
         assertTrue( ebaFile.exists() );
 
         //expected files/directories inside the eba file
-        expectedFiles = new ArrayList();
+        List expectedFiles = new ArrayList();
 
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/pom.properties" );
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/pom.xml" );
@@ -229,32 +166,6 @@ public class EbaMojoTest
 
         mojo.execute();
 
-        //check the working directory
-        File workDirectory = new File( workDir );
-
-        assertTrue( workDirectory.exists() );
-
-        assertTrue( workDirectory.isDirectory() );
-
-        File[] fileNames = workDirectory.listFiles();
-
-        List expectedFiles = new ArrayList();
-        List fileList = new ArrayList();
-
-        for( int i=0; i<fileNames.length; i++ )
-        {
-            addFileToList( fileNames[i], fileList );
-        }
-
-        expectedFiles.add( "application.mf" );
-        expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
-        expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
-        expectedFiles.add( "META-INF" );
-        expectedFiles.add( "MANIFEST.MF" );
-
-        assertEquals( expectedFiles.size(), fileList.size() );
-
-        assertEquals( 0, getSizeOfExpectedFiles( fileList, expectedFiles ) );
 
         //check the generated eba file
         File ebaFile = new File( outputDir, finalName + ".eba" );
@@ -262,7 +173,7 @@ public class EbaMojoTest
         assertTrue( ebaFile.exists() );
 
         //expected files/directories inside the eba file
-        expectedFiles = new ArrayList();
+        List expectedFiles = new ArrayList();
 
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/pom.properties" );
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/pom.xml" );
