@@ -144,6 +144,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
+            <artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
+            <version>${ariesVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.container</artifactId>
             <version>${ariesVersion}</version>
         </dependency>
