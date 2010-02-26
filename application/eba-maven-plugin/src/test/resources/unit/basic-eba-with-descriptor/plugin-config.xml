@@ -28,6 +28,7 @@ under the License.
 		  <includeJar>false</includeJar>
 		  <manifestFile>${basedir}/src/test/resources/unit/basic-eba-with-descriptor/src/main/eba/META-INF/MANIFEST.MF</manifestFile>
 		  <workDirectory>${basedir}/target/unit/basic-eba-with-descriptor/target/eba-test-with-descriptor</workDirectory>
+          <sharedResources>${basedir}/target/unit/basic-eba-with-descriptor/target/maven-shared-archive-resources</sharedResources>
 		  <outputDirectory>${basedir}/target/unit/basic-eba-with-descriptor/target</outputDirectory>
 		  <finalName>test-eba-with-descriptor</finalName>
 		  <project implementation="org.apache.aries.plugin.eba.stubs.EbaMavenProjectStub2" />
