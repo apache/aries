@@ -28,6 +28,7 @@ under the License.
 		  <includeJar>true</includeJar>
 		  <manifestFile>${basedir}/src/main/eba/META-INF/MANIFEST.MF</manifestFile>
 		  <workDirectory>${basedir}/target/unit/basic-eba-test/target/eba-test</workDirectory>
+		  <sharedResources>${basedir}/target/unit/basic-eba-test/target/maven-shared-archive-resources</sharedResources>
 		  <outputDirectory>${basedir}/target/unit/basic-eba-test/target</outputDirectory>
 		  <finalName>test-eba</finalName>
 		  <project implementation="org.apache.aries.plugin.eba.stubs.EbaMavenProjectStub" />

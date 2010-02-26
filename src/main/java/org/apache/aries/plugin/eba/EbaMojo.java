@@ -89,6 +89,14 @@ public class EbaMojo
     private String workDirectory;
 
     /**
+     * Directory that remote-resources puts legal files.
+     *
+     * @parameter expression="${project.build.directory}/maven-shared-archive-resources"
+     * @required
+     */
+    private String sharedResources;
+
+    /**
      * The directory for the generated eba.
      *
      * @parameter expression="${project.build.directory}"
@@ -248,7 +256,12 @@ public class EbaMojo
             // Include custom manifest if necessary
             includeCustomManifestFile();
 
-            archiver.getArchiver().addDirectory( getBuildDir() );
+            jarArchiver.addDirectory( getBuildDir() );
+            //include legal files if any
+            File sharedResourcesDir = new File(sharedResources);
+            if (sharedResourcesDir.isDirectory()) {
+                jarArchiver.addDirectory(sharedResourcesDir);
+            }
             archiver.createArchive( project, archive );
 
             project.getArtifact().setFile( ebaFile );
