@@ -19,22 +19,21 @@ package org.apache.aries.plugin.eba;
  * under the License.
  */
 
+import org.apache.maven.archiver.PomPropertiesUtil;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.archiver.MavenArchiver;
-import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.artifact.Artifact;
 import org.codehaus.plexus.archiver.ArchiverException;
-import org.codehaus.plexus.archiver.jar.JarArchiver;
-import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.util.DirectoryScanner;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
-import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 
 /**
  * Builds Aries Enterprise Bundle Archive (eba) files.
@@ -125,17 +124,31 @@ public class EbaMojo
     /**
      * The Jar archiver.
      *
-     * @component role="org.codehaus.plexus.archiver.Archiver" roleHint="jar"
+     * @parameter expression="${component.org.codehaus.plexus.archiver.Archiver#zip}"
+     * @required
      */
-    private JarArchiver jarArchiver;
+    private ZipArchiver zipArchiver;
 
     /**
-     * The archive configuration to use.
-     * See <a href="http://maven.apache.org/shared/maven-archiver/index.html">Maven Archiver Reference</a>.
+     * Adding pom.xml and pom.properties to the archive.
      *
-     * @parameter
+     * @parameter expression="${addMavenDescriptor}" default-value="true"
      */
-    private MavenArchiveConfiguration archive = new MavenArchiveConfiguration();
+    private boolean addMavenDescriptor;
+
+    /**
+     * Include or not empty directories
+     *
+     * @parameter expression="${zip.includeEmptyDirs}" default-value="true"
+     */
+    private boolean includeEmptyDirs;
+
+    /**
+     * Whether creating the archive should be forced.
+     *
+     * @parameter expression="${zip.forceCreation}" default-value="false"
+     */
+    private boolean forceCreation;
 
 
     private File buildDir;
@@ -152,6 +165,9 @@ public class EbaMojo
         getLog().debug( "outputDirectory[" + outputDirectory + "]" );
         getLog().debug( "finalName[" + finalName + "]" );
 
+        zipArchiver.setIncludeEmptyDirs( includeEmptyDirs );
+        zipArchiver.setCompress( true );
+        zipArchiver.setForced( forceCreation );
         // Check if jar file is there and if requested, copy it
         try
         {
@@ -159,7 +175,7 @@ public class EbaMojo
                 File generatedJarFile = new File( outputDirectory, finalName + ".jar" );
                 if (generatedJarFile.exists()) {
                     getLog().info( "Including generated jar file["+generatedJarFile.getName()+"]");
-                    jarArchiver.addFile(generatedJarFile, finalName + ".jar");
+                    zipArchiver.addFile(generatedJarFile, finalName + ".jar");
                 }
             }
         }
@@ -182,7 +198,7 @@ public class EbaMojo
                 {
                     getLog().info("Copying artifact[" + artifact.getGroupId() + ", " + artifact.getId() + ", " +
                         artifact.getScope() + "]");
-                    jarArchiver.addFile(artifact.getFile(), artifact.getArtifactId() + "-" + artifact.getVersion() + "." + (artifact.getType() == null? "jar": artifact.getType()));
+                    zipArchiver.addFile(artifact.getFile(), artifact.getArtifactId() + "-" + artifact.getVersion() + "." + (artifact.getType() == null? "jar": artifact.getType()));
                 }
             }
         }
@@ -250,24 +266,34 @@ public class EbaMojo
 
         try
         {
-            File ebaFile = new File( outputDirectory, finalName + ".eba" );
-            MavenArchiver archiver = new MavenArchiver();
-            archiver.setArchiver( jarArchiver );
-            archiver.setOutputFile( ebaFile );
+            if (addMavenDescriptor) {
+                if (project.getArtifact().isSnapshot()) {
+                    project.setVersion(project.getArtifact().getVersion());
+                }
 
-            // Include custom manifest if necessary
-            includeCustomManifestFile();
+                String groupId = project.getGroupId();
+
+                String artifactId = project.getArtifactId();
+
+                zipArchiver.addFile(project.getFile(), "META-INF/maven/" + groupId + "/" + artifactId + "/pom.xml");
+                PomPropertiesUtil pomPropertiesUtil = new PomPropertiesUtil();
+                File dir = new File(project.getBuild().getDirectory(), "maven-zip-plugin");
+                File pomPropertiesFile = new File(dir, "pom.properties");
+                pomPropertiesUtil.createPomProperties(project, zipArchiver, pomPropertiesFile, forceCreation);
+            }
+            File ebaFile = new File( outputDirectory, finalName + ".eba" );
+            zipArchiver.setDestFile(ebaFile);
 
             File buildDir = getBuildDir();
             if (buildDir.isDirectory()) {
-                jarArchiver.addDirectory(buildDir);
+                zipArchiver.addDirectory(buildDir);
             }
             //include legal files if any
             File sharedResourcesDir = new File(sharedResources);
             if (sharedResourcesDir.isDirectory()) {
-                jarArchiver.addDirectory(sharedResourcesDir);
+                zipArchiver.addDirectory(sharedResourcesDir);
             }
-            archiver.createArchive( project, archive );
+            zipArchiver.createArchive();
 
             project.getArtifact().setFile( ebaFile );
         }
@@ -284,23 +310,6 @@ public class EbaMojo
             buildDir = new File( workDirectory );
         }
         return buildDir;
-    }
-
-    private void includeCustomManifestFile()
-        throws IOException
-    {
-        File customManifestFile = manifestFile;
-        if ( !customManifestFile.exists() )
-        {
-            getLog().info( "Could not find manifest file: " + manifestFile +" - Generating one");
-        }
-        else
-        {
-            getLog().info( "Including custom manifest file[" + customManifestFile + "]" );
-            archive.setManifestFile( customManifestFile );
-            File metaInfDir = new File(getBuildDir(), "META-INF");
-            FileUtils.copyFileToDirectory( customManifestFile, metaInfDir );
-        }
     }
 
     private void includeCustomApplicationManifestFile()

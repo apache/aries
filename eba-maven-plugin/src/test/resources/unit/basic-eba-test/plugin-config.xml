@@ -26,6 +26,8 @@ under the License.
 		  <ebaSourceDirectory>${basedir}/src/test/resources/unit/basic-eba-test/src/main/eba</ebaSourceDirectory>
 		  <applicationManifestFile>${basedir}/src/test/resources/unit/basic-eba-test/src/main/eba/META-INF/application.mf</applicationManifestFile>
 		  <includeJar>true</includeJar>
+          <addMavenDescriptor>true</addMavenDescriptor>
+          <includeEmptyDirs>true</includeEmptyDirs>
 		  <manifestFile>${basedir}/src/main/eba/META-INF/MANIFEST.MF</manifestFile>
 		  <workDirectory>${basedir}/target/unit/basic-eba-test/target/eba-test</workDirectory>
 		  <sharedResources>${basedir}/target/unit/basic-eba-test/target/maven-shared-archive-resources</sharedResources>
