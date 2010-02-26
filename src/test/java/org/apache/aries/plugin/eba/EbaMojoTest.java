@@ -87,7 +87,7 @@ public class EbaMojoTest
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/" );
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/" );
         expectedFiles.add( "META-INF/maven/" );
-        expectedFiles.add( "META-INF/MANIFEST.MF" );
+//        expectedFiles.add( "META-INF/MANIFEST.MF" );
         expectedFiles.add( "META-INF/" );
         expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
         expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
@@ -99,7 +99,10 @@ public class EbaMojoTest
 
         assertTrue( entries.hasMoreElements() );
 
-        assertEquals( 0, getSizeOfExpectedFiles( entries, expectedFiles ) );
+        assertTrue( entries.hasMoreElements() );
+
+        int missing = getSizeOfExpectedFiles(entries, expectedFiles);
+        assertEquals("Missing files: " + expectedFiles,  0, missing);
     }
 
     public void testBasicEbaWithDescriptor()
@@ -133,7 +136,7 @@ public class EbaMojoTest
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/" );
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/" );
         expectedFiles.add( "META-INF/maven/" );
-        expectedFiles.add( "META-INF/MANIFEST.MF" );
+//        expectedFiles.add( "META-INF/MANIFEST.MF" );
         expectedFiles.add( "META-INF/application.mf" );
         expectedFiles.add( "META-INF/" );
         expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
@@ -145,7 +148,10 @@ public class EbaMojoTest
 
         assertTrue( entries.hasMoreElements() );
 
-        assertEquals( 0, getSizeOfExpectedFiles( entries, expectedFiles ) );
+        assertTrue( entries.hasMoreElements() );
+
+        int missing = getSizeOfExpectedFiles(entries, expectedFiles);
+        assertEquals("Missing files: " + expectedFiles,  0, missing);
     }
 
     public void testBasicEbaWithManifest()
@@ -192,7 +198,8 @@ public class EbaMojoTest
 
         assertTrue( entries.hasMoreElements() );
 
-        assertEquals( 0, getSizeOfExpectedFiles( entries, expectedFiles ) );
+        int missing = getSizeOfExpectedFiles(entries, expectedFiles);
+        assertEquals("Missing files: " + expectedFiles,  0, missing);
     }
 
     private int getSizeOfExpectedFiles( Enumeration entries, List expectedFiles )
@@ -214,41 +221,4 @@ public class EbaMojoTest
         return expectedFiles.size();
     }
 
-    private int getSizeOfExpectedFiles( List fileList, List expectedFiles )
-    {
-        for( Iterator iter=fileList.iterator(); iter.hasNext(); )
-        {
-            String fileName = ( String ) iter.next();
-
-            if( expectedFiles.contains(  fileName ) )
-            {
-                expectedFiles.remove( fileName );
-                assertFalse( expectedFiles.contains( fileName ) );
-            }
-            else
-            {
-                fail( fileName + " is not included in the expected files" );
-            }
-        }
-        return expectedFiles.size();
-    }
-
-    private void addFileToList( File file, List fileList )
-    {
-        if( !file.isDirectory() )
-        {
-            fileList.add( file.getName() );
-        }
-        else
-        {
-            fileList.add( file.getName() );
-
-            File[] files = file.listFiles();
-
-            for( int i=0; i<files.length; i++ )
-            {
-                addFileToList( files[i], fileList );
-            }
-        }
-    }
 }
