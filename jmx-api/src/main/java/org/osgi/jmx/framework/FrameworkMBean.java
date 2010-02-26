@@ -131,7 +131,7 @@ public interface FrameworkMBean {
 
 	/**
 	 * The Composite Type for a batch action result.
-	 * {@link #refreshPackages(long)} and {@link #refreshPackages(long[])}.
+	 * {@link #refreshBundle(long)} and {@link #refreshBundles(long[])}.
 	 * Notice that a batch action result returns uses an id for the
 	 * {@link #BUNDLE_IN_ERROR} while the {@link #BATCH_INSTALL_RESULT_TYPE}
 	 * uses a location.
@@ -267,35 +267,23 @@ public interface FrameworkMBean {
 	 * @return the resulting state from executing the operation
 	 * @throws IOException if the operation does not succeed
 	 */
-	CompositeData installBundles(String[] locations, String[] urls)
-			throws IOException;
+	CompositeData installBundles(String[] locations, String[] urls) throws IOException;
 
 	/**
-	 * Force the update, replacement or removal of the pacakges identified by
-	 * the list of bundles
+	 * Force the update, replacement or removal of the packages identified by the specified bundle. 
 	 * 
-	 * @see #BATCH_ACTION_RESULT_TYPE for the precise specification of the
-	 *      CompositeData type representing the returned result.
-	 * 
-	 *      ### there is not result???
 	 * @param bundleIdentifier the bundle identifier
 	 * @throws IOException if the operation failed
 	 */
-	void refreshPackages(long bundleIdentifier) throws IOException;
+	void refreshBundle(long bundleIdentifier) throws IOException;
 
 	/**
-	 * Force the update, replacement or removal of the packages identified by
-	 * the list of bundles.
+	 * Force the update, replacement or removal of the packages identified by the list of bundles. 
 	 * 
-	 * 
-	 * @see #BATCH_ACTION_RESULT_TYPE for the precise specification of the
-	 *      CompositeData type representing the returned result.
-	 * 
-	 * @param bundleIdentifiers the array of bundle identifiers
-	 * @return the resulting state from executing the operation
+	 * @param bundleIdentifiers The identifiers of the bundles to refresh, or null for all bundles with packages pending removal.
 	 * @throws IOException if the operation failed
 	 */
-	CompositeData refreshPackages(long[] bundleIdentifiers) throws IOException;
+	void refreshBundles(long[] bundleIdentifiers) throws IOException;
 
 	/**
 	 * Resolve the bundle indicated by the unique symbolic name and version
@@ -310,7 +298,7 @@ public interface FrameworkMBean {
 	/**
 	 * Batch resolve the bundles indicated by the list of bundle identifiers
 	 * 
-	 * @param bundleIdentifiers = the identifiers of the bundles to resolve
+	 * @param bundleIdentifiers The identifiers of the bundles to resolve, or null to resolve all unresolved bundles. 
 	 * @return true if the bundles were resolved, false otherwise
 	 * @throws IOException if the operation does not succeed
 	 */
