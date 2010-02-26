@@ -5,7 +5,7 @@ import java.util.regex.*;
 
 try
 {
-    File jarFile = new File( basedir, "target/maven-it-it0070-1.0.rar" );
+    File jarFile = new File( basedir, "target/maven-it-it0070-1.0.eba" );
     System.out.println( "Checking for existence of " + jarFile );
     if ( !jarFile.isFile() )
     {
@@ -16,7 +16,7 @@ try
     JarFile jar = new JarFile( jarFile );
 
     String[] includedEntries = {
-        "META-INF/ra.xml",
+        "META-INF/application.mf",
         "SomeResource.txt",
     };
     for ( String included : includedEntries )

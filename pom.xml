@@ -19,102 +19,90 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-<project xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd' xmlns='http://maven.apache.org/POM/4.0.0'>
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+         xsi:schemaLocation='http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd'
+         xmlns='http://maven.apache.org/POM/4.0.0'>
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <artifactId>maven-plugins</artifactId>
-    <groupId>org.apache.maven.plugins</groupId>
-    <version>14</version>
-  </parent>
 
-  <artifactId>maven-rar-plugin</artifactId>
-  <version>2.3-SNAPSHOT</version>
-  <packaging>maven-plugin</packaging>
+    <parent>
+        <groupId>org.apache.aries.application</groupId>
+        <artifactId>application</artifactId>
+        <version>1.0.0-incubating-SNAPSHOT</version>
+    </parent>
+    <artifactId>eba-maven-plugin</artifactId>
+    <version>1.0.0-incubating-SNAPSHOT</version>
+    <packaging>maven-plugin</packaging>
 
-  <name>Maven RAR Plugin</name>
-  <description>Builds a Resource Adapter Archive (RAR) from the project output for deployment to a J2EE server.</description>
-  <inceptionYear>2004</inceptionYear>
+    <name>Aries EBA Maven Plugin</name>
+    <description>Builds an eba (Enterprise Bundle Archive) from the project for deployment to an aries server.
+    </description>
 
-  <prerequisites>
-    <maven>2.0</maven>
-  </prerequisites>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-project</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-artifact</artifactId>
+            <version>2.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-archiver</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-plugin-testing-harness</artifactId>
+            <version>1.0-beta-1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-rar-plugin/</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/plugins/trunk/maven-rar-plugin/</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/plugins/trunk/maven-rar-plugin/</url>
-  </scm>
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://jira.codehaus.org/browse/MRAR</url>
-  </issueManagement>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-project</artifactId>
-      <version>2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact</artifactId>
-      <version>2.0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-archiver</artifactId>
-      <version>2.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>1.0-beta-1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-
-  <profiles>
-    <profile>
-      <id>run-its</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-invoker-plugin</artifactId>
-            <version>1.4</version>
-            <configuration>
-              <debug>true</debug>
-              <projectsDirectory>src/it</projectsDirectory>
-              <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-              <pomIncludes>
-                <pomInclude>*/pom.xml</pomInclude>
-              </pomIncludes>
-              <preBuildHookScript>setup</preBuildHookScript>
-              <postBuildHookScript>verify</postBuildHookScript>
-              <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-              <settingsFile>src/it/settings.xml</settingsFile>
-              <goals>
-                <goal>clean</goal>
-                <goal>package</goal>
-              </goals>
-            </configuration>
-            <executions>
-              <execution>
-                <id>integration-test</id>
-                <goals>
-                  <goal>install</goal>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+    <profiles>
+        <profile>
+            <id>run-its</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-invoker-plugin</artifactId>
+                        <version>1.4</version>
+                        <configuration>
+                            <debug>true</debug>
+                            <projectsDirectory>src/it</projectsDirectory>
+                            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+                            <pomIncludes>
+                                <pomInclude>*/pom.xml</pomInclude>
+                            </pomIncludes>
+                            <preBuildHookScript>setup</preBuildHookScript>
+                            <postBuildHookScript>verify</postBuildHookScript>
+                            <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+                            <settingsFile>src/it/settings.xml</settingsFile>
+                            <goals>
+                                <goal>clean</goal>
+                                <goal>package</goal>
+                            </goals>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>install</goal>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
