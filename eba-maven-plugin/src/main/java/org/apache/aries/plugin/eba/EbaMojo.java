@@ -25,6 +25,7 @@ import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.artifact.Artifact;
+import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.DirectoryScanner;
@@ -158,13 +159,14 @@ public class EbaMojo
                 File generatedJarFile = new File( outputDirectory, finalName + ".jar" );
                 if (generatedJarFile.exists()) {
                     getLog().info( "Including generated jar file["+generatedJarFile.getName()+"]");
-                    FileUtils.copyFileToDirectory( generatedJarFile, getBuildDir());
+                    jarArchiver.addFile(generatedJarFile, finalName + ".jar");
                 }
             }
         }
-        catch ( IOException e )
+        catch ( ArchiverException e )
         {
-            throw new MojoExecutionException( "Error copying generated Jar file", e );
+            throw new MojoExecutionException( "Error adding generated Jar file", e );
+
         }
 
         // Copy dependencies
@@ -180,11 +182,11 @@ public class EbaMojo
                 {
                     getLog().info("Copying artifact[" + artifact.getGroupId() + ", " + artifact.getId() + ", " +
                         artifact.getScope() + "]");
-                    FileUtils.copyFileToDirectory( artifact.getFile(), getBuildDir() );
+                    jarArchiver.addFile(artifact.getFile(), artifact.getArtifactId() + "-" + artifact.getVersion() + "." + (artifact.getType() == null? "jar": artifact.getType()));
                 }
             }
         }
-        catch ( IOException e )
+        catch ( ArchiverException e )
         {
             throw new MojoExecutionException( "Error copying EBA dependencies", e );
         }
@@ -256,7 +258,10 @@ public class EbaMojo
             // Include custom manifest if necessary
             includeCustomManifestFile();
 
-            jarArchiver.addDirectory( getBuildDir() );
+            File buildDir = getBuildDir();
+            if (buildDir.isDirectory()) {
+                jarArchiver.addDirectory(buildDir);
+            }
             //include legal files if any
             File sharedResourcesDir = new File(sharedResources);
             if (sharedResourcesDir.isDirectory()) {
