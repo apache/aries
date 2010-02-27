@@ -40,125 +40,61 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>org.osgi</groupId>
-				<artifactId>org.osgi.core</artifactId>
-				<version>4.2.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.osgi</groupId>
-				<artifactId>org.osgi.compendium</artifactId>
-				<version>4.2.0</version>
-			</dependency>
+            <dependency>
+                <groupId>asm</groupId>
+                <artifactId>asm-all</artifactId>
+                <version>3.1</version>
+            </dependency>
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>4.5</version>
 			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>1.5.6</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-simple</artifactId>
-				<version>1.5.6</version>
-			</dependency>
-			<dependency>
-				<groupId>asm</groupId>
-				<artifactId>asm-all</artifactId>
-				<version>3.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.aries.application</groupId>
-				<artifactId>org.apache.aries.application.api</artifactId>
-				<version>${version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.aries.application</groupId>
-				<artifactId>org.apache.aries.application.utils</artifactId>
-				<version>${version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.aries.application</groupId>
-				<artifactId>org.apache.aries.application.management</artifactId>
-				<version>${version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.aries.application</groupId>
-				<artifactId>org.apache.aries.application.resolver.obr</artifactId>
-				<version>${version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.aries.application</groupId>
-				<artifactId>org.apache.aries.application.runtime</artifactId>
-				<version>${version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.aries.application</groupId>
-				<artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
-				<version>${version}</version>
-			</dependency>
+            <dependency>
+                <groupId>org.apache.aries</groupId>
+                <artifactId>org.apache.aries.util</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>org.apache.aries.blueprint</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
 			<dependency>
 				<groupId>org.apache.aries.testsupport</groupId>
 				<artifactId>org.apache.aries.testsupport.unit</artifactId>
-				<version>${version}</version>
+				<version>1.0.0-incubating-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.aries.web</groupId>
 				<artifactId>org.apache.aries.web.urlhandler</artifactId>
-				<version>${version}</version>
+				<version>1.0.0-incubating-SNAPSHOT</version>
 			</dependency>
-			<dependency>
-				<groupId>org.ops4j.pax.exam</groupId>
-				<artifactId>pax-exam</artifactId>
-				<version>1.2.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.ops4j.pax.exam</groupId>
-				<artifactId>pax-exam-junit</artifactId>
-				<version>1.2.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.ops4j.pax.exam</groupId>
-				<artifactId>pax-exam-container-default</artifactId>
-				<version>1.2.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.ops4j.pax.swissbox</groupId>
-				<artifactId>pax-swissbox-tinybundles</artifactId>
-				<version>1.2.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.ops4j.pax.logging</groupId>
-				<artifactId>pax-logging-api</artifactId>
-				<version>1.4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.ops4j.pax.logging</groupId>
-				<artifactId>pax-logging-service</artifactId>
-				<version>1.4</version>
-				<exclusions>
-					<exclusion>
-						<groupId>com.sun.jdmk</groupId>
-						<artifactId>jmxtools</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>com.sun.jmx</groupId>
-						<artifactId>jmxri</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.mail</groupId>
-						<artifactId>mail</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.ops4j.pax.url</groupId>
-				<artifactId>pax-url-mvn</artifactId>
-				<version>1.0.0</version>
-			</dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.bundlerepository</artifactId>
+                <version>1.5.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.configadmin</artifactId>
+                <version>1.2.4</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>org.osgi.compendium</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>org.osgi.core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.fileinstall</artifactId>
+                <version>2.0.8</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.osgi.service.obr</artifactId>
@@ -171,51 +107,123 @@
                 <version>1.0.2</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.bundlerepository</artifactId>
-                <version>1.5.0-SNAPSHOT</version>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam</artifactId>
+                <version>1.2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-container-default</artifactId>
+                <version>1.2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-junit</artifactId>
+                <version>1.2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-api</artifactId>
+                <version>1.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-service</artifactId>
+                <version>1.4</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.service.obr</artifactId>
+                        <groupId>com.sun.jdmk</groupId>
+                        <artifactId>jmxtools</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.apache.felix.shell</artifactId>
+                        <groupId>com.sun.jmx</groupId>
+                        <artifactId>jmxri</artifactId>
                     </exclusion>
                     <exclusion>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>net.sf.kxml</groupId>
-                        <artifactId>kxml2</artifactId>
+                        <groupId>javax.mail</groupId>
+                        <artifactId>mail</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.swissbox</groupId>
+                <artifactId>pax-swissbox-tinybundles</artifactId>
+                <version>1.2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.url</groupId>
+                <artifactId>pax-url-mvn</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>4.2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>4.2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.5.6</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.5.6</version>
+            </dependency>
+
+            <!-- internal -->
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.api</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.converters</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.install</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.management</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.resolver.obr</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.runtime</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.runtime.itests</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.utils</artifactId>
+                <version>${version}</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.felix</groupId>
-					<artifactId>maven-bundle-plugin</artifactId>
-					<version>2.0.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-release-plugin</artifactId>
-					<configuration>
-						<useReleaseProfile>false</useReleaseProfile>
-						<goals>deploy</goals>
-						<arguments>-Papache-release,deploy</arguments>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
 
 	<modules>
 		<module>application-utils</module>
@@ -227,6 +235,7 @@
 		<module>application-itests</module>
 		<module>application-obr-resolver</module>
 		<module>application-install</module>
+		<module>eba-maven-plugin</module>
 	</modules>
 
 </project>

@@ -28,12 +28,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.utils</artifactId>
+            <artifactId>org.apache.aries.application.management</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.management</artifactId>
+            <artifactId>org.apache.aries.application.utils</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
