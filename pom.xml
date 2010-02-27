@@ -31,6 +31,12 @@
     <name>Apache Aries Web Component</name>
     <version>1.0.0-incubating-SNAPSHOT</version>
 
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/web</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/web</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/web</url>
+    </scm>
+    
     <modules>
         <module>web-urlhandler</module>
         <module>web-itests</module>
