@@ -16,7 +16,9 @@
     KIND, either express or implied.  See the License for the
     specific language governing permissions and limitations
     under the License.
---><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.apache</groupId>
@@ -24,7 +26,8 @@
         <version>6</version>
     </parent>
 
-    <!-- This file was based on the Geronimo Genesis Parent Pom -->
+    <!-- This pom is for convenience in building several aries subprojects at once.
+     Do not try to use it to deploy or release.-->
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries</groupId>
@@ -47,6 +50,17 @@
         <module>spi-fly</module>
         <module>samples</module>
         <module>ariestrader-sample</module>
-  </modules>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

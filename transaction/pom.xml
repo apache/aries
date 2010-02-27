@@ -28,9 +28,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.transaction</groupId>
     <artifactId>transaction</artifactId>
+    <version>1.0.0-incubating-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Apache Aries Transaction</name> 
 
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/transaction</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/transaction</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/transaction</url>
+    </scm>
 	<modules>
 		<module>transaction-manager</module>
 		<module>transaction-blueprint</module>

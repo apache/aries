@@ -142,6 +142,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <modules>
         <!-- application components-->
         <module>modules</module>

@@ -16,13 +16,14 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
         <version>1.0.0-incubating-SNAPSHOT</version>
-    </parent>  
+    </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.testsupport</groupId>
@@ -35,6 +36,11 @@
         Test Support for OSGi
     </description>
 
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/testsupport</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/testsupport</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/testsupport</url>
+    </scm>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -53,26 +59,5 @@
     <modules>
         <module>testsupport-unit</module>
     </modules>
-
-		<build>
-		    <pluginManagement>
-		        <plugins>
-		            <plugin>
-		                <groupId>org.apache.felix</groupId>
-		                <artifactId>maven-bundle-plugin</artifactId>
-		                <version>2.0.1</version>
-		            </plugin>
-		            <plugin>
-		                <groupId>org.apache.maven.plugins</groupId>
-		                <artifactId>maven-release-plugin</artifactId>
-		                <configuration>
-		                    <useReleaseProfile>false</useReleaseProfile>
-		                    <goals>deploy</goals>
-		                    <arguments>-Papache-release,deploy</arguments>
-		                </configuration>
-		            </plugin>
-		        </plugins>
-		    </pluginManagement>
-		</build>
 
 </project>

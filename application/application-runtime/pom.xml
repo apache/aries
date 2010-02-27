@@ -39,18 +39,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.utils</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -64,8 +58,14 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.utils</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

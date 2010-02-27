@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>6</version>
+        <version>7</version>
     </parent>
 
     <groupId>org.apache.aries</groupId>
@@ -45,20 +45,12 @@
         <url>http://www.apache.org</url>
     </organization>
 
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
     <inceptionYear>2009</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk</developerConnection>
-        <url>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/parent</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/parent</developerConnection>
+        <url>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/parent</url>
     </scm>
 
     <issueManagement>

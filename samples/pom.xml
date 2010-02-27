@@ -31,17 +31,11 @@
     <name>Apache Aries Samples</name>
     <packaging>pom</packaging>
   
-    <build>
-        <pluginManagement>
-            <plugins>    
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.0.1</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/samples</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/samples</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/samples</url>
+    </scm>
 
     <modules>
         <module>helloworld-samples</module>

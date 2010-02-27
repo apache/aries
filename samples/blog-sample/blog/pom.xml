@@ -19,19 +19,16 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>blog-sample</artifactId>
+        <groupId>org.apache.aries.blog-sample</groupId>
+        <version>1.0.0-incubating-SNAPSHOT</version>
+    </parent>
 
 	<groupId>org.apache.aries.samples</groupId>
 	<artifactId>blog</artifactId>
 	<name>Apache Aries blog sample </name>
 	<packaging>bundle</packaging>
-	<version>1.0.0</version>
-
-
-	<parent>
-		<artifactId>blog-sample</artifactId>
-		<groupId>org.apache.aries.blog-sample</groupId>
-		<version>1.0.0</version>
-	</parent>
 
 	<build>
 		<plugins>
@@ -46,17 +43,13 @@
 					</instructions>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.aries.samples</groupId>
 			<artifactId>blog-api</artifactId>
-			<version>1.0.0</version>
+			<version>${pom.version}</version>
 		</dependency>
 	</dependencies>
 </project>
