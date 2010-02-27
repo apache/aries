@@ -118,7 +118,7 @@
                            *
                         </Import-Package>
                         <Export-Package>
-                            org.apache.aries.jpa.container.context;versions="1.0.0"
+                            org.apache.aries.jpa.container.context;version="1.0.0"
                         </Export-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
