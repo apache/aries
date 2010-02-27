@@ -113,6 +113,22 @@
                     <version>2.0.1</version>
                     <extensions>true</extensions>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>1.1</version>
+                    <configuration>
+                        <excludes>
+                            <!--  3.5.0.v20090520 < 3.3.0-v20070530 -->
+                            <exclude>org.eclipse:osgi</exclude>
+                            <!-- 2.0.0-SNAPSHOT < 2.0.0-beta -->
+                            <exclude>org.apache.openjpa:openjpa</exclude>
+                        </excludes>
+
+                    </configuration>
+                </plugin>
+                
             </plugins>
         </pluginManagement> 
 
