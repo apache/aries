@@ -139,16 +139,23 @@ public class EbaMojo
     /**
      * Include or not empty directories
      *
-     * @parameter expression="${zip.includeEmptyDirs}" default-value="true"
+     * @parameter expression="${includeEmptyDirs}" default-value="true"
      */
     private boolean includeEmptyDirs;
 
     /**
      * Whether creating the archive should be forced.
      *
-     * @parameter expression="${zip.forceCreation}" default-value="false"
+     * @parameter expression="${forceCreation}" default-value="false"
      */
     private boolean forceCreation;
+
+    /**
+     * Whether to follow transitive dependencies or use explicit dependencies.
+     *
+     * @parameter expression="${useTransitiveDependencies}" default-value="false"
+     */
+    private boolean useTransitiveDependencies;
 
 
     private File buildDir;
@@ -188,17 +195,19 @@ public class EbaMojo
         // Copy dependencies
         try
         {
-            Set artifacts = project.getArtifacts();
-            for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
-            {
-                Artifact artifact = (Artifact) iter.next();
+            Set<Artifact> artifacts;
+            if (useTransitiveDependencies) {
+                artifacts = project.getArtifacts();
+            } else {
+                artifacts = project.getDependencyArtifacts();
+            }
+            for (Artifact artifact : artifacts) {
 
-                ScopeArtifactFilter filter = new ScopeArtifactFilter( Artifact.SCOPE_RUNTIME );
-                if ( !artifact.isOptional() && filter.include( artifact ) )
-                {
+                ScopeArtifactFilter filter = new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME);
+                if (!artifact.isOptional() && filter.include(artifact)) {
                     getLog().info("Copying artifact[" + artifact.getGroupId() + ", " + artifact.getId() + ", " +
-                        artifact.getScope() + "]");
-                    zipArchiver.addFile(artifact.getFile(), artifact.getArtifactId() + "-" + artifact.getVersion() + "." + (artifact.getType() == null? "jar": artifact.getType()));
+                            artifact.getScope() + "]");
+                    zipArchiver.addFile(artifact.getFile(), artifact.getArtifactId() + "-" + artifact.getVersion() + "." + (artifact.getType() == null ? "jar" : artifact.getType()));
                 }
             }
         }
