@@ -16,39 +16,34 @@
     limitations under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.apache.aries.transaction-sample</groupId>
-		<artifactId>transaction-sample</artifactId>
-		<version>1.0.0</version>
-	</parent>
+    <parent>
+        <groupId>org.apache.aries.transaction-sample</groupId>
+        <artifactId>transaction-sample</artifactId>
+        <version>1.0.0-incubating-SNAPSHOT</version>
+    </parent>
 
-	<groupId>org.apache.aries.samples</groupId>
-	<artifactId>osgi-jdbc-api</artifactId>
-        <name>Apache Aries OSGi API for JDBC access</name>
-	<version>1.0.0</version>
-	<packaging>bundle</packaging>
+    <groupId>org.apache.aries.samples</groupId>
+    <artifactId>osgi-jdbc-api</artifactId>
+    <name>Apache Aries OSGi API for JDBC access</name>
+    <packaging>bundle</packaging>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<Bundle-Name>osgi-jdbc-api</Bundle-Name>
-						<Bundle-SymbolicName>${pom.groupId}.osgi-jdbc-api</Bundle-SymbolicName>
-					</instructions>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Name>osgi-jdbc-api</Bundle-Name>
+                        <Bundle-SymbolicName>${pom.groupId}.osgi-jdbc-api</Bundle-SymbolicName>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

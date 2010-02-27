@@ -23,13 +23,12 @@
 	<parent>
 		<groupId>org.apache.aries.blog-sample</groupId>
 		<artifactId>blog-sample</artifactId>
-		<version>1.0.0</version>
+        <version>1.0.0-incubating-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.apache.aries.samples</groupId>
 	<artifactId>blog-servlet</artifactId>
 	<name>Apache Aries blog sample servlet</name>
-	<version>1.0.0</version>
 	<packaging>bundle</packaging>
 
 	<build>
@@ -46,17 +45,13 @@
 					</instructions>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.aries.samples</groupId>
 			<artifactId>blog-api</artifactId>
-			<version>1.0.0</version>
+			<version>${pom.version}</version>
 		</dependency>
 	 	<dependency>
 			<groupId>org.mortbay.jetty</groupId>

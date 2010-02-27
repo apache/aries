@@ -35,6 +35,11 @@ of JRE SPI providers (components typically plugged in to the
 JRE through META-INF/services resources).
     </description>
     
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/spi-fly</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/spi-fly</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/spi-fly</url>
+    </scm>
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -74,8 +79,6 @@ JRE through META-INF/services resources).
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.0.1</version>
-                <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Import-Package>

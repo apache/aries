@@ -21,12 +21,11 @@
     <parent>
         <groupId>org.apache.aries.blog-sample</groupId>
         <artifactId>blog-sample</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>blog-assembly</artifactId>
     <name>Apache Aries blog sample assembly</name>
-    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <dependencies>
@@ -147,41 +146,31 @@
         <dependency>
             <groupId>org.apache.aries.samples</groupId>
             <artifactId>blog</artifactId>
-            <version>1.0.0</version>
+            <version>${pom.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.samples</groupId>
             <artifactId>blog-api</artifactId>
-            <version>1.0.0</version>
+            <version>${pom.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.samples</groupId>
             <artifactId>blog-persistence</artifactId>
-            <version>1.0.0</version>
+            <version>${pom.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.samples</groupId>
             <artifactId>blog-servlet</artifactId>
-            <version>1.0.0</version>
+            <version>${pom.version}</version>
         </dependency>
 
 
     </dependencies>
 
     <build>
-
-        <resources>
-            <resource>
-                <directory>${pom.basedir}/src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-        </resources>
 
         <plugins>
             <plugin>
