@@ -224,6 +224,11 @@
                             <exclude>org.eclipse:osgi</exclude>
                             <!-- 2.0.0-SNAPSHOT < 2.0.0-beta -->
                             <exclude>org.apache.openjpa:openjpa</exclude>
+                            <!-- maven 3.0 components don't work with 2.0 -->
+                            <exclude>org.apache.maven:maven-plugin-api</exclude>
+                            <exclude>org.apache.maven:maven-project</exclude>
+                            <exclude>org.apache.maven:maven-artifact</exclude>
+                            <exclude>org.apache.maven:maven-archiver</exclude>
                         </excludes>
 
                     </configuration>
