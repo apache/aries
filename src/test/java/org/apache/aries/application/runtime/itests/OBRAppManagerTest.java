@@ -127,6 +127,7 @@ public class OBRAppManagerTest extends AbstractIntegrationTest {
     
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
+    app = manager.resolve(app);
     //installing requires a valid url for the bundle in repository.xml.
 //    ApplicationContext ctx = manager.install(app);
 //    ctx.start();
