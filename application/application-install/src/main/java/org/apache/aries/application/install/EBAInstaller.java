@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.aries.application.management.ApplicationContext;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationManager;
+import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.felix.fileinstall.ArtifactInstaller;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
@@ -58,7 +59,7 @@ public class EBAInstaller implements ArtifactInstaller
   public void install(File applicationLocation) throws Exception
   {
     AriesApplication app = applicationManager
-        .createApplication(applicationLocation.toURI().toURL());
+        .createApplication(FileSystem.getFSRoot(applicationLocation));
     
     String appSymName = app.getApplicationMetadata().getApplicationSymbolicName();
     Version appVersion = app.getApplicationMetadata().getApplicationVersion();
