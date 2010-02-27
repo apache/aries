@@ -212,7 +212,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
 
     protected Pattern getPattern() {
         if (pattern == null) {
-            pattern = Pattern.compile("\\Q" + placeholderPrefix + "\\E(.+)\\Q" + placeholderSuffix + "\\E");
+            pattern = Pattern.compile("\\Q" + placeholderPrefix + "\\E(.+?)\\Q" + placeholderSuffix + "\\E");
         }
         return pattern;
     }
