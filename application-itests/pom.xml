@@ -104,11 +104,12 @@
             <artifactId>pax-exam-junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-container-default</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!-- duplicate -->
+        <!--<dependency>-->
+            <!--<groupId>org.ops4j.pax.exam</groupId>-->
+            <!--<artifactId>pax-exam-container-default</artifactId>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.osgi</groupId>
