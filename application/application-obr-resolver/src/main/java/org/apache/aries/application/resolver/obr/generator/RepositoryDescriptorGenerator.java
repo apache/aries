@@ -108,7 +108,7 @@ public final class RepositoryDescriptorGenerator
     resource.appendChild(capability);
     
     addProperty(doc, capability, "package", p.getContentName(), null);
-    addProperty(doc, capability, Constants.VERSION_ATTRIBUTE, p.getAttribute("version"), "version");
+    addProperty(doc, capability, Constants.VERSION_ATTRIBUTE, p.getVersion().toString(), "version");
     addProperty(doc, capability, Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE, info.getSymbolicName(), null);
     addProperty(doc, capability, Constants.BUNDLE_VERSION_ATTRIBUTE, info.getVersion().toString(), "version");
     
