@@ -174,7 +174,6 @@
       <groupId>org.apache.aries.jpa</groupId>
       <artifactId>org.apache.aries.jpa.blueprint.itest.bundle</artifactId>
       <version>1.0.0-incubating-SNAPSHOT</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
   
