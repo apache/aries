@@ -15,16 +15,13 @@
  */
 package org.apache.aries.jpa.blueprint.itest;
 
+import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
-import java.util.Hashtable;
-
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.CoreOptions;
@@ -40,12 +37,11 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
-import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.util.tracker.ServiceTracker;
-import org.osgi.service.blueprint.BlueprintContainer;
 
 @RunWith(JUnit4TestRunner.class)
-public class JPAContainerTest {
+public class JPAInjectionTest {
   public static final long DEFAULT_TIMEOUT = 30000;
 
   @Inject
@@ -53,7 +49,12 @@ public class JPAContainerTest {
  
   @Test
   public void findResources() throws Exception {
-    BlueprintContainer bc = getOsgiService(BlueprintContainer.class, "(&(osgi.unit.name=test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+    BlueprintContainer bc = getOsgiService(BlueprintContainer.class, 
+        "(osgi.blueprint.container.symbolicname=org.apache.aries.jpa.blueprint.itest.bundle)", DEFAULT_TIMEOUT);
+    
+    JPATestBean bean = (JPATestBean) bc.getComponentInstance("test");
+    assertTrue("No persistence unit injection", bean.isPUnit());
+    assertTrue("No persistence context injection", bean.isPContext());
   }
 
   @org.ops4j.pax.exam.junit.Configuration
