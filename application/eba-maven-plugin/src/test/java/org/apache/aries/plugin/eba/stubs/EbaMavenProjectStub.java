@@ -117,7 +117,12 @@ public class EbaMavenProjectStub
         
         return artifacts;
     }
-    
+
+    @Override
+    public Set getDependencyArtifacts() {
+        return getArtifacts();
+    }
+
     public List getAttachedArtifacts()
     {
         if ( attachedArtifacts == null )
