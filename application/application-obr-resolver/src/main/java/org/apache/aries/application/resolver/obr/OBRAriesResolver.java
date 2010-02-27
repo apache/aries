@@ -70,7 +70,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
    * This method is synchronized because it changes the repositories understood by OBR, and we don't
    * want one apps by value content being used to resolve another. I'll ask for an OBR enhancement.
    */
-  public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) throws ResolverException
+  public synchronized Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) throws ResolverException
   {
     log.trace("resolving {}", app);
     Resolver obrResolver = repositoryAdmin.resolver();
