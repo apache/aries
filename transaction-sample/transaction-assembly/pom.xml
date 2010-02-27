@@ -21,12 +21,12 @@
 	<parent>
 		<groupId>org.apache.aries.transaction-sample</groupId>
 		<artifactId>transaction-sample</artifactId>
-		<version>1.0.0</version>
+        <version>1.0.0-incubating-SNAPSHOT</version>
+
 	</parent>
 
 	<artifactId>transaction-assembly</artifactId>
 	<name>Apache Aries Transaction sample assembly</name>
-	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
 	<dependencies>
