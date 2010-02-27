@@ -16,13 +16,14 @@
  */
 package org.apache.aries.samples.ariestrader.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collection;
 import java.util.Iterator;
-import org.apache.commons.logging.*;
-import org.apache.aries.samples.ariestrader.*;
 
 public class Log {
-	private final static org.apache.commons.logging.Log log = LogFactory.getLog(Log.class);
+	private final static Logger log = LoggerFactory.getLogger(Log.class);
 //A general purpose, high performance logging, tracing, statistic service
 
 	public static void log(String message)
@@ -193,7 +194,7 @@ public class Log {
 		
 	/**
 	 * Sets the trace
-	 * @param trace The trace to set
+	 * @param traceValue The trace to set
 	 */
 	public static void setTrace(boolean traceValue)
 	{
@@ -201,7 +202,7 @@ public class Log {
 	}
 	/**
 	 * Sets the trace value for Trade actions only
-	 * @param trace The trace to set
+	 * @param traceValue The trace to set
 	 */
 	public static void setActionTrace(boolean traceValue)
 	{
