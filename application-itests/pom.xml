@@ -37,7 +37,6 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -50,13 +49,13 @@
 		<dependency>
 			<groupId>org.apache.aries</groupId>
 			<artifactId>org.apache.aries.util</artifactId>
-			<version>${version}</version>
+			<version>1.0.0-incubating-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.blueprint</groupId>
 			<artifactId>org.apache.aries.blueprint</artifactId>
-			<version>${version}</version>
+			<version>1.0.0-incubating-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -99,22 +98,10 @@
             <artifactId>org.osgi.service.obr</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- duplicate -->
-        <!--<dependency>-->
-            <!--<groupId>org.ops4j.pax.exam</groupId>-->
-            <!--<artifactId>pax-exam-container-default</artifactId>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -138,12 +125,14 @@
 
         <!-- Dependencies needed at test runtime -->
         <dependency>
+            <!--test dep above -->
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
+            <!--test dep above -->
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-service</artifactId>
             <scope>provided</scope>
@@ -157,6 +146,7 @@
         </dependency>
 
         <dependency>
+            <!--compile dep above -->
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-mvn</artifactId>
             <scope>provided</scope>
@@ -177,14 +167,14 @@
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>${version}</version>
+            <version>1.0.0-incubating-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
-            <version>${version}</version>
+            <version>1.0.0-incubating-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -208,11 +198,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-          <groupId>org.apache.aries.testsupport</groupId>
-          <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <scope>provided</scope>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
+            <!--test dep above -->
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
