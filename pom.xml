@@ -18,71 +18,71 @@
     under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <artifactId>jpa</artifactId>
-    <groupId>org.apache.aries.jpa</groupId>
+    <parent>
+        <artifactId>jpa</artifactId>
+        <groupId>org.apache.aries.jpa</groupId>
+        <version>1.0.0-incubating-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.apache.aries.jpa.container</artifactId>
+    <packaging>bundle</packaging>
+    <name>Aries JPA Container</name>
     <version>1.0.0-incubating-SNAPSHOT</version>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>org.apache.aries.jpa.container</artifactId>
-  <packaging>bundle</packaging>
-  <name>Aries JPA Container</name>
-  <version>1.0.0-incubating-SNAPSHOT</version>
-  <dependencies>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.compendium</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <artifactId>org.apache.aries.application.api</artifactId>
-      <groupId>org.apache.aries.application</groupId>
-      <version>1.0.0-incubating-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <artifactId>org.apache.aries.application.utils</artifactId>
-      <groupId>org.apache.aries.application</groupId>
-      <version>1.0.0-incubating-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <artifactId>org.apache.aries.util</artifactId>
-      <groupId>org.apache.aries</groupId>
-      <version>1.0.0-incubating-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-jpa_2.0_spec</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <scope>test</scope>
-    </dependency> 
-    <dependency>
-      <groupId>org.apache.aries.testsupport</groupId>
-      <artifactId>org.apache.aries.testsupport.unit</artifactId>
-      <scope>test</scope>
-    </dependency>
-         
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  
-  
-      <build>
-       <resources>
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <artifactId>org.apache.aries.application.api</artifactId>
+            <groupId>org.apache.aries.application</groupId>
+            <version>1.0.0-incubating-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <artifactId>org.apache.aries.application.utils</artifactId>
+            <groupId>org.apache.aries.application</groupId>
+            <version>1.0.0-incubating-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <artifactId>org.apache.aries.util</artifactId>
+            <groupId>org.apache.aries</groupId>
+            <version>1.0.0-incubating-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <resources>
             <resource>
                 <targetPath>OSGI-INF/blueprint</targetPath>
                 <filtering>false</filtering>
@@ -92,11 +92,11 @@
                 </includes>
             </resource>
             <resource>
-              <includes>
-                <include>*.rsrc</include>
-              </includes>
-              <targetPath>org/apache/aries/jpa/container/parsing/impl</targetPath>
-              <directory>${basedir}/src/main/resources/org/apache/aries/jpa/container/parsing/impl</directory>
+                <includes>
+                    <include>*.rsrc</include>
+                </includes>
+                <targetPath>org/apache/aries/jpa/container/parsing/impl</targetPath>
+                <directory>${basedir}/src/main/resources/org/apache/aries/jpa/container/parsing/impl</directory>
             </resource>
         </resources>
         <plugins>
@@ -125,5 +125,5 @@
             </plugin>
         </plugins>
     </build>
-  
+
 </project>
