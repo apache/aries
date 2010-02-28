@@ -35,12 +35,6 @@
         <dependencies>
 
             <dependency>
-                <groupId>org.eclipse</groupId>
-                <artifactId>osgi</artifactId>
-                <version>3.5.0.v20090520</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.api</artifactId>
                 <version>1.0.0-incubating-SNAPSHOT</version>
