@@ -74,6 +74,7 @@ public class WarToWabConverterImpl {
   private Set<String> exemptPackages;
   private Map<String, Manifest> manifests; 
   private ArrayList<String> classPath;
+  private boolean signed;
 
   public WarToWabConverterImpl(InputStreamProvider warFile, String name, Properties properties) throws IOException {
       this(warFile, name, new CaseInsensitiveMap(properties));
@@ -131,6 +132,10 @@ public class WarToWabConverterImpl {
       jarInput = new JarInputStream(input.getInputStream());
       byte[] buffer = new byte[2048];
       while ((entry = jarInput.getNextEntry()) != null) {
+        // skip signature files if war is signed
+        if (signed && isSignatureFile(entry.getName())) {
+            continue;
+        }
         jarOutput.putNextEntry(entry);        
         while ((val = jarInput.read(buffer)) > 0) {
           jarOutput.write(buffer, 0, val);
@@ -262,6 +267,9 @@ public class WarToWabConverterImpl {
     if (manifest == null) {
       manifest = new Manifest();
       manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1");
+    } else {
+      // remove digest attributes if was is signed
+      signed = removeDigestAttributes(manifest);
     }
     
     // Compare the manifest and the supplied properties
@@ -479,6 +487,36 @@ public class WarToWabConverterImpl {
       }
 
       return list;
+  }
+  
+  private static boolean removeDigestAttributes(Manifest manifest) {
+      boolean foundDigestAttribute = false;
+      for (Map.Entry<String, Attributes> entry : manifest.getEntries().entrySet()) {
+          Attributes attributes = entry.getValue();
+          for (Object attributeName : attributes.keySet()) {    
+              String name = ((Attributes.Name) attributeName).toString();
+              name = name.toLowerCase();
+              if (name.endsWith("-digest") || name.contains("-digest-")) {
+                  attributes.remove(attributeName);
+                  foundDigestAttribute = true;
+              }
+          }
+      }
+      return foundDigestAttribute;
+  }
+  
+  private static boolean isSignatureFile(String entryName) {
+      String[] parts = entryName.split("/");
+      if (parts.length == 2) {
+          String name = parts[1].toLowerCase();
+          return (parts[0].equals("META-INF") &&
+                  (name.endsWith(".sf") || 
+                   name.endsWith(".dsa") || 
+                   name.endsWith(".rsa") || 
+                   name.startsWith("sig-")));
+      } else {
+          return false;
+      }
   }
   
   public InputStream getWAB() throws IOException {
