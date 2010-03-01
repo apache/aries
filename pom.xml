@@ -17,13 +17,13 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <artifactId>java5-parent</artifactId>
         <groupId>org.apache.aries</groupId>
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
-    
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.web</groupId>
     <artifactId>web</artifactId>
@@ -36,7 +36,7 @@
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/web</developerConnection>
         <url>http://svn.apache.org/viewvc/incubator/aries/trunk/web</url>
     </scm>
-    
+
     <modules>
         <module>web-urlhandler</module>
         <module>web-itests</module>
@@ -44,7 +44,19 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- internal dependencies -->
+            <dependency>
+                <groupId>org.apache.aries.web</groupId>
+                <artifactId>org.apache.aries.web.itests</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.web</groupId>
+                <artifactId>org.apache.aries.web.urlhandler</artifactId>
+                <version>${version}</version>
+            </dependency>
 
+            <!-- external dependencies -->
             <dependency>
                 <groupId>asm</groupId>
                 <artifactId>asm-all</artifactId>
@@ -57,6 +69,26 @@
                 <version>1.0.0-incubating-SNAPSHOT</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>org.apache.aries.blueprint.sample</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.configadmin</artifactId>
+                <version>1.2.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries</groupId>
+                <artifactId>org.apache.aries.util</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>org.apache.aries.blueprint</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
