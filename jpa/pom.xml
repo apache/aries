@@ -35,24 +35,82 @@
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/jpa</developerConnection>
         <url>http://svn.apache.org/viewvc/incubator/aries/trunk/jpa</url>
     </scm>
-    <modules>
-        <module>jpa-container</module>
-        <module>jpa-container-context</module>
-        <module>jpa-blueprint-aries</module>
-        <module>jpa-container-itest</module>
-        <module>jpa-container-testbundle</module>
-        <module>jpa-context-itest</module>
-        <module>jpa-blueprint-testbundle</module>
-    </modules>
     <dependencyManagement>
         <dependencies>
 
+            <dependency>
+                <groupId>org.apache.aries.jpa</groupId>
+                <artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jpa</groupId>
+                <artifactId>org.apache.aries.jpa.blueprint.itest</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jpa</groupId>
+                <artifactId>org.apache.aries.jpa.blueprint.itest.bundle</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jpa</groupId>
+                <artifactId>org.apache.aries.jpa.container</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jpa</groupId>
+                <artifactId>org.apache.aries.jpa.container.context</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jpa</groupId>
+                <artifactId>org.apache.aries.jpa.container.itest</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jpa</groupId>
+                <artifactId>org.apache.aries.jpa.container.itest.bundle</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jpa</groupId>
+                <artifactId>org.apache.aries.jpa.context.itest</artifactId>
+                <version>${version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.apache.aries</groupId>
+                <artifactId>org.apache.aries.util</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <artifactId>org.apache.aries.application.api</artifactId>
+                <groupId>org.apache.aries.application</groupId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <artifactId>org.apache.aries.application.utils</artifactId>
+                <groupId>org.apache.aries.application</groupId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>org.apache.aries.blueprint</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.aries.testsupport</groupId>
                 <artifactId>org.apache.aries.testsupport.unit</artifactId>
                 <version>1.0.0-incubating-SNAPSHOT</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.configadmin</artifactId>
+                <version>1.2.4</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-jpa_2.0_spec</artifactId>
@@ -64,7 +122,68 @@
                 <artifactId>geronimo-jta_1.1_spec</artifactId>
                 <version>1.1.1</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.openjpa</groupId>
+                <artifactId>openjpa</artifactId>
+                <version>2.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.4</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>3.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-pool</groupId>
+                <artifactId>commons-pool</artifactId>
+                <version>1.5.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.serp</artifactId>
+                <version>1.13.1_2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa</artifactId>
+                <version>2.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.core</artifactId>
+                <version>2.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.asm</artifactId>
+                <version>2.0.0</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
+    <modules>
+        <module>jpa-container</module>
+        <module>jpa-container-context</module>
+        <module>jpa-blueprint-aries</module>
+        <module>jpa-container-itest</module>
+        <module>jpa-container-testbundle</module>
+        <module>jpa-context-itest</module>
+        <module>jpa-blueprint-testbundle</module>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>eclipselink</id>
+            <repositories>
+                <repository>
+                    <id>EclipseLink Repo</id>
+                    <url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo</url>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
 </project>
