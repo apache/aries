@@ -50,7 +50,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
-            <artifactId>org.apache.aries.jpa.container</artifactId>
+            <artifactId>org.apache.aries.jpa.api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -87,9 +87,6 @@
                             org.apache.aries.blueprint;version="[1.0.0,1.1.0)",
                             *
                         </Import-Package>
-                        <Export-Package>
-                            org.apache.aries.jpa.container.context;version="1.0.0"
-                        </Export-Package>
                         <Export-Service>
                             org.apache.aries.blueprint.NamespaceHandler;osgi.service.blueprint.namespace=http://aries.apache.org/xmlns/jpa/v1.0.0
                         </Export-Service>
