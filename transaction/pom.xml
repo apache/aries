@@ -30,16 +30,53 @@
     <artifactId>transaction</artifactId>
     <version>1.0.0-incubating-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Apache Aries Transaction</name> 
+    <name>Apache Aries Transaction</name>
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/transaction</connection>
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/transaction</developerConnection>
         <url>http://svn.apache.org/viewvc/incubator/aries/trunk/transaction</url>
     </scm>
-	<modules>
-		<module>transaction-manager</module>
-		<module>transaction-blueprint</module>
-	</modules>
-	
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jta_1.1_spec</artifactId>
+                <version>1.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>org.apache.aries.blueprint</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.testsupport</groupId>
+                <artifactId>org.apache.aries.testsupport.unit</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.geronimo.components</groupId>
+                <artifactId>geronimo-transaction</artifactId>
+                <version>2.1.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.objectweb.howl</groupId>
+                <artifactId>howl</artifactId>
+                <version>1.0.1-1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
+                <version>2.5.6</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>transaction-manager</module>
+        <module>transaction-blueprint</module>
+    </modules>
+
 </project>
