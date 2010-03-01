@@ -118,4 +118,30 @@ public class OBRBundleInfo implements BundleInfo
   {
     return requireBundle;
   }
+  
+  /**
+   * Equality is just based on the location. If you install a bundle from the same location string
+   * you get the same Bundle, even if the underlying bundle had a different symbolic name/version.
+   * This seems reasonable and quick.
+   */
+  public boolean equals(Object other)
+  {
+    if (other == null) return false;
+    if (other == this) return true;
+    if (other instanceof OBRBundleInfo) {
+      return location.equals(((OBRBundleInfo)other).location);
+    }
+    
+    return false;
+  }
+  
+  public int hashCode()
+  {
+    return location.hashCode();
+  }
+  
+  public String toString()
+  {
+    return symbolicName + "_" + version;
+  }
 }
