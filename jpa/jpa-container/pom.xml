@@ -39,6 +39,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <artifactId>org.apache.aries.jpa.api</artifactId>
+            <groupId>org.apache.aries.jpa</groupId>
+        </dependency>
+        <dependency>
             <artifactId>org.apache.aries.application.api</artifactId>
             <groupId>org.apache.aries.application</groupId>
         </dependency>
@@ -49,6 +53,7 @@
         <dependency>
             <artifactId>org.apache.aries.util</artifactId>
             <groupId>org.apache.aries</groupId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
@@ -90,12 +95,10 @@
                             javax.persistence.spi;version="[1.0.0,2.1.0)",
                             javax.persistence.criteria;version="[1.1.0,2.1.0)";resolution:=optional,
                             javax.persistence.metamodel;version="[1.1.0,2.1.0)";resolution:=optional,
+                            org.apache.aries.jpa.container;version="[1.0.0,1.1.0)",
+                            org.apache.aries.jpa.container.parsing;version="[1.0.0,1.1.0)",
                             *
                         </Import-Package>
-                        <Export-Package>
-                            org.apache.aries.jpa.container.parsing;version="${pom.version}",
-                            org.apache.aries.jpa.container;version="${pom.version}"
-                        </Export-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>

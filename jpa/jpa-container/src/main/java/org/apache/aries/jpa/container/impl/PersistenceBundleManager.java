@@ -83,6 +83,8 @@ public class PersistenceBundleManager extends MultiBundleTracker
   private Collection<EntityManagerFactoryManager> managersAwaitingProviders = new ArrayList<EntityManagerFactoryManager>();
   /** Plug-point for persistence unit providers */
   private ManagedPersistenceUnitInfoFactory persistenceUnitFactory; 
+  /** Parser for persistence descriptors */
+  private PersistenceDescriptorParser parser;
   /** Configuration for this extender */
   private Properties config;
 
@@ -97,6 +99,15 @@ public class PersistenceBundleManager extends MultiBundleTracker
 			  Bundle.ACTIVE | Bundle.STOPPING);
     this.ctx = ctx;
   }
+
+  /**
+   * Provide a parser implementation
+   * @param parser
+   */
+  public void setParser(PersistenceDescriptorParser descriptorParser) {
+    parser = descriptorParser;
+  }
+
   
   @SuppressWarnings("unchecked")
   @Override
@@ -301,7 +312,7 @@ public class PersistenceBundleManager extends MultiBundleTracker
       //Parse each descriptor
       for(PersistenceDescriptor descriptor : persistenceXmls) {
         try {
-          pUnits.addAll(PersistenceDescriptorParser.parse(b, descriptor));
+          pUnits.addAll(parser.parse(b, descriptor));
         } catch (PersistenceDescriptorParserException e) {
           _logger.error("There was an error while parsing the persistence descriptor " 
               + descriptor.getLocation() + " in bundle " + b.getSymbolicName() 
