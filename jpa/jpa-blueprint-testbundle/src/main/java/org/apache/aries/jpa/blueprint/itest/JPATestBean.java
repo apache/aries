@@ -5,31 +5,31 @@ import javax.persistence.EntityManager;
 
 public class JPATestBean {
   
-  private EntityManagerFactory emf;
+  private EntityManagerFactory persistenceUnit;
   
-  private EntityManager em;
+  private EntityManager persistenceContext;
   
-  public void setPUnit(EntityManagerFactory pUnit) {
-    emf = pUnit;
+  public void setPersistenceUnit(EntityManagerFactory emf) {
+    persistenceUnit = emf;
   }
 
-  public void setPContext(EntityManager pContext) {
-    em = pContext;
+  public void setPersistenceContext(EntityManager em) {
+    persistenceContext = em;
   }
   
   /**
    * @return True if we sucessfully called a method on the EMF
    */
-  public boolean isPUnit() {
-    emf.isOpen();
+  public boolean pUnitAvailable() {
+    persistenceUnit.isOpen();
     return true;
   }
   
   /**
    * @return True if we sucessfully called a method on the EM
    */
-  public boolean isPContext() {
-    em.isOpen();
+  public boolean pContextAvailable() {
+    persistenceContext.isOpen();
     return true;
   }
   

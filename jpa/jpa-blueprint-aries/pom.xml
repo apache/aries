@@ -88,7 +88,7 @@
                             *
                         </Import-Package>
                         <Export-Package>
-                            org.apache.aries.jpa.container.context;versions="1.0.0"
+                            org.apache.aries.jpa.container.context;version="1.0.0"
                         </Export-Package>
                         <Export-Service>
                             org.apache.aries.blueprint.NamespaceHandler;osgi.service.blueprint.namespace=http://aries.apache.org/xmlns/jpa/v1.0.0
