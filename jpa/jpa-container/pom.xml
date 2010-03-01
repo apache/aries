@@ -27,7 +27,6 @@
     <artifactId>org.apache.aries.jpa.container</artifactId>
     <packaging>bundle</packaging>
     <name>Aries JPA Container</name>
-    <version>1.0.0-incubating-SNAPSHOT</version>
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -42,17 +41,14 @@
         <dependency>
             <artifactId>org.apache.aries.application.api</artifactId>
             <groupId>org.apache.aries.application</groupId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
         <dependency>
             <artifactId>org.apache.aries.application.utils</artifactId>
             <groupId>org.apache.aries.application</groupId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
         <dependency>
             <artifactId>org.apache.aries.util</artifactId>
             <groupId>org.apache.aries</groupId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
@@ -82,23 +78,6 @@
 
 
     <build>
-        <resources>
-            <resource>
-                <targetPath>OSGI-INF/blueprint</targetPath>
-                <filtering>false</filtering>
-                <directory>${basedir}/src/main/resources/OSGI-INF/blueprint</directory>
-                <includes>
-                    <include>*.xml</include>
-                </includes>
-            </resource>
-            <resource>
-                <includes>
-                    <include>*.rsrc</include>
-                </includes>
-                <targetPath>org/apache/aries/jpa/container/parsing/impl</targetPath>
-                <directory>${basedir}/src/main/resources/org/apache/aries/jpa/container/parsing/impl</directory>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
