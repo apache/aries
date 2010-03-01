@@ -102,7 +102,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
     
     try {
       if (obrResolver.resolve()) {
-        Set<BundleInfo> result = new HashSet<BundleInfo>(app.getBundleInfo());
+        Set<BundleInfo> result = new HashSet<BundleInfo>();
         for (Resource resource: obrResolver.getRequiredResources()) {
           BundleInfo bundleInfo = toBundleInfo(resource);
           result.add(bundleInfo);
