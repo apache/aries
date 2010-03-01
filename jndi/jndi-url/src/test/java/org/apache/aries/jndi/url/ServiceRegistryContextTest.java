@@ -21,7 +21,6 @@ package org.apache.aries.jndi.url;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
@@ -37,6 +36,12 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.spi.ObjectFactory;
 
+import org.apache.aries.jndi.ContextHelper;
+import org.apache.aries.jndi.OSGiObjectFactoryBuilder;
+import org.apache.aries.mocks.BundleContextMock;
+import org.apache.aries.mocks.BundleMock;
+import org.apache.aries.unittest.mocks.MethodCall;
+import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,22 +52,13 @@ import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
-import org.apache.aries.unittest.mocks.MethodCall;
-import org.apache.aries.unittest.mocks.Skeleton;
-import org.apache.aries.jndi.ContextHelper;
-import org.apache.aries.jndi.OSGiObjectFactoryBuilder;
-import org.apache.aries.jndi.services.ServiceHelper;
-import org.apache.aries.jndi.url.Activator;
-import org.apache.aries.mocks.BundleContextMock;
-import org.apache.aries.mocks.BundleMock;
-
 /**
  * Tests for our JNDI implementation for the service registry.
  */
 public class ServiceRegistryContextTest
 {
   /** The service we register by default */
-  private Thread service;
+  private Runnable service;
   /** The bundle context for the test */
   private BundleContext bc;
   /** The service registration for the service */
@@ -83,10 +79,7 @@ public class ServiceRegistryContextTest
     new Activator().start(bc);
     new org.apache.aries.jndi.startup.Activator().start(bc);
     
-    Field f = ServiceHelper.class.getDeclaredField("context");
-    f.setAccessible(true);
-    f.set(null, bc);
-    f = ContextHelper.class.getDeclaredField("context");
+    Field f = ContextHelper.class.getDeclaredField("context");
     f.setAccessible(true);
     f.set(null, bc);
     f = OSGiObjectFactoryBuilder.class.getDeclaredField("context");
@@ -94,7 +87,7 @@ public class ServiceRegistryContextTest
     f.set(null, bc);
 
 
-    service = new Thread();
+    service = Skeleton.newMock(Runnable.class);
     
     registerService(service);
   }
@@ -104,7 +97,7 @@ public class ServiceRegistryContextTest
    * 
    * @param service2 The service to register.
    */
-  private void registerService(Thread service2)
+  private void registerService(Runnable service2)
   {
     ServiceFactory factory = Skeleton.newMock(ServiceFactory.class);
     Skeleton skel = Skeleton.getSkeleton(factory);
@@ -159,11 +152,13 @@ public class ServiceRegistryContextTest
     
     Thread.currentThread().setContextClassLoader(mock.getClassLoader());
     
-    Object s = ctx.lookup("aries:services/java.lang.Runnable");
+    Runnable s = (Runnable) ctx.lookup("aries:services/java.lang.Runnable");
     
     assertNotNull("We didn't get a service back from our lookup :(", s);
     
-    assertEquals("The SR did not return the object we expected", service, s);
+    s.run();
+    
+    Skeleton.getSkeleton(service).assertCalledExactNumberOfTimes(new MethodCall(Runnable.class, "run"), 1);
     
     Skeleton skel = Skeleton.getSkeleton(mock.getBundleContext());
     
@@ -173,7 +168,7 @@ public class ServiceRegistryContextTest
     
     Thread.currentThread().setContextClassLoader(mock.getClassLoader());
 
-    s = ctx.lookup("osgi:services/java.lang.Runnable");
+    s = (Runnable) ctx.lookup("osgi:service/java.lang.Runnable");
     
     // Check we have the packages set correctly
     
@@ -181,10 +176,11 @@ public class ServiceRegistryContextTest
     
     assertTrue(ctx.getEnvironment().containsValue(packages));
 
-    
     assertNotNull("We didn't get a service back from our lookup :(", s);
+
+    s.run();
     
-    assertEquals("The SR did not return the object we expected", service, s);
+    Skeleton.getSkeleton(service).assertCalledExactNumberOfTimes(new MethodCall(Runnable.class, "run"), 2);
 
     skel = Skeleton.getSkeleton(mock.getBundleContext());
     skel.assertCalled(new MethodCall(BundleContext.class, "getServiceReferences", "java.lang.Runnable", null));
@@ -201,15 +197,21 @@ public class ServiceRegistryContextTest
   @Test
   public void jndiLookupWithFilter() throws NamingException
   {
+    BundleMock mock = new BundleMock("scooby.doo", new Properties());
+    
+    Thread.currentThread().setContextClassLoader(mock.getClassLoader());
+
     InitialContext ctx = new InitialContext();
     
     Object s = ctx.lookup("aries:services/java.lang.Runnable/(rubbish=smelly)");
     
     assertNotNull("We didn't get a service back from our lookup :(", s);
     
-    assertEquals("The SR did not return the object we expected", service, s);
+    service.run();
     
-    Skeleton.getSkeleton(bc).assertCalled(new MethodCall(BundleContext.class, "getServiceReferences", "java.lang.Runnable", "(rubbish=smelly)"));
+    Skeleton.getSkeleton(service).assertCalledExactNumberOfTimes(new MethodCall(Runnable.class, "run"), 1);
+
+    Skeleton.getSkeleton(mock.getBundleContext()).assertCalled(new MethodCall(BundleContext.class, "getServiceReferences", "java.lang.Runnable", "(rubbish=smelly)"));
   }
   
   /**
@@ -222,6 +224,11 @@ public class ServiceRegistryContextTest
   public void testLookupWhenServiceHasBeenRemoved() throws NamingException
   {
     reg.unregister();
+
+    BundleMock mock = new BundleMock("scooby.doo", new Properties());
+    
+    Thread.currentThread().setContextClassLoader(mock.getClassLoader());
+
     InitialContext ctx = new InitialContext();
     
     ctx.lookup("aries:services/java.lang.Runnable");
@@ -236,6 +243,10 @@ public class ServiceRegistryContextTest
   @Test(expected=NameNotFoundException.class)
   public void testLookupForServiceWeNeverHad() throws NamingException
   {
+    BundleMock mock = new BundleMock("scooby.doo", new Properties());
+    
+    Thread.currentThread().setContextClassLoader(mock.getClassLoader());
+
     InitialContext ctx = new InitialContext();
     
     ctx.lookup("aries:services/java.lang.Integer");
@@ -271,14 +282,53 @@ public class ServiceRegistryContextTest
   }
 
   @Test
-  public void checkServiceOrderObserved() throws NamingException
+  public void checkProxyDynamism() throws NamingException
   {
+    BundleMock mock = new BundleMock("scooby.doo", new Properties());
+    
+    Thread.currentThread().setContextClassLoader(mock.getClassLoader());
+
     InitialContext ctx = new InitialContext();
     
     String className = Runnable.class.getName();
     
-    Thread t = new Thread();
-    Thread t2 = new Thread();
+    Runnable t = Skeleton.newMock(Runnable.class);
+    Runnable t2 = Skeleton.newMock(Runnable.class);
+    
+    // we don't want the default service
+    reg.unregister();
+    
+    ServiceRegistration reg = bc.registerService(className, t, null);
+    bc.registerService(className, t2, null);
+    
+    Runnable r = (Runnable) ctx.lookup("osgi:service/java.lang.Runnable");
+    
+    r.run();
+    
+    Skeleton.getSkeleton(t).assertCalledExactNumberOfTimes(new MethodCall(Runnable.class, "run"), 1);
+    Skeleton.getSkeleton(t2).assertNotCalled(new MethodCall(Runnable.class, "run"));
+    
+    reg.unregister();
+    
+    r.run();
+    
+    Skeleton.getSkeleton(t).assertCalledExactNumberOfTimes(new MethodCall(Runnable.class, "run"), 1);
+    Skeleton.getSkeleton(t2).assertCalledExactNumberOfTimes(new MethodCall(Runnable.class, "run"), 1);
+  }  
+
+  @Test
+  public void checkServiceOrderObserved() throws NamingException
+  {
+    BundleMock mock = new BundleMock("scooby.doo", new Properties());
+    
+    Thread.currentThread().setContextClassLoader(mock.getClassLoader());
+
+    InitialContext ctx = new InitialContext();
+    
+    String className = Runnable.class.getName();
+    
+    Runnable t = Skeleton.newMock(Runnable.class);
+    Runnable t2 = Skeleton.newMock(Runnable.class);
     
     // we don't want the default service
     reg.unregister();
@@ -286,9 +336,12 @@ public class ServiceRegistryContextTest
     ServiceRegistration reg = bc.registerService(className, t, null);
     ServiceRegistration reg2 = bc.registerService(className, t2, null);
     
-    Runnable r = (Runnable) ctx.lookup("osgi:services/java.lang.Runnable");
+    Runnable r = (Runnable) ctx.lookup("osgi:service/java.lang.Runnable");
     
-    assertSame("The wrong runnable was returned", t, r);
+    r.run();
+    
+    Skeleton.getSkeleton(t).assertCalledExactNumberOfTimes(new MethodCall(Runnable.class, "run"), 1);
+    Skeleton.getSkeleton(t2).assertNotCalled(new MethodCall(Runnable.class, "run"));
     
     reg.unregister();
     reg2.unregister();
@@ -296,12 +349,18 @@ public class ServiceRegistryContextTest
     Hashtable<String, Object> props = new Hashtable<String, Object>();
     props.put(Constants.SERVICE_RANKING, 55);
     
+    t = Skeleton.newMock(Runnable.class);
+    t2 = Skeleton.newMock(Runnable.class);
+
     reg = bc.registerService(className, t, null);
     reg2 = bc.registerService(className, t2, props);
     
-    r = (Runnable) ctx.lookup("osgi:services/java.lang.Runnable");
+    r = (Runnable) ctx.lookup("osgi:service/java.lang.Runnable");
     
-    assertSame("The wrong runnable was returned", t2, r);
+    r.run();
+    
+    Skeleton.getSkeleton(t).assertNotCalled(new MethodCall(Runnable.class, "run"));
+    Skeleton.getSkeleton(t2).assertCalledExactNumberOfTimes(new MethodCall(Runnable.class, "run"), 1);
   }
   
   /**

@@ -34,8 +34,6 @@ public class Activator implements BundleActivator {
 	
   public void start(BundleContext context)
   {
-    ServiceHelper.setBundleContext(context);
-    
     Hashtable<Object, Object> props = new Hashtable<Object, Object>();
     props.put("osgi.jndi.urlScheme", new String[] {"osgi", "aries"} );
     reg = context.registerService(ObjectFactory.class.getName(), new OsgiURLContextFactory(), props);
