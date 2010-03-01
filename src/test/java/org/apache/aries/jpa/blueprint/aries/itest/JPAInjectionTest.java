@@ -79,6 +79,7 @@ public class JPAInjectionTest {
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
         mavenBundle("org.apache.geronimo.specs", "geronimo-jpa_2.0_spec"),
+        mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api"),
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container"),
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.context"),
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.blueprint.aries"),
