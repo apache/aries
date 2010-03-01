@@ -6,7 +6,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.aries.jpa.container.itest</artifactId>
-    <name>Aries JPA iTests - Managed Persistence Units</name>
+    <name>Aries JPA iTests</name>
     <!--
 
       For adding EclipseLink as a provider
@@ -92,6 +92,16 @@
             <artifactId>org.apache.aries.jpa.container</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.aries.jpa</groupId>
+            <artifactId>org.apache.aries.jpa.container.context</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.jpa</groupId>
+            <artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!--
 
         For adding EclipseLink as a provider
@@ -146,6 +156,11 @@
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.container.itest.bundle</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.jpa</groupId>
+            <artifactId>org.apache.aries.jpa.blueprint.itest.bundle</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
