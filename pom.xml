@@ -65,6 +65,11 @@
                 <artifactId>org.apache.aries.testsupport.unit</artifactId>
                 <version>1.0.0-incubating-SNAPSHOT</version>
             </dependency>
+            <dependency>
+            	<groupId>org.apache.aries</groupId>
+            	<artifactId>org.apache.aries.util</artifactId>
+            	<version>${version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
