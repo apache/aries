@@ -25,6 +25,10 @@
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <geronimo-transaction-version>2.1.3</geronimo-transaction-version>
+    </properties>
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.transaction</groupId>
     <artifactId>transaction</artifactId>
@@ -59,7 +63,7 @@
             <dependency>
                 <groupId>org.apache.geronimo.components</groupId>
                 <artifactId>geronimo-transaction</artifactId>
-                <version>2.1.3</version>
+                <version>${geronimo-transaction-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.objectweb.howl</groupId>
