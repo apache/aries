@@ -32,21 +32,21 @@
     </description>
 
     <dependencies>
-      <dependency>
-          <groupId>org.osgi</groupId>
-          <artifactId>org.osgi.core</artifactId>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.osgi</groupId>
-          <artifactId>org.osgi.compendium</artifactId>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.eclipse</groupId>
-          <artifactId>osgi</artifactId>
-          <scope>provided</scope>
-      </dependency>     
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
@@ -67,7 +67,7 @@
             <artifactId>org.apache.aries.blueprint.testbundlea</artifactId>
             <scope>test</scope>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.testbundleb</artifactId>
             <scope>test</scope>
@@ -126,17 +126,11 @@
             <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
             <scope>test</scope>
         </dependency>
-      <dependency>
-          <groupId>asm</groupId>
-          <artifactId>asm-all</artifactId>
-          <version>3.2</version>
-          <scope>test</scope>
-      </dependency>
-        <!--<dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.main</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -174,29 +168,29 @@
     </build>
 
     <profiles>
-      <profile>
-          <id>ci-build-profile</id>
-          <activation>
-              <property>
-                  <name>maven.repo.local</name>
-              </property>
-          </activation>
-          <build>
-              <plugins>
-                  <plugin>
-                      <groupId>org.apache.maven.plugins</groupId>
-                      <artifactId>maven-surefire-plugin</artifactId>
-                      <configuration>
-                          <!--
-                              when the local repo location has been specified, we need to pass
-                              on this information to PAX mvn url
-                          -->
-                          <argLine>-Dorg.ops4j.pax.url.mvn.localRepository=${maven.repo.local}</argLine>
-                      </configuration>
-                  </plugin>
-              </plugins>
-          </build>
-      </profile>
-  </profiles>
+        <profile>
+            <id>ci-build-profile</id>
+            <activation>
+                <property>
+                    <name>maven.repo.local</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <!--
+                                when the local repo location has been specified, we need to pass
+                                on this information to PAX mvn url
+                            -->
+                            <argLine>-Dorg.ops4j.pax.url.mvn.localRepository=${maven.repo.local}</argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

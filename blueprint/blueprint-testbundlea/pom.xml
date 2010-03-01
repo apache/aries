@@ -27,6 +27,21 @@
     <name>Apache Aries Blueprint Test Bundle A</name>
     <packaging>bundle</packaging>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.core</artifactId>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -46,19 +61,4 @@
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <scope>provided</scope>
-        </dependency>
-       <dependency>
-           <groupId>org.apache.aries.blueprint</groupId>
-           <artifactId>org.apache.aries.blueprint.api</artifactId>
-       </dependency>
-       <dependency>
-           <groupId>org.apache.aries.blueprint</groupId>
-           <artifactId>org.apache.aries.blueprint.core</artifactId>
-       </dependency>       
-    </dependencies>
 </project>
