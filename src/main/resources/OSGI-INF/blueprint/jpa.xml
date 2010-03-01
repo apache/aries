@@ -28,7 +28,7 @@
     </service-properties>
   </service>
   
-  <bean id="namespaceHandler" class="org.apache.aries.jpa.container.context.namespace.NSHandler">
+  <bean id="namespaceHandler" class="org.apache.aries.jpa.blueprint.aries.impl.NSHandler">
     <property name="manager" ref="persistenceContextProvider" />
   </bean>
   
