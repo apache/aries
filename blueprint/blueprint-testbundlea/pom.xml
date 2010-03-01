@@ -48,7 +48,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin
                 </artifactId>
-                <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.groupId}.testbundlea</Bundle-SymbolicName>
