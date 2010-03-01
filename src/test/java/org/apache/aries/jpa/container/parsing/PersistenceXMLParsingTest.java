@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.aries.jpa.container.impl.PersistenceDescriptorImpl;
+import org.apache.aries.jpa.container.parsing.impl.PersistenceDescriptorParserImpl;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -57,7 +58,7 @@ public class PersistenceXMLParsingTest
       
       Bundle b = Skeleton.newMock(Bundle.class);
       
-      Collection<ParsedPersistenceUnit> parsedUnits = PersistenceDescriptorParser.parse(b, descriptor);
+      Collection<ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
       assertEquals("An incorrect number of persistence units has been returned.", 4, parsedUnits.size());
       
       List<ParsedPersistenceUnit> units = getList(parsedUnits);
@@ -207,7 +208,7 @@ public class PersistenceXMLParsingTest
 
       Bundle b = Skeleton.newMock(Bundle.class);
       
-      Collection<ParsedPersistenceUnit> parsedUnits = PersistenceDescriptorParser.parse(b, descriptor);
+      Collection<ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
       assertEquals("An incorrect number of persistence units has been returned.", 0, parsedUnits.size());
     } finally {
       if(is != null)
@@ -227,7 +228,7 @@ public class PersistenceXMLParsingTest
       
       Bundle b = Skeleton.newMock(Bundle.class);
       
-      Collection<ParsedPersistenceUnit> parsedUnits = PersistenceDescriptorParser.parse(b, descriptor);
+      Collection<ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
 
       fail("Parsing should not succeed");
     } finally {
@@ -246,7 +247,7 @@ public class PersistenceXMLParsingTest
       PersistenceDescriptor descriptor = new PersistenceDescriptorImpl(location, is);
       
       Bundle b = Skeleton.newMock(Bundle.class);
-      List<ParsedPersistenceUnit> parsedUnits = getList(PersistenceDescriptorParser.parse(b, descriptor));
+      List<ParsedPersistenceUnit> parsedUnits = getList(new PersistenceDescriptorParserImpl().parse(b, descriptor));
       
       assertEquals(2, parsedUnits.size());
       
