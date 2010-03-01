@@ -35,7 +35,7 @@ import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 
-public class BundleInfoImpl implements BundleInfo {
+public final class BundleInfoImpl implements BundleInfo {
   private Content _symbolicName;
   private Version _version;
   private Attributes _attributes;
@@ -134,5 +134,31 @@ public class BundleInfoImpl implements BundleInfo {
     }
     
     return _requireBundle;
+  }
+  
+  /**
+   * Equality is just based on the location. If you install a bundle from the same location string
+   * you get the same Bundle, even if the underlying bundle had a different symbolic name/version.
+   * This seems reasonable and quick.
+   */
+  public boolean equals(Object other)
+  {
+    if (other == null) return false;
+    if (other == this) return true;
+    if (other instanceof BundleInfoImpl) {
+      return _location.equals(((BundleInfoImpl)other)._location);
+    }
+    
+    return false;
+  }
+  
+  public int hashCode()
+  {
+    return _location.hashCode();
+  }
+  
+  public String toString()
+  {
+    return _symbolicName.getContentName() + "_" + getVersion();
   }
 }
