@@ -18,18 +18,30 @@
  */
 package org.apache.aries.jndi.services;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.naming.NamingException;
+
+import org.apache.aries.util.BundleToClassLoaderAdapter;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceReference;
 
 /**
@@ -47,113 +59,182 @@ import org.osgi.framework.ServiceReference;
  */
 public final class ServiceHelper
 {
-  /** The bundle context used for service registry queries */
-  private static BundleContext context;
-  /** A cache of what service was returned last time the query was performed */
-  private static ConcurrentMap<ServiceKey, Set<ServiceReference>> cache = new ConcurrentHashMap<ServiceKey, Set<ServiceReference>>();
-
-  public static void setBundleContext(BundleContext ctx)
+  public static class StackFinder extends SecurityManager
   {
-    context = ctx;
+    public Class<?>[] getClassContext()
+    {
+      return super.getClassContext();
+    }
+  }
+
+  private static class JNDIServiceDamper implements InvocationHandler
+  {
+    private BundleContext ctx;
+    private ServicePair pair;
+    private String interfaceName;
+    private String filter;
+    private boolean dynamic;
+    
+    public JNDIServiceDamper(BundleContext context, String i, String f, ServicePair service, boolean d)
+    {
+      ctx = context;
+      pair = service;
+      interfaceName = i;
+      filter = f;
+      dynamic = d;
+    }
+    
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+    {
+      if (pair.ref.getBundle() == null) {
+        if (dynamic) pair = findService(ctx, interfaceName, filter);
+        else pair = null;
+      }
+      
+      if (pair == null) {
+        throw new ServiceException(interfaceName, ServiceException.UNREGISTERED);
+      }
+      
+      return method.invoke(pair.service, args);
+    }
+  }
+  
+  private static class ServicePair
+  {
+    private ServiceReference ref;
+    private Object service;
   }
   
   /**
-   * This class is used as the key into the cache. It holds information to identify 
-   * who performed the query, along with the className and filter used. The thread context
-   * class loader is used in the key, so two different modules will potentially get different
-   * services.
+   * @param env 
+   * @return the bundle context for the caller.
+   * @throws NamingException 
    */
-  private static final class ServiceKey
+  public static BundleContext getBundleContext(Map<String, Object> env) throws NamingException
   {
-    /** The class loader of the invoking application */
-    private ClassLoader classLoader;
-    /** The name of the class being queried from the registry */
-    private String className;
-    /** the registry filter, this may be null */
-    private String filter;
-    /** The cached hashCode */
-    private final int hashCode;
-
-    /**
-     * Boring unimportant comment.
-     * 
-     * @param cl
-     * @param cn
-     * @param f
-     */
-    public ServiceKey(ClassLoader cl, String cn, String f)
-    {
-      classLoader = cl;
-      className = cn;
-      filter = f;
+    BundleContext result = null;
+    
+    Object bc = env.get("osgi.service.jndi.bundleContext");
+    
+    if (bc != null && bc instanceof BundleContext) result = (BundleContext) bc;
+    else {
+      ClassLoader cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+        public ClassLoader run()
+        {
+          return Thread.currentThread().getContextClassLoader();
+        }
+      });
       
-      int classNameHash = (className == null) ? 0 : className.hashCode();
-      hashCode = System.identityHashCode(classLoader) * 1000003 + classNameHash;
-    }
-
-    @Override
-    public int hashCode()
-    {
-      return hashCode;
-    }
-
-    @Override
-    public boolean equals(Object other)
-    {
-      if (other == this) return true;
-      if (other == null) return false;
-
-      if (other instanceof ServiceKey) {
-        ServiceKey otherKey = (ServiceKey) other;
-        if (hashCode != otherKey.hashCode) return false;
-
-        if (classLoader != otherKey.classLoader) return false;
-        if (!!!comparePossiblyNullObjects(className, otherKey.className)) return false;
-        return comparePossiblyNullObjects(filter, otherKey.filter);
-      }
-
-      return false;
+      result = getBundleContext(cl);
     }
     
-    /**
-     * Compares two objects where one or other (or both) may be null.
-     * 
-     * @param a the first object to compare.
-     * @param b the second object to compare.
-     * @return true if they are ==, both null or identity equals, false otherwise.
-     */
-    public boolean comparePossiblyNullObjects(Object a, Object b) {
-      if (a == b) return true;
-      else if (a == null) return false;
-      else return a.equals(b);
+    if (result == null) {
+      StackTraceElement[] stackTrace = AccessController.doPrivileged(new PrivilegedAction<StackTraceElement[]>() {
+        public StackTraceElement[] run()
+        {
+          return Thread.currentThread().getStackTrace();
+        }
+      });
+      
+      StackFinder finder = new StackFinder();
+      Class<?>[] classStack = finder.getClassContext();
+      
+      boolean found = false;
+      boolean foundLookup = false;
+      int i = 0;
+      for (; i < stackTrace.length && !!!found; i++) {
+        if (!!!foundLookup && "lookup".equals(stackTrace[i].getMethodName())) {
+          foundLookup = true;
+        } else if (foundLookup && !!!(stackTrace[i].getClassName().startsWith("org.apache.aries.jndi") ||
+                                stackTrace[i].getClassName().startsWith("javax.naming"))) {
+          found = true;
+        }
+      }
+      
+      if (found) {
+        Set<Integer> classLoadersChecked = new HashSet<Integer>();
+        for (; i < classStack.length && result == null; i++) {
+          ClassLoader cl = classStack[i].getClassLoader();
+          int hash = System.identityHashCode(cl);
+          if (!!!classLoadersChecked.contains(hash)) {
+            classLoadersChecked.add(hash);
+            result = getBundleContext(cl);
+          }
+        }
+        // Now we walk the stack looking for the BundleContext
+      }
     }
+    
+    if (result == null) throw new NamingException("Unable to find BundleContext");
+    
+    return result;
   }
 
-  /**
-   * This method is used to obtain a single instance of a desired service from the OSGi
-   * service registry. If the filter and class name identify multiple services the first
-   * one is returned. If no service is found null will be returned.
-   * 
-   * @param className The class name used to register the desired service. If null is provided
-   *                  then all services are eligible to be returned.
-   * @param filter    An RFC 1960 query into the properties of the registered services. e.g.
-   *                  (service.description=really useful)
-   * @return          The desired service
-   * 
-   * @throws IllegalArgumentException If the filter is not valid. See RFC 1960 to work out what 
-   *                                  it should be.
-   */
-  public static Object getService(String className, String filter) throws IllegalArgumentException
+  private static BundleContext getBundleContext(ClassLoader cl)
   {
-    Object service = null;
+    BundleContext result = null;
+    while (result == null && cl != null) {
+      if (cl instanceof BundleReference) {
+        result = ((BundleReference)cl).getBundle().getBundleContext();
+      } else if (cl != null) {
+        cl = cl.getParent();
+      }
+    }
+    
+    return result;
+  }
+
+  public static Object getService(String interface1, String filter, String serviceName, boolean dynamicRebind, Map<String, Object> env) throws NamingException
+  {
+    Object result = null;
+    
+    BundleContext ctx = getBundleContext(env);
+    
+    ServicePair pair = findService(ctx, interface1, filter);
+    
+    if (pair == null) {
+      interface1 = null;
+      filter = "(osgi.jndi.serviceName=" + serviceName + ")";
+      pair = findService(ctx, interface1, filter);
+    }
+    
+    if (pair != null) {
+      String[] interfaces = (String[]) pair.ref.getProperty("objectClass");
+      
+      List<Class<?>> clazz = new ArrayList<Class<?>>(interfaces.length);
+      
+      Bundle b = ctx.getBundle();
+      
+      for (String interfaceName : interfaces) {
+        try {
+          clazz.add(b.loadClass(interfaceName));
+        } catch (ClassNotFoundException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+      
+      if (clazz.isEmpty()) {
+        throw new IllegalArgumentException();
+      }
+      
+      InvocationHandler ih = new JNDIServiceDamper(ctx, interface1, filter, pair, dynamicRebind);
+      
+      result = Proxy.newProxyInstance(new BundleToClassLoaderAdapter(b), clazz.toArray(new Class<?>[clazz.size()]), ih);
+    }
+    
+    return result;
+  }
+
+  private static ServicePair findService(BundleContext ctx, String interface1, String filter)
+  {
+    ServicePair p = null;
+    
     try {
-      BundleContext callerCtx = getBundleContext();
-      ServiceReference[] refs = callerCtx.getServiceReferences(className, filter);
+      ServiceReference[] refs = ctx.getServiceReferences(interface1, filter);
       
       if (refs != null) {
-        // we need to sort the references returned in case they are out of order
-        // we need to sort in the reverse natural order, services with higher 
-        // ranking or lower id should be processed first so should be earlier in the array.
+        // natural order is the exact opposite of the order we desire.
         Arrays.sort(refs, new Comparator<ServiceReference>() {
           public int compare(ServiceReference o1, ServiceReference o2)
           {
@@ -162,106 +243,22 @@ public final class ServiceHelper
         });
         
         for (ServiceReference ref : refs) {
-          List<Object> services = getServices(callerCtx, className, filter, ref);
-          if (!!!services.isEmpty()) {
-            service = services.get(0);
+          Object service = ctx.getService(ref);
+          
+          if (service != null) {
+            p = new ServicePair();
+            p.ref = ref;
+            p.service = service;
             break;
           }
         }
-      }      
+      }
+      
     } catch (InvalidSyntaxException e) {
-      throw new IllegalArgumentException(e.getMessage(), e);
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
     
-    return service;
-  }
-  
-  /**
-   * This method is used to obtain a list of service instances from the OSGi
-   * service registry. If no service is found an empty list will be returned.
-   * 
-   * @param className The class name used to register the desired service. If null is provided
-   *                  then all services are eligible to be returned.
-   * @param filter    An RFC 1960 query into the properties of the registered services. e.g.
-   *                  (service.description=really useful)
-   * @return          A list of matching services.
-   * 
-   * @throws IllegalArgumentException If the filter is not valid. See RFC 1960 to work out what 
-   *                                  it should be.
-   */
-  public static List<?> getServices(String className, String filter)
-      throws IllegalArgumentException
-  {
-    List<Object> services;
-    try {
-      BundleContext callerCtx = getBundleContext();
-      ServiceReference[] refs = callerCtx.getAllServiceReferences(className, filter);
-      
-      services = getServices(callerCtx, className, filter, refs);
-    } catch (InvalidSyntaxException e) {
-      throw new IllegalArgumentException(e.getMessage(), e);
-    }
-    
-    return services;
-  }
-  
-  /**
-   * @return the bundle context for the caller.
-   */
-  private static BundleContext getBundleContext()
-  {
-    BundleContext result = null;
-    ClassLoader cl = Thread.currentThread().getContextClassLoader();
-    while (result == null && cl != null) {
-      if (cl instanceof BundleReference) {
-        result = ((BundleReference)cl).getBundle().getBundleContext();
-      } else if (cl != null) {
-        cl = cl.getParent();
-      }
-    } 
-    
-    if (result == null) result = context;
-    return result;
-  }
-
-  /**
-   * This worker method obtains the requested service(s) and if the service(s) 
-   * exist updates the cache and releases the previous service(s).
-   * 
-   * @param callerCtx The caller context.
-   * @param className The class name used to query for the service.
-   * @param filter    The filter name used to query for the service.
-   * @param refs      The references to get.
-   * @return          The service, if one was found, or null.
-   */
-  private static List<Object> getServices(BundleContext callerCtx, String className, String filter, ServiceReference...refs)
-  {
-    List<Object> data = new LinkedList<Object>();
-    
-    if (refs != null) {
-      Set<ServiceReference> refSet = new HashSet<ServiceReference>();
-      for (ServiceReference ref : refs) {
-        Object service = callerCtx.getService(ref);
-        if (service != null) {
-          data.add(service);
-          refSet.add(ref);
-        }
-      }
-      
-      ClassLoader cl = Thread.currentThread().getContextClassLoader();
-      ServiceKey key = new ServiceKey(cl, className, filter);
-      
-      // we do not need any synchronization around this. The map is concurrent
-      // and until here we do not touch any shared state.
-      refSet = cache.put(key, refSet);
-      
-      if (refSet != null) {
-        for (ServiceReference ref : refSet) {
-          callerCtx.ungetService(ref);
-        }
-      }
-    }
-    
-    return data;
+    return p;
   }
 }

@@ -49,7 +49,7 @@ public class OsgiURLContextFactory implements ObjectFactory
     } else if (obj instanceof String[]) {
       // Try each URL until either lookup succeeds or they all fail
       String[] urls = (String[])obj;
-      if (urls.length == 0) throw new ConfigurationException("ariesURLContextFactory: empty URL array");
+      if (urls.length == 0) throw new ConfigurationException("0");
       Context context = new ServiceRegistryContext(environment);
       try
       {
