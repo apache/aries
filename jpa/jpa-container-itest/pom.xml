@@ -88,6 +88,11 @@
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
         </dependency>
         <dependency>
+            <artifactId>org.apache.aries.jpa.api</artifactId>
+            <groupId>org.apache.aries.jpa</groupId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.container</artifactId>
             <scope>test</scope>

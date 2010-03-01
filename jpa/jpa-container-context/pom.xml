@@ -54,7 +54,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
-            <artifactId>org.apache.aries.jpa.container</artifactId>
+            <artifactId>org.apache.aries.jpa.api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -94,9 +94,6 @@
                             org.apache.aries.jpa.container.context;version="[1.0.0,1.1.0)",
                             *
                         </Import-Package>
-                        <Export-Package>
-                            org.apache.aries.jpa.container.context;version="1.0.0"
-                        </Export-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
