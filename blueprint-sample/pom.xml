@@ -29,6 +29,18 @@
         Example blueprint application, mostly used for integration tests.
     </description>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.api</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -42,23 +54,12 @@
                         <Bundle-Activator>
                             org.apache.aries.blueprint.sample.Activator
                         </Bundle-Activator>
-<!--
-                        <Bundle-Blueprint>/test.xml</Bundle-Blueprint>
--->
+                        <!--
+                                                <Bundle-Blueprint>/test.xml</Bundle-Blueprint>
+                        -->
                     </instructions>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <scope>provided</scope>
-        </dependency>
-       <dependency>
-           <groupId>org.apache.aries.blueprint</groupId>
-           <artifactId>org.apache.aries.blueprint.api</artifactId>
-       </dependency>
-    </dependencies>
 </project>
