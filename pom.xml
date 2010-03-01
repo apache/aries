@@ -43,6 +43,7 @@
     
     <dependencyManagement>
         <dependencies>
+            <!-- internal dependencies -->
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>org.apache.aries.jndi.core</artifactId>
@@ -58,6 +59,7 @@
                 <artifactId>org.apache.aries.jndi</artifactId>
                 <version>${version}</version>
             </dependency>
+            <!-- external dependencies -->
             <dependency>
                 <groupId>org.apache.aries.testsupport</groupId>
                 <artifactId>org.apache.aries.testsupport.unit</artifactId>
