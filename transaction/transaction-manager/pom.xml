@@ -31,10 +31,6 @@
     <packaging>bundle</packaging>
     <name>Apache Aries Transaction Manager</name> 
 
-    <properties>
-        <geronimo-transaction-version>2.1.3</geronimo-transaction-version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -49,40 +45,19 @@
         <dependency>
             <groupId>org.apache.geronimo.components</groupId>
             <artifactId>geronimo-transaction</artifactId>
-            <version>2.1.3</version>
         </dependency>
         <dependency>
             <groupId>org.objectweb.howl</groupId>
             <artifactId>howl</artifactId>
-            <version>1.0.1-1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-            <version>2.5.6</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
 
     <build>
-       <resources>
-            <resource>
-                <targetPath>OSGI-INF/blueprint</targetPath>
-                <filtering>false</filtering>
-                <directory>${basedir}/src/main/resources/OSGI-INF/blueprint</directory>
-                <includes>
-                    <include>*.xml</include>
-                </includes>
-            </resource>
-            <resource>
-                <targetPath>org/apache/aries/transaction/parsing</targetPath>
-                <filtering>false</filtering>
-                <directory>${basedir}/src/main/resources/org/apache/aries/transaction/parsing</directory>
-                <includes>
-                  <include>*.xsd</include>
-                </includes>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
