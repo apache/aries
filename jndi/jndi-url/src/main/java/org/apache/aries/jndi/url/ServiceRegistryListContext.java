@@ -24,40 +24,22 @@ import java.util.Map;
 
 import javax.naming.Binding;
 import javax.naming.Context;
-import javax.naming.InvalidNameException;
 import javax.naming.Name;
 import javax.naming.NameClassPair;
-import javax.naming.NameNotFoundException;
 import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.OperationNotSupportedException;
 
-import org.apache.aries.jndi.services.ServiceHelper;
-
-/**
- * A JNDI context for looking stuff up from the service registry.
- */
-public class ServiceRegistryContext implements Context
+public class ServiceRegistryListContext implements Context
 {
-  private static final String ARIES_SERVICES = "aries:services/";
+  private Map<String, Object> env;
   /** The name parser for the service registry name space */
   private NameParser parser = new OsgiNameParser();
-  /** The environment for this context */
-  private Map<String, Object> env;
   
-  /**
-   * Why Mr Java this class does indeed take a fine copy of the provided 
-   * environment. One might imagine that it is worried that the provider is
-   * not to be trusted.
-   * 
-   * @param environment
-   */
-  @SuppressWarnings("unchecked")
-  public ServiceRegistryContext(Hashtable<?, ?> environment)
+  public ServiceRegistryListContext(Map<String, Object> env, OsgiName validName)
   {
-    env = new HashMap<String, Object>();
-    env.putAll((Map<? extends String, ? extends Object>) environment);
+    this.env = new HashMap<String, Object>(env);
   }
 
   public Object addToEnvironment(String propName, Object propVal) throws NamingException
@@ -83,30 +65,14 @@ public class ServiceRegistryContext implements Context
 
   public Name composeName(Name name, Name prefix) throws NamingException
   {
-    String result = prefix + "/" + name;
-
-    String ns = ARIES_SERVICES;
-    
-    if (result.startsWith(ns)) {
-      ns = "";
-    }
-    
-    return parser.parse(ns + result);
+    // TODO Auto-generated method stub
+    return null;
   }
 
   public String composeName(String name, String prefix) throws NamingException
   {
-    String result = prefix + "/" + name;
-
-    String ns = ARIES_SERVICES;
-    
-    if (result.startsWith(ns)) {
-      ns = "";
-    }
-    
-    parser.parse(ns + result);
-    
-    return result;
+    // TODO Auto-generated method stub
+    return null;
   }
 
   public Context createSubcontext(Name name) throws NamingException
@@ -121,13 +87,12 @@ public class ServiceRegistryContext implements Context
 
   public void destroySubcontext(Name name) throws NamingException
   {
-    //No-op we don't support sub-contexts in our context   
+    //No-op we don't support sub-contexts in our context
   }
 
   public void destroySubcontext(String name) throws NamingException
   {
     //No-op we don't support sub-contexts in our context
-    
   }
 
   public Hashtable<?, ?> getEnvironment() throws NamingException
@@ -139,7 +104,8 @@ public class ServiceRegistryContext implements Context
 
   public String getNameInNamespace() throws NamingException
   {
-    throw new OperationNotSupportedException();
+    // TODO Auto-generated method stub
+    return null;
   }
 
   public NameParser getNameParser(Name name) throws NamingException
@@ -152,70 +118,36 @@ public class ServiceRegistryContext implements Context
     return parser;
   }
 
-  public NamingEnumeration<NameClassPair> list(final Name name) throws NamingException
+  public NamingEnumeration<NameClassPair> list(Name name) throws NamingException
   {
-    return new ServiceRegistryListContext(env, convert(name)).list("");
+    return list(name.toString());
   }
 
   public NamingEnumeration<NameClassPair> list(String name) throws NamingException
   {
-    return list(parser.parse(name));
+    // TODO Auto-generated method stub
+    return null;
   }
 
-  public NamingEnumeration<Binding> listBindings(final Name name) throws NamingException
+  public NamingEnumeration<Binding> listBindings(Name name) throws NamingException
   {
-    return new ServiceRegistryListContext(env, convert(name)).listBindings("");
+    return listBindings(name.toString());
   }
 
   public NamingEnumeration<Binding> listBindings(String name) throws NamingException
   {
-    return listBindings(parser.parse(name));
+    // TODO Auto-generated method stub
+    return null;
   }
 
   public Object lookup(Name name) throws NamingException
   {
-    Object result;
-    
-    OsgiName validName = convert(name);
-    
-    String pathFragment = validName.getSchemePath();
-    String serviceName = validName.getServiceName();
-    String schemeName = validName.getScheme();
-    
-    if (OsgiName.FRAMEWORK_PATH.equals(pathFragment) && "bundleContext".equals(validName.getServiceName())) {
-      result = ServiceHelper.getBundleContext(env);
-    } else if ((OsgiName.SERVICE_PATH.equals(pathFragment) && OsgiName.OSGI_SCHEME.equals(schemeName)) ||
-               (OsgiName.SERVICES_PATH.equals(pathFragment) && OsgiName.ARIES_SCHEME.equals(schemeName))) {
-      result = ServiceHelper.getService(validName.getInterface(), validName.getFilter(), serviceName, true, env);
-    } else if (OsgiName.SERVICE_LIST_PATH.equals(pathFragment)) {
-      result = new ServiceRegistryListContext(env, validName);
-    } else {
-      result = null;
-    }
-    
-    if (result == null) {
-      throw new NameNotFoundException(name.toString());
-    }
-    
-    return result;
-  }
-
-  private OsgiName convert(Name name) throws InvalidNameException
-  {
-    OsgiName result;
-    
-    if (name instanceof OsgiName) {
-      result = (OsgiName) name;
-    } else {
-      result = new OsgiName(name);
-    }
-    
-    return result;
+    return lookup(name.toString());
   }
 
   public Object lookup(String name) throws NamingException
   {
-    return lookup(parser.parse(name));
+    return null;
   }
 
   public Object lookupLink(Name name) throws NamingException
