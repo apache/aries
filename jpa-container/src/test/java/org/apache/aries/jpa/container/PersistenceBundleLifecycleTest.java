@@ -46,6 +46,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.apache.aries.jpa.container.impl.EntityManagerFactoryManager;
 import org.apache.aries.jpa.container.impl.PersistenceBundleManager;
+import org.apache.aries.jpa.container.parsing.impl.PersistenceDescriptorParserImpl;
 import org.apache.aries.jpa.container.util.FakeManagedPersistenceUnitFactory;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
@@ -109,6 +110,7 @@ public class PersistenceBundleLifecycleTest
 
     extenderBundle = Skeleton.newMock(new BundleMock("extender", new Hashtable<String, Object>()), Bundle.class);
 //    Skeleton.getSkeleton(extenderBundle).setReturnValue(new MethodCall(Bundle.class, "getResource", "schemas/persistence_1_0.xsd"), new File("unittest/resources/persistence_1_0.xsd").toURI().toURL());
+    
   }
 
   @After
@@ -128,6 +130,7 @@ public class PersistenceBundleLifecycleTest
     
     mgr = new PersistenceBundleManager(extenderContext);
     mgr.setConfig(new Properties());
+    mgr.setParser(new PersistenceDescriptorParserImpl());
     return extenderContext;
   }
   
@@ -325,6 +328,7 @@ public class PersistenceBundleLifecycleTest
     
     mgr = new PersistenceBundleManager(extenderContext);
     mgr.setConfig(new Properties());
+    mgr.setParser(new PersistenceDescriptorParserImpl());
     mgr.open();
     
     Hashtable<String,String> hash1 = new Hashtable<String, String>();
@@ -516,6 +520,7 @@ public class PersistenceBundleLifecycleTest
     
     mgr = new PersistenceBundleManager(extenderContext);
     mgr.setConfig(new Properties());
+    mgr.setParser(new PersistenceDescriptorParserImpl());
     
     Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");

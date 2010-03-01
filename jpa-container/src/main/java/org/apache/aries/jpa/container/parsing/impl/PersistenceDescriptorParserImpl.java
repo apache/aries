@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.aries.jpa.container.parsing;
+package org.apache.aries.jpa.container.parsing.impl;
 
 import java.io.BufferedInputStream;
 import java.io.FilterInputStream;
@@ -30,16 +30,17 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.Schema;
 
-import org.apache.aries.jpa.container.parsing.impl.EarlyParserReturn;
-import org.apache.aries.jpa.container.parsing.impl.JPAHandler;
-import org.apache.aries.jpa.container.parsing.impl.SchemaLocatingHandler;
+import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
+import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
+import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParser;
+import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParserException;
 import org.osgi.framework.Bundle;
 
 /**
  * This class may be used to parse JPA persistence descriptors. The parser validates
  * using the relevant version of the persistence schema as defined by the xml file. 
  */
-public class PersistenceDescriptorParser {
+public class PersistenceDescriptorParserImpl implements PersistenceDescriptorParser {
 
   /**
    * This class is used internally to prevent the first pass parse from
@@ -57,16 +58,10 @@ public class PersistenceDescriptorParser {
     }
   }
   
-  /**
-   * Parse the supplied {@link PersistenceDescriptor} 
-   * 
-   * @param b  The bundle that contains the persistence descriptor
-   * @param descriptor The descriptor
-   * 
-   * @return A collection of {@link ParsedPersistenceUnit}
-   * @throws PersistenceDescriptorParserException  if any error occurs in parsing
+  /* (non-Javadoc)
+   * @see org.apache.aries.jpa.container.parsing.impl.PersistenceDescriptorParser#parse(org.osgi.framework.Bundle, org.apache.aries.jpa.container.parsing.PersistenceDescriptor)
    */
-  public static Collection<ParsedPersistenceUnit> parse(Bundle b, PersistenceDescriptor descriptor) throws PersistenceDescriptorParserException {
+  public Collection<ParsedPersistenceUnit> parse(Bundle b, PersistenceDescriptor descriptor) throws PersistenceDescriptorParserException {
     Collection<ParsedPersistenceUnit> persistenceUnits = new ArrayList<ParsedPersistenceUnit>();
     SAXParserFactory parserFactory = SAXParserFactory.newInstance();
     BufferedInputStream is = null;

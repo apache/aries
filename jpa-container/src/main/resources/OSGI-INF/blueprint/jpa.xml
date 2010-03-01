@@ -20,10 +20,15 @@
     <bean id="container"  class="org.apache.aries.jpa.container.impl.PersistenceBundleManager" init-method="open" destroy-method="close">
       <argument ref="blueprintBundleContext"/>
       <property name="config"><props/></property>
+      <property name="parser" ref="parser"/>
     </bean>
+
+    <bean id="parser" class="org.apache.aries.jpa.container.parsing.impl.PersistenceDescriptorParserImpl"/>
 
 	<reference-list interface="javax.persistence.spi.PersistenceProvider" availability="optional">
 	  <reference-listener ref="container" bind-method="addingProvider" unbind-method="removingProvider"/>
 	</reference-list>
+    
+    <service interface="org.apache.aries.jpa.container.parsing.PersistenceDescriptorParser" ref="parser"/>
     
 </blueprint>
