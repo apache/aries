@@ -54,7 +54,7 @@ public class JPAInjectionTest {
     
     JPATestBean bean = (JPATestBean) bc.getComponentInstance("test");
     assertTrue("No persistence unit injection", bean.isPUnit());
-    assertTrue("No persistence context injection", bean.isPContext());
+    assertTrue("No persistence context injection", bean.pContextAvailable());
   }
 
   @org.ops4j.pax.exam.junit.Configuration
