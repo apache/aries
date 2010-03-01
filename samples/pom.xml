@@ -41,6 +41,7 @@
         <module>helloworld-samples</module>
         <module>blog-sample</module>
         <module>blueprint-sample-idverifier</module>
+        <module>ariestrader-sample</module>
     </modules>
 
 </project>
