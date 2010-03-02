@@ -32,21 +32,17 @@
     <packaging>bundle</packaging>
     <dependencies>
         <dependency>
-            <groupId>org.eclipse.osgi</groupId>
+            <groupId>org.eclipse</groupId>
             <artifactId>osgi</artifactId>
-            <version>3.5.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
-            <version>10.5.3.0_1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.samples</groupId>
             <artifactId>osgi-jdbc-api</artifactId>
-            <version>1.0.0</version>
-            <type>bundle</type>
             <scope>compile</scope>
         </dependency>
     </dependencies>

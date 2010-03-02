@@ -36,12 +36,197 @@
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/samples</developerConnection>
         <url>http://svn.apache.org/viewvc/incubator/aries/trunk/samples</url>
     </scm>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.main</artifactId>
+                <version>2.0.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.shell</artifactId>
+                <version>1.4.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.shell.tui</artifactId>
+                <version>1.4.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.eventadmin</artifactId>
+                <version>1.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.web</groupId>
+                <artifactId>pax-web-extender-war</artifactId>
+                <version>0.7.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.web</groupId>
+                <artifactId>pax-web-jetty-bundle</artifactId>
+                <version>0.7.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.web</groupId>
+                <artifactId>pax-web-jsp</artifactId>
+                <version>0.7.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-servlet_2.5_spec</artifactId>
+                <version>1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jsp_2.1_spec</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jta_1.1_spec</artifactId>
+                <version>1.1.1</version>
+            </dependency>
+<!--
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jpa_1.0_spec</artifactId>
+                <version>1.1.2</version>
+            </dependency>
+-->
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jpa_2.0_spec</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>jstl</artifactId>
+                <version>1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derby</artifactId>
+                <version>10.5.3.0_1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.openjpa</groupId>
+                <artifactId>openjpa</artifactId>
+                <version>2.0.0-beta2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.openjpa</groupId>
+                <artifactId>openjpa-persistence-jdbc</artifactId>
+                <version>2.0.0-beta2</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sourceforge.serp</groupId>
+                <artifactId>serp</artifactId>
+                <version>1.13.1</version>
+            </dependency>
+            <!-- bundle version of serp necessary for equinox assembly using openjpa -->
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.serp</artifactId>
+                <version>1.13.1_2</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.5</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-pool</groupId>
+                <artifactId>commons-pool</artifactId>
+                <version>1.5.4</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>3.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
+                <version>2.1_3_4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.fileinstall</artifactId>
+                <version>2.0.8</version>
+            </dependency>
+
+            <!-- other aries subproject dependency management -->
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>application</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>blueprint</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jmx</groupId>
+                <artifactId>jmx</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jndi</groupId>
+                <artifactId>jndi</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jpa</groupId>
+                <artifactId>jpa</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jpa</groupId>
+                <artifactId>jpa</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.transaction</groupId>
+                <artifactId>transaction</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.web</groupId>
+                <artifactId>web</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
 
     <modules>
-        <module>helloworld-samples</module>
+        <module>ariestrader-sample</module>
         <module>blog-sample</module>
         <module>blueprint-sample-idverifier</module>
-        <module>ariestrader-sample</module>
+        <module>helloworld-samples</module>
+        <module>transaction-sample</module>
     </modules>
 
 </project>

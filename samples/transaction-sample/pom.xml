@@ -28,7 +28,31 @@
     <artifactId>transaction-sample</artifactId>
     <name>Apache Aries Transaction sample</name>
     <packaging>pom</packaging>
-	
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.aries.samples</groupId>
+                <artifactId>osgi-jdbc-api</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples</groupId>
+                <artifactId>osgi-jdbc-derby</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples</groupId>
+                <artifactId>transaction-assembly</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples</groupId>
+                <artifactId>transaction-sample-web</artifactId>
+                <version>${version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <modules>
         <module>osgi-jdbc-api</module>

@@ -119,72 +119,58 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
-            <version>${ariesVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>${ariesVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi</artifactId>
-            <version>${ariesVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.api</artifactId>
-            <version>${ariesVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
-            <version>${ariesVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.container</artifactId>
-            <version>${ariesVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.container.context</artifactId>
-            <version>${ariesVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.blueprint</artifactId>
-            <version>${ariesVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.manager</artifactId>
-            <version>${ariesVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.install</artifactId>
-            <version>${ariesVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
-            <version>${ariesVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.management</artifactId>
-            <version>${ariesVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.runtime</artifactId>
-            <version>${ariesVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
-            <version>${ariesVersion}</version>
         </dependency>
 
 
@@ -194,33 +180,20 @@
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-derby-ds</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.assemblies</groupId>
             <artifactId>ariestrader-all-eba</artifactId>
-            <version>${pom.version}</version>
             <type>eba</type>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.assemblies</groupId>
             <artifactId>ariestrader-jdbc-eba</artifactId>
-            <version>${pom.version}</version>
             <type>eba</type>
         </dependency>
     </dependencies>
 
     <build>
-
-        <resources>
-            <resource>
-                <directory>${pom.basedir}/src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-        </resources>
 
         <plugins>
             <plugin>

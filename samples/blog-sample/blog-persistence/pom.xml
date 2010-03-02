@@ -16,8 +16,8 @@
     limitations under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -26,13 +26,25 @@
         <artifactId>blog-sample</artifactId>
         <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
-    
-	<groupId>org.apache.aries.samples</groupId>
-	<artifactId>blog-persistence</artifactId>
-	<name>Apache Aries blog sample persistence</name>
-	<packaging>bundle</packaging>
-	
-	   <build>
+
+    <groupId>org.apache.aries.samples</groupId>
+    <artifactId>blog-persistence</artifactId>
+    <name>Apache Aries blog sample persistence</name>
+    <packaging>bundle</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.aries.samples</groupId>
+            <artifactId>blog-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -46,20 +58,6 @@
             </plugin>
         </plugins>
     </build>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.aries.samples</groupId>
-            <artifactId>blog-api</artifactId>
-            <version>${pom.version}</version>
-            <scope>provided</scope>
-        </dependency>
-       <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>10.5.3.0_1</version>
-        </dependency> 
-    </dependencies>
-       
+
 </project>
 	

@@ -58,104 +58,88 @@
         <dependency>
             <groupId>org.ops4j.pax.web</groupId>
             <artifactId>pax-web-extender-war</artifactId>
-            <version>0.7.2</version>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.web</groupId>
             <artifactId>pax-web-jetty-bundle</artifactId>
-            <version>0.7.2</version>
         </dependency>
 
         <dependency>
             <groupId>org.ops4j.pax.web</groupId>
             <artifactId>pax-web-jsp</artifactId>
-            <version>0.7.2</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
-            <version>10.5.3.0_1</version>
+            <!--<version>10.5.3.0_1</version>-->
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.install</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.fileinstall</artifactId>
-            <version>2.0.8</version>
+            <!--<version>2.0.8</version>-->
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.management</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.runtime</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.samples</groupId>
             <artifactId>blog</artifactId>
-            <version>${pom.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.samples</groupId>
             <artifactId>blog-api</artifactId>
-            <version>${pom.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.samples</groupId>
             <artifactId>blog-persistence</artifactId>
-            <version>${pom.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.samples</groupId>
             <artifactId>blog-servlet</artifactId>
-            <version>${pom.version}</version>
         </dependency>
-
 
     </dependencies>
 

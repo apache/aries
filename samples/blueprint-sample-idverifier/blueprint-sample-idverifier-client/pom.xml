@@ -18,16 +18,36 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.aries.samples</groupId>
-    	<artifactId>blueprint-sample-idverifier</artifactId>
-    	<version>1.0.0-incubating-SNAPSHOT</version>
+        <artifactId>blueprint-sample-idverifier</artifactId>
+        <version>1.0.0-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.samples.blueprint.idverifier.client</artifactId>
     <name>Apache Aries Blueprint Sample - ID Verifier Client</name>
     <packaging>bundle</packaging>
     <description>
-         Example blueprint application to demo inlined managers definitions.
+        Example blueprint application to demo inlined managers definitions.
     </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.samples</groupId>
+            <artifactId>org.apache.aries.samples.blueprint.idverifier.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.samples</groupId>
+            <artifactId>org.apache.aries.samples.blueprint.idverifier.server</artifactId>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -38,33 +58,12 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId};blueprint.graceperiod:=true;blueprint.timeout:= 60000</Bundle-SymbolicName>
                         <Bundle-Activator>org.apache.aries.samples.blueprint.idverifier.client.IDVerifierClientActivator</Bundle-Activator>
-<!--
-                        <Bundle-Blueprint>/test.xml</Bundle-Blueprint>
--->
+                        <!--
+                                                <Bundle-Blueprint>/test.xml</Bundle-Blueprint>
+                        -->
                     </instructions>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <scope>provided</scope>
-        </dependency>
-       <dependency>
-           <groupId>org.apache.aries.blueprint</groupId>
-           <artifactId>org.apache.aries.blueprint.api</artifactId>
-       </dependency>
-       <dependency>
-            <groupId>org.apache.aries.samples</groupId>
-            <artifactId>org.apache.aries.samples.blueprint.idverifier.api</artifactId>
-            <version>${pom.version}</version>
-        </dependency>
-	<dependency>
-            <groupId>org.apache.aries.samples</groupId>
-            <artifactId>org.apache.aries.samples.blueprint.idverifier.server</artifactId>
-            <version>${pom.version}</version>
-        </dependency>
-    </dependencies>
 </project>
