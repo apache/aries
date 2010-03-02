@@ -34,13 +34,11 @@
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-api</artifactId>
-            <version>${pom.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-util</artifactId>
-            <version>${pom.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

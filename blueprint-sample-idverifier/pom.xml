@@ -35,11 +35,27 @@
         <dependencies>
 
             <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint.api</artifactId>
-                <version>1.0.0-incubating-SNAPSHOT</version>
+                <groupId>org.apache.aries.samples</groupId>
+                <artifactId>org.apache.aries.samples.blueprint.idverifier.api</artifactId>
+                <version>${version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.apache.aries.samples</groupId>
+                <artifactId>org.apache.aries.samples.blueprint.idverifier.assembly</artifactId>
+                <type>eba</type>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples</groupId>
+                <artifactId>org.apache.aries.samples.blueprint.idverifier.client</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples</groupId>
+                <artifactId>org.apache.aries.samples.blueprint.idverifier.server</artifactId>
+                <version>${version}</version>
+            </dependency>
+            
         </dependencies>
     </dependencyManagement>
 

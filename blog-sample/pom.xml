@@ -28,7 +28,37 @@
     <artifactId>blog-sample</artifactId>
     <name>Apache Aries blog sample</name>
     <packaging>pom</packaging>
-	
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.aries.samples</groupId>
+                <artifactId>blog</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples</groupId>
+                <artifactId>blog-api</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples</groupId>
+                <artifactId>blog-assembly</artifactId>
+                <version>${version}</version>
+                <type>eba</type>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples</groupId>
+                <artifactId>blog-persistence</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples</groupId>
+                <artifactId>blog-servlet</artifactId>
+                <version>${version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <modules>
         <module>blog</module>

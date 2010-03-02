@@ -30,37 +30,31 @@
     <packaging>pom</packaging>
     <name>AriesTrader :: Assemblies - EBA - JDBC</name>
     <description>An EBA version of AriesTrader JDBC</description>
-    
+        
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-util</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-core</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-api</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-beans</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-persist-jdbc</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.ariestrader.modules</groupId>
             <artifactId>ariestrader-web</artifactId>
-            <version>${pom.version}</version>
         </dependency>
     </dependencies>
 

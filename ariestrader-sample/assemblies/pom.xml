@@ -30,6 +30,31 @@
     <name>AriesTrader :: Assemblies</name>
     <packaging>pom</packaging>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.aries.ariestrader</groupId>
+                <artifactId>modules</artifactId>
+                <version>${version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.aries.ariestrader.assemblies</groupId>
+                <artifactId>ariestrader-all-eba</artifactId>
+                <version>${pom.version}</version>
+                <type>eba</type>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.ariestrader.assemblies</groupId>
+                <artifactId>ariestrader-jdbc-eba</artifactId>
+                <version>${pom.version}</version>
+                <type>eba</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <modules>
         <module>ariestrader-jdbc-eba</module>
         <module>ariestrader-all-eba</module>
