@@ -44,6 +44,19 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- internal dependencies -->
+            <dependency>
+                <groupId>org.apache.aries.transaction</groupId>
+                <artifactId>org.apache.aries.transaction.blueprint</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.transaction</groupId>
+                <artifactId>org.apache.aries.transaction.manager</artifactId>
+                <version>1.0.0-incubating-SNAPSHOT</version>
+            </dependency>
+            
+            <!-- external dependencies -->
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-jta_1.1_spec</artifactId>
