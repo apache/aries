@@ -58,47 +58,31 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.samples</groupId>
             <artifactId>blueprint-helloworld-api</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.samples</groupId>
             <artifactId>blueprint-helloworld-server</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.samples</groupId>
             <artifactId>blueprint-helloworld-client</artifactId>
-            <version>1.0.0-incubating-SNAPSHOT</version>
         </dependency>
-
 
     </dependencies>
 
     <build>
-
-        <resources>
-            <resource>
-                <directory>${pom.basedir}/src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-        </resources>
 
         <plugins>
             <plugin>

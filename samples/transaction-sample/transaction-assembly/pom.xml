@@ -22,7 +22,6 @@
 		<groupId>org.apache.aries.transaction-sample</groupId>
 		<artifactId>transaction-sample</artifactId>
         <version>1.0.0-incubating-SNAPSHOT</version>
-
 	</parent>
 
 	<artifactId>transaction-assembly</artifactId>
@@ -31,10 +30,10 @@
 
 	<dependencies>
 
-		<dependency>
-			<groupId>org.eclipse</groupId>
-			<artifactId>osgi</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+        </dependency>
 
 		<dependency>
 			<groupId>org.eclipse.equinox</groupId>
@@ -59,64 +58,46 @@
 		<dependency>
 			<groupId>org.ops4j.pax.web</groupId>
 			<artifactId>pax-web-extender-war</artifactId>
-			<version>0.7.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ops4j.pax.web</groupId>
 			<artifactId>pax-web-jetty-bundle</artifactId>
-			<version>0.7.2</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.ops4j.pax.web</groupId>
 			<artifactId>pax-web-jsp</artifactId>
-			<version>0.7.2</version>
 		</dependency>
 
 		<dependency>
 		    <groupId>org.apache.aries.transaction</groupId>
-		    <artifactId>org.apache.aries.transaction</artifactId>
-			<version>1.0.0-incubating-SNAPSHOT</version>
+		    <artifactId>org.apache.aries.transaction.blueprint</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.samples</groupId>
 			<artifactId>osgi-jdbc-api</artifactId>
-			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.samples</groupId>
 			<artifactId>transaction-sample-web</artifactId>
-			<version>1.0.0</version>
 		</dependency>
 	
 		<dependency>
 			<groupId>org.apache.aries.samples</groupId>
 			<artifactId>osgi-jdbc-derby</artifactId>
-			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-            <version>2.5.6</version>
         </dependency>
 
 
 	</dependencies>
 
 	<build>
-
-		<resources>
-			<resource>
-				<directory>${pom.basedir}/src/main/resources</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>**/*</include>
-				</includes>
-			</resource>
-		</resources>
 
 		<plugins>
 			<plugin>

@@ -30,6 +30,13 @@
 	<name>Apache Aries blog sample </name>
 	<packaging>bundle</packaging>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.aries.samples</groupId>
+            <artifactId>blog-api</artifactId>
+        </dependency>
+    </dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -44,12 +51,5 @@
 			</plugin>
 		</plugins>
 	</build>
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.aries.samples</groupId>
-			<artifactId>blog-api</artifactId>
-			<version>${pom.version}</version>
-		</dependency>
-	</dependencies>
 </project>
 	
