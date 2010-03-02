@@ -53,6 +53,7 @@
                         </Export-Package>
                         <Import-Package>
                             org.apache.aries.samples.ariestrader.api,
+                            org.apache.aries.samples.ariestrader.persistence.api,
                             org.apache.aries.samples.ariestrader.util
                         </Import-Package>
                     </instructions>
