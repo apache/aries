@@ -19,8 +19,6 @@
 
     <persistence-unit transaction-type="RESOURCE_LOCAL" name="ariestrader-am">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-        <!--<jta-data-source>javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/TradeDataSource)</jta-data-source>-->
-        <!--<non-jta-data-source>javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/NoTxTradeDataSource)</non-jta-data-source>-->
         <jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/TradeDataSource)</jta-data-source>
         <non-jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/NoTxTradeDataSource)</non-jta-data-source>
          
@@ -40,8 +38,6 @@
         
     <persistence-unit transaction-type="JTA" name="ariestrader-cm">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-        <!--<jta-data-source>javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/TradeDataSource)</jta-data-source>-->
-        <!--<non-jta-data-source>javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/NoTxTradeDataSource)</non-jta-data-source>-->
         <jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/TradeDataSource)</jta-data-source>
         <non-jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/NoTxTradeDataSource)</non-jta-data-source>
          
