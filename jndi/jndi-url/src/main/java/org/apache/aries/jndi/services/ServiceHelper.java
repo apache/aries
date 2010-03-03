@@ -129,12 +129,7 @@ public final class ServiceHelper
     }
     
     if (result == null) {
-      StackTraceElement[] stackTrace = AccessController.doPrivileged(new PrivilegedAction<StackTraceElement[]>() {
-        public StackTraceElement[] run()
-        {
-          return Thread.currentThread().getStackTrace();
-        }
-      });
+      StackTraceElement[] stackTrace =  Thread.currentThread().getStackTrace();
       
       StackFinder finder = new StackFinder();
       Class<?>[] classStack = finder.getClassContext();
@@ -152,6 +147,7 @@ public final class ServiceHelper
       }
       
       if (found) {
+        i--; // we need to move back an item because the previous loop leaves us one after where we wanted to be
         Set<Integer> classLoadersChecked = new HashSet<Integer>();
         for (; i < classStack.length && result == null; i++) {
           ClassLoader cl = classStack[i].getClassLoader();
