@@ -201,7 +201,7 @@
                                 <copy file="${basedir}/../LICENSE" todir="${project.build.directory}"/>
                                 <copy file="${basedir}/../NOTICE" todir="${project.build.directory}"/>
                                 <zip destfile="${project.build.directory}/blog.eba">
-                                    <zipfileset dir="${project.build.directory}" includes="blog*.jar"/>
+                                    <zipfileset dir="${project.build.directory}" includes="blog*1.0.0*.jar"/>
                                     <zipfileset dir="${project.build.directory}" prefix="META-INF" includes="LICENSE"/>
                                     <zipfileset dir="${project.build.directory}" prefix="META-INF" includes="NOTICE"/>
                                 </zip>
