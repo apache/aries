@@ -19,6 +19,7 @@
 package org.apache.aries.blueprint.container;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
@@ -609,7 +610,11 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         public Object createProxy(final ClassLoader classLoader, final Class[] classes, final Callable<Object> dispatcher) {
             return Proxy.newProxyInstance(classLoader, getInterfaces(classes), new InvocationHandler() {
                 public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                    return method.invoke(dispatcher.call(), args);
+                    try {
+                        return method.invoke(dispatcher.call(), args);
+                    } catch (InvocationTargetException ite) {
+                      throw ite.getTargetException();
+                    }
                 }
             });
         }
