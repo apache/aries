@@ -195,11 +195,7 @@ public class BundleManifest
   }
   
   public boolean isValid() {
-    // TODO when either the derby jar is a valid R4 bundle, or we fix the itest we need to comment out this bit.
-    // NOTE I have a test for the resolver to show it works, but it fails with the commented out bit. This is because
-    //      derby don't produce valid OSGi R4 bundles. That is being fixed, but I'll remove the need for it in a test
-    //      soon, but I wanted to get something in to test things while I work on the update.
-    return /*getManifestVersion() != null && */ getSymbolicName() != null;
+    return getManifestVersion() != null && getSymbolicName() != null;
   }
 }
 
