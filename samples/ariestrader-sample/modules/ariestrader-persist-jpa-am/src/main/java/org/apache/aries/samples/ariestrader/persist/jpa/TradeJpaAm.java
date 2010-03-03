@@ -254,12 +254,14 @@ public class TradeJpaAm implements TradeServices {
 
                 entityManager.persist(orderData);
 
+                entityManager.getTransaction().commit();
+
                 if (entityManager != null) {
                     entityManager.close();
                     entityManager = null;
 
                 }
-                entityManager.getTransaction().commit();
+
                 return orderData;
             }
 
