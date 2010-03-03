@@ -136,6 +136,30 @@
             <artifactId>org.apache.aries.application.resolver.obr</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.samples</groupId>
+        	<artifactId>blog</artifactId>
+        	<version>1.0.0-incubating-SNAPSHOT</version>
+        	<scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.samples</groupId>
+        	<artifactId>blog-persistence</artifactId>
+        	<version>1.0.0-incubating-SNAPSHOT</version>
+        	<scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.aries.samples</groupId>
+        	<artifactId>blog-api</artifactId>
+        	<version>1.0.0-incubating-SNAPSHOT</version>
+        	<scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.derby</groupId>
+        	<artifactId>derby</artifactId>
+        	<version>10.5.3.0_1</version>
+        	<scope>test</scope>
+        </dependency>
 
     </dependencies>
 
