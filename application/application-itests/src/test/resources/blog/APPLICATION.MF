@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Application-ManifestVersion: 1.0
+Application-Name: test application 2
+Application-SymbolicName: org.apache.aries.blog.app
+Application-Version: 1.0
+Application-Content: org.apache.aries.samples.blog-persistence; version=1.0.0,
+ org.apache.aries.samples.blog; version=1.0.0
