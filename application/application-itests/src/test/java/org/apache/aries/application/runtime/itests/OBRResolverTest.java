@@ -19,19 +19,16 @@
 package org.apache.aries.application.runtime.itests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,10 +45,10 @@ import org.apache.aries.application.management.ApplicationContext;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.resolver.obr.generator.RepositoryDescriptorGenerator;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.manifest.BundleManifest;
-import org.apache.aries.samples.blog.api.BloggingService;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.junit.Before;
@@ -60,39 +57,113 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleListener;
+import org.osgi.framework.Constants;
 import org.osgi.service.obr.Repository;
 import org.osgi.service.obr.RepositoryAdmin;
 import org.w3c.dom.Document;
 
 @RunWith(JUnit4TestRunner.class)
-public class BlogSampleInstalledUsingOBRResolverTest extends AbstractIntegrationTest 
+public class OBRResolverTest extends AbstractIntegrationTest 
 {
+  public static final String CORE_BUNDLE_BY_VALUE = "core.bundle.by.value";
+  public static final String CORE_BUNDLE_BY_REFERENCE = "core.bundle.by.reference";
+  public static final String TRANSITIVE_BUNDLE_BY_VALUE = "transitive.bundle.by.reference";
+  public static final String TRANSITIVE_BUNDLE_BY_REFERENCE = "transitive.bundle.by.value";
+  
+  
   /* Use @Before not @BeforeClass so as to ensure that these resources
    * are created in the paxweb temp directory, and not in the svn tree
    */
   @Before
   public static void createApplications() throws Exception 
   {
-    System.out.println("creating eba " + new Date());
+    ZipFixture bundle = ArchiveFixture.newJar().manifest()
+                            .attribute(Constants.BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_VALUE)
+                            .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
+                            .attribute(Constants.IMPORT_PACKAGE, "p.q.r, x.y.z")
+                            .attribute(Constants.BUNDLE_VERSION, "1.0.0").end();
+
+    
+    FileOutputStream fout = new FileOutputStream(CORE_BUNDLE_BY_VALUE + ".jar");
+    bundle.writeOut(fout);
+    fout.close();
+
+    bundle = ArchiveFixture.newJar().manifest()
+                            .attribute(Constants.BUNDLE_SYMBOLICNAME, TRANSITIVE_BUNDLE_BY_VALUE)
+                            .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
+                            .attribute(Constants.EXPORT_PACKAGE, "p.q.r")
+                            .attribute(Constants.BUNDLE_VERSION, "1.0.0").end();
+
+    fout = new FileOutputStream(TRANSITIVE_BUNDLE_BY_VALUE + ".jar");
+    bundle.writeOut(fout);
+    fout.close();
+
+    bundle = ArchiveFixture.newJar().manifest()
+                            .attribute(Constants.BUNDLE_SYMBOLICNAME, TRANSITIVE_BUNDLE_BY_REFERENCE)
+                            .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
+                            .attribute(Constants.EXPORT_PACKAGE, "x.y.z")
+                            .attribute(Constants.BUNDLE_VERSION, "1.0.0").end();
+    
+    fout = new FileOutputStream(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar");
+    bundle.writeOut(fout);
+    fout.close();
+
+    bundle = ArchiveFixture.newJar().manifest()
+                            .attribute(Constants.BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_REFERENCE)
+                            .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
+                            .attribute(Constants.EXPORT_PACKAGE, "d.e.f")
+                            .attribute(Constants.BUNDLE_VERSION, "1.0.0").end();
+    
+    fout = new FileOutputStream(CORE_BUNDLE_BY_REFERENCE + ".jar");
+    bundle.writeOut(fout);
+    fout.close();
+
+    bundle = ArchiveFixture.newJar().manifest()
+                            .attribute(Constants.BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_REFERENCE)
+                            .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
+                            .attribute(Constants.EXPORT_PACKAGE, "d.e.f").end();
+
+    fout = new FileOutputStream(CORE_BUNDLE_BY_REFERENCE + "_0.0.0.jar");
+    bundle.writeOut(fout);
+    fout.close();
+    
     ZipFixture testEba = ArchiveFixture.newZip()
      .binary("META-INF/APPLICATION.MF",
-        BlogSampleInstalledUsingOBRResolverTest.class.getClassLoader().getResourceAsStream("blog/APPLICATION.MF"))
+        OBRResolverTest.class.getClassLoader().getResourceAsStream("obr/APPLICATION.MF"))
         .end()
-      .binary("org.apache.aries.samples.blog.jar", new URL("mvn:org.apache.aries.samples/blog").openStream()).end()
-      .binary("org.apache.derby.jar", new URL("mvn:org.apache.derby/derby").openStream()).end();
+      .binary(CORE_BUNDLE_BY_VALUE + ".jar", new FileInputStream(CORE_BUNDLE_BY_VALUE + ".jar")).end()
+      .binary(TRANSITIVE_BUNDLE_BY_VALUE + ".jar", new FileInputStream(TRANSITIVE_BUNDLE_BY_VALUE + ".jar")).end();
 
-    FileOutputStream fout = new FileOutputStream("blog.eba");
+    fout = new FileOutputStream("blog.eba");
     testEba.writeOut(fout);
     fout.close();
-    System.out.println("created eba  " + new Date());
   }
 
+  @Test(expected=ResolverException.class)
+  public void testBlogAppResolveFail() throws ResolverException, Exception
+  {
+    generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + "_0.0.0.jar");
+    
+    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+    
+    Repository[] repos = repositoryAdmin.listRepositories();
+    for (Repository repo : repos) {
+      repositoryAdmin.removeRepository(repo.getURL());
+    }
+    
+    repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
+
+    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("blog.eba")));
+    //installing requires a valid url for the bundle in repository.xml.
+    
+    app = manager.resolve(app);
+  }
+  
   @Test
   public void testBlogApp() throws Exception 
   {
-    generateOBRRepoXML();
+    generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar");
     
     RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
     
@@ -121,43 +192,30 @@ public class BlogSampleInstalledUsingOBRResolverTest extends AbstractIntegration
       bundleSymbolicNames.add(dep.getContentName());
     }
     
-    assertTrue("Bundle org.apache.aries.samples.blog-api not found.", bundleSymbolicNames.contains("org.apache.aries.samples.blog-api"));
+    assertTrue("Bundle " + TRANSITIVE_BUNDLE_BY_REFERENCE + " not found.", bundleSymbolicNames.contains(TRANSITIVE_BUNDLE_BY_REFERENCE));
+    assertTrue("Bundle " + TRANSITIVE_BUNDLE_BY_VALUE + " not found.", bundleSymbolicNames.contains(TRANSITIVE_BUNDLE_BY_VALUE));
     
-    bundleContext.addBundleListener(new BundleListener() {
-      public void bundleChanged(BundleEvent event)
-      {
-        System.out.println("Bundle " + event.getBundle().getSymbolicName() + " " + event.getType() + " at " + new Date());
-      }
-    });
-    
-    System.out.println("about to install " + new Date());
     ApplicationContext ctx = manager.install(app);
-    System.out.println("about to start   " + new Date());
     ctx.start();
-    System.out.println("started          " + new Date());
 
     Set<Bundle> bundles = ctx.getApplicationContent();
     
     assertEquals("Number of bundles provisioned in the app", 4, bundles.size());
-    
-    BloggingService service = getOsgiService(BloggingService.class);
-    
-    assertNotNull("Found the blogging service", service);
     
     ctx.stop();
     manager.uninstall(ctx);
   }
 
 
-  private void generateOBRRepoXML() throws Exception
+  private void generateOBRRepoXML(String ... bundleFiles) throws Exception
   {
     Set<BundleInfo> bundles = new HashSet<BundleInfo>();
     
-    bundles.add(createBundleInfo("mvn:org.apache.aries.samples/blog-persistence"));
-    bundles.add(createBundleInfo("mvn:org.apache.aries.samples/blog-api"));
-//    bundles.add(createBundleInfo("mvn:org.apache.derby/derby"));
+    for (String file : bundleFiles) {
+      bundles.add(createBundleInfo(new File(file).toURI().toURL().toExternalForm()));
+    }
     
-    Document doc = RepositoryDescriptorGenerator.generateRepositoryDescriptor("Blog sample description", bundles);
+    Document doc = RepositoryDescriptorGenerator.generateRepositoryDescriptor("Test repo description", bundles);
     
     FileOutputStream fout = new FileOutputStream("repository.xml");
     
