@@ -27,7 +27,7 @@
     
     <groupId>org.apache.aries.ariestrader.assemblies</groupId>
     <artifactId>ariestrader-all-eba</artifactId>    
-    <packaging>pom</packaging>
+    <packaging>eba</packaging>
     <name>AriesTrader :: Assemblies - EBA - ALL</name>
     <description>An EBA version of AriesTrader ALL</description>
 
@@ -72,131 +72,13 @@
 
     <build>
         <plugins>
-            <!-- Copy dependencies for eba into a common location - eba-jars -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
-                                    <artifactId>ariestrader-util</artifactId>
-                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
-                                    <artifactId>ariestrader-core</artifactId>
-                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
-                                    <artifactId>ariestrader-api</artifactId>
-                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
-                                    <artifactId>ariestrader-web</artifactId>
-                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
-                                    <artifactId>ariestrader-beans</artifactId>
-                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
-                                    <artifactId>ariestrader-persist-jdbc</artifactId>
-                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
-                                    <artifactId>ariestrader-entities</artifactId>
-                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
-                                    <artifactId>ariestrader-persist-jpa-am</artifactId>
-                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.aries.ariestrader.modules</groupId>
-                                    <artifactId>ariestrader-persist-jpa-cm</artifactId>
-                                    <outputDirectory>${project.build.directory}/eba-jars</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Use the maven-assembly-plugin to create the eba content as a jar -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>create-eba-as-jar</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attached</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>${pom.basedir}/src/main/assembly/assembly.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Use the maven-antrun-plugin to copy the jar as an eba - NOTE: we can't move the file because maven still expects to install the artifact -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-jar-to-eba</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.build.directory}/${project.build.finalName}.eba"/>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Use the build-helper-maven-plugin to push the eba to the maven repo  -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-artifacts</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>${project.build.directory}/${project.build.finalName}.eba</file>
-                                    <type>eba</type>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                    </execution>
-                </executions>
+                <groupId>org.apache.aries</groupId>
+                <artifactId>eba-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <includeJar>false</includeJar>
+                </configuration>
             </plugin>
         </plugins>
     </build>
