@@ -60,7 +60,7 @@ public class TranStrategyTest {
 
       try {
         assertNotNull("TransactionStrategy.MANDATORY.begin(tm) returned null when manager " +
-              "status is STATUS_NO_TRANSACTION", TransactionStrategy.MANDATORY.begin(tm));
+              "status is STATUS_NO_TRANSACTION", TransactionStrategy.MANDATORY.begin(tm).getActiveTransaction());
       } catch (IllegalStateException ise) {
           // Expected to be in here
       } catch (Exception e) {
@@ -74,11 +74,13 @@ public class TranStrategyTest {
           Status.STATUS_ROLLING_BACK, Status.STATUS_UNKNOWN };
       
       for (int i = 0; i < invalids.length ; i++) {
-        skel.setReturnValue(new MethodCall(TransactionManager.class, "getStatus"), invalids[i]);
+          skel.setReturnValue(new MethodCall(TransactionManager.class, "getStatus"), invalids[i]);
+          skel.setReturnValue(new MethodCall(TransactionManager.class, "getTransaction"), null);
         try {
-          assertNull("TransactionStrategy.MANDATORY.begin() did not return null when manager status value is " + invalids[i], TransactionStrategy.MANDATORY.begin(tm));
+          Transaction tran = TransactionStrategy.MANDATORY.begin(tm).getActiveTransaction();
+          assertNull("TransactionStrategy.MANDATORY.begin() did not return null when manager status value is " + invalids[i], tran);
         } catch (Exception ise) {
-            fail("TransactionStrategy.MANDATORY.begin() threw Exception when manager status value is " + invalids[i]);
+          fail("TransactionStrategy.MANDATORY.begin() threw Exception when manager status value is " + invalids[i]);
         } 
       }
     }
@@ -87,7 +89,8 @@ public class TranStrategyTest {
     public void testMandatoryFinish()
     {
       try {
-        TransactionStrategy.MANDATORY.finish(tm, t);
+        TransactionToken tranToken = new TransactionToken(t, null, TransactionStrategy.MANDATORY);
+        TransactionStrategy.MANDATORY.finish(tm, tranToken);
       } catch (Exception e) {
           fail("TransactionStrategy.MANDATORY.finish() threw an unexpected exception");
       }
@@ -117,8 +120,9 @@ public class TranStrategyTest {
       
       for (int i = 0; i < invalids.length ; i++) {
         skel.setReturnValue(new MethodCall(TransactionManager.class, "getStatus"), invalids[i]);
+        skel.setReturnValue(new MethodCall(TransactionManager.class, "getTransaction"), null);
         try {
-          assertNull("TransactionStrategy.NEVER.begin() did not return null when manager status value is " + invalids[i], TransactionStrategy.NEVER.begin(tm));
+          assertNull("TransactionStrategy.NEVER.begin() did not return null when manager status value is " + invalids[i], TransactionStrategy.NEVER.begin(tm).getActiveTransaction());
         } catch (Exception ise) {
             fail("TransactionStrategy.NEVER.begin() threw unexpected exception when manager status value is " + invalids[i]);
         } 
@@ -130,7 +134,8 @@ public class TranStrategyTest {
     public void testNeverFinish()
     {
       try {
-        TransactionStrategy.NEVER.finish(tm, t);
+        TransactionToken tranToken = new TransactionToken(null, null, TransactionStrategy.NEVER);
+        TransactionStrategy.NEVER.finish(tm, tranToken);
       } catch (Exception e) {
           fail("TransactionStrategy.NEVER.finish() threw an unexpected exception");
       }
@@ -143,7 +148,7 @@ public class TranStrategyTest {
       // and _NOT_ begin a new one
       skel.setReturnValue(new MethodCall(TransactionManager.class, "getStatus"), Status.STATUS_ACTIVE);
        
-      TransactionStrategy.NOT_SUPPORTED.begin(tm);
+      TransactionStrategy.NOTSUPPORTED.begin(tm);
       skel.assertCalled(new MethodCall(TransactionManager.class, "suspend"));
       skel.assertNotCalled(new MethodCall(TransactionManager.class, "begin"));
        
@@ -155,8 +160,9 @@ public class TranStrategyTest {
       
       for (int i = 0; i < invalids.length ; i++) {
         skel.setReturnValue(new MethodCall(TransactionManager.class, "getStatus"), invalids[i]);
+        skel.setReturnValue(new MethodCall(TransactionManager.class, "getTransaction"), null);
         try {
-          assertNull("TransactionStrategy.NOT_SUPPORTED.begin() did not return null when manager status value is " + invalids[i], TransactionStrategy.NOT_SUPPORTED.begin(tm));
+          assertNull("TransactionStrategy.NOT_SUPPORTED.begin() did not return null when manager status value is " + invalids[i], TransactionStrategy.NOTSUPPORTED.begin(tm).getActiveTransaction());
         } catch (Exception ise) {
             fail("TransactionStrategy.NOT_SUPPORTED.begin() threw unexpected exception when manager status value is " + invalids[i]);
         } 
@@ -170,13 +176,15 @@ public class TranStrategyTest {
       // If finish is called with a previously active transaction, then
       // we expect this transaction to be resumed for a NOT_SUPPORTED strategy
       try {
-        TransactionStrategy.NOT_SUPPORTED.finish(tm, t);
+        TransactionToken tranToken = new TransactionToken(null, t, TransactionStrategy.NOTSUPPORTED);
+        TransactionStrategy.NOTSUPPORTED.finish(tm, tranToken);
         skel.assertCalled(new MethodCall(TransactionManager.class, "resume", t));
         skel.clearMethodCalls();
-        TransactionStrategy.NOT_SUPPORTED.finish(tm, null);
+        tranToken = new TransactionToken(null, null, TransactionStrategy.NOTSUPPORTED);
+        TransactionStrategy.NOTSUPPORTED.finish(tm, tranToken);
         skel.assertNotCalled(new MethodCall(TransactionManager.class, "resume", Transaction.class));
       } catch (Exception e) {
-          fail("TransactionStrategy.NOT_SUPPORTED.finish() threw unexpected exception");
+          fail("TransactionStrategy.NOT_SUPPORTED.finish() threw unexpected exception, " + e);
       }
     }
     
@@ -198,8 +206,9 @@ public class TranStrategyTest {
       
       for (int i = 0; i < invalids.length ; i++) {
         skel.setReturnValue(new MethodCall(TransactionManager.class, "getStatus"), invalids[i]);
+        skel.setReturnValue(new MethodCall(TransactionManager.class, "getTransaction"), null);
         try {
-          assertNull("TransactionStrategy.REQUIRED.begin() did not return null when manager status value is " + invalids[i], TransactionStrategy.REQUIRED.begin(tm));
+          assertNull("TransactionStrategy.REQUIRED.begin() did not return null when manager status value is " + invalids[i], TransactionStrategy.REQUIRED.begin(tm).getActiveTransaction());
         } catch (Exception ise) {
             fail("TransactionStrategy.REQUIRED.begin() threw unexpected exception when manager status value is " + invalids[i]);
         } 
@@ -214,7 +223,8 @@ public class TranStrategyTest {
       skel.setReturnValue(new MethodCall(TransactionManager.class, "getStatus"), Status.STATUS_MARKED_ROLLBACK);
       
       try {
-        TransactionStrategy.REQUIRED.finish(tm, t);
+        TransactionToken tranToken = new TransactionToken(t, null, TransactionStrategy.REQUIRED, true);
+        TransactionStrategy.REQUIRED.finish(tm, tranToken);
         skel.assertCalled(new MethodCall(TransactionManager.class, "rollback"));
         skel.assertNotCalled(new MethodCall(TransactionManager.class, "commit"));
         
@@ -226,14 +236,15 @@ public class TranStrategyTest {
         for (int i = 0; i < invalids.length ; i++) {
           skel.clearMethodCalls();
           skel.setReturnValue(new MethodCall(TransactionManager.class, "getStatus"), invalids[i]);
-          TransactionStrategy.REQUIRED.finish(tm, t);
+          TransactionStrategy.REQUIRED.finish(tm, tranToken);
           skel.assertCalled(new MethodCall(TransactionManager.class, "commit"));
           skel.assertNotCalled(new MethodCall(TransactionManager.class, "rollback"));
         }
         
         // If null is passed instead of a tran we expect nothing to happen
         skel.clearMethodCalls();
-        TransactionStrategy.REQUIRED.finish(tm, null);
+        tranToken = new TransactionToken(null, null, TransactionStrategy.REQUIRED);
+        TransactionStrategy.REQUIRED.finish(tm, tranToken);
         skel.assertNotCalled(new MethodCall(TransactionManager.class, "commit"));
         skel.assertNotCalled(new MethodCall(TransactionManager.class, "rollback"));
       
@@ -250,7 +261,7 @@ public class TranStrategyTest {
       
       // In the case of the REQUIRES_NEW strategy we expect an active tran to be suspended
       // a new new transaction to begin 
-      TransactionStrategy.REQUIRES_NEW.begin(tm);
+      TransactionStrategy.REQUIRESNEW.begin(tm);
       skel.assertCalled(new MethodCall(TransactionManager.class, "suspend"));
       skel.assertCalled(new MethodCall(TransactionManager.class, "begin"));
       
@@ -271,8 +282,9 @@ public class TranStrategyTest {
       for (int i = 0; i < manStatus.length ; i++) {
         skel.clearMethodCalls();
         skel.setReturnValue(new MethodCall(TransactionManager.class, "getStatus"), manStatus[i]);
+        skel.setReturnValue(new MethodCall(TransactionManager.class, "getTransaction"), null);
         try {
-          assertNull("TransactionStrategy.REQUIRES_NEW.begin() did not return null when manager status value is " + manStatus[i], TransactionStrategy.REQUIRES_NEW.begin(tm));
+          assertNull("TransactionStrategy.REQUIRES_NEW.begin() did not return null when manager status value is " + manStatus[i], TransactionStrategy.REQUIRESNEW.begin(tm).getActiveTransaction());
           skel.assertCalled(new MethodCall(TransactionManager.class, "begin"));
           skel.assertNotCalled(new MethodCall(TransactionManager.class, "suspend"));
         } catch (Exception ise) {
@@ -323,7 +335,7 @@ public class TranStrategyTest {
       // in calls to resume(t)
       
       try {
-        TransactionStrategy.REQUIRES_NEW.begin(tm);
+        TransactionStrategy.REQUIRESNEW.begin(tm);
       } catch (SystemException se) {
           // Expect to be in here
       } catch (NotSupportedException nse) {
@@ -356,7 +368,8 @@ public class TranStrategyTest {
         skel.setReturnValue(new MethodCall(TransactionManager.class, "getStatus"), allStates[i]);
         
         try {
-          TransactionStrategy.REQUIRES_NEW.finish(tm, t);
+          TransactionToken tranToken = new TransactionToken(t, t, TransactionStrategy.REQUIRESNEW, true);
+          TransactionStrategy.REQUIRESNEW.finish(tm, tranToken);
         } catch (Exception e) {
             fail("TransactionStrategy.REQUIRES_NEW.finish() threw unexpected exception when manager status is " + allStates[i]);
         } finally {
@@ -366,7 +379,8 @@ public class TranStrategyTest {
         
         try {
           skel.clearMethodCalls();
-          TransactionStrategy.REQUIRES_NEW.finish(tm, null);
+          TransactionToken tranToken = new TransactionToken(t, null, TransactionStrategy.REQUIRESNEW, true);
+          TransactionStrategy.REQUIRESNEW.finish(tm, tranToken);
         } catch (Exception e) {
             fail("TransactionStrategy.REQUIRES_NEW.finish() threw unexpected exception when manager status is " + allStates[i]);
         } finally {
@@ -395,7 +409,8 @@ public class TranStrategyTest {
     public void testSupports()
     {
       try {
-        assertNull("TransTransactionStrategy.SUPPORTS.begin(tm) did not return null", TransactionStrategy.SUPPORTS.begin(tm));
+        skel.setReturnValue(new MethodCall(TransactionManager.class, "getTransaction"), null);
+        assertNull("TransTransactionStrategy.SUPPORTS.begin(tm) did not return null", TransactionStrategy.SUPPORTS.begin(tm).getActiveTransaction());
       } catch (Exception e) {
           fail("TransTransactionStrategy.SUPPORTS.begin(tm) threw an unexpected exception");
       }
