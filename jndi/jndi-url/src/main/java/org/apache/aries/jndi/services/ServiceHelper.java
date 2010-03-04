@@ -27,12 +27,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import javax.naming.NamingException;
 
@@ -40,6 +37,7 @@ import org.apache.aries.util.BundleToClassLoaderAdapter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
+import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceReference;
@@ -190,12 +188,12 @@ public final class ServiceHelper
     
     if (pair == null) {
       interface1 = null;
-      filter = "(osgi.jndi.serviceName=" + serviceName + ")";
+      filter = "(osgi.jndi.service.name=" + serviceName + ")";
       pair = findService(ctx, interface1, filter);
     }
     
     if (pair != null) {
-      String[] interfaces = (String[]) pair.ref.getProperty("objectClass");
+      String[] interfaces = (String[]) pair.ref.getProperty(Constants.OBJECTCLASS);
       
       List<Class<?>> clazz = new ArrayList<Class<?>>(interfaces.length);
       
@@ -205,13 +203,11 @@ public final class ServiceHelper
         try {
           clazz.add(b.loadClass(interfaceName));
         } catch (ClassNotFoundException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
         }
       }
       
       if (clazz.isEmpty()) {
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(Arrays.asList(interfaces).toString());
       }
       
       InvocationHandler ih = new JNDIServiceDamper(ctx, interface1, filter, pair, dynamicRebind);
@@ -222,7 +218,7 @@ public final class ServiceHelper
     return result;
   }
 
-  private static ServicePair findService(BundleContext ctx, String interface1, String filter)
+  private static ServicePair findService(BundleContext ctx, String interface1, String filter) throws NamingException
   {
     ServicePair p = null;
     
@@ -251,8 +247,7 @@ public final class ServiceHelper
       }
       
     } catch (InvalidSyntaxException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw (NamingException) new NamingException(e.getMessage()).initCause(e);
     }
     
     return p;
