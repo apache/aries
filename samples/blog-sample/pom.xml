@@ -66,6 +66,7 @@
         <module>blog-persistence</module>
         <module>blog-servlet</module>
         <module>blog-assembly</module>
+        <module>blog-eba</module>
     </modules>
 
 </project>
