@@ -18,6 +18,10 @@
  */
 package org.apache.aries.transaction;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
@@ -30,40 +34,56 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
 
     private static class TranData
     {
-      private final String strategy;
-      private final Pattern[] methodNames;
+      private final Map<Pattern, String> map;
       
-      public TranData(String s, String m)
-      {
-        strategy = s;
-        String[] names = m.split("[, \t]");
-        methodNames = new Pattern[names.length];
-        
-        for (int i = 0; i < names.length; i++) {
-          methodNames[i] = Pattern.compile(names[i].replaceAll("\\*", ".*"));
-        }
+      public TranData() {
+          map = new LinkedHashMap<Pattern, String>();
       }
       
-      public boolean matches(String name)
+      public void add(Pattern pattern, String strategy) {
+          map.put(pattern, strategy);
+      }
+      
+      public String getStrategy(String name)
       {
-        for (Pattern p : methodNames) {
+        for (Pattern p : map.keySet()) {
           if (p.matcher(name).matches()) {
-            return true;
+            return map.get(p);
           }
         }
-        return false;
+        return null;
       }
     }
-
-    // TODO cope with having multiple tran data per component.
+    
     private final Map<ComponentMetadata, TranData> data = new ConcurrentHashMap<ComponentMetadata, TranData>();
     private TransactionManager tm;
     
-    public void setComponentTransactionData(ComponentMetadata component, String value, String method)
+    public synchronized void setComponentTransactionData(ComponentMetadata component, String value, String method)
     {
-      TranData td = new TranData(value, method);
+      TranData td = data.get(component);
+          
+      if (td == null) {
+          td = new TranData();
+          data.put(component, td);
+      }
       
-      data.put(component, td);
+      String[] names = method.split("[, \t]");
+      
+      for (int i = 0; i < names.length; i++) {
+          Pattern pattern = Pattern.compile(names[i].replaceAll("\\*", ".*"));
+          td.add(pattern, value);
+      }
+    }
+
+    public String getComponentMethodTxStrategy(ComponentMetadata component, String methodName)
+    {
+        TranData td = data.get(component);
+        String result = null;
+
+        if (td != null)
+            result = td.getStrategy(methodName);
+
+        return result;
     }
 
     public TransactionManager getTransactionManager()
@@ -74,20 +94,5 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
     public void setTransactionManager(TransactionManager manager)
     {
       tm = manager;
-    }
-
-
-    public String getComponentMethodTxStrategy(ComponentMetadata component, String methodName)
-    {
-      String result = null;
-      TranData td = data.get(component);
-      
-      if (td != null) {
-        if (td.matches(methodName)) {
-          result = td.strategy;
-        }
-     }
-
-      return result;
     }
 }
