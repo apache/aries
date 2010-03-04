@@ -374,6 +374,9 @@ public class ArchiveFixture
      * @return
      */
     public ZipFixture binary(String path, InputStream input) throws IOException {
+      
+      if (input == null) throw new IllegalArgumentException("Provided input stream cannot be null");
+      
       IStreamFixture child = new IStreamFixture(this, input);
       children.add(new ChildFixture(path, child));
       
