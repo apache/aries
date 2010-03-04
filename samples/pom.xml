@@ -20,13 +20,13 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>1.0.0-incubating-SNAPSHOT</version>
+        <version>0.1-incubating-SNAPSHOT</version>
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>org.apache.aries.samples</groupId>
-    <version>1.0.0-incubating-SNAPSHOT</version>
+    <version>0.1-incubating-SNAPSHOT</version>
     <artifactId>samples</artifactId>
     <name>Apache Aries Samples</name>
     <packaging>pom</packaging>
@@ -36,6 +36,18 @@
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/samples</developerConnection>
         <url>http://svn.apache.org/viewvc/incubator/aries/trunk/samples</url>
     </scm>
+
+    <properties>
+        <ariesApplicationVersion>0.1-incubating-SNAPSHOT</ariesApplicationVersion>
+        <ariesBlueprintVersion>0.1-incubating-SNAPSHOT</ariesBlueprintVersion>
+        <ariesJmxVersion>0.1-incubating-SNAPSHOT</ariesJmxVersion>
+        <ariesJndiVersion>0.1-incubating-SNAPSHOT</ariesJndiVersion>
+        <ariesJpaVersion>0.1-incubating-SNAPSHOT</ariesJpaVersion>
+        <ariesTransactionVersion>0.1-incubating-SNAPSHOT</ariesTransactionVersion>
+        <ariesUtilVersion>0.1-incubating-SNAPSHOT</ariesUtilVersion>
+        <ariesWebVersion>0.1-incubating-SNAPSHOT</ariesWebVersion>
+    </properties>
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -75,6 +87,11 @@
                 <groupId>org.ops4j.pax.web</groupId>
                 <artifactId>pax-web-jsp</artifactId>
                 <version>0.7.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
+                <version>2.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
@@ -162,58 +179,56 @@
 
             <!-- other aries subproject dependency management -->
             <dependency>
+                <groupId>org.apache.aries</groupId>
+                <artifactId>org.apache.aries.util</artifactId>
+                <version>${ariesUtilVersion}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>application</artifactId>
-                <version>1.0.0-incubating-SNAPSHOT</version>
+                <version>${ariesApplicationVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>blueprint</artifactId>
-                <version>1.0.0-incubating-SNAPSHOT</version>
+                <version>${ariesBlueprintVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jmx</groupId>
                 <artifactId>jmx</artifactId>
-                <version>1.0.0-incubating-SNAPSHOT</version>
+                <version>${ariesJmxVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>jndi</artifactId>
-                <version>1.0.0-incubating-SNAPSHOT</version>
+                <version>${ariesJndiVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.jpa</groupId>
                 <artifactId>jpa</artifactId>
-                <version>1.0.0-incubating-SNAPSHOT</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.jpa</groupId>
-                <artifactId>jpa</artifactId>
-                <version>1.0.0-incubating-SNAPSHOT</version>
+                <version>${ariesJpaVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.transaction</groupId>
                 <artifactId>transaction</artifactId>
-                <version>1.0.0-incubating-SNAPSHOT</version>
+                <version>${ariesTransactionVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.web</groupId>
                 <artifactId>web</artifactId>
-                <version>1.0.0-incubating-SNAPSHOT</version>
+                <version>${ariesWebVersion}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
