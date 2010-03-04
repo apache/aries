@@ -197,11 +197,14 @@ public final class ServiceHelper
       
       List<Class<?>> clazz = new ArrayList<Class<?>>(interfaces.length);
       
-      Bundle b = ctx.getBundle();
+      Bundle serviceProviderBundle = pair.ref.getBundle();
+      Bundle owningBundle = ctx.getBundle();
       
       for (String interfaceName : interfaces) {
         try {
-          clazz.add(b.loadClass(interfaceName));
+          Class<?> potentialClass = serviceProviderBundle.loadClass(interfaceName);
+          
+          if (pair.ref.isAssignableTo(owningBundle, interfaceName)) clazz.add(potentialClass);
         } catch (ClassNotFoundException e) {
         }
       }
@@ -212,7 +215,8 @@ public final class ServiceHelper
       
       InvocationHandler ih = new JNDIServiceDamper(ctx, interface1, filter, pair, dynamicRebind);
       
-      result = Proxy.newProxyInstance(new BundleToClassLoaderAdapter(b), clazz.toArray(new Class<?>[clazz.size()]), ih);
+      // TODO not sure this is quite right, but it'll do for now
+      result = Proxy.newProxyInstance(new BundleToClassLoaderAdapter(serviceProviderBundle), clazz.toArray(new Class<?>[clazz.size()]), ih);
     }
     
     return result;
@@ -233,6 +237,8 @@ public final class ServiceHelper
             return o2.compareTo(o1);
           }
         });
+        
+        Bundle b = ctx.getBundle();
         
         for (ServiceReference ref : refs) {
           Object service = ctx.getService(ref);
