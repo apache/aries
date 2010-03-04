@@ -197,6 +197,19 @@ public final class ServiceHelper
       
       List<Class<?>> clazz = new ArrayList<Class<?>>(interfaces.length);
       
+      // We load the interface classes the service is registered under using the defining
+      // bundle. This is ok because the service must be able to see the classes to be 
+      // registered using them. We then check to see if isAssignableTo on the reference
+      // works for the owning bundle and the interface name and only use the interface if
+      // true is returned there.
+      
+      // This might seem odd, but equinox and felix return true for isAssignableTo if the
+      // Bundle provided does not import the package. This is under the assumption the
+      // caller will then use reflection. The upshot of doing it this way is that a utility
+      // bundle can be created which centralizes JNDI lookups, but the service will be used
+      // by another bundle. It is true that class space consistency is less safe, but we
+      // are enabling a slightly odd use case anyway.
+      
       Bundle serviceProviderBundle = pair.ref.getBundle();
       Bundle owningBundle = ctx.getBundle();
       
@@ -215,7 +228,9 @@ public final class ServiceHelper
       
       InvocationHandler ih = new JNDIServiceDamper(ctx, interface1, filter, pair, dynamicRebind);
       
-      // TODO not sure this is quite right, but it'll do for now
+      // The ClassLoader needs to be able to load the service interface classes so it needs to be
+      // wrapping the service provider bundle. The class is actually defined on this adapter.
+      
       result = Proxy.newProxyInstance(new BundleToClassLoaderAdapter(serviceProviderBundle), clazz.toArray(new Class<?>[clazz.size()]), ih);
     }
     
