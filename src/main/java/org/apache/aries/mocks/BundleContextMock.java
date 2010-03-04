@@ -36,6 +36,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -167,6 +168,8 @@ public class BundleContextMock
     private final Hashtable<String, Object> serviceProps = new Hashtable<String, Object>();
     /** The interfaces the service publishes with */
     private String[] interfaceNames;
+    /** The bundle that defines this service */
+    private Bundle registeringBundle;
 
     /**
      * This method unregisters the service from the registry.
@@ -183,6 +186,7 @@ public class BundleContextMock
         }
       }
       notifyAllListeners(ServiceEvent.UNREGISTERING);
+      registeringBundle = null;
     }
 
     /**
@@ -302,7 +306,7 @@ public class BundleContextMock
      */
     public Bundle getBundle()
     {
-      return bundle;
+      return registeringBundle;
     }
     
     /**
@@ -350,7 +354,8 @@ public class BundleContextMock
    */
   public BundleContextMock()
   {
-    
+    bundle = Skeleton.newMock(new BundleMock("test." + new Random(System.currentTimeMillis()).nextInt(),
+                              new Hashtable<Object, Object>()), Bundle.class);
   }
   
   /**
@@ -434,6 +439,7 @@ public class BundleContextMock
       data.serviceImpl = new MockServiceFactory(service);
     }
     data.interfaceNames = interfaces;
+    data.registeringBundle = bundle;
     
     Enumeration<String> keys = properties.keys();
     
