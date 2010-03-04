@@ -25,8 +25,12 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
+import java.util.Properties;
 
 import org.apache.aries.blueprint.sample.Bar;
 import org.apache.aries.blueprint.sample.Foo;
@@ -123,6 +127,61 @@ public abstract class AbstractIntegrationTest {
 
     public static MavenArtifactProvisionOption mavenBundle(String groupId, String artifactId) {
         return CoreOptions.mavenBundle().groupId(groupId).artifactId(artifactId).versionAsInProject();
+    }
+    
+    public static MavenArtifactProvisionOption mavenBundleInTest(String groupId, String artifactId) {
+        return CoreOptions.mavenBundle().groupId(groupId).artifactId(artifactId).version(getArtifactVersion(groupId, artifactId));
+    }
+
+    //TODO getArtifactVersion and getFileFromClasspath are borrowed and modified from pax-exam.  They should be moved back ASAP.
+    public static String getArtifactVersion( final String groupId,
+                                             final String artifactId )
+    {
+        final Properties dependencies = new Properties();
+        try
+        {
+            InputStream in = getFileFromClasspath("META-INF/maven/dependencies.properties");
+            try {
+                dependencies.load(in);
+            } finally {
+                in.close();
+            }
+            final String version = dependencies.getProperty( groupId + "/" + artifactId + "/version" );
+            if( version == null )
+            {
+                throw new RuntimeException(
+                    "Could not resolve version. Do you have a dependency for " + groupId + "/" + artifactId
+                    + " in your maven project?"
+                );
+            }
+            return version;
+        }
+        catch( IOException e )
+        {
+            // TODO throw a better exception
+            throw new RuntimeException(
+                "Could not resolve version. Did you configured the plugin in your maven project?"
+                + "Or maybe you did not run the maven build and you are using an IDE?"
+            );
+        }
+    }
+
+    private static InputStream getFileFromClasspath( final String filePath )
+        throws FileNotFoundException
+    {
+        try
+        {
+            URL fileURL = AbstractIntegrationTest.class.getClassLoader().getResource( filePath );
+            if( fileURL == null )
+            {
+                throw new FileNotFoundException( "File [" + filePath + "] could not be found in classpath" );
+            }
+            return fileURL.openStream();
+        }
+        catch (IOException e)
+        {
+            throw new FileNotFoundException( "File [" + filePath + "] could not be found: " + e.getMessage() );
+        }
     }
 
 
