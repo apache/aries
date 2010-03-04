@@ -1,0 +1,76 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.aries.transaction;
+
+import javax.transaction.Transaction;
+
+class TransactionToken
+{
+   private Transaction activeTransaction;
+   private Transaction suspendedTransaction;
+   private TransactionStrategy transactionStrategy;
+   private boolean isCompletionAllowed;
+   
+   public TransactionToken(Transaction activeTransaction, Transaction suspendedTransaction,
+        TransactionStrategy transactionStrategy)
+   {
+    this(activeTransaction, suspendedTransaction, transactionStrategy, false);
+   }
+
+   TransactionToken(Transaction activeTransaction, Transaction suspendedTransaction,
+           TransactionStrategy transactionStrategy, boolean isCompletionAllowed)
+   {
+       this.activeTransaction = activeTransaction;
+       this.suspendedTransaction = suspendedTransaction;
+       this.transactionStrategy = transactionStrategy;
+       this.isCompletionAllowed = isCompletionAllowed;
+   }
+
+   public Transaction getActiveTransaction() {
+       return activeTransaction;
+   }
+
+   public void setActiveTransaction(Transaction activeTransaction) {
+       this.activeTransaction = activeTransaction;
+   }
+
+   public Transaction getSuspendedTransaction() {
+       return suspendedTransaction;
+   }
+
+   public void setSuspendedTransaction(Transaction suspendedTransaction) {
+       this.suspendedTransaction = suspendedTransaction;
+   }
+
+   public TransactionStrategy getTransactionStrategy() {
+       return transactionStrategy;
+   }
+
+   public void setTransactionStrategy(TransactionStrategy transactionStrategy) {
+       this.transactionStrategy = transactionStrategy;
+   }
+
+   public boolean isCompletionAllowed() {
+       return isCompletionAllowed;
+   }
+
+   public void setCompletionAllowed(boolean isCompletionAllowed) {
+       this.isCompletionAllowed = isCompletionAllowed;
+   }
+}

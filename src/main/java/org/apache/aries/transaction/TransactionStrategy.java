@@ -31,40 +31,41 @@ import javax.transaction.TransactionManager;
 public enum TransactionStrategy {
     MANDATORY
     {
-      public Transaction begin(TransactionManager man) throws SystemException
+      public TransactionToken begin(TransactionManager man) throws SystemException
       {
         if (man.getStatus() == Status.STATUS_NO_TRANSACTION) {
-          throw new IllegalStateException("No tran on thread");
+          throw new IllegalStateException("No transaction on the thread");
         }
 
-        return null;
+        return new TransactionToken(man.getTransaction(), null, MANDATORY);
       }
     },
     NEVER
     {
-      public Transaction begin(TransactionManager man) throws SystemException
+      public TransactionToken begin(TransactionManager man) throws SystemException
       {
         if (man.getStatus() == Status.STATUS_ACTIVE) {
-          throw new IllegalStateException("Tran on thread");
+          throw new IllegalStateException("Transaction on the thread");
         }
 
-        return null;
+        return new TransactionToken(null, null, NEVER);
       }
     },
-    NOT_SUPPORTED
+    NOTSUPPORTED
     {
-      public Transaction begin(TransactionManager man) throws SystemException
+      public TransactionToken begin(TransactionManager man) throws SystemException
       {
         if (man.getStatus() == Status.STATUS_ACTIVE) {
-          return man.suspend();
+          return new TransactionToken(null, man.suspend(), this);
         }
 
-        return null;
+        return new TransactionToken(null, null, NOTSUPPORTED);
       }
 
-      public void finish(TransactionManager man, Transaction tran) throws SystemException,
+      public void finish(TransactionManager man, TransactionToken tranToken) throws SystemException,
           InvalidTransactionException, IllegalStateException
       {
+        Transaction tran = tranToken.getSuspendedTransaction();
         if (tran != null) {
           man.resume(tran);
         }
@@ -72,21 +73,21 @@ public enum TransactionStrategy {
     },
     REQUIRED
     {
-      public Transaction begin(TransactionManager man) throws SystemException, NotSupportedException
+      public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException
       {
         if (man.getStatus() == Status.STATUS_NO_TRANSACTION) {
           man.begin();
-          return man.getTransaction();
+          return new TransactionToken(man.getTransaction(), null, REQUIRED, true);
         }
 
-        return null;
+        return new TransactionToken(man.getTransaction(), null, REQUIRED);
       }
 
-      public void finish(TransactionManager man, Transaction tran) throws SystemException,
+      public void finish(TransactionManager man, TransactionToken tranToken) throws SystemException,
           InvalidTransactionException, IllegalStateException, SecurityException, RollbackException,
           HeuristicMixedException, HeuristicRollbackException
       {
-        if (tran != null) {
+        if (tranToken.isCompletionAllowed()) {
           if (man.getStatus() == Status.STATUS_MARKED_ROLLBACK) {
             man.rollback();
           } else {
@@ -95,59 +96,77 @@ public enum TransactionStrategy {
         }
       }
     },
-    REQUIRES_NEW
+    REQUIRESNEW
     {
-      public Transaction begin(TransactionManager man) throws SystemException, NotSupportedException,
+      public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException,
           InvalidTransactionException, IllegalStateException
       {
-        Transaction result;
+        TransactionToken tranToken;
         if (man.getStatus() == Status.STATUS_ACTIVE) {
-          result = man.suspend();
+          tranToken = new TransactionToken(null, man.suspend(), REQUIRESNEW);
         } else {
-          result = null;
+          tranToken = new TransactionToken(null, null, REQUIRESNEW);
         }
 
         try {
           man.begin();
         } catch (SystemException e) {
-          man.resume(result);
+          man.resume(tranToken.getSuspendedTransaction());
           throw e;
         } catch (NotSupportedException e) {
-          man.resume(result);
+          man.resume(tranToken.getSuspendedTransaction());
           throw e;
         }
-        return result;
+        
+        tranToken.setActiveTransaction(man.getTransaction());
+        tranToken.setCompletionAllowed(true);
+        
+        return tranToken;
       }
 
-      public void finish(TransactionManager man, Transaction tran) throws SystemException,
+      public void finish(TransactionManager man, TransactionToken tranToken) throws SystemException,
           InvalidTransactionException, IllegalStateException, SecurityException, RollbackException,
           HeuristicMixedException, HeuristicRollbackException
       {
-        if (man.getStatus() == Status.STATUS_MARKED_ROLLBACK) {
-          man.rollback();
-        } else {
-          man.commit();
+        if (tranToken.isCompletionAllowed()) {
+          if (man.getStatus() == Status.STATUS_MARKED_ROLLBACK) {
+            man.rollback();
+          } else {
+            man.commit();
+          }
         }
 
+        Transaction tran = tranToken.getSuspendedTransaction();
         if (tran != null) {
           man.resume(tran);
         }
       }
     },
-    SUPPORTS;
+    SUPPORTS
+    {
+      public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException,
+          InvalidTransactionException, IllegalStateException
+      {
+          if (man.getStatus() == Status.STATUS_ACTIVE) {
+              return new TransactionToken(man.getTransaction(), null, SUPPORTS);
+          }
+
+          return new TransactionToken(null, null, SUPPORTS);
+      }
+    };
 
     public static TransactionStrategy fromValue(String value)
     {
       return valueOf(value.toUpperCase());
     }
 
-    public Transaction begin(TransactionManager man) throws SystemException, NotSupportedException,
+    public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException,
         InvalidTransactionException, IllegalStateException
     {
       return null;
     }
 
-    public void finish(TransactionManager man, Transaction tran) throws SystemException,
+    public void finish(TransactionManager man, TransactionToken tranToken) throws SystemException,
         InvalidTransactionException, IllegalStateException, SecurityException, RollbackException,
         HeuristicMixedException, HeuristicRollbackException
     {

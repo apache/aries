@@ -29,10 +29,9 @@ import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class TxInterceptorImpl implements Interceptor {
-    private static final Logger _logger =
-        LoggerFactory.getLogger("org.apache.aries.transaction");
+    private static final Logger LOGGER =
+        LoggerFactory.getLogger(TxInterceptorImpl.class);
 
     private TransactionManager tm;
     private TxComponentMetaDataHelper metaDataHelper;
@@ -50,12 +49,28 @@ public class TxInterceptorImpl implements Interceptor {
        {
          final TransactionToken token = (TransactionToken)preCallToken;
          try { 
-            token.ts.finish(tm, token.t);
+             Transaction tran = token.getActiveTransaction();
+             if (tran != null) {
+                 Class<?> exceptionClass = ex.getClass();
+                 boolean isAppException = false;
+
+                 for (Class<?> cls : m.getExceptionTypes()) {
+                     isAppException = cls.isAssignableFrom(exceptionClass);
+                     
+                     if (isAppException)
+                         break;
+                 }
+
+                 if (!isAppException)
+                     tran.setRollbackOnly();
+             }
+
+             token.getTransactionStrategy().finish(tm, token);
          }
          catch (Exception e)
          {
            // we do not throw the exception since there already is one, but we need to log it
-           _logger.error("An exception has occured.", e);
+           LOGGER.error("An exception has occured.", e);
          }
        } else {
          // TODO: what now?
@@ -69,11 +84,11 @@ public class TxInterceptorImpl implements Interceptor {
       {
         final TransactionToken token = (TransactionToken)preCallToken;
         try { 
-           token.ts.finish(tm, token.t);
+           token.getTransactionStrategy().finish(tm, token);
         }
         catch (Exception e)
         {
-          _logger.error("An exception has occured.", e);
+          LOGGER.error("An exception has occured.", e);
           throw new TransactionRollbackException(e);
         }
       }
@@ -93,17 +108,16 @@ public class TxInterceptorImpl implements Interceptor {
         
       final String strategy = metaDataHelper.getComponentMethodTxStrategy(cm, methodName);
 
-      Transaction t;
       TransactionStrategy txStrategy = TransactionStrategy.REQUIRED;
       if (strategy != null)
       {
         txStrategy = TransactionStrategy.fromValue(strategy);
       }
+      
+      if (LOGGER.isDebugEnabled())
+          LOGGER.debug("Method: " + m + ", has transaction strategy: " + txStrategy);
 
-      t = txStrategy.begin(tm);
-
-      // now construct return object from txStrategy and t
-      return new TransactionToken(t, txStrategy);
+      return txStrategy.begin(tm);
     }
 
     public final void setTransactionManager(TransactionManager manager)
@@ -114,16 +128,5 @@ public class TxInterceptorImpl implements Interceptor {
     public final void setTxMetaDataHelper(TxComponentMetaDataHelper transactionEnhancer)
     {
       this.metaDataHelper = transactionEnhancer;
-    }  
-
-    private static class TransactionToken
-    {
-       private Transaction t;
-       private TransactionStrategy ts;
-       private TransactionToken(Transaction t, TransactionStrategy ts)
-       {
-         this.t = t;
-         this.ts = ts;
-       }
     }
 }

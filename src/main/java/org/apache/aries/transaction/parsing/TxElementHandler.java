@@ -34,33 +34,33 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class TxElementHandler implements NamespaceHandler {
-    private static final Logger _logger =
-        LoggerFactory.getLogger("org.apache.aries.transaction.parsing");
+    private static final Logger LOGGER =
+        LoggerFactory.getLogger(TxElementHandler.class);
 
     private TxComponentMetaDataHelper metaDataHelper;
     private Interceptor interceptor = null;
 
     private void parseElement(Element elt, ComponentMetadata cm, ParserContext pc)
     {
-        if (_logger.isDebugEnabled())
-            _logger.debug("parser asked to parse .. " + elt);
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("parser asked to parse .. " + elt);
 
         if ("transaction".equals(elt.getLocalName())) {
-            if (_logger.isDebugEnabled())
-                _logger.debug("parser adding interceptor for " + elt);
+            if (LOGGER.isDebugEnabled())
+                LOGGER.debug("parser adding interceptor for " + elt);
 
             ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
             cdr.registerInterceptorWithComponent(cm, interceptor);
-            if (_logger.isDebugEnabled())
-                _logger.debug("parser setting comp trans data for " + elt.getAttribute("value") + "  "
+            if (LOGGER.isDebugEnabled())
+                LOGGER.debug("parser setting comp trans data for " + elt.getAttribute("value") + "  "
                         + elt.getAttribute("method"));
 
             metaDataHelper.setComponentTransactionData(cm, elt.getAttribute("value"), elt
                     .getAttribute("method"));
         }
         
-        if (_logger.isDebugEnabled())
-            _logger.debug("parser done with " + elt);
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("parser done with " + elt);
     }
 
     public ComponentMetadata decorate(Node node, ComponentMetadata cm, ParserContext pc)
@@ -92,8 +92,8 @@ public class TxElementHandler implements NamespaceHandler {
 
     public final void setTransactionInterceptor(Interceptor itx)
     {
-        if (_logger.isDebugEnabled())
-            _logger.debug("parser having interceptor set " + itx);
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("parser having interceptor set " + itx);
         
         this.interceptor = itx;
     }
