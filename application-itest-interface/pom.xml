@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.aries.application</groupId>
         <artifactId>application</artifactId>
-        <version>1.0.0-incubating-SNAPSHOT</version>
+        <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
