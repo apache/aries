@@ -87,7 +87,8 @@ public class BlueprintContainerBTCustomizerTest extends AbstractIntegrationTest 
 
             BundleContext compositeBundleContext = cb.getCompositeFramework().getBundleContext();
             // install the blueprint sample onto the framework associated with the composite bundle
-            MavenArtifactProvisionOption mapo = CoreOptions.mavenBundle().groupId("org.apache.aries.blueprint").artifactId("org.apache.aries.blueprint.sample").version( "1.0.0-incubating-SNAPSHOT");
+            MavenArtifactProvisionOption mapo = mavenBundleInTest("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample");
+//            MavenArtifactProvisionOption mapo = CoreOptions.mavenBundle().groupId("org.apache.aries.blueprint").artifactId("org.apache.aries.blueprint.sample").version( "0.1-incubating-SNAPSHOT");
             // let's use input stream to avoid invoking mvn url handler which isn't avail in the child framework.
             InputStream is = new URL(mapo.getURL()).openStream();
             Bundle bundle = compositeBundleContext.installBundle(mapo.getURL(), is);
@@ -127,7 +128,7 @@ public class BlueprintContainerBTCustomizerTest extends AbstractIntegrationTest 
             // don't install the blueprint sample here as it will be installed onto the same framework as the blueprint core bundle
             //mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").noStart(),
             mavenBundle("org.osgi", "org.osgi.compendium"),
-            //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+//            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
             equinox().version("3.5.0")
         );
