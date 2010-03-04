@@ -263,7 +263,7 @@ public final class Skeleton implements InvocationHandler
     {
       return (Skeleton)ih;
     }
-    throw new IllegalArgumentException("The supplied proxy (" + mock + ") was not a (Jetstream mediations) dynamic mock ");
+    throw new IllegalArgumentException("The supplied proxy (" + mock + ") was not an Aries dynamic mock ");
   }
   
   /* ------------------------------------------------------------------------ */
@@ -989,7 +989,7 @@ public final class Skeleton implements InvocationHandler
   {
     Assert.assertFalse( "The method call " + 
                         call + 
-                        "occurred in the skeleton " + 
+                        " occurred in the skeleton " + 
                         this.toString(), checkCall(call));
   }
   
