@@ -21,14 +21,14 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>1.0.0-incubating-SNAPSHOT</version>
+        <version>0.1-incubating-SNAPSHOT</version>
     </parent>  
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>blueprint</artifactId>
     <name>Apache Aries Blueprint</name>
-    <version>1.0.0-incubating-SNAPSHOT</version>
+    <version>0.1-incubating-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
@@ -89,7 +89,7 @@
             <dependency>
                 <groupId>org.apache.aries</groupId>
                 <artifactId>org.apache.aries.util</artifactId>
-                <version>1.0.0-incubating-SNAPSHOT</version> 
+                <version>0.1-incubating-SNAPSHOT</version> 
             </dependency>
             <!-- Use an OSGi enabled cglib version, so that BND can find the version information
                  and we can use it in integration tests -->

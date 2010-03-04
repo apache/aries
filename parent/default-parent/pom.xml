@@ -25,12 +25,12 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>1.0.0-incubating-SNAPSHOT</version>
+        <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>default-parent</artifactId>
     <name>Aries :: Default Parent POM</name>
-    <version>1.0.0-incubating-SNAPSHOT</version>
+    <version>0.1-incubating-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <dependencyManagement>
@@ -253,6 +253,11 @@
                         </excludes>
 
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.ops4j.pax.exam</groupId>
+                    <artifactId>maven-paxexam-plugin</artifactId>
+                    <version>1.2.0</version>
                 </plugin>
                 
             </plugins>
