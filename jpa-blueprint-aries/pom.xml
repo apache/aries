@@ -83,8 +83,8 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
                             javax.persistence;version="[1.0.0,3.0.0)",
-                            org.apache.aries.jpa.container.context;version="[1.0.0,2.0.0)",
-                            org.apache.aries.blueprint;version="[1.0.0,1.1.0)",
+                            org.apache.aries.jpa.container.context;version="[0.1.0,1.1.0)",
+                            org.apache.aries.blueprint;version="[0.1.0,1.1.0)",
                             *
                         </Import-Package>
                         <Export-Service>
