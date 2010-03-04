@@ -28,8 +28,7 @@
     </parent>
 
     <groupId>org.apache.aries.samples</groupId>
-    <artifactId>blog-persistence</artifactId>
-    <version>0.1.0.1-incubating-SNAPSHOT</version>
+    <artifactId>blog-persistence-jpa</artifactId>
     <name>Apache Aries blog sample persistence</name>
     <packaging>bundle</packaging>
 
