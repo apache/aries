@@ -19,6 +19,7 @@ package org.apache.aries.jmx.framework;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -28,15 +29,12 @@ import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
 
-import junit.framework.Assert;
-
 import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
-import org.osgi.framework.Bundle;
 import org.osgi.jmx.framework.PackageStateMBean;
 
 /**
@@ -83,7 +81,7 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
         assertTrue("Should find a bundle exporting org.osgi.jmx.framework", exportingBundles.length > 0);
 
         long[] exportingBundles2 = packagaState.getExportingBundles("test", "1.0.0");
-        Assert.assertNull("Shouldn't find a bundle exporting test package", exportingBundles2);
+        assertNull("Shouldn't find a bundle exporting test package", exportingBundles2);
 
         long[] importingBundlesId = packagaState
                 .getImportingBundles("org.osgi.jmx.framework", "1.5.0", exportingBundles[0]);
