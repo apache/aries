@@ -88,9 +88,9 @@ public class Framework implements FrameworkMBean {
     }
 
     /**
-     * @see org.osgi.jmx.framework.FrameworkMBean#installBundle(java.lang.String, java.lang.String)
+     * @see org.osgi.jmx.framework.FrameworkMBean#installBundleFromURL(String, String)
      */
-    public long installBundle(String location, String url) throws IOException {
+    public long installBundleFromURL(String location, String url) throws IOException {
         InputStream inputStream = null;
         try {
             inputStream = createStream(url);
@@ -139,9 +139,9 @@ public class Framework implements FrameworkMBean {
     }
 
     /**
-     * @see org.osgi.jmx.framework.FrameworkMBean#installBundles(java.lang.String[], java.lang.String[])
+     * @see org.osgi.jmx.framework.FrameworkMBean#installBundlesFromURL(String[], String[])
      */
-    public CompositeData installBundles(String[] locations, String[] urls) throws IOException {
+    public CompositeData installBundlesFromURL(String[] locations, String[] urls) throws IOException {
         if(locations == null || urls == null){
             return new BatchInstallResult("Failed to install bundles arguments can't be null").toCompositeData(); 
         }
@@ -152,7 +152,7 @@ public class Framework implements FrameworkMBean {
         long[] ids = new long[locations.length];
         for (int i = 0; i < locations.length; i++) {
             try {
-                long id = installBundle(locations[i], urls[i]);
+                long id = installBundleFromURL(locations[i], urls[i]);
                 ids[i] = id;
             } catch (Throwable t) {
                 long[] completed = new long[i];
@@ -405,9 +405,9 @@ public class Framework implements FrameworkMBean {
     }
 
     /**
-     * @see org.osgi.jmx.framework.FrameworkMBean#updateBundle(long, java.lang.String)
+     * @see org.osgi.jmx.framework.FrameworkMBean#updateBundleFromURL(long, String)
      */
-    public void updateBundle(long bundleIdentifier, String url) throws IOException {
+    public void updateBundleFromURL(long bundleIdentifier, String url) throws IOException {
         Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);;
         InputStream inputStream = null;
         try {
@@ -446,9 +446,9 @@ public class Framework implements FrameworkMBean {
     }
 
     /**
-     * @see org.osgi.jmx.framework.FrameworkMBean#updateBundles(long[], java.lang.String[])
+     * @see org.osgi.jmx.framework.FrameworkMBean#updateBundlesFromURL(long[], String[])
      */
-    public CompositeData updateBundles(long[] bundleIdentifiers, String[] urls) throws IOException {
+    public CompositeData updateBundlesFromURL(long[] bundleIdentifiers, String[] urls) throws IOException {
         if(bundleIdentifiers == null || urls == null){
             return new BatchActionResult("Failed to update bundles arguments can't be null").toCompositeData(); 
         }
@@ -458,7 +458,7 @@ public class Framework implements FrameworkMBean {
         }
         for (int i = 0; i < bundleIdentifiers.length; i++) {
             try {
-                updateBundle(bundleIdentifiers[i], urls[i]);
+                updateBundleFromURL(bundleIdentifiers[i], urls[i]);
             } catch (Throwable t) {
                 return createFailedBatchActionResult(bundleIdentifiers, i, t);
             }
