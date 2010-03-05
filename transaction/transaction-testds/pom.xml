@@ -63,7 +63,6 @@
                 <configuration>
                     <instructions>
                         <Import-Package>
-                            javax.transaction*;version="[0.0.0,1.1.0)",
                             *
                         </Import-Package>
                         <Private-Package>
