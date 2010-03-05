@@ -27,7 +27,7 @@
   <groupId>org.apache.aries.samples</groupId>
   <artifactId>blog-datasource</artifactId>
   <version>0.1-incubating-SNAPSHOT</version>
-  <name>Blog Sample Transaction Enlisting JDBC Datasource</name>
+  <name>Apache Aries blog sample transaction enlisting JDBC datasource</name>
   <packaging>bundle</packaging>
   <dependencies>
         <dependency>
