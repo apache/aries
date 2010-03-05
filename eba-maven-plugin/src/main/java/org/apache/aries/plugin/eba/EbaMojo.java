@@ -29,7 +29,9 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
-
+import org.apache.maven.shared.osgi.DefaultMaven2OsgiConverter;
+import org.apache.maven.shared.osgi.Maven2OsgiConverter;
+import aQute.lib.osgi.Analyzer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -46,10 +48,30 @@ import java.util.Set;
 public class EbaMojo
     extends AbstractMojo
 {
-    public static final String APPLICATION_MF_URI = "META-INF/application.mf";
+
+    
+	public static final String APPLICATION_MF_URI = "META-INF/APPLICATION.MF";
 
     private static final String[] DEFAULT_INCLUDES = {"**/**"};
 
+    /**
+     * Application manifest headers
+     */
+    private static final String MANIFEST_VERSION = "Manifest-Version: ";
+    private static final String APPLICATION_MANIFESTVERSION = "Application-ManifestVersion: ";
+    private static final String APPLICATION_SYMBOLICNAME = "Application-SymbolicName: ";
+    private static final String APPLICATION_VERSION = "Application-Version: ";
+    private static final String APPLICATION_NAME = "Application-Name: ";
+    private static final String APPLICATION_DESCRIPTION = "Application-Description: ";
+    private static final String APPLICATION_CONTENT = "Application-Content: ";
+    private static final String APPLICATION_EXPORTSERVICE = "Application-ExportService: ";
+    private static final String APPLICATION_IMPORTSERVICE = "Application-ImportService: ";
+
+    /**
+     * Coverter for maven pom values to OSGi manifest values (pulled in from the maven-bundle-plugin)
+     */
+    private Maven2OsgiConverter maven2OsgiConverter = new DefaultMaven2OsgiConverter();
+    
     /**
      * Single directory for extra files to include in the eba.
      *
@@ -59,9 +81,9 @@ public class EbaMojo
     private File ebaSourceDirectory;
 
     /**
-     * The location of the application.mf file to be used within the eba file.
+     * The location of the APPLICATION.MF file to be used within the eba file.
      *
-     * @parameter expression="${basedir}/src/main/eba/META-INF/application.mf"
+     * @parameter expression="${basedir}/src/main/eba/META-INF/APPLICATION.MF"
      */
     private File applicationManifestFile;
 
@@ -130,6 +152,27 @@ public class EbaMojo
     private ZipArchiver zipArchiver;
 
     /**
+     * Whether to generate a manifest based on maven configuration.
+     *
+     * @parameter expression="${generateManifest}" default-value="false"
+     */
+    private boolean generateManifest;
+
+    /**
+     * Any service exports to add to a generated manifest.
+     *
+     * @parameter expression="${serviceExports}"
+     */
+    private String serviceExports;
+
+    /**
+     * Any service imports to add to a generated manifest.
+     *
+     * @parameter expression="${serviceImports}"
+     */
+    private String serviceImports;
+
+    /**
      * Adding pom.xml and pom.properties to the archive.
      *
      * @parameter expression="${addMavenDescriptor}" default-value="true"
@@ -171,6 +214,7 @@ public class EbaMojo
         getLog().debug( "workDirectory[" + workDirectory + "]" );
         getLog().debug( "outputDirectory[" + outputDirectory + "]" );
         getLog().debug( "finalName[" + finalName + "]" );
+        getLog().debug( "generateManifest[" + generateManifest + "]" );
 
         zipArchiver.setIncludeEmptyDirs( includeEmptyDirs );
         zipArchiver.setCompress( true );
@@ -258,19 +302,43 @@ public class EbaMojo
         // Include custom manifest if necessary
         try
         {
-            includeCustomApplicationManifestFile();
+            if (!generateManifest) {
+            	includeCustomApplicationManifestFile();
+            }
         }
         catch ( IOException e )
         {
-            throw new MojoExecutionException( "Error copying application.mf file", e );
+            throw new MojoExecutionException( "Error copying APPLICATION.MF file", e );
         }
 
+		// Generate application manifest if requested
+		if (generateManifest) {
+			String fileName = new String(getBuildDir() + "/"
+					+ APPLICATION_MF_URI);
+			File appMfFile = new File(fileName);
+
+			try {
+				// Delete any old manifest
+				if (appMfFile.exists()) {
+					FileUtils.fileDelete(fileName);
+				}
+
+				appMfFile.getParentFile().mkdirs();
+				if (appMfFile.createNewFile()) {
+					writeApplicationManifest(fileName);
+				}
+			} catch (java.io.IOException e) {
+				throw new MojoExecutionException(
+						"Error generating APPLICATION.MF file: " + fileName, e);
+			}
+		}
+        
         // Check if connector deployment descriptor is there
         File ddFile = new File( getBuildDir(), APPLICATION_MF_URI);
         if ( !ddFile.exists() )
         {
             getLog().warn(
-                "eba deployment descriptor: " + ddFile.getAbsolutePath() + " does not exist." );
+                "Application manifest: " + ddFile.getAbsolutePath() + " does not exist." );
         }
 
         try
@@ -312,6 +380,78 @@ public class EbaMojo
         }
     }
 
+	private void writeApplicationManifest(String fileName)
+			throws MojoExecutionException {
+		try {
+			// TODO: add support for dependency version ranges. Need to pick
+			// them up from the pom and convert them to OSGi version ranges.
+			FileUtils.fileAppend(fileName, MANIFEST_VERSION + "1" + "\n");
+			FileUtils.fileAppend(fileName, APPLICATION_MANIFESTVERSION + "1" + "\n");
+			FileUtils.fileAppend(fileName, APPLICATION_SYMBOLICNAME
+					+ getApplicationSymbolicName(project.getArtifact()) + "\n");
+			FileUtils.fileAppend(fileName, APPLICATION_VERSION
+					+ aQute.lib.osgi.Analyzer.cleanupVersion(project.getVersion()) + "\n");
+//					+ maven2OsgiConverter.getVersion(project.getVersion()) + "\n");
+			FileUtils.fileAppend(fileName, APPLICATION_NAME + project.getName() + "\n");
+			FileUtils.fileAppend(fileName, APPLICATION_DESCRIPTION
+					+ project.getDescription() + "\n");
+
+			// Write the APPLICATION-CONTENT
+			// TODO: check that the dependencies are bundles (currently, the converter
+			// will throw an exception)
+			Set<Artifact> artifacts;
+			if (useTransitiveDependencies) {
+				artifacts = project.getArtifacts();
+			} else {
+				artifacts = project.getDependencyArtifacts();
+			}
+			Iterator<Artifact> iter = artifacts.iterator();
+
+			FileUtils.fileAppend(fileName, APPLICATION_CONTENT);
+			if (iter.hasNext()) {
+				Artifact artifact = iter.next();
+				FileUtils.fileAppend(fileName, maven2OsgiConverter
+						.getBundleSymbolicName(artifact)
+						+ ";version=\""
+						+ aQute.lib.osgi.Analyzer.cleanupVersion(artifact.getVersion())
+//						+ maven2OsgiConverter.getVersion(artifact.getVersion())
+						+ "\"");
+			}
+			while (iter.hasNext()) {
+				Artifact artifact = iter.next();
+				FileUtils.fileAppend(fileName, ",\n "
+						+ maven2OsgiConverter.getBundleSymbolicName(artifact)
+						+ ";version=\""
+						+ aQute.lib.osgi.Analyzer.cleanupVersion(artifact.getVersion())
+//						+ maven2OsgiConverter.getVersion(artifact.getVersion())
+						+ "\"");
+			}
+
+			FileUtils.fileAppend(fileName, "\n");
+
+			// Add any service imports or exports
+			if (serviceExports != null) {
+				FileUtils.fileAppend(fileName, APPLICATION_EXPORTSERVICE
+						+ serviceExports + "\n");
+			}
+			if (serviceImports != null) {
+				FileUtils.fileAppend(fileName, APPLICATION_IMPORTSERVICE
+						+ serviceImports + "\n");
+			}
+
+		} catch (Exception e) {
+			throw new MojoExecutionException(
+					"Error writing dependencies into APPLICATION.MF", e);
+		}
+
+	}
+    
+    // The maven2OsgiConverter assumes the artifact is a jar so we need our own
+	// This uses the same fallback scheme as the converter
+    private String getApplicationSymbolicName(Artifact artifact) {
+    	return artifact.getGroupId() + "." + artifact.getArtifactId();
+    }
+    
     protected File getBuildDir()
     {
         if ( buildDir == null )
@@ -329,7 +469,7 @@ public class EbaMojo
         }
         File appMfFile = applicationManifestFile;
         if (appMfFile.exists()) {
-            getLog().info( "Using application.mf "+ applicationManifestFile);
+            getLog().info( "Using APPLICATION.MF "+ applicationManifestFile);
             File metaInfDir = new File(getBuildDir(), "META-INF");
             FileUtils.copyFileToDirectory( appMfFile, metaInfDir);
         }
