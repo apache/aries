@@ -231,7 +231,7 @@
 			<groupId>org.apache.aries.samples</groupId>
 			<artifactId>blog-servlet</artifactId>
 		</dependency>
-
+		
 	</dependencies>
 
 	<build>
@@ -253,7 +253,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -267,54 +266,6 @@
 						<configuration>
 							<excludeTransitive>true</excludeTransitive>
 							<outputDirectory>${project.build.directory}</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<tasks>
-								<!-- Note: need a less fragile way of including the legal files -->
-								<copy file="${basedir}/../LICENSE" todir="${project.build.directory}" />
-								<copy file="${basedir}/../NOTICE" todir="${project.build.directory}" />
-								<zip destfile="${project.build.directory}/blog.eba">
-									<zipfileset dir="${project.build.directory}"
-										includes="blog*1.0.0*.jar" />
-									<zipfileset dir="${project.build.directory}" prefix="META-INF"
-										includes="LICENSE" />
-									<zipfileset dir="${project.build.directory}" prefix="META-INF"
-										includes="NOTICE" />
-								</zip>
-							</tasks>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-artifacts</id>
-						<phase>package</phase>
-						<goals>
-							<goal>attach-artifact</goal>
-						</goals>
-						<configuration>
-							<artifacts>
-								<artifact>
-									<file>${project.build.directory}/blog.eba</file>
-									<type>eba</type>
-								</artifact>
-							</artifacts>
 						</configuration>
 					</execution>
 				</executions>
