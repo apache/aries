@@ -17,7 +17,9 @@
 package org.apache.aries.jmx.framework;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.management.openmbean.TabularData;
@@ -59,30 +61,41 @@ public class PackageState implements PackageStateMBean {
     }
 
     /**
-     * @see org.osgi.jmx.framework.PackageStateMBean#getExportingBundle(java.lang.String, java.lang.String)
+     * @see org.osgi.jmx.framework.PackageStateMBean#getExportingBundles(String, String)
      */
-    public long getExportingBundle(String packageName, String version) throws IOException {
+    public long[] getExportingBundles(String packageName, String version) throws IOException {
         ExportedPackage[] exportedPackages = packageAdmin.getExportedPackages(packageName);
         if (exportedPackages != null) {
             Version ver = Version.parseVersion(version);
+            List<Long> exportingBundles = new ArrayList<Long>();
             for (ExportedPackage exportedPackage : exportedPackages) {
                 if (exportedPackage.getVersion().equals(ver)) {
-                    return exportedPackage.getExportingBundle().getBundleId();
+                    long bundleId  = exportedPackage.getExportingBundle().getBundleId();
+                    exportingBundles.add(bundleId);
                 }
             }
+            
+            if(!exportingBundles.isEmpty()){
+                long[] convertedArray = new long[exportingBundles.size()];
+                for(int i=0; i < exportingBundles.size(); i++){
+                    convertedArray[i] = exportingBundles.get(i);
+                }
+                return convertedArray;
+            }
         }
-        return -1;
+        return null;
     }
 
     /**
-     * @see org.osgi.jmx.framework.PackageStateMBean#getImportingBundles(java.lang.String, java.lang.String)
+     * @see org.osgi.jmx.framework.PackageStateMBean#getImportingBundles(String, String, long)
      */
-    public long[] getImportingBundles(String packageName, String version) throws IOException {
+    public long[] getImportingBundles(String packageName, String version, long exportingBundle) throws IOException {
         ExportedPackage[] exportedPackages = packageAdmin.getExportedPackages(packageName);
         if (exportedPackages != null) {
             Version ver = Version.parseVersion(version);
             for (ExportedPackage exportedPackage : exportedPackages) {
-                if (exportedPackage.getVersion().equals(ver)) {
+                if (exportedPackage.getVersion().equals(ver)
+                        && exportedPackage.getExportingBundle().getBundleId() == exportingBundle) {
                     Bundle[] bundles = exportedPackage.getImportingBundles();
                     if (bundles != null) {
                         long[] importingBundles = new long[bundles.length];
@@ -98,14 +111,16 @@ public class PackageState implements PackageStateMBean {
     }
 
     /**
-     * @see org.osgi.jmx.framework.PackageStateMBean#isRemovalPending(java.lang.String, java.lang.String)
+     * @see org.osgi.jmx.framework.PackageStateMBean#isRemovalPending(String, String, long)
      */
-    public boolean isRemovalPending(String packageName, String version) throws IOException {
+    public boolean isRemovalPending(String packageName, String version, long exportingBundle) throws IOException {
         ExportedPackage[] exportedPackages = packageAdmin.getExportedPackages(packageName);
         if (exportedPackages != null) {
             Version ver = Version.parseVersion(version);
             for (ExportedPackage exportedPackage : exportedPackages) {
-                if (exportedPackage.getVersion().equals(ver) && exportedPackage.isRemovalPending()) {
+                if (exportedPackage.getVersion().equals(ver)
+                        && exportedPackage.getExportingBundle().getBundleId() == exportingBundle
+                        && exportedPackage.isRemovalPending()) {
                     return true;
                 }
             }
