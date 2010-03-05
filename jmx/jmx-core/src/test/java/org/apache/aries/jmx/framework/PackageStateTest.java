@@ -117,9 +117,9 @@ public class PackageStateTest {
         Mockito.when(admin.getExportedPackages(bundle)).thenReturn(new ExportedPackage[]{exported});
         TabularData table = mbean.listPackages();
         Assert.assertEquals(PackageStateMBean.PACKAGES_TYPE,table.getTabularType());
-        Collection<CompositeData> values = table.values();
+        Collection values = table.values();
         Assert.assertEquals(1, values.size());
-        CompositeData data = values.iterator().next();
+        CompositeData data = (CompositeData) values.iterator().next();
         Long[] exportingBundles = (Long[])data.get(PackageStateMBean.EXPORTING_BUNDLES);
         Assert.assertArrayEquals(new Long[]{Long.valueOf(4)}, exportingBundles);
         String name = (String) data.get(PackageStateMBean.NAME);
