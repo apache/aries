@@ -23,6 +23,11 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+import javax.persistence.Column;
 
 import org.apache.aries.samples.blog.persistence.api.Entry;
 
@@ -36,11 +41,12 @@ import org.apache.aries.samples.blog.persistence.api.Entry;
 public class EntryImpl implements Entry
 {
   /** An auto-generated primary key */
-
+	@Id
+	@GeneratedValue
   private Long id;
 
   /** The author of the blog post */
-
+	@ManyToOne(fetch=FetchType.EAGER)
   private AuthorImpl author;
 
   /** The date the post was published */
@@ -52,7 +58,7 @@ public class EntryImpl implements Entry
   /** Tags associated with the post */
   private List<String> tags;
   /** The text of the blog */
-
+	@Column(length=10000)
   private String blogText;
 
   /** Get the author of this blog post */
