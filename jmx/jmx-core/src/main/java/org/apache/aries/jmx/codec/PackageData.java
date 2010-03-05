@@ -41,9 +41,9 @@ import org.osgi.service.packageadmin.ExportedPackage;
 public class PackageData {
 
     /**
-     * {@link PackageStateMBean#EXPORTING_BUNDLE}
+     * {@link PackageStateMBean#EXPORTING_BUNDLES}
      */
-    long exportingBundle;
+    long[] exportingBundles;
 
     /**
      * {@link PackageStateMBean#IMPORTING_BUNDLES}
@@ -70,7 +70,7 @@ public class PackageData {
      * @param exportedPackage @see {@link ExportedPackage}.
      */
     public PackageData(ExportedPackage exportedPackage) {
-        this(exportedPackage.getExportingBundle().getBundleId(), toBundleIds(exportedPackage.getImportingBundles()),
+        this(new long[]{exportedPackage.getExportingBundle().getBundleId()}, toBundleIds(exportedPackage.getImportingBundles()),
                 exportedPackage.getName(), exportedPackage.isRemovalPending(), exportedPackage.getVersion().toString());
 
     }
@@ -78,14 +78,14 @@ public class PackageData {
     /**
      * Constructs new PackageData.
      * 
-     * @param exportingBundle the bundle the package belongs to.
+     * @param exportingBundles the bundle the package belongs to.
      * @param importingBundles the importing bundles of the package.
      * @param name the package name.
      * @param removalPending whether the package is pending removal.
      * @param version package version.
      */
-    public PackageData(long exportingBundle, long[] importingBundles, String name, boolean removalPending, String version) {
-        this.exportingBundle = exportingBundle;
+    public PackageData(long[] exportingBundles, long[] importingBundles, String name, boolean removalPending, String version) {
+        this.exportingBundles = exportingBundles;
         this.importingBundles = importingBundles;
         this.name = name;
         this.removalPending = removalPending;
@@ -101,7 +101,7 @@ public class PackageData {
     public CompositeData toCompositeData() {
         try {
             Map<String, Object> items = new HashMap<String, Object>();
-            items.put(PackageStateMBean.EXPORTING_BUNDLE, exportingBundle);
+            items.put(PackageStateMBean.EXPORTING_BUNDLES, toLongArray(exportingBundles));
             items.put(PackageStateMBean.IMPORTING_BUNDLES, toLongArray(importingBundles));
             items.put(PackageStateMBean.NAME, name);
             items.put(PackageStateMBean.REMOVAL_PENDING, removalPending);
@@ -122,7 +122,7 @@ public class PackageData {
         if(data == null){
             return null;
         }
-        long exportingBundle = (Long) data.get(PackageStateMBean.EXPORTING_BUNDLE);
+        long[] exportingBundle = toLongPrimitiveArray((Long[])data.get(PackageStateMBean.EXPORTING_BUNDLES));
         long[] importingBundles = toLongPrimitiveArray((Long[]) data.get(PackageStateMBean.IMPORTING_BUNDLES));
         String name = (String) data.get(PackageStateMBean.NAME);
         boolean removalPending = (Boolean) data.get(PackageStateMBean.REMOVAL_PENDING);
@@ -198,10 +198,10 @@ public class PackageData {
     }
 
     /**
-     * @return the exportingBundle
+     * @return the exportingBundles
      */
-    public long getExportingBundle() {
-        return exportingBundle;
+    public long[] getExportingBundles() {
+        return exportingBundles;
     }
 
     /**
@@ -239,7 +239,8 @@ public class PackageData {
 
         PackageData that = (PackageData) o;
 
-        if (exportingBundle != that.exportingBundle) return false;
+        // exportingBundle must be always there
+        if (exportingBundles[0] != that.exportingBundles[0]) return false;
         if (!name.equals(that.name)) return false;
         if (!version.equals(that.version)) return false;
 
@@ -248,7 +249,7 @@ public class PackageData {
 
     @Override
     public int hashCode() {
-        int result = (int) (exportingBundle ^ (exportingBundle >>> 32));
+        int result = (int) (exportingBundles[0] ^ (exportingBundles[0] >>> 32));
         result = 31 * result + name.hashCode();
         result = 31 * result + version.hashCode();
         return result;

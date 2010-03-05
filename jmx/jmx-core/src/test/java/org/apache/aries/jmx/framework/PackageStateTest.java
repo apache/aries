@@ -17,6 +17,7 @@
 package org.apache.aries.jmx.framework;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
@@ -56,37 +57,48 @@ public class PackageStateTest {
     }
 
     @Test
-    public void testGetExportingBundle() throws IOException {
+    public void testGetExportingBundles() throws IOException {
         ExportedPackage exported = Mockito.mock(ExportedPackage.class);
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(exported.getVersion()).thenReturn(Version.parseVersion("1.0.0"));
         Mockito.when(exported.getExportingBundle()).thenReturn(bundle);
-        Mockito.when(bundle.getBundleId()).thenReturn(new Long(5));
-        Mockito.when(admin.getExportedPackages(Mockito.anyString())).thenReturn(new ExportedPackage[]{exported});
-        long id = mbean.getExportingBundle("test", "1.0.0");
-        Assert.assertEquals(5, id);
-        
+        Mockito.when(bundle.getBundleId()).thenReturn(Long.valueOf(5));
+        ExportedPackage exported2 = Mockito.mock(ExportedPackage.class);
+        Bundle bundle2 = Mockito.mock(Bundle.class);
+        Mockito.when(exported2.getVersion()).thenReturn(Version.parseVersion("1.0.0"));
+        Mockito.when(exported2.getExportingBundle()).thenReturn(bundle2);
+        Mockito.when(bundle2.getBundleId()).thenReturn(Long.valueOf(6));
+        Mockito.when(admin.getExportedPackages(Mockito.anyString())).thenReturn(new ExportedPackage[]{exported, exported2});
+        long[] ids = mbean.getExportingBundles("test", "1.0.0");
+        Assert.assertNotNull(ids);
+        Assert.assertArrayEquals(new long[]{5,6}, ids);
     }
 
     @Test
     public void testGetImportingBundles() throws IOException {
         ExportedPackage exported = Mockito.mock(ExportedPackage.class);
         Bundle bundle = Mockito.mock(Bundle.class);
+        Bundle exportingBundle = Mockito.mock(Bundle.class);
         Mockito.when(exported.getVersion()).thenReturn(Version.parseVersion("1.0.0"));
+        Mockito.when(exported.getExportingBundle()).thenReturn(exportingBundle);
+        Mockito.when(exportingBundle.getBundleId()).thenReturn(Long.valueOf(2));
         Mockito.when(exported.getImportingBundles()).thenReturn(new Bundle[]{bundle});
-        Mockito.when(bundle.getBundleId()).thenReturn(new Long(4));
+        Mockito.when(bundle.getBundleId()).thenReturn(Long.valueOf(4));
         Mockito.when(admin.getExportedPackages(Mockito.anyString())).thenReturn(new ExportedPackage[]{exported});
-        long[] ids = mbean.getImportingBundles("test", "1.0.0");
+        long[] ids = mbean.getImportingBundles("test", "1.0.0", 2);
         Assert.assertArrayEquals(new long[]{4}, ids);
     }
 
     @Test
     public void testIsRemovalPending() throws IOException {
         ExportedPackage exported = Mockito.mock(ExportedPackage.class);
+        Bundle expBundle = Mockito.mock(Bundle.class);
         Mockito.when(exported.getVersion()).thenReturn(Version.parseVersion("1.0.0"));
         Mockito.when(exported.isRemovalPending()).thenReturn(true);
+        Mockito.when(exported.getExportingBundle()).thenReturn(expBundle);
+        Mockito.when(expBundle.getBundleId()).thenReturn(Long.valueOf(2));
         Mockito.when(admin.getExportedPackages(Mockito.anyString())).thenReturn(new ExportedPackage[]{exported});
-        boolean isRemoval = mbean.isRemovalPending("test", "1.0.0");
+        boolean isRemoval = mbean.isRemovalPending("test", "1.0.0", Long.valueOf(2));
         Assert.assertTrue(isRemoval);
     }
 
@@ -100,14 +112,20 @@ public class PackageStateTest {
         Mockito.when(exported.getImportingBundles()).thenReturn(new Bundle[]{impBundle});
         Mockito.when(exported.getName()).thenReturn("test");
         Mockito.when(exported.getExportingBundle()).thenReturn(bundle);
-        Mockito.when(bundle.getBundleId()).thenReturn(new Long(4));
-        Mockito.when(impBundle.getBundleId()).thenReturn(new Long(5));
+        Mockito.when(bundle.getBundleId()).thenReturn(Long.valueOf(4));
+        Mockito.when(impBundle.getBundleId()).thenReturn(Long.valueOf(5));
         Mockito.when(admin.getExportedPackages(bundle)).thenReturn(new ExportedPackage[]{exported});
         TabularData table = mbean.listPackages();
         Assert.assertEquals(PackageStateMBean.PACKAGES_TYPE,table.getTabularType());
-        CompositeData data = table.get(new Object[]{"test", "1.0.0", new Long(4)});
-        Assert.assertNotNull(data);
-       
+        Collection<CompositeData> values = table.values();
+        Assert.assertEquals(1, values.size());
+        CompositeData data = values.iterator().next();
+        Long[] exportingBundles = (Long[])data.get(PackageStateMBean.EXPORTING_BUNDLES);
+        Assert.assertArrayEquals(new Long[]{Long.valueOf(4)}, exportingBundles);
+        String name = (String) data.get(PackageStateMBean.NAME);
+        Assert.assertEquals("test", name);
+        String version = (String) data.get(PackageStateMBean.VERSION);
+        Assert.assertEquals("1.0.0", version);
     }
 
 }
