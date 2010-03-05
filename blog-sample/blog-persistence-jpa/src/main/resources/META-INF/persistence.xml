@@ -29,7 +29,7 @@
 
     <class>org.apache.aries.samples.blog.persistence.entity.AuthorImpl</class>
     <class>org.apache.aries.samples.blog.persistence.entity.EntryImpl</class>
-    <exclude-unlisted-classes/>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
     
     
      <properties>
