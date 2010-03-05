@@ -26,8 +26,9 @@ import java.util.Collection;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
-import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
+
+import junit.framework.Assert;
 
 import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.junit.Before;
@@ -35,6 +36,7 @@ import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
+import org.osgi.framework.Bundle;
 import org.osgi.jmx.framework.PackageStateMBean;
 
 /**
@@ -75,23 +77,26 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
     public void testMBeanInterface() throws IOException {
         PackageStateMBean packagaState = getMBean(PackageStateMBean.OBJECTNAME, PackageStateMBean.class);
         assertNotNull(packagaState);
-        long exportingBundleId = packagaState.getExportingBundle("org.osgi.jmx.framework", "1.5.0");
-        assertTrue("Should find a bundle exporting org.osgi.jmx.framework", exportingBundleId > -1);
+        
+        long[] exportingBundles = packagaState.getExportingBundles("org.osgi.jmx.framework", "1.5.0");
+        assertNotNull(exportingBundles);
+        assertTrue("Should find a bundle exporting org.osgi.jmx.framework", exportingBundles.length > 0);
 
-        long exportingBundleId_2 = packagaState.getExportingBundle("test", "1.0.0");
-        assertTrue("Shouldn't find a bundle exporting test package", exportingBundleId_2 == -1);
+        long[] exportingBundles2 = packagaState.getExportingBundles("test", "1.0.0");
+        Assert.assertNull("Shouldn't find a bundle exporting test package", exportingBundles2);
 
-        long[] importingBundlesId = packagaState.getImportingBundles("org.osgi.jmx.framework", "1.5.0");
+        long[] importingBundlesId = packagaState
+                .getImportingBundles("org.osgi.jmx.framework", "1.5.0", exportingBundles[0]);
         assertTrue("Should find bundles importing org.osgi.jmx.framework", importingBundlesId.length > 0);
 
         TabularData table = packagaState.listPackages();
         assertNotNull("TabularData containing CompositeData with packages info shouldn't be null", table);
         assertEquals("TabularData should be a type PACKAGES", PackageStateMBean.PACKAGES_TYPE, table.getTabularType());
-        //Collection<CompositeData> colData = table.values();
-        //assertNotNull("Collection of CompositeData shouldn't be null", colData);
-        //assertFalse("Collection of CompositeData should contain elements", colData.isEmpty());
+        Collection colData = table.values();
+        assertNotNull("Collection of CompositeData shouldn't be null", colData);
+        assertFalse("Collection of CompositeData should contain elements", colData.isEmpty());
 
-        boolean isRemovalPending = packagaState.isRemovalPending("org.osgi.jmx.framework", "1.5.0");
+        boolean isRemovalPending = packagaState.isRemovalPending("org.osgi.jmx.framework", "1.5.0", exportingBundles[0]);
         assertFalse("Should removal pending on org.osgi.jmx.framework be false", isRemovalPending);
     }
 
