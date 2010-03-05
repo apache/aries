@@ -21,6 +21,9 @@ package org.apache.aries.samples.blog.persistence.entity;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 import org.apache.aries.samples.blog.persistence.api.Entry;
 
 
@@ -28,7 +31,8 @@ import org.apache.aries.samples.blog.persistence.api.Entry;
 /**
  * This class represents a blog entry
  */
-
+@Entity(name = "BLOGENTRY")
+@Table(name = "BLOGENTRY")
 public class EntryImpl implements Entry
 {
   /** An auto-generated primary key */
