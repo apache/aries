@@ -75,10 +75,10 @@ public class FrameworkTest {
     }
 
     @Test
-    public void testInstallBundleString() throws Exception {
+    public void testInstallBundle() throws Exception {
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.installBundle("file:test.jar")).thenReturn(bundle);
-        Mockito.when(bundle.getBundleId()).thenReturn(new Long(2));
+        Mockito.when(bundle.getBundleId()).thenReturn(Long.valueOf(2));
         long bundleId = mbean.installBundle("file:test.jar");
         Assert.assertEquals(2, bundleId);
         Mockito.reset(context);
@@ -94,14 +94,14 @@ public class FrameworkTest {
     }
 
     @Test
-    public void testInstallBundleStringString() throws Exception {
+    public void testInstallBundleFromURL() throws Exception {
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.installBundle(Mockito.anyString(), Mockito.any(InputStream.class))).thenReturn(bundle);
-        Mockito.when(bundle.getBundleId()).thenReturn(new Long(2));
+        Mockito.when(bundle.getBundleId()).thenReturn(Long.valueOf(2));
         Framework spiedMBean = Mockito.spy(mbean);
         InputStream stream = Mockito.mock(InputStream.class);
         Mockito.doReturn(stream).when(spiedMBean).createStream("test.jar");
-        long bundleId = spiedMBean.installBundle("file:test.jar", "test.jar");
+        long bundleId = spiedMBean.installBundleFromURL("file:test.jar", "test.jar");
         Assert.assertEquals(2, bundleId);
         Mockito.reset(context);
         Mockito.doReturn(stream).when(spiedMBean).createStream(Mockito.anyString());
@@ -109,7 +109,7 @@ public class FrameworkTest {
                 new BundleException("location doesn't exist"));
 
         try {
-            spiedMBean.installBundle("file:test2.jar", "test.jar");
+            spiedMBean.installBundleFromURL("file:test2.jar", "test.jar");
             Assert.fail("Shouldn't go to this stage, location doesn't exist");
         } catch (IOException e) {
             // ok
@@ -117,11 +117,11 @@ public class FrameworkTest {
     }
 
     @Test
-    public void testInstallBundlesStringArray() throws Exception {
+    public void testInstallBundles() throws Exception {
         String[] locations = new String[] { "file:test.jar" };
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.installBundle("file:test.jar")).thenReturn(bundle);
-        Mockito.when(bundle.getBundleId()).thenReturn(new Long(2));
+        Mockito.when(bundle.getBundleId()).thenReturn(Long.valueOf(2));
         CompositeData data = mbean.installBundles(locations);
         BatchInstallResult batch = BatchInstallResult.from(data);
         Assert.assertNotNull(batch);
@@ -144,14 +144,14 @@ public class FrameworkTest {
     }
 
     @Test
-    public void testInstallBundlesStringArrayStringArray() throws Exception {
+    public void testInstallBundlesFromURL() throws Exception {
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.installBundle(Mockito.anyString(), Mockito.any(InputStream.class))).thenReturn(bundle);
-        Mockito.when(bundle.getBundleId()).thenReturn(new Long(2));
+        Mockito.when(bundle.getBundleId()).thenReturn(Long.valueOf(2));
         Framework spiedMBean = Mockito.spy(mbean);
         InputStream stream = Mockito.mock(InputStream.class);
         Mockito.doReturn(stream).when(spiedMBean).createStream(Mockito.anyString());
-        CompositeData data = spiedMBean.installBundles(new String[] { "file:test.jar" }, new String[] { "test.jar" });
+        CompositeData data = spiedMBean.installBundlesFromURL(new String[] { "file:test.jar" }, new String[] { "test.jar" });
         Assert.assertNotNull(data);
         BatchInstallResult batch = BatchInstallResult.from(data);
         Assert.assertEquals(2, batch.getCompleted()[0]);
@@ -175,7 +175,7 @@ public class FrameworkTest {
     }
 
     @Test
-    public void testRefreshBundleLong() throws Exception {
+    public void testRefreshBundle() throws Exception {
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.getBundle(1)).thenReturn(bundle);
 
@@ -191,7 +191,7 @@ public class FrameworkTest {
     }
 
     @Test
-    public void testRefreshBundlesLongArray() throws IOException {
+    public void testRefreshBundles() throws IOException {
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.getBundle(1)).thenReturn(bundle);
 
@@ -401,7 +401,7 @@ public class FrameworkTest {
     }
 
     @Test
-    public void testUpdateBundleLong() throws Exception {
+    public void testUpdateBundle() throws Exception {
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.getBundle(5)).thenReturn(bundle);
         mbean.updateBundle(5);
@@ -409,18 +409,18 @@ public class FrameworkTest {
     }
 
     @Test
-    public void testUpdateBundleLongString() throws Exception {
+    public void testUpdateBundleFromUrl() throws Exception {
         Framework spiedMBean = Mockito.spy(mbean);
         InputStream stream = Mockito.mock(InputStream.class);
         Mockito.doReturn(stream).when(spiedMBean).createStream(Mockito.anyString());
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.getBundle(5)).thenReturn(bundle);
-        spiedMBean.updateBundle(5, "file:test.jar");
+        spiedMBean.updateBundleFromURL(5, "file:test.jar");
         Mockito.verify(bundle).update(stream);
     }
 
     @Test
-    public void testUpdateBundlesLongArray() throws Exception {
+    public void testUpdateBundles() throws Exception {
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.getBundle(5)).thenReturn(bundle);
         CompositeData data = mbean.updateBundles(new long[] { 5 });
@@ -471,13 +471,13 @@ public class FrameworkTest {
     }
 
     @Test
-    public void testUpdateBundlesLongArrayStringArray() throws Exception {
+    public void testUpdateBundlesFromURL() throws Exception {
         Framework spiedMBean = Mockito.spy(mbean);
         InputStream stream = Mockito.mock(InputStream.class);
         Mockito.doReturn(stream).when(spiedMBean).createStream(Mockito.anyString());
         Bundle bundle = Mockito.mock(Bundle.class);
         Mockito.when(context.getBundle(5)).thenReturn(bundle);
-        CompositeData data = spiedMBean.updateBundles(new long[] { 5 }, new String[] { "file:test.jar" });
+        CompositeData data = spiedMBean.updateBundlesFromURL(new long[] { 5 }, new String[] { "file:test.jar" });
         Mockito.verify(bundle).update(stream);
         BatchActionResult batch = BatchActionResult.from(data);
         Assert.assertEquals(5, batch.getCompleted()[0]);
@@ -485,7 +485,7 @@ public class FrameworkTest {
         Assert.assertNull(batch.getError());
         Assert.assertNull(batch.getRemainingItems());
 
-        CompositeData data2 = spiedMBean.updateBundles(new long[] { 2, 4 }, new String[] { "file:test.jar" });
+        CompositeData data2 = spiedMBean.updateBundlesFromURL(new long[] { 2, 4 }, new String[] { "file:test.jar" });
         BatchActionResult batch2 = BatchActionResult.from(data2);
         Assert.assertFalse(batch2.isSuccess());
         Assert.assertNotNull(batch2.getError());
