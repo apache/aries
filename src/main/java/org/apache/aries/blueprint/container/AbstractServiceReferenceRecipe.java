@@ -638,28 +638,18 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             return e.create();
         }
 
-        protected Class getTargetClass(Class[] interfaceNames) {
+        protected Class<?> getTargetClass(Class<?>[] interfaceNames) {
             // Only allow class proxying if specifically asked to
-            Class root = Object.class;
-            for (Class clazz : interfaceNames) {
+            Class<?> root = Object.class;
+            for (Class<?> clazz : interfaceNames) {
                 if (!clazz.isInterface()) {
-                    if (root == Object.class) {
+                    if (root.isAssignableFrom(clazz)) {
                         root = clazz;
-                        continue;
+                    } else if (clazz.isAssignableFrom(root)) {
+                        //nothing to do, root is correct
+                    } else {
+                        throw new ComponentDefinitionException("Classes " + root.getClass().getName() + " and " + clazz.getName() + " are not in the same hierarchy");
                     }
-                    // Check that all classes are in the same hierarchy
-                    for (Class p = clazz; p != Object.class; p = p.getSuperclass()) {
-                        if (p == root) {
-                            root = clazz;
-                            continue;
-                        }
-                    }
-                    for (Class p = root; p != Object.class; p = p.getSuperclass()) {
-                        if (p == clazz) {
-                            continue;
-                        }
-                    }
-                    throw new ComponentDefinitionException("Classes " + root.getClass().getName() + " and " + clazz.getName() + " are not in the same hierarchy");
                 }
             }
             return root;
