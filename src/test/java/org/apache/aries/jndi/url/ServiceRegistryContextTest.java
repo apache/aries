@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
 import java.util.Hashtable;
@@ -48,6 +49,7 @@ import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -314,8 +316,168 @@ public class ServiceRegistryContextTest
     
     Skeleton.getSkeleton(t).assertCalledExactNumberOfTimes(new MethodCall(Runnable.class, "run"), 1);
     Skeleton.getSkeleton(t2).assertCalledExactNumberOfTimes(new MethodCall(Runnable.class, "run"), 1);
-  }  
+  }
+  
+  @Test
+  public void checkServiceListLookup() throws NamingException
+  {
+    BundleMock mock = new BundleMock("scooby.doo", new Properties());
+    
+    Thread.currentThread().setContextClassLoader(mock.getClassLoader());
 
+    InitialContext ctx = new InitialContext();
+    
+    String className = Runnable.class.getName();
+    
+    Runnable t = Skeleton.newMock(Runnable.class);
+    
+    // we don't want the default service
+    reg.unregister();
+    
+    ServiceRegistration reg = bc.registerService(className, t, null);
+    ServiceRegistration reg2 = bc.registerService("java.lang.Thread", new Thread(), null);
+    
+    Context ctx2 = (Context) ctx.lookup("osgi:servicelist/java.lang.Runnable");
+    
+    Runnable r = (Runnable) ctx2.lookup(String.valueOf(reg.getReference().getProperty(Constants.SERVICE_ID)));
+
+    r.run();
+    
+    Skeleton.getSkeleton(t).assertCalled(new MethodCall(Runnable.class, "run"));
+    
+    reg.unregister();
+    
+    try {
+      r.run();
+      fail("Should have received a ServiceException");
+    } catch (ServiceException e) {
+      assertEquals("service exception has the wrong type", ServiceException.UNREGISTERED, e.getType());
+    }
+    
+    try {
+      ctx2.lookup(String.valueOf(reg2.getReference().getProperty(Constants.SERVICE_ID)));
+      fail("Expected a NameNotFoundException");
+    } catch (NameNotFoundException e) {
+    }
+  }
+  
+  @Test
+  public void checkServiceListList() throws NamingException
+  {
+    BundleMock mock = new BundleMock("scooby.doo", new Properties());
+    
+    Thread.currentThread().setContextClassLoader(mock.getClassLoader());
+
+    InitialContext ctx = new InitialContext();
+    
+    String className = Runnable.class.getName();
+    
+    Runnable t = Skeleton.newMock(Runnable.class);
+    
+    // we don't want the default service
+    reg.unregister();
+    
+    ServiceRegistration reg = bc.registerService(className, t, null);
+    ServiceRegistration reg2 = bc.registerService(className, new Thread(), null);
+    
+    NamingEnumeration<NameClassPair> ne = ctx.list("osgi:servicelist/" + className);
+    
+    assertTrue(ne.hasMoreElements());
+    
+    NameClassPair ncp = ne.nextElement();
+    
+    assertEquals(String.valueOf(reg.getReference().getProperty(Constants.SERVICE_ID)), ncp.getName());
+    assertTrue("Class name not correct. Was: " + ncp.getClassName(), ncp.getClassName().contains("Proxy"));
+    
+    assertTrue(ne.hasMoreElements());
+    
+    ncp = ne.nextElement();
+    
+    assertEquals(String.valueOf(reg2.getReference().getProperty(Constants.SERVICE_ID)), ncp.getName());
+    assertEquals("Class name not correct.", Thread.class.getName(), ncp.getClassName());
+    
+    assertFalse(ne.hasMoreElements());
+  }
+
+  @Test
+  public void checkServiceListListBindings() throws NamingException
+  {
+    BundleMock mock = new BundleMock("scooby.doo", new Properties());
+    
+    Thread.currentThread().setContextClassLoader(mock.getClassLoader());
+
+    InitialContext ctx = new InitialContext();
+    
+    String className = Runnable.class.getName();
+    
+    MethodCall run = new MethodCall(Runnable.class, "run");
+    
+    Runnable t = Skeleton.newMock(Runnable.class);
+    Runnable t2 = Skeleton.newMock(Runnable.class);
+    
+    // we don't want the default service
+    reg.unregister();
+    
+    ServiceRegistration reg = bc.registerService(className, t, null);
+    ServiceRegistration reg2 = bc.registerService(className, t2, null);
+    
+    NamingEnumeration<Binding> ne = ctx.listBindings("osgi:servicelist/" + className);
+    
+    assertTrue(ne.hasMoreElements());
+    
+    Binding bnd = ne.nextElement();
+    
+    assertEquals(String.valueOf(reg.getReference().getProperty(Constants.SERVICE_ID)), bnd.getName());
+    assertTrue("Class name not correct. Was: " + bnd.getClassName(), bnd.getClassName().contains("Proxy"));
+    
+    Runnable r = (Runnable) bnd.getObject();
+    
+    assertNotNull(r);
+    
+    r.run();
+    
+    Skeleton.getSkeleton(t).assertCalledExactNumberOfTimes(run, 1);
+    Skeleton.getSkeleton(t2).assertNotCalled(run);
+    
+    assertTrue(ne.hasMoreElements());
+    
+    bnd = ne.nextElement();
+    
+    assertEquals(String.valueOf(reg2.getReference().getProperty(Constants.SERVICE_ID)), bnd.getName());
+    assertTrue("Class name not correct. Was: " + bnd.getClassName(), bnd.getClassName().contains("Proxy"));
+    
+    r = (Runnable) bnd.getObject();
+    
+    assertNotNull(r);
+    
+    r.run();
+    
+    Skeleton.getSkeleton(t).assertCalledExactNumberOfTimes(run, 1);
+    Skeleton.getSkeleton(t2).assertCalledExactNumberOfTimes(run, 1);
+    
+    assertFalse(ne.hasMoreElements());
+  }
+
+  @Test(expected=ServiceException.class)
+  public void checkProxyWhenServiceGoes() throws ServiceException, NamingException
+  {
+    BundleMock mock = new BundleMock("scooby.doo", new Properties());
+    
+    Thread.currentThread().setContextClassLoader(mock.getClassLoader());
+
+    InitialContext ctx = new InitialContext();
+    
+    Runnable r = (Runnable) ctx.lookup("osgi:service/java.lang.Runnable");
+    
+    r.run();
+    
+    Skeleton.getSkeleton(service).assertCalled(new MethodCall(Runnable.class, "run"));
+    
+    reg.unregister();
+    
+    r.run();
+  }
+  
   @Test
   public void checkServiceOrderObserved() throws NamingException
   {
