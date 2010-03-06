@@ -33,6 +33,19 @@ public interface NamespaceHandler  {
     
     Metadata parse(Element element, ParserContext context);
     
+    /**
+     * Process a child node of an enclosing blueprint component. 
+     * 
+     * If the decorator returns a new ComponentMetadata instance, then this namespace handler must 
+     * ensure that existing interceptors are registered against the new instance if appropriate.
+     * 
+     * @param node The node associated with this NamespaceHandler that should be used to decorate the enclosing 
+     * component
+     * @param component The enclosing blueprint component
+     * @param context The parser context
+     * @return The decorated component to be used instead of the original enclosing component. This can of course be
+     * the original component.
+     */
     ComponentMetadata decorate(Node node, ComponentMetadata component, ParserContext context);
              
 }
