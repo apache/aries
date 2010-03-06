@@ -120,24 +120,27 @@ public class NSHandler implements NamespaceHandler {
             ParserContext context) {
         // The node should always be an element
         if (node.getNodeType() != Node.ELEMENT_NODE) {
-            _logger
-                    .error(
-                            "The JPA namespace handler does not understand the DOM node {}.",
+            _logger.error("The JPA namespace handler does not understand the DOM node {}.",
                             new Object[] { node });
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(node.toString());
         }
 
         Element element = (Element) node;
         // The surrounding component should always be a bean
         if (!(component instanceof BeanMetadata)) {
-            _logger
-                    .error(
-                            "The JPA namespace should only be used to inject properties into a bean. The surrounding component was {}.",
+            _logger.error("The JPA namespace should only be used to inject properties into a bean. The surrounding component was {}.",
                             new Object[] { component });
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(component.toString());
+        }
+        
+        if (!(component instanceof MutableBeanMetadata)) {
+            _logger.error("The JPA namespace should only be used to inject properties into beans " +
+                            "that implement the MutableBeanMetadata interface. " +
+                            "The surrounding component was {}.", new Object[] { component });
+            throw new IllegalArgumentException(component.toString());
         }
 
-        final BeanMetadata bean = (BeanMetadata) component;
+        MutableBeanMetadata bean = (MutableBeanMetadata) component;
 
         if (!NS_URI.equals(element.getNamespaceURI())) {
             _logger
@@ -181,30 +184,9 @@ public class NSHandler implements NamespaceHandler {
             }
         }
 
-        // Create a new Bean to replace the one passed in
-        if (bean instanceof ExtendedBeanMetadata) {
-            return new ExtendedBeanMetadataProxy((ExtendedBeanMetadata) bean) {
-                @Override
-                public List getProperties() {
-                    // Remember to add the jpa injection property
-                    ArrayList<BeanProperty> result = new ArrayList<BeanProperty>(
-                            bean.getProperties());
-                    result.add(beanProperty);
-                    return result;
-                }
-            };            
-        } else {
-            return new BeanMetadataProxy(bean) {
-                @Override
-                public List getProperties() {
-                    // Remember to add the jpa injection property
-                    ArrayList<BeanProperty> result = new ArrayList<BeanProperty>(
-                            bean.getProperties());
-                    result.add(beanProperty);
-                    return result;
-                }
-            };
-        }
+        bean.addProperty(beanProperty);
+        
+        return bean;
     }
 
     @SuppressWarnings("unchecked")
@@ -215,8 +197,7 @@ public class NSHandler implements NamespaceHandler {
 
     public URL getSchemaLocation(String namespace) {
         if(NS_URI.equals(namespace))
-            return getClass().getResource(
-                "/org/apache/aries/jpa/blueprint/namespace/jpa.xsd");
+            return getClass().getResource("/org/apache/aries/jpa/blueprint/namespace/jpa.xsd");
         else
             return null;
     }
@@ -226,8 +207,7 @@ public class NSHandler implements NamespaceHandler {
          * The namespace does not define any top-level elements, so we should
          * never get here. In case we do -> explode.
          */
-        _logger
-                .error("The JPA namespace handler was called to parse a top level element.");
+        _logger.error("The JPA namespace handler was called to parse a top level element.");
         throw new UnsupportedOperationException();
     }
     
@@ -269,14 +249,10 @@ public class NSHandler implements NamespaceHandler {
 
         if (_logger.isDebugEnabled()) {
             if (isPersistenceUnit)
-                _logger
-                        .debug(
-                                "Creating blueprint injection metadata to inject the unit {} into bean property {}",
+                _logger.debug("Creating blueprint injection metadata to inject the unit {} into bean property {}",
                                 new Object[] { unitName, property });
             else
-                _logger
-                        .debug(
-                                "Creating blueprint injection metadata to inject the context {} into bean property {}",
+                _logger.debug("Creating blueprint injection metadata to inject the context {} into bean property {}",
                                 new Object[] { unitName, property });
         }
 
@@ -345,8 +321,7 @@ public class NSHandler implements NamespaceHandler {
             ReferenceMetadata factory) {
 
         if (_logger.isDebugEnabled())
-            _logger
-                    .debug("Creating a managed persistence context definition for injection");
+            _logger.debug("Creating a managed persistence context definition for injection");
 
         // Register the factory bean, and then create an entitymanager from it
         ctx.getComponentDefinitionRegistry().registerComponentDefinition(
@@ -421,86 +396,12 @@ public class NSHandler implements NamespaceHandler {
 
                     result.put(key.getStringValue(), value.getStringValue());
                 } else {
-                    _logger
-                            .error("There was a problem parsing a map of JPA properties");
+                    _logger.error("There was a problem parsing a map of JPA properties");
                     throw new UnsupportedOperationException();
                 }
             }
         }
 
         return result;
-    }
-
-    private static class BeanMetadataProxy implements BeanMetadata {
-        private final BeanMetadata delegate;
-
-        public BeanMetadataProxy(BeanMetadata delegate) {
-            this.delegate = delegate;
-        }
-
-        public List getArguments() {
-            return delegate.getArguments();
-        }
-
-        public String getClassName() {
-            return delegate.getClassName();
-        }
-
-        public String getDestroyMethod() {
-            return delegate.getDestroyMethod();
-        }
-
-        public Target getFactoryComponent() {
-            return delegate.getFactoryComponent();
-        }
-
-        public String getFactoryMethod() {
-            return delegate.getFactoryMethod();
-        }
-
-        public String getInitMethod() {
-            return delegate.getInitMethod();
-        }
-
-        public List getProperties() {
-            return delegate.getProperties();
-        }
-
-        public String getScope() {
-            return delegate.getScope();
-        }
-
-        public int getActivation() {
-            return delegate.getActivation();
-        }
-
-        public List getDependsOn() {
-            return delegate.getDependsOn();
-        }
-
-        public String getId() {
-            return delegate.getId();
-        }
-    }
-    
-    private static class ExtendedBeanMetadataProxy extends BeanMetadataProxy implements ExtendedBeanMetadata {
-        private final ExtendedBeanMetadata delegate;
-        
-        public ExtendedBeanMetadataProxy(ExtendedBeanMetadata delegate) {
-            super(delegate);
-            this.delegate = delegate;
-        }
-        
-        public boolean getFieldInjection() {
-            return delegate.getFieldInjection();
-        }
-
-        public Class<?> getRuntimeClass() {
-            return delegate.getRuntimeClass();
-        }
-
-        public boolean isProcessor() {
-            return delegate.isProcessor();
-        }
     }
 }
