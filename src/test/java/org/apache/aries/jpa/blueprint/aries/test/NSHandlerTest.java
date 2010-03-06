@@ -129,7 +129,7 @@ public class NSHandlerTest {
   public void testUnit() {
     Element e = getTestElement("unit");
     BeanMetadata bean = 
-      (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), parserCtx);
+      (BeanMetadata) sut.decorate(e, new BeanMetadataImpl(), parserCtx);
     BeanProperty property = (BeanProperty) bean.getProperties().get(0);
     ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
     
@@ -146,7 +146,7 @@ public class NSHandlerTest {
   public void testUnitNoName() {
     Element e = getTestElement("unitNoName");
     BeanMetadata bean = 
-      (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), parserCtx);
+      (BeanMetadata) sut.decorate(e, new BeanMetadataImpl(), parserCtx);
     BeanProperty property = (BeanProperty) bean.getProperties().get(0);
     ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
     
@@ -161,7 +161,7 @@ public class NSHandlerTest {
   public void testEmptyUnitName() {
     Element e = getTestElement("emptyUnitName");
     BeanMetadata bean = 
-      (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), parserCtx);
+      (BeanMetadata) sut.decorate(e, new BeanMetadataImpl(), parserCtx);
     BeanProperty property = (BeanProperty) bean.getProperties().get(0);
     ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
     
@@ -191,7 +191,7 @@ public class NSHandlerTest {
   public void testDefaultContext() {
     Element e = getTestElement("context");
     BeanMetadata bean = 
-      (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), parserCtx);
+      (BeanMetadata) sut.decorate(e, new BeanMetadataImpl(), parserCtx);
     BeanMetadata innerBean = (BeanMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
 
     assertEquals("createEntityManager", innerBean.getFactoryMethod());
@@ -215,7 +215,7 @@ public class NSHandlerTest {
     sut.contextUnavailable(null);
     Element e = getTestElement("context");
     BeanMetadata bean = 
-      (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), parserCtx);
+      (BeanMetadata) sut.decorate(e, new BeanMetadataImpl(), parserCtx);
     BeanMetadata innerBean = (BeanMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
 
     assertEquals("createEntityManager", innerBean.getFactoryMethod());
@@ -237,7 +237,7 @@ public class NSHandlerTest {
   public void testContextWithProps() {
     Element e = getTestElement("contextWithProps");
     BeanMetadata bean = 
-      (BeanMetadata) sut.decorate(e, Skeleton.newMock(BeanMetadata.class), parserCtx);
+      (BeanMetadata) sut.decorate(e, new BeanMetadataImpl(), parserCtx);
     BeanMetadata innerBean = (BeanMetadata) ((BeanProperty) bean.getProperties().get(0)).getValue();
     
     assertEquals("createEntityManager", innerBean.getFactoryMethod());
@@ -258,10 +258,11 @@ public class NSHandlerTest {
   }
   
   @Test
-  public void testExtendedMetadataProxying() {
+  public void testNoMoreProxying() {
       Element e = getTestElement("contextWithProps");
-      Object res = sut.decorate(e, Skeleton.newMock(ExtendedBeanMetadata.class), parserCtx);
-      assertTrue(res instanceof ExtendedBeanMetadata);
+      BeanMetadata input = new BeanMetadataImpl();
+      Object output = sut.decorate(e, input, parserCtx);
+      assertTrue(input == output);
   }
   
   private Element getTestElement(String beanName) {
