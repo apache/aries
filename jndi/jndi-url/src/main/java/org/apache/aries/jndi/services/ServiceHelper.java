@@ -136,7 +136,9 @@ public final class ServiceHelper
       boolean foundLookup = false;
       int i = 0;
       for (; i < stackTrace.length && !!!found; i++) {
-        if (!!!foundLookup && "lookup".equals(stackTrace[i].getMethodName())) {
+        if (!!!foundLookup && ("lookup".equals(stackTrace[i].getMethodName()) ||
+                               "list".equals(stackTrace[i].getMethodName()) ||
+                               "listBindings".equals(stackTrace[i].getMethodName()))) {
           foundLookup = true;
         } else if (foundLookup && !!!(stackTrace[i].getClassName().startsWith("org.apache.aries.jndi") ||
                                 stackTrace[i].getClassName().startsWith("javax.naming"))) {
@@ -178,62 +180,80 @@ public final class ServiceHelper
     return result;
   }
 
-  public static Object getService(String interface1, String filter, String serviceName, boolean dynamicRebind, Map<String, Object> env) throws NamingException
+  public static Object getService(String interface1, String filter, String serviceName, String id, boolean dynamicRebind, Map<String, Object> env) throws NamingException
   {
     Object result = null;
     
     BundleContext ctx = getBundleContext(env);
     
+    if (id != null && filter == null) {
+      filter = '(' + Constants.SERVICE_ID + '=' + id + ')';
+    } else if (id != null && filter != null) {
+      filter = "(&(" + Constants.SERVICE_ID + '=' + id + ')' + filter + ')'; 
+    }
+    
     ServicePair pair = findService(ctx, interface1, filter);
     
     if (pair == null) {
       interface1 = null;
-      filter = "(osgi.jndi.service.name=" + serviceName + ")";
+      if (id == null) {
+        filter = "(osgi.jndi.service.name=" + serviceName + ')';
+      } else {
+        filter = "(&(" + Constants.SERVICE_ID + '=' + id + ")(osgi.jndi.service.name=" + serviceName + "))";
+      }
       pair = findService(ctx, interface1, filter);
     }
     
     if (pair != null) {
-      String[] interfaces = (String[]) pair.ref.getProperty(Constants.OBJECTCLASS);
-      
-      List<Class<?>> clazz = new ArrayList<Class<?>>(interfaces.length);
-      
-      // We load the interface classes the service is registered under using the defining
-      // bundle. This is ok because the service must be able to see the classes to be 
-      // registered using them. We then check to see if isAssignableTo on the reference
-      // works for the owning bundle and the interface name and only use the interface if
-      // true is returned there.
-      
-      // This might seem odd, but equinox and felix return true for isAssignableTo if the
-      // Bundle provided does not import the package. This is under the assumption the
-      // caller will then use reflection. The upshot of doing it this way is that a utility
-      // bundle can be created which centralizes JNDI lookups, but the service will be used
-      // by another bundle. It is true that class space consistency is less safe, but we
-      // are enabling a slightly odd use case anyway.
-      
-      Bundle serviceProviderBundle = pair.ref.getBundle();
-      Bundle owningBundle = ctx.getBundle();
-      
-      for (String interfaceName : interfaces) {
-        try {
-          Class<?> potentialClass = serviceProviderBundle.loadClass(interfaceName);
-          
-          if (pair.ref.isAssignableTo(owningBundle, interfaceName)) clazz.add(potentialClass);
-        } catch (ClassNotFoundException e) {
-        }
-      }
-      
-      if (clazz.isEmpty()) {
-        throw new IllegalArgumentException(Arrays.asList(interfaces).toString());
-      }
-      
-      InvocationHandler ih = new JNDIServiceDamper(ctx, interface1, filter, pair, dynamicRebind);
-      
-      // The ClassLoader needs to be able to load the service interface classes so it needs to be
-      // wrapping the service provider bundle. The class is actually defined on this adapter.
-      
-      result = Proxy.newProxyInstance(new BundleToClassLoaderAdapter(serviceProviderBundle), clazz.toArray(new Class<?>[clazz.size()]), ih);
+      result = proxy(interface1, filter, dynamicRebind, ctx, pair);
     }
     
+    return result;
+  }
+
+  private static Object proxy(String interface1, String filter, boolean dynamicRebind,
+      BundleContext ctx, ServicePair pair)
+  {
+    Object result;
+    String[] interfaces = (String[]) pair.ref.getProperty(Constants.OBJECTCLASS);
+    
+    List<Class<?>> clazz = new ArrayList<Class<?>>(interfaces.length);
+    
+    // We load the interface classes the service is registered under using the defining
+    // bundle. This is ok because the service must be able to see the classes to be 
+    // registered using them. We then check to see if isAssignableTo on the reference
+    // works for the owning bundle and the interface name and only use the interface if
+    // true is returned there.
+    
+    // This might seem odd, but equinox and felix return true for isAssignableTo if the
+    // Bundle provided does not import the package. This is under the assumption the
+    // caller will then use reflection. The upshot of doing it this way is that a utility
+    // bundle can be created which centralizes JNDI lookups, but the service will be used
+    // by another bundle. It is true that class space consistency is less safe, but we
+    // are enabling a slightly odd use case anyway.
+    
+    Bundle serviceProviderBundle = pair.ref.getBundle();
+    Bundle owningBundle = ctx.getBundle();
+    
+    for (String interfaceName : interfaces) {
+      try {
+        Class<?> potentialClass = serviceProviderBundle.loadClass(interfaceName);
+        
+        if (pair.ref.isAssignableTo(owningBundle, interfaceName)) clazz.add(potentialClass);
+      } catch (ClassNotFoundException e) {
+      }
+    }
+    
+    if (clazz.isEmpty()) {
+      throw new IllegalArgumentException(Arrays.asList(interfaces).toString());
+    }
+    
+    InvocationHandler ih = new JNDIServiceDamper(ctx, interface1, filter, pair, dynamicRebind);
+    
+    // The ClassLoader needs to be able to load the service interface classes so it needs to be
+    // wrapping the service provider bundle. The class is actually defined on this adapter.
+    
+    result = Proxy.newProxyInstance(new BundleToClassLoaderAdapter(serviceProviderBundle), clazz.toArray(new Class<?>[clazz.size()]), ih);
     return result;
   }
 
@@ -253,8 +273,6 @@ public final class ServiceHelper
           }
         });
         
-        Bundle b = ctx.getBundle();
-        
         for (ServiceReference ref : refs) {
           Object service = ctx.getService(ref);
           
@@ -273,4 +291,51 @@ public final class ServiceHelper
     
     return p;
   }
+
+  public static ServiceReference[] getServiceReferences(String interface1, String filter,
+      String serviceName, Map<String, Object> env) throws NamingException
+  {
+    BundleContext ctx = getBundleContext(env);
+    ServiceReference[] refs = null;
+
+    try {
+      refs = ctx.getServiceReferences(interface1, filter);
+      
+      if (refs == null || refs.length == 0) {
+        refs = ctx.getServiceReferences(null, "(osgi.jndi.service.name=" + serviceName + ')');
+      }
+    } catch (InvalidSyntaxException e) {
+      throw (NamingException) new NamingException(e.getFilter()).initCause(e);
+    }
+    
+    if (refs != null) {
+      // natural order is the exact opposite of the order we desire.
+      Arrays.sort(refs, new Comparator<ServiceReference>() {
+        public int compare(ServiceReference o1, ServiceReference o2)
+        {
+          return o2.compareTo(o1);
+        }
+      });
+    }
+    
+    return refs;
+  }
+
+  public static Object getService(BundleContext ctx, ServiceReference ref)
+  {
+    Object service = ctx.getService(ref);
+    
+    Object result = null;
+    
+    if (service != null) {
+      ServicePair pair = new ServicePair();
+      pair.ref = ref;
+      pair.service = service;
+      
+      result = proxy(null, null, false, ctx, pair);
+    }
+    
+    return result;
+  }
+
 }
