@@ -186,7 +186,7 @@ public class ServiceRegistryContext implements Context
       result = ServiceHelper.getBundleContext(env);
     } else if ((OsgiName.SERVICE_PATH.equals(pathFragment) && OsgiName.OSGI_SCHEME.equals(schemeName)) ||
                (OsgiName.SERVICES_PATH.equals(pathFragment) && OsgiName.ARIES_SCHEME.equals(schemeName))) {
-      result = ServiceHelper.getService(validName.getInterface(), validName.getFilter(), serviceName, true, env);
+      result = ServiceHelper.getService(validName.getInterface(), validName.getFilter(), serviceName, null, true, env);
     } else if (OsgiName.SERVICE_LIST_PATH.equals(pathFragment)) {
       result = new ServiceRegistryListContext(env, validName);
     } else {
