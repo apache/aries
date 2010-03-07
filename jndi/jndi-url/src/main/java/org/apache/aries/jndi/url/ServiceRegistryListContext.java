@@ -53,7 +53,7 @@ public class ServiceRegistryListContext implements Context
     public void release(BundleContext ctx, ServiceReference ref);
   }
   
-  private class ServiceNamingEnumeration<T> implements NamingEnumeration<T>
+  private static class ServiceNamingEnumeration<T> implements NamingEnumeration<T>
   {
     private BundleContext ctx;
     private ServiceReference[] refs;
@@ -76,7 +76,7 @@ public class ServiceRegistryListContext implements Context
 
     public boolean hasMore() throws NamingException
     {
-      return hasMore();
+      return hasMoreElements();
     }
 
     public T next() throws NamingException
