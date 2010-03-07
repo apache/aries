@@ -1,0 +1,191 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.aries.jndi.url;
+
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+
+import javax.naming.Context;
+import javax.naming.Name;
+import javax.naming.NameParser;
+import javax.naming.NamingException;
+import javax.naming.OperationNotSupportedException;
+
+public abstract class AbstractServiceRegistryContext implements Context
+{
+
+  /** The environment for this context */
+  protected Map<String, Object> env;
+  /** The name parser for the service registry name space */
+  protected NameParser parser = new OsgiNameParser();
+  private static final String ARIES_SERVICES = "aries:services/";
+
+  @SuppressWarnings("unchecked")
+  public AbstractServiceRegistryContext(Hashtable<?, ?> environment)
+  {
+    env = new HashMap<String, Object>();
+    env.putAll((Map<? extends String, ? extends Object>) environment);
+  }
+
+  @SuppressWarnings("unchecked")
+  public AbstractServiceRegistryContext(Map<?, ?> environment)
+  {
+    env = new HashMap<String, Object>();
+    env.putAll((Map<? extends String, ? extends Object>) environment);
+  }
+
+  public Object addToEnvironment(String propName, Object propVal) throws NamingException
+  {
+    return env.put(propName, propVal);
+  }
+
+  public void bind(Name name, Object obj) throws NamingException
+  {
+    throw new OperationNotSupportedException();
+  }
+
+  public void bind(String name, Object obj) throws NamingException
+  {
+    throw new OperationNotSupportedException();
+  }
+
+  public void close() throws NamingException
+  {
+    env = null;
+    parser = null;
+  }
+
+  public Name composeName(Name name, Name prefix) throws NamingException
+  {
+    String result = prefix + "/" + name;
+  
+    String ns = ARIES_SERVICES;
+    
+    if (result.startsWith(ns)) {
+      ns = "";
+    }
+    
+    return parser.parse(ns + result);
+  }
+
+  public String composeName(String name, String prefix) throws NamingException
+  {
+    String result = prefix + "/" + name;
+  
+    String ns = ARIES_SERVICES;
+    
+    if (result.startsWith(ns)) {
+      ns = "";
+    }
+    
+    parser.parse(ns + result);
+    
+    return result;
+  }
+
+  public Context createSubcontext(Name name) throws NamingException
+  {
+    throw new OperationNotSupportedException();
+  }
+
+  public Context createSubcontext(String name) throws NamingException
+  {
+    throw new OperationNotSupportedException();
+  }
+
+  public void destroySubcontext(Name name) throws NamingException
+  {
+    //No-op we don't support sub-contexts in our context   
+  }
+
+  public void destroySubcontext(String name) throws NamingException
+  {
+    //No-op we don't support sub-contexts in our context
+    
+  }
+
+  public Hashtable<?, ?> getEnvironment() throws NamingException
+  {
+    Hashtable<Object, Object> environment = new Hashtable<Object, Object>();
+    environment.putAll(env);
+    return environment;
+  }
+
+  public String getNameInNamespace() throws NamingException
+  {
+    throw new OperationNotSupportedException();
+  }
+
+  public NameParser getNameParser(Name name) throws NamingException
+  {
+    return parser;
+  }
+
+  public NameParser getNameParser(String name) throws NamingException
+  {
+    return parser;
+  }
+
+  public Object lookupLink(Name name) throws NamingException
+  {
+    throw new OperationNotSupportedException();
+  }
+
+  public Object lookupLink(String name) throws NamingException
+  {
+    throw new OperationNotSupportedException();
+  }
+
+  public void rebind(Name name, Object obj) throws NamingException
+  {
+    throw new OperationNotSupportedException();
+  }
+
+  public void rebind(String name, Object obj) throws NamingException
+  {
+    throw new OperationNotSupportedException();
+  }
+
+  public Object removeFromEnvironment(String propName) throws NamingException
+  {
+    return env.remove(propName);
+  }
+
+  public void rename(Name oldName, Name newName) throws NamingException
+  {
+    throw new OperationNotSupportedException();
+  }
+
+  public void rename(String oldName, String newName) throws NamingException
+  {
+    throw new OperationNotSupportedException();
+  }
+
+  public void unbind(Name name) throws NamingException
+  {
+    throw new OperationNotSupportedException();
+  }
+
+  public void unbind(String name) throws NamingException
+  {
+    throw new OperationNotSupportedException();
+  }
+
+}
