@@ -514,8 +514,8 @@ public class ServiceRegistryContextTest
     t = Skeleton.newMock(Runnable.class);
     t2 = Skeleton.newMock(Runnable.class);
 
-    reg = bc.registerService(className, t, null);
-    reg2 = bc.registerService(className, t2, props);
+    bc.registerService(className, t, null);
+    bc.registerService(className, t2, props);
     
     r = (Runnable) ctx.lookup("osgi:service/java.lang.Runnable");
     
