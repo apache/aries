@@ -210,8 +210,19 @@ public final class ServiceHelper
     
     return result;
   }
+  
+  private static Object proxy(final String interface1, final String filter, final boolean rebind, 
+                              final BundleContext ctx, final ServicePair pair)
+  {
+    return AccessController.doPrivileged(new PrivilegedAction<Object>() {
+      public Object run()
+      {
+        return proxyPriviledged(interface1, filter, rebind, ctx, pair);
+      }
+    });
+  }
 
-  private static Object proxy(String interface1, String filter, boolean dynamicRebind,
+  private static Object proxyPriviledged(String interface1, String filter, boolean dynamicRebind,
       BundleContext ctx, ServicePair pair)
   {
     Object result;
