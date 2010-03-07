@@ -21,10 +21,6 @@
 	xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0" xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
 	default-activation="lazy">
 
-	<bean id="datasource" class="org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource">
-		<property name="databaseName" value="blogDB" />
-	</bean>
-
 	<bean id="persistenceImpl"
 		class="org.apache.aries.samples.blog.persistence.BlogPersistenceServiceImpl">
 		<tx:transaction method="*" value="Required" />
