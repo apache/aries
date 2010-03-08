@@ -66,7 +66,7 @@ public class UserAdminTest {
      * @throws IOException
      */
     @Test
-    public void testAddCredentialStringByteArrayString() throws IOException {
+    public void testAddCredential() throws IOException {
         User user1 = Mockito.mock(User.class);
         Dictionary<String, Object> credentials = new Hashtable<String, Object>();
         Mockito.when(userAdmin.getRole("user1")).thenReturn(user1);
@@ -79,19 +79,19 @@ public class UserAdminTest {
 
     /**
      * Test method for
-     * {@link org.apache.aries.jmx.useradmin.UserAdmin#addCredential(java.lang.String, java.lang.String, java.lang.String)}
+     * {@link org.apache.aries.jmx.useradmin.UserAdmin#addCredentialString(String, String, String)}
      * .
      * 
      * @throws IOException
      */
     @Test
-    public void testAddCredentialStringStringString() throws IOException {
+    public void testAddCredentialString() throws IOException {
         User user1 = Mockito.mock(User.class);
         Dictionary<String, Object> credentials = new Hashtable<String, Object>();
         Mockito.when(userAdmin.getRole("user1")).thenReturn(user1);
         Mockito.when(user1.getType()).thenReturn(Role.USER);
         Mockito.when(user1.getCredentials()).thenReturn(credentials);
-        mbean.addCredential("password", "1234", "user1");
+        mbean.addCredentialString("password", "1234", "user1");
         Assert.assertEquals("1234", (String) credentials.get("password"));
     }
 
@@ -115,19 +115,19 @@ public class UserAdminTest {
 
     /**
      * Test method for
-     * {@link org.apache.aries.jmx.useradmin.UserAdmin#addProperty(java.lang.String, java.lang.String, java.lang.String)}
+     * {@link org.apache.aries.jmx.useradmin.UserAdmin#addPropertyString(String, String, String)}
      * .
      * 
      * @throws IOException
      */
     @Test
-    public void testAddPropertyStringStringString() throws IOException {
+    public void testAddPropertyString() throws IOException {
         User user1 = Mockito.mock(User.class);
         Dictionary<String, Object> props = new Hashtable<String, Object>();
         Mockito.when(userAdmin.getRole("user1")).thenReturn(user1);
         Mockito.when(user1.getType()).thenReturn(Role.USER);
         Mockito.when(user1.getProperties()).thenReturn(props);
-        mbean.addProperty("key", "1234", "user1");
+        mbean.addPropertyString("key", "1234", "user1");
         Assert.assertEquals("1234", (String) props.get("key"));
     }
 
@@ -138,7 +138,7 @@ public class UserAdminTest {
      * @throws IOException
      */
     @Test
-    public void testAddPropertyStringByteArrayString() throws IOException {
+    public void testAddProperty() throws IOException {
         User user1 = Mockito.mock(User.class);
         Dictionary<String, Object> props = new Hashtable<String, Object>();
         Mockito.when(userAdmin.getRole("user1")).thenReturn(user1);
@@ -402,7 +402,7 @@ public class UserAdminTest {
      * @throws IOException
      */
     @Test
-    public void testGetUserString() throws IOException {
+    public void testGetUser() throws IOException {
         User user1 = Mockito.mock(User.class);
         Mockito.when(user1.getType()).thenReturn(Role.USER);
         Mockito.when(user1.getName()).thenReturn("user1");
@@ -417,17 +417,17 @@ public class UserAdminTest {
     }
 
     /**
-     * Test method for {@link org.apache.aries.jmx.useradmin.UserAdmin#getUser(java.lang.String, java.lang.String)}.
+     * Test method for {@link org.apache.aries.jmx.useradmin.UserAdmin#getUserWithProperty(String, String)}.
      * 
      * @throws IOException
      */
     @Test
-    public void testGetUserStringString() throws IOException {
+    public void testGetUserString() throws IOException {
         User user1 = Mockito.mock(User.class);
         Mockito.when(user1.getType()).thenReturn(Role.USER);
         Mockito.when(user1.getName()).thenReturn("user1");
         Mockito.when(userAdmin.getUser("key", "valuetest")).thenReturn(user1);
-        String username = mbean.getUser("key", "valuetest");
+        String username = mbean.getUserWithProperty("key", "valuetest");
         Assert.assertEquals(username, "user1");
     }
 
