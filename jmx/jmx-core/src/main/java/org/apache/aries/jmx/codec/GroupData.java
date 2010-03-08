@@ -17,7 +17,6 @@
 package org.apache.aries.jmx.codec;
 
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,6 @@ import java.util.Map;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenDataException;
-import javax.management.openmbean.TabularData;
 
 import org.osgi.jmx.service.useradmin.UserAdminMBean;
 import org.osgi.service.useradmin.Group;
@@ -58,7 +56,7 @@ public class GroupData extends UserData {
      * @param group {@link Group} instance.
      */
     public GroupData(Group group) {
-        super(group.getName(), Role.GROUP, group.getProperties(), group.getCredentials());
+        super(group.getName(), Role.GROUP);
         setRequiredMembers(group);
         setMembers(group);
     }
@@ -69,11 +67,9 @@ public class GroupData extends UserData {
      * @param name group name.
      * @param members basic members.
      * @param requiredMembers required members.
-     * @param properties role properties.
-     * @param credentials group credentials.
      */
-    public GroupData(String name, String[] members, String[] requiredMembers, Dictionary<String, Object> properties, Dictionary<String, Object> credentials) {
-        super(name, Role.GROUP, properties, credentials);
+    public GroupData(String name, String[] members, String[] requiredMembers) {
+        super(name, Role.GROUP);
         this.members = members;
         this.requiredMembers = requiredMembers;
     }
@@ -90,8 +86,6 @@ public class GroupData extends UserData {
             items.put(UserAdminMBean.TYPE, type);
             items.put(UserAdminMBean.MEMBERS, members);
             items.put(UserAdminMBean.REQUIRED_MEMBERS, requiredMembers);
-            items.put(UserAdminMBean.PROPERTIES, toTabularData(properties));
-            items.put(UserAdminMBean.CREDENTIALS, toTabularData(credentials));
             return new CompositeDataSupport(UserAdminMBean.GROUP_TYPE, items);
         } catch (OpenDataException e) {
             throw new IllegalStateException("Can't create CompositeData" + e);
@@ -112,11 +106,7 @@ public class GroupData extends UserData {
         String name = (String) data.get(UserAdminMBean.NAME);
         String[] members = (String[]) data.get(UserAdminMBean.MEMBERS);
         String[] requiredMembers = (String[]) data.get(UserAdminMBean.REQUIRED_MEMBERS);
-        TabularData propsData = (TabularData) data.get(UserAdminMBean.PROPERTIES);
-        Dictionary<String, Object> properties = propertiesFrom(propsData);
-        TabularData credData = (TabularData)data.get(UserAdminMBean.CREDENTIALS);
-        Dictionary<String, Object> credentials = propertiesFrom(credData);
-        return new GroupData(name, members, requiredMembers, properties, credentials);
+        return new GroupData(name, members, requiredMembers);
     }
 
     /**
