@@ -70,6 +70,9 @@ under the License.
                 <artifactId>eba-maven-plugin</artifactId>
                 <version>${version}</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <generateManifest>true</generateManifest>
+                </configuration>
             </plugin>
         </plugins>
     </build>
