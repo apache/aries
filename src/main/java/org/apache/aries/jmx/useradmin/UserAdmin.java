@@ -100,10 +100,9 @@ public class UserAdmin implements UserAdminMBean {
     }
 
     /**
-     * @see org.osgi.jmx.service.useradmin.UserAdminMBean#addCredential(java.lang.String, java.lang.String,
-     *      java.lang.String)
+     * @see org.osgi.jmx.service.useradmin.UserAdminMBean#addCredentialString(String, String, String)
      */
-    public void addCredential(String key, String value, String username) throws IOException {
+    public void addCredentialString(String key, String value, String username) throws IOException {
         Role role = userAdmin.getRole(username);
         if (role == null) {
             throw new IOException("Operation fails user with provided username = [" + username + "] doesn't exist");
@@ -130,10 +129,9 @@ public class UserAdmin implements UserAdminMBean {
     }
 
     /**
-     * @see org.osgi.jmx.service.useradmin.UserAdminMBean#addProperty(java.lang.String, java.lang.String,
-     *      java.lang.String)
+     * @see org.osgi.jmx.service.useradmin.UserAdminMBean#addPropertyString(String, String, String)
      */
-    public void addProperty(String key, String value, String rolename) throws IOException {
+    public void addPropertyString(String key, String value, String rolename) throws IOException {
         addRoleProperty(key, value, rolename);
 
     }
@@ -383,9 +381,9 @@ public class UserAdmin implements UserAdminMBean {
     }
 
     /**
-     * @see org.osgi.jmx.service.useradmin.UserAdminMBean#getUser(java.lang.String, java.lang.String)
+     * @see org.osgi.jmx.service.useradmin.UserAdminMBean#getUserWithProperty(String, String)
      */
-    public String getUser(String key, String value) throws IOException {
+    public String getUserWithProperty(String key, String value) throws IOException {
         User user = userAdmin.getUser(key, value);
         if (user == null) {
             return null;

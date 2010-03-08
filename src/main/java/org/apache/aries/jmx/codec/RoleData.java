@@ -52,29 +52,23 @@ public class RoleData {
      * role type.
      */
     protected int type;
-    /**
-     * role properties.
-     */
-    protected Dictionary<String, Object> properties;
     
     /**
      * Constructs new RoleData from Role object.
      * @param role {@link Role} instance.
      */
     public RoleData(Role role){
-        this(role.getName(),role.getType(),role.getProperties());
+        this(role.getName(),role.getType());
     }
     
     /**
      * Constructs new RoleData.
      * @param name role name.
      * @param type role type.
-     * @param properties role properties.
      */
-    public RoleData(String name, int type, Dictionary<String, Object> properties){
+    public RoleData(String name, int type){
         this.name = name;
         this.type = type;
-        this.properties = properties;
     }
     
     /**
@@ -88,7 +82,6 @@ public class RoleData {
             Map<String, Object> items = new HashMap<String, Object>();
             items.put(UserAdminMBean.NAME, name);
             items.put(UserAdminMBean.TYPE, type);
-            items.put(UserAdminMBean.PROPERTIES, toTabularData(properties));
             return new CompositeDataSupport(UserAdminMBean.ROLE_TYPE, items);
         } catch (OpenDataException e) {
             throw new IllegalStateException("Can't create CompositeData" + e);
@@ -107,9 +100,7 @@ public class RoleData {
         }
         String name = (String) data.get(UserAdminMBean.NAME);
         int type = (Integer) data.get(UserAdminMBean.TYPE);
-        TabularData tabularData = (TabularData) data.get(UserAdminMBean.PROPERTIES);
-        Dictionary<String, Object> properties = propertiesFrom(tabularData);
-        return new RoleData(name, type, properties);
+        return new RoleData(name, type);
     }
 
     /**
@@ -161,13 +152,6 @@ public class RoleData {
      */
     public int getType() {
         return type;
-    }
-
-    /**
-     * @return the properties
-     */
-    public Dictionary<String, Object> getProperties() {
-        return properties;
     }
 
 }
