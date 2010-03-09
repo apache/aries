@@ -21,13 +21,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.blog-sample</groupId>
-        <artifactId>blog-sample</artifactId>
+        <groupId>org.apache.aries.samples.blog</groupId>
+        <artifactId>blog</artifactId>
         <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.aries.samples</groupId>
-    <artifactId>blog-api</artifactId>
+    <artifactId>org.apache.aries.samples.blog.api</artifactId>
     <name>Apache Aries blog sample API</name>
     <packaging>bundle</packaging>
 
@@ -36,12 +35,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-Name>blog-api</Bundle-Name>
-                        <Bundle-SymbolicName>${pom.groupId}.blog-api</Bundle-SymbolicName>
-                    </instructions>
-                </configuration>
             </plugin>
         </plugins>
     </build>

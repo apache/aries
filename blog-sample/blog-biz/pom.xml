@@ -20,20 +20,20 @@
 
 	<modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>blog-sample</artifactId>
-        <groupId>org.apache.aries.blog-sample</groupId>
+        <groupId>org.apache.aries.samples.blog</groupId>
+        <artifactId>blog</artifactId>
         <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
-	<groupId>org.apache.aries.samples</groupId>
-	<artifactId>blog</artifactId>
+	<artifactId>org.apache.aries.samples.blog.biz</artifactId>
 	<name>Apache Aries blog sample </name>
 	<packaging>bundle</packaging>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.samples</groupId>
-            <artifactId>blog-api</artifactId>
+            <artifactId>org.apache.aries.samples.blog.api</artifactId>
+            <version>0.1-incubating-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -44,10 +44,9 @@
 				<artifactId>maven-bundle-plugin</artifactId>
 				<configuration>
 					<instructions>
-						<Bundle-SymbolicName>${pom.groupId}.blog</Bundle-SymbolicName>
 						<Export-Package>!org.apache.aries.samples.*</Export-Package>
 					</instructions>
-				</configuration>
+				</configuration> 
 			</plugin>
 		</plugins>
 	</build>
