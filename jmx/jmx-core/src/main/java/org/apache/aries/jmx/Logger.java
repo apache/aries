@@ -50,8 +50,6 @@ public class Logger extends ServiceTracker implements LogService {
         LogService logService = (LogService) getService();
         if (logService != null) {
             logService.log(level, message);
-        } else {
-            System.err.println("[" + bundleLocation + ":" + level + "] " + message);
         }
 
     }
@@ -63,9 +61,6 @@ public class Logger extends ServiceTracker implements LogService {
         LogService logService = (LogService) getService();
         if (logService != null) {
             logService.log(level, message, exception);
-        } else {
-            System.err.println("[" + bundleLocation + ":" + +level + "] " + message
-                    + ((exception == null) ? " " : exception.toString()));
         }
     }
 
@@ -76,9 +71,6 @@ public class Logger extends ServiceTracker implements LogService {
         LogService logService = (LogService) getService();
         if (logService != null) {
             logService.log(ref, level, message);
-        } else {
-            System.err.println("[" + bundleLocation + ":" + ((ref == null) ? " " : (ref + ":"))
-                    + level + "] " + message);
         }
     }
 
@@ -90,9 +82,6 @@ public class Logger extends ServiceTracker implements LogService {
         LogService logService = (LogService) getService();
         if (logService != null) {
             logService.log(ref, level, message, exception);
-        } else {
-            System.err.println("[" + bundleLocation + ":" + ((ref == null) ? "" : (ref + ":"))
-                    + level + "] " + message + ((exception == null) ? " " : exception.toString()));
         }
     }
 
