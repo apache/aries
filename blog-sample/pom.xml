@@ -38,7 +38,7 @@
         <module>blog-assembly</module>
         <module>blog-datasource</module>
         <module>blog-persistence-jpa</module>
-        <module>blog-eba</module>
+        <module>blog-jdbc-eba</module>
         <module>blog-jpa-eba</module>
     </modules>
 

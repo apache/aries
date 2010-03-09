@@ -31,7 +31,7 @@ under the License.
     </parent>
 
     <groupId>org.apache.aries.samples.blog</groupId>
-    <artifactId>org.apache.aries.samples.blog.eba</artifactId>
+    <artifactId>org.apache.aries.samples.blog.jdbc.eba</artifactId>
     <name>Apache Aries Blog Sample EBA</name>
     <description>
   This EBA contains the core bundles for the sample Blog application.  
