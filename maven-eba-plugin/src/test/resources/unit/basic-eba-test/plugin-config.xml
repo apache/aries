@@ -21,19 +21,19 @@ under the License.
   <build>
     <plugins>
       <plugin>
-        <artifactId>eba-maven-plugin</artifactId>
+        <artifactId>maven-eba-plugin</artifactId>
 		<configuration>
-		  <ebaSourceDirectory>${basedir}/src/test/resources/unit/basic-eba-with-manifest/src/main/eba</ebaSourceDirectory>
-		  <applicationManifestFile>${basedir}/src/test/resources/unit/basic-eba-with-manifest/src/main/eba/META-INF/application.mf</applicationManifestFile>
-		  <includeJar>false</includeJar>
+		  <ebaSourceDirectory>${basedir}/src/test/resources/unit/basic-eba-test/src/main/eba</ebaSourceDirectory>
+		  <applicationManifestFile>${basedir}/src/test/resources/unit/basic-eba-test/src/main/eba/META-INF/application.mf</applicationManifestFile>
+		  <includeJar>true</includeJar>
           <addMavenDescriptor>true</addMavenDescriptor>
           <includeEmptyDirs>true</includeEmptyDirs>
-		  <manifestFile>${basedir}/src/test/resources/unit/basic-eba-with-manifest/src/main/eba/META-INF/MANIFEST.MF</manifestFile>
-		  <workDirectory>${basedir}/target/unit/basic-eba-with-manifest/target/eba-test-with-manifest</workDirectory>
-          <sharedResources>${basedir}/target/unit/basic-eba-with-manifest/target/maven-shared-archive-resources</sharedResources>
-		  <outputDirectory>${basedir}/target/unit/basic-eba-with-manifest/target</outputDirectory>
-		  <finalName>test-eba-with-manifest</finalName>
-		  <project implementation="org.apache.aries.plugin.eba.stubs.EbaMavenProjectStub3" />
+		  <manifestFile>${basedir}/src/main/eba/META-INF/MANIFEST.MF</manifestFile>
+		  <workDirectory>${basedir}/target/unit/basic-eba-test/target/eba-test</workDirectory>
+		  <sharedResources>${basedir}/target/unit/basic-eba-test/target/maven-shared-archive-resources</sharedResources>
+		  <outputDirectory>${basedir}/target/unit/basic-eba-test/target</outputDirectory>
+		  <finalName>test-eba</finalName>
+		  <project implementation="org.apache.aries.plugin.eba.stubs.EbaMavenProjectStub" />
 		</configuration>
       </plugin>
     </plugins>
