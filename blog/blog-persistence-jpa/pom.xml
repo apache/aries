@@ -39,6 +39,7 @@
 					<instructions>
 						<Export-Package>!org.apache.aries.samples.*</Export-Package>
 						<Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
+                                                <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
 					</instructions>
 				</configuration>
 			</plugin>
