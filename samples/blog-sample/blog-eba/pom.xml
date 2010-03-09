@@ -25,13 +25,13 @@ under the License.
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.samples</groupId>
-        <artifactId>samples</artifactId>
+        <groupId>org.apache.aries.samples.blog</groupId>
+        <artifactId>blog</artifactId>
         <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.aries.samples</groupId>
-    <artifactId>blog-eba</artifactId>
+    <groupId>org.apache.aries.samples.blog</groupId>
+    <artifactId>org.apache.aries.samples.blog.eba</artifactId>
     <name>Apache Aries Blog Sample EBA</name>
     <description>
   This EBA contains the core bundles for the sample Blog application.  
@@ -42,23 +42,23 @@ under the License.
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.aries.samples</groupId>
-            <artifactId>blog-api</artifactId>
+            <groupId>org.apache.aries.samples.blog</groupId>
+            <artifactId>org.apache.aries.samples.blog.api</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.samples</groupId>
-            <artifactId>blog-servlet</artifactId>
+            <groupId>org.apache.aries.samples.blog</groupId>
+            <artifactId>org.apache.aries.samples.blog.web</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.samples</groupId>
-            <artifactId>blog</artifactId>
+            <groupId>org.apache.aries.samples.blog</groupId>
+            <artifactId>org.apache.aries.samples.blog.biz</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.samples</groupId>
-            <artifactId>blog-persistence</artifactId>
+            <groupId>org.apache.aries.samples.blog</groupId>
+            <artifactId>org.apache.aries.samples.blog.persistence.jdbc</artifactId>
             <version>${version}</version>
         </dependency>
     </dependencies>

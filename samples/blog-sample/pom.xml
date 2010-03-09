@@ -24,47 +24,17 @@
         <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.aries.blog-sample</groupId>
-    <artifactId>blog-sample</artifactId>
+    <groupId>org.apache.aries.samples.blog</groupId>
+    <artifactId>blog</artifactId>
     <name>Apache Aries blog sample</name>
     <packaging>pom</packaging>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.aries.samples</groupId>
-                <artifactId>blog</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.samples</groupId>
-                <artifactId>blog-api</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.samples</groupId>
-                <artifactId>blog-assembly</artifactId>
-                <version>${version}</version>
-                <type>eba</type>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.samples</groupId>
-                <artifactId>blog-persistence</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.samples</groupId>
-                <artifactId>blog-servlet</artifactId>
-                <version>${version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <modules>
-        <module>blog</module>
+        <module>blog-biz</module>
         <module>blog-api</module>
-        <module>blog-persistence</module>
-        <module>blog-servlet</module>
+        <module>blog-persistence-jdbc</module>
+        <module>blog-web</module>
         <module>blog-assembly</module>
         <module>blog-datasource</module>
         <module>blog-persistence-jpa</module>
