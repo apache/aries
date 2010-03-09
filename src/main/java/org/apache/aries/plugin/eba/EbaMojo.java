@@ -444,6 +444,9 @@ public class EbaMojo
     // The maven2OsgiConverter assumes the artifact is a jar so we need our own
 	// This uses the same fallback scheme as the converter
     private String getApplicationSymbolicName(Artifact artifact) {
+		if (instructions.containsKey(APPLICATION_SYMBOLICNAME)) {
+			return instructions.get(APPLICATION_SYMBOLICNAME).toString();
+		}
     	return artifact.getGroupId() + "." + artifact.getArtifactId();
     }
     
