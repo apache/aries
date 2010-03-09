@@ -19,12 +19,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.apache.aries.blog-sample</groupId>
-		<artifactId>blog-sample</artifactId>
+		<groupId>org.apache.aries.samples.blog</groupId>
+		<artifactId>blog</artifactId>
 		<version>0.1-incubating-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>blog-assembly</artifactId>
+	<artifactId>org.apache.aries.samples.blog.assembly</artifactId>
 	<name>Apache Aries blog sample assembly</name>
 	<packaging>pom</packaging>
 
@@ -215,36 +215,40 @@
 		<!-- Base (JDBC) blog sample code -->
 
 		<dependency>
-			<groupId>org.apache.aries.samples</groupId>
-			<artifactId>blog</artifactId>
+			<groupId>org.apache.aries.samples.blog</groupId>
+			<artifactId>org.apache.aries.samples.blog.biz</artifactId>
+			<version>0.1-incubating-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.aries.samples</groupId>
-			<artifactId>blog-api</artifactId>
+			<groupId>org.apache.aries.samples.blog</groupId>
+			<artifactId>org.apache.aries.samples.blog.api</artifactId>
+			<version>0.1-incubating-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.aries.samples</groupId>
-			<artifactId>blog-persistence</artifactId>
+			<groupId>org.apache.aries.samples.blog</groupId>
+			<artifactId>org.apache.aries.samples.blog.persistence.jdbc</artifactId>
+			<version>0.1-incubating-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.aries.samples</groupId>
-			<artifactId>blog-servlet</artifactId>
+			<groupId>org.apache.aries.samples.blog</groupId>
+			<artifactId>org.apache.aries.samples.blog.web</artifactId>
+			<version>0.1-incubating-SNAPSHOT</version>
 		</dependency>
 		
 		<!-- For the jpa persistence layer -->
 		
 		<dependency>
-			<groupId>org.apache.aries.samples</groupId>
-			<artifactId>blog-datasource</artifactId>
+			<groupId>org.apache.aries.samples.blog</groupId>
+			<artifactId>org.apache.aries.samples.blog.datasource</artifactId>
 			<version>0.1-incubating-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
-			<groupId>org.apache.aries.samples</groupId>
-			<artifactId>blog-persistence-jpa</artifactId>
+			<groupId>org.apache.aries.samples.blog</groupId>
+			<artifactId>org.apache.aries.samples.blog.persistence.jpa</artifactId>
 			<version>0.1-incubating-SNAPSHOT</version>
 			
 		</dependency>
