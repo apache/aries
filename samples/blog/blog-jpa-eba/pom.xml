@@ -36,7 +36,7 @@ under the License.
     <description>
   This EBA contains the core bundles for the sample Blog application.  
   It does not include all transitive dependencies, which need to
-  be provisioned during deployment.
+  be provisioned during deployment.  It uses JPA for the persistence layer.
     </description>
     <packaging>eba</packaging>
 
@@ -72,6 +72,9 @@ under the License.
                 <extensions>true</extensions>
                 <configuration>
                     <generateManifest>true</generateManifest>
+                    <instructions>
+                        <Application-SymbolicName>${pom.artifactId}</Application-SymbolicName>
+                    </instructions>
                 </configuration>
             </plugin>
         </plugins>
