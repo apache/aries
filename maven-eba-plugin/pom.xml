@@ -30,18 +30,18 @@ under the License.
         <version>0.1-incubating-SNAPSHOT</version>
     </parent>
     
-    <artifactId>eba-maven-plugin</artifactId>
+    <artifactId>maven-eba-plugin</artifactId>
     <version>0.1-incubating-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
-    <name>Aries EBA Maven Plugin</name>
+    <name>Aries Maven EBA Plugin</name>
     <description>Builds an eba (Enterprise Bundle Archive) from the project for deployment to an aries server.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/eba-maven-plugin</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/eba-maven-plugin</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/eba-maven-plugin</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/maven-eba-plugin</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/maven-eba-plugin</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/maven-eba-plugin</url>
     </scm>
     
     <dependencies>
