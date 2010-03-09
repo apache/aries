@@ -31,7 +31,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.aries.samples</groupId>
+            <groupId>org.apache.aries.samples.blog</groupId>
             <artifactId>org.apache.aries.samples.blog.api</artifactId>
             <version>0.1-incubating-SNAPSHOT</version>
         </dependency>
