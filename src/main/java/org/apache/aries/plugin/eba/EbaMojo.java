@@ -35,6 +35,8 @@ import aQute.lib.osgi.Analyzer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -57,15 +59,15 @@ public class EbaMojo
     /**
      * Application manifest headers
      */
-    private static final String MANIFEST_VERSION = "Manifest-Version: ";
-    private static final String APPLICATION_MANIFESTVERSION = "Application-ManifestVersion: ";
-    private static final String APPLICATION_SYMBOLICNAME = "Application-SymbolicName: ";
-    private static final String APPLICATION_VERSION = "Application-Version: ";
-    private static final String APPLICATION_NAME = "Application-Name: ";
-    private static final String APPLICATION_DESCRIPTION = "Application-Description: ";
-    private static final String APPLICATION_CONTENT = "Application-Content: ";
-    private static final String APPLICATION_EXPORTSERVICE = "Application-ExportService: ";
-    private static final String APPLICATION_IMPORTSERVICE = "Application-ImportService: ";
+    private static final String MANIFEST_VERSION = "Manifest-Version";
+    private static final String APPLICATION_MANIFESTVERSION = "Application-ManifestVersion";
+    private static final String APPLICATION_SYMBOLICNAME = "Application-SymbolicName";
+    private static final String APPLICATION_VERSION = "Application-Version";
+    private static final String APPLICATION_NAME = "Application-Name";
+    private static final String APPLICATION_DESCRIPTION = "Application-Description";
+    private static final String APPLICATION_CONTENT = "Application-Content";
+    private static final String APPLICATION_EXPORTSERVICE = "Application-ExportService";
+    private static final String APPLICATION_IMPORTSERVICE = "Application-ImportService";
 
     /**
      * Coverter for maven pom values to OSGi manifest values (pulled in from the maven-bundle-plugin)
@@ -159,19 +161,12 @@ public class EbaMojo
     private boolean generateManifest;
 
     /**
-     * Any service exports to add to a generated manifest.
+     * Configuration for the plugin.
      *
-     * @parameter expression="${serviceExports}"
+     * @parameter
      */
-    private String serviceExports;
-
-    /**
-     * Any service imports to add to a generated manifest.
-     *
-     * @parameter expression="${serviceImports}"
-     */
-    private String serviceImports;
-
+    private Map instructions = new LinkedHashMap();;    
+    
     /**
      * Adding pom.xml and pom.properties to the archive.
      *
@@ -385,15 +380,15 @@ public class EbaMojo
 		try {
 			// TODO: add support for dependency version ranges. Need to pick
 			// them up from the pom and convert them to OSGi version ranges.
-			FileUtils.fileAppend(fileName, MANIFEST_VERSION + "1" + "\n");
-			FileUtils.fileAppend(fileName, APPLICATION_MANIFESTVERSION + "1" + "\n");
-			FileUtils.fileAppend(fileName, APPLICATION_SYMBOLICNAME
+			FileUtils.fileAppend(fileName, MANIFEST_VERSION + ": " + "1" + "\n");
+			FileUtils.fileAppend(fileName, APPLICATION_MANIFESTVERSION + ": " + "1" + "\n");
+			FileUtils.fileAppend(fileName, APPLICATION_SYMBOLICNAME + ": "
 					+ getApplicationSymbolicName(project.getArtifact()) + "\n");
-			FileUtils.fileAppend(fileName, APPLICATION_VERSION
+			FileUtils.fileAppend(fileName, APPLICATION_VERSION + ": "
 					+ aQute.lib.osgi.Analyzer.cleanupVersion(project.getVersion()) + "\n");
 //					+ maven2OsgiConverter.getVersion(project.getVersion()) + "\n");
-			FileUtils.fileAppend(fileName, APPLICATION_NAME + project.getName() + "\n");
-			FileUtils.fileAppend(fileName, APPLICATION_DESCRIPTION
+			FileUtils.fileAppend(fileName, APPLICATION_NAME + ": " + project.getName() + "\n");
+			FileUtils.fileAppend(fileName, APPLICATION_DESCRIPTION + ": "
 					+ project.getDescription() + "\n");
 
 			// Write the APPLICATION-CONTENT
@@ -407,7 +402,7 @@ public class EbaMojo
 			}
 			Iterator<Artifact> iter = artifacts.iterator();
 
-			FileUtils.fileAppend(fileName, APPLICATION_CONTENT);
+			FileUtils.fileAppend(fileName, APPLICATION_CONTENT + ": ");
 			if (iter.hasNext()) {
 				Artifact artifact = iter.next();
 				FileUtils.fileAppend(fileName, maven2OsgiConverter
@@ -430,13 +425,13 @@ public class EbaMojo
 			FileUtils.fileAppend(fileName, "\n");
 
 			// Add any service imports or exports
-			if (serviceExports != null) {
-				FileUtils.fileAppend(fileName, APPLICATION_EXPORTSERVICE
-						+ serviceExports + "\n");
+			if (instructions.containsKey(APPLICATION_EXPORTSERVICE)) {
+				FileUtils.fileAppend(fileName, APPLICATION_EXPORTSERVICE + ": "
+						+ instructions.get(APPLICATION_EXPORTSERVICE) + "\n");
 			}
-			if (serviceImports != null) {
-				FileUtils.fileAppend(fileName, APPLICATION_IMPORTSERVICE
-						+ serviceImports + "\n");
+			if (instructions.containsKey(APPLICATION_IMPORTSERVICE)) {
+				FileUtils.fileAppend(fileName, APPLICATION_IMPORTSERVICE + ": "
+						+ instructions.get(APPLICATION_IMPORTSERVICE) + "\n");
 			}
 
 		} catch (Exception e) {
