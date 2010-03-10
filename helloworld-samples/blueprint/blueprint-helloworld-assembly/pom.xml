@@ -19,12 +19,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.samples</groupId>
-        <artifactId>blueprint-helloworld</artifactId>
+        <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
+        <artifactId>blueprint</artifactId>
         <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>blueprint-helloworld-assembly</artifactId>
+    <artifactId>org.apache.aries.samples.helloworld.blueprint.assembly</artifactId>
     <name>Apache Aries Blueprint HelloWorld Assembly</name>
     <packaging>pom</packaging>
 
@@ -66,18 +66,21 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.aries.samples</groupId>
-            <artifactId>blueprint-helloworld-api</artifactId>
+            <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
+            <artifactId>org.apache.aries.samples.helloworld.blueprint.api</artifactId>
+        <version>0.1-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.aries.samples</groupId>
-            <artifactId>blueprint-helloworld-server</artifactId>
+            <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
+            <artifactId>org.apache.aries.samples.helloworld.blueprint.server</artifactId>
+        <version>0.1-incubating-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.aries.samples</groupId>
-            <artifactId>blueprint-helloworld-client</artifactId>
+            <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
+            <artifactId>org.apache.aries.samples.helloworld.blueprint.client</artifactId>
+        <version>0.1-incubating-SNAPSHOT</version>
         </dependency>
 
     </dependencies>
@@ -123,11 +126,3 @@
     </build>
 
 </project>
-
-        
-
-        
-        
-        
-        
-        
