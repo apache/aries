@@ -68,12 +68,6 @@
     <build>
         <resources>
             <resource>
-                <directory>${basedir}</directory>
-                <includes>
-                    <include>obr.xml</include>
-                </includes>
-            </resource>
-            <resource>
                 <targetPath>OSGI-INF/blueprint</targetPath>
                 <filtering>false</filtering>
                 <directory>${basedir}/src/main/resources/OSGI-INF/blueprint</directory>
@@ -101,10 +95,6 @@
                             org.apache.aries.application.utils.manifest;version="${pom.version}",
                             org.apache.aries.application.utils.management;version="${pom.version}"
                         </Export-Package>
-                        <Export-Service>
-                            org.apache.aries.application.ApplicationMetadataFactory,
-                            org.apache.aries.application.DeploymentMetadataFactory
-                        </Export-Service>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
