@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -104,9 +105,13 @@ public class AriesApplicationImpl implements AriesApplication {
   }
 
   public void store(File f) throws FileNotFoundException, IOException {
-    OutputStream os = new FileOutputStream (f);
-    store(os);
-    os.close();
+    if (f.isDirectory()) {
+      storeInDirectory(f);
+    } else {
+      OutputStream os = new FileOutputStream (f);
+      store(os);
+      os.close();
+    }
   }
 
   /**
@@ -124,10 +129,20 @@ public class AriesApplicationImpl implements AriesApplication {
     // be quite large: the app server implementation will be better able to select
     // an appropriate location. 
     File tempDir = _localPlatform.getTemporaryDirectory();
+    storeInDirectory(tempDir);    
+    // We now have an exploded eba in tempDir which we need to copy into targetStream
+    IOUtils.zipUp(tempDir, targetStream);
+    if (!IOUtils.deleteRecursive(tempDir))
+    {
+      _logger.warn("APPMANAGEMENT0001E", tempDir);
+    }
+  }
+
+  private void storeInDirectory(File dir) throws IOException, MalformedURLException {
     OutputStream out = null;
     InputStream in = null;
     try {
-      out = IOUtils.getOutputStream(tempDir, AppConstants.APPLICATION_MF);
+      out = IOUtils.getOutputStream(dir, AppConstants.APPLICATION_MF);
       _applicationMetadata.store(out);
 
     } finally {
@@ -135,7 +150,7 @@ public class AriesApplicationImpl implements AriesApplication {
     }
     if (_deploymentMetadata != null) {
       try {
-        out = IOUtils.getOutputStream(tempDir, AppConstants.DEPLOYMENT_MF);
+        out = IOUtils.getOutputStream(dir, AppConstants.DEPLOYMENT_MF);
         _deploymentMetadata.store(out);
       } finally {
         IOUtils.close(out);
@@ -150,7 +165,7 @@ public class AriesApplicationImpl implements AriesApplication {
       String bundleLocation = bi.getLocation();
       String bundleFileName = bundleLocation.substring(bundleLocation.lastIndexOf('/') + 1);
       try { 
-        out = IOUtils.getOutputStream(tempDir, bundleFileName);
+        out = IOUtils.getOutputStream(dir, bundleFileName);
         URL bundleURL = new URL (bundleLocation);
         InputStream is = bundleURL.openStream();
         IOUtils.copy(is, out);
@@ -164,19 +179,12 @@ public class AriesApplicationImpl implements AriesApplication {
     if (_modifiedBundles != null) { 
       for (Map.Entry<String, InputStream> modifiedBundle : _modifiedBundles.entrySet()) {
         try { 
-          out = IOUtils.getOutputStream(tempDir, modifiedBundle.getKey());
+          out = IOUtils.getOutputStream(dir, modifiedBundle.getKey());
           IOUtils.copy(modifiedBundle.getValue(), out);
         } finally { 
           IOUtils.close(out);
         }
       }
-    }
-    
-    // We now have an exploded eba in tempDir which we need to copy into targetStream
-    IOUtils.zipUp(tempDir, targetStream);
-    if (!IOUtils.deleteRecursive(tempDir))
-    {
-      _logger.warn("APPMANAGEMENT0001E", tempDir);
     }
   }
 }

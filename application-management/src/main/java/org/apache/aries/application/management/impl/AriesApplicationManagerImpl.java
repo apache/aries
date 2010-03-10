@@ -57,6 +57,7 @@ import org.apache.aries.application.management.internal.MessageUtil;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.filesystem.IOUtils;
+import org.apache.aries.application.utils.management.SimpleBundleInfo;
 import org.apache.aries.application.utils.manifest.BundleManifest;
 import org.apache.aries.application.utils.manifest.ManifestDefaultsInjector;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
@@ -143,7 +144,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
         BundleManifest bm = getBundleManifest (f);
         if (bm != null) {
           if (bm.isValid()) {
-            extraBundlesInfo.add(new BundleInfoImpl(_applicationMetadataFactory, bm, f.toURL().toExternalForm()));
+            extraBundlesInfo.add(new SimpleBundleInfo(_applicationMetadataFactory, bm, f.toURL().toExternalForm()));
           } else if (deploymentMetadata != null) {
             throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0003E", f.getName(), ebaFile.getName()));
           } else { 
@@ -169,7 +170,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
             if (convertedBinary != null) { 
               modifiedBundles.put (f.getName(), convertedBinary);
               bm = BundleManifest.fromBundle(f);
-              extraBundlesInfo.add(new BundleInfoImpl(_applicationMetadataFactory, bm, f.getName()));
+              extraBundlesInfo.add(new SimpleBundleInfo(_applicationMetadataFactory, bm, f.getName()));
             }
           }
         } 
