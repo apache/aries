@@ -171,18 +171,24 @@ public final class ServiceHelper
     return result;
   }
 
-  private static BundleContext getBundleContext(ClassLoader cl)
+  private static BundleContext getBundleContext(final ClassLoader cl2)
   {
-    BundleContext result = null;
-    while (result == null && cl != null) {
-      if (cl instanceof BundleReference) {
-        result = ((BundleReference)cl).getBundle().getBundleContext();
-      } else if (cl != null) {
-        cl = cl.getParent();
+    return AccessController.doPrivileged(new PrivilegedAction<BundleContext>() {
+      public BundleContext run()
+      {
+        ClassLoader cl = cl2;
+        BundleContext result = null;
+        while (result == null && cl != null) {
+          if (cl instanceof BundleReference) {
+            result = ((BundleReference)cl).getBundle().getBundleContext();
+          } else if (cl != null) {
+            cl = cl.getParent();
+          }
+        }
+        
+        return result;
       }
-    }
-    
-    return result;
+    });
   }
 
   public static Object getService(String interface1, String filter, String serviceName, String id, boolean dynamicRebind, Map<String, Object> env) throws NamingException
