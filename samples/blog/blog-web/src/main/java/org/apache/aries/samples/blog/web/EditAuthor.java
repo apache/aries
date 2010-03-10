@@ -66,6 +66,10 @@ public class EditAuthor extends HttpServlet
       
       FormServlet.addError(req, "The email field is required.");
       resp.sendRedirect("EditAuthorForm");
+      
+    }else if (checkEmail(email) == null) {
+    	FormServlet.addError(req, "The email field is not properly formatted");
+        resp.sendRedirect("EditAuthorForm");	
     } else {
       BloggingService service = JNDIHelper.getBloggingService();
 
@@ -85,4 +89,10 @@ public class EditAuthor extends HttpServlet
   {
     FormServlet.storeParam(req, EditAuthorForm.ID, param, value);
   }
+    
+    private String checkEmail(String parameter)
+    {
+      if (parameter != null && parameter.matches("^(?:[a-zA-Z0-9_'^&amp;/+-])+(?:\\.(?:[a-zA-Z0-9_'^&amp;/+-])+)*@(?:(?:\\[?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\\.){3}(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\]?)|(?:[a-zA-Z0-9-]+\\.)+(?:[a-zA-Z]){2,}\\.?)$")) return parameter;
+      return null;
+    }
 }
