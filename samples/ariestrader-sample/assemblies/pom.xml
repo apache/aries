@@ -20,12 +20,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.ariestrader</groupId>
-        <artifactId>ariestrader-parent</artifactId>
+        <groupId>org.apache.aries.samples.ariestrader</groupId>
+        <artifactId>parent</artifactId>
         <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.aries.ariestrader</groupId>
+    <groupId>org.apache.aries.samples.ariestrader</groupId>
     <artifactId>assemblies</artifactId>
     <name>AriesTrader :: Assemblies</name>
     <packaging>pom</packaging>
@@ -33,7 +33,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.apache.aries.ariestrader</groupId>
+                <groupId>org.apache.aries.samples.ariestrader</groupId>
                 <artifactId>modules</artifactId>
                 <version>${version}</version>
                 <type>pom</type>
@@ -41,14 +41,14 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.aries.ariestrader.assemblies</groupId>
-                <artifactId>ariestrader-all-eba</artifactId>
+                <groupId>org.apache.aries.samples.ariestrader</groupId>
+                <artifactId>org.apache.aries.samples.ariestrader.all</artifactId>
                 <version>${pom.version}</version>
                 <type>eba</type>
             </dependency>
             <dependency>
-                <groupId>org.apache.aries.ariestrader.assemblies</groupId>
-                <artifactId>ariestrader-jdbc-eba</artifactId>
+                <groupId>org.apache.aries.samples.ariestrader</groupId>
+                <artifactId>org.apache.aries.samples.ariestrader.jdbc</artifactId>
                 <version>${pom.version}</version>
                 <type>eba</type>
             </dependency>

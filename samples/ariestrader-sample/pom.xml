@@ -25,8 +25,8 @@
         <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.aries.ariestrader</groupId>
-    <artifactId>ariestrader-parent</artifactId>
+    <groupId>org.apache.aries.samples.ariestrader</groupId>
+    <artifactId>parent</artifactId>
     <name>AriesTrader :: Performance Benchmark Sample</name>
     <description>Java EE 5.0 Performance Benchmark Sample Application</description>
     <packaging>pom</packaging>
