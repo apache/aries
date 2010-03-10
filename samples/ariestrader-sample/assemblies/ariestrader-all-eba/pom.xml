@@ -74,7 +74,7 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.aries</groupId>
-                <artifactId>maven-eba-plugin</artifactId>
+                <artifactId>eba-maven-plugin</artifactId>
                 <extensions>true</extensions>
             </plugin>
         </plugins>
