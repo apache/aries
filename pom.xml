@@ -92,13 +92,6 @@
                             org.apache.aries.transaction.parsing
                         </Private-Package>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Import-Service>
-                           javax.transaction.TransactionManager
-                        </Import-Service>
-                        <Export-Service>
-                            org.apache.aries.blueprint.Interceptor,
-                            org.apache.aries.blueprint.NamespaceHandler
-                        </Export-Service>
                     </instructions>
                 </configuration>
             </plugin>
