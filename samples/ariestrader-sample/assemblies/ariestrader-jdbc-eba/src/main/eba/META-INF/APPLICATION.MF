@@ -3,11 +3,11 @@ Application-ManifestVersion: 1.0
 Application-Name: AriesTrader EBA
 Application-SymbolicName: ariestrader.eba
 Application-Version: 1.0
-Application-Content: org.apache.aries.ariestrader.modules.ariestrader-util;version=0.1.0.incubating-SNAPSHOT,
- org.apache.aries.ariestrader.modules.ariestrader-api;version=0.1.0.incubating-SNAPSHOT,
- org.apache.aries.ariestrader.modules.ariestrader-core;version=0.1.0.incubating-SNAPSHOT,
- org.apache.aries.ariestrader.modules.ariestrader-persist-jdbc;version=0.1.0.incubating-SNAPSHOT,
- org.apache.aries.ariestrader.modules.ariestrader-beans;version=0.1.0.incubating-SNAPSHOT,
- org.apache.aries.ariestrader.modules.ariestrader-web;version=0.1.0.incubating-SNAPSHOT
+Application-Content: org.apache.aries.samples.ariestrader.util;version=0.1.0.incubating-SNAPSHOT,
+ org.apache.aries.samples.ariestrader.api;version=0.1.0.incubating-SNAPSHOT,
+ org.apache.aries.samples.ariestrader.core;version=0.1.0.incubating-SNAPSHOT,
+ org.apache.aries.samples.ariestrader.persist.jdbc;version=0.1.0.incubating-SNAPSHOT,
+ org.apache.aries.samples.ariestrader.beans;version=0.1.0.incubating-SNAPSHOT,
+ org.apache.aries.samples.ariestrader.web;version=0.1.0.incubating-SNAPSHOT
 
 
