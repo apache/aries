@@ -232,7 +232,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     
     Bundle b = getBundle("org.apache.aries.application.management");
     @SuppressWarnings("unchecked")
-    Class<BundleInfo> clazz = b.loadClass("org.apache.aries.application.management.impl.BundleInfoImpl");
+    Class<BundleInfo> clazz = b.loadClass("org.apache.aries.application.utils.management.SimpleBundleInfo");
     Constructor<BundleInfo> c = clazz.getConstructor(ApplicationMetadataFactory.class, BundleManifest.class, String.class);
     
     return c.newInstance(factory, BundleManifest.fromBundle(new URL(urlToBundle).openStream()), urlToBundle);

@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,10 +38,8 @@ import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.VersionRange;
-import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
-import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
@@ -82,25 +79,17 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
   }
   
   /**
-   * Construct a DeploymentMetadata from an IFile
+   * Construct a DeploymentMetadata from Manifest
    * @param src
    * @throws IOException
    */
-  public DeploymentMetadataImpl (IFile src) throws IOException { 
-    InputStream is = src.open();
-    try { 
-      // Populate application symbolic name and version fields
-      Manifest mf = ManifestProcessor.parseManifest(is);
-      _applicationMetadata = new ApplicationMetadataImpl (mf);
+  public DeploymentMetadataImpl(Manifest mf) { 
+    _applicationMetadata = new ApplicationMetadataImpl (mf);
 
-      Attributes attributes = mf.getMainAttributes();
+    Attributes attributes = mf.getMainAttributes();
       
-      parseContent(attributes.getValue(AppConstants.DEPLOYMENT_CONTENT), _deploymentContent);
-      parseContent(attributes.getValue(AppConstants.PROVISION_CONTENT), _provisionSharedContent);
-      
-    } finally { 
-      is.close();
-    }
+    parseContent(attributes.getValue(AppConstants.DEPLOYMENT_CONTENT), _deploymentContent);
+    parseContent(attributes.getValue(AppConstants.PROVISION_CONTENT), _provisionSharedContent);
   }
 
   public List<DeploymentContent> getApplicationDeploymentContents() {
@@ -137,8 +126,12 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
     attributes.putValue(Attributes.Name.MANIFEST_VERSION.toString(), AppConstants.MANIFEST_VERSION);
     attributes.putValue(AppConstants.APPLICATION_VERSION, getApplicationVersion().toString());
     attributes.putValue(AppConstants.APPLICATION_SYMBOLIC_NAME, getApplicationSymbolicName());
-    attributes.putValue(AppConstants.DEPLOYMENT_CONTENT, getDeploymentContentsAsString(_deploymentContent));
-    attributes.putValue(AppConstants.PROVISION_CONTENT, getDeploymentContentsAsString(_provisionSharedContent));
+    if (!_deploymentContent.isEmpty()) {
+      attributes.putValue(AppConstants.DEPLOYMENT_CONTENT, getDeploymentContentsAsString(_deploymentContent));
+    }
+    if (!_provisionSharedContent.isEmpty()) {
+      attributes.putValue(AppConstants.PROVISION_CONTENT, getDeploymentContentsAsString(_provisionSharedContent));
+    }
     mf.write(out);
   }
   
