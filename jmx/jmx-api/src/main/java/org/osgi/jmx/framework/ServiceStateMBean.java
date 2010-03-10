@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2009). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2009, 2010). All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,8 @@ import org.osgi.jmx.JmxConstants;
  * emits events that clients can use to get notified of the changes in the
  * service state of the framework.
  * 
- * @version $Rev$
+ * @version $Revision$
+ * @ThreadSafe
  */
 public interface ServiceStateMBean {
 	/**
@@ -93,31 +94,18 @@ public interface ServiceStateMBean {
 			"The bundles using the service", JmxConstants.LONG_ARRAY_TYPE);
 
 	/**
-	 * The key PROPERTIES, used in {@link #PROPERTIES_ITEM}.
-	 */
-	String PROPERTIES = "Properties";
-
-	/**
-	 * The item containing service properties. The key is {@link #PROPERTIES}
-	 * and the type is {@link JmxConstants#PROPERTIES_TYPE}.
-	 */
-	Item PROPERTIES_ITEM = new Item(PROPERTIES, "The service properties",
-			JmxConstants.PROPERTIES_TYPE);
-
-	/**
-	 * The item names in the CompositeData representing the service. This type
+	 * The Composite Type for a CompositeData representing a service. This type
 	 * consists of:
 	 * <ul>
 	 * <li>{@link #BUNDLE_IDENTIFIER}</li>
 	 * <li>{@link #IDENTIFIER}</li>
 	 * <li>{@link #OBJECT_CLASS}</li>
-	 * <li>{@link #PROPERTIES}</li>
 	 * <li>{@link #USING_BUNDLES}</li>
 	 * </ul>
 	 */
 	CompositeType SERVICE_TYPE = Item.compositeType("SERVICE",
 			"This type encapsulates an OSGi service", BUNDLE_IDENTIFIER_ITEM,
-			IDENTIFIER_ITEM, OBJECT_CLASS_ITEM, PROPERTIES_ITEM,
+			IDENTIFIER_ITEM, OBJECT_CLASS_ITEM,
 			USING_BUNDLES_ITEM);
 
 	/**

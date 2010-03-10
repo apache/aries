@@ -19,25 +19,18 @@ package org.apache.aries.jmx.codec;
 import static org.apache.aries.jmx.util.FrameworkUtils.getBundleIds;
 import static org.apache.aries.jmx.util.TypeUtils.toLong;
 import static org.apache.aries.jmx.util.TypeUtils.toPrimitive;
-import static org.osgi.jmx.JmxConstants.PROPERTIES_TYPE;
 import static org.osgi.jmx.framework.ServiceStateMBean.BUNDLE_IDENTIFIER;
 import static org.osgi.jmx.framework.ServiceStateMBean.IDENTIFIER;
 import static org.osgi.jmx.framework.ServiceStateMBean.OBJECT_CLASS;
-import static org.osgi.jmx.framework.ServiceStateMBean.PROPERTIES;
 import static org.osgi.jmx.framework.ServiceStateMBean.SERVICE_TYPE;
 import static org.osgi.jmx.framework.ServiceStateMBean.USING_BUNDLES;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenDataException;
-import javax.management.openmbean.TabularData;
-import javax.management.openmbean.TabularDataSupport;
 
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -68,10 +61,11 @@ public class ServiceData {
      */
     private String[] serviceInterfaces;
     
-    /**
-     * @see ServiceStateMBean#PROPERTIES_ITEM
-     */
-    private List<PropertyData<? extends Object>> properties = new ArrayList<PropertyData<? extends Object>>();
+    // keep properties for next version of the spec
+    ///**
+    // * @see ServiceStateMBean#PROPERTIES_ITEM
+    // */
+    //private List<PropertyData<? extends Object>> properties = new ArrayList<PropertyData<? extends Object>>();
     
     /**
      * @see ServiceStateMBean#USING_BUNDLES_ITEM
@@ -90,9 +84,9 @@ public class ServiceData {
         this.bundleId = serviceReference.getBundle().getBundleId();
         this.serviceInterfaces = (String[]) serviceReference.getProperty(Constants.OBJECTCLASS);
         this.usingBundles = getBundleIds(serviceReference.getUsingBundles());
-        for (String propertyKey: serviceReference.getPropertyKeys()) {
-            this.properties.add(PropertyData.newInstance(propertyKey, serviceReference.getProperty(propertyKey)));
-        }
+        //for (String propertyKey: serviceReference.getPropertyKeys()) {
+        //    this.properties.add(PropertyData.newInstance(propertyKey, serviceReference.getProperty(propertyKey)));
+        //}
     }
 
     /**
@@ -105,11 +99,11 @@ public class ServiceData {
         items.put(IDENTIFIER, this.serviceId);
         items.put(BUNDLE_IDENTIFIER, this.bundleId);
         items.put(OBJECT_CLASS, this.serviceInterfaces);
-        TabularData propertiesTable = new TabularDataSupport(PROPERTIES_TYPE);
-        for (PropertyData<? extends Object> propertyData : this.properties) {
-            propertiesTable.put(propertyData.toCompositeData());
-        }
-        items.put(PROPERTIES, propertiesTable);
+        //TabularData propertiesTable = new TabularDataSupport(PROPERTIES_TYPE);
+        //for (PropertyData<? extends Object> propertyData : this.properties) {
+        //    propertiesTable.put(propertyData.toCompositeData());
+        //}
+        // items.put(PROPERTIES, propertiesTable);
         items.put(USING_BUNDLES, toLong(this.usingBundles));
         try {
             result = new CompositeDataSupport(SERVICE_TYPE, items);
@@ -128,7 +122,6 @@ public class ServiceData {
      * @throws IlleglArugmentException
      *             if compositeData is null or not of type {@link ServiceStateMBean#SERVICE_TYPE}.
      */
-    @SuppressWarnings("unchecked")
     public static ServiceData from(CompositeData compositeData) {
         if (compositeData == null) {
             throw new IllegalArgumentException("Argument compositeData cannot be null");
@@ -141,11 +134,11 @@ public class ServiceData {
         serviceData.bundleId = (Long) compositeData.get(BUNDLE_IDENTIFIER);
         serviceData.serviceInterfaces = (String[]) compositeData.get(OBJECT_CLASS);
         serviceData.usingBundles = toPrimitive((Long[]) compositeData.get(USING_BUNDLES));
-        TabularData propertiesTable = (TabularData) compositeData.get(PROPERTIES);
-        Collection<CompositeData> propertyData = (Collection<CompositeData>) propertiesTable.values();
-        for (CompositeData propertyRow: propertyData) {
-            serviceData.properties.add(PropertyData.from(propertyRow));
-        }
+        // TabularData propertiesTable = (TabularData) compositeData.get(PROPERTIES);
+        // Collection<CompositeData> propertyData = (Collection<CompositeData>) propertiesTable.values();
+        // for (CompositeData propertyRow: propertyData) {
+        //     serviceData.properties.add(PropertyData.from(propertyRow));
+        // }
         return serviceData;
     }
 
@@ -161,9 +154,9 @@ public class ServiceData {
         return serviceInterfaces;
     }
 
-    public List<PropertyData<? extends Object>> getProperties() {
-        return properties;
-    }
+    //public List<PropertyData<? extends Object>> getProperties() {
+    //    return properties;
+    //}
 
     public long[] getUsingBundles() {
         return usingBundles;

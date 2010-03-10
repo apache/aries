@@ -18,34 +18,19 @@ package org.apache.aries.jmx.codec;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.osgi.jmx.JmxConstants.BOOLEAN;
-import static org.osgi.jmx.JmxConstants.KEY;
-import static org.osgi.jmx.JmxConstants.LONG;
-import static org.osgi.jmx.JmxConstants.PROPERTIES_TYPE;
-import static org.osgi.jmx.JmxConstants.P_BOOLEAN;
-import static org.osgi.jmx.JmxConstants.STRING;
-import static org.osgi.jmx.JmxConstants.TYPE;
-import static org.osgi.jmx.JmxConstants.VALUE;
 import static org.osgi.jmx.framework.BundleStateMBean.IDENTIFIER;
 import static org.osgi.jmx.framework.ServiceStateMBean.BUNDLE_IDENTIFIER;
 import static org.osgi.jmx.framework.ServiceStateMBean.OBJECT_CLASS;
-import static org.osgi.jmx.framework.ServiceStateMBean.PROPERTIES;
 import static org.osgi.jmx.framework.ServiceStateMBean.SERVICE_TYPE;
 import static org.osgi.jmx.framework.ServiceStateMBean.USING_BUNDLES;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
-import javax.management.openmbean.TabularData;
-import javax.management.openmbean.TabularDataSupport;
 
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -61,7 +46,6 @@ public class ServiceDataTest {
 
    
     @Test
-    @SuppressWarnings("unchecked")
     public void testToCompositeData() throws Exception {
 
         ServiceReference reference = mock(ServiceReference.class);
@@ -93,27 +77,28 @@ public class ServiceDataTest {
         assertEquals(new Long(34), compositeData.get(BUNDLE_IDENTIFIER));
         assertArrayEquals( new Long[] {new Long(6), new Long(9)}, (Long[]) compositeData.get(USING_BUNDLES));
         assertArrayEquals(interfaces, (String[]) compositeData.get(OBJECT_CLASS));
-        TabularData propertiesTable = (TabularData) compositeData.get(PROPERTIES);
-        Collection<CompositeData> propertyData = (Collection<CompositeData>) propertiesTable.values();
-        assertEquals(4, propertyData.size());
-        for (CompositeData propertyRow: propertyData) {
-            String key = (String) propertyRow.get(KEY);
-            if (key.equals("x.vendor")) {
-                assertEquals("aries", propertyRow.get(VALUE));
-                assertEquals(STRING, propertyRow.get(TYPE));
-            } else if (key.equals("x.domain")) {
-                assertEquals("test", propertyRow.get(VALUE));
-                assertEquals(STRING, propertyRow.get(TYPE));
-            } else if (key.equals("x.index")) {
-                assertEquals("67", propertyRow.get(VALUE));
-                assertEquals(LONG, propertyRow.get(TYPE));
-            } else if (key.equals("x.optimized")) {
-                assertEquals("true", propertyRow.get(VALUE));
-                assertEquals(BOOLEAN, propertyRow.get(TYPE));
-            } else {
-                fail("unknown key parsed from properties");
-            }
-        }
+        // keep Properties for next version
+        //TabularData propertiesTable = (TabularData) compositeData.get(PROPERTIES);
+        //Collection<CompositeData> propertyData = (Collection<CompositeData>) propertiesTable.values();
+        //assertEquals(4, propertyData.size());
+        //for (CompositeData propertyRow: propertyData) {
+        //    String key = (String) propertyRow.get(KEY);
+        //    if (key.equals("x.vendor")) {
+        //        assertEquals("aries", propertyRow.get(VALUE));
+        //        assertEquals(STRING, propertyRow.get(TYPE));
+        //    } else if (key.equals("x.domain")) {
+        //        assertEquals("test", propertyRow.get(VALUE));
+        //        assertEquals(STRING, propertyRow.get(TYPE));
+        //    } else if (key.equals("x.index")) {
+        //        assertEquals("67", propertyRow.get(VALUE));
+        //        assertEquals(LONG, propertyRow.get(TYPE));
+        //    } else if (key.equals("x.optimized")) {
+        //        assertEquals("true", propertyRow.get(VALUE));
+        //        assertEquals(BOOLEAN, propertyRow.get(TYPE));
+        //    } else {
+        //        fail("unknown key parsed from properties");
+        //    }
+        //}
     }
 
    
@@ -125,12 +110,12 @@ public class ServiceDataTest {
         items.put(BUNDLE_IDENTIFIER, new Long(5));
         items.put(USING_BUNDLES, new Long[] { new Long(10), new Long(11) });
         items.put(OBJECT_CLASS, new String[] { "org.apache.aries.jmx.Test", "org.apache.aries.jmx.Mock" });
-        TabularData propertyTable = new TabularDataSupport(PROPERTIES_TYPE);
-        propertyTable.put(PropertyData.newInstance("a", true).toCompositeData());
-        propertyTable.put(PropertyData.newInstance("b", "value").toCompositeData());
-        propertyTable.put(PropertyData.newInstance("c", new int[] {1, 2}).toCompositeData());
-        propertyTable.put(PropertyData.newInstance("d", new Long[] {new Long(3), new Long(4)}).toCompositeData());
-        items.put(PROPERTIES, propertyTable);
+        //TabularData propertyTable = new TabularDataSupport(PROPERTIES_TYPE);
+        //propertyTable.put(PropertyData.newInstance("a", true).toCompositeData());
+        //propertyTable.put(PropertyData.newInstance("b", "value").toCompositeData());
+        //propertyTable.put(PropertyData.newInstance("c", new int[] {1, 2}).toCompositeData());
+        //propertyTable.put(PropertyData.newInstance("d", new Long[] {new Long(3), new Long(4)}).toCompositeData());
+        //items.put(PROPERTIES, propertyTable);
         CompositeData compositeData = new CompositeDataSupport(SERVICE_TYPE, items);
         
         ServiceData data = ServiceData.from(compositeData);
@@ -139,29 +124,28 @@ public class ServiceDataTest {
         assertArrayEquals(new long[] {10, 11}, data.getUsingBundles());
         assertArrayEquals(new String[] { "org.apache.aries.jmx.Test", "org.apache.aries.jmx.Mock" }, data.getServiceInterfaces());
         
-        List<PropertyData<? extends Object>> properties = data.getProperties();
-        assertEquals(4, properties.size());
+        //List<PropertyData<? extends Object>> properties = data.getProperties();
+        //assertEquals(4, properties.size());
         
-        for (PropertyData<? extends Object> property: properties) {
-            if (property.getKey().equals("a")) {
-                assertTrue((Boolean) property.getValue());
-                assertEquals(P_BOOLEAN, property.getEncodedType());
-            } else if (property.getKey().equals("b")) {
-                assertEquals("value", property.getValue());
-                assertEquals(STRING, property.getEncodedType());
-            } else if (property.getKey().equals("c")) {
-                assertArrayEquals(new int[] { 1, 2 }, (int[]) property.getValue());
-                assertEquals("Array of int", property.getEncodedType());
-                assertEquals("1,2", property.getEncodedValue());
-            } else if (property.getKey().equals("d")) {
-                assertArrayEquals(new Long[] {new Long(3), new Long(4) }, (Long[]) property.getValue());
-                assertEquals("Array of Long", property.getEncodedType());
-                assertEquals("3,4", property.getEncodedValue());
-            } else {
-                fail("unknown key parsed from properties");
-            }
-        }
-        
+        //for (PropertyData<? extends Object> property: properties) {
+        //    if (property.getKey().equals("a")) {
+        //        assertTrue((Boolean) property.getValue());
+        //        assertEquals(P_BOOLEAN, property.getEncodedType());
+        //    } else if (property.getKey().equals("b")) {
+        //        assertEquals("value", property.getValue());
+        //        assertEquals(STRING, property.getEncodedType());
+        //    } else if (property.getKey().equals("c")) {
+        //        assertArrayEquals(new int[] { 1, 2 }, (int[]) property.getValue());
+        //        assertEquals("Array of int", property.getEncodedType());
+        //        assertEquals("1,2", property.getEncodedValue());
+        //    } else if (property.getKey().equals("d")) {
+        //        assertArrayEquals(new Long[] {new Long(3), new Long(4) }, (Long[]) property.getValue());
+        //        assertEquals("Array of Long", property.getEncodedType());
+        //        assertEquals("3,4", property.getEncodedValue());
+        //    } else {
+        //        fail("unknown key parsed from properties");
+        //    }
+        //}       
     }
 
 }
