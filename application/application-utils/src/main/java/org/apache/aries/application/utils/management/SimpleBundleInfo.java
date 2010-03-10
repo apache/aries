@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.aries.application.management.impl;
+package org.apache.aries.application.utils.management;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,7 +35,7 @@ import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 
-public final class BundleInfoImpl implements BundleInfo {
+public final class SimpleBundleInfo implements BundleInfo {
   private Content _symbolicName;
   private Version _version;
   private Attributes _attributes;
@@ -48,7 +48,7 @@ public final class BundleInfoImpl implements BundleInfo {
   private String _location;
   private ApplicationMetadataFactory _applicationMetadataFactory;
   
-  public BundleInfoImpl (ApplicationMetadataFactory amf, BundleManifest bm, String location) { 
+  public SimpleBundleInfo(ApplicationMetadataFactory amf, BundleManifest bm, String location) { 
     _symbolicName = amf.parseContent(bm.getSymbolicName());
     _version = bm.getVersion();
     _attributes = bm.getRawAttributes();
@@ -145,8 +145,8 @@ public final class BundleInfoImpl implements BundleInfo {
   {
     if (other == null) return false;
     if (other == this) return true;
-    if (other instanceof BundleInfoImpl) {
-      return _location.equals(((BundleInfoImpl)other)._location);
+    if (other instanceof SimpleBundleInfo) {
+      return _location.equals(((SimpleBundleInfo)other)._location);
     }
     
     return false;

@@ -98,7 +98,8 @@
                         <Export-Package>
                             org.apache.aries.application.utils;version="${pom.version}",
                             org.apache.aries.application.utils.filesystem;version="${pom.version}",
-                            org.apache.aries.application.utils.manifest;version="${pom.version}"
+                            org.apache.aries.application.utils.manifest;version="${pom.version}",
+                            org.apache.aries.application.utils.management;version="${pom.version}"
                         </Export-Package>
                         <Export-Service>
                             org.apache.aries.application.ApplicationMetadataFactory,
