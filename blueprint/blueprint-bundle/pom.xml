@@ -73,7 +73,7 @@
                         <Bundle-Activator>org.apache.aries.blueprint.container.BlueprintExtender</Bundle-Activator>
                         <Import-Package>
                             !org.apache.aries.blueprint*,
-                            org.osgi.service.blueprint*,
+                            !org.osgi.service.blueprint*,
                             org.osgi.service.event*;resolution:=optional,
                             org.osgi.service.framework;resolution:=optional,
                             net.sf.cglib*;resolution:=optional,
