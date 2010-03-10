@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
         Licensed to the Apache Software Foundation (ASF) under one or more
         contributor license agreements. See the NOTICE file distributed with
@@ -23,13 +24,14 @@
         <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>helloworld-samples</artifactId>
+    <groupId>org.apache.aries.samples.helloworld</groupId>
+    <artifactId>helloworld</artifactId>
     <name>Apache Aries HelloWorld samples</name>
     <packaging>pom</packaging>
     <description>Example hello world application</description>
 
     <modules>
-        <module>blueprint-helloworld</module>
+        <module>blueprint</module> 
     </modules>
 
 

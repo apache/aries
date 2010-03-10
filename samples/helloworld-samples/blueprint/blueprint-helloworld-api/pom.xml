@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
     Licensed to the Apache Software Foundation (ASF) under one or more
     contributor license agreements.  See the NOTICE file distributed with
@@ -15,14 +16,16 @@
     limitations under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <groupId>org.apache.aries.samples</groupId>
-        <artifactId>blueprint-helloworld</artifactId>
+        <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
+        <artifactId>blueprint</artifactId>
         <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>blueprint-helloworld-api</artifactId>
+    <artifactId>org.apache.aries.samples.helloworld.blueprint.api</artifactId>
     <name>Apache Aries Blueprint HelloWorld API</name>
     <packaging>bundle</packaging>
     <description>Example blueprint hello world application - api</description>
