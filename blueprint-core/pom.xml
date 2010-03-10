@@ -105,7 +105,11 @@
                           org.apache.aries.util.tracker;resolution:=optional,
                           org.osgi.service.event*;resolution:=optional,
                           org.osgi.service.framework;resolution:=optional,
-                          *</Import-Package>
+                          *
+                        </Import-Package>
+                        <Export-Service>
+                            org.apache.aries.blueprint.ParserService
+                        </Export-Service>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
