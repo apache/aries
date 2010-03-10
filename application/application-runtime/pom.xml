@@ -77,11 +77,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Service>
-                            org.apache.aries.application.management.ApplicationContextManager,
-                            org.apache.aries.application.management.LocalPlatform,
-                            org.apache.aries.application.management.AriesApplicationResolver
-                        </Export-Service>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                     </instructions>
