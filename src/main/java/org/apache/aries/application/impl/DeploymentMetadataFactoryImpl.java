@@ -20,24 +20,39 @@
 package org.apache.aries.application.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Set;
+import java.util.jar.Manifest;
 
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.DeploymentMetadataFactory;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
-import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.utils.manifest.ManifestProcessor;
 
 public class DeploymentMetadataFactoryImpl implements DeploymentMetadataFactory {
 
   public DeploymentMetadata createDeploymentMetadata(AriesApplication app,
-      Set<BundleInfo> additionalBundlesRequired) throws ResolverException {
-    return new DeploymentMetadataImpl (app, additionalBundlesRequired);
+                                                     Set<BundleInfo> additionalBundlesRequired) throws ResolverException {
+    return new DeploymentMetadataImpl(app, additionalBundlesRequired);
   }
   
   public DeploymentMetadata createDeploymentMetadata(IFile src) throws IOException { 
-    return new DeploymentMetadataImpl (src);
+    InputStream is = src.open();
+    try { 
+      return createDeploymentMetadata(is);
+    } finally { 
+      is.close();
+    }
+  }
+
+  public DeploymentMetadata createDeploymentMetadata(InputStream in) throws IOException {
+    return createDeploymentMetadata(ManifestProcessor.parseManifest(in));
+  }
+
+  public DeploymentMetadata createDeploymentMetadata(Manifest manifest) throws IOException {
+    return new DeploymentMetadataImpl(manifest);
   }
 }
