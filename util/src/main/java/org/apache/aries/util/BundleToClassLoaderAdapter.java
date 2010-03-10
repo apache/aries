@@ -26,8 +26,9 @@ import java.util.Collections;
 import java.util.Enumeration;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleReference;
 
-public class BundleToClassLoaderAdapter extends ClassLoader
+public class BundleToClassLoaderAdapter extends ClassLoader implements BundleReference
 {
   private Bundle b;
   
@@ -78,5 +79,10 @@ public class BundleToClassLoaderAdapter extends ClassLoader
   public Class<?> loadClass(String name) throws ClassNotFoundException
   {
     return b.loadClass(name);
+  }
+
+  public Bundle getBundle()
+  {
+    return b;
   }
 }
