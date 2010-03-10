@@ -20,12 +20,13 @@
 package org.apache.aries.application;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Set;
+import java.util.jar.Manifest;
 
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
-import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.ResolverException;
 
 /**
@@ -35,6 +36,7 @@ public interface DeploymentMetadataFactory {
 
   /** 
    * Create a DeploymentMetadata from an AriesApplication and its by-value bundles. 
+   * 
    * @param  app The AriesApplication in question
    * @param  bundleInfo A resolved set of BundleInfo objects
    * @throws ResolverException
@@ -45,10 +47,29 @@ public interface DeploymentMetadataFactory {
   
   /**
    * Extract a DeploymentMetadata instance from an IFile
+   * 
    * @param src DEPLOYMENT.MF file, either in an exploded directory or within a jar file. 
    * @throws IOException
    * @return DeploymentMetadata instance
    */
   public DeploymentMetadata createDeploymentMetadata (IFile src) throws IOException;
+  
+  /**
+   * Extract a DeploymentMetadata instance from InputStream.
+   * 
+   * @param in InputStream
+   * @throws IOException
+   * @return DeploymentMetadata instance
+   */
+  public DeploymentMetadata createDeploymentMetadata (InputStream in) throws IOException;
+  
+  /**
+   * Extract a DeploymentMetadata instance from Manifest.
+   * 
+   * @param manifest Manifest
+   * @throws IOException
+   * @return DeploymentMetadata instance
+   */
+  public DeploymentMetadata createDeploymentMetadata (Manifest manifest) throws IOException;
   
 }
