@@ -34,7 +34,7 @@ under the License.
         <plugins>
             <plugin>
                 <groupId>org.apache.aries.application</groupId>
-                <artifactId>maven-eba-plugin</artifactId>
+                <artifactId>eba-maven-plugin</artifactId>
                 <version>@project.version@</version>
                 <extensions>true</extensions>
                 <configuration>

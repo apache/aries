@@ -21,19 +21,19 @@ under the License.
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-eba-plugin</artifactId>
+        <artifactId>eba-maven-plugin</artifactId>
 		<configuration>
-		  <ebaSourceDirectory>${basedir}/src/test/resources/unit/basic-eba-with-manifest/src/main/eba</ebaSourceDirectory>
-		  <applicationManifestFile>${basedir}/src/test/resources/unit/basic-eba-with-manifest/src/main/eba/META-INF/application.mf</applicationManifestFile>
+		  <ebaSourceDirectory>${basedir}/src/test/resources/unit/basic-eba-with-descriptor/src/main/eba</ebaSourceDirectory>
+		  <applicationManifestFile>${basedir}/src/test/resources/unit/basic-eba-with-descriptor/src/main/eba/META-INF/application.mf</applicationManifestFile>
 		  <includeJar>false</includeJar>
           <addMavenDescriptor>true</addMavenDescriptor>
           <includeEmptyDirs>true</includeEmptyDirs>
-		  <manifestFile>${basedir}/src/test/resources/unit/basic-eba-with-manifest/src/main/eba/META-INF/MANIFEST.MF</manifestFile>
-		  <workDirectory>${basedir}/target/unit/basic-eba-with-manifest/target/eba-test-with-manifest</workDirectory>
-          <sharedResources>${basedir}/target/unit/basic-eba-with-manifest/target/maven-shared-archive-resources</sharedResources>
-		  <outputDirectory>${basedir}/target/unit/basic-eba-with-manifest/target</outputDirectory>
-		  <finalName>test-eba-with-manifest</finalName>
-		  <project implementation="org.apache.aries.plugin.eba.stubs.EbaMavenProjectStub3" />
+		  <manifestFile>${basedir}/src/test/resources/unit/basic-eba-with-descriptor/src/main/eba/META-INF/MANIFEST.MF</manifestFile>
+		  <workDirectory>${basedir}/target/unit/basic-eba-with-descriptor/target/eba-test-with-descriptor</workDirectory>
+          <sharedResources>${basedir}/target/unit/basic-eba-with-descriptor/target/maven-shared-archive-resources</sharedResources>
+		  <outputDirectory>${basedir}/target/unit/basic-eba-with-descriptor/target</outputDirectory>
+		  <finalName>test-eba-with-descriptor</finalName>
+		  <project implementation="org.apache.aries.plugin.eba.stubs.EbaMavenProjectStub2" />
 		</configuration>
       </plugin>
     </plugins>
