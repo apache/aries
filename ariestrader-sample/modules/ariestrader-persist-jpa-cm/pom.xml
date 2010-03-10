@@ -19,31 +19,31 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.aries.ariestrader</groupId>
+        <groupId>org.apache.aries.samples.ariestrader</groupId>
         <artifactId>modules</artifactId>
         <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.aries.ariestrader.modules</groupId>
-    <artifactId>ariestrader-persist-jpa-cm</artifactId>
+    <groupId>org.apache.aries.samples.ariestrader</groupId>
+    <artifactId>org.apache.aries.samples.ariestrader.persist.jpa.cm</artifactId>
     <packaging>bundle</packaging>
     <name>AriesTrader :: Modules - Persist JPA Container Managed</name>
     <description>AriesTrader Persist JPA Container Managed Module</description>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-util</artifactId>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.util</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-api</artifactId>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-entities</artifactId>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.entities</artifactId>
             <scope>provided</scope>
         </dependency>
 <!--
@@ -67,7 +67,7 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>
                             <!--org.apache.aries.samples.ariestrader.persist.jpa;version="${pom.version}"-->

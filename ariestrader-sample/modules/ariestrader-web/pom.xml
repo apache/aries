@@ -20,26 +20,26 @@
     <modelVersion>4.0.0</modelVersion>
     
     <parent>
-        <groupId>org.apache.aries.ariestrader</groupId>
+        <groupId>org.apache.aries.samples.ariestrader</groupId>
         <artifactId>modules</artifactId>
         <version>0.1-incubating-SNAPSHOT</version>
     </parent>
     
-    <groupId>org.apache.aries.ariestrader.modules</groupId>
-    <artifactId>ariestrader-web</artifactId>    
+    <groupId>org.apache.aries.samples.ariestrader</groupId>
+    <artifactId>org.apache.aries.samples.ariestrader.web</artifactId>    
     <packaging>bundle</packaging>
     <name>AriesTrader :: Modules - Web </name>
     <description>A version of AriesTrader for basic Web containers</description>
     
     <dependencies>
         <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-util</artifactId>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.util</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-api</artifactId>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.api</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -68,7 +68,7 @@
               <artifactId>maven-bundle-plugin</artifactId>
               <configuration>
                 <instructions>
-                  <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
+                  <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                   <Bundle-Version>${pom.version}</Bundle-Version>
                   <Web-ContextPath>/ariestrader</Web-ContextPath>
                   <Web-JSPExtractLocation>/</Web-JSPExtractLocation>

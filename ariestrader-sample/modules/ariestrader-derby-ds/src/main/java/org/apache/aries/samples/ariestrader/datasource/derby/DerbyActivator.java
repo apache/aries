@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.ariestrader.datasource.derby;
+package org.apache.aries.samples.ariestrader.datasource.derby;
 
 import java.sql.Driver;
 import java.sql.DriverManager;

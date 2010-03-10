@@ -20,41 +20,41 @@
     <modelVersion>4.0.0</modelVersion>
     
 	<parent>
-		<groupId>org.apache.aries.ariestrader</groupId>
+		<groupId>org.apache.aries.samples.ariestrader</groupId>
 		<artifactId>assemblies</artifactId>
 		<version>0.1-incubating-SNAPSHOT</version>
 	</parent>
     
-    <groupId>org.apache.aries.ariestrader.assemblies</groupId>
-    <artifactId>ariestrader-jdbc-eba</artifactId>    
+    <groupId>org.apache.aries.samples.ariestrader</groupId>
+    <artifactId>org.apache.aries.samples.ariestrader.jdbc</artifactId>    
     <packaging>eba</packaging>
     <name>AriesTrader :: Assemblies - EBA - JDBC</name>
     <description>An EBA version of AriesTrader JDBC</description>
         
     <dependencies>
         <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-util</artifactId>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.util</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-core</artifactId>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-api</artifactId>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-beans</artifactId>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.beans</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-persist-jdbc</artifactId>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.persist.jdbc</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.ariestrader.modules</groupId>
-            <artifactId>ariestrader-web</artifactId>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.web</artifactId>
         </dependency>
     </dependencies>
 

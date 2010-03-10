@@ -23,17 +23,18 @@
         
         <sys:environment>
             <sys:moduleId>
-                <sys:groupId>org.apache.aries.ariestrader.modules</sys:groupId>
+                <sys:groupId>org.apache.aries.samples.ariestrader</sys:groupId>
                 <sys:artifactId>ariestrader-web</sys:artifactId>
                 <sys:version>1.0.0-incubating-SNAPSHOT</sys:version>
             </sys:moduleId>
-        
+<!--        
             <sys:dependencies>
                 <sys:dependency>
-                    <sys:groupId>org.apache.aries.ariestrader.plugins</sys:groupId>
+                    <sys:groupId>org.apache.aries.samples.ariestrader</sys:groupId>
                     <sys:artifactId>ariestrader-derby-datasource</sys:artifactId>
                 </sys:dependency>
             </sys:dependencies>
+-->
         </sys:environment>
     
     <context-root>/ariestrader</context-root>
