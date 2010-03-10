@@ -19,6 +19,7 @@
 package org.apache.aries.jndi.services;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.security.AccessController;
@@ -93,7 +94,11 @@ public final class ServiceHelper
         throw new ServiceException(interfaceName, ServiceException.UNREGISTERED);
       }
       
-      return method.invoke(pair.service, args);
+      try {
+        return method.invoke(pair.service, args);
+      } catch (InvocationTargetException ite) {
+        throw ite.getTargetException();
+      }
     }
   }
   
