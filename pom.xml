@@ -34,7 +34,7 @@ under the License.
     <version>0.1-incubating-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
-    <name>Aries EBA Maven Plugin</name>
+    <name>Aries Maven EBA Plugin</name>
     <description>Builds an eba (Enterprise Bundle Archive) from the project for deployment to an aries server.
     </description>
 
