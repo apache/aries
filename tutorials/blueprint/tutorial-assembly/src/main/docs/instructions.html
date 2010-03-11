@@ -1,4 +1,3 @@
-
        <!--
                 Licensed to the Apache Software Foundation (ASF) under one or more
                 contributor license agreements. See the NOTICE file distributed with
@@ -59,8 +58,9 @@ need:
 
 <ul>
 	<li>A laptop</li>
-	<li>Java (Version 1.5 or greater)</li>
+	<li>Java (Version 1.6 or greater)</li>
 	<li>Maven (Version 2.2.1 or greater)</li>
+	<li>A working network connection</li>
 </ul>
 
 
@@ -77,24 +77,25 @@ commands from a shell prompt:</p>
 <p>You should see the Equinox OSGi console come up. The 'ss' command
 lists the state of the platform. Issue the 'ss' command:
 <div class=code>osgi> ss</div>
+You should see 8 bundles (numbered 0-7).
 
 <p>Leave this running in one window as we will return to it later. Open a new window/shell, we
 will use the new shell to run some samples.</p>
 
 <p>In the new shell, change directory to [toplevel]/bin and copy the following
 three files into the [toplevel]/dropins directory:</p>
-<div class=code>greeter-api-1.0.0-incubating-SNAPSHOT.jar<br>
-greeter-client-osgi-1.0.0-incubating-SNAPSHOT.jar<br>
-greeter-server-osgi-1.0.0-incubating-SNAPSHOT.jar<br>
+<div class=code>iorg.apache.aries.tutorials.blueprint.greeter.api-0.1-incubating-SNAPSHOT.jar<br>
+org.apache.aries.tutorials.blueprint.greeter.server.osgi-0.1-incubating-SNAPSHOT.jar<br>
+org.apache.aries.tutorials.blueprint.greeter.client.osgi-0.1-incubating-SNAPSHOT.jar<br>
 </div>
 <p>This installs those bundles in the OSGi framework. Back in the OSGi console window, type 'ss' again, you should see
 three new bundles in the 'INSTALLED' state. Start all three new bundles
-starting with the <b>greeter-server-osgi</b> bundle. To do this, issue the 'start' command
+starting with the <b>greeter.server.osgi</b> bundle. To do this, issue the 'start' command
 followed by the bundle ID:</p>
 <div class=code>osgi> start [ID]</div>
 <p>Where 'ID' is the number of the bundle.</p>
 
-<p>When you start the <b>greeter-client-osgi</b> bundle you will see some output - we
+<p>When you start the <b>greeter.client.osgi</b> bundle you will see some output - we
 will come back to this later in the tutorial.</p>
 
 <p>Back in the other shell, navigate to [toplevel]/dropins and
@@ -104,18 +105,14 @@ delete everything - this will uninstall the bundles.</p>
 bundles have gone by issuing another 'ss' command.</p>
 
 <p>Later in the tutorial you will be using Maven to build the sample
-code. As it is unlikely that there will be a reliable network
-connection, a Maven repository is supplied with the course material. To
-use the supplied repository, change to the [toplevel]/scripts directory
-and extract the repository file appropriate to your platform (it will be
-called fullrepo_{platform}.*) <b>in the scripts directory</b>. Rename
-the extracted directory 'fullrepo'. Check that the 'fullrepo' directory contains repository.xml.</p>
-
+code. 
 
 <h1>Converting the OSGi Client.</h1>
 
-<p>The projects greeter-client-osgi, greeter-server-osgi, and
-greeter-api together comprise a simple application demonstrating
+<p>The projects org.apache.aries.tutorials.blueprint.greeter.client.osgi,
+org.apache.aries.tutorials.blueprint.greeter.server.osgi and 
+org.apache.aries.tutorials.blueprint.greeter.api
+together comprise a simple application demonstrating
 publication and consumption of an OSGi service. By following the steps
 below, you will gradually migrate the application to use blueprint,
 which will demonstrate how blueprint can help to simplify such projects.</p>
@@ -134,7 +131,7 @@ convert the greeter client application to use blueprint.</p>
 
 <p>First, take a look at the the client class, the source is located here:</p>
 <div class=code>
-[toplevel]/source/greeter-client-osgi/src/main/java/org/apache/aries/samples/tutorial/blueprint/greeter/client/osgi/ClientBundleActivator.java
+[toplevel]/source/org.apache.aries.tutorials.blueprint.greeter.client.osgi/src/main/java/org/apache/aries/tutorials/blueprint/greeter/client/osgi/ClientBundleActivator.java
 </div>
 <p>This class (activator) does two things:</p>
 <ol>
@@ -149,11 +146,11 @@ convert the greeter client application to use blueprint.</p>
 <p>In the following steps we will develop blueprint to carry out the tasks that are currently handled by the activator, the first
 step is to delete the activator class. For example, on linux:</p>
 <div class=code>rm
-source/greeter-client-osgi/src/main/java/org/apache/aries/samples/tutorial/blueprint/greeter/client/osgi/ClientBundleActivator.java
+[toplevel]/source/org.apache.aries.tutorials.blueprint.greeter.client.osgi/src/main/java/org/apache/aries/tutorials/blueprint/greeter/client/osgi/ClientBundleActivator.java
 </div>
 <p>The next step is to edit the file
-[toplevel]/source/greeter-client-osgi/pom.xml, and remove the line:</p>
-<div class=code>&lt;Bundle-Activator&gt;org.apache.aries.samples.tutorial.blueprint.greeter.client.osgi.ClientBundleActivator&lt;/Bundle-Activator&gt;
+[toplevel]/source/org.apache.aries.tutorials.blueprint.greeter.client.osgi/pom.xml, and remove the line:</p>
+<div class=code>&lt;Bundle-Activator&gt;org.apache.aries.tutorials.blueprint.greeter.client.osgi.ClientBundleActivator&lt;/Bundle-Activator&gt;
 </div>
 
 <h3>Replacing the functionality of the activator with blueprint</h3>
@@ -168,9 +165,9 @@ methods.</p>
 
 
 <p>Start by adding an OSGI-INF/blueprint directory under the
-greeter-client-osgi/src/main/resources folder:</p>
+org.apache.aries.tutorials.blueprint.greeter.client.osgi/src/main/resources folder:</p>
 <div class=code>mkdir -p
-[toplevel]/source/greeter-client-osgi/src/main/resources/OSGI-INF/blueprint
+[toplevel]/source/org.apache.aries.tutorials.blueprint.greeter.client.osgi/src/main/resources/OSGI-INF/blueprint
 </div>
 <p>In the newly created blueprint directory, create a blueprint.xml
 file containing the following blueprint 'template'.</p>
@@ -186,7 +183,7 @@ file containing the following blueprint 'template'.</p>
 activator was used to create an instance of this class, now we will use blueprint to do
 the same. Add the bean element shown below within the blueprint XML element.</p>
 <div class=code>&lt;bean id="clientBean" <br>
-&nbsp;&nbsp;&nbsp;&nbsp;class="org.apache.aries.samples.tutorial.blueprint.greeter.client.osgi.GreeterTestClient"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;class="org.apache.aries.tutorials.blueprint.greeter.client.osgi.GreeterTestClient"&gt;
 &lt;/bean&gt;</div>
 <p>The blueprint container will attempt to instantiate the class
 (GreeterTestClient) with a zero argument constructor by default. However
@@ -213,7 +210,7 @@ bean is constructed. To use the 'init-method', add</p>
 your blueprint xml file:</p>
 <div class=code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
 &lt;blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"&gt;<br>
-&nbsp;&nbsp;&lt;bean id="clientBean" class="org.apache.aries.samples.tutorial.blueprint.greeter.client.osgi.GreeterTestClient"<br>
+&nbsp;&nbsp;&lt;bean id="clientBean" class="org.apache.aries.tutorials.blueprint.greeter.client.osgi.GreeterTestClient"<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;init-method="doRequests"&gt;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;argument value="My blueprint client ID"/&gt;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;argument ref="blueprintBundleContext"/&gt;<br>
@@ -226,17 +223,9 @@ changed.</p>
 <p>To build the code, run the script build.sh (or build.bat) in the
 [toplevel]/scripts directory. If you are using your own Maven repository
 the commands are:</p>
-<div class=code>./build.sh greeter-api<br>
-./build.sh greeter-server-osgi<br>
-./build.sh greeter-client-osgi<br>
-</div>
-
-<p>If you are using the local Maven repository provided with the
-tutorial, the commands are:</p>
-
-<div class=code>./build.sh localrepo greeter-api<br>
-./build.sh localrepo greeter-server-osgi<br>
-./build.sh localrepo greeter-client-osgi<br>
+<div class=code>./build.sh org.apache.aries.tutorials.blueprint.greeter.api.osgi<br>
+./build.sh org.apache.aries.tutorials.blueprint.greeter.client.osgi<br>
+./build.sh org.apache.aries.tutorials.blueprint.greeter.server.osgi<br>
 </div>
 
 <p>To run your sample, from the the [toplevel]/scripts directory:</p>
@@ -283,7 +272,7 @@ take care of this for us, we can remove the old OSGi service API usage.</p>
 
 <p>In the class:</p>
 <div class=code>
-greeter-client-osgi/src/main/java/org/apache/aries/samples/tutorial/blueprint/greeter/client/osgi/GreeterTestClient.java
+[toplevel]/source/org.apache.aries.tutorials.blueprint.greeter.client.osgi/src/main/java/org/apache/aries/tutorials/blueprint/greeter/client/osgi/GreeterTestClient.java
 </div>
 <p>Remove the following methods:
 <ul>
@@ -346,7 +335,7 @@ from the class constructor. Like this:
 <p>The last step is to modify the blueprint xml to reflect these
 changes. Edit the blueprint xml you created earlier:</p>
 <div class=code>
-[toplevel]/source/greeter-client-osgi/src/main/resources/OSGI_INF/blueprint/blueprint.xml
+[toplevel]/source/org.apache.aries.tutorials.blueprint.greeter.client.osgi/src/main/resources/OSGI_INF/blueprint/blueprint.xml
 </div>
 <p>Remove the following line from the blueprint xml</p>
 <div class=code>&lt;argument ref="blueprintBundleContext"/&gt;</div>
@@ -370,13 +359,13 @@ using blueprint!</p>
 
 <p>Back in the xml file:</p>
 <div class=code>
-[toplevel]/source/greeter-client-osgi/src/main/resources/OSGI_INF/blueprint/blueprint.xml
+[toplevel]/source/org.apache.aries.tutorials.blueprint.greeter.client.osgi/src/main/resources/OSGI_INF/blueprint/blueprint.xml
 </div>
 
 <p>Add a 'reference' element, that refers to the greeter service. To
 do this add the folowing xml inside &lt;blueprint&gt; but not inside the
 &lt;bean&gt; element.</p>
-<div class=code>&lt;reference id="greeterService" interface="org.apache.aries.samples.tutorial.blueprint.greeter.api.GreeterMessageService"<br>
+<div class=code>&lt;reference id="greeterService" interface="org.apache.aries.tutorials.blueprint.greeter.api.GreeterMessageService"<br>
 &nbsp;&nbsp;timeout="10000" availability="mandatory"/&gt;</div>
 <p>This sets up a blueprint component with the ID 'greeterService',
 which will appear to its users as an instance of the interface
@@ -406,9 +395,9 @@ implementing the GreeterMessageService.</p>
 <div class=code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
 &lt;blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"&gt;<br>
 
-&nbsp;&nbsp;&lt;reference id="greeterService" interface="org.apache.aries.samples.tutorial.blueprint.greeter.api.GreeterMessageService"<br>
+&nbsp;&nbsp;&lt;reference id="greeterService" interface="org.apache.aries.tutorials.blueprint.greeter.api.GreeterMessageService"<br>
 &nbsp;&nbsp;&nbsp;&nbsp;timeout="10000" availability="mandatory"/&gt;<br>
-&nbsp;&nbsp;&lt;bean id="clientBean" class="org.apache.aries.samples.tutorial.blueprint.greeter.client.osgi.GreeterTestClient"<br>
+&nbsp;&nbsp;&lt;bean id="clientBean" class="org.apache.aries.tutorials.blueprint.greeter.client.osgi.GreeterTestClient"<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;init-method="doRequests"&gt;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;argument value="My blueprint client ID"/&gt;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;property name="proxy"
@@ -424,14 +413,7 @@ convenience.</p>
 [toplevel]/scripts directory. If you are using your own Maven repository
 the commands are:</p>
 <div class=code>
-./build.sh greeter-client-osgi<br>
-</div>
-
-<p>If you are using the local Maven repository provided with the
-tutorial, the commands are:</p>
-
-<div class=code>
-./build.sh localrepo greeter-client-osgi<br>
+./build.sh org.apache.aries.tutorials.blueprint.greeter.client.osgi<br>
 </div>
 
 <p>To run your sample, from the the [toplevel]/scripts directory:</p>
@@ -457,7 +439,7 @@ service.</p>
 <p>The service creation and registration is once again being handled
 by a Bundle Activator, this time it's at..
 <div class=code>
-[toplevel]/greeter-server-osgi/src/main/java/org/apache/samples/tutorial/blueprint/greeter/server/osgi/ServiceRegisteringActivator.java
+[toplevel]/org.apache.aries.tutorials.blueprint.greeter.server.osgi/src/main/java/org/apache/tutorials/blueprint/greeter/server/osgi/ServiceRegisteringActivator.java
 </div>
 <p>Have a quick look at what this class is doing, make a quick note
 of how it creates and initialises the service implementation, and how it
@@ -465,10 +447,8 @@ manages the service registration.</p>
 
 <p>Delete the class. We'll be replacing it entirely with a blueprint
 version.</p>
-<p>Start by adding an OSGI-INF directory to the
-greeter-server-osgi/src/main/resources folder.</p>
-
-<p>In the OSGI-INF directory, add a blueprint directory</p>
+<p>Start by adding an OSGI-INF/blueprint directory to the
+source/org.apache.aries.tutorials.blueprint.greeter.server.osgi/src/main/resources folder.</p>
 
 <p>In the blueprint directory, create an xml file called
 blueprint.xml.</p>
@@ -483,7 +463,7 @@ boilerplate.</p>
 implementation of our service. Add a bean element with the service
 implementation class "GreeterMessageServiceImpl" as its target class.</p>
 <div class=code>&lt;bean id="serverBean"
-class="org.apache.aries.samples.tutorial.blueprint.greeter.server.osgi.GreeterMessageServiceImpl">
+class="org.apache.aries.tutorials.blueprint.greeter.server.osgi.GreeterMessageServiceImpl">
 &lt;/bean></div>
 <p>Now we need to initalise it, just as the original activator did.
 The activator set the sender id in the Service by using the 'setSender'
@@ -494,7 +474,7 @@ deployed, would create an implementation of the service and set the
 sender id on it. Unfortunately, no-one would be able to see it as we have not published it
 to the OSGi registry. The blueprint '&lt;service&gt;' element is required to publish the service:</p>
 <div class=code>&lt;service id="greeterService"<br>
-&nbsp;&nbsp;interface="org.apache.aries.samples.tutorial.blueprint.greeter.api.GreeterMessageService"<br>
+&nbsp;&nbsp;interface="org.apache.aries.tutorials.blueprint.greeter.api.GreeterMessageService"<br>
 &nbsp;&nbsp;ref="serverBean"&gt;<br>
 &lt;/service&gt;</div>
 <p>Putting it all together, you should have ended up with something
@@ -503,13 +483,13 @@ a little like this...</p>
 &lt;blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"&gt;<br>
 
 &nbsp;&nbsp;&lt;bean id="serverBean"
-class="org.apache.aries.samples.tutorial.blueprint.greeter.server.osgi.GreeterMessageServiceImpl"&gt;<br>
+class="org.apache.aries.tutorials.blueprint.greeter.server.osgi.GreeterMessageServiceImpl"&gt;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property name="sender"
 value="Blueprint Greeting Service"/&gt;<br>
 &nbsp;&nbsp;&lt;/bean&gt;<br>
 <br>
 &nbsp;&nbsp;&lt;service id="greeterService"<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;interface="org.apache.aries.samples.tutorial.blueprint.greeter.api.GreeterMessageService"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;interface="org.apache.aries.tutorials.blueprint.greeter.api.GreeterMessageService"<br>
 &nbsp;&nbsp;&nbsp;&nbsp;ref="serverBean"&gt;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;/service&gt;<br>
 
@@ -517,10 +497,10 @@ value="Blueprint Greeting Service"/&gt;<br>
 </div>
 
 <p>Finally, before you rebuild, you will need to edit the file:</p>
-<div class=code>[toplevel]/source/greeter-server-osgi/pom.xml</div>
+<div class=code>[toplevel]/source/org.apache.aries.tutorials.blueprint.greeter.server.osgi/pom.xml</div>
 <p>and remove the line:</p>
 <div class=code>
-&lt;Bundle-Activator&gt;org.apache.aries.samples.tutorial.blueprint.greeter.server.osgi.ServiceRegisteringActivator&lt;/Bundle-Activator&gt;
+&lt;Bundle-Activator&gt;org.apache.aries.tutorials.blueprint.greeter.server.osgi.ServiceRegisteringActivator&lt;/Bundle-Activator&gt;
 </div>
 <p>When you build and deploy the server bundle now, we should be
 able to see it all working as expected again.</p>
