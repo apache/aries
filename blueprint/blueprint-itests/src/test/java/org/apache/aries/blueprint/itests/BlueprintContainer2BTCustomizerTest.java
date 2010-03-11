@@ -77,7 +77,7 @@ public class BlueprintContainer2BTCustomizerTest extends AbstractIntegrationTest
             compositeManifest.put(Constants.BUNDLE_SYMBOLICNAME, "test-composite");
             compositeManifest.put(Constants.BUNDLE_VERSION, "1.0.0");
             // this import-package is used by the blueprint.sample
-            compositeManifest.put(Constants.IMPORT_PACKAGE, "org.osgi.service.blueprint.container");
+            compositeManifest.put(Constants.IMPORT_PACKAGE, "org.osgi.service.blueprint;version=\"[1.0.0,2.0.0)\", org.osgi.service.blueprint.container;version=1.0");
             // this export-package is used by pax junit runner as it needs to see the blueprint sample package 
             // for the test after the blueprint sample is started.
             compositeManifest.put(Constants.EXPORT_PACKAGE, "org.apache.aries.blueprint.sample");
