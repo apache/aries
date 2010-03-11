@@ -135,7 +135,8 @@ public class RecipeBuilder {
     }
 
     private Recipe createPassThroughRecipe(PassThroughMetadata passThroughMetadata) {
-        return new PassThroughRecipe(passThroughMetadata.getId(), passThroughMetadata.getObject());
+        return new PassThroughRecipe(getName(passThroughMetadata.getId()), 
+            passThroughMetadata.getObject());
     }
 
     private Recipe createReferenceListRecipe(ReferenceListMetadata metadata) {
