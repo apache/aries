@@ -69,13 +69,14 @@ public abstract class AbstractIntegrationTest {
                 systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
                 // Bundles
-                mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager"),
                 mavenBundle("org.osgi", "org.osgi.compendium"),
                 mavenBundle("asm", "asm-all"),
                 mavenBundle("org.apache.derby", "derby"),
                 mavenBundle("org.apache.aries", "org.apache.aries.util"),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
+                mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint"),
+                mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.wrappers"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.testbundle"),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.testds"),
 
