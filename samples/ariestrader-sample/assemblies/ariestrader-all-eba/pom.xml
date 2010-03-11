@@ -76,6 +76,12 @@
                 <groupId>org.apache.aries</groupId>
                 <artifactId>eba-maven-plugin</artifactId>
                 <extensions>true</extensions>
+                <configuration>
+                    <generateManifest>true</generateManifest>
+                    <instructions>
+                        <Application-SymbolicName>${pom.artifactId}</Application-SymbolicName>
+                    </instructions>
+                </configuration>
             </plugin>
         </plugins>
     </build>
