@@ -248,6 +248,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
                             }
                         }
                         if (missing.size() > 0) {
+                            LOGGER.warn("Bundle " + bundleContext.getBundle().getSymbolicName() + " is waiting for namespace handlers " + missing);
                             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundleContext().getBundle(), getExtenderBundle(), missing.toArray(new String[missing.size()])));
                             return;
                         }
