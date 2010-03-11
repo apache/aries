@@ -53,14 +53,15 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>
-                            <!--org.apache.aries.samples.ariestrader.core;version="${pom.version}"-->
+                            org.apache.aries.samples.ariestrader.core;version="${pom.version}"
                         </Export-Package>
                         <Import-Package>
                             org.apache.aries.samples.ariestrader.api,
                             org.apache.aries.samples.ariestrader.persistence.api,
                             org.apache.aries.samples.ariestrader.util,
                             javax.naming,
-                            javax.sql
+                            javax.sql,
+                            *
                         </Import-Package>
                         <Private-Package>
                             org.apache.aries.samples.ariestrader.core
