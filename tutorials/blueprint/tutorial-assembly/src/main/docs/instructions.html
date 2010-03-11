@@ -1,0 +1,532 @@
+
+       <!--
+                Licensed to the Apache Software Foundation (ASF) under one or more
+                contributor license agreements. See the NOTICE file distributed with
+                this work for additional information regarding copyright ownership.
+                The ASF licenses this file to You under the Apache License, Version
+                2.0 (the "License"); you may not use this file except in compliance
+                with the License. You may obtain a copy of the License at
+
+                http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+                applicable law or agreed to in writing, software distributed under the
+                License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+                CONDITIONS OF ANY KIND, either express or implied. See the License for
+                the specific language governing permissions and limitations under the
+                License.
+        -->
+<html>
+<link rel=StyleSheet href="style/site.css" type="text/css">
+<header>
+<TABLE width="100%" cellpadding="0" cellspacing="0">
+	<TR width="100%">
+		<TD id="cell-0-0" colspan="2">&nbsp;</TD>
+		<TD id="cell-0-1">&nbsp;</TD>
+		<TD id="cell-0-2" colspan="2">&nbsp;</TD>
+	</TR>
+	<TR width="100%">
+		<TD id="cell-1-2" colspan="5">
+		<DIV style="padding: 40px;">
+		<DIV id="banner"><!-- Banner -->
+		<TABLE border="0" cellpadding="0" cellspacing="0" width="100%">
+			<TR>
+				<TD align="left" class="topbardiv" nowrap=""><A
+					href="http://incubator.apache.org/aries/"
+					title="Apache Aries (incubating)"> <IMG border="0"
+					src="images/Arieslogo_Horizontal.gif"> </A></TD>
+				<TD align="right" nowrap="">
+				<div class=tutorialHeader>Blueprint Tutorial</div>
+			</TR>
+		</TABLE>
+		</DIV>
+		</DIV>
+		</TD>
+
+	</TR>
+	<TR width="100%">
+		<TD id="cell-2-0" colspan="2">&nbsp;</TD>
+		<TD id="cell-2-1">&nbsp;</TD>
+		<TD id="cell-2-2" colspan="2">&nbsp;</TD>
+	</TR>
+</TABLE>
+</header>
+<body>
+<div class=wiki-content>
+<h1>Setting up</h1>
+
+<p>This set of instructions will take you through modifying and
+running the code in the tutorial. To run through the tutorial you will
+need:
+
+<ul>
+	<li>A laptop</li>
+	<li>Java (Version 1.5 or greater)</li>
+	<li>Maven (Version 2.2.1 or greater)</li>
+</ul>
+
+
+<p>Before beginning the tutorial code we need to check that you can
+run the OSGi platform and applications. We will refer to the directory
+that you extracted the zip or tar file in as [toplevel]. We will use
+Linux commands in the instructions - if you don't know what the
+equivalent Windows commands are please ask.</p>
+
+<p>To check that you are able to run the OSGi sample code run these
+commands from a shell prompt:</p>
+<div class=code>cd [toplevel]/scripts<br>
+./start_platform.sh</div>
+<p>You should see the Equinox OSGi console come up. The 'ss' command
+lists the state of the platform. Issue the 'ss' command:
+<div class=code>osgi> ss</div>
+
+<p>Leave this running in one window as we will return to it later. Open a new window/shell, we
+will use the new shell to run some samples.</p>
+
+<p>In the new shell, change directory to [toplevel]/bin and copy the following
+three files into the [toplevel]/dropins directory:</p>
+<div class=code>greeter-api-1.0.0-incubating-SNAPSHOT.jar<br>
+greeter-client-osgi-1.0.0-incubating-SNAPSHOT.jar<br>
+greeter-server-osgi-1.0.0-incubating-SNAPSHOT.jar<br>
+</div>
+<p>This installs those bundles in the OSGi framework. Back in the OSGi console window, type 'ss' again, you should see
+three new bundles in the 'INSTALLED' state. Start all three new bundles
+starting with the <b>greeter-server-osgi</b> bundle. To do this, issue the 'start' command
+followed by the bundle ID:</p>
+<div class=code>osgi> start [ID]</div>
+<p>Where 'ID' is the number of the bundle.</p>
+
+<p>When you start the <b>greeter-client-osgi</b> bundle you will see some output - we
+will come back to this later in the tutorial.</p>
+
+<p>Back in the other shell, navigate to [toplevel]/dropins and
+delete everything - this will uninstall the bundles.</p>
+
+<p>Finally check the OSGi console to confirm that the three
+bundles have gone by issuing another 'ss' command.</p>
+
+<p>Later in the tutorial you will be using Maven to build the sample
+code. As it is unlikely that there will be a reliable network
+connection, a Maven repository is supplied with the course material. To
+use the supplied repository, change to the [toplevel]/scripts directory
+and extract the repository file appropriate to your platform (it will be
+called fullrepo_{platform}.*) <b>in the scripts directory</b>. Rename
+the extracted directory 'fullrepo'. Check that the 'fullrepo' directory contains repository.xml.</p>
+
+
+<h1>Converting the OSGi Client.</h1>
+
+<p>The projects greeter-client-osgi, greeter-server-osgi, and
+greeter-api together comprise a simple application demonstrating
+publication and consumption of an OSGi service. By following the steps
+below, you will gradually migrate the application to use blueprint,
+which will demonstrate how blueprint can help to simplify such projects.</p>
+
+<p>In the next section ('Minimum conversion') we will go through the
+minimum number of steps necessary to convert the client code to use
+blueprint. In the section after that ('Finishing the client') we will go
+through some more extensive changes to the client which extend its use
+of blueprint.</p>
+
+<h2>Minimum conversion</h2>
+
+
+<p>In this section we will take the minimum number of actions to
+convert the greeter client application to use blueprint.</p>
+
+<p>First, take a look at the the client class, the source is located here:</p>
+<div class=code>
+[toplevel]/source/greeter-client-osgi/src/main/java/org/apache/aries/samples/tutorial/blueprint/greeter/client/osgi/ClientBundleActivator.java
+</div>
+<p>This class (activator) does two things:</p>
+<ol>
+	<li>Instantiates the test class (GreeterTestClient)</li>
+	<li>Invokes the 'doRequests()' method from the GreeterTestClient
+	class.</li>
+</ol>
+
+<h3>Removing the activator</h3>
+
+
+<p>In the following steps we will develop blueprint to carry out the tasks that are currently handled by the activator, the first
+step is to delete the activator class. For example, on linux:</p>
+<div class=code>rm
+source/greeter-client-osgi/src/main/java/org/apache/aries/samples/tutorial/blueprint/greeter/client/osgi/ClientBundleActivator.java
+</div>
+<p>The next step is to edit the file
+[toplevel]/source/greeter-client-osgi/pom.xml, and remove the line:</p>
+<div class=code>&lt;Bundle-Activator&gt;org.apache.aries.samples.tutorial.blueprint.greeter.client.osgi.ClientBundleActivator&lt;/Bundle-Activator&gt;
+</div>
+
+<h3>Replacing the functionality of the activator with blueprint</h3>
+
+
+<p>If you were to rebuild the bundle at this point it would still
+build and deploy, but without the activator the test class would not be
+invoked and there would be no output when the client bundle was started.
+In this step we will use blueprint to replace what the activator was
+doing - creating an instance of the test class and calling one of its
+methods.</p>
+
+
+<p>Start by adding an OSGI-INF/blueprint directory under the
+greeter-client-osgi/src/main/resources folder:</p>
+<div class=code>mkdir -p
+[toplevel]/source/greeter-client-osgi/src/main/resources/OSGI-INF/blueprint
+</div>
+<p>In the newly created blueprint directory, create a blueprint.xml
+file containing the following blueprint 'template'.</p>
+<div class=code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"&gt;<br>
+&lt;/blueprint&gt;<br>
+</div>
+
+<p>Note: The name of the file can be anything you like that ends in
+.xml - blueprint.xml is a popular choice.</p>
+
+<p>Now, add a bean element to represent the test class; remember the
+activator was used to create an instance of this class, now we will use blueprint to do
+the same. Add the bean element shown below within the blueprint XML element.</p>
+<div class=code>&lt;bean id="clientBean" <br>
+&nbsp;&nbsp;&nbsp;&nbsp;class="org.apache.aries.samples.tutorial.blueprint.greeter.client.osgi.GreeterTestClient"&gt;
+&lt;/bean&gt;</div>
+<p>The blueprint container will attempt to instantiate the class
+(GreeterTestClient) with a zero argument constructor by default. However
+- there is no zero argument constructor in the GreeterTestClient class;
+the only constructor has the signature GreeterTestClient(BundleContext
+b, String clientID). We can tell blueprint to use this by adding some
+arguments inside the bean like this:</p>
+<div class=code>&lt;argument ref="blueprintBundleContext"/&gt;<br>
+&lt;argument value="My blueprint client ID"/&gt;<br>
+</div>
+<p>These arguments will be fed to the constructor. The string "My
+blueprint client ID" will be used directly, while the
+'blueprintBundleContext' references a special bean - we are not going to
+worry about this now, it's beyond the scope of the tutorial.</p>
+
+<p>If we were to build and deploy now, we'd discover the
+GreeterTestClient is constructed, but the 'doRequests' method is not invoked.</p>
+
+<p>For this last part of the puzzle, we'll use the blueprint bean
+'init-method' attribute, which specifies a method to be called after a
+bean is constructed. To use the 'init-method', add</p>
+<div class=code>init-method="doRequests"</div>
+<p>to the bean element. You should now have something like this in
+your blueprint xml file:</p>
+<div class=code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"&gt;<br>
+&nbsp;&nbsp;&lt;bean id="clientBean" class="org.apache.aries.samples.tutorial.blueprint.greeter.client.osgi.GreeterTestClient"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;init-method="doRequests"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;argument value="My blueprint client ID"/&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;argument ref="blueprintBundleContext"/&gt;<br>
+&nbsp;&nbsp;&lt;/bean&gt;<br>
+&lt;/blueprint&gt;<br>
+</div>
+<p>Finally we need to build and re-deploy the client we have just
+changed.</p>
+
+<p>To build the code, run the script build.sh (or build.bat) in the
+[toplevel]/scripts directory. If you are using your own Maven repository
+the commands are:</p>
+<div class=code>./build.sh greeter-api<br>
+./build.sh greeter-server-osgi<br>
+./build.sh greeter-client-osgi<br>
+</div>
+
+<p>If you are using the local Maven repository provided with the
+tutorial, the commands are:</p>
+
+<div class=code>./build.sh localrepo greeter-api<br>
+./build.sh localrepo greeter-server-osgi<br>
+./build.sh localrepo greeter-client-osgi<br>
+</div>
+
+<p>To run your sample, from the the [toplevel]/scripts directory:</p>
+<div class=code>./run.sh</div>
+<p>this will copy the jar files generated in the build step to
+[toplevel]/dropins and hence install the application.</p>
+
+<p>Now look back to the OSGi console, start the bundles (server
+first!), and check that they run. Clean the dropins directory again by
+removing all the files from it.</p>
+
+
+<p>At this point we have a blueprint client running without a bundle
+activator. However, when we look at the content of the
+GreeterTestClient class, it's doing all sorts of OSGi service related things
+that blueprint could do much more simply. In the next section we will see how
+use of blueprint can lead to much a much cleaner service invocation.</p>
+
+<h2>Finishing the client</h2>
+
+
+<p>The client code (GreeterTestClient) was written to demonstrate a
+few common approaches to invoking an OSGi service. For example, there is
+a proxy class, hiding a tracker, which passes the requests on
+to the service (see inner class GreeterMessageServiceProxy). The really quite nasty 
+'look it up and use it all in one hit.. ' approach
+is demonstrated in the method doRequestUsingImmediateLookup().</p>
+
+<p>Those experienced with OSGi will recognise the usual hidden
+selection of service usage bugs, for example, failing to unget the
+service in all cases, not handling situations when the service goes away
+after being looked up, etc.</p>
+
+<p>Blueprint can help us avoid most of the common errors
+demonstrated in this code. So, let's get started and convert this client
+code to use blueprint.</p>
+
+<h3>Removing the old test implementations</h3>
+
+
+<p>The current contents of the client is written to show various
+OSGi ways of invoking a service. Since we're going to have blueprint
+take care of this for us, we can remove the old OSGi service API usage.</p>
+
+<p>In the class:</p>
+<div class=code>
+greeter-client-osgi/src/main/java/org/apache/aries/samples/tutorial/blueprint/greeter/client/osgi/GreeterTestClient.java
+</div>
+<p>Remove the following methods:
+<ul>
+	<li>doRequestUsingImmediateLookup</li>
+	<li>doRequestUsingTracker</li>
+	<li>doRequestUsingCachedService</li>
+</ul>
+
+<p>Also remove:
+<ul>
+	<li>The inner class 'GreeterMessageServiceProxy'</li>
+	<li>The field 'owningContext'</li>
+	<li>The field 'cachedService'</li>
+	<li>The field 'tracker'</li>
+	<li>The entire content of the constructor method, except the first
+	line.</li>
+</ul>
+
+<p>Now, you should have removed everything from the class
+except:
+<ul>
+	<li>The field 'clientID'</li>
+	<li>The field 'proxy'</li>
+	<li>The first line of the constructor</li>
+	<li>The 'doRequests' method.</li>
+	<li>The 'doRequestUsingProxy' method.</li>
+	<li>The 'printResult' method.</li>
+</ul>
+
+
+
+<h3>Preparing for blueprint</h3>
+
+
+<p>In this section we will add code that makes the client a lot more
+like a java-bean by adding a setter for the proxy and removing the old
+bundle context related elements from both the Java code and blueprint
+xml.</p>
+
+<p>Continuing to edit the GreeterTestClient class, remove all but
+the first two lines of the 'doRequests' method, it should now just
+contain:</p>
+<div class=code>System.out.println("Proxy based...");<br>
+doRequestUsingProxy();</div>
+
+<p>Now add a setter for the proxy,</p>
+<div class=code>public void setProxy(GreeterMessageService p){<br>
+&nbsp;&nbsp;this.proxy = p;<br>
+}</div>
+<p>and, since we're not using it any more, remove the BundleContext
+from the class constructor. Like this:
+
+<div class=code>public GreeterTestClient(String clientID) {<br>
+&nbsp;&nbsp;this.clientID = clientID;<br>
+}<br>
+</div>
+
+<p>Finally, save and close the GreeterTestClient class.
+
+<p>The last step is to modify the blueprint xml to reflect these
+changes. Edit the blueprint xml you created earlier:</p>
+<div class=code>
+[toplevel]/source/greeter-client-osgi/src/main/resources/OSGI_INF/blueprint/blueprint.xml
+</div>
+<p>Remove the following line from the blueprint xml</p>
+<div class=code>&lt;argument ref="blueprintBundleContext"/&gt;</div>
+<p>This ensures that the blueprint matches the modified constructor in the
+GreeterTestClient class.</p>
+
+
+<h3>Adding blueprint to the client</h3>
+
+
+<p>At this point we have code which will compile, but is not yet
+complete. We have a client that will instantly null pointer if we
+attempt to run it. Looking back at the GreeterTestClient class, when the
+doRequests() method is invoked by the init-method declaration in the
+blueprint xml, this in turn calls doRequestUsingProxy() which calls
+getGreetingMessage() on the proxy variable. However, this variable is
+initialised to null and never changed.</p>
+
+<p>We need to make sure we set the 'proxy' variable. We can do this
+using blueprint!</p>
+
+<p>Back in the xml file:</p>
+<div class=code>
+[toplevel]/source/greeter-client-osgi/src/main/resources/OSGI_INF/blueprint/blueprint.xml
+</div>
+
+<p>Add a 'reference' element, that refers to the greeter service. To
+do this add the folowing xml inside &lt;blueprint&gt; but not inside the
+&lt;bean&gt; element.</p>
+<div class=code>&lt;reference id="greeterService" interface="org.apache.aries.samples.tutorial.blueprint.greeter.api.GreeterMessageService"<br>
+&nbsp;&nbsp;timeout="10000" availability="mandatory"/&gt;</div>
+<p>This sets up a blueprint component with the ID 'greeterService',
+which will appear to its users as an instance of the interface
+specified, with its implementation being backed by an OSGi service
+claiming to meet that interface.</p>
+
+<p>Note: This is the most simple possible blueprint service - there
+are many more powerful ways to use services within blueprint.</p>
+
+<p>Notice that we added the 'availability="mandatory"' attribute.
+This will ensure that the client will not start if if there are no
+services available implementing the interface. If you started the client
+before the service in any of the previous steps you would have seen a
+stack trace, making the service mandatory avoids this issue.</p>
+
+<p>The last step is to inject the 'greeterService' reference into
+our test client using a property element. Add this line inside the bean
+definition</p>
+<div class=code>&lt;property name="proxy"
+ref="greeterService"/&gt;</div>
+<p>This will invoke the 'setProxy' method we added earlier and pass
+in a blueprint service proxy, hooked up to any OSGi service
+implementing the GreeterMessageService.</p>
+
+
+<p>The complete blueprint.xml file should now look like this:</p>
+<div class=code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"&gt;<br>
+
+&nbsp;&nbsp;&lt;reference id="greeterService" interface="org.apache.aries.samples.tutorial.blueprint.greeter.api.GreeterMessageService"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;timeout="10000" availability="mandatory"/&gt;<br>
+&nbsp;&nbsp;&lt;bean id="clientBean" class="org.apache.aries.samples.tutorial.blueprint.greeter.client.osgi.GreeterTestClient"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;init-method="doRequests"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;argument value="My blueprint client ID"/&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;property name="proxy"
+ref="greeterService"/&gt;<br>
+&nbsp;&nbsp;&lt;/bean&gt;<br>
+&lt;/blueprint&gt;</div>
+<p>That is all we need to do to the client. At this stage, rebuild
+the client as you did at the end of the minimum conversion and watch it
+running in the OSGi console. The steps are repeated here for
+convenience.</p>
+
+<p>To build the code, run the script build.sh (or build.bat) in the
+[toplevel]/scripts directory. If you are using your own Maven repository
+the commands are:</p>
+<div class=code>
+./build.sh greeter-client-osgi<br>
+</div>
+
+<p>If you are using the local Maven repository provided with the
+tutorial, the commands are:</p>
+
+<div class=code>
+./build.sh localrepo greeter-client-osgi<br>
+</div>
+
+<p>To run your sample, from the the [toplevel]/scripts directory:</p>
+<div class=code>./run.sh</div>
+<p>this will copy the jar files generated in the build step to
+[toplevel]/dropins and hence install the application.</p>
+
+
+<p>Now look back to the OSGi console, start the bundles (server
+first!), and check that they run. Clean the dropins directory again by
+removing all the files from it.</p>
+
+
+
+<p>We're done with the client, and it's time to turn our attention
+to the server side of things. Converting the server is very similar to
+converting the client, but a lot simpler, as the only OSGi related bits
+in the current server are limited to instantiating and registering the
+service.</p>
+
+<h1>Converting the OSGi service</h1>
+
+<p>The service creation and registration is once again being handled
+by a Bundle Activator, this time it's at..
+<div class=code>
+[toplevel]/greeter-server-osgi/src/main/java/org/apache/samples/tutorial/blueprint/greeter/server/osgi/ServiceRegisteringActivator.java
+</div>
+<p>Have a quick look at what this class is doing, make a quick note
+of how it creates and initialises the service implementation, and how it
+manages the service registration.</p>
+
+<p>Delete the class. We'll be replacing it entirely with a blueprint
+version.</p>
+<p>Start by adding an OSGI-INF directory to the
+greeter-server-osgi/src/main/resources folder.</p>
+
+<p>In the OSGI-INF directory, add a blueprint directory</p>
+
+<p>In the blueprint directory, create an xml file called
+blueprint.xml.</p>
+
+<p>In the xml file, add the main blueprint element and usual xml
+boilerplate.</p>
+<div class=code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"&gt;<br>
+&lt;/blueprint&gt;<br>
+</div>
+<p>Let's start by having blueprint create the instance of the
+implementation of our service. Add a bean element with the service
+implementation class "GreeterMessageServiceImpl" as its target class.</p>
+<div class=code>&lt;bean id="serverBean"
+class="org.apache.aries.samples.tutorial.blueprint.greeter.server.osgi.GreeterMessageServiceImpl">
+&lt;/bean></div>
+<p>Now we need to initalise it, just as the original activator did.
+The activator set the sender id in the Service by using the 'setSender'
+method. We can have blueprint do this for us with a property element.</p>
+<div class=code>&lt;property name="sender" value="Blueprint Greeting Service"/></div>
+<p>Great... we have a server bundle, which if built and
+deployed, would create an implementation of the service and set the
+sender id on it. Unfortunately, no-one would be able to see it as we have not published it
+to the OSGi registry. The blueprint '&lt;service&gt;' element is required to publish the service:</p>
+<div class=code>&lt;service id="greeterService"<br>
+&nbsp;&nbsp;interface="org.apache.aries.samples.tutorial.blueprint.greeter.api.GreeterMessageService"<br>
+&nbsp;&nbsp;ref="serverBean"&gt;<br>
+&lt;/service&gt;</div>
+<p>Putting it all together, you should have ended up with something
+a little like this...</p>
+<div class=code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+&lt;blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"&gt;<br>
+
+&nbsp;&nbsp;&lt;bean id="serverBean"
+class="org.apache.aries.samples.tutorial.blueprint.greeter.server.osgi.GreeterMessageServiceImpl"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property name="sender"
+value="Blueprint Greeting Service"/&gt;<br>
+&nbsp;&nbsp;&lt;/bean&gt;<br>
+<br>
+&nbsp;&nbsp;&lt;service id="greeterService"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;interface="org.apache.aries.samples.tutorial.blueprint.greeter.api.GreeterMessageService"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ref="serverBean"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/service&gt;<br>
+
+&lt;/blueprint&gt;<br>
+</div>
+
+<p>Finally, before you rebuild, you will need to edit the file:</p>
+<div class=code>[toplevel]/source/greeter-server-osgi/pom.xml</div>
+<p>and remove the line:</p>
+<div class=code>
+&lt;Bundle-Activator&gt;org.apache.aries.samples.tutorial.blueprint.greeter.server.osgi.ServiceRegisteringActivator&lt;/Bundle-Activator&gt;
+</div>
+<p>When you build and deploy the server bundle now, we should be
+able to see it all working as expected again.</p>
+
+<p>Congratulations! You have completed the final step in converting
+the greeter application to use blueprint.</p>
+</div>
+</body>
+</html>
