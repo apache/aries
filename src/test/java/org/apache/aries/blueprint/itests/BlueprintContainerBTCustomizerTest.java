@@ -22,6 +22,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -78,7 +80,7 @@ public class BlueprintContainerBTCustomizerTest extends AbstractIntegrationTest 
             compositeManifest.put(Constants.BUNDLE_SYMBOLICNAME, "test-composite");
             compositeManifest.put(Constants.BUNDLE_VERSION, "1.0.0");
             // this import-package is used by the blueprint.sample
-            compositeManifest.put(Constants.IMPORT_PACKAGE, "org.osgi.service.blueprint.container");
+            compositeManifest.put(Constants.IMPORT_PACKAGE, "org.osgi.service.blueprint;version=\"[1.0.0,2.0.0)\", org.osgi.service.blueprint.container;version=1.0");
             // this export-package is used by pax junit runner as it needs to see the blueprint sample package 
             // for the test after the blueprint sample is started.
             compositeManifest.put(Constants.EXPORT_PACKAGE, "org.apache.aries.blueprint.sample");
@@ -87,8 +89,7 @@ public class BlueprintContainerBTCustomizerTest extends AbstractIntegrationTest 
 
             BundleContext compositeBundleContext = cb.getCompositeFramework().getBundleContext();
             // install the blueprint sample onto the framework associated with the composite bundle
-            MavenArtifactProvisionOption mapo = mavenBundleInTest("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample");
-//            MavenArtifactProvisionOption mapo = CoreOptions.mavenBundle().groupId("org.apache.aries.blueprint").artifactId("org.apache.aries.blueprint.sample").version( "0.1-incubating-SNAPSHOT");
+            MavenArtifactProvisionOption mapo = CoreOptions.mavenBundle().groupId("org.apache.aries.blueprint").artifactId("org.apache.aries.blueprint.sample").version( "0.1-incubating-SNAPSHOT");
             // let's use input stream to avoid invoking mvn url handler which isn't avail in the child framework.
             InputStream is = new URL(mapo.getURL()).openStream();
             Bundle bundle = compositeBundleContext.installBundle(mapo.getURL(), is);
@@ -130,7 +131,16 @@ public class BlueprintContainerBTCustomizerTest extends AbstractIntegrationTest 
             mavenBundle("org.osgi", "org.osgi.compendium"),
 //            org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
-            equinox().version("3.5.0")
+            /* For debugging, uncomment the next two lines */
+//          vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
+//          waitForFrameworkStartup(),
+
+          /* For debugging, uncomment the next two lines
+          and add these imports:
+          import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
+          import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+          */
+            equinox().version("3.5.1")
         );
         options = updateOptions(options);
         return options;
