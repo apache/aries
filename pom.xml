@@ -55,6 +55,11 @@
                 <artifactId>org.apache.aries.transaction.manager</artifactId>
                 <version>0.1-incubating-SNAPSHOT</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.aries.transaction</groupId>
+                <artifactId>org.apache.aries.transaction.wrappers</artifactId>
+                <version>0.1-incubating-SNAPSHOT</version>
+            </dependency>
 				<dependency>
 					<groupId>org.apache.aries.transaction</groupId>
 					<artifactId>org.apache.aries.transaction.testds</artifactId>
@@ -117,6 +122,7 @@
     <modules>
         <module>transaction-manager</module>
         <module>transaction-blueprint</module>
+		<module>transaction-wrappers</module>
 		<module>transaction-itests</module>
 		<module>transaction-testbundle</module>
 		<module>transaction-testds</module>

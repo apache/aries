@@ -95,6 +95,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
+            <artifactId>org.apache.aries.transaction.wrappers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.testds</artifactId>
             <scope>test</scope>
         </dependency>
