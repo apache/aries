@@ -1,5 +1,5 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one
+f * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
@@ -168,19 +168,23 @@ public class NSHandler implements NamespaceHandler {
             Bundle client = getBlueprintBundle(context);
             String unitName = parseUnitName(element);
 
-            HashMap<String, Object> properties = new HashMap<String, Object>();
-            // Remember to add the PersistenceContextType so that we can create
-            // the correct type of
-            // EntityManager
-            properties.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE,
-                    parseType(element));
-            properties.putAll(parseJPAProperties(element, context));
-            if(contextsAvailable.get()) {
-                manager.registerContext(unitName, client, properties);
+            if (client != null) {
+                HashMap<String, Object> properties = new HashMap<String, Object>();
+                // Remember to add the PersistenceContextType so that we can create
+                // the correct type of
+                // EntityManager    
+                properties.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE,
+                        parseType(element));
+                properties.putAll(parseJPAProperties(element, context));
+                if(contextsAvailable.get()) {
+                    manager.registerContext(unitName, client, properties);
+                } else {
+                    _logger.warn("The bundle {} is a client of persistence unit {} with properties {}, but no PersistenceContextProvider is available in the runtime. " +
+                    		"The blueprint for this bundle will not start correctly unless the managed persistence context is registered through some other mechanism",
+                    		new Object[] {client.getSymbolicName() + "_" + client.getVersion(), unitName, properties});
+                }
             } else {
-                _logger.warn("The bundle {} is a client of persistence unit {} with properties {}, but no PersistenceContextProvider is available in the runtime. " +
-                		"The blueprint for this bundle will not start correctly unless the managed persistence context is registered through some other mechanism",
-                		new Object[] {client.getSymbolicName() + "_" + client.getVersion(), unitName, properties});
+                _logger.debug("No bundle: this must be a dry, parse only run.");
             }
         }
 
