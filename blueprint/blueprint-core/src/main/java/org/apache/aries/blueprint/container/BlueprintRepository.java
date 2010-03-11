@@ -114,6 +114,13 @@ public class BlueprintRepository implements Repository, ExecutionContext {
         }
         recipes.put(name, recipe);
     }
+    
+    public void removeRecipe(String name) {
+        if (instances.get(name) != null)
+            throw new ComponentDefinitionException("Name " + name + " is already instanciated as " + instances.get(name) + " and cannot be removed.");
+
+        recipes.remove(name);
+    }
 
     private Object convert(String name, Object instance) throws ComponentDefinitionException {
         try {
