@@ -61,7 +61,7 @@
                             org.apache.aries.samples.ariestrader.util,
                             javax.naming,
                             javax.sql,
-                            *
+                            org.osgi.service.blueprint
                         </Import-Package>
                         <Private-Package>
                             org.apache.aries.samples.ariestrader.core
