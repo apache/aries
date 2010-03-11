@@ -210,6 +210,11 @@
 			<artifactId>org.apache.aries.transaction.blueprint</artifactId>
 		</dependency>
 		
+		<dependency>
+			<groupId>org.apache.aries.transaction</groupId>
+			<artifactId>org.apache.aries.transaction.wrappers</artifactId>
+		</dependency>
+		
 
 
 		<!-- Base (JDBC) blog sample code -->
