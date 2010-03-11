@@ -50,6 +50,13 @@ public interface Repository {
     Recipe getRecipe(String name);
 
     void putRecipe(String name, Recipe recipe);
+    
+    /**
+     * Remove an uninstantiated recipe
+     * @param name
+     * @throws ComponentDefinitionException if the recipe is already instantiated
+     */
+    void removeRecipe(String name);
 
     Object create(String name) throws ComponentDefinitionException;
 
