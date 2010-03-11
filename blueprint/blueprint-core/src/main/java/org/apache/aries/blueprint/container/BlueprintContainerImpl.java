@@ -138,7 +138,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     private final AtomicBoolean running = new AtomicBoolean();
     private List<ServiceRecipe> services;
     private AccessControlContext accessControlContext;
-
+    private final IdSpace tempRecipeIdSpace = new IdSpace();
+    
     public BlueprintContainerImpl(BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher, NamespaceHandlerRegistry handlers, ScheduledExecutorService executors, List<Object> pathList) {
         this.bundleContext = bundleContext;
         this.extenderBundle = extenderBundle;
@@ -427,7 +428,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
     
     public BlueprintRepository getRepository() {
         if (repository == null) {
-            repository = new RecipeBuilder(this).createRepository();
+            repository = new RecipeBuilder(this, tempRecipeIdSpace).createRepository();
         }
         return repository;
     }
@@ -484,15 +485,31 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer, Names
             }
             // Update repository with recipes processed by the processors
             untrackServiceReferences();
-            Repository tmpRepo = new RecipeBuilder(this).createRepository();
+            Repository tmpRepo = new RecipeBuilder(this, tempRecipeIdSpace).createRepository();
+            
+            LOGGER.debug("Updating blueprint repository");
+            
+            for (String name : repository.getNames()) {
+                if (repository.getInstance(name) == null) {
+                    LOGGER.debug("Removing uninstantiated recipe {}", new Object[] { name });
+                    repository.removeRecipe(name);
+                } else {
+                    LOGGER.debug("Recipe {} is already instantiated", new Object[] { name });
+                }
+            }
+            
             for (String name : tmpRepo.getNames()) {
                 if (repository.getInstance(name) == null) {
+                    LOGGER.debug("Adding new recipe {}", new Object[] { name });
                     Recipe r = tmpRepo.getRecipe(name);
                     if (r != null) {
                         repository.putRecipe(name, r);
                     }
+                } else {
+                    LOGGER.debug("Recipe {} is already instantiated and cannot be updated", new Object[] { name });
                 }
             }
+            
             getSatisfiableDependenciesMap(true);
             trackServiceReferences();
         }
