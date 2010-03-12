@@ -32,9 +32,7 @@
         </bean>
   </service>              
   
-  <bean id="txenhancer" class="org.apache.aries.transaction.TxComponentMetaDataHelperImpl">
-    <property name="transactionManager" ref="tm"/>
-  </bean>
+  <bean id="txenhancer" class="org.apache.aries.transaction.TxComponentMetaDataHelperImpl"/>
   
   <bean id="txinterceptor" class="org.apache.aries.transaction.TxInterceptorImpl">
     <property name="transactionManager" ref="tm"/>

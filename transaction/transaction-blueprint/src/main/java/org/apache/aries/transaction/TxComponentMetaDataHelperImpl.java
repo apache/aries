@@ -19,14 +19,11 @@
 package org.apache.aries.transaction;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.transaction.TransactionManager;
 
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
@@ -34,10 +31,13 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
 
     private static class TranData
     {
+      private static final Pattern WILDCARD = Pattern.compile("\\Q.*\\E");
       private final Map<Pattern, String> map;
+      private final Map<String, String> cache;
       
       public TranData() {
-          map = new LinkedHashMap<Pattern, String>();
+          map = new ConcurrentHashMap<Pattern, String>();
+          cache = new ConcurrentHashMap<String, String>();
       }
       
       public void add(Pattern pattern, String strategy) {
@@ -46,17 +46,104 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
       
       public String getStrategy(String name)
       {
+        String strategy = cache.get(name);
+        
+        if (strategy == null) {
+            List<Pattern> matches = findMatches(name);
+            int size = matches.size();
+
+            if (size == 0) {
+                strategy = "Required";
+            }
+            else if (size == 1) {
+                strategy = map.get(matches.get(0));
+            }
+            else {
+                matches = selectPatternsWithFewestWildcards(matches);
+                size = matches.size();
+
+                if (size == 1) {
+                    strategy = map.get(matches.get(0));
+                }
+                else {
+                    matches = selectLongestPatterns(matches);
+                    size = matches.size();
+
+                    if (size == 1) {
+                        strategy = map.get(matches.get(0));
+                    }
+                    else {
+                        throw new IllegalStateException("Unable to apply patterns: " + matches);
+                    }
+                }
+            }
+            
+            cache.put(name, strategy);
+        }
+        
+        return strategy;
+      }
+      
+      private List<Pattern> findMatches(String name)
+      {
+        List<Pattern> matches = new ArrayList<Pattern>();
         for (Pattern p : map.keySet()) {
           if (p.matcher(name).matches()) {
-            return map.get(p);
+            matches.add(p);
           }
         }
-        return null;
+        return matches;
+      }
+      
+      private List<Pattern> selectPatternsWithFewestWildcards(List<Pattern> matches) {
+          List<Pattern> remainingMatches = new ArrayList<Pattern>();
+          int minWildcards = Integer.MAX_VALUE;
+          
+          for (Pattern p : matches) {
+              String pattern = p.pattern();
+              Matcher m = WILDCARD.matcher(pattern);
+              int count = 0;
+              
+              while (m.find()) {
+                  count++;
+              }
+              
+              if (count < minWildcards) {
+                  remainingMatches.clear();
+                  remainingMatches.add(p);
+                  minWildcards = count;
+              }
+              else if (count == minWildcards) {
+                  remainingMatches.add(p);
+              }
+          }
+          
+          return remainingMatches;
+      }
+      
+      private List<Pattern> selectLongestPatterns(List<Pattern> matches) {
+          List<Pattern> remainingMatches = new ArrayList<Pattern>();
+          int longestLength = 0;
+          
+          for (Pattern p : matches) {
+              String pattern = p.pattern();
+              int length = pattern.length();
+              
+              if (length > longestLength) {
+                  remainingMatches.clear();
+                  remainingMatches.add(p);
+                  longestLength = length;
+              }
+              else if (length == longestLength) {
+                  remainingMatches.add(p);
+              }
+          }
+          
+          return remainingMatches;
       }
     }
     
     private final Map<ComponentMetadata, TranData> data = new ConcurrentHashMap<ComponentMetadata, TranData>();
-    private TransactionManager tm;
     
     public synchronized void setComponentTransactionData(ComponentMetadata component, String value, String method)
     {
@@ -84,15 +171,5 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
             result = td.getStrategy(methodName);
 
         return result;
-    }
-
-    public TransactionManager getTransactionManager()
-    {
-      return tm;
-    }
-    
-    public void setTransactionManager(TransactionManager manager)
-    {
-      tm = manager;
     }
 }
