@@ -26,8 +26,8 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import org.apache.aries.application.management.ApplicationContext;
 import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.sample.HelloWorld;
@@ -81,7 +81,7 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
     
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
-    ApplicationContext ctx = manager.install(app);
+    AriesApplicationContext ctx = manager.install(app);
     ctx.start();
     
     HelloWorld hw = getOsgiService(HelloWorld.class);
@@ -96,7 +96,7 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
   public void testAppWithApplicationManifest() throws Exception {
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
-    ApplicationContext ctx = manager.install(app);
+    AriesApplicationContext ctx = manager.install(app);
     ctx.start();
     
     HelloWorld hw = getOsgiService(HelloWorld.class);
