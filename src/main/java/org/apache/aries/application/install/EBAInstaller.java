@@ -23,8 +23,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.aries.application.management.ApplicationContext;
 import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.felix.fileinstall.ArtifactInstaller;
@@ -37,7 +37,7 @@ public class EBAInstaller implements ArtifactInstaller
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EBAInstaller.class);
 
-  private Map<File, ApplicationContext> appContexts = new HashMap<File, ApplicationContext>();
+  private Map<File, AriesApplicationContext> appContexts = new HashMap<File, AriesApplicationContext>();
 
   private AriesApplicationManager applicationManager;
 
@@ -68,7 +68,7 @@ public class EBAInstaller implements ArtifactInstaller
         applicationLocation.getName(), appSymName, appVersion,
         app.getApplicationMetadata().getApplicationContents() });
 
-    ApplicationContext context = applicationManager.install(app);
+    AriesApplicationContext context = applicationManager.install(app);
 
     LOGGER.debug("installed app {} {} state: {}", new Object[] {
         appSymName, appVersion,
@@ -87,7 +87,7 @@ public class EBAInstaller implements ArtifactInstaller
 
   public void uninstall(File applicationLocation) throws Exception
   {
-    ApplicationContext context = appContexts.get(applicationLocation);
+    AriesApplicationContext context = appContexts.get(applicationLocation);
     
     String appSymName = context.getApplication().getApplicationMetadata().getApplicationSymbolicName();
     Version appVersion = context.getApplication().getApplicationMetadata().getApplicationVersion();
