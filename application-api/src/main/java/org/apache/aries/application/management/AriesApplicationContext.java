@@ -28,7 +28,7 @@ import org.osgi.framework.BundleException;
  * Represents an Aries application in the runtime. See the application-runtime module for a 
  * sample implementation. 
  */
-public interface ApplicationContext
+public interface AriesApplicationContext
 {
   /** 
    * Get the state of a running application. An application is INSTALLED if all its bundles 
@@ -62,7 +62,7 @@ public interface ApplicationContext
    * constituents. 
    * @return The application's runtime content. 
    */
-  public Set<Bundle> getApplicationContent(); // 
+  public Set<Bundle> getApplicationContent();
   
   public enum ApplicationState
   {

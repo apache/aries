@@ -26,16 +26,16 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.aries.application.management.ApplicationContext;
-import org.apache.aries.application.management.ApplicationContextManager;
 import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.AriesApplicationContext;
+import org.apache.aries.application.management.AriesApplicationContextManager;
 import org.apache.aries.application.management.ManagementException;
-import org.apache.aries.application.management.ApplicationContext.ApplicationState;
+import org.apache.aries.application.management.AriesApplicationContext.ApplicationState;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 
-public class ApplicationContextManagerImpl implements ApplicationContextManager {
+public class ApplicationContextManagerImpl implements AriesApplicationContextManager {
 
   private ConcurrentMap<AriesApplication, ApplicationContextImpl> _appToContextMap;
   private BundleContext _bundleContext;
@@ -48,7 +48,7 @@ public class ApplicationContextManagerImpl implements ApplicationContextManager 
     _bundleContext = b;
   }
   
-  public ApplicationContext getApplicationContext(AriesApplication app) throws BundleException, ManagementException {
+  public AriesApplicationContext getApplicationContext(AriesApplication app) throws BundleException, ManagementException {
     ApplicationContextImpl result;
     if (_appToContextMap.containsKey(app)) { 
       result = _appToContextMap.get(app);
@@ -62,15 +62,15 @@ public class ApplicationContextManagerImpl implements ApplicationContextManager 
     return result;
   }
 
-  public Set<ApplicationContext> getApplicationContexts() {
-    Set<ApplicationContext> result = new HashSet<ApplicationContext>();
+  public Set<AriesApplicationContext> getApplicationContexts() {
+    Set<AriesApplicationContext> result = new HashSet<AriesApplicationContext>();
     for (Map.Entry<AriesApplication, ApplicationContextImpl> entry: _appToContextMap.entrySet()) {
       result.add (entry.getValue());
     }
     return result;
   }
 
-  public void remove(ApplicationContext app)
+  public void remove(AriesApplicationContext app)
   {
     Iterator<Map.Entry<AriesApplication, ApplicationContextImpl>> it = _appToContextMap.entrySet().iterator();
     

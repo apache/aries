@@ -28,27 +28,27 @@ import org.osgi.framework.BundleException;
  * server's OSGi runtime. We expect that many projects consuming this code will provide
  * their own implementation of this service. 
  */
-public interface ApplicationContextManager {
+public interface AriesApplicationContextManager {
 
   /**
    * Obtain an ApplicationContext for an AriesApplication. Applications are stopped and
    * started via an ApplicationContext. 
    * @param app The applicaton for which to obtain an ApplicationContext. 
-   * @return ApplicationContext
+   * @return AriesApplicationContext
    * @throws BundleException 
    * @throws ManagementException 
    */
-  public ApplicationContext getApplicationContext(AriesApplication app) throws BundleException, ManagementException;
+  public AriesApplicationContext getApplicationContext(AriesApplication app) throws BundleException, ManagementException;
 
   /**
-   * @return The set of all ApplicationContexts.
+   * @return The set of all AriesApplicationContexts.
    */
-  public Set<ApplicationContext> getApplicationContexts();
+  public Set<AriesApplicationContext> getApplicationContexts();
 
   /**
-   * Remove the provided ApplicationContext from the running system.
+   * Remove the provided AriesApplicationContext from the running system.
    * 
    * @param app the application to remove.
    */
-  public void remove(ApplicationContext app) throws BundleException;
+  public void remove(AriesApplicationContext app) throws BundleException;
 }
