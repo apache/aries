@@ -20,12 +20,20 @@
 package org.apache.aries.application.management;
 
 /**
- * A client that wishes to receive ApplicationEvents should implement this interface. 
+ * Objects of this type are passed to ApplicationListener clients
  */
-public interface ApplicationListener {
+public abstract class AriesApplicationEvent {
 
   /**
-   * Receives notification of an application lifecycle event
+   * Get the type of the event
+   * @return
    */
-  public void applicationChanged (ApplicationEvent event);
+  abstract public AriesApplicationContext.ApplicationState getType();
+  
+  /**
+   * Get the associated AriesApplication
+   * @return
+   */
+  abstract public AriesApplication getApplication();
+  
 }

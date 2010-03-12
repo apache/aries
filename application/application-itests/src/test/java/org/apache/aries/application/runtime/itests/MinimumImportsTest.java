@@ -27,8 +27,8 @@ import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
-import org.apache.aries.application.management.ApplicationContext;
 import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
@@ -102,7 +102,7 @@ public class MinimumImportsTest extends AbstractIntegrationTest {
     
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("appmgrclienttest.eba")));
-    ApplicationContext ctx = manager.install(app);
+    AriesApplicationContext ctx = manager.install(app);
     ctx.start();
     
     int sleepfor = 3000;

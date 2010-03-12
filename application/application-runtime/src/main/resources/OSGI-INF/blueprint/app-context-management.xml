@@ -23,7 +23,7 @@
     <property name="bundleContext" ref="blueprintBundleContext"/>
   </bean>
 
-  <service interface="org.apache.aries.application.management.ApplicationContextManager" ref="app-context-manager" />
+  <service interface="org.apache.aries.application.management.AriesApplicationContextManager" ref="app-context-manager" />
   
   <!-- Default implementations of services that must be implemented against a 
        particular application server environment follow -->

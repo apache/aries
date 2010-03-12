@@ -35,7 +35,7 @@
                   availability="optional"/>
   <reference id="resolver" interface="org.apache.aries.application.management.AriesApplicationResolver"/>
   <reference id="localPlatform" interface="org.apache.aries.application.management.LocalPlatform"/>
-  <reference id="application-context-manager" interface="org.apache.aries.application.management.ApplicationContextManager"/>
+  <reference id="application-context-manager" interface="org.apache.aries.application.management.AriesApplicationContextManager"/>
     
   <service interface="org.apache.aries.application.management.AriesApplicationManager" ref="app-manager" />
   

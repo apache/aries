@@ -40,10 +40,10 @@ import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.DeploymentMetadataFactory;
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
-import org.apache.aries.application.management.ApplicationContext;
-import org.apache.aries.application.management.ApplicationContextManager;
-import org.apache.aries.application.management.ApplicationListener;
 import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.AriesApplicationContext;
+import org.apache.aries.application.management.AriesApplicationContextManager;
+import org.apache.aries.application.management.AriesApplicationListener;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleConverter;
@@ -74,7 +74,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   private List<BundleConverter> _bundleConverters;
   private AriesApplicationResolver _resolver;
   private LocalPlatform _localPlatform;
-  private ApplicationContextManager _applicationContextManager;
+  private AriesApplicationContextManager _applicationContextManager;
 
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.application.management.impl");
 
@@ -98,7 +98,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     _localPlatform = lp;
   }
   
-  public void setApplicationContextManager (ApplicationContextManager acm) { 
+  public void setApplicationContextManager (AriesApplicationContextManager acm) { 
     _applicationContextManager = acm;
   }
   
@@ -224,24 +224,24 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     return application;
   } 
 
-  public ApplicationContext install(AriesApplication app) throws BundleException, ManagementException, ResolverException {
+  public AriesApplicationContext install(AriesApplication app) throws BundleException, ManagementException, ResolverException {
     if (!app.isResolved()) {
         app = resolve(app);
     }
-    ApplicationContext result = _applicationContextManager.getApplicationContext(app);
+    AriesApplicationContext result = _applicationContextManager.getApplicationContext(app);
     return result;
   }
   
-  public void uninstall(ApplicationContext app) throws BundleException 
+  public void uninstall(AriesApplicationContext app) throws BundleException 
   {
     _applicationContextManager.remove(app);
   }
 
-  public void addApplicationListener(ApplicationListener l) {
+  public void addApplicationListener(AriesApplicationListener l) {
     // Need application listener lifecycle support
   }
 
-  public void removeApplicationListener(ApplicationListener l) {
+  public void removeApplicationListener(AriesApplicationListener l) {
     // TODO Auto-generated method stub
 
   }

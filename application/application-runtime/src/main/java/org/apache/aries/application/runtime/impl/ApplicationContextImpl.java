@@ -28,8 +28,8 @@ import java.util.Set;
 
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
-import org.apache.aries.application.management.ApplicationContext;
 import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ManagementException;
@@ -40,7 +40,7 @@ import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 
-public class ApplicationContextImpl implements ApplicationContext {
+public class ApplicationContextImpl implements AriesApplicationContext {
   
   private AriesApplication _application;
   private Map<BundleInfo, Bundle> _bundles;
