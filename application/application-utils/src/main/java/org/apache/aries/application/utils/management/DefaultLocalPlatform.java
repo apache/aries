@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.runtime.defaults;
+package org.apache.aries.application.utils.management;
 
 import java.io.File;
 import java.io.IOException;
