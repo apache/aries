@@ -58,34 +58,34 @@ public interface AriesApplicationManager
    * not start them.
    * If the application is not resolved, a call to {@link #resolve(AriesApplication, ResolveConstraint...)}
    * will be performed and the resolved application will be installed.  In such a case the resolved
-   * application can be obtained by calling {@link org.apache.aries.application.management.ApplicationContext#getApplication()}
+   * application can be obtained by calling {@link org.apache.aries.application.management.AriesApplicationContext#getApplication()}
    * on the returned ApplicationContext.
    *
    * @param app Application to install 
-   * @return ApplicationContext, a handle to an application in the runtime
+   * @return AriesApplicationContext, a handle to an application in the runtime
    * @throws BundleException
    * @throws ManagementException 
    */
-  public ApplicationContext install(AriesApplication app) throws BundleException, ManagementException, ResolverException;
+  public AriesApplicationContext install(AriesApplication app) throws BundleException, ManagementException, ResolverException;
   
   /**
    * Uninstall an AriesApplication - i.e. unload its bundles from the runtime. 
    * @param app The installed application to uninstall
    * @throws BundleException
    */
-  public void uninstall(ApplicationContext app) throws BundleException;
+  public void uninstall(AriesApplicationContext app) throws BundleException;
   
   /**
-   * Add an ApplicationListener
+   * Add an AriesApplicationListener
    * @param l
    */
-  public void addApplicationListener(ApplicationListener l);
+  public void addApplicationListener(AriesApplicationListener l);
   
   /**
-   * Remove an ApplicationListener
+   * Remove an AriesApplicationListener
    * @param l
    */
-  public void removeApplicationListener(ApplicationListener l);
+  public void removeApplicationListener(AriesApplicationListener l);
   
   /**
    * Resolve an AriesApplication against a set of constraints. Each ResolveConstraint
