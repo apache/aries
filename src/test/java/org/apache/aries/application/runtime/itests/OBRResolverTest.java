@@ -41,8 +41,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.aries.application.ApplicationMetadataFactory;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
-import org.apache.aries.application.management.ApplicationContext;
 import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolverException;
@@ -195,7 +195,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     assertTrue("Bundle " + TRANSITIVE_BUNDLE_BY_REFERENCE + " not found.", bundleSymbolicNames.contains(TRANSITIVE_BUNDLE_BY_REFERENCE));
     assertTrue("Bundle " + TRANSITIVE_BUNDLE_BY_VALUE + " not found.", bundleSymbolicNames.contains(TRANSITIVE_BUNDLE_BY_VALUE));
     
-    ApplicationContext ctx = manager.install(app);
+    AriesApplicationContext ctx = manager.install(app);
     ctx.start();
 
     Set<Bundle> bundles = ctx.getApplicationContent();
