@@ -99,20 +99,10 @@ public class TxInterceptorImpl implements Interceptor {
 
     public Object preCall(ComponentMetadata cm, Method m,
         Object... parameters) throws Throwable  {
-      // extract bundleId, componentName and method name
-      // then lookup using metadatahelper
-      // build transtrategy and call begin
-      // store resulting tx and strategy in return object
-      // which will be passed to postInvoke call
       final String methodName = m.getName();
-        
       final String strategy = metaDataHelper.getComponentMethodTxStrategy(cm, methodName);
-
-      TransactionStrategy txStrategy = TransactionStrategy.REQUIRED;
-      if (strategy != null)
-      {
-        txStrategy = TransactionStrategy.fromValue(strategy);
-      }
+      
+      TransactionStrategy txStrategy = TransactionStrategy.fromValue(strategy);
       
       if (LOGGER.isDebugEnabled())
           LOGGER.debug("Method: " + m + ", has transaction strategy: " + txStrategy);
