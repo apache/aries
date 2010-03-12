@@ -69,11 +69,11 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
                 mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
                 mavenBundle("org.ops4j.pax.logging", "pax-logging-api"), 
                 mavenBundle("org.ops4j.pax.logging", "pax-logging-service"), 
-                mavenBundle("org.osgi", "org.osgi.compendium") ,
                 mavenBundle("org.apache.aries", "org.apache.aries.util"), 
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample"), 
-                mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.blueprint")
+                mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.blueprint"),
+                mavenBundle("org.osgi", "org.osgi.compendium")
         );
         options = updateOptions(options);
         return options;
