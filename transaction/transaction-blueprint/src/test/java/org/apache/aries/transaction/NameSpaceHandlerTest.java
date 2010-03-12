@@ -62,7 +62,6 @@ public class NameSpaceHandlerTest {
       TransactionManager tm = Skeleton.newMock(TransactionManager.class);
       
       TxComponentMetaDataHelperImpl txenhancer = new TxComponentMetaDataHelperImpl();
-      txenhancer.setTransactionManager(tm);
       
       TxInterceptorImpl txinterceptor = new TxInterceptorImpl();
       txinterceptor.setTransactionManager(tm);

@@ -54,7 +54,7 @@
    </service>
 
    <bean id="supportsBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl" init-method="initialize">
-       <tx:transaction method="insertRow throw*" value="Supports"/>
+       <tx:transaction method="*" value="Supports"/>
        <tx:transaction method="countRows" value="NotSupported"/>
        <property name="enlistingDataSource" ref="enlistingDataSource"/>
        <property name="dataSource" ref="dataSource"/>
@@ -112,6 +112,21 @@
    <service id="neverBean" ref="neverBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
        <service-properties>
            <entry key="tranStrategy" value="Never"/>
+       </service-properties>
+   </service>
+
+   <bean id="invalidBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl" init-method="initialize">
+       <tx:transaction method="ins*" value="Never"/>
+       <tx:transaction method="*Row" value="NotSupported"/>
+       <property name="enlistingDataSource" ref="enlistingDataSource"/>
+       <property name="dataSource" ref="dataSource"/>
+       <property name="user" value="user"/>
+       <property name="password" value="password"/>
+   </bean>
+   
+   <service id="invalidBean" ref="invalidBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
+       <service-properties>
+           <entry key="tranStrategy" value="Invalid"/>
        </service-properties>
    </service>
    
