@@ -34,6 +34,7 @@ import java.util.Set;
 
 import javax.naming.NamingException;
 
+import org.apache.aries.jndi.url.OsgiName;
 import org.apache.aries.util.BundleToClassLoaderAdapter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -191,9 +192,13 @@ public final class ServiceHelper
     });
   }
 
-  public static Object getService(String interface1, String filter, String serviceName, String id, boolean dynamicRebind, Map<String, Object> env) throws NamingException
+  public static Object getService(OsgiName lookupName, String id, boolean dynamicRebind, Map<String, Object> env) throws NamingException
   {
     Object result = null;
+    
+    String interfaceName = lookupName.getInterface();
+    String filter = lookupName.getFilter();
+    String serviceName = lookupName.getServiceName();
     
     BundleContext ctx = getBundleContext(env);
     
@@ -203,20 +208,22 @@ public final class ServiceHelper
       filter = "(&(" + Constants.SERVICE_ID + '=' + id + ')' + filter + ')'; 
     }
     
-    ServicePair pair = findService(ctx, interface1, filter);
+    ServicePair pair = null;
+    
+    if (!!!lookupName.isServiceNameBased()) pair = findService(ctx, interfaceName, filter);
     
     if (pair == null) {
-      interface1 = null;
+      interfaceName = null;
       if (id == null) {
         filter = "(osgi.jndi.service.name=" + serviceName + ')';
       } else {
         filter = "(&(" + Constants.SERVICE_ID + '=' + id + ")(osgi.jndi.service.name=" + serviceName + "))";
       }
-      pair = findService(ctx, interface1, filter);
+      pair = findService(ctx, interfaceName, filter);
     }
     
     if (pair != null) {
-      result = proxy(interface1, filter, dynamicRebind, ctx, pair);
+      result = proxy(interfaceName, filter, dynamicRebind, ctx, pair);
     }
     
     return result;
@@ -308,7 +315,8 @@ public final class ServiceHelper
       }
       
     } catch (InvalidSyntaxException e) {
-      throw (NamingException) new NamingException(e.getMessage()).initCause(e);
+      // If we get an invalid syntax exception we just ignore it. Null will be returned which
+      // is valid and that may result in a NameNotFoundException if that is the right thing to do
     }
     
     return p;
