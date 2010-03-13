@@ -51,6 +51,8 @@ public class OsgiNameParserTest
     checkName("osgi","servicelist","java.lang.Runnable", "(a=b)");
     checkName("osgi","servicelist","jdbc", "grok", "DataSource");
     checkName("osgi", "framework", "bundleContext");
+    checkName("osgi","service","javax.sql.DataSource", "(osgi.jndi.servicee.name=jdbc/myDataSource)");
+    checkName("osgi","service","javax.sql.DataSource", "(&(a=/b)(c=/d))");
   }
   
   /**
@@ -126,17 +128,14 @@ public class OsgiNameParserTest
     
     if (elements.length > 1) {
       assertEquals(elements[0], n.getInterface());
+      if (elements.length == 2) {
+        assertTrue("There is no filter in the name", n.hasFilter());
+        assertEquals(elements[1], n.getFilter());
+      } else assertFalse(n.hasFilter());
     }
     
     if (elements.length == 1) {
-      assertFalse(n.hasFilter());
-    }
-    
-    if (elements.length > 2) {
-      if (elements.length == 2) {
-        assertTrue(n.hasFilter());
-        assertEquals(elements[1], n.getFilter());
-      } else assertFalse(n.hasFilter());
+      assertFalse("There is a filter in the name", n.hasFilter());
     }
     
     assertEquals(serviceName.toString(), n.getServiceName());

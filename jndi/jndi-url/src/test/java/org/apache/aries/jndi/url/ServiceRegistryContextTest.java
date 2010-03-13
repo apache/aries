@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -36,6 +37,7 @@ import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.spi.ObjectFactory;
+import javax.sql.DataSource;
 
 import org.apache.aries.jndi.ContextHelper;
 import org.apache.aries.jndi.OSGiObjectFactoryBuilder;
@@ -137,6 +139,41 @@ public class ServiceRegistryContextTest
     ObjectFactory factory = (ObjectFactory) bc.getService(ref);
     
     assertNotNull("The aries url context object factory was null", factory);
+  }
+  
+  @Test
+  public void jndiLookupServiceNameTest() throws NamingException, SQLException
+  {
+    InitialContext ctx = new InitialContext(new Hashtable<Object, Object>());
+    
+    BundleMock mock = new BundleMock("scooby.doo", new Properties());
+    
+    Thread.currentThread().setContextClassLoader(mock.getClassLoader());
+    
+    DataSource first = Skeleton.newMock(DataSource.class);
+    DataSource second = Skeleton.newMock(DataSource.class);
+    
+    Hashtable<String, String> properties = new Hashtable<String, String>();
+    properties.put("osgi.jndi.service.name", "jdbc/myDataSource");
+    
+    bc.registerService(DataSource.class.getName(), first, properties);
+
+    properties = new Hashtable<String, String>();
+    properties.put("osgi.jndi.service.name", "jdbc/myDataSource2");
+    
+    bc.registerService(DataSource.class.getName(), second, properties);
+    
+    DataSource s = (DataSource) ctx.lookup("osgi:service/jdbc/myDataSource");
+    
+    assertNotNull(s);
+    
+    s = (DataSource) ctx.lookup("osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/myDataSource2)");
+    
+    assertNotNull(s);
+    
+    s.isWrapperFor(DataSource.class); // don't care about the method, just need to call something.
+    
+    Skeleton.getSkeleton(second).assertCalled(new MethodCall(DataSource.class, "isWrapperFor", Class.class));
   }
   
   /**
