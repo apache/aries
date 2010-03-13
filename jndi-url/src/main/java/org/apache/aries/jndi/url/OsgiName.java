@@ -18,7 +18,10 @@
  */
 package org.apache.aries.jndi.url;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.naming.CompositeName;
 import javax.naming.InvalidNameException;
@@ -45,12 +48,39 @@ public final class OsgiName extends CompositeName
   
   public OsgiName(String name) throws InvalidNameException
   {
-    super(name);
+    super(split(name));
   }
 
   public OsgiName(Name name) throws InvalidNameException
   {
     this(name.toString());
+  }
+
+  private static Enumeration<String> split(String name)
+  {
+    List<String> elements = new ArrayList<String>();
+
+    StringBuilder builder = new StringBuilder();
+    
+    int len = name.length();
+    int count = 0;
+    
+    for (int i = 0; i < len; i++) {
+      char c = name.charAt(i);
+      
+      if (c == '/' && count == 0) {
+        elements.add(builder.toString());
+        builder = new StringBuilder();
+        continue;
+      } else if (c == '(') count++;
+      else if (c == ')') count++;
+      
+      builder.append(c);
+    }
+    
+    elements.add(builder.toString());
+    
+    return Collections.enumeration(elements);
   }
 
   public boolean hasFilter()
