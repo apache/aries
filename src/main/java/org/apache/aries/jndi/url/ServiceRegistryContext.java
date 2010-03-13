@@ -75,14 +75,13 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
     OsgiName validName = convert(name);
     
     String pathFragment = validName.getSchemePath();
-    String serviceName = validName.getServiceName();
     String schemeName = validName.getScheme();
     
     if (OsgiName.FRAMEWORK_PATH.equals(pathFragment) && "bundleContext".equals(validName.getServiceName())) {
       result = ServiceHelper.getBundleContext(env);
     } else if ((OsgiName.SERVICE_PATH.equals(pathFragment) && OsgiName.OSGI_SCHEME.equals(schemeName)) ||
                (OsgiName.SERVICES_PATH.equals(pathFragment) && OsgiName.ARIES_SCHEME.equals(schemeName))) {
-      result = ServiceHelper.getService(validName.getInterface(), validName.getFilter(), serviceName, null, true, env);
+      result = ServiceHelper.getService(validName, null, true, env);
     } else if (OsgiName.SERVICE_LIST_PATH.equals(pathFragment)) {
       result = new ServiceRegistryListContext(env, validName);
     } else {
