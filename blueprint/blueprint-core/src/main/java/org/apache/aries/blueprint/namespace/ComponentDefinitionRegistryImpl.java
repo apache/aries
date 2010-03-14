@@ -122,7 +122,8 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
     }
 
     public List<Interceptor> getInterceptors(ComponentMetadata component) {
-        return interceptors.get(component);
+        List<Interceptor> result = interceptors.get(component);
+        return (result == null) ? Collections.<Interceptor>emptyList() : result;
     }
     
 }
