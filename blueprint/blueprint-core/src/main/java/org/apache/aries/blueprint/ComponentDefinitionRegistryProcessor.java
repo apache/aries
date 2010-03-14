@@ -19,18 +19,30 @@
 package org.apache.aries.blueprint;
 
 /**
- * TODO
- *
- * Processors must be advertized as being such.  This can be done by using
- * the custom attribtue defined in the extension schema.
+ * A processor that processes Blueprint component definitions after they have been parsed but before
+ * component managers are created.
+ * 
+ * Component definition registry processors must be advertised as such in the blueprint xml. Do this by using
+ * the custom attribute defined in the extension schema.
  * <pre>
  *    &lt;bp:bean ext:role="processor" ...&gt;
  * </pre>
- *
+ * 
+ * When a definition registry processor is invoked type converters and registry processors have been already
+ * been created. Hence, changing component definitions for these or any components referenced by them will have 
+ * no effect.
+ * 
+ * Note: a processor that replaces existing component definitions with new ones should take care to copy
+ * interceptors defined against the old component definition if appropriate
+ * 
  * @version $Rev$, $Date$
  */
 public interface ComponentDefinitionRegistryProcessor {
 
+    /**
+     * Process a <code>ComponentDefinitionRegistry</code>
+     * @param registry 
+     */
     public void process(ComponentDefinitionRegistry registry);
 
 }
