@@ -29,7 +29,6 @@
 	<groupId>org.apache.aries.tutorials.blueprint</groupId>
 	<artifactId>tutorial-assembly</artifactId>
 	<name>Greeter Tutorial Assembly</name>
-	<version>0.1-incubating-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<dependencies>
@@ -39,43 +38,31 @@
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.fileinstall</artifactId>
-			<version>2.0.8</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse</groupId>
 			<artifactId>osgi</artifactId>
-			<version>3.5.0.v20090520</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse.equinox</groupId>
 			<artifactId>cm</artifactId>
-			<version>3.2.0-v20070116</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse.osgi</groupId>
 			<artifactId>services</artifactId>
-			<version>3.1.200-v20070605</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.ops4j.pax.logging</groupId>
 			<artifactId>pax-logging-api</artifactId>
-			<version>1.4</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.ops4j.pax.logging</groupId>
 			<artifactId>pax-logging-service</artifactId>
-			<version>1.4</version>
-			<exclusions>
-				<exclusion>
-					<groupId>log4j</groupId>
-					<artifactId>log4j</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
  
                 <!-- Internal (Aries) dependencies -->
@@ -83,13 +70,11 @@
 		<dependency>
 			<groupId>org.apache.aries.blueprint</groupId>
 			<artifactId>org.apache.aries.blueprint</artifactId>
-			<version>0.1-incubating-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries</groupId>
 			<artifactId>org.apache.aries.util</artifactId>
-			<version>0.1-incubating-SNAPSHOT</version>
 		</dependency>
 
                 <!-- Sample application dependencies -->
@@ -97,31 +82,31 @@
 		<dependency>
 			<groupId>org.apache.aries.tutorials.blueprint</groupId>
 			<artifactId>org.apache.aries.tutorials.blueprint.greeter.api</artifactId>
-			<version>0.1-incubating-SNAPSHOT</version>
+                        <version>${version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.tutorials.blueprint</groupId>
 			<artifactId>org.apache.aries.tutorials.blueprint.greeter.client.blueprint</artifactId>
-			<version>0.1-incubating-SNAPSHOT</version>
+                        <version>${version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.tutorials.blueprint</groupId>
 			<artifactId>org.apache.aries.tutorials.blueprint.greeter.client.osgi</artifactId>
-			<version>0.1-incubating-SNAPSHOT</version>
+                        <version>${version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.tutorials.blueprint</groupId>
 			<artifactId>org.apache.aries.tutorials.blueprint.greeter.server.blueprint</artifactId>
-			<version>0.1-incubating-SNAPSHOT</version>
+                        <version>${version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.tutorials.blueprint</groupId>
 			<artifactId>org.apache.aries.tutorials.blueprint.greeter.server.osgi</artifactId>
-			<version>0.1-incubating-SNAPSHOT</version>
+                        <version>${version}</version>
 		</dependency>
 
 	</dependencies>
@@ -136,6 +121,22 @@
 
 	<build>
 		<plugins>
+			<plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-resources-plugin</artifactId>
+                                <configuration>
+                                        <outputDirectory>${project.build.directory}</outputDirectory>
+                                </configuration>
+                                <executions>
+                                        <execution>
+                                                <id>filter</id>
+                                                <phase>generate-resources</phase>
+                                                <goals>
+                                                        <goal>resources</goal>
+                                                </goals>
+                                        </execution>
+                                </executions>
+			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.2-beta-5</version>

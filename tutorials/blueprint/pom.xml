@@ -28,7 +28,8 @@
 	<artifactId>blueprint</artifactId>
 	<name>Blueprint Tutorial</name>
 	<packaging>pom</packaging>
-	<version>0.1-incubating-SNAPSHOT</version>
+
+        
 	<modules>
 		<module>tutorial-modules</module>
 	</modules>
