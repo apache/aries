@@ -44,22 +44,18 @@ under the License.
         <dependency>
             <groupId>org.apache.aries.samples.blog</groupId>
             <artifactId>org.apache.aries.samples.blog.api</artifactId>
-            <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.samples.blog</groupId>
             <artifactId>org.apache.aries.samples.blog.web</artifactId>
-            <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.samples.blog</groupId>
             <artifactId>org.apache.aries.samples.blog.biz</artifactId>
-            <version>${version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.samples.blog</groupId>
             <artifactId>org.apache.aries.samples.blog.persistence.jdbc</artifactId>
-            <version>${version}</version>
         </dependency>
     </dependencies>
 
@@ -68,7 +64,6 @@ under the License.
             <plugin>
                 <groupId>org.apache.aries</groupId>
                 <artifactId>eba-maven-plugin</artifactId>
-                <version>${version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <generateManifest>true</generateManifest>
