@@ -184,7 +184,7 @@ public class Framework implements FrameworkMBean {
           bundles = new Bundle[bundleIdentifiers.length];
           for (int i = 0; i < bundleIdentifiers.length; i++) 
           {
-             bundles[i] = context.getBundle(bundleIdentifiers[i]);
+              bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]); 
           }
        }
        packageAdmin.refreshPackages(bundles);
@@ -208,7 +208,7 @@ public class Framework implements FrameworkMBean {
           bundles = new Bundle[bundleIdentifiers.length];
           for (int i = 0; i < bundleIdentifiers.length; i++) 
           {
-             bundles[i] = context.getBundle(bundleIdentifiers[i]);
+              bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]); 
           }
        }
        return packageAdmin.resolveBundles(bundles);
@@ -218,7 +218,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#restartFramework()
      */
     public void restartFramework() throws IOException {
-        Bundle bundle = context.getBundle(0);
+        Bundle bundle = FrameworkUtils.resolveBundle(context, 0);
         try {
             bundle.update();
         } catch (BundleException be) {
@@ -277,7 +277,7 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#shutdownFramework()
      */
     public void shutdownFramework() throws IOException {
-        Bundle bundle = context.getBundle(0);
+        Bundle bundle = FrameworkUtils.resolveBundle(context, 0);
         try {
             bundle.stop();
         } catch (BundleException be) {
