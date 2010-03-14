@@ -53,7 +53,7 @@ public class ProvisioningServiceTest {
 
    
     @Test
-    public void testAddInformation() throws Exception {
+    public void testAddInformationFromZip() throws Exception {
 
         org.osgi.service.provisioning.ProvisioningService provService = mock(org.osgi.service.provisioning.ProvisioningService.class);
         ProvisioningService mbean = new ProvisioningService(provService);
@@ -62,7 +62,7 @@ public class ProvisioningServiceTest {
         InputStream is = mock(InputStream.class);
         doReturn(is).when(spiedMBean).createStream("file://prov.zip");
         
-        spiedMBean.addInformation("file://prov.zip");
+        spiedMBean.addInformationFromZip("file://prov.zip");
         verify(provService).addInformation(any(ZipInputStream.class));
         verify(is).close();
         

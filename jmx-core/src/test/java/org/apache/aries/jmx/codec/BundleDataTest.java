@@ -18,8 +18,10 @@ package org.apache.aries.jmx.codec;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.osgi.jmx.framework.BundleStateMBean.BUNDLES_TYPE;
 import static org.osgi.jmx.framework.BundleStateMBean.BUNDLE_TYPE;
 import static org.osgi.jmx.framework.BundleStateMBean.EXPORTED_PACKAGES;
 import static org.osgi.jmx.framework.BundleStateMBean.FRAGMENT;
@@ -56,7 +58,6 @@ import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
 
-import org.apache.aries.jmx.codec.BundleData;
 import org.apache.aries.jmx.codec.BundleData.Header;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -161,6 +162,22 @@ public class BundleDataTest {
         assertEquals("0.0.0", (String) compositeData.get(VERSION));
         TabularData headerTable = (TabularData) compositeData.get(HEADERS);
         assertEquals(4, headerTable.values().size());
+        CompositeData header = headerTable.get(new Object[]{Constants.BUNDLE_SYMBOLICNAME});
+        assertNotNull(header);
+        String value = (String) header.get(VALUE);
+        assertEquals("test", value);
+        String key = (String)header.get(KEY);
+        assertEquals(Constants.BUNDLE_SYMBOLICNAME, key);
+        
+        
+        TabularData bundleTable = new TabularDataSupport(BUNDLES_TYPE);
+        bundleTable.put(b.toCompositeData());
+   
+        CompositeData bundleData = bundleTable.get(new Object[]{Long.valueOf(1)});
+        assertNotNull(bundleData);
+        String location = (String) bundleData.get(LOCATION);
+        assertEquals("location", location);
+        
         assertArrayEquals(new String[] { "org.apache.aries.jmx;1.0.0"} , (String[]) compositeData.get(EXPORTED_PACKAGES));
         assertArrayEquals(new String[] { "org.apache.aries.jmx.b1;0.0.0" , "org.apache.aries.jmx.b2;2.0.1"}, (String[]) compositeData.get(IMPORTED_PACKAGES));
         assertArrayEquals(new Long[] { new Long(44), new Long(66) }, (Long[]) compositeData.get(REQUIRED_BUNDLES));
