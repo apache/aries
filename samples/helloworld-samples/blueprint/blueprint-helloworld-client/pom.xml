@@ -46,7 +46,6 @@
 		<dependency>
 			<groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
 			<artifactId>org.apache.aries.samples.helloworld.blueprint.api</artifactId>
-			<version>${pom.version}</version>
 		</dependency>
 	</dependencies>
 </project>
