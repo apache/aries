@@ -31,6 +31,32 @@
 	<packaging>pom</packaging>
 	<description>Example blueprint hello world application</description>
 
+
+	<dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
+                <artifactId>org.apache.aries.samples.helloworld.blueprint.api</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
+                <artifactId>org.apache.aries.samples.helloworld.blueprint.server</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
+                <artifactId>org.apache.aries.samples.helloworld.blueprint.client</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
+                <artifactId>org.apache.aries.samples.helloworld.blueprint.assembly</artifactId>
+                <version>${version}</version>
+            </dependency>
+        </dependencies>
+	</dependencyManagement>
+
 	<modules>
 		<module>blueprint-helloworld-api</module>
 		<module>blueprint-helloworld-server</module>
