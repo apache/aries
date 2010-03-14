@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.aries.samples.blog.api.BloggingService;
 import org.apache.aries.samples.blog.web.util.FormServlet;
+import org.apache.aries.samples.blog.web.util.FormatChecker;
 import org.apache.aries.samples.blog.web.util.JNDIHelper;
 
 public class EditAuthor extends HttpServlet
@@ -67,7 +68,13 @@ public class EditAuthor extends HttpServlet
       FormServlet.addError(req, "The email field is required.");
       resp.sendRedirect("EditAuthorForm");
       
-    }else if (checkEmail(email) == null) {
+    }else if (!FormatChecker.isValidEmail(email)) {
+    	storeParam(req, "email", email);
+        storeParam(req, "nickName", nickName);
+        storeParam(req, "name", name);
+        storeParam(req, "bio", bio);
+        storeParam(req, "dob", dob);
+        
     	FormServlet.addError(req, "The email field is not properly formatted");
         resp.sendRedirect("EditAuthorForm");	
     } else {
@@ -89,10 +96,4 @@ public class EditAuthor extends HttpServlet
   {
     FormServlet.storeParam(req, EditAuthorForm.ID, param, value);
   }
-    
-    private String checkEmail(String parameter)
-    {
-      if (parameter != null && parameter.matches("^(?:[a-zA-Z0-9_'^&amp;/+-])+(?:\\.(?:[a-zA-Z0-9_'^&amp;/+-])+)*@(?:(?:\\[?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\\.){3}(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\]?)|(?:[a-zA-Z0-9-]+\\.)+(?:[a-zA-Z]){2,}\\.?)$")) return parameter;
-      return null;
-    }
 }
