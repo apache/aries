@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.aries.samples.blog.api.BlogAuthor;
 import org.apache.aries.samples.blog.api.BloggingService;
 import org.apache.aries.samples.blog.web.util.FormServlet;
+import org.apache.aries.samples.blog.web.util.FormatChecker;
 import org.apache.aries.samples.blog.web.util.HTMLOutput;
 import org.apache.aries.samples.blog.web.util.JNDIHelper;
 
@@ -67,10 +68,14 @@ public class EditAuthorForm extends FormServlet
   private String getEmail(HttpServletRequest req)
   {
     String email = retrieveOrEmpty(req, "email");
+    
     if ("".equals(email)) {
       email = req.getParameter("email");
     }
-    return checkEmail(email);
+    if(FormatChecker.isValidEmail(email))
+    	return email;
+    else 
+    	return null;
   }
   
   @Override
