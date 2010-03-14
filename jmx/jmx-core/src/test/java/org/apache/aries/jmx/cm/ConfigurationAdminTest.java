@@ -59,7 +59,7 @@ public class ConfigurationAdminTest {
         
         ConfigurationAdmin mbean = new ConfigurationAdmin(admin);
         assertEquals(fpid + "-1260133982371-0", mbean.createFactoryConfiguration(fpid));
-        assertEquals(fpid + "-1260133982371-0", mbean.createFactoryConfiguration(fpid, "/bundlex"));
+        assertEquals(fpid + "-1260133982371-0", mbean.createFactoryConfigurationForLocation(fpid, "/bundlex"));
         
     }
 
@@ -80,7 +80,7 @@ public class ConfigurationAdminTest {
         reset(config);
         
         when(admin.getConfiguration(pid, "location")).thenReturn(config);
-        mbean.delete(pid, "location");
+        mbean.deleteForLocation(pid, "location");
         verify(config).delete();
         
     }
@@ -160,7 +160,7 @@ public class ConfigurationAdminTest {
         
         ConfigurationAdmin mbean = new ConfigurationAdmin(admin);
         assertEquals(factoryPid, mbean.getFactoryPid(factoryPid  + "-1260133982371-0"));
-        assertEquals(factoryPid, mbean.getFactoryPid(factoryPid  + "-1260133982371-0", "location"));
+        assertEquals(factoryPid, mbean.getFactoryPidForLocation(factoryPid  + "-1260133982371-0", "location"));
         
     }
 
@@ -180,7 +180,7 @@ public class ConfigurationAdminTest {
         
         ConfigurationAdmin mbean = new ConfigurationAdmin(admin);
         
-        TabularData properties = mbean.getProperties(pid, null);
+        TabularData properties = mbean.getPropertiesForLocation(pid, null);
         assertNotNull(properties);
         assertEquals(PROPERTIES_TYPE, properties.getTabularType());
         assertEquals(2, properties.values().size());
@@ -231,7 +231,7 @@ public class ConfigurationAdminTest {
         when(admin.getConfiguration(pid, null)).thenReturn(config);
         
         ConfigurationAdmin mbean = new ConfigurationAdmin(admin);
-        mbean.update(pid, null, data);
+        mbean.updateForLocation(pid, null, data);
         
         ArgumentCaptor<Dictionary> props = ArgumentCaptor.forClass(Dictionary.class);
         verify(config).update(props.capture());

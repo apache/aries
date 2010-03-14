@@ -57,13 +57,13 @@ public class ConfigurationAdmin implements ConfigurationAdminMBean {
      * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#createFactoryConfiguration(java.lang.String)
      */
     public String createFactoryConfiguration(String factoryPid) throws IOException {
-        return createFactoryConfiguration(factoryPid, null); 
+        return createFactoryConfigurationForLocation(factoryPid, null); 
     }
 
     /**
-     * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#createFactoryConfiguration(java.lang.String, java.lang.String)
+     * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#createFactoryConfigurationForLocation(java.lang.String, java.lang.String)
      */
-    public String createFactoryConfiguration(String factoryPid, String location) throws IOException {
+    public String createFactoryConfigurationForLocation(String factoryPid, String location) throws IOException {
         if (factoryPid == null || factoryPid.length() < 1) {
             throw new IllegalArgumentException("Argument factoryPid cannot be null or empty");
         }
@@ -75,13 +75,13 @@ public class ConfigurationAdmin implements ConfigurationAdminMBean {
      * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#delete(java.lang.String)
      */
     public void delete(String pid) throws IOException {
-       delete(pid, null);
+       deleteForLocation(pid, null);
     }
 
     /**
-     * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#delete(java.lang.String, java.lang.String)
+     * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#deleteForLocation(java.lang.String, java.lang.String)
      */
-    public void delete(String pid, String location) throws IOException {
+    public void deleteForLocation(String pid, String location) throws IOException {
         if (pid == null || pid.length() < 1) {
             throw new IllegalArgumentException("Argument pid cannot be null or empty");
         }
@@ -149,13 +149,13 @@ public class ConfigurationAdmin implements ConfigurationAdminMBean {
      * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#getFactoryPid(java.lang.String)
      */
     public String getFactoryPid(String pid) throws IOException {
-       return getFactoryPid(pid, null);
+       return getFactoryPidForLocation(pid, null);
     }
 
     /**
-     * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#getFactoryPid(java.lang.String, java.lang.String)
+     * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#getFactoryPidForLocation(java.lang.String, java.lang.String)
      */
-    public String getFactoryPid(String pid, String location) throws IOException {
+    public String getFactoryPidForLocation(String pid, String location) throws IOException {
         if (pid == null || pid.length() < 1) {
             throw new IllegalArgumentException("Argument pid cannot be null or empty");
         }
@@ -167,14 +167,14 @@ public class ConfigurationAdmin implements ConfigurationAdminMBean {
      * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#getProperties(java.lang.String)
      */
     public TabularData getProperties(String pid) throws IOException {
-       return getProperties(pid, null);
+       return getPropertiesForLocation(pid, null);
     }
 
     /**
-     * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#getProperties(java.lang.String, java.lang.String)
+     * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#getPropertiesForLocation(java.lang.String, java.lang.String)
      */
     @SuppressWarnings("unchecked")
-    public TabularData getProperties(String pid, String location) throws IOException {
+    public TabularData getPropertiesForLocation(String pid, String location) throws IOException {
         if (pid == null || pid.length() < 1) {
             throw new IllegalArgumentException("Argument pid cannot be null or empty");
         }
@@ -206,14 +206,14 @@ public class ConfigurationAdmin implements ConfigurationAdminMBean {
      * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#update(java.lang.String, javax.management.openmbean.TabularData)
      */
     public void update(String pid, TabularData configurationTable) throws IOException {
-        update(pid, null, configurationTable);
+        updateForLocation(pid, null, configurationTable);
     }
 
     /**
-     * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#update(java.lang.String, java.lang.String, javax.management.openmbean.TabularData)
+     * @see org.osgi.jmx.service.cm.ConfigurationAdminMBean#updateForLocation(java.lang.String, java.lang.String, javax.management.openmbean.TabularData)
      */
     @SuppressWarnings("unchecked")
-    public void update(String pid, String location, TabularData configurationTable) throws IOException {
+    public void updateForLocation(String pid, String location, TabularData configurationTable) throws IOException {
         if (pid == null || pid.length() < 1) {
             throw new IllegalArgumentException("Argument pid cannot be null or empty");
         }

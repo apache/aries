@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2009). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2009, 2010). All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ import org.osgi.jmx.JmxConstants;
  * This MBean represents the management interface to the OSGi Initial
  * Provisioning Service
  * 
- * @version $Rev$
+ * @version $Revision$
+ * @ThreadSafe
  */
 public interface ProvisioningServiceMBean {
 	/**
@@ -54,7 +55,7 @@ public interface ProvisioningServiceMBean {
 	 *         Provisioning Information dictionary and no bundles must be
 	 *         started or installed.
 	 */
-	public void addInformation(String zipURL) throws IOException;
+	public void addInformationFromZip(String zipURL) throws IOException;
 
 	/**
 	 * Adds the key/value pairs contained in <code>info</code> to the

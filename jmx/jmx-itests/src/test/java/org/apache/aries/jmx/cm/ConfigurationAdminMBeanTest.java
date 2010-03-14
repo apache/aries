@@ -185,7 +185,7 @@ public class ConfigurationAdminMBeanTest extends AbstractIntegrationTest {
         assertEquals(2, config.get("A2"));
         
         //delete
-        mbean.delete("org.apache.aries.jmx.test.ServiceA", a.getLocation());
+        mbean.deleteForLocation("org.apache.aries.jmx.test.ServiceA", a.getLocation());
         
         Thread.sleep(1000);
         assertNull(managedServiceA.getConfig());
