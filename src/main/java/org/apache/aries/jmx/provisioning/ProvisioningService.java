@@ -52,9 +52,9 @@ public class ProvisioningService implements ProvisioningServiceMBean {
     }
     
     /**
-     * @see org.osgi.jmx.service.provisioning.ProvisioningServiceMBean#addInformation(java.lang.String)
+     * @see org.osgi.jmx.service.provisioning.ProvisioningServiceMBean#addInformationFromZip(java.lang.String)
      */
-    public void addInformation(String zipURL) throws IOException {
+    public void addInformationFromZip(String zipURL) throws IOException {
         if (zipURL == null || zipURL.length() < 1) {
             throw new IllegalArgumentException("Argument zipURL cannot be null or empty");
         }
