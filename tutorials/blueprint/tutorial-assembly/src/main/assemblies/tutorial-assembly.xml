@@ -60,8 +60,8 @@
 
 	<fileSets>
 		<fileSet>
-			<directory>src/main/resources</directory>
-			<outputDirectory>/platform</outputDirectory>
+			<directory>target/configuration</directory>
+			<outputDirectory>/platform/configuration</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>src/main/dropins</directory>
