@@ -123,7 +123,7 @@ public class ProvisioningServiceMBeanTest extends AbstractIntegrationTest {
         
         provZip.deleteOnExit();
         
-        mbean.addInformation(provZip.toURL().toExternalForm());
+        mbean.addInformationFromZip(provZip.toURL().toExternalForm());
         
         //check the info has been added
         
