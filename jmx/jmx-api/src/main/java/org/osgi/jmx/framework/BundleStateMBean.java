@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2009). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2009, 2010). All Rights Reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,8 @@ import org.osgi.jmx.JmxConstants;
  * emits events that clients can use to get notified of the changes in the
  * bundle state of the framework.
  * 
- * @version $Rev$
+ * @version $Revision$
+ * @ThreadSafe
  */
 public interface BundleStateMBean {
 	/**
@@ -75,7 +76,9 @@ public interface BundleStateMBean {
 	 * {@link #KEY_ITEM}.
 	 */
 	TabularType HEADERS_TYPE = Item.tabularType("HEADERS",
-			"The table of bundle headers", HEADER_TYPE, new String[] { KEY });
+																"The table of bundle headers",
+																HEADER_TYPE,
+																KEY);
 
 	/**
 	 * The key LOCATION, used in {@link #LOCATION_ITEM}.
@@ -197,7 +200,7 @@ public interface BundleStateMBean {
 	/**
 	 * The key PERSISTENTLY_STARTED, used in {@link #PERSISTENTLY_STARTED_ITEM}.
 	 */
-	String PERSISTENTLY_STARTED = "PersistentlyStarted";
+	String			PERSISTENTLY_STARTED		= "PersistentlyStarted";
 
 	/**
 	 * The item containing the indication of persistently started in
@@ -219,7 +222,7 @@ public interface BundleStateMBean {
 	Item REMOVAL_PENDING_ITEM = new Item(REMOVAL_PENDING,
 			"Whether the bundle is pending removal", SimpleType.BOOLEAN);
 	/**
-	 * The key REQUIRED, used in {@value #REQUIRED_ITEM}.
+	 * The key REQUIRED, used in {@link #REQUIRED_ITEM}.
 	 */
 	String REQUIRED = "Required";
 
@@ -230,7 +233,7 @@ public interface BundleStateMBean {
 	Item REQUIRED_ITEM = new Item(REQUIRED, "Whether the bundle is required",
 			SimpleType.BOOLEAN);
 	/**
-	 * The key FRAGMENT, used in {@value #FRAGMENT_ITEM}.
+	 * The key FRAGMENT, used in {@link #FRAGMENT_ITEM}.
 	 */
 	String FRAGMENT = "Fragment";
 
@@ -241,7 +244,7 @@ public interface BundleStateMBean {
 	Item FRAGMENT_ITEM = new Item(FRAGMENT, "Whether the bundle is a fragment",
 			SimpleType.BOOLEAN);
 	/**
-	 * The key REGISTERED_SERVICES, used in {@value #REGISTERED_SERVICES_ITEM}.
+	 * The key REGISTERED_SERVICES, used in {@link #REGISTERED_SERVICES_ITEM}.
 	 */
 	String REGISTERED_SERVICES = "RegisteredServices";
 
@@ -254,7 +257,7 @@ public interface BundleStateMBean {
 			"The registered services of the bundle",
 			JmxConstants.LONG_ARRAY_TYPE);
 	/**
-	 * The key SERVICES_IN_USE, used in {@value #SERVICES_IN_USE_ITEM}.
+	 * The key SERVICES_IN_USE, used in {@link #SERVICES_IN_USE_ITEM}.
 	 */
 	String SERVICES_IN_USE = "ServicesInUse";
 
@@ -417,10 +420,11 @@ public interface BundleStateMBean {
 
 	/**
 	 * The Tabular Type for a list of bundles. The row type is
-	 * {@link #BUNDLE_TYPE}.
+	 * {@link #BUNDLE_TYPE} and the index is {@link #IDENTIFIER}.
 	 */
 	TabularType BUNDLES_TYPE = Item.tabularType("BUNDLES", "A list of bundles",
-			BUNDLE_TYPE, new String[] { IDENTIFIER });
+																BUNDLE_TYPE,
+																IDENTIFIER);
 
 	/**
 	 * Answer the list of identifiers of the bundles this bundle depends upon
