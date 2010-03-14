@@ -25,6 +25,16 @@
 	<name>Greeter OSGi Server</name>
 	<version>0.1-incubating-SNAPSHOT</version>
 
+        <description>
+        This is the initial greeter service project. Students working through the tutorial
+        modify this server to turn it into a blueprint server. It has no parent because it
+        is built outside the tutorial. When the tutorial is assembled the source and binaries
+        from this project are included the the tutorial zip/tar.gz files.
+        The version is referenced in the tutorial documentation (tutorial-assembly/src/main/docs/instructions.html),
+        so changes to the version number here must be reflected in the documentation.
+        </description>
+
+
 	<build>
 		<plugins>
 			<plugin>
