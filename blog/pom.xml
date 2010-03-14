@@ -28,6 +28,57 @@
     <artifactId>blog</artifactId>
     <name>Apache Aries blog sample</name>
     <packaging>pom</packaging>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.aries.samples.blog</groupId>
+                <artifactId>org.apache.aries.samples.blog.biz</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.blog</groupId>
+                <artifactId>org.apache.aries.samples.blog.api</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.blog</groupId>
+                <artifactId>org.apache.aries.samples.blog.assembly</artifactId>
+                <version>${version}</version>
+                <type>eba</type>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.blog</groupId>
+                <artifactId>org.apache.aries.samples.blog.persistence.jdbc</artifactId>
+                <version>${version}</version>
+            </dependency>
+             <dependency>
+                <groupId>org.apache.aries.samples.blog</groupId>
+                <artifactId>org.apache.aries.samples.blog.persistence.jpa</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.blog</groupId>
+		<artifactId>org.apache.aries.samples.blog.web</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.blog</groupId>
+                <artifactId>org.apache.aries.samples.blog.jdbc.eba</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.blog</groupId>
+                <artifactId>org.apache.aries.samples.blog.jpa.eba</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.blog</groupId>
+                <artifactId>org.apache.aries.samples.blog.datasource</artifactId>
+                <version>${version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 
     <modules>
