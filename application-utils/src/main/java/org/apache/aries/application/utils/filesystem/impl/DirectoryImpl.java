@@ -49,9 +49,14 @@ public class DirectoryImpl extends FileImpl implements IDirectory
     File desiredFile = new File(file, name);
     IFile result = null;
     
-    if (desiredFile.exists()) {
-      result = new FileImpl(desiredFile, rootDirFile);
+    if (desiredFile.exists()) 
+    {
+        if(!desiredFile.isDirectory())
+          result = new FileImpl(desiredFile, rootDirFile);
+        else
+          result = new DirectoryImpl(desiredFile, rootDirFile);
     }
+    
     return result;
   }
 
