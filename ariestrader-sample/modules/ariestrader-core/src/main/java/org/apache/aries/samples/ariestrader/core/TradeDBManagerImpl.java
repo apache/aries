@@ -46,8 +46,6 @@ import java.sql.Statement;
 
 public class TradeDBManagerImpl implements TradeDBManager {
 
-    private static String dsName = TradeConfig.DS_NAME;
-
     private DataSource dataSource = null;
 
     private static InitialContext context;
@@ -386,7 +384,6 @@ public class TradeDBManagerImpl implements TradeDBManager {
      */
     private void lookupDataSource() throws Exception {
         if (dataSource == null) {
-//            dataSource = (DataSource) ServiceUtilities.getOSGIService(DataSource.class.getName(),"(osgi.jndi.serviceName=jdbc/TradeDataSource)");
             dataSource = (DataSource) ServiceUtilities.getOSGIService(DataSource.class.getName(),TradeConfig.OSGI_DS_NAME_FILTER);
         }
     }
