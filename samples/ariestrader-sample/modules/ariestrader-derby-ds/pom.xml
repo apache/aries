@@ -32,14 +32,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.transaction</groupId>
+            <artifactId>org.apache.aries.transaction.blueprint</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.components</groupId>
+            <artifactId>geronimo-transaction</artifactId>
         </dependency>
     </dependencies>
 
@@ -52,19 +55,6 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
-                        <Bundle-Activator>org.apache.aries.samples.ariestrader.datasource.derby.DerbyActivator</Bundle-Activator>
-                        <Export-Service>javax.sql.DataSource</Export-Service>
-                        <Export-Package>
-                            <!--org.apache.aries.samples.ariestrader.datasource.derby;version="${pom.version}"-->
-                        </Export-Package>
-                        <Import-Package>
-                            org.osgi.framework,
-                            javax.sql,
-                            org.apache.derby.jdbc
-                        </Import-Package>
-                        <Private-Package>
-                            org.apache.aries.samples.ariestrader.datasource.derby
-                        </Private-Package>
                     </instructions>
                 </configuration>
             </plugin>
