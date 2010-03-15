@@ -40,7 +40,7 @@ public class ApplicationResourceImpl implements Resource
   private Version _version;
   private Requirement[] _requirements;
   
-  private class FilterWrapper implements Filter
+  private static class FilterWrapper implements Filter
   {
     private Filter delgate;
     
@@ -57,11 +57,6 @@ public class ApplicationResourceImpl implements Resource
     public boolean match(Dictionary dictionary)
     {
       boolean result = delgate.match(dictionary);
-      
-      System.out.println("Filter:     " + delgate);
-      System.out.println("Dictionary: " + dictionary);
-      System.out.println("Result:     " + result);
-      
       return result;
     }
 
