@@ -69,8 +69,6 @@ import java.sql.Timestamp;
 
 public class TradeJdbc implements TradeServices {
 
-    private static String dsName = TradeConfig.DS_NAME;
-
     private DataSource dataSource= null;
 
     private static BigDecimal ZERO = new BigDecimal(0.0);
@@ -1482,7 +1480,6 @@ public class TradeJdbc implements TradeServices {
      */
     private void lookupDataSource() throws Exception {
         if (dataSource == null) {
-//            dataSource = (DataSource) ServiceUtilities.getOSGIService(DataSource.class.getName(),"(osgi.jndi.serviceName=jdbc/TradeDataSource)");
             dataSource = (DataSource) ServiceUtilities.getOSGIService(DataSource.class.getName(),TradeConfig.OSGI_DS_NAME_FILTER);
         }
     }
