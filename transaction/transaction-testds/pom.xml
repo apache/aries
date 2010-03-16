@@ -27,7 +27,7 @@
   <groupId>org.apache.aries.transaction</groupId>
   <artifactId>org.apache.aries.transaction.testds</artifactId>
   <version>0.1-incubating-SNAPSHOT</version>
-  <name>Apache Aries Transaction Test Datasource</name>
+  <name>Apache Aries Transaction Test Datasource Configuration</name>
   <packaging>bundle</packaging>
   <dependencies>
         <dependency>
@@ -61,12 +61,6 @@
                         <Import-Package>
                             *
                         </Import-Package>
-                        <Private-Package>
-                            org.apache.aries.transaction.jdbc
-                        </Private-Package>
-                        <Export-Package>
-                            !org.apache.aries.transaction.jdbc
-                        </Export-Package>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                     </instructions>
                 </configuration>
