@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jmx.blueprint.impl.codec;
+package org.apache.aries.jmx.blueprint.codec;
 
 import java.util.HashMap;
 
@@ -25,40 +25,52 @@ import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenDataException;
 
 import org.apache.aries.jmx.blueprint.BlueprintMetadataMBean;
-import org.osgi.service.blueprint.reflect.ValueMetadata;
+import org.osgi.service.blueprint.reflect.BeanArgument;
 
-public class BPValueMetadata implements BPNonNullMetadata {
-    private String stringValue;
+public class BPBeanArgument implements TransferObject {
+    private int index;
 
-    private String type;
+    private BPMetadata value;
 
-    public BPValueMetadata(CompositeData value) {
-        stringValue = (String) value.get(BlueprintMetadataMBean.STRING_VALUE);
-        type = (String) value.get(BlueprintMetadataMBean.TYPE);
+    private String valueType;
+
+    public BPBeanArgument(CompositeData argument) {
+        index = (Integer) argument.get(BlueprintMetadataMBean.INDEX);
+        Byte[] buf = (Byte[]) argument.get(BlueprintMetadataMBean.VALUE);
+        value = Util.boxedBinary2BPMetadata(buf);
+        valueType = (String) argument.get(BlueprintMetadataMBean.VALUE_TYPE);
     }
 
-    public BPValueMetadata(ValueMetadata value) {
-        stringValue = value.getStringValue();
-        type = value.getType();
+    public BPBeanArgument(BeanArgument argument) {
+        index = argument.getIndex();
+
+        value = Util.metadata2BPMetadata(argument.getValue());
+
+        valueType = argument.getValueType();
     }
 
     public CompositeData asCompositeData() {
         HashMap<String, Object> items = new HashMap<String, Object>();
-        items.put(BlueprintMetadataMBean.STRING_VALUE, stringValue);
-        items.put(BlueprintMetadataMBean.TYPE, type);
+        items.put(BlueprintMetadataMBean.INDEX, index);
+        items.put(BlueprintMetadataMBean.VALUE, Util.bpMetadata2BoxedBinary(value));
+        items.put(BlueprintMetadataMBean.VALUE_TYPE, valueType);
 
         try {
-            return new CompositeDataSupport(BlueprintMetadataMBean.VALUE_METADATA_TYPE, items);
+            return new CompositeDataSupport(BlueprintMetadataMBean.BEAN_ARGUMENT_TYPE, items);
         } catch (OpenDataException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String getStringValue() {
-        return stringValue;
+    public int getIndex() {
+        return index;
     }
 
-    public String getType() {
-        return type;
+    public BPMetadata getValue() {
+        return value;
+    }
+
+    public String getValueType() {
+        return valueType;
     }
 }

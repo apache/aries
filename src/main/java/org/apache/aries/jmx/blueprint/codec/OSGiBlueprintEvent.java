@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jmx.blueprint.impl.codec;
+package org.apache.aries.jmx.blueprint.codec;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -70,25 +70,25 @@ import org.osgi.service.blueprint.container.BlueprintEvent;
  */
 
 public class OSGiBlueprintEvent implements TransferObject{
-    
+
     private long bundleId;
 
     private long extenderBundleId;
-    
+
     private int eventType;
-    
+
     private boolean replay;
-    
+
     private long timestamp;
-    
+
     private String[] dependencies;
 
     private String exceptionMessage;
-    
+
 
     /**
      * Construct an OSGiBlueprintEvent from the supplied <link>BlueprintEvent</link>
-     * 
+     *
      * @param event
      *            - the event to represent
      */
@@ -105,7 +105,7 @@ public class OSGiBlueprintEvent implements TransferObject{
     /**
      * Construct an OSGiBlueprintEvent from the CompositeData representing the
      * event
-     * 
+     *
      * @param data
      *            - the CompositeData representing the event.
      */
@@ -122,7 +122,7 @@ public class OSGiBlueprintEvent implements TransferObject{
 
     /**
      * Construct the OSGiBlueprintEvent
-     * 
+     *
      * @param bundleId
      * @param extenderBundleId
      * @param eventType
@@ -140,10 +140,10 @@ public class OSGiBlueprintEvent implements TransferObject{
         this.dependencies = dependencies;
         this.exceptionMessage = exceptionMessage;
     }
-    
+
     /**
      * Answer the receiver encoded as CompositeData
-     * 
+     *
      * @return the CompositeData encoding of the receiver.
      */
     @SuppressWarnings("boxing")
@@ -162,7 +162,7 @@ public class OSGiBlueprintEvent implements TransferObject{
             throw new IllegalStateException("Cannot form blueprint event open data", e);
         }
     }
-    
+
     public long getBundleId() {
         return bundleId;
     }
