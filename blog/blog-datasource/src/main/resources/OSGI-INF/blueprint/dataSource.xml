@@ -26,7 +26,11 @@
     <property name="databaseName" value="blogDB"/>
   </bean>
   
-  <service id="xaDataSource" ref="derbyXADataSource" interface="javax.sql.XADataSource"/>
+  <service id="xaDataSource" ref="derbyXADataSource" interface="javax.sql.XADataSource">
+  <service-properties>
+    <entry key="osgi.jndi.serviceName" value="jdbc/blogdb"/>
+   </service-properties>
+  </service>
 
   
   <bean id="derbyDataSource" class="org.apache.derby.jdbc.EmbeddedDataSource">
@@ -35,7 +39,7 @@
   
   <service ref="derbyDataSource" interface="javax.sql.DataSource">
    <service-properties>
-     <entry key="xa.aware" value="false"/>
+     <entry key="osgi.jndi.serviceName" value="jdbc/blogdbnojta"/>
    </service-properties>
   </service>
   

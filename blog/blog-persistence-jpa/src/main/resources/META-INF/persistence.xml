@@ -24,8 +24,8 @@
 
     <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 
-    <jta-data-source>aries:services/javax.sql.DataSource/(xa.aware=true)</jta-data-source>
-    <non-jta-data-source>aries:services/javax.sql.DataSource/(xa.aware=false)</non-jta-data-source>
+    <jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/blogdb)</jta-data-source>
+    <non-jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.serviceName=jdbc/blogdbnojta)</non-jta-data-source>
 
     <class>org.apache.aries.samples.blog.persistence.entity.AuthorImpl</class>
     <class>org.apache.aries.samples.blog.persistence.entity.EntryImpl</class>
