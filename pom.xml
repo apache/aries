@@ -80,7 +80,7 @@
 						</Import-Package>
                         <!-- Not currently exporting anything -->
                         <Export-Package>
-                            org.apache.aries.jmx.codec;;version=${project.version} 
+                            org.apache.aries.jmx.codec;version=${project.version} 
                         </Export-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
