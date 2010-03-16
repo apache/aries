@@ -130,7 +130,7 @@
        </service-properties>
    </service>
    
-   <reference id="enlistingDataSource" interface="javax.sql.DataSource" filter="(xa.aware=true)"/>
+   <reference id="enlistingDataSource" interface="javax.sql.DataSource" filter="(osgi.jndi.service.name=jdbc/xads)"/>
    
-   <reference id="dataSource" interface="javax.sql.DataSource" filter="(xa.aware=false)"/>
+   <reference id="dataSource" interface="javax.sql.DataSource" filter="(osgi.jndi.service.name=jdbc/nonxads)"/>
 </blueprint>
