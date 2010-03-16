@@ -70,7 +70,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	public void createBlogPost(String authorEmail, String title,
 			String blogText, List<String> tags) {
-
+	
 		AuthorImpl a = em.find(AuthorImpl.class, authorEmail);
 		EntryImpl b = new EntryImpl();
 
@@ -83,8 +83,11 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 		b.setTags((tags == null) ? new ArrayList<String>() : tags);
 
 		a.updateEntries(b);
-		em.persist(b);
+		em.persist(b);		
 		em.merge(b.getAuthor());
+		//Uncomment this line to verify that datasources have been enlisted.
+		//The data base should not contain the blog post even though it has been persisted.
+		//throw new RuntimeException();
 	}
 
 	public Entry findBlogEntryByTitle(String title) {
