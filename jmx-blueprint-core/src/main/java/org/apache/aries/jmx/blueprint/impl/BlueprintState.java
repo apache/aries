@@ -30,7 +30,7 @@ import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
 
 import org.apache.aries.jmx.blueprint.BlueprintStateMBean;
-import org.apache.aries.jmx.blueprint.impl.codec.OSGiBlueprintEvent;
+import org.apache.aries.jmx.blueprint.codec.OSGiBlueprintEvent;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintEvent;

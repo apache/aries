@@ -71,7 +71,8 @@
                             *
                         </Import-Package>
                         <Export-Package>
-                            org.apache.aries.jmx.blueprint
+                            org.apache.aries.jmx.blueprint;version="${pom.version}",
+                            org.apache.aries.jmx.blueprint.codec;version="${pom.version}"
                         </Export-Package>
                         <Private-Package>
                             org.apache.aries.jmx.blueprint.impl*

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jmx.blueprint.impl.codec;
+package org.apache.aries.jmx.blueprint.codec;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -87,7 +87,7 @@ public class Util {
     public static BPMetadata binary2BPMetadata(byte[] buf) {
         if(null == buf)
             return null;
-        
+
         ByteArrayInputStream inBytes = new ByteArrayInputStream(buf);
         ObjectInputStream inObject;
         CompositeData metadata;
@@ -146,7 +146,7 @@ public class Util {
     public static byte[] bpMetadata2Binary(BPMetadata metadata) {
         if(null == metadata)
             return null;
-        
+
         ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
         ObjectOutputStream outObject;
         try {
@@ -163,7 +163,7 @@ public class Util {
     {
         if(null == metadata)
             return null;
-        
+
         byte [] src = bpMetadata2Binary(metadata);
         Byte [] res = new Byte[src.length];
         for(int i=0;i<src.length;i++)
@@ -175,7 +175,7 @@ public class Util {
     public static BPMetadata boxedBinary2BPMetadata(Byte[] buf) {
         if(null == buf)
             return null;
-        
+
         byte [] unbox = new byte[buf.length];
         for(int i=0;i<buf.length;i++)
         {
