@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jmx.blueprint.impl.codec;
+package org.apache.aries.jmx.blueprint.codec;
 
 import java.util.HashMap;
 

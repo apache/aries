@@ -24,8 +24,8 @@ import java.util.Collection;
 import javax.management.openmbean.CompositeData;
 
 import org.apache.aries.jmx.blueprint.BlueprintMetadataMBean;
-import org.apache.aries.jmx.blueprint.impl.codec.BPMetadata;
-import org.apache.aries.jmx.blueprint.impl.codec.Util;
+import org.apache.aries.jmx.blueprint.codec.BPMetadata;
+import org.apache.aries.jmx.blueprint.codec.Util;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
