@@ -86,18 +86,9 @@
                             org.osgi.service.blueprint.container;version="1.0",
                             org.osgi.service.blueprint.reflect;version="1.0",
 
-                            org.apache.aries.blueprint;version="${pom.version}",
-                            org.apache.aries.blueprint.ext;version="${pom.version}",
-                            org.apache.aries.blueprint.mutable;version="${pom.version}"
+                            org.apache.aries.blueprint*;version="${pom.version}"
                         </Export-Package>
                         <Private-Package>
-                            org.apache.aries.blueprint.compendium.cm,
-                            org.apache.aries.blueprint.container,
-                            org.apache.aries.blueprint.di,
-                            org.apache.aries.blueprint.namespace,
-                            org.apache.aries.blueprint.proxy,
-                            org.apache.aries.blueprint.reflect,
-                            org.apache.aries.blueprint.utils,
                             org.apache.aries.util.tracker,
                             OSGI-INF*
                         </Private-Package>
