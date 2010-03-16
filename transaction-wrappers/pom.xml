@@ -32,20 +32,20 @@
   <dependencies>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
-            <artifactId>org.apache.aries.transaction.blueprint</artifactId>
+            <artifactId>org.apache.aries.transaction.manager</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
         </dependency>
   </dependencies>
   <build>
-   <resources>
-        <resource>
-            <targetPath>OSGI-INF/blueprint</targetPath>
-            <filtering>false</filtering>
-            <directory>${basedir}/src/main/resources/OSGI-INF/blueprint</directory>
-            <includes>
-                <include>*.xml</include>
-            </includes>
-        </resource>
-    </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -63,6 +63,7 @@
                         <Export-Package>
                             !org.apache.aries.transaction.jdbc
                         </Export-Package>
+                        <Bundle-Activator>org.apache.aries.transaction.jdbc.Activator</Bundle-Activator>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                     </instructions>
                 </configuration>
