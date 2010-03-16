@@ -16,47 +16,40 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jmx.blueprint.impl.codec;
+package org.apache.aries.jmx.blueprint.codec;
 
-import java.util.Map;
+import java.util.HashMap;
 
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenDataException;
 
 import org.apache.aries.jmx.blueprint.BlueprintMetadataMBean;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
+import org.osgi.service.blueprint.reflect.RefMetadata;
 
-public class BPReferenceMetadata extends BPServiceReferenceMetadata implements BPTarget {
+public class BPRefMetadata implements BPNonNullMetadata, BPTarget {
+    private String componentId;
 
-    private long timeout;
-
-    public BPReferenceMetadata(CompositeData reference) {
-        super(reference);
-        timeout = (Long) reference.get(BlueprintMetadataMBean.TIMEOUT);
+    public BPRefMetadata(CompositeData ref) {
+        componentId = (String) ref.get(BlueprintMetadataMBean.COMPONENT_ID);
     }
 
-    public BPReferenceMetadata(ReferenceMetadata reference) {
-        super(reference);
-        timeout = reference.getTimeout();
-    }
-
-    protected Map<String, Object> getItemsMap() {
-        Map<String, Object> items = super.getItemsMap();
-        items.put(BlueprintMetadataMBean.TIMEOUT, timeout);
-
-        return items;
+    public BPRefMetadata(RefMetadata ref) {
+        componentId = ref.getComponentId();
     }
 
     public CompositeData asCompositeData() {
+        HashMap<String, Object> items = new HashMap<String, Object>();
+        items.put(BlueprintMetadataMBean.COMPONENT_ID, componentId);
+
         try {
-            return new CompositeDataSupport(BlueprintMetadataMBean.REFERENCE_METADATA_TYPE, getItemsMap());
+            return new CompositeDataSupport(BlueprintMetadataMBean.REF_METADATA_TYPE, items);
         } catch (OpenDataException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public long getTimeout() {
-        return timeout;
+    public String getComponentId() {
+        return componentId;
     }
 }

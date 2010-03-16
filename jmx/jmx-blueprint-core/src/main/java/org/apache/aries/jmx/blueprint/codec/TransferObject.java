@@ -16,8 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jmx.blueprint.impl.codec;
+package org.apache.aries.jmx.blueprint.codec;
 
-public interface BPNonNullMetadata extends BPMetadata {
-    // marker interface
+import javax.management.openmbean.CompositeData;
+
+public interface TransferObject {
+	CompositeData asCompositeData();
 }

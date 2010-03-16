@@ -16,46 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jmx.blueprint.impl.codec;
-
-import java.util.Map;
+package org.apache.aries.jmx.blueprint.codec;
 
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenDataException;
 
 import org.apache.aries.jmx.blueprint.BlueprintMetadataMBean;
-import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
+import org.osgi.service.blueprint.reflect.NullMetadata;
 
-public class BPReferenceListMetadata extends BPServiceReferenceMetadata {
-    private int memberType;
-
-    public BPReferenceListMetadata(CompositeData ref_list) {
-        super(ref_list);
-        memberType = (Integer) ref_list.get(BlueprintMetadataMBean.MEMBER_TYPE);
+public class BPNullMetadata implements BPMetadata {
+    public BPNullMetadata(CompositeData Null) {
+        //do nothing ?
     }
 
-    public BPReferenceListMetadata(ReferenceListMetadata ref_list) {
-        super(ref_list);
-        memberType = ref_list.getMemberType();
-    }
-
-    protected Map<String, Object> getItemsMap() {
-        Map<String, Object> items = super.getItemsMap();
-        items.put(BlueprintMetadataMBean.MEMBER_TYPE, memberType);
-
-        return items;
+    public BPNullMetadata(NullMetadata Null) {
+        //do nothing ?
     }
 
     public CompositeData asCompositeData() {
         try {
-            return new CompositeDataSupport(BlueprintMetadataMBean.REFERENCE_LIST_METADATA_TYPE, getItemsMap());
-        } catch (OpenDataException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public int getMemberType() {
-        return memberType;
+			return new CompositeDataSupport(
+					BlueprintMetadataMBean.NULL_METADATA_TYPE,
+					new String[]{BlueprintMetadataMBean.PLACEHOLDER},
+					new Object[]{null});
+		} catch (OpenDataException e) {
+			throw new RuntimeException(e);
+		}
     }
 }

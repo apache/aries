@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jmx.blueprint.impl.codec;
+package org.apache.aries.jmx.blueprint.codec;
 
 import java.util.HashMap;
 
@@ -25,44 +25,31 @@ import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenDataException;
 
 import org.apache.aries.jmx.blueprint.BlueprintMetadataMBean;
-import org.osgi.service.blueprint.reflect.MapEntry;
-import org.osgi.service.blueprint.reflect.PropsMetadata;
+import org.osgi.service.blueprint.reflect.IdRefMetadata;
 
-public class BPPropsMetadata implements BPNonNullMetadata {
-    BPMapEntry[] entries;
+public class BPIdRefMetadata implements BPNonNullMetadata {
+    private String componentId;
 
-    public BPPropsMetadata(CompositeData props) {
-        CompositeData[] cd_entries = (CompositeData[]) props.get(BlueprintMetadataMBean.ENTRIES);
-        entries = new BPMapEntry[cd_entries.length];
-        for (int i = 0; i < entries.length; i++) {
-            entries[i] = new BPMapEntry(cd_entries[i]);
-        }
+    public BPIdRefMetadata(CompositeData idRef) {
+        componentId = (String) idRef.get(BlueprintMetadataMBean.COMPONENT_ID);
     }
 
-    public BPPropsMetadata(PropsMetadata props) {
-        entries = new BPMapEntry[props.getEntries().size()];
-        int i = 0;
-        for (Object arg : props.getEntries()) {
-            entries[i++] = new BPMapEntry((MapEntry) arg);
-        }
+    public BPIdRefMetadata(IdRefMetadata idRef) {
+        componentId = idRef.getComponentId();
     }
 
     public CompositeData asCompositeData() {
-        CompositeData[] cd_entries = new CompositeData[entries.length];
-        for (int i = 0; i < entries.length; i++) {
-            cd_entries[i] = entries[i].asCompositeData();
-        }
         HashMap<String, Object> items = new HashMap<String, Object>();
-        items.put(BlueprintMetadataMBean.ENTRIES, cd_entries);
+        items.put(BlueprintMetadataMBean.COMPONENT_ID, componentId);
 
         try {
-            return new CompositeDataSupport(BlueprintMetadataMBean.PROPS_METADATA_TYPE, items);
+            return new CompositeDataSupport(BlueprintMetadataMBean.ID_REF_METADATA_TYPE, items);
         } catch (OpenDataException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public BPMapEntry[] getEntries() {
-        return entries;
+    public String getComponentId() {
+        return componentId;
     }
 }
