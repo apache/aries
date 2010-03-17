@@ -47,7 +47,7 @@ public class BlogAuthorManagerImpl implements BlogAuthorManager
    
     Date dateOfBirth;
     
-	dateOfBirth = (dob == null || "".equals(dob)) ? null : new SimpleDateFormat("dd-mm-yyyy").parse(dob);
+	dateOfBirth = (dob == null || "".equals(dob)) ? null : new SimpleDateFormat("yyyy-MM-dd").parse(dob);
 	
     persistenceService.createAuthor(email, dateOfBirth, name, displayName, bio);
   }
