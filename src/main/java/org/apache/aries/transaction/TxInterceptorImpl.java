@@ -54,11 +54,13 @@ public class TxInterceptorImpl implements Interceptor {
                  Class<?> exceptionClass = ex.getClass();
                  boolean isAppException = false;
 
-                 for (Class<?> cls : m.getExceptionTypes()) {
-                     isAppException = cls.isAssignableFrom(exceptionClass);
-                     
-                     if (isAppException)
-                         break;
+                 if (!RuntimeException.class.isAssignableFrom(exceptionClass)) {
+                     for (Class<?> cls : m.getExceptionTypes()) {
+                         isAppException = cls.isAssignableFrom(exceptionClass);
+
+                         if (isAppException)
+                             break;
+                     }
                  }
 
                  if (!isAppException)
