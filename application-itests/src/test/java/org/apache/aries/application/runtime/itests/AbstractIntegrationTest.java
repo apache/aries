@@ -20,6 +20,9 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -44,15 +47,21 @@ public class AbstractIntegrationTest {
 
   @Inject
   protected BundleContext bundleContext;
+  
+  private List<ServiceTracker> srs;
 
   @Before
-  public void setUp() throws Exception {
-    // Register any core services
+  public void setUp() {
+      srs = new ArrayList<ServiceTracker>();
   }
-
+  
   @After
-  public void tearDown() throws Exception {
-    // ungetService (reference)
+  public void tearDown() throws Exception{
+      for (ServiceTracker st : srs) {
+          if (st != null) {
+              st.close();
+          }  
+      }
   }
 
   protected Bundle getBundle(String symbolicName) {
@@ -124,8 +133,10 @@ public class AbstractIntegrationTest {
       tracker = new ServiceTracker(bc == null ? bundleContext : bc, osgiFilter,
           null);
       tracker.open();
-      // Note that the tracker is not closed to keep the reference
-      // This is buggy, has the service reference may change i think
+      
+      // add tracker to the list of trackers we close at tear down
+      srs.add(tracker);
+
       Object x = tracker.waitForService(timeout);
       Object svc = type.cast(x);
       if (svc == null) {
