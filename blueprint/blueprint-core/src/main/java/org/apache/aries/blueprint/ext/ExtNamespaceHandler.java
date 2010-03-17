@@ -165,7 +165,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
 
     private ComponentMetadata decorateProxyMethod(Node node, ComponentMetadata component, ParserContext context) {
         if (!(component instanceof ServiceReferenceMetadata)) {
-            throw new ComponentDefinitionException("Attribute " + node.getNodeName() + " can only be used on a <reference>, <ref-list> or <ref-set> element");
+            throw new ComponentDefinitionException("Attribute " + node.getNodeName() + " can only be used on a <reference> or <reference-list> element");
         }
         if (!(component instanceof MutableServiceReferenceMetadata)) {
             throw new ComponentDefinitionException("Expected an instance of MutableServiceReferenceMetadata");
@@ -185,7 +185,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             }
         }
         if ((method & ExtendedReferenceListMetadata.PROXY_METHOD_GREEDY) != 0 && !(component instanceof ReferenceListMetadata)) {
-            throw new ComponentDefinitionException("Greedy proxying is only available for <ref-list> and <ref-set> elements");
+            throw new ComponentDefinitionException("Greedy proxying is only available for <reference-list> element");
         }
         ((MutableServiceReferenceMetadata) component).setProxyMethod(method);
         return component;
