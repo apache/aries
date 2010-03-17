@@ -25,7 +25,11 @@ import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.modifyBundle;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Customizer;
@@ -50,6 +54,22 @@ import org.osgi.util.tracker.ServiceTracker;
 public abstract class AbstractIntegrationTest {
 
     public static final long DEFAULT_TIMEOUT = 30000;
+    
+    private List<ServiceTracker> srs;
+
+    @Before
+    public void setUp() {
+        srs = new ArrayList<ServiceTracker>();
+    }
+    
+    @After
+    public void tearDown() throws Exception{
+        for (ServiceTracker st : srs) {
+            if (st != null) {
+                st.close();
+            }  
+        }
+    }
     
     @Inject
     protected BundleContext bundleContext;
@@ -156,8 +176,10 @@ public abstract class AbstractIntegrationTest {
                   tracker = new ServiceTracker(bc == null ? bundleContext : bc, osgiFilter,
                       null);
                   tracker.open();
-                  // Note that the tracker is not closed to keep the reference
-                  // This is buggy, has the service reference may change i think
+                  
+                  // add tracker to the list of trackers we close at tear down
+                  srs.add(tracker);
+                  
                   Object svc = type.cast(tracker.waitForService(timeout));
                   if (svc == null) {
                     throw new RuntimeException("Gave up waiting for service " + flt);
