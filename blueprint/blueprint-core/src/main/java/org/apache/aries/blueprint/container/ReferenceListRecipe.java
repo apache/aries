@@ -215,7 +215,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
         public Object convert(ReifiedType type) {
             LOGGER.debug("Converting ManagedCollection to {}", type);
             if (!type.getRawClass().isAssignableFrom(List.class)) {
-                throw new ComponentDefinitionException("<ref-list/> can only be converted to a List, not " + type);
+                throw new ComponentDefinitionException("<reference-list/> can only be converted to a List, not " + type);
             }
             int memberType = metadata.getMemberType();            
             boolean useRef = false;
