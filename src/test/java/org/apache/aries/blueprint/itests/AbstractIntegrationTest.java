@@ -29,11 +29,15 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.aries.blueprint.sample.Bar;
 import org.apache.aries.blueprint.sample.Foo;
+import org.junit.After;
+import org.junit.Before;
 import org.ops4j.pax.exam.CoreOptions;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
@@ -54,6 +58,22 @@ public abstract class AbstractIntegrationTest {
 
     public static final long DEFAULT_TIMEOUT = 30000;
 
+    private List<ServiceTracker> srs;
+
+    @Before
+    public void setUp() {
+        srs = new ArrayList<ServiceTracker>();
+    }
+    
+    @After
+    public void tearDown() throws Exception{
+        for (ServiceTracker st : srs) {
+            if (st != null) {
+                st.close();
+            }  
+        }
+    }
+    
     @Inject
     protected BundleContext bundleContext;
 
@@ -93,8 +113,9 @@ public abstract class AbstractIntegrationTest {
             Filter osgiFilter = FrameworkUtil.createFilter(flt);
             tracker = new ServiceTracker(bc == null ? bundleContext : bc, osgiFilter, null);
             tracker.open();
-            // Note that the tracker is not closed to keep the reference
-            // This is buggy, has the service reference may change i think
+            
+            // add tracker to the list of trackers we close at tear down
+            srs.add(tracker);
             Object svc = type.cast(tracker.waitForService(timeout));
             if (svc == null) {
                 throw new RuntimeException("Gave up waiting for service " + flt);
