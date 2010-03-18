@@ -77,7 +77,7 @@ public class BlogEntryManagerImpl implements BlogEntryManager
   {
     if(startDate == null || "".equals(startDate)) throw new IllegalArgumentException("A valid start date must be supplied");
     if(endDate == null || "".equals(endDate)) throw new IllegalArgumentException("A valid end date must be supplied");
-    SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
+    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
     Date start = sdf.parse(startDate);
     Date end = sdf.parse(endDate);
 	List <? extends Entry> entries = persistenceService.getBlogEntriesModifiedBetween(start, end);
@@ -145,7 +145,7 @@ public class BlogEntryManagerImpl implements BlogEntryManager
   
   private Date parseDate(String dateString) throws ParseException
   {
-    SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
+    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
     return sdf.parse(dateString);
   }
 
@@ -155,14 +155,8 @@ public class BlogEntryManagerImpl implements BlogEntryManager
     return new BlogEntryImpl(persistenceService.getBlogEntryById(id));
   }
   
-	private List <? extends BlogEntry> adaptEntries(List<? extends Entry> e) {
-		  List<BlogEntryImpl> posts = new ArrayList<BlogEntryImpl>();
-		    
-		    for (Entry entry : e) {
-		      posts.add(new BlogEntryImpl(entry));
-		    }
-		      
-		return posts;
-	}
+	private List <? extends BlogEntry> adaptEntries(List<? extends Entry> entries) {
+		return new BlogListAdapter<BlogEntry, Entry>(entries, BlogEntryImpl.class, Entry.class);
+  }
 	
 }
