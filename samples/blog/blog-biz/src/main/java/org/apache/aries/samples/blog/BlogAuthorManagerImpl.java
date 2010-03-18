@@ -84,15 +84,8 @@ public class BlogAuthorManagerImpl implements BlogAuthorManager
   
 	private List<? extends BlogAuthor> adaptAuthor(
 			List<? extends Author> authors) {
-		List<BlogAuthorImpl> list = new ArrayList<BlogAuthorImpl>();
-
-		Iterator<? extends Author> a = authors.iterator();
-		while (a.hasNext()) {
-			list.add(new BlogAuthorImpl(a.next()));
-		}
-
-		return list;
+			return new BlogListAdapter<BlogAuthor, Author>(authors, BlogAuthorImpl.class, Author.class);
 
 	}
-  
+ 
 }

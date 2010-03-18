@@ -27,62 +27,56 @@ import org.apache.aries.samples.blog.api.BlogEntry;
 import org.apache.aries.samples.blog.persistence.api.Author;
 import org.apache.aries.samples.blog.persistence.api.Entry;
 
+public class BlogAuthorImpl implements BlogAuthor {
+	private static Calendar cal = Calendar.getInstance();
+	private Author author;
 
+	public BlogAuthorImpl(Author a) {
+		author = a;
+	}
 
-public class BlogAuthorImpl implements BlogAuthor
-{
-  private static Calendar cal = Calendar.getInstance();
-  private Author author;
-  
-  public BlogAuthorImpl(Author a)
-  {
-    author = a;
-  }
+	public String getBio() {
+		return author.getBio();
+	}
 
-  public String getBio()
-  {
-    return author.getBio();
-  }
+	public String getEmailAddress() {
+		return author.getEmail();
+	}
 
-  public String getEmailAddress()
-  {
-    return author.getEmail();
-  }
+	public String getFullName() {
+		return author.getName();
+	}
 
-  public String getFullName()
-  {
-    return author.getName();
-  }
+	public String getName() {
+		return author.getDisplayName();
+	}
 
-  public String getName()
-  {
-    return author.getDisplayName();
-  }
+	public String getDateOfBirth() {
+		Date dob = author.getDob();
 
-  public String getDateOfBirth()
-  {
-    Date dob = author.getDob();
-    
-    int year;
-    int month;
-    int date;
-    
-    synchronized (cal) {
-      cal.setTime(dob);
-      year = cal.get(Calendar.YEAR);
-      month = cal.get(Calendar.MONTH) + 1;
-      date = cal.get(Calendar.DATE);
-    }
-    
-    return year + "-" + month + "-" + date;
-  }
-  
+		int year = 0;
+		int month = 0;
+		int date = 0;
+
+		synchronized (cal) {
+			if (dob != null) {
+				cal.setTime(dob);
+				year = cal.get(Calendar.YEAR);
+				month = cal.get(Calendar.MONTH) + 1;
+				date = cal.get(Calendar.DATE);
+			}
+		}
+		return year + "-" + month + "-" + date;
+
+	}
+
 	public List<? extends BlogEntry> getEntries() {
 		return adapt(author.getEntries());
 	}
-	
-	private List<? extends BlogEntry> adapt (List<? extends Entry> list) {
-		List<BlogEntryImpl> bei = null;;
+
+	private List<? extends BlogEntry> adapt(List<? extends Entry> list) {
+		List<BlogEntryImpl> bei = null;
+		;
 		return bei;
 	}
 }
