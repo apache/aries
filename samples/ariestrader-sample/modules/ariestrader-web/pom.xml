@@ -72,15 +72,7 @@
                   <Bundle-Version>${pom.version}</Bundle-Version>
                   <Web-ContextPath>/ariestrader</Web-ContextPath>
                   <Web-JSPExtractLocation>/</Web-JSPExtractLocation>
-                  <Import-Package>
-                      org.apache.aries.samples.ariestrader.api,
-                      org.apache.aries.samples.ariestrader.persistence.api,
-                      org.apache.aries.samples.ariestrader.util,
-                      javax.naming, 
-                      javax.servlet, 
-                      javax.servlet.http, 
-                      javax.sql
-                  </Import-Package>
+                  <Export-Package>!org.apache.aries.samples.ariestrader.web.*</Export-Package>
                 </instructions>
               </configuration>
             </plugin>

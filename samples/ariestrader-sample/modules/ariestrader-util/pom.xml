@@ -47,14 +47,6 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
-                        <Export-Package>
-                            org.apache.aries.samples.ariestrader.util;version="${pom.version}"
-                        </Export-Package>
-                        <Import-Package>
-                            org.apache.aries.samples.ariestrader.util,
-                            org.slf4j,
-                            javax.naming
-                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
