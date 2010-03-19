@@ -55,7 +55,7 @@ try {
 }
 catch (Exception e)
 {
-    Log.error("displayQuote.jsp  exception", e);
+    Log.error("PingJspEL.jsp  exception", e);
 }
 
 pageContext.setAttribute("quoteData0", quoteData0);
