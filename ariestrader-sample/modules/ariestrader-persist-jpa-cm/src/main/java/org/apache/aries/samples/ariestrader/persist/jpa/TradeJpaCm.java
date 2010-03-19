@@ -671,6 +671,10 @@ public class TradeJpaCm implements TradeServices {
             account.setProfile((AccountProfileDataBean)profile);
             entityManager.persist(profile);
             entityManager.persist(account);
+            // Uncomment this line to verify that datasources has been enlisted.  After rebuild attempt to register a user with
+            // a user id "fail".  After the exception is thrown the database should not contain the user "fail" even though 
+            // the profile and account have already been persisted.
+            // if (userID.equals("fail")) throw new RuntimeException("**** enlisted datasource validated via rollback test ****");
         }
 
         return account;
