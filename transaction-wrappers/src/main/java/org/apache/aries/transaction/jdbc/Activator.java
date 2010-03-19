@@ -61,6 +61,14 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer, Ser
 
   public void stop(BundleContext ctx)
   {
+      // it is possible these are not cleaned by serviceChanged method when the
+      // tm service is still active
+      if (t != null) {
+          t.close();
+      }
+      if (ref != null) {
+          context.ungetService(ref);
+      }
   }
 
   public Object addingService(ServiceReference ref)
