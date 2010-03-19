@@ -69,24 +69,11 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
-                        <Export-Package>
-                            <!--org.apache.aries.samples.ariestrader.persist.jpa;version="${pom.version}"-->
-                        </Export-Package>
+                        <Export-Package>!org.apache.aries.samples.ariestrader.persist.jpa.am.*</Export-Package>
                         <Import-Package>
-                            org.apache.aries.samples.ariestrader.api,
-                            org.apache.aries.samples.ariestrader.entities,
-                            org.apache.aries.samples.ariestrader.persistence.api,
-                            org.apache.aries.samples.ariestrader.util,
                             javax.persistence;version="[1.0.0,2.1.0)",
-                            javax.persistence.criteria;version="[1.0.0,2.1.0)";resolution:="optional",
-                            javax.persistence.metamodel;version="[1.0.0,2.1.0)";resolution:="optional",
-                            javax.persistence.spi;version="[1.0.0,2.1.0)";resolution:="optional",
-                            net.sf.cglib.proxy;resolution:="optional",
-                            org.osgi.service.blueprint
+                            *
                         </Import-Package>
-                        <Private-Package>
-                            org.apache.aries.samples.ariestrader.persist.jpa
-                        </Private-Package>
                     </instructions>
                 </configuration>
             </plugin>
