@@ -38,7 +38,6 @@ pageContext.setAttribute("somefloat1", new Float(somefloat1));
 float somefloat2 = TradeConfig.rndFloat(100) + 1.0f;
 pageContext.setAttribute("somefloat2", new Float(somefloat2));
 
-String symbol = request.getParameter("symbol");
 TradeServicesManager tradeServicesManager = null;
 
 if (tradeServicesManager == null) {
