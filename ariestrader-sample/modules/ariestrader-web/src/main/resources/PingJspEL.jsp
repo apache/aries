@@ -20,7 +20,7 @@
 	<title>PingJspEL</title>
 </head>
 <body>
-<%@ page import="org.apache.aries.samples.ariestrader.util.*,org.apache.aries.samples.ariestrader.persistence.api.*" session="false" %>
+<%@ page import="org.apache.aries.samples.ariestrader.util.*,org.apache.aries.samples.ariestrader.api.*,org.apache.aries.samples.ariestrader.persistence.api.*" session="false" %>
 
 <%!
 int hitCount = 0;
@@ -37,21 +37,39 @@ float somefloat1 = TradeConfig.rndFloat(100) + 1.0f;
 pageContext.setAttribute("somefloat1", new Float(somefloat1));
 float somefloat2 = TradeConfig.rndFloat(100) + 1.0f;
 pageContext.setAttribute("somefloat2", new Float(somefloat2));
- 
-QuoteDataBean quoteData1 = QuoteDataBean.getRandomInstance();
+
+String symbol = request.getParameter("symbol");
+TradeServicesManager tradeServicesManager = null;
+
+if (tradeServicesManager == null) {
+    tradeServicesManager = TradeServiceUtilities.getTradeServicesManager();
+}
+TradeServices tradeServices = tradeServicesManager.getTradeServices();
+
+QuoteDataBean quoteData0=null, quoteData1=null, quoteData2=null, quoteData3=null;
+
+try { 
+	quoteData0 = tradeServices.getQuote(TradeConfig.rndSymbol());
+	quoteData1 = tradeServices.getQuote(TradeConfig.rndSymbol());
+	quoteData2 = tradeServices.getQuote(TradeConfig.rndSymbol());
+	quoteData3 = tradeServices.getQuote(TradeConfig.rndSymbol());
+}
+catch (Exception e)
+{
+    Log.error("displayQuote.jsp  exception", e);
+}
+
+pageContext.setAttribute("quoteData0", quoteData0);
 pageContext.setAttribute("quoteData1", quoteData1);
-QuoteDataBean quoteData2 = QuoteDataBean.getRandomInstance();
 pageContext.setAttribute("quoteData2", quoteData2);
-QuoteDataBean quoteData3 = QuoteDataBean.getRandomInstance();
 pageContext.setAttribute("quoteData3", quoteData3);
-QuoteDataBean quoteData4 = QuoteDataBean.getRandomInstance();
-pageContext.setAttribute("quoteData4", quoteData4);
 
 QuoteDataBean quoteData[] = new QuoteDataBean[4];
-quoteData[0] = quoteData1;
-quoteData[1] = quoteData2;
-quoteData[2] = quoteData3;
-quoteData[3] = quoteData4;
+quoteData[0] = quoteData0;
+quoteData[1] = quoteData1;
+quoteData[2] = quoteData2;
+quoteData[3] = quoteData3;
+
 pageContext.setAttribute("quoteData", quoteData);
 %>
   
@@ -98,16 +116,16 @@ somefloat2 = <%= somefloat2 %><br/>
 	<tr>
 		<td>Indexing Operations</td>
 		<td>
-			\${quoteData3.symbol}<br/>
+			\${quoteData1.symbol}<br/>
 			\${quoteData[2].symbol}<br/>
-			\${quoteData4["symbol"]}<br/>
+			\${quoteData3["symbol"]}<br/>
 			\${header["host"]}<br/>
 			\${header.host}<br/>
 		</td>
 		<td>
-			${quoteData3.symbol}<br/>
-			${quoteData[1].symbol}<br/>
-			${quoteData4["symbol"]}<br/>
+			${quoteData1.symbol}<br/>
+			${quoteData[2].symbol}<br/>
+			${quoteData3["symbol"]}<br/>
 			${header["host"]}<br/>
 			${header.host}
 		</td>
@@ -115,11 +133,11 @@ somefloat2 = <%= somefloat2 %><br/>
 	<tr>
 		<td>Variable Scope Tests</td>
 		<td>
-			\${(quoteData3 == null) ? "null" : quoteData3}<br/>
+			\${(quoteData0 == null) ? "null" : quoteData0}<br/>
 			\${(noSuchVariableAtAnyScope == null) ? "null" : noSuchVariableAtAnyScope}
 		</td>
 		<td>
-			${(quoteData3 == null) ? "null" : quoteData3}<br/>
+			${(quoteData0 == null) ? "null" : quoteData0}<br/>
 			${(noSuchVariableAtAnyScope == null) ? "null" : noSuchVariableAtAnyScope}
 		</td>
 	</tr>
