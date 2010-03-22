@@ -29,7 +29,17 @@
         This bundle contains the blueprint api 1.0.0 and the corresponding xml schema.
     </description>
 
-    <dependencies>
+    <properties>
+         <aries.osgi.export>
+             org.osgi.service.blueprint*;version="1.0"
+         </aries.osgi.export>
+         <aries.osgi.import>
+             !org.osgi.service.blueprint*,
+             *
+         </aries.osgi.import>
+     </properties>
+
+     <dependencies>
         <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>osgi</artifactId>
@@ -37,21 +47,4 @@
         </dependency>
     </dependencies>
     
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.api</Bundle-SymbolicName>
-                        <Export-Package>org.osgi.service.blueprint*;version="1.0"</Export-Package>
-                        <Import-Package>!org.osgi.service.blueprint*,*</Import-Package>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
