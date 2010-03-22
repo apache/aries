@@ -30,7 +30,19 @@
   <description>
       This bundle contains the JNDI URL handler for OSGi
   </description>
-  
+
+  <properties>
+    <aries.osgi.export.pkg>
+        org.apache.aries.jndi.services
+    </aries.osgi.export.pkg>
+    <aries.osgi.private.pkg>
+        org.apache.aries.jndi.url
+    </aries.osgi.private.pkg>
+    <aries.osgi.activator>
+        org.apache.aries.jndi.url.Activator
+    </aries.osgi.activator>
+  </properties>
+
   <dependencies>
       <dependency>
       	<groupId>org.apache.aries</groupId>
@@ -53,25 +65,4 @@
       </dependency>
   </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.url</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.aries.jndi.url.Activator</Bundle-Activator>
-                        <Export-Package>
-                            org.apache.aries.jndi.services;version="${pom.version}"
-                        </Export-Package>
-                        <Import-Package>!org.apache.aries.jndi*,*</Import-Package>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-  
 </project>
