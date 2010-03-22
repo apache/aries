@@ -37,7 +37,13 @@
                 <artifactId>maven-bundle-plugin</artifactId>
 				<configuration>
 					<instructions>
-                                                <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+						<Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+						<Export-Package>
+							org.apache.aries.samples.blog.api;
+							org.apache.aries.samples.blog.comment.persistence.api;
+							org.apache.aries.samples.blog.persistence.api;
+								version=${project.version}
+						</Export-Package>
 					</instructions>
 				</configuration> 
             </plugin>
