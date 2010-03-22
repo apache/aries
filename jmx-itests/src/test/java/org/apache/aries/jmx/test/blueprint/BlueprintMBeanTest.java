@@ -69,7 +69,7 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
                 mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
                 mavenBundle("org.ops4j.pax.logging", "pax-logging-api"), 
                 mavenBundle("org.ops4j.pax.logging", "pax-logging-service"), 
-                mavenBundle("org.apache.aries", "org.apache.aries.util"), 
+                mavenBundle("org.apache.aries", "org.apache.aries.util"),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample"), 
                 mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.blueprint"),
@@ -98,12 +98,13 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
                }
            }
            i++;
-           Thread.sleep(1000);
+           Thread.sleep(100);
        }
        
        // Wait enough time for osgi framework and blueprint bundles to be set up
        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Waiting for bundles to be set up");
-       Thread.sleep(10000);       
+       getOsgiService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=org.apache.aries.blueprint)", DEFAULT_TIMEOUT);
+       getOsgiService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=org.apache.aries.blueprint.sample)", DEFAULT_TIMEOUT);
     }
     
     @Test
