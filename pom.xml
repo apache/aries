@@ -30,6 +30,31 @@
        This bundle contains the standalone implementation of the along with the API.
     </description>
 
+    <properties>
+        <aries.osgi.activator>
+            org.apache.aries.jmx.blueprint.impl.Activator
+        </aries.osgi.activator>
+        <aries.osgi.export.pkg>
+            org.apache.aries.jmx.blueprint,
+            org.apache.aries.jmx.blueprint.codec
+        </aries.osgi.export.pkg>
+        <aries.osgi.import>
+            !org.apache.aries.jmx*,
+            javax.management,
+            javax.management.openmbean,
+            org.osgi.framework;version="1.5.0",
+            org.osgi.service.blueprint.container;version="1.0",
+            org.osgi.service.blueprint.reflect;version="1.0",
+            org.osgi.util.tracker;version="1.4",
+            *
+        </aries.osgi.import>
+        <aries.osgi.private.pkg>
+            org.apache.aries.jmx.blueprint.impl*
+        </aries.osgi.private.pkg>
+        <aries.osgi.import.service>
+            javax.management.MBeanServer
+        </aries.osgi.import.service>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -54,37 +79,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Import-Package>
-                            !org.apache.aries.jmx*,
-                            javax.management,
-                            javax.management.openmbean,
-                            org.osgi.framework;version="1.5.0",
-                            org.osgi.service.blueprint.container;version="1.0",
-                            org.osgi.service.blueprint.reflect;version="1.0",
-                            org.osgi.util.tracker;version="1.4",
-                            *
-                        </Import-Package>
-                        <Export-Package>
-                            org.apache.aries.jmx.blueprint;version="${pom.version}",
-                            org.apache.aries.jmx.blueprint.codec;version="${pom.version}"
-                        </Export-Package>
-                        <Private-Package>
-                            org.apache.aries.jmx.blueprint.impl*
-                        </Private-Package>
-                        <Bundle-Activator>org.apache.aries.jmx.blueprint.impl.Activator</Bundle-Activator>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                        <_failok>true</_failok>
-                    </instructions>
-                    <unpackBundle>true</unpackBundle>
-                </configuration>
-            </plugin>
             <!--
                 Use the shade plugin with the dependency plugin to unjar the two jars (api & core)
                 so that the associated sources and javadocs jars are complete. To build the main
