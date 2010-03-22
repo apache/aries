@@ -28,6 +28,16 @@
     <packaging>bundle</packaging>
     <name>Apache Aries Web Url handler</name>
 
+	<properties>
+		<aries.osgi.export.pkg>
+			org.apache.aries.web.converter
+		</aries.osgi.export.pkg>
+		<aries.osgi.private.pkg>
+			org.apache.aries.web.converter.impl,
+			org.apache.aries.web.url
+		</aries.osgi.private.pkg>
+	</properties>
+
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -49,24 +59,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>
-                            org.apache.aries.web.converter;version="${pom.version}",
-                        </Export-Package>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
