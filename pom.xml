@@ -31,6 +31,12 @@
       This bundle contains the ConfigAdmin namespace for blueprint.
   </description>
   
+    <properties>
+         <aries.osgi.export.pkg>
+             org.apache.aries.blueprint.compendium.cm*
+         </aries.osgi.export.pkg>
+     </properties>
+
   <dependencies>
       <dependency>
           <groupId>org.apache.aries.blueprint</groupId>
@@ -48,22 +54,4 @@
       </dependency>
   </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.cm</Bundle-SymbolicName>
-                        <Export-Package>org.apache.aries.blueprint.compendium.cm*;version="${pom.version}"</Export-Package>
-                        <Import-Package>!org.apache.aries.blueprint.compendium.cm*,*</Import-Package>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-  
 </project>
