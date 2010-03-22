@@ -29,6 +29,19 @@
   <version>0.1-incubating-SNAPSHOT</version>
   <name>Apache Aries Transaction Enlisting JDBC Datasource</name>
   <packaging>bundle</packaging>
+
+  <properties>
+    <aries.osgi.export.pkg>
+      !org.apache.aries.transaction.jdbc
+    </aries.osgi.export.pkg>
+    <aries.osgi.private.pkg>
+      org.apache.aries.transaction.jdbc
+    </aries.osgi.private.pkg>
+    <aries.osgi.activator>
+      org.apache.aries.transaction.jdbc.Activator
+    </aries.osgi.activator>
+  </properties>
+
   <dependencies>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
@@ -45,27 +58,5 @@
             <scope>provided</scope>
         </dependency>
   </dependencies>
-  <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Import-Package>
-                            *
-                        </Import-Package>
-                        <Private-Package>
-                            org.apache.aries.transaction.jdbc
-                        </Private-Package>
-                        <Export-Package>
-                            !org.apache.aries.transaction.jdbc
-                        </Export-Package>
-                        <Bundle-Activator>org.apache.aries.transaction.jdbc.Activator</Bundle-Activator>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-  </build>
+
 </project>
