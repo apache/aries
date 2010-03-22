@@ -30,6 +30,18 @@
   <description>
       This bundle contains the core of JNDI support for OSGi.
   </description>
+
+  <properties>
+    <aries.osgi.export.pkg>
+      org.apache.aries.jndi
+    </aries.osgi.export.pkg>
+    <aries.osgi.private.pkg>
+      org.apache.aries.jndi.startup
+    </aries.osgi.private.pkg>
+    <aries.osgi.activator>
+      org.apache.aries.jndi.startup.Activator
+    </aries.osgi.activator>
+  </properties>
   
   <dependencies>
       <dependency>
@@ -44,25 +56,4 @@
       </dependency>
   </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.core</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.aries.jndi.startup.Activator</Bundle-Activator>
-                        <Export-Package>
-                            org.apache.aries.jndi;version="${pom.version}"
-                        </Export-Package>
-                        <Import-Package>!org.apache.aries.jndi*,*</Import-Package>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-  
 </project>

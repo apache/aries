@@ -30,7 +30,76 @@
         It's composed of the blueprint-api, blueprint-core and blueprint-cm modules.
     </description>
 
+    <properties>
+        <aries.osgi.symbolic.name>
+            ${project.artifactId};blueprint.graceperiod:=false
+        </aries.osgi.symbolic.name>
+        <aries.osgi.activator>
+            org.apache.aries.blueprint.container.BlueprintExtender
+        </aries.osgi.activator>
+        <aries.osgi.import>
+            !org.apache.aries.blueprint*,
+            !org.osgi.service.blueprint*,
+            org.osgi.service.event*;resolution:=optional,
+            org.osgi.service.framework;resolution:=optional,
+            net.sf.cglib*;resolution:=optional,
+            org.objectweb.asm*;version="[3.1,4)";resolution:=optional,
+            org.osgi.service.cm;version="[1.2.0,2.0.0)",
+            *
+        </aries.osgi.import>
+        <!--
+        <aries.osgi.export>
+            =org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.aries.blueprint,org.apache.aries.blueprint.ext,org.apache.aries.blueprint.mutable,org.apache.aries.blueprint.compendium.cm";version="1.0",
+            org.osgi.service.blueprint.container;version="1.0",
+            org.osgi.service.blueprint.reflect;version="1.0",
+
+            org.apache.aries.blueprint;version="${pom.version}",
+            org.apache.aries.blueprint.ext;version="${pom.version}",
+            org.apache.aries.blueprint.mutable;version="${pom.version}",
+            org.apache.aries.blueprint.compendium.cm;version="${pom.version}"
+        </aries.osgi.export>
+        <aries.osgi.private.pkg>
+                org.apache.aries.blueprint.container,
+            org.apache.aries.blueprint.di,
+            org.apache.aries.blueprint.namespace,
+            org.apache.aries.blueprint.proxy,
+            org.apache.aries.blueprint.reflect,
+            org.apache.aries.blueprint.utils,
+            org.apache.aries.util.tracker,
+            OSGI-INF*
+        </aries.osgi.private.pkg>
+        -->
+        <aries.osgi.export>
+            =org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.aries.blueprint,org.apache.aries.blueprint.ext,org.apache.aries.blueprint.mutable,org.apache.aries.blueprint.compendium.cm";version="1.0",
+            org.osgi.service.blueprint.container;version="1.0",
+            org.osgi.service.blueprint.reflect;version="1.0",
+
+            org.apache.aries.blueprint*;version="${pom.version}",
+        </aries.osgi.export>
+        <aries.osgi.private.pkg>
+            org.apache.aries.util.tracker,
+            OSGI-INF*
+        </aries.osgi.private.pkg>
+        <aries.osgi.export.service>
+            org.apache.aries.blueprint.ParserService
+        </aries.osgi.export.service>
+        <aries.osgi.import.service>
+            org.osgi.service.cm.ConfigurationAdmin;availability:=optional
+        </aries.osgi.import.service>
+        <aries.osgi.include.resource>
+            {maven-resources},
+            META-INF/NOTICE=../NOTICE
+        </aries.osgi.include.resource>
+        <aries.osgi.failok>
+            true
+        </aries.osgi.failok>
+    </properties>
+
     <dependencies>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
@@ -64,49 +133,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.groupId};blueprint.graceperiod:=false</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.aries.blueprint.container.BlueprintExtender</Bundle-Activator>
-                        <Import-Package>
-                            !org.apache.aries.blueprint*,
-                            !org.osgi.service.blueprint*,
-                            org.osgi.service.event*;resolution:=optional,
-                            org.osgi.service.framework;resolution:=optional,
-                            net.sf.cglib*;resolution:=optional,
-                            org.objectweb.asm*;version="[3.1,4)";resolution:=optional,
-                            org.osgi.service.cm;version="[1.2.0,2.0.0)",
-                            *
-                        </Import-Package>
-                        <Export-Package>
-                            =org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.aries.blueprint,org.apache.aries.blueprint.ext,org.apache.aries.blueprint.mutable";version="1.0",
-                            org.osgi.service.blueprint.container;version="1.0",
-                            org.osgi.service.blueprint.reflect;version="1.0",
-
-                            org.apache.aries.blueprint*;version="${pom.version}"
-                        </Export-Package>
-                        <Private-Package>
-                            org.apache.aries.util.tracker,
-                            OSGI-INF*
-                        </Private-Package>
-                        <Export-Service>
-                            org.apache.aries.blueprint.ParserService
-                        </Export-Service>
-                        <Import-Service>
-                            org.osgi.service.cm.ConfigurationAdmin;availability:=optional
-                        </Import-Service>
-                        <!-- include the right NOTICE with attribution to the OSGi alliance -->
-                        <Include-Resource>{maven-resources},META-INF/NOTICE=../NOTICE</Include-Resource>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                        <_failok>true</_failok>
-                     </instructions>
-                    <unpackBundle>true</unpackBundle>
-                </configuration>
-            </plugin>
             <!-- Use the shade plugin with the dependency plugin to unjar the three jars (api, core and cm)
                  so that the associated sources and javadocs jars are complete.
                  To build the main jar, the maven-bundle-plugin is used, that's why everything is exluded -->

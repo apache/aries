@@ -27,6 +27,12 @@
     <name>Apache Aries Blueprint Test Bundle A</name>
     <packaging>bundle</packaging>
 
+    <properties>
+        <aries.osgi.activator>
+            org.apache.aries.blueprint.testbundlea.Activator
+        </aries.osgi.activator>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.eclipse</groupId>
@@ -42,22 +48,5 @@
             <artifactId>org.apache.aries.blueprint.core</artifactId>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin
-                </artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.testbundlea</Bundle-SymbolicName>
-                        <Bundle-Activator>
-                            org.apache.aries.blueprint.testbundlea.Activator
-                        </Bundle-Activator>
-                        <Export-Package>org.apache.aries.blueprint.testbundlea.*</Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+
 </project>

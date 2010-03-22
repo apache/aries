@@ -31,6 +31,25 @@
       This bundle contains the core implementation of Blueprint 
       along with the "ext" namespace handler.
   </description>
+
+  <properties>
+      <aries.osgi.activator>
+          org.apache.aries.blueprint.container.BlueprintExtender
+      </aries.osgi.activator>
+      <aries.osgi.export.pkg>
+          org.apache.aries.blueprint*
+      </aries.osgi.export.pkg>
+      <aries.osgi.import>
+          !org.apache.aries.blueprint*,
+        org.apache.aries.util.tracker;resolution:=optional,
+        org.osgi.service.event*;resolution:=optional,
+        org.osgi.service.framework;resolution:=optional,
+        *
+      </aries.osgi.import>
+      <aries.osgi.export.service>
+          org.apache.aries.blueprint.ParserService
+      </aries.osgi.export.service>
+  </properties>
   
   <dependencies>
       <dependency>
@@ -90,32 +109,6 @@
                 </includes>
             </resource>
         </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}.core</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.aries.blueprint.container.BlueprintExtender</Bundle-Activator>
-                        <Export-Package>
-                            org.apache.aries.blueprint*;version="${pom.version}"
-                        </Export-Package>
-                        <Import-Package>!org.apache.aries.blueprint*,
-                          org.apache.aries.util.tracker;resolution:=optional,
-                          org.osgi.service.event*;resolution:=optional,
-                          org.osgi.service.framework;resolution:=optional,
-                          *
-                        </Import-Package>
-                        <Export-Service>
-                            org.apache.aries.blueprint.ParserService
-                        </Export-Service>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
   
 </project>

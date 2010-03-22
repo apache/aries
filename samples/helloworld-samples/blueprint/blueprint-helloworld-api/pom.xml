@@ -39,6 +39,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+						<Export-Package>org.apache.aries.samples.blueprint.helloworld.api</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

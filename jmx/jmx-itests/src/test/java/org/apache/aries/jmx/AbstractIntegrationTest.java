@@ -16,6 +16,12 @@
  */
 package org.apache.aries.jmx;
 
+import java.util.Collection;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
+
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
@@ -36,9 +42,14 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * 
@@ -49,6 +60,8 @@ import org.osgi.framework.Version;
 @RunWith(JUnit4TestRunner.class)
 public class AbstractIntegrationTest {
     
+    public static final long DEFAULT_TIMEOUT = 30000;
+
     ServiceRegistration registration;
     ServiceReference reference;
     protected MBeanServer mbeanServer;
@@ -110,6 +123,55 @@ public class AbstractIntegrationTest {
         return result;
     }
     
+    protected <T> T getOsgiService(Class<T> type, long timeout) {
+        return getOsgiService(type, null, timeout);
+    }
+
+    protected <T> T getOsgiService(Class<T> type) {
+        return getOsgiService(type, null, DEFAULT_TIMEOUT);
+    }
+
+    protected <T> T getOsgiService(Class<T> type, String filter, long timeout) {
+        ServiceTracker tracker = null;
+        try {
+            String flt;
+            if (filter != null) {
+                if (filter.startsWith("(")) {
+                    flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")" + filter + ")";
+                } else {
+                    flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")(" + filter + "))";
+                }
+            } else {
+                flt = "(" + Constants.OBJECTCLASS + "=" + type.getName() + ")";
+            }
+            Filter osgiFilter = FrameworkUtil.createFilter(flt);
+            tracker = new ServiceTracker(bundleContext, osgiFilter, null);
+            tracker.open(true);
+            // Note that the tracker is not closed to keep the reference
+            // This is buggy, as the service reference may change i think
+            Object svc = type.cast(tracker.waitForService(timeout));
+            if (svc == null) {
+                Dictionary dic = bundleContext.getBundle().getHeaders();
+                System.err.println("Test bundle headers: " + explode(dic));
+
+                for (ServiceReference ref : asCollection(bundleContext.getAllServiceReferences(null, null))) {
+                    System.err.println("ServiceReference: " + ref);
+                }
+
+                for (ServiceReference ref : asCollection(bundleContext.getAllServiceReferences(null, flt))) {
+                    System.err.println("Filtered ServiceReference: " + ref);
+                }
+
+                throw new RuntimeException("Gave up waiting for service " + flt);
+            }
+            return type.cast(svc);
+        } catch (InvalidSyntaxException e) {
+            throw new IllegalArgumentException("Invalid filter", e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static MavenArtifactProvisionOption mavenBundle(String groupId, String artifactId) {
         return CoreOptions.mavenBundle().groupId(groupId).artifactId(artifactId).versionAsInProject();
     }
@@ -126,6 +188,35 @@ public class AbstractIntegrationTest {
         }
 
         return options;
+    }
+
+    /*
+     * Explode the dictionary into a ,-delimited list of key=value pairs
+     */
+    private static String explode(Dictionary dictionary) {
+        Enumeration keys = dictionary.keys();
+        StringBuffer result = new StringBuffer();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            result.append(String.format("%s=%s", key, dictionary.get(key)));
+            if (keys.hasMoreElements()) {
+                result.append(", ");
+            }
+        }
+        return result.toString();
+    }
+
+    /*
+     * Provides an iterable collection of references, even if the original array is null
+     */
+    private static final Collection<ServiceReference> asCollection(ServiceReference[] references) {
+        List<ServiceReference> result = new LinkedList<ServiceReference>();
+        if (references != null) {
+            for (ServiceReference reference : references) {
+                result.add(reference);
+            }
+        }
+        return result;
     }
 
 }

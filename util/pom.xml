@@ -38,6 +38,19 @@
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/util</developerConnection>
         <url>http://svn.apache.org/viewvc/incubator/aries/trunk/util</url>
     </scm>
+
+    <properties>
+        <aries.osgi.export.pkg>
+            org.apache.aries.util*
+        </aries.osgi.export.pkg>
+        <aries.osgi.import.pkg>
+            !org.apache.aries.util*,
+            org.osgi.framework.launch;resolution:=optional,
+            org.osgi.service.framework;resolution:=optional,
+            *
+        </aries.osgi.import.pkg>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -66,28 +79,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>
-                            org.apache.aries.util*;version="${pom.version}"
-                        </Export-Package>
-                        <!--  let's make org.osgi.service.framework optional as this is proposed API 
-                        may not be avail depends on the OSGi framework -->
-                        <Import-Package>!org.apache.aries.util*,org.osgi.service.framework;resolution:=optional,*
-                        </Import-Package>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

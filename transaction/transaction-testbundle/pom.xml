@@ -29,31 +29,14 @@
   <packaging>bundle</packaging>
   <version>0.1-incubating-SNAPSHOT</version>
   <name>Apache Aries Transaction Test Bundle</name>
-  <build>
-   <resources>
-        <resource>
-            <targetPath>OSGI-INF/blueprint</targetPath>
-            <filtering>false</filtering>
-            <directory>${basedir}/src/main/resources/OSGI-INF/blueprint</directory>
-            <includes>
-                <include>*.xml</include>
-            </includes>
-        </resource>
-    </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
 
-						<nsh_interface>org.apache.aries.blueprint.NamespaceHandler</nsh_interface>
-						<nsh_namespace>osgi.service.blueprint.namespace</nsh_namespace>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-  </build>
+  <properties>
+    <aries.osgi.export.pkg>
+      org.apache.aries.transaction.test
+    </aries.osgi.export.pkg>
+    <aries.osgi.private.pkg>
+      org.apache.aries.transaction.test.impl
+    </aries.osgi.private.pkg>
+  </properties>
+
 </project>

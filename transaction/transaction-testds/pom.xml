@@ -32,31 +32,4 @@
 			<artifactId>derby</artifactId>
 		</dependency>
 	</dependencies>
-	<build>
-		<resources>
-			<resource>
-				<targetPath>OSGI-INF/blueprint</targetPath>
-				<filtering>false</filtering>
-				<directory>${basedir}/src/main/resources/OSGI-INF/blueprint
-				</directory>
-				<includes>
-					<include>*.xml</include>
-				</includes>
-			</resource>
-		</resources>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<configuration>
-					<instructions>
-						<Import-Package>
-							*
-                        </Import-Package>
-						<Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-					</instructions>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>

@@ -28,6 +28,9 @@
                             javax.persistence;version="[1.0.0,3.0.0)",
                             *
                         </Import-Package>
+						<Export-Package>
+                            org.apache.aries.jpa.blueprint.itest*;version="${pom.version}",
+						</Export-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
                         <Meta-Persistence>OSGI-INF/persistence/persistence.xml</Meta-Persistence>
