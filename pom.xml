@@ -31,7 +31,13 @@
       This bundle provides unit test support.
   </description>
 
-  <dependencies>
+    <properties>
+        <aries.osgi.export.pkg>
+            org.apache.aries.*
+        </aries.osgi.export.pkg>
+    </properties>
+
+   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -43,26 +49,5 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-            <Export-Package>
-              org.apache.aries.unittest.fixture
-            </Export-Package>
-            <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))
-            </_versionpolicy>
-            <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL
-            </_removeheaders>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>
