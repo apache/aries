@@ -31,6 +31,39 @@
     <packaging>bundle</packaging>
     <name>Apache Aries Transaction Manager</name> 
 
+    <properties>
+        <aries.osgi.export>
+            org.apache.geronimo.transaction*;version="${geronimo-transaction-version}",
+            javax.transaction*;version="1.1.0"
+        </aries.osgi.export>
+        <aries.osgi.import>
+            org.springframework.*;resolution:=optional,
+            !org.apache.geronimo.transaction*,
+            javax.resource.spi;version="1.5";resolution:=optional,
+            org.osgi.framework;version="1.4",
+            org.osgi.service.cm;version="[1.2.0,2.0.0)",
+            javax.transaction*;version="[1.1.0,2.0.0)",
+            *
+        </aries.osgi.import>
+        <aries.osgi.private.pkg>
+            org.objectweb.howl.log*,
+            org.apache.aries.transaction
+        </aries.osgi.private.pkg>
+        <aries.osgi.activator>
+            org.apache.aries.transaction.Activator
+        </aries.osgi.activator>
+        <aries.osgi.export.service>
+            javax.transaction.TransactionManager,
+            javax.transaction.TransactionSynchronizationRegistry,
+            javax.transaction.UserTransaction,
+            org.apache.geronimo.transaction.manager.RecoverableTransactionManager
+        </aries.osgi.export.service>
+        <aries.osgi.include.resource>
+            {maven-resources},
+            javax/resource/spi/XATerminator.class=target/classes/javax/resource/spi/XATerminator.class
+        </aries.osgi.include.resource>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -59,43 +92,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Import-Package>
-                            org.springframework.*;resolution:=optional,
-                            !org.apache.geronimo.transaction*,
-                            javax.resource.spi;version="1.5";resolution:=optional,
-                            org.osgi.framework;version="1.4",
-                            org.osgi.service.cm;version="[1.2.0,2.0.0)",
-                            javax.transaction*;version="[1.1.0,2.0.0)",
-                            *
-                        </Import-Package>
-                        <Export-Package>
-                            org.apache.geronimo.transaction*;version="${geronimo-transaction-version}",
-							javax.transaction*;version="1.1.0"
-                        </Export-Package>
-                        <Private-Package>
-                            org.objectweb.howl.log*,
-                            org.apache.aries.transaction
-                        </Private-Package>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.aries.transaction.Activator</Bundle-Activator>
-                        <Export-Service>
-                            javax.transaction.TransactionManager,
-                            javax.transaction.TransactionSynchronizationRegistry,
-                            javax.transaction.UserTransaction,
-                            org.apache.geronimo.transaction.manager.RecoverableTransactionManager
-                        </Export-Service>
-                        <Include-Resource>
-                            {maven-resources},
-                            javax/resource/spi/XATerminator.class=target/classes/javax/resource/spi/XATerminator.class
-                        </Include-Resource>
-                    </instructions>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
