@@ -30,23 +30,10 @@
         This bundle contains the JMX Blueprint API
     </description>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>
-                            org.apache.aries.jmx.blueprint
-                        </Export-Package>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    
+    <properties>
+        <aries.osgi.export.pkg>
+            org.apache.aries.jmx.blueprint
+        </aries.osgi.export.pkg>
+    </properties>
+
 </project>
