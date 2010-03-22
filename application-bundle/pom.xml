@@ -33,31 +33,41 @@
       Aries applications.
     </description>
 
+    <properties>
+        <aries.osgi.symbolic.name>
+            ${project.artifactId};blueprint.graceperiod:=false
+        </aries.osgi.symbolic.name>
+        <aries.osgi.import>
+            org.osgi.framework;version="[1.5,2)",
+            org.slf4j;version="[1.5,2)",
+            org.apache.aries.application*;version="[0.1,0.2)",
+            *
+        </aries.osgi.import>
+        <aries.osgi.export.pkg>
+            org.apache.aries.application;
+            org.apache.aries.application.filesystem;
+            org.apache.aries.application.management;
+            org.apache.aries.application.utils;
+            org.apache.aries.application.utils.filesystem;
+            org.apache.aries.application.utils.manifest;
+            org.apache.aries.application.utils.management;
+        </aries.osgi.export.pkg>
+        <aries.osgi.private.pkg>
+            org.apache.aries.application*,
+            META-INF*,
+            OSGI-INF*
+        </aries.osgi.private.pkg>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.converters</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.install</artifactId>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.management</artifactId>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.resolver.obr</artifactId>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.runtime</artifactId>
@@ -70,38 +80,6 @@
     
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId};blueprint.graceperiod:=false</Bundle-SymbolicName>
-                        <Export-Package>
-                            org.apache.aries.application;version="${pom.version}",
-                            org.apache.aries.application.filesystem;version="${pom.version}",
-                            org.apache.aries.application.management;version="${pom.version}",
-                            org.apache.aries.application.utils;version="${pom.version}",
-                            org.apache.aries.application.utils.filesystem;version="${pom.version}",
-                            org.apache.aries.application.utils.manifest;version="${pom.version}",
-                            org.apache.aries.application.utils.management;version="${pom.version}"
-                        </Export-Package>
-						<Import-Package>
-							!org.apache.aries.application*,
-                            <!--
-							org.apache.aries.web.converter;resolution:=optional,
-							org.apache.felix.fileinstall;resolution:=optional,
-							org.osgi.service.obr;resolution:=optional,
-							-->
-							*
-						</Import-Package>
-                        <Private-Package>
-                            org.apache.aries.application.*
-                        </Private-Package>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
             <!-- Use the shade plugin with the dependency plugin to unjar the three jars (api, core and cm)
                  so that the associated sources and javadocs jars are complete.
                  To build the main jar, the maven-bundle-plugin is used, that's why everything is exluded -->
@@ -118,14 +96,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.apache.aries.application:org.apache.aries.application.api</include>
-                                    <!--
-                                    <include>org.apache.aries.application:org.apache.aries.application.converters</include>
-                                    <include>org.apache.aries.application:org.apache.aries.application.install</include>
-                                    -->
                                     <include>org.apache.aries.application:org.apache.aries.application.managment</include>
-                                    <!--
-                                    <include>org.apache.aries.application:org.apache.aries.application.resolver.obr</include>
-                                    -->
                                     <include>org.apache.aries.application:org.apache.aries.application.runtime</include>
                                     <include>org.apache.aries.application:org.apache.aries.application.utils</include>
                                 </includes>
@@ -137,34 +108,12 @@
                                         <exclude>org/**</exclude>
                                     </excludes>
                                 </filter>
-                                <!--
-                                <filter>
-                                    <artifact>org.apache.aries.application:org.apache.aries.application.converters</artifact>
-                                    <excludes>
-                                        <exclude>org/**</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>org.apache.aries.application:org.apache.aries.application.install</artifact>
-                                    <excludes>
-                                        <exclude>org/**</exclude>
-                                    </excludes>
-                                </filter>
-                                -->
                                 <filter>
                                     <artifact>org.apache.aries.application:org.apache.aries.application.management</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
                                 </filter>
-                                <!--
-                                <filter>
-                                    <artifact>org.apache.aries.application:org.apache.aries.application.resolver.obr</artifact>
-                                    <excludes>
-                                        <exclude>org/**</exclude>
-                                    </excludes>
-                                </filter>
-                                -->
                                 <filter>
                                     <artifact>org.apache.aries.application:org.apache.aries.application.runtime</artifact>
                                     <excludes>
@@ -215,22 +164,7 @@
                                         </artifactItem>
                                         <artifactItem>
                                             <groupId>org.apache.aries.application</groupId>
-                                            <artifactId>org.apache.aries.application.converters</artifactId>
-                                            <classifier>sources</classifier>
-                                        </artifactItem>
-                                        <artifactItem>
-                                            <groupId>org.apache.aries.application</groupId>
-                                            <artifactId>org.apache.aries.application.install</artifactId>
-                                            <classifier>sources</classifier>
-                                        </artifactItem>
-                                        <artifactItem>
-                                            <groupId>org.apache.aries.application</groupId>
                                             <artifactId>org.apache.aries.application.management</artifactId>
-                                            <classifier>sources</classifier>
-                                        </artifactItem>
-                                        <artifactItem>
-                                            <groupId>org.apache.aries.application</groupId>
-                                            <artifactId>org.apache.aries.application.resolver.obr</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                         <artifactItem>

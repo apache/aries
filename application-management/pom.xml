@@ -32,6 +32,15 @@
       Implementation of the application management API
     </description>
 
+    <properties>
+        <aries.osgi.export.pkg>
+        </aries.osgi.export.pkg>
+        <aries.osgi.private.pkg>
+            org.apache.aries.application.management.impl;
+			org.apache.aries.application.management.internal
+        </aries.osgi.private.pkg>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -69,19 +78,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
