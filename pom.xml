@@ -30,6 +30,18 @@
         It's composed of the jndi-core and jndi-url modules.
     </description>
 
+    <properties>
+        <aries.osgi.export.pkg>
+            org.osgi.service.jndi;org.osgi.service.jndi.services
+        </aries.osgi.export.pkg>
+        <aries.osgi.private.pkg>
+            org.apache.aries.jndi*
+        </aries.osgi.private.pkg>
+        <aries.osgi.activator>
+            org.apache.aries.jndi.priv.Activator
+        </aries.osgi.activator>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
@@ -48,33 +60,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.groupId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.apache.aries.jndi.priv.Activator</Bundle-Activator>
-                        <Import-Package>
-                            !org.apache.aries.jndi*,
-                            *
-                        </Import-Package>
-                        <Export-Package>
-                            org.osgi.service.jndi;version="${pom.version}",
-                            org.osgi.service.jndi.services;version="${pom.version}"
-                        </Export-Package>
-                        <Private-Package>
-                            org.apache.aries.jndi*
-                        </Private-Package>
-                        <!-- include the right NOTICE with attribution to the OSGi alliance -->
-                        <Include-Resource>{maven-resources},META-INF/NOTICE=../NOTICE</Include-Resource>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                        <_failok>true</_failok>
-                     </instructions>
-                    <unpackBundle>true</unpackBundle>
-                </configuration>
-            </plugin>
             <!-- Use the shade plugin with the dependency plugin to unjar the three jars (api, core and cm)
                  so that the associated sources and javadocs jars are complete.
                  To build the main jar, the maven-bundle-plugin is used, that's why everything is exluded -->
