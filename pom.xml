@@ -28,6 +28,10 @@
     <packaging>bundle</packaging>
     <name>Apache Aries Application Converters</name>
 
+    <properties>
+        <aries.osgi.export.pkg />
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -64,21 +68,5 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
