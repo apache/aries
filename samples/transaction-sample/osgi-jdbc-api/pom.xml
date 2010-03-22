@@ -40,6 +40,7 @@
                     <instructions>
                         <Bundle-Name>osgi-jdbc-api</Bundle-Name>
                         <Bundle-SymbolicName>${pom.groupId}.osgi-jdbc-api</Bundle-SymbolicName>
+						<Export-Package>org.osgi.service.jdbc</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

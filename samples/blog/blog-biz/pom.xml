@@ -43,8 +43,9 @@
 				<artifactId>maven-bundle-plugin</artifactId>
 				<configuration>
 					<instructions>
-                                                <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
 						<Export-Package>!org.apache.aries.samples.*</Export-Package>
+						<Private-Package>org.apache.aries.samples.blog</Private-Package>
 					</instructions>
 				</configuration> 
 			</plugin>

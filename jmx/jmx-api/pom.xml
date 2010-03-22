@@ -30,29 +30,19 @@
         This bundle contains the JMX 1.0.0 API
     </description>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>
-                            org.osgi.jmx;version="1.0.0";uses:="javax.management.openmbean",
-                            org.osgi.jmx.framework;version="1.5.0";uses:="org.osgi.jmx,javax.management.openmbean",
-                            org.osgi.jmx.service.cm;version="1.3.0";uses:="javax.management.openmbean",
-                            org.osgi.jmx.service.permissionadmin;version="1.2.0";uses:="org.osgi.jmx",
-                            org.osgi.jmx.service.provisioning;version="1.2.0";uses:="javax.management.openmbean",
-                            org.osgi.jmx.service.useradmin;version="1.1.0";uses:="org.osgi.jmx,javax.management.openmbean"
-						</Export-Package>
-                        <Import-Package>!org.osgi.jmx*,*</Import-Package>
-                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    
+    <properties>
+        <aries.osgi.export>
+            org.osgi.jmx;version="1.0.0";uses:="javax.management.openmbean",
+            org.osgi.jmx.framework;version="1.5.0";uses:="org.osgi.jmx,javax.management.openmbean",
+            org.osgi.jmx.service.cm;version="1.3.0";uses:="javax.management.openmbean",
+            org.osgi.jmx.service.permissionadmin;version="1.2.0";uses:="org.osgi.jmx",
+            org.osgi.jmx.service.provisioning;version="1.2.0";uses:="javax.management.openmbean",
+            org.osgi.jmx.service.useradmin;version="1.1.0";uses:="org.osgi.jmx,javax.management.openmbean"
+        </aries.osgi.export>
+        <aries.osgi.import>
+            !org.osgi.jmx*,
+            *
+        </aries.osgi.import>
+    </properties>
+
 </project>
