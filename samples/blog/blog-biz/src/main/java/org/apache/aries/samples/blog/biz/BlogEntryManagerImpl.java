@@ -27,8 +27,8 @@ import java.util.List;
 import org.apache.aries.samples.blog.api.BlogAuthor;
 import org.apache.aries.samples.blog.api.BlogEntry;
 import org.apache.aries.samples.blog.api.BlogEntryManager;
-import org.apache.aries.samples.blog.api.persistence.api.BlogPersistenceService;
-import org.apache.aries.samples.blog.api.persistence.api.Entry;
+import org.apache.aries.samples.blog.api.persistence.BlogPersistenceService;
+import org.apache.aries.samples.blog.api.persistence.Entry;
 
 
 

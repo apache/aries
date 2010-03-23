@@ -24,8 +24,8 @@ import java.util.List;
 
 import org.apache.aries.samples.blog.api.BlogAuthor;
 import org.apache.aries.samples.blog.api.BlogEntry;
-import org.apache.aries.samples.blog.api.persistence.api.Author;
-import org.apache.aries.samples.blog.api.persistence.api.Entry;
+import org.apache.aries.samples.blog.api.persistence.Author;
+import org.apache.aries.samples.blog.api.persistence.Entry;
 
 public class BlogAuthorImpl implements BlogAuthor {
 	private static Calendar cal = Calendar.getInstance();
