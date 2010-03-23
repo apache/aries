@@ -40,9 +40,9 @@
   
   <service ref="bloggingServiceComponent" interface="org.apache.aries.samples.blog.api.BloggingService"/>
 
-  <reference id="persistenceManager" interface="org.apache.aries.samples.blog.api.persistence.api.BlogPersistenceService"/>
+  <reference id="persistenceManager" interface="org.apache.aries.samples.blog.api.persistence.BlogPersistenceService"/>
 
-  <reference id="commentPersistenceService" availability="optional" interface="org.apache.aries.samples.blog.api.comment.persistence.api.BlogCommentService">
+  <reference id="commentPersistenceService" availability="optional" interface="org.apache.aries.samples.blog.api.comment.persistence.BlogCommentService">
     <reference-listener ref="blogCommentManager" bind-method="blogServiceBound" unbind-method="blogServiceUnbound"/>
   </reference>
  

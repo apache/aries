@@ -31,7 +31,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
-import org.apache.aries.samples.blog.api.persistence.api.Author;
+import org.apache.aries.samples.blog.api.persistence.Author;
 
 /**
  * This class represents a blog post Author
