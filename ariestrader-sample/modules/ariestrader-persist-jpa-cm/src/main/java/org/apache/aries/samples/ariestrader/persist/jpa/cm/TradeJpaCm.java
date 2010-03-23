@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.aries.samples.ariestrader.persist.jpa;
+package org.apache.aries.samples.ariestrader.persist.jpa.cm;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
