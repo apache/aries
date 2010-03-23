@@ -58,6 +58,7 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Export-Package>!org.apache.aries.samples.ariestrader.persist.jdbc.*</Export-Package>
+                        <Private-Package>org.apache.aries.samples.ariestrader.persist.jdbc</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>
