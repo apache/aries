@@ -24,7 +24,7 @@ import java.util.Calendar;
 import org.apache.aries.samples.blog.api.BlogAuthor;
 import org.apache.aries.samples.blog.api.BlogComment;
 import org.apache.aries.samples.blog.api.BlogEntry;
-import org.apache.aries.samples.blog.api.comment.persistence.api.Comment;
+import org.apache.aries.samples.blog.api.comment.persistence.Comment;
 
 
 public class BlogCommentImpl implements BlogComment {

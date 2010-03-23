@@ -21,7 +21,7 @@ package org.apache.aries.samples.blog.api;
 import java.text.ParseException;
 import java.util.List;
 
-import org.apache.aries.samples.blog.api.persistence.api.Entry;
+import org.apache.aries.samples.blog.api.persistence.Entry;
 
 
 

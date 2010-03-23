@@ -25,8 +25,8 @@ import java.util.Map;
 
 import org.apache.aries.samples.blog.api.BlogComment;
 import org.apache.aries.samples.blog.api.BlogCommentManager;
-import org.apache.aries.samples.blog.api.comment.persistence.api.BlogCommentService;
-import org.apache.aries.samples.blog.api.comment.persistence.api.Comment;
+import org.apache.aries.samples.blog.api.comment.persistence.BlogCommentService;
+import org.apache.aries.samples.blog.api.comment.persistence.Comment;
 
 
 public class BlogCommentManagerImpl implements BlogCommentManager {

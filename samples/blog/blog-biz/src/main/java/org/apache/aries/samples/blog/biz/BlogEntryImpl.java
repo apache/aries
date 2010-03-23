@@ -22,7 +22,7 @@ import java.util.Date;
 
 import org.apache.aries.samples.blog.api.BlogAuthor;
 import org.apache.aries.samples.blog.api.BlogEntry;
-import org.apache.aries.samples.blog.api.persistence.api.Entry;
+import org.apache.aries.samples.blog.api.persistence.Entry;
 
 
 /** Implementation of a BlogPast */

@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.samples.blog.api.comment.persistence.api;
+package org.apache.aries.samples.blog.api.comment.persistence;
 
 import java.util.Date;
 
-import org.apache.aries.samples.blog.api.persistence.api.Author;
-import org.apache.aries.samples.blog.api.persistence.api.Entry;
+import org.apache.aries.samples.blog.api.persistence.Author;
+import org.apache.aries.samples.blog.api.persistence.Entry;
 
 public interface Comment {
 	 /** Get comment 
