@@ -24,7 +24,7 @@
             xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
             xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0">
 
-  <bean id="tradeServicesBeanJPA-CM" class="org.apache.aries.samples.ariestrader.persist.jpa.TradeJpaCm" init-method="init"> 
+  <bean id="tradeServicesBeanJPA-CM" class="org.apache.aries.samples.ariestrader.persist.jpa.cm.TradeJpaCm" init-method="init"> 
       <jpa:context property="entityManager" unitname="ariestrader-cm" />
       <tx:transaction method="*" value="Required"/>
   </bean>
