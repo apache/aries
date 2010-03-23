@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.samples.blog;
+package org.apache.aries.samples.blog.biz;
 
 import java.lang.reflect.Constructor;
 import java.util.ListIterator;

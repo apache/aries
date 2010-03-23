@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.samples.blog.persistence.api;
+package org.apache.aries.samples.blog.api.persistence.api;
 
 import java.util.Date;
 import java.util.List;

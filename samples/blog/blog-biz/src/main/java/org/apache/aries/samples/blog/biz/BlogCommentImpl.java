@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.samples.blog;
+package org.apache.aries.samples.blog.biz;
 
 import java.util.Date;
 import java.util.Calendar;
@@ -24,7 +24,7 @@ import java.util.Calendar;
 import org.apache.aries.samples.blog.api.BlogAuthor;
 import org.apache.aries.samples.blog.api.BlogComment;
 import org.apache.aries.samples.blog.api.BlogEntry;
-import org.apache.aries.samples.blog.comment.persistence.api.Comment;
+import org.apache.aries.samples.blog.api.comment.persistence.api.Comment;
 
 
 public class BlogCommentImpl implements BlogComment {

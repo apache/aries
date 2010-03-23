@@ -40,8 +40,8 @@
 						<Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
 						<Export-Package>
 							org.apache.aries.samples.blog.api;
-							org.apache.aries.samples.blog.comment.persistence.api;
-							org.apache.aries.samples.blog.persistence.api;
+							org.apache.aries.samples.blog.api.comment.persistence.api;
+							org.apache.aries.samples.blog.api.persistence.api;
 								version=${project.version}
 						</Export-Package>
 					</instructions>
