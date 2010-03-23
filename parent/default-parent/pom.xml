@@ -494,7 +494,6 @@
         <aries.osgi.import.before.defaults />
         <aries.osgi.import.additional />
         <aries.osgi.import.pkg>
-          !${aries.osgi.export.pkg},
           org.apache.aries.*;${aries.osgi.import.aries.version},
           ${aries.osgi.import.before.defaults},
           ${aries.osgi.import.defaults},
@@ -504,8 +503,8 @@
         <aries.osgi.activator />
         <aries.osgi.failok>false</aries.osgi.failok>
         <aries.osgi.private.pkg>${project.artifactId}*.impl</aries.osgi.private.pkg>
-        <aries.osgi.export>${aries.osgi.export.pkg};${aries.osgi.version}</aries.osgi.export>
-        <aries.osgi.export.pkg>!*.impl;${project.artifactId}*;</aries.osgi.export.pkg>
+        <aries.osgi.export>${aries.osgi.export.pkg};${aries.osgi.version};-noimport:=true</aries.osgi.export>
+        <aries.osgi.export.pkg>!*.impl;${project.artifactId}*</aries.osgi.export.pkg>
         <aries.osgi.version>version=${project.version}</aries.osgi.version>
         <aries.osgi.split.pkg>-split-package:=first</aries.osgi.split.pkg>
         <aries.osgi.import>${aries.osgi.import.pkg}</aries.osgi.import>

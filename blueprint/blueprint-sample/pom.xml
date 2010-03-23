@@ -31,7 +31,7 @@
 
     <properties>
 		<aries.osgi.export>
-			org.apache.aries.blueprint.sample
+			org.apache.aries.blueprint.sample;-noimport:=true
 		</aries.osgi.export>
         <aries.osgi.activator>
             org.apache.aries.blueprint.sample.Activator
