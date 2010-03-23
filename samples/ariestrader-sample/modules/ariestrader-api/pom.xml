@@ -47,7 +47,11 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
-						<Export-Package>org.apache.aries.samples.ariestrader.api;org.apache.aries.samples.ariestrader.persistence.api;version=${pom.version}</Export-Package>
+						<Export-Package>
+                            org.apache.aries.samples.ariestrader.api;
+                            org.apache.aries.samples.ariestrader.api.persistence;
+                                version=${pom.version}
+                        </Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -25,7 +25,7 @@
 	session="false" isThreadSafe="true" isErrorPage="false"%>
 
 <jsp:useBean
-	class="org.apache.aries.samples.ariestrader.persistence.api.RunStatsDataBean"
+	class="org.apache.aries.samples.ariestrader.api.persistence.RunStatsDataBean"
 	id="runStatsData" scope="request" />
 <% 
 double loginPercentage = (double) ((TradeConfig.getScenarioMixes())[TradeConfig.workloadMix][TradeConfig.LOGOUT_OP]) / 100.0;

@@ -14,46 +14,40 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.aries.samples.ariestrader.persistence.api;
+package org.apache.aries.samples.ariestrader.api.persistence;
 
-import java.math.BigDecimal;
+public interface AccountProfileDataBean {
 
-public interface QuoteDataBean {
-    
     public String toString();
 
     public String toHTML();
 
-    public String getSymbol();
+    public String getUserID();
 
-    public void setSymbol(String symbol);
+    public void setUserID(String userID);
 
-    public String getCompanyName();
+    public String getPassword();
 
-    public void setCompanyName(String companyName);
+    public void setPassword(String password);
 
-    public BigDecimal getPrice();
+    public String getFullName();
 
-    public void setPrice(BigDecimal price);
+    public void setFullName(String fullName);
 
-    public BigDecimal getOpen();
+    public String getAddress();
 
-    public void setOpen(BigDecimal open);
+    public void setAddress(String address);
 
-    public BigDecimal getLow();
+    public String getEmail();
 
-    public void setLow(BigDecimal low);
+    public void setEmail(String email);
 
-    public BigDecimal getHigh();
+    public String getCreditCard();
 
-    public void setHigh(BigDecimal high);
+    public void setCreditCard(String creditCard);
 
-    public double getChange();
+    public AccountDataBean getAccount();
 
-    public void setChange(double change);
-
-    public double getVolume();
-
-    public void setVolume(double volume);
-
+    public void setAccount(AccountDataBean account);
+    
 }

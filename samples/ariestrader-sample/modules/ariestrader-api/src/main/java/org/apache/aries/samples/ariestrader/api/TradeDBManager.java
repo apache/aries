@@ -16,7 +16,7 @@
  */
 package org.apache.aries.samples.ariestrader.api;
 
-import org.apache.aries.samples.ariestrader.persistence.api.RunStatsDataBean;
+import org.apache.aries.samples.ariestrader.api.persistence.RunStatsDataBean;
 
 /**
   * TradeDBManager interface centralizes and simplifies the DB
