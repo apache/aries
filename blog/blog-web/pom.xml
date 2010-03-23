@@ -49,7 +49,7 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Export-Package>!org.apache.aries.samples.*</Export-Package>
+                        <Private-Package>org.apache.aries.samples.blog.web.*</Private-Package>
                         <Web-ContextPath>/blog</Web-ContextPath>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                     </instructions>

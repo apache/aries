@@ -29,7 +29,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Column;
 
-import org.apache.aries.samples.blog.persistence.api.Entry;
+import org.apache.aries.samples.blog.api.persistence.api.Entry;
 
 
 

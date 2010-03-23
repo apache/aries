@@ -29,7 +29,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.aries.samples.blog.persistence.api.BlogPersistenceService;
+import org.apache.aries.samples.blog.api.persistence.api.BlogPersistenceService;
 import org.apache.aries.samples.blog.persistence.entity.AuthorImpl;
 import org.apache.aries.samples.blog.persistence.entity.EntryImpl;
 

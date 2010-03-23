@@ -66,9 +66,6 @@
                         <Private-Package>
                             org.apache.aries.samples.blog.datasource
                         </Private-Package>
-                        <Export-Package>
-                            !org.apache.aries.samples.*
-                        </Export-Package>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                     </instructions>
                 </configuration>

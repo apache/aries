@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.samples.blog;
+package org.apache.aries.samples.blog.biz;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,8 +27,8 @@ import java.util.List;
 import org.apache.aries.samples.blog.api.BlogAuthor;
 import org.apache.aries.samples.blog.api.BlogEntry;
 import org.apache.aries.samples.blog.api.BlogEntryManager;
-import org.apache.aries.samples.blog.persistence.api.BlogPersistenceService;
-import org.apache.aries.samples.blog.persistence.api.Entry;
+import org.apache.aries.samples.blog.api.persistence.api.BlogPersistenceService;
+import org.apache.aries.samples.blog.api.persistence.api.Entry;
 
 
 

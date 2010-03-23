@@ -29,8 +29,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.sql.DataSource;
 
-import org.apache.aries.samples.blog.persistence.api.BlogPersistenceService;
-import org.apache.aries.samples.blog.persistence.api.Entry;
+import org.apache.aries.samples.blog.api.persistence.api.BlogPersistenceService;
+import org.apache.aries.samples.blog.api.persistence.api.Entry;
 import org.apache.aries.samples.blog.persistence.entity.AuthorImpl;
 import org.apache.aries.samples.blog.persistence.entity.EntryImpl;
 

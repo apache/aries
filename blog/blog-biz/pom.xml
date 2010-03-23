@@ -44,8 +44,7 @@
 				<configuration>
 					<instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-						<Export-Package>!org.apache.aries.samples.*</Export-Package>
-						<Private-Package>org.apache.aries.samples.blog</Private-Package>
+						<Private-Package>org.apache.aries.samples.blog.biz</Private-Package>
 					</instructions>
 				</configuration> 
 			</plugin>

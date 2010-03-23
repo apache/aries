@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.samples.blog;
+package org.apache.aries.samples.blog.biz;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -24,8 +24,8 @@ import java.util.List;
 
 import org.apache.aries.samples.blog.api.BlogAuthor;
 import org.apache.aries.samples.blog.api.BlogEntry;
-import org.apache.aries.samples.blog.persistence.api.Author;
-import org.apache.aries.samples.blog.persistence.api.Entry;
+import org.apache.aries.samples.blog.api.persistence.api.Author;
+import org.apache.aries.samples.blog.api.persistence.api.Entry;
 
 public class BlogAuthorImpl implements BlogAuthor {
 	private static Calendar cal = Calendar.getInstance();
