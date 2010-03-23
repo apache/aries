@@ -19,7 +19,7 @@ package org.apache.aries.samples.ariestrader.web;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import org.apache.aries.samples.ariestrader.persistence.api.*;
+import org.apache.aries.samples.ariestrader.api.persistence.*;
 import org.apache.aries.samples.ariestrader.util.*;
 
 import java.util.Collection;

@@ -69,7 +69,6 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
-                        <Export-Package>!org.apache.aries.samples.ariestrader.persist.jpa.*</Export-Package>
                         <Private-Package>org.apache.aries.samples.ariestrader.persist.jpa.*</Private-Package>
                         <Import-Package>
                             javax.persistence;version="[1.0.0,2.1.0)",

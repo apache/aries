@@ -15,7 +15,7 @@
   limitations under the License.
 -->
 <%@ page
-	import="java.math.BigDecimal, org.apache.aries.samples.ariestrader.api.*, org.apache.aries.samples.ariestrader.persistence.api.*, org.apache.aries.samples.ariestrader.util.*"
+	import="java.math.BigDecimal, org.apache.aries.samples.ariestrader.api.*, org.apache.aries.samples.ariestrader.api.persistence.*, org.apache.aries.samples.ariestrader.util.*"
 	session="true" isThreadSafe="true" isErrorPage="false"%>
 <% 
     String symbol = request.getParameter("symbol");

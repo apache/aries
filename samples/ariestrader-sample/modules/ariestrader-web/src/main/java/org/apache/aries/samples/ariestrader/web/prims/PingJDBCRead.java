@@ -22,7 +22,7 @@ import javax.servlet.http.*;
 
 import org.apache.aries.samples.ariestrader.api.TradeServiceUtilities;
 import org.apache.aries.samples.ariestrader.api.TradeServices;
-import org.apache.aries.samples.ariestrader.persistence.api.*;
+import org.apache.aries.samples.ariestrader.api.persistence.*;
 import org.apache.aries.samples.ariestrader.util.*;
 
 /**

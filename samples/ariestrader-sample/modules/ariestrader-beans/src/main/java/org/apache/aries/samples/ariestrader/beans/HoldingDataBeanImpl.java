@@ -22,9 +22,9 @@ import java.util.Date;
 
 import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.TradeConfig;
-import org.apache.aries.samples.ariestrader.persistence.api.AccountDataBean;
-import org.apache.aries.samples.ariestrader.persistence.api.HoldingDataBean;
-import org.apache.aries.samples.ariestrader.persistence.api.QuoteDataBean;
+import org.apache.aries.samples.ariestrader.api.persistence.AccountDataBean;
+import org.apache.aries.samples.ariestrader.api.persistence.HoldingDataBean;
+import org.apache.aries.samples.ariestrader.api.persistence.QuoteDataBean;
 
 
 public class HoldingDataBeanImpl implements HoldingDataBean, Serializable {
