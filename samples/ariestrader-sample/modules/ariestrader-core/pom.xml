@@ -52,7 +52,8 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
-                        <Export-Package>!org.apache.aries.samples.ariestrader.code.*</Export-Package>
+                        <Export-Package>!org.apache.aries.samples.ariestrader.core.*</Export-Package>
+                        <Private-Package>org.apache.aries.samples.ariestrader.core</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

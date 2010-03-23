@@ -73,6 +73,7 @@
                   <Web-ContextPath>/ariestrader</Web-ContextPath>
                   <Web-JSPExtractLocation>/</Web-JSPExtractLocation>
                   <Export-Package>!org.apache.aries.samples.ariestrader.web.*</Export-Package>
+                  <Private-Package>org.apache.aries.samples.ariestrader.web.*</Private-Package>
                 </instructions>
               </configuration>
             </plugin>
