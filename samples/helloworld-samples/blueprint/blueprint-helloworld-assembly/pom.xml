@@ -86,6 +86,23 @@
 
         <plugins>
             <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-resources-plugin</artifactId>
+                  <configuration>
+                        <outputDirectory>${project.build.directory}</outputDirectory>
+                  </configuration>
+                  <executions>
+                        <execution>
+                        <id>filter</id>
+                        <phase>generate-resources</phase>
+                            <goals>
+                                <goal>resources</goal>
+                            </goals>
+                  </execution>
+                  </executions>
+           </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <configuration>
