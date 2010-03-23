@@ -28,7 +28,7 @@
 	</bean>
 
 	<service ref="persistenceImpl"
-		interface="org.apache.aries.samples.blog.persistence.api.BlogPersistenceService">
+		interface="org.apache.aries.samples.blog.api.persistence.api.BlogPersistenceService">
 	</service>
 
 </blueprint>

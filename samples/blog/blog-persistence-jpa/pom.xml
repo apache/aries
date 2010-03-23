@@ -37,9 +37,9 @@
 				<artifactId>maven-bundle-plugin</artifactId>
 				<configuration>
 					<instructions>
-						<Export-Package>!org.apache.aries.samples.*</Export-Package>
+						<Private-Package>org.apache.aries.samples.blog.persistence.*</Private-Package>
 						<Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
-                                                <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
 					</instructions>
 				</configuration>
 			</plugin>
