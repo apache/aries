@@ -22,12 +22,12 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
-import org.apache.aries.samples.ariestrader.persistence.api.AccountDataBean;
-import org.apache.aries.samples.ariestrader.persistence.api.AccountProfileDataBean;
-import org.apache.aries.samples.ariestrader.persistence.api.HoldingDataBean;
-import org.apache.aries.samples.ariestrader.persistence.api.MarketSummaryDataBean;
-import org.apache.aries.samples.ariestrader.persistence.api.OrderDataBean;
-import org.apache.aries.samples.ariestrader.persistence.api.QuoteDataBean;
+import org.apache.aries.samples.ariestrader.api.persistence.AccountDataBean;
+import org.apache.aries.samples.ariestrader.api.persistence.AccountProfileDataBean;
+import org.apache.aries.samples.ariestrader.api.persistence.HoldingDataBean;
+import org.apache.aries.samples.ariestrader.api.persistence.MarketSummaryDataBean;
+import org.apache.aries.samples.ariestrader.api.persistence.OrderDataBean;
+import org.apache.aries.samples.ariestrader.api.persistence.QuoteDataBean;
 
 /**
   * TradeServices interface specifies the business methods provided by the Trade online broker application.

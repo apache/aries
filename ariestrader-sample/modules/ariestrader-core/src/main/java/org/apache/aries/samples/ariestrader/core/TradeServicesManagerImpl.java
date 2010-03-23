@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.aries.samples.ariestrader.persistence.api.MarketSummaryDataBean;
+import org.apache.aries.samples.ariestrader.api.persistence.MarketSummaryDataBean;
 import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.TradeConfig;
 import org.apache.aries.samples.ariestrader.api.TradeServicesManager;

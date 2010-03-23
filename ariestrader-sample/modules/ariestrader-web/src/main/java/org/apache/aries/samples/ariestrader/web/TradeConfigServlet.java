@@ -21,7 +21,7 @@ import javax.servlet.http.*;
 
 import org.apache.aries.samples.ariestrader.api.TradeDBManager;
 import org.apache.aries.samples.ariestrader.api.TradeServiceUtilities;
-import org.apache.aries.samples.ariestrader.persistence.api.RunStatsDataBean;
+import org.apache.aries.samples.ariestrader.api.persistence.RunStatsDataBean;
 import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.TradeConfig;
 

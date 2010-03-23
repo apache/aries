@@ -19,7 +19,7 @@ package org.apache.aries.samples.ariestrader.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.aries.samples.ariestrader.persistence.api.MarketSummaryDataBean;
+import org.apache.aries.samples.ariestrader.api.persistence.MarketSummaryDataBean;
 
 /**
   * TradeServicesManager interface provides an interface to be

@@ -20,7 +20,7 @@
 	<title>PingJspEL</title>
 </head>
 <body>
-<%@ page import="org.apache.aries.samples.ariestrader.util.*,org.apache.aries.samples.ariestrader.api.*,org.apache.aries.samples.ariestrader.persistence.api.*" session="false" %>
+<%@ page import="org.apache.aries.samples.ariestrader.util.*,org.apache.aries.samples.ariestrader.api.*,org.apache.aries.samples.ariestrader.api.persistence.*" session="false" %>
 
 <%!
 int hitCount = 0;

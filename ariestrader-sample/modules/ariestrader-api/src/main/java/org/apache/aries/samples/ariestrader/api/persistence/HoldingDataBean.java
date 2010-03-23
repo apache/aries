@@ -14,76 +14,43 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.aries.samples.ariestrader.persistence.api;
+package org.apache.aries.samples.ariestrader.api.persistence;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-public interface OrderDataBean {
+public interface HoldingDataBean {
 
     public String toString();
 
     public String toHTML();
 
-    public Integer getOrderID();
+    public Integer getHoldingID();
 
-    public void setOrderID(Integer orderID);
-
-    public String getOrderType();
-
-    public void setOrderType(String orderType);
-
-    public String getOrderStatus();
-
-    public void setOrderStatus(String orderStatus);
-
-    public Date getOpenDate();
-
-    public void setOpenDate(Date openDate);
-
-    public Date getCompletionDate();
-
-    public void setCompletionDate(Date completionDate);
+    public void setHoldingID(Integer holdingID);
 
     public double getQuantity();
 
     public void setQuantity(double quantity);
 
-    public BigDecimal getPrice();
+    public BigDecimal getPurchasePrice();
 
-    public void setPrice(BigDecimal price);
+    public void setPurchasePrice(BigDecimal purchasePrice);
 
-    public BigDecimal getOrderFee();
+    public Date getPurchaseDate();
 
-    public void setOrderFee(BigDecimal orderFee);
+    public void setPurchaseDate(Date purchaseDate);
 
-    public String getSymbol();
+    public String getQuoteID();
 
-    public void setSymbol(String symbol);
+    public void setQuoteID(String quoteID);
 
     public AccountDataBean getAccount();
 
     public void setAccount(AccountDataBean account);
-
+    
     public QuoteDataBean getQuote();
 
     public void setQuote(QuoteDataBean quote);
 
-    public HoldingDataBean getHolding();
-
-    public void setHolding(HoldingDataBean holding);
-
-    public boolean isBuy();
-
-    public boolean isSell();
-
-    public boolean isOpen();
-
-    public boolean isCompleted();
-
-    public boolean isCancelled();
-
-    public void cancel();
-
 }
-

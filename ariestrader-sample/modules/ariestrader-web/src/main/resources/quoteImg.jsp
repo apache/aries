@@ -24,7 +24,7 @@
 
 <BODY bgcolor="#ffffff" link="#000099" vlink="#000099">
 <%@ page
-	import="java.util.Collection, java.util.Iterator, org.apache.aries.samples.ariestrader.api.*, org.apache.aries.samples.ariestrader.persistence.api.*, org.apache.aries.samples.ariestrader.util.*"
+	import="java.util.Collection, java.util.Iterator, org.apache.aries.samples.ariestrader.api.*, org.apache.aries.samples.ariestrader.api.persistence.*, org.apache.aries.samples.ariestrader.util.*"
 	session="true" isThreadSafe="true" isErrorPage="false"%>
 
 <TABLE height="54">

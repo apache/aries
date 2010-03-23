@@ -20,7 +20,7 @@ import javax.naming.InitialContext;
 
 import javax.sql.DataSource;
 
-import org.apache.aries.samples.ariestrader.persistence.api.RunStatsDataBean;
+import org.apache.aries.samples.ariestrader.api.persistence.RunStatsDataBean;
 import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.MDBStats;
 import org.apache.aries.samples.ariestrader.util.ServiceUtilities;
