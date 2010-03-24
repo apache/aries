@@ -123,6 +123,9 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${pom.version}</Bundle-Version>
                         <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
+                        <Export-Package>
+                            org.apache.aries.samples.ariestrader.entities;version=${pom.version}
+                        </Export-Package>
                         <Import-Package>
                             org.apache.openjpa.enhance;version="[1.0.0,2.1.0)",
                             org.apache.openjpa.util;version="[1.0.0,2.1.0)",
