@@ -77,8 +77,6 @@ public class JPAContainerTest {
         systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
         // Bundles
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 

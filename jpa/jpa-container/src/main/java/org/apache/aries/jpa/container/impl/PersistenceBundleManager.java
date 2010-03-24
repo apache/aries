@@ -34,8 +34,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.apache.aries.application.VersionRange;
-import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfoFactory;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
@@ -43,6 +41,7 @@ import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParser;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParserException;
 import org.apache.aries.jpa.container.unit.impl.ManagedPersistenceUnitInfoFactoryImpl;
+import org.apache.aries.util.VersionRange;
 import org.apache.aries.util.tracker.MultiBundleTracker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -409,7 +408,7 @@ public class PersistenceBundleManager extends MultiBundleTracker
          
           String versionRangeString = props.getProperty(ParsedPersistenceUnit.JPA_PROVIDER_VERSION, "0.0.0");
           try {
-            versionRanges.add(ManifestHeaderProcessor.parseVersionRange(versionRangeString));
+            versionRanges.add(VersionRange.parseVersionRange(versionRangeString));
           } catch (IllegalArgumentException e) {
             _logger.warn("There was an error parsing the version range string {} for persistence unit {}. It will be ignored."
                 , new Object[] {versionRangeString, metadata.get(ParsedPersistenceUnit.UNIT_NAME)});
@@ -508,7 +507,7 @@ public class PersistenceBundleManager extends MultiBundleTracker
       rangeString.append(maxExclusive ? ")" : "]");
     }
     //Turn that string back into a VersionRange
-    return ManifestHeaderProcessor.parseVersionRange(rangeString.toString());
+    return VersionRange.parseVersionRange(rangeString.toString());
   }
 
   /**

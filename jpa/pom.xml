@@ -85,16 +85,6 @@
                 <version>0.1-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <artifactId>org.apache.aries.application.api</artifactId>
-                <groupId>org.apache.aries.application</groupId>
-                <version>0.1-incubating-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <artifactId>org.apache.aries.application.utils</artifactId>
-                <groupId>org.apache.aries.application</groupId>
-                <version>0.1-incubating-SNAPSHOT</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint</artifactId>
                 <version>0.1-incubating-SNAPSHOT</version>
