@@ -53,8 +53,8 @@ public class NeverTranStrategyTest extends AbstractIntegrationTest {
 
       try {
           bean.insertRow("testWithoutClientTran", 1, true);
-          fail("Exception not thrown");
-      } catch (Exception e) {
+          fail("IllegalStateException not thrown");
+      } catch (IllegalStateException e) {
           e.printStackTrace();
       }
       
