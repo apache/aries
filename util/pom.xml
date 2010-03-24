@@ -41,7 +41,8 @@
 
     <properties>
         <aries.osgi.export.pkg>
-            org.apache.aries.util*
+            org.apache.aries.util;
+            org.apache.aries.util.tracker;
         </aries.osgi.export.pkg>
         <aries.osgi.import.pkg>
             !org.apache.aries.util*,
@@ -49,6 +50,9 @@
             org.osgi.service.framework;resolution:=optional,
             *
         </aries.osgi.import.pkg>
+        <aries.osgi.private.pkg>
+            org.apache.aries.util.internal
+        </aries.osgi.private.pkg>
     </properties>
 
     <dependencies>
