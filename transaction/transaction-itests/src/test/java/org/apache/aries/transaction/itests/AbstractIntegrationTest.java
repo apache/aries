@@ -63,7 +63,11 @@ public abstract class AbstractIntegrationTest {
     }
     
     @After
-    public void tearDown() throws Exception{
+    public void tearDown() throws Exception {
+        closeServiceTrackers();
+    }
+    
+    private void closeServiceTrackers() {
         for (ServiceTracker st : srs) {
             if (st != null) {
                 st.close();
@@ -156,40 +160,43 @@ public abstract class AbstractIntegrationTest {
         return getOsgiService(null, type, filter, timeout);
       }
 
-    protected <T> T getOsgiService(BundleContext bc, Class<T> type, String filter,
-            long timeout) {
-                ServiceTracker tracker = null;
-                try {
-                  String flt;
-                  if (filter != null) {
-                    if (filter.startsWith("(")) {
-                      flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")"
-                          + filter + ")";
-                    } else {
-                      flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")("
-                          + filter + "))";
-                    }
-                  } else {
-                    flt = "(" + Constants.OBJECTCLASS + "=" + type.getName() + ")";
-                  }
-                  Filter osgiFilter = FrameworkUtil.createFilter(flt);
-                  tracker = new ServiceTracker(bc == null ? bundleContext : bc, osgiFilter,
-                      null);
-                  tracker.open();
-                  
-                  // add tracker to the list of trackers we close at tear down
-                  srs.add(tracker);
-                  
-                  Object svc = type.cast(tracker.waitForService(timeout));
-                  if (svc == null) {
-                    throw new RuntimeException("Gave up waiting for service " + flt);
-                  }
-                  return type.cast(svc);
-                } catch (InvalidSyntaxException e) {
-                  throw new IllegalArgumentException("Invalid filter", e);
-                } catch (InterruptedException e) {
-                  throw new RuntimeException(e);
+    protected <T> T getOsgiService(BundleContext bc, Class<T> type,
+            String filter, long timeout) {
+        // close out all service trackers
+        closeServiceTrackers();
+
+        ServiceTracker tracker = null;
+        try {
+            String flt;
+            if (filter != null) {
+                if (filter.startsWith("(")) {
+                    flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName()
+                            + ")" + filter + ")";
+                } else {
+                    flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName()
+                            + ")(" + filter + "))";
                 }
-              }
+            } else {
+                flt = "(" + Constants.OBJECTCLASS + "=" + type.getName() + ")";
+            }
+            Filter osgiFilter = FrameworkUtil.createFilter(flt);
+            tracker = new ServiceTracker(bc == null ? bundleContext : bc,
+                    osgiFilter, null);
+            tracker.open();
+
+            // add tracker to the list of trackers we close at tear down
+            srs.add(tracker);
+
+            Object svc = type.cast(tracker.waitForService(timeout));
+            if (svc == null) {
+                throw new RuntimeException("Gave up waiting for service " + flt);
+            }
+            return type.cast(svc);
+        } catch (InvalidSyntaxException e) {
+            throw new IllegalArgumentException("Invalid filter", e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
