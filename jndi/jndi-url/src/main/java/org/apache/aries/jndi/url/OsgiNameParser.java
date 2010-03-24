@@ -39,8 +39,6 @@ public final class OsgiNameParser implements NameParser
   {
     OsgiName result = new OsgiName(name);
     
-    if (result.size() < 2) throw new InvalidNameException(name);
-    
     String urlScheme = result.getScheme();
     String schemePath = result.getSchemePath();
     
@@ -55,10 +53,6 @@ public final class OsgiNameParser implements NameParser
     if (OSGI_SCHEME.equals(urlScheme) && !!!( SERVICE_PATH.equals(schemePath) || 
                                               SERVICE_LIST_PATH.equals(schemePath) || 
                                               FRAMEWORK_PATH.equals(schemePath))) {
-      throw new InvalidNameException(name);
-    }
-    
-    if (result.getInterface() == null || result.getInterface().length() == 0) {
       throw new InvalidNameException(name);
     }
     

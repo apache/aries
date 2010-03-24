@@ -125,6 +125,22 @@ public class ServiceRegistryContextTest
     Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
   }
   
+  @Test
+  public void testBaseLookup() throws NamingException
+  {
+     BundleMock mock = new BundleMock("scooby.doo", new Properties());
+        
+     Thread.currentThread().setContextClassLoader(mock.getClassLoader());
+
+     InitialContext ctx = new InitialContext();
+     
+     Context ctx2 = (Context) ctx.lookup("osgi:service");
+     
+     Runnable r = (Runnable) ctx2.lookup("java.lang.Runnable");
+     
+     assertNotNull(r);
+  }
+  
   /**
    * This test checks that we correctly register and deregister the url context
    * object factory in the service registry.

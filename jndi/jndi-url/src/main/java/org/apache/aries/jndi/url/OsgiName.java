@@ -142,13 +142,21 @@ public final class OsgiName extends CompositeName
     
     StringBuilder builder = new StringBuilder();
     
-    while (parts.hasMoreElements()) {
-      builder.append(parts.nextElement());
-      builder.append('/');
+    if (parts.hasMoreElements()) {
+
+      while (parts.hasMoreElements()) {
+        builder.append(parts.nextElement());
+        builder.append('/');
+      }
+    
+      builder.deleteCharAt(builder.length() - 1);
     }
     
-    builder.deleteCharAt(builder.length() - 1);
-    
     return builder.toString();
+  }
+
+  public boolean hasInterface()
+  {
+    return size() > 1;
   }
 }
