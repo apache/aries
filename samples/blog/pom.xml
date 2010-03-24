@@ -63,7 +63,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.blog</groupId>
-		<artifactId>org.apache.aries.samples.blog.web</artifactId>
+                <artifactId>org.apache.aries.samples.blog.web</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
