@@ -53,6 +53,7 @@ public class OsgiNameParserTest
     checkName("osgi", "framework", "bundleContext");
     checkName("osgi","service","javax.sql.DataSource", "(osgi.jndi.servicee.name=jdbc/myDataSource)");
     checkName("osgi","service","javax.sql.DataSource", "(&(a=/b)(c=/d))");
+    checkName("osgi", "service");
   }
   
   /**
@@ -63,27 +64,6 @@ public class OsgiNameParserTest
   public void checkOutsideNamespace() throws NamingException
   {
     checkName("java","comp","env","jms","cf");
-  }
-  
-  /**
-   * Check that it fails if no interface name is provided.
-   * @throws NamingException
-   */
-  @Test(expected=InvalidNameException.class)
-  public void checkMissingInterface() throws NamingException
-  {
-    checkName("aries","services");
-  }
-  
-  /**
-   * Check that it fails if no interface name is provided in a subtly different
-   * way from the previous method.
-   * @throws NamingException
-   */
-  @Test(expected=InvalidNameException.class)
-  public void checkMissingInterface2() throws NamingException
-  {
-    checkName("aries","services", "");
   }
   
   @Test(expected=InvalidNameException.class)
