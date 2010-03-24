@@ -61,6 +61,20 @@ public class PersistenceBundleHelper
    */
   public static Collection<PersistenceDescriptor> findPersistenceXmlFiles(Bundle bundle)
   {    
+    String header = (String) bundle.getHeaders().get(PERSISTENCE_UNIT_HEADER);
+    if (header == null) {
+      return Collections.emptySet();
+    }
+      
+    // Do not scan WABs
+    if (bundle.getHeaders().get(WEB_CONTEXT_PATH_HEADER) != null) {
+      _logger.warn("The bundle " + bundle.getSymbolicName() + " specifies both the " + 
+                  PERSISTENCE_UNIT_HEADER + " and the " + WEB_CONTEXT_PATH_HEADER + " header. WABs that use JPA " +
+                  "are not supported as part of the OSGi JPA specification. No persistence descriptors will be processed" +
+                  "for this bundle.");
+      return Collections.emptySet();
+    }
+    
     //The files we have found
     Collection<PersistenceDescriptor> persistenceXmlFiles = new ArrayList<PersistenceDescriptor>();
     
@@ -68,48 +82,36 @@ public class PersistenceBundleHelper
     //location twice!
     Collection<String> locations = new HashSet<String>();
     locations.add(PERSISTENCE_XML);
+          
+    //Split apart the header to get the individual entries
+    for (String s : header.split(",")) {
+      locations.add(s.trim());
+    }
     
-    String header = (String) bundle.getHeaders().get(PERSISTENCE_UNIT_HEADER);
-    
-    if(header != null) {
-      // Do not scan WABs
-      if (bundle.getHeaders().get(WEB_CONTEXT_PATH_HEADER) != null) {
-        _logger.warn("The bundle " + bundle.getSymbolicName() + " specifies both the " + 
-                    PERSISTENCE_UNIT_HEADER + " and the " + WEB_CONTEXT_PATH_HEADER + " header. WABs that use JPA " +
-            		"are not supported as part of the OSGi JPA specification. No persistence descriptors will be processed" +
-            		"for this bundle.");
-        return Collections.emptySet();
-      }
-      
-      //Split apart the header to get the individual entries
-      for(String s : header.split(","))
-        locations.add(s.trim());
-    
-      //Find the file and add it to our list
-      for(String location : locations) {
-        try {
-            InputStream file = locateFile(bundle, location);
-            if(file != null)
-              persistenceXmlFiles.add(new PersistenceDescriptorImpl(location, file));
-            
-        } catch (Exception e) {
-            _logger.error("There was an exception while locating the persistence descriptor at location "
-                + location + " in bundle " + bundle.getSymbolicName() + "_" + bundle.getVersion()
-            		+ ". No persistence descriptors will be processed for this bundle.", e);
-          //If we get an exception, then go through closing all of our streams.
-          //It is better to fail completely than half succeed.
-          for (PersistenceDescriptor desc : persistenceXmlFiles) {
-            try {
-              desc.getInputStream().close();
-            } catch (IOException ioe) {
-              //We don't care about this exception, so swallow it
-            }
+    //Find the file and add it to our list
+    for (String location : locations) {
+      try {
+          InputStream file = locateFile(bundle, location);
+          if (file != null) {
+            persistenceXmlFiles.add(new PersistenceDescriptorImpl(location, file));
           }
-          persistenceXmlFiles = Collections.emptySet();
-          //Exit the for loop
-          break;
+      } catch (Exception e) {
+          _logger.error("There was an exception while locating the persistence descriptor at location "
+              + location + " in bundle " + bundle.getSymbolicName() + "_" + bundle.getVersion()
+          		+ ". No persistence descriptors will be processed for this bundle.", e);
+        //If we get an exception, then go through closing all of our streams.
+        //It is better to fail completely than half succeed.
+        for (PersistenceDescriptor desc : persistenceXmlFiles) {
+          try {
+            desc.getInputStream().close();
+          } catch (IOException ioe) {
+            //We don't care about this exception, so swallow it
+          }
         }
-      }
+        persistenceXmlFiles = Collections.emptySet();
+        //Exit the for loop
+        break;
+      }     
     }
    return persistenceXmlFiles;
  }
