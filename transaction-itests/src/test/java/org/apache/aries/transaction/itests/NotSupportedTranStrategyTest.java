@@ -42,8 +42,8 @@ public class NotSupportedTranStrategyTest extends AbstractIntegrationTest {
       
       try {
           nsBean.insertRow("testWithClientTran", 1, true);
-          fail("Exception not thrown");
-      } catch (Exception e) {
+          fail("IllegalStateException not thrown");
+      } catch (IllegalStateException e) {
           e.printStackTrace();
       }
       
@@ -94,8 +94,8 @@ public class NotSupportedTranStrategyTest extends AbstractIntegrationTest {
       
       try {
           nsBean.insertRow("testWithoutClientTran", 1, true);
-          fail("Exception not thrown");
-      } catch (Exception e) {
+          fail("IllegalStateException not thrown");
+      } catch (IllegalStateException e) {
           e.printStackTrace();
       }
       
