@@ -55,7 +55,7 @@ public class NameSpaceHandlerTest {
     @Test
     public void testMultipleElements() throws Exception
     {
-      Bundle b = Skeleton.newMock(new BundleMock("com.ibm.ws.eba.tx", new Properties()), Bundle.class);
+      Bundle b = Skeleton.newMock(new BundleMock("org.apache.aries.tx", new Properties()), Bundle.class);
       BundleContext ctx = b.getBundleContext();
       NamespaceHandlerRegistry nhri = new NamespaceHandlerRegistryImpl(ctx);
       
