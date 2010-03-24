@@ -18,35 +18,18 @@
  */
 package org.apache.aries.application.impl;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.aries.application.VersionRange;
-import org.apache.aries.application.utils.internal.MessageUtil;
 import org.osgi.framework.Version;
 
-public final class VersionRangeImpl implements VersionRange
-{
-  /** A string representation of the version. */
-  private String version;
-  /** The minimum desired version for the bundle */
-  private Version minimumVersion;
-  /** The maximum desired version for the bundle */
-  private Version maximumVersion;
-  /** True if the match is exclusive of the minimum version */
-  private boolean minimumExclusive;
-  /** True if the match is exclusive of the maximum version */
-  private boolean maximumExclusive;
-  /** A regexp to select the version */
-  private static final Pattern versionCapture = Pattern.compile("\"?(.*?)\"?$");
+public final class VersionRangeImpl implements VersionRange {
 
+  private org.apache.aries.util.VersionRange versionRange;
   /**
    * 
    * @param version   version for the verioninfo
    */
   public VersionRangeImpl(String version) {
-    this.version = version;
-    processVersionAttribute(this.version);
+      versionRange = new org.apache.aries.util.VersionRange(version);
   }
 
   /**
@@ -55,37 +38,13 @@ public final class VersionRangeImpl implements VersionRange
    * @param exactVersion        whether this is an exact version
    */
   public VersionRangeImpl(String version, boolean exactVersion) {
-    this.version = version;
-    if (exactVersion) {
-      processExactVersionAttribute(this.version);
-    } else {
-      processVersionAttribute(this.version);
-    }
-    
-    assertInvariants();
+      versionRange = new org.apache.aries.util.VersionRange(version, exactVersion);
   }
 
-  /**
-   * Constructor designed for internal use only.
-   * 
-   * @param maximumVersion
-   * @param maximumExclusive
-   * @param minimumVersion
-   * @param minimumExclusive
-   * @throws IllegalArgumentException
-   *           if parameters are not valid.
-   */
-  private VersionRangeImpl(Version maximumVersion, boolean maximumExclusive,
-      Version minimumVersion, boolean minimumExclusive) {
-    this.maximumVersion = maximumVersion;
-    this.maximumExclusive = maximumExclusive;
-    this.minimumVersion = minimumVersion;
-    this.minimumExclusive = minimumExclusive;
-
-    assertInvariants();
-
+  private VersionRangeImpl(org.apache.aries.util.VersionRange versionRange) {
+      this.versionRange = versionRange;
   }
-
+  
   /*
    * (non-Javadoc)
    * 
@@ -93,49 +52,25 @@ public final class VersionRangeImpl implements VersionRange
    */
   @Override
   public String toString() {
-    // Some constructors don't take in a string, so construct one if needed
-    if (version == null) {
-      if (maximumVersion == null) {
-        version = minimumVersion.toString();
-      } else {
-        version = (minimumExclusive ? "(" : "[") + minimumVersion + ","
-            + maximumVersion + (maximumExclusive ? ")" : "]");
-      }
-    }
-    return this.version;
+      return versionRange.toString();
   }
 
   @Override
   public int hashCode() {
-    int result = 17;
-    result = 31 * result + minimumVersion.hashCode();
-    result = 31 * result + (minimumExclusive ? 1 : 0);
-    result = 31 * result
-        + (maximumVersion != null ? maximumVersion.hashCode() : 0);
-    result = 31 * result + (maximumExclusive ? 1 : 0);
-    return result;
+      return versionRange.hashCode();
   }
   
   @Override
-  public boolean equals(Object other) 
-  {
-    boolean result = false;
-
-    if (this == other) {
-      result = true;
-    } else if (other instanceof VersionRangeImpl) {
-      VersionRangeImpl vr = (VersionRangeImpl) other;
-      result = minimumVersion.equals(vr.minimumVersion)
-          && minimumExclusive == vr.minimumExclusive
-          && (maximumVersion == null ? vr.maximumVersion == null
-              : maximumVersion.equals(vr.maximumVersion))
-          && maximumExclusive == vr.maximumExclusive;
-    }
-
-    return result;
+  public boolean equals(Object other) {
+      boolean result = false;
+      if (this == other) {
+          result = true;
+      } else if (other instanceof VersionRangeImpl) {
+          VersionRangeImpl vr = (VersionRangeImpl) other;   
+          result = versionRange.equals(vr.versionRange);
+      }
+      return result;
   }
-
-
 
   /*
    * (non-Javadoc)
@@ -143,182 +78,44 @@ public final class VersionRangeImpl implements VersionRange
    * @see org.apache.aries.application.impl.VersionRange#getExactVersion()
    */
   public Version getExactVersion() {
-    Version v = null;
-    if (isExactVersion()) {
-      v = getMinimumVersion();
-    }
-    return v;
+      return versionRange.getExactVersion();
   }
 
   /* (non-Javadoc)
    * @see org.apache.aries.application.impl.VersionRange#getMaximumVersion()
    */
-  public Version getMaximumVersion()
-  {
-    return maximumVersion;
+  public Version getMaximumVersion() {
+      return versionRange.getMaximumVersion();
   }
 
   /* (non-Javadoc)
    * @see org.apache.aries.application.impl.VersionRange#getMinimumVersion()
    */
-  public Version getMinimumVersion()
-  {
-    return minimumVersion;
+  public Version getMinimumVersion() {
+      return versionRange.getMinimumVersion();
   }
 
   /* (non-Javadoc)
    * @see org.apache.aries.application.impl.VersionRange#isMaximumExclusive()
    */
-  public boolean isMaximumExclusive()
-  {
-    return maximumExclusive;
+  public boolean isMaximumExclusive() {
+      return versionRange.isMaximumExclusive();
   }
 
   /* (non-Javadoc)
    * @see org.apache.aries.application.impl.VersionRange#isMaximumUnbounded()
    */
-  public boolean isMaximumUnbounded()
-  {
-    boolean unbounded = maximumVersion == null;
-    return unbounded;
+  public boolean isMaximumUnbounded() {
+      return versionRange.isMaximumUnbounded();
   }
 
   /* (non-Javadoc)
    * @see org.apache.aries.application.impl.VersionRange#isMinimumExclusive()
    */
-  public boolean isMinimumExclusive()
-  {
-    return minimumExclusive;
+  public boolean isMinimumExclusive() {
+      return versionRange.isMinimumExclusive();
   }
-
-  /**
-   * this is designed for deployed-version as that is the exact version.
-   * @param version
-   * @return
-   * @throws IllegalArgumentException
-   */
-  private boolean processExactVersionAttribute(String version) throws IllegalArgumentException{
-    boolean success = processVersionAttribute(version);
-
-    if (maximumVersion == null) {
-      maximumVersion = minimumVersion;
-    }
-
-    if (!minimumVersion.equals(maximumVersion)) {
-      throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0011E", version));
-    }
-
-    if (!!!isExactVersion()) {
-      throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0009E", version));
-    }
-
-    return success;
-  }
-
-  /**
-   * process the version attribute,
-   * @param version  the value to be processed
-   * @return
-   * @throws IllegalArgumentException
-   */
-  private boolean processVersionAttribute(String version) throws IllegalArgumentException{
-    boolean success = false;
-
-    if (version == null) {
-      throw new IllegalArgumentException(MessageUtil
-          .getMessage("APPUTILS0010E"));
-    }
-
-    Matcher matches = versionCapture.matcher(version);
-
-    if (matches.matches()) {
-      String versions = matches.group(1);
-
-      if ((versions.startsWith("[") || versions.startsWith("(")) &&
-          (versions.endsWith("]") || versions.endsWith(")"))) {
-        if (versions.startsWith("[")) minimumExclusive = false;
-        else if (versions.startsWith("(")) minimumExclusive = true;
-
-        if (versions.endsWith("]")) maximumExclusive = false;
-        else if (versions.endsWith(")")) maximumExclusive = true;
-
-        int index = versions.indexOf(',');
-        String minVersion = versions.substring(1, index);
-        String maxVersion = versions.substring(index + 1, versions.length() - 1);
-
-        try {
-          minimumVersion = new Version(minVersion.trim());
-          maximumVersion = new Version(maxVersion.trim());
-          success = true;
-        } catch (NumberFormatException nfe) {
-          throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0009E", version), nfe);
-        }
-      } else {
-        try {
-          if (versions.trim().length() == 0) minimumVersion = new Version(0,0,0);
-          else minimumVersion = new Version(versions.trim());
-          success = true;
-        } catch (NumberFormatException nfe) {
-          throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0009E", version), nfe);
-        }
-      }
-    } else {
-      throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0009E", version));
-    }
-
-    return success;
-  }
-
-  /**
-   * Assert object invariants. Called by constructors to verify that arguments
-   * were valid.
-   * 
-   * @throws IllegalArgumentException
-   *           if invariants are violated.
-   */
-  private void assertInvariants() {
-    if (minimumVersion == null
-        || !isRangeValid(minimumVersion, minimumExclusive, maximumVersion, maximumExclusive)) {
-      IllegalArgumentException e = new IllegalArgumentException();
-      throw e;
-    }
-  }
-
-  /**
-   * Check if the supplied parameters describe a valid version range.
-   * 
-   * @param min
-   *          the minimum version.
-   * @param minExclusive
-   *          whether the minimum version is exclusive.
-   * @param max
-   *          the maximum version.
-   * @param maxExclusive
-   *          whether the maximum version is exclusive.
-   * @return true is the range is valid; otherwise false.
-   */
-  private boolean isRangeValid(Version min, boolean minExclusive, Version max,
-      boolean maxExclusive) {
-    boolean result;
-
-    // A null maximum version is unbounded so means that minimum is smaller than
-    // maximum.
-    int minMaxCompare = (max == null ? -1 : min.compareTo(max));
-    if (minMaxCompare > 0) {
-      // Minimum larger than maximum is invalid.
-      result = false;
-    } else if (minMaxCompare == 0 && (minExclusive || maxExclusive)) {
-      // If min and max are the same, and either are exclusive, no valid range
-      // exists.
-      result = false;
-    } else {
-      // Range is valid.
-      result = true;
-    }
-
-    return result;
-  }
-
+  
   /**
    * This method checks that the provided version matches the desired version.
    * 
@@ -326,28 +123,16 @@ public final class VersionRangeImpl implements VersionRange
    *          the version.
    * @return true if the version matches, false otherwise.
    */
-  public boolean matches(Version version) 
-  {
-    boolean result;
-    if (this.getMaximumVersion() == null) {
-      result = this.getMinimumVersion().compareTo(version) <= 0;
-    } else {
-      int minN = this.isMinimumExclusive() ? 0 : 1;
-      int maxN = this.isMaximumExclusive() ? 0 : 1;
-
-      result = (this.getMinimumVersion().compareTo(version) < minN) &&
-               (version.compareTo(this.getMaximumVersion()) < maxN);
-    }
-    return result;
+  public boolean matches(Version version) {
+      return versionRange.matches(version);
   }
 
   /* (non-Javadoc)
    * @see org.apache.aries.application.impl.VersionRange#isExactVersion()
    */
   public boolean isExactVersion() {
-    return minimumVersion.equals(maximumVersion) && minimumExclusive == maximumExclusive && !!!minimumExclusive;
+      return versionRange.isExactVersion();
   }
-
 
   /*
    * (non-Javadoc)
@@ -356,54 +141,9 @@ public final class VersionRangeImpl implements VersionRange
    * range)
    */
   public VersionRange intersect(VersionRange r) {
-    // Use the highest minimum version.
-    final Version newMinimumVersion;
-    final boolean newMinimumExclusive;
-    int minCompare = minimumVersion.compareTo(r.getMinimumVersion());
-    if (minCompare > 0) {
-      newMinimumVersion = minimumVersion;
-      newMinimumExclusive = minimumExclusive;
-    } else if (minCompare < 0) {
-      newMinimumVersion = r.getMinimumVersion();
-      newMinimumExclusive = r.isMinimumExclusive();
-    } else {
-      newMinimumVersion = minimumVersion;
-      newMinimumExclusive = (minimumExclusive || r.isMinimumExclusive());
-    }
-
-    // Use the lowest maximum version.
-    final Version newMaximumVersion;
-    final boolean newMaximumExclusive;
-    // null maximum version means unbounded, so the highest possible value.
-    if (maximumVersion == null) {
-      newMaximumVersion = r.getMaximumVersion();
-      newMaximumExclusive = r.isMaximumExclusive();
-    } else if (r.getMaximumVersion() == null) {
-      newMaximumVersion = maximumVersion;
-      newMaximumExclusive = maximumExclusive;
-    } else {
-      int maxCompare = maximumVersion.compareTo(r.getMaximumVersion());
-      if (maxCompare < 0) {
-        newMaximumVersion = maximumVersion;
-        newMaximumExclusive = maximumExclusive;
-      } else if (maxCompare > 0) {
-        newMaximumVersion = r.getMaximumVersion();
-        newMaximumExclusive = r.isMaximumExclusive();
-      } else {
-        newMaximumVersion = maximumVersion;
-        newMaximumExclusive = (maximumExclusive || r.isMaximumExclusive());
-      }
-    }
-
-    VersionRange result;
-    if (isRangeValid(newMinimumVersion, newMinimumExclusive, newMaximumVersion,
-        newMaximumExclusive)) {
-      result = new VersionRangeImpl(newMaximumVersion, newMaximumExclusive,
-          newMinimumVersion, newMinimumExclusive);
-    } else {
-      result = null;
-    }
-    return result;
+      VersionRangeImpl rr = (VersionRangeImpl) r;      
+      org.apache.aries.util.VersionRange result = versionRange.intersect(rr.versionRange);
+      return (result == null) ? null : new VersionRangeImpl(result);
   }
 
 }
