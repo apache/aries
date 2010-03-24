@@ -76,14 +76,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <artifactId>org.apache.aries.application.api</artifactId>
-            <groupId>org.apache.aries.application</groupId>
-        </dependency>
-        <dependency>
-            <artifactId>org.apache.aries.application.utils</artifactId>
-            <groupId>org.apache.aries.application</groupId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
         </dependency>
