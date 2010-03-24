@@ -19,10 +19,10 @@
 package org.apache.aries.jndi.url;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.naming.Binding;
 import javax.naming.Context;
-import javax.naming.InvalidNameException;
 import javax.naming.Name;
 import javax.naming.NameClassPair;
 import javax.naming.NameNotFoundException;
@@ -36,6 +36,9 @@ import org.apache.aries.jndi.services.ServiceHelper;
  */
 public class ServiceRegistryContext extends AbstractServiceRegistryContext implements Context
 {
+  /** The parent name, if one is provided, of this context */
+  private OsgiName parentName;
+
   /**
    * Why Mr Java this class does indeed take a fine copy of the provided 
    * environment. One might imagine that it is worried that the provider is
@@ -48,6 +51,12 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
     super(environment);
   }
 
+  public ServiceRegistryContext(OsgiName validName, Map<String, Object> env) 
+  {
+    super(env);
+    parentName = validName;
+  }
+
   public NamingEnumeration<NameClassPair> list(final Name name) throws NamingException
   {
     return new ServiceRegistryListContext(env, convert(name)).list("");
@@ -55,7 +64,7 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
 
   public NamingEnumeration<NameClassPair> list(String name) throws NamingException
   {
-    return list(parser.parse(name));
+    return list(parse(name));
   }
 
   public NamingEnumeration<Binding> listBindings(final Name name) throws NamingException
@@ -65,7 +74,7 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
 
   public NamingEnumeration<Binding> listBindings(String name) throws NamingException
   {
-    return listBindings(parser.parse(name));
+    return listBindings(parse(name));
   }
 
   public Object lookup(Name name) throws NamingException
@@ -77,15 +86,19 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
     String pathFragment = validName.getSchemePath();
     String schemeName = validName.getScheme();
     
-    if (OsgiName.FRAMEWORK_PATH.equals(pathFragment) && "bundleContext".equals(validName.getServiceName())) {
-      result = ServiceHelper.getBundleContext(env);
-    } else if ((OsgiName.SERVICE_PATH.equals(pathFragment) && OsgiName.OSGI_SCHEME.equals(schemeName)) ||
-               (OsgiName.SERVICES_PATH.equals(pathFragment) && OsgiName.ARIES_SCHEME.equals(schemeName))) {
-      result = ServiceHelper.getService(validName, null, true, env);
-    } else if (OsgiName.SERVICE_LIST_PATH.equals(pathFragment)) {
-      result = new ServiceRegistryListContext(env, validName);
+    if (validName.hasInterface()) {
+      if (OsgiName.FRAMEWORK_PATH.equals(pathFragment) && "bundleContext".equals(validName.getServiceName())) {
+        result = ServiceHelper.getBundleContext(env);
+      } else if ((OsgiName.SERVICE_PATH.equals(pathFragment) && OsgiName.OSGI_SCHEME.equals(schemeName)) ||
+                 (OsgiName.SERVICES_PATH.equals(pathFragment) && OsgiName.ARIES_SCHEME.equals(schemeName))) {
+        result = ServiceHelper.getService(validName, null, true, env);
+      } else if (OsgiName.SERVICE_LIST_PATH.equals(pathFragment)) {
+        result = new ServiceRegistryListContext(env, validName);
+      } else {
+        result = null;
+      }
     } else {
-      result = null;
+      result = new ServiceRegistryContext(validName, env);
     }
     
     if (result == null) {
@@ -95,21 +108,34 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
     return result;
   }
 
-  private OsgiName convert(Name name) throws InvalidNameException
+  private OsgiName convert(Name name) throws NamingException
   {
     OsgiName result;
     
     if (name instanceof OsgiName) {
       result = (OsgiName) name;
     } else {
-      result = new OsgiName(name);
+      if (parentName != null) {
+        result = new OsgiName(parentName.toString() + "/" + name.toString());
+      } else {
+        result = (OsgiName)parser.parse(name.toString());
+      }
     }
     
     return result;
   }
-
+  
+  private Name parse(String name) throws NamingException
+  {
+    if (parentName != null) {
+        name = parentName.toString() + "/" + name;
+    }
+    
+    return parser.parse(name);
+  }
+  
   public Object lookup(String name) throws NamingException
   {
-    return lookup(parser.parse(name));
+    return lookup(parse(name));
   }
 }
