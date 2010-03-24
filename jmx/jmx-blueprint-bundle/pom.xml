@@ -35,7 +35,7 @@
             org.apache.aries.jmx.blueprint.impl.Activator
         </aries.osgi.activator>
         <aries.osgi.export.pkg>
-            org.apache.aries.jmx.blueprint,
+            org.apache.aries.jmx.blueprint;
             org.apache.aries.jmx.blueprint.codec
         </aries.osgi.export.pkg>
         <aries.osgi.import>
