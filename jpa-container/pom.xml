@@ -43,14 +43,6 @@
             <groupId>org.apache.aries.jpa</groupId>
         </dependency>
         <dependency>
-            <artifactId>org.apache.aries.application.api</artifactId>
-            <groupId>org.apache.aries.application</groupId>
-        </dependency>
-        <dependency>
-            <artifactId>org.apache.aries.application.utils</artifactId>
-            <groupId>org.apache.aries.application</groupId>
-        </dependency>
-        <dependency>
             <artifactId>org.apache.aries.util</artifactId>
             <groupId>org.apache.aries</groupId>
             <scope>provided</scope>
