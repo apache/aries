@@ -51,8 +51,9 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Private-Package>org.apache.aries.samples.blog.persistence.*</Private-Package>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Private-Package>org.apache.aries.samples.blog.persistence.*</Private-Package>
+                        <Export-Package>!org.apache.aries.samples.blog.persistence.*</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
