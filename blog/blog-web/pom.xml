@@ -53,6 +53,10 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Private-Package>org.apache.aries.samples.blog.web.*</Private-Package>
                         <Export-Package>!org.apache.aries.samples.blog.web.*</Export-Package>
+                        <Import-Package>
+                            javax.servlet*;version=2.5,
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

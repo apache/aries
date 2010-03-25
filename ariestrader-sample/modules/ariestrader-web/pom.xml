@@ -74,6 +74,10 @@
                   <Web-JSPExtractLocation>/</Web-JSPExtractLocation>
                   <Private-Package>org.apache.aries.samples.ariestrader.web.*</Private-Package>
                   <Export-Package>!org.apache.aries.samples.ariestrader.web.*</Export-Package>
+                  <Import-Package>
+                    javax.servlet*;version=2.5,
+                    *
+                  </Import-Package>
                 </instructions>
               </configuration>
             </plugin>
