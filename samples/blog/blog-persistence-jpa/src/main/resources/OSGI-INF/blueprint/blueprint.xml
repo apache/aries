@@ -22,7 +22,7 @@
 	default-activation="lazy">
 
 	<bean id="persistenceImpl"
-		class="org.apache.aries.samples.blog.persistence.BlogPersistenceServiceImpl">
+		class="org.apache.aries.samples.blog.persistence.jpa.BlogPersistenceServiceImpl">
 		<tx:transaction method="*" value="Required" />
 		<jpa:context property="entityManager" unitname="blogExample" />
 	</bean>
