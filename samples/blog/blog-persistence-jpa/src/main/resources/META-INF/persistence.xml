@@ -27,8 +27,8 @@
     <jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/blogdb)</jta-data-source>
     <non-jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/blogdbnojta)</non-jta-data-source>
 
-    <class>org.apache.aries.samples.blog.persistence.entity.AuthorImpl</class>
-    <class>org.apache.aries.samples.blog.persistence.entity.EntryImpl</class>
+    <class>org.apache.aries.samples.blog.persistence.jpa.entity.AuthorImpl</class>
+    <class>org.apache.aries.samples.blog.persistence.jpa.entity.EntryImpl</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     
     

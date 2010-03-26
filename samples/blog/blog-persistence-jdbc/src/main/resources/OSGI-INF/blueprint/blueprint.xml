@@ -24,7 +24,7 @@
      <property name="databaseName" value="blogDB"/>
   </bean>
 
-  <bean id="persistenceImpl" class="org.apache.aries.samples.blog.persistence.BlogPersistenceServiceImpl" activation="lazy">
+  <bean id="persistenceImpl" class="org.apache.aries.samples.blog.persistence.jdbc.BlogPersistenceServiceImpl" activation="lazy">
    <property name="dataSource" ref="datasource" />
   </bean>
 

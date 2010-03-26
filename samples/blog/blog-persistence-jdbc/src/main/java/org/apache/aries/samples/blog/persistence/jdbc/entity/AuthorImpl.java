@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.aries.samples.blog.persistence.entity;
+package org.apache.aries.samples.blog.persistence.jdbc.entity;
 
 import java.util.Date;
 import java.util.List;

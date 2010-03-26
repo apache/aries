@@ -39,8 +39,8 @@
 					<instructions>
 						<Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-						<Private-Package>org.apache.aries.samples.blog.persistence.*</Private-Package>
-                        <Export-Package>!org.apache.aries.samples.blog.persistence.*</Export-Package>
+						<Private-Package>org.apache.aries.samples.blog.persistence.jpa.*</Private-Package>
+                        <Export-Package>!org.apache.aries.samples.blog.persistence.jpa.*</Export-Package>
 					</instructions>
 				</configuration>
 			</plugin>

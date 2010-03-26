@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.samples.blog.persistence;
+package org.apache.aries.samples.blog.persistence.jdbc;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,8 +30,8 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.apache.aries.samples.blog.api.persistence.BlogPersistenceService;
-import org.apache.aries.samples.blog.persistence.entity.AuthorImpl;
-import org.apache.aries.samples.blog.persistence.entity.EntryImpl;
+import org.apache.aries.samples.blog.persistence.jdbc.entity.AuthorImpl;
+import org.apache.aries.samples.blog.persistence.jdbc.entity.EntryImpl;
 
 /**
  * This class is the implementation of the blogPersistenceService
