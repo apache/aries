@@ -38,35 +38,6 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
     
-<!-- JavaEE Only
-    <servlet>
-        <display-name>TestServlet</display-name>
-        <servlet-name>TestServlet</servlet-name>
-        <servlet-class>org.apache.aries.samples.ariestrader.web.TestServlet</servlet-class>
-    </servlet>
--->
-<!-- Not sure why this is a necessary and it's causing a problem for pax-web so temporarily removed    
-    <servlet>
-        <display-name>register</display-name>
-        <servlet-name>register</servlet-name>
-        <jsp-file>/register.jsp</jsp-file>
-    </servlet>   
-    <servlet>
-        <display-name>welcome</display-name>
-        <servlet-name>welcome</servlet-name>
-        <jsp-file>/welcome.jsp</jsp-file>
-    </servlet>
-    <servlet>
-        <display-name>order</display-name>
-        <servlet-name>order</servlet-name>
-        <jsp-file>/order.jsp</jsp-file>
-    </servlet>
-    <servlet>
-        <display-name>tradehome</display-name>
-        <servlet-name>tradehome</servlet-name>
-        <jsp-file>/tradehome.jsp</jsp-file>
-    </servlet>
--->    
     <servlet>
         <display-name>TradeConfigServlet</display-name>
         <servlet-name>TradeConfigServlet</servlet-name>
@@ -131,14 +102,6 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    
-<!-- JavaEE Only
-    <servlet>
-        <display-name>org_apache_aries_samples_ariestrader_TradeWSAction</display-name>
-        <servlet-name>org_apache_aries_samples_ariestrader_TradeWSAction</servlet-name>
-        <servlet-class>org.apache.aries.samples.ariestrader.soap.TradeWSAction</servlet-class>
-    </servlet>
--->
     
     <!-- Web container primitives -->
     <servlet>
@@ -213,66 +176,10 @@
     </servlet>
     <!-- End of Web container primitives -->
     
-    <!-- EJB container primitives (EJB3) -->   
-<!-- JavaEE Only
-    <servlet>
-        <servlet-name>ejb3.PingServlet2Session</servlet-name>
-        <servlet-class>org.apache.aries.samples.ariestrader.web.prims.ejb3.PingServlet2Session</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ejb3.PingServlet2Entity</servlet-name>
-        <servlet-class>org.apache.aries.samples.ariestrader.web.prims.ejb3.PingServlet2Entity</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ejb3.PingServlet2Session2Entity</servlet-name>
-        <servlet-class>org.apache.aries.samples.ariestrader.web.prims.ejb3.PingServlet2Session2Entity</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ejb3.PingServlet2Session2EntityCollection</servlet-name>
-        <servlet-class>org.apache.aries.samples.ariestrader.web.prims.ejb3.PingServlet2Session2EntityCollection</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ejb3.PingServlet2Session2CMROne2One</servlet-name>
-        <servlet-class>org.apache.aries.samples.ariestrader.web.prims.ejb3.PingServlet2Session2CMROne2One</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ejb3.PingServlet2Session2CMROne2Many</servlet-name>
-        <servlet-class>org.apache.aries.samples.ariestrader.web.prims.ejb3.PingServlet2Session2CMROne2Many</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ejb3.PingServlet2Session2JDBC</servlet-name>
-        <servlet-class>org.apache.aries.samples.ariestrader.web.prims.ejb3.PingServlet2Session2JDBC</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ejb3.PingServlet2Session2JDBCCollection</servlet-name>
-        <servlet-class>org.apache.aries.samples.ariestrader.web.prims.ejb3.PingServlet2Session2JDBCCollection</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ejb3.PingServlet2MDBQueue</servlet-name>
-        <servlet-class>org.apache.aries.samples.ariestrader.web.prims.ejb3.PingServlet2MDBQueue</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ejb3.PingServlet2MDBTopic</servlet-name>
-        <servlet-class>org.apache.aries.samples.ariestrader.web.prims.ejb3.PingServlet2MDBTopic</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ejb3.PingServlet2TwoPhase</servlet-name>
-        <servlet-class>org.apache.aries.samples.ariestrader.web.prims.ejb3.PingServlet2TwoPhase</servlet-class>
-    </servlet>
--->
-    <!-- End of EJB container primitives (EJB3) -->
-    
-
     <servlet-mapping>
         <servlet-name>TradeAppServlet</servlet-name>
         <url-pattern>/app</url-pattern>
     </servlet-mapping>
-<!-- JavaEE Only
-    <servlet-mapping>
-        <servlet-name>TestServlet</servlet-name>
-        <url-pattern>/TestServlet</url-pattern>
-    </servlet-mapping>
--->
     <servlet-mapping>
         <servlet-name>TradeConfigServlet</servlet-name>
         <url-pattern>/config</url-pattern>
@@ -281,13 +188,6 @@
         <servlet-name>TradeScenarioServlet</servlet-name>
         <url-pattern>/scenario</url-pattern>
     </servlet-mapping>
-<!-- JavaEE Only
-    <servlet-mapping>
-        <servlet-name>org_apache_aries_samples_ariestrader_TradeWSAction</servlet-name>
-        <url-pattern>/services/TradeWSServices</url-pattern>
-    </servlet-mapping>
--->
-    
     
     <!-- Web container primitives (Servlet Mappings) -->
     <servlet-mapping>
@@ -349,56 +249,6 @@
     <!-- End of Web container primitives (Servlet Mappings) -->
 
     
-    <!-- EJB container primitives (Servlet Mappings) -->   
-<!-- JavaEE only
-    <servlet-mapping>
-        <servlet-name>ejb3.PingServlet2Session</servlet-name>
-        <url-pattern>/ejb3/PingServlet2Session</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ejb3.PingServlet2Entity</servlet-name>
-        <url-pattern>/ejb3/PingServlet2Entity</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ejb3.PingServlet2Session2Entity</servlet-name>
-        <url-pattern>/ejb3/PingServlet2Session2Entity</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ejb3.PingServlet2Session2EntityCollection</servlet-name>
-        <url-pattern>/ejb3/PingServlet2Session2EntityCollection</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ejb3.PingServlet2Session2CMROne2One</servlet-name>
-        <url-pattern>/ejb3/PingServlet2Session2CMROne2One</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ejb3.PingServlet2Session2CMROne2Many</servlet-name>
-        <url-pattern>/ejb3/PingServlet2Session2CMROne2Many</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ejb3.PingServlet2Session2JDBC</servlet-name>
-        <url-pattern>/ejb3/PingServlet2Session2JDBC</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ejb3.PingServlet2Session2JDBCCollection</servlet-name>
-        <url-pattern>/ejb3/PingServlet2Session2JDBCCollection</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ejb3.PingServlet2MDBQueue</servlet-name>
-        <url-pattern>/ejb3/PingServlet2MDBQueue</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ejb3.PingServlet2MDBTopic</servlet-name>
-        <url-pattern>/ejb3/PingServlet2MDBTopic</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ejb3.PingServlet2TwoPhase</servlet-name>
-        <url-pattern>/ejb3/PingServlet2TwoPhase</url-pattern>
-    </servlet-mapping>
--->
-    <!-- End of EJB container primitives (Servlet Mappings) -->
-    
-
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
@@ -414,62 +264,4 @@
         <location>/error.jsp</location>
     </error-page>
     
-    <resource-ref>
-        <res-ref-name>jdbc/TradeDataSource</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-        <res-sharing-scope>Shareable</res-sharing-scope>
-    </resource-ref>
-<!-- JavaEE only
-    <resource-ref>
-        <res-ref-name>jms/QueueConnectionFactory</res-ref-name>
-        <res-type>javax.jms.QueueConnectionFactory</res-type>
-        <res-auth>Application</res-auth>
-        <res-sharing-scope>Shareable</res-sharing-scope>
-    </resource-ref>
-    <resource-ref>
-        <res-ref-name>jms/TopicConnectionFactory</res-ref-name>
-        <res-type>javax.jms.TopicConnectionFactory</res-type>
-        <res-auth>Application</res-auth>
-        <res-sharing-scope>Shareable</res-sharing-scope>
-    </resource-ref>
-    
-    <ejb-ref>
-        <ejb-ref-name>ejb/TradeSLSBBean</ejb-ref-name>
-        <ejb-ref-type>Session</ejb-ref-type>
-        <remote>org.apache.aries.samples.ariestrader.ejb3.TradeSLSBRemote</remote>
-        <ejb-link>TradeSLSBBean</ejb-link>
-    </ejb-ref>
-    <ejb-ref>
-        <ejb-ref-name>ejb/DirectSLSBBean</ejb-ref-name>
-        <ejb-ref-type>Session</ejb-ref-type>
-        <remote>org.apache.aries.samples.ariestrader.ejb3.DirectSLSBRemote</remote>
-        <ejb-link>DirectSLSBBean</ejb-link>
-    </ejb-ref>
-
-    <message-destination-ref>
-        <message-destination-ref-name>jms/TradeBrokerQueue</message-destination-ref-name>
-        <message-destination-type>javax.jms.Queue</message-destination-type>
-        <message-destination-usage>Produces</message-destination-usage>
-        <message-destination-link>dt-ejb.jar#jms/TradeBrokerQueue</message-destination-link>
-    </message-destination-ref>
-    <message-destination-ref>
-        <message-destination-ref-name>jms/TradeStreamerTopic</message-destination-ref-name>
-        <message-destination-type>javax.jms.Topic</message-destination-type>
-        <message-destination-usage>Produces</message-destination-usage>
-        <message-destination-link>dt-ejb.jar#jms/TradeStreamerTopic</message-destination-link>
-    </message-destination-ref>
-    
-    <service-ref>
-        <description>WSDL Service Trade</description>
-        <service-ref-name>service/Trade</service-ref-name>
-        <service-interface>org.apache.aries.samples.ariestrader.client.ws.Trade</service-interface>
-        <wsdl-file>WEB-INF/wsdl/TradeServices.wsdl</wsdl-file>
-        <jaxrpc-mapping-file>WEB-INF/TradeServicesClient_mapping.xml</jaxrpc-mapping-file>
-        <service-qname xmlns:pfx="http://ariestrader.samples.aries.apache.org">pfx:Trade</service-qname>
-        <port-component-ref>
-            <service-endpoint-interface>org.apache.aries.samples.ariestrader.client.ws.TradeWSServices</service-endpoint-interface>
-        </port-component-ref>
-    </service-ref>
--->
 </web-app>
