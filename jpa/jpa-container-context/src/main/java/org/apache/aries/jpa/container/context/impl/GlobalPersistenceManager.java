@@ -147,7 +147,7 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
                 System.identityHashCode(frameworkBundle)});
           }
           removeManager = true;
-          managers.remove(bundle);
+          manager = managers.remove(bundle);
           bundle.getBundleContext().removeBundleListener(this);
         }
       }
