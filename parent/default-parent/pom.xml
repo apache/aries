@@ -336,8 +336,6 @@
                         <_failok>${aries.osgi.failok}</_failok>
                         <Export-Service>${aries.osgi.export.service}</Export-Service>
                         <Import-Service>${aries.osgi.import.service}</Import-Service>
-                        <nsh_interface>org.apache.aries.blueprint.NamespaceHandler</nsh_interface>
-                        <nsh_namespace>osgi.service.blueprint.namespace</nsh_namespace>
                     </instructions>
                     <versions>
                         <aries.osgi.version.clean>${project.version}</aries.osgi.version.clean>
