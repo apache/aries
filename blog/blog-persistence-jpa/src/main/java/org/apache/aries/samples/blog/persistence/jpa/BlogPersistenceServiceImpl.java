@@ -18,7 +18,7 @@
  * under the License.
  */
 
-package org.apache.aries.samples.blog.persistence;
+package org.apache.aries.samples.blog.persistence.jpa;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,8 +31,8 @@ import javax.sql.DataSource;
 
 import org.apache.aries.samples.blog.api.persistence.BlogPersistenceService;
 import org.apache.aries.samples.blog.api.persistence.Entry;
-import org.apache.aries.samples.blog.persistence.entity.AuthorImpl;
-import org.apache.aries.samples.blog.persistence.entity.EntryImpl;
+import org.apache.aries.samples.blog.persistence.jpa.entity.AuthorImpl;
+import org.apache.aries.samples.blog.persistence.jpa.entity.EntryImpl;
 
 /**
  * This class is the implementation of the blogPersistenceService
