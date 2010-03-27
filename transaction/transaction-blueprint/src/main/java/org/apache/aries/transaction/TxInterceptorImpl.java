@@ -43,7 +43,7 @@ public class TxInterceptorImpl implements Interceptor {
     }
 
     public void postCallWithException(ComponentMetadata cm, Method m,
-        Exception ex, Object preCallToken)
+        Throwable ex, Object preCallToken)
      {
        if (preCallToken instanceof TransactionToken)
        {
@@ -51,20 +51,11 @@ public class TxInterceptorImpl implements Interceptor {
          try { 
              Transaction tran = token.getActiveTransaction();
              if (tran != null) {
-                 Class<?> exceptionClass = ex.getClass();
-                 boolean isAppException = false;
-
-                 if (!RuntimeException.class.isAssignableFrom(exceptionClass)) {
-                     for (Class<?> cls : m.getExceptionTypes()) {
-                         isAppException = cls.isAssignableFrom(exceptionClass);
-
-                         if (isAppException)
-                             break;
-                     }
-                 }
-
-                 if (!isAppException)
+                 if (ex instanceof RuntimeException || ex instanceof Error) {
                      tran.setRollbackOnly();
+                 } else {
+                     //declared exception, we don't set rollback
+                 }
              }
 
              token.getTransactionStrategy().finish(tm, token);

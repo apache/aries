@@ -50,11 +50,11 @@ public interface Interceptor {
      * The method is called after the method m is invoked and causes an exception.
      * @param cm : the component metadata
      * @param m : the method invoked
-     * @param ex : the exception thrown
+     * @param ex : the <code>Throwable</code> thrown
      * @param preCallToken token returned by preCall
      * @throws Throwable
      */
-    public void postCallWithException(ComponentMetadata cm, Method m, Exception ex, Object preCallToken) throws Throwable;
+    public void postCallWithException(ComponentMetadata cm, Method m, Throwable ex, Object preCallToken) throws Throwable;
     
     
     /**
