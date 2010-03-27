@@ -19,7 +19,7 @@
 package org.apache.aries.blueprint;
 
 /**
+ * Marker interface for blueprint processors such as <code>BeanProcessor</code> or
+ * <code>ServiceProcessor</code>
  */
-public interface Processor {
-
-}
+public interface Processor {}
