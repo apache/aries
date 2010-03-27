@@ -89,7 +89,7 @@ public class NSHandlerTwo implements NamespaceHandler{
         }
         
         public void postCallWithException(ComponentMetadata cm, Method m,
-                Exception ex, Object preCallToken) throws Throwable {
+                Throwable ex, Object preCallToken) throws Throwable {
             
             if(!isIgnorableMethod(m))
                 interceptorLog.add("POSTCALLEXCEPTION["+ex.toString()+"]:"+preCallToken);
