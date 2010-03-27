@@ -53,10 +53,20 @@ import org.osgi.service.blueprint.reflect.Metadata;
  * <li>A namespace handler should not return new metadata instances from the <code>decorate</code> method if 
  * the same result could also be achieved by operating on a <code>MutableComponentMetadata</code> instance.
  * </li>
+ * <li>A namespace handler should not assume the existence of predefined entries in the component definition
+ * registry such as <code>blueprintBundle</code> or <code>blueprintBundleContext</code>. In the case of a dry
+ * parse (i.e. a parse of the blueprint xml files without a backing OSGi bundle), these values will not be 
+ * available
+ * </li>
  * </ul>
  */
 public interface NamespaceHandler  {
-    
+    /**
+     * Retrieve a URL from where the schema for a given namespace can be retrieved
+     * @param namespace The schema's namespace
+     * @return A URL that points to the location of the schema or null if the namespace validation
+     * is not needed
+     */
     URL getSchemaLocation(String namespace);
 
     /**
@@ -71,6 +81,18 @@ public interface NamespaceHandler  {
      */
     Set<Class> getManagedClasses();
     
+    /**
+     * Parse a stand-alone blueprint component 
+     *
+     * Given an <code>Element</code> node as a root, this method parses the stand-alone component and returns its
+     * metadata. The supplied <code>ParserContext</code> should be used to parse embedded blueprint elements as well
+     * as creating metadata.
+     * 
+     * @param element The DOM element representing the custom component
+     * @param context The <code>ParserContext</code> for parsing sub-components and creating metadata objects
+     * @return A metadata instance representing the custom component. This should be an instance of an appropriate
+     * <code>MutableMetadata</code> type to enable further decoration by other namespace handlers
+     */
     Metadata parse(Element element, ParserContext context);
     
     /**
