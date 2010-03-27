@@ -150,13 +150,13 @@ class Collaborator implements InvocationHandler, Serializable {
                 postCallInterceptorWithReturn(cm, method, toReturn,
                         calledInterceptors);
 
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 // log the exception e
                 LOGGER.error("invoke", e);
 
                 // if we catch an exception we decide carefully which one to
                 // throw onwards
-                Exception exceptionToRethrow = null;
+                Throwable exceptionToRethrow = null;
                 // if the exception came from a precall or postcall interceptor
                 // we will rethrow it
                 // after we cycle through the rest of the interceptors using
@@ -238,7 +238,7 @@ class Collaborator implements InvocationHandler, Serializable {
      *            : exception throwed
      */
     private void postCallInterceptorWithException(ComponentMetadata cm,
-            Method method, Exception exception,
+            Method method, Throwable exception,
             Stack<Collaborator.StackElement> calledInterceptors)
             throws Throwable {
         Throwable tobeRethrown = null;
