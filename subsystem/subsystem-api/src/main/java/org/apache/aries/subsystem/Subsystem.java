@@ -13,52 +13,94 @@
  */
 package org.apache.aries.subsystem;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 
+/**
+ * Interface representing an installed subsystem
+ */
 public interface Subsystem {
 
     public enum State {
 
-        Installed,
-        Resolved,
-        Starting,
-        Stopping,
-        Active,
-        Uninstalled
+        INSTALLED,
+        RESOLVED,
+        STARTING,
+        STOPPING,
+        ACTIVE,
+        UNINSTALLED
 
     }
 
+    /**
+     * Retrieve the state of the subsystem.
+     *
+     * @return
+     */
     State getState();
 
-    void resolve();
-
+    /**
+     * Start the subsystem (i.e. start all its constituent bundles according to their start level).
+     */
     void start();
 
+    /**
+     * Stop the subsystem (i.e. stop all its constituent bundles).
+     */
     void stop();
 
-    void update();
-
-    void update(InputStream is);
-
-    void uninstall();
-
+    /**
+     * The identifier of the subsystem.  Must be unique in the framework.
+     *
+     * @return
+     */
     long getSubsystemId();
 
+    /**
+     * The location of the subsystem.
+     * The location will be used when updating a subsystem to load the new
+     * content and/or identify subsystems to update.
+     *
+     * @return
+     */
     String getLocation();
 
+    /**
+     * Retrieve the symbolic name of this subsystem.
+     *
+     * @return
+     */
     String getSymbolicName();
 
+    /**
+     * Retrieve the version of this subsystem.
+     *
+     * @return
+     */
     Version getVersion();
 
+    /**
+     * Return the subsystem headers
+     *
+     * @return
+     */
     Map<String, String> getHeaders();
 
+    /**
+     * Return the subsystem headers
+     *
+     * @return
+     */
     Map<String, String> getHeaders(String locale);
 
+    /**
+     * Retrieve the constituent bundles of this subsystem.
+     *
+     * @return
+     */
     Collection<Bundle> getConstituents();
 
 }
