@@ -45,6 +45,11 @@
                 <artifactId>org.apache.aries.subsystem.api</artifactId>
                 <version>${version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>4.2.0</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 
