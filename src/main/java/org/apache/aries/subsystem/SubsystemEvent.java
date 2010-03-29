@@ -15,17 +15,20 @@ package org.apache.aries.subsystem;
 
 import java.util.EventObject;
 
+/**
+ * Event sent to listeners when an operation has been performed on a subsystem.
+ */
 public class SubsystemEvent extends EventObject {
 
     public enum Type {
-        Installed,
-        Started,
-        Stopped,
-        Updated,
-        Uninstalled,
-        Resolved,
-        Starting,
-        Stopping
+        INSTALLED,
+        STARTED,
+        STOPPED,
+        UPDATED,
+        UNINSTALLED,
+        RESOLVED,
+        STARTING,
+        STOPPING
     }
     private final Type type;
 
