@@ -14,11 +14,24 @@
 package org.apache.aries.subsystem;
 
 /**
- * Registered OSGi services implementing this interface
- * will be delivered subsystem events.
+ * Exception thrown by SubsystemAdmin or Subsystem when
+ * a problem occur.
  */
-public interface SubsystemListener {
+public class SubsystemException extends RuntimeException {
 
-    void subsystemEvent(SubsystemEvent event);
+    public SubsystemException() {
+    }
+
+    public SubsystemException(String message) {
+        super(message);
+    }
+
+    public SubsystemException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public SubsystemException(Throwable cause) {
+        super(cause);
+    }
 
 }
