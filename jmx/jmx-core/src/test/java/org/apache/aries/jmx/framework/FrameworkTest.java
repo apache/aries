@@ -131,16 +131,16 @@ public class FrameworkTest {
         Assert.assertNull(batch.getRemainingLocationItems());
         Mockito.reset(context);
         Mockito.when(context.installBundle("file:test.jar")).thenThrow(new BundleException("location doesn't exist"));
-
-        /*
-         * this one is not passing bug in api bundleInError should be String CompositeData data2 =
-         * mbean.installBundles(locations); BatchInstallResult batch2 = BatchInstallResult.from(data2);
-         * Assert.assertNotNull(batch2); Assert.assertNull(batch2.getCompleted());
-         * Assert.assertFalse(batch2.isSuccess()); Assert.assertNotNull(batch2.getError());
-         * Assert.assertEquals("file:test.jar", batch2.getBundleInError());
-         * Assert.assertNull(batch2.getRemainingLocationItems());
-         */
-
+        CompositeData data2 = mbean.installBundles(locations);
+        BatchInstallResult batch2 = BatchInstallResult.from(data2);
+        Assert.assertNotNull(batch2);
+        Assert.assertNotNull(batch2.getCompleted());
+        Assert.assertEquals(0, batch2.getCompleted().length);
+        Assert.assertFalse(batch2.isSuccess());
+        Assert.assertNotNull(batch2.getError());
+        Assert.assertEquals("file:test.jar", batch2.getBundleInError());
+        Assert.assertNotNull(batch2.getRemainingLocationItems());
+        Assert.assertEquals(0, batch2.getRemainingLocationItems()); 
     }
 
     @Test
@@ -162,16 +162,16 @@ public class FrameworkTest {
         Mockito.when(spiedMBean.createStream(Mockito.anyString())).thenReturn(stream);
         Mockito.when(context.installBundle(Mockito.anyString(), Mockito.any(InputStream.class))).thenThrow(
                 new BundleException("location doesn't exist"));
-
-        /*
-         * this one is not passing bug in api bundleInError should be String CompositeData data2 =
-         * spiedMBean.installBundles(new String[]{"file:test.jar"}, new String[]{"test.jar"}); BatchInstallResult batch2
-         * = BatchInstallResult.from(data2); Assert.assertNotNull(batch2); Assert.assertNull(batch2.getCompleted());
-         * Assert.assertFalse(batch2.isSuccess()); Assert.assertNotNull(batch2.getError());
-         * Assert.assertEquals("file:test.jar", batch2.getBundleInError());
-         * Assert.assertNull(batch2.getRemainingLocationItems());
-         */
-
+        CompositeData data2 = spiedMBean.installBundlesFromURL(new String[] { "file:test.jar" }, new String[] { "test.jar" });
+        BatchInstallResult batch2 = BatchInstallResult.from(data2);
+        Assert.assertNotNull(batch2);
+        Assert.assertNotNull(batch2.getCompleted());
+        Assert.assertEquals(0, batch2.getCompleted());
+        Assert.assertFalse(batch2.isSuccess());
+        Assert.assertNotNull(batch2.getError());
+        Assert.assertEquals("file:test.jar", batch2.getBundleInError());
+        Assert.assertNotNull(batch2.getRemainingLocationItems());
+        Assert.assertEquals(0, batch2.getRemainingLocationItems());     
     }
 
     @Test
