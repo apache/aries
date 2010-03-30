@@ -206,10 +206,16 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
 
     /*
      * Shuts down the notification dispatcher
+     * [ARIES-259] MBeans not getting unregistered reliably
      */
     protected void shutDownDispatcher() {
         if (serviceListener != null) {
-            bundleContext.removeServiceListener(serviceListener);
+            try {
+               bundleContext.removeServiceListener(serviceListener);
+            }
+            catch (Exception e) {
+               // ignore
+            }
         }
         if (eventDispatcher != null) {  
             eventDispatcher.shutdown();

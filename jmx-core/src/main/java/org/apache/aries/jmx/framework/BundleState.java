@@ -347,10 +347,16 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
 
     /*
      * Shuts down the notification dispatcher
+     * [ARIES-259] MBeans not getting unregistered reliably
      */
     protected void shutDownDispatcher() {
         if (bundleListener != null) {
-            bundleContext.removeBundleListener(bundleListener);  
+            try {
+               bundleContext.removeBundleListener(bundleListener);
+            }
+            catch (Exception e) {
+               // ignore
+            }  
         }
         if (eventDispatcher != null) {
             eventDispatcher.shutdown(); 
