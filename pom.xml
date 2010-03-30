@@ -174,5 +174,34 @@
                 </repository>
             </repositories>
         </profile>
+        <profile>
+            <id>rat</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
+                        <version>0.6</version>
+                        <!-- Note: other configuration inherited from the parent pom -->
+                        <configuration>
+                            <excludes>
+                                <!-- These CDDL+GPL files are covered in the NOTICE.vm and LICENCE.vm in the jpa-container module -->
+                                <exclude>**/persistence.xsd.rsrc</exclude>
+                                <exclude>**/persistence_2_0.xsd.rsrc</exclude>
+                                <!-- The rest of the excludes below had to be copied from the parent pom -->
+                                <exclude>**/target/**/*</exclude>
+                                <exclude>**/appended-resources/**/*</exclude>
+                                <exclude>**/dependency-reduced-pom.xml</exclude>
+                                <exclude>**/velocity.log</exclude>
+                                <!-- manifest files don't support comments so don't contain the ASL2.0 header -->
+                                <exclude>**/*.MF</exclude>
+                                <!--RAT doesn't seem to recognize MIT style licenses-->
+                                <exclude>manual/src/styles/print.css</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>
