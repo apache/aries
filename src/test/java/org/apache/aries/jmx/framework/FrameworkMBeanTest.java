@@ -16,11 +16,18 @@
  */
 package org.apache.aries.jmx.framework;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
 import javax.management.openmbean.CompositeData;
-
-import static org.junit.Assert.*;
 
 import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.apache.aries.jmx.codec.BatchActionResult;
@@ -35,22 +42,24 @@ import org.osgi.jmx.framework.FrameworkMBean;
  * 
  * @version $Rev$ $Date$
  */
-public class FrameworkMBeanTest extends AbstractIntegrationTest {
+public class FrameworkMBeanTest extends AbstractIntegrationTest {    
 
     @Configuration
-    public static Option[] configuration() {
+    public static Option[] configuration() throws IOException, ClassNotFoundException {
+        
         Option[] options = CoreOptions.options(
             CoreOptions.equinox(),
             mavenBundle("org.ops4j.pax.logging", "pax-logging-api"), 
             mavenBundle("org.ops4j.pax.logging", "pax-logging-service"), 
             mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx")
         );
+        
         options = updateOptions(options);
         return options;
     }
 
     @Test
-    public void testMBeanInterface() throws IOException {
+    public void testMBeanInterface() throws IOException, ClassNotFoundException {
         FrameworkMBean framework = getMBean(FrameworkMBean.OBJECTNAME, FrameworkMBean.class);
         assertNotNull(framework);
         
@@ -64,6 +73,27 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
         assertTrue(batch2.isSuccess());
         assertNull(batch2.getError());
         assertNull(batch2.getRemainingItems());
+                
+        File file = File.createTempFile("bundletest", ".jar");
+        file.deleteOnExit();        
+        Manifest man = new Manifest();
+        man.getMainAttributes().putValue("Manifest-Version", "1.0");
+        JarOutputStream jaros = new JarOutputStream(new FileOutputStream(file), man);
+        jaros.flush();
+        jaros.close();
+        
+        long bundleId = 0;
+        try {
+            bundleId = framework.installBundleFromURL(file.getAbsolutePath(), file.toURI().toString());
+        } catch (Exception e) {
+            fail("Installation of test bundle shouldn't fail");
+        }
+        
+        try{
+            framework.uninstallBundle(bundleId);
+        } catch (Exception e) {
+            fail("Uninstallation of test bundle shouldn't fail");
+        }
     }
 
 }
