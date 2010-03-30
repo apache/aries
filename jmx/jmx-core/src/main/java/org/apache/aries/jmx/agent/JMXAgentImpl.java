@@ -147,26 +147,27 @@ public class JMXAgentImpl implements JMXAgent {
      */
     public void unregisterMBeans(final MBeanServer server) {
         for (MBeanHandler mBeanHandler : mbeansHandlers) {
-            String name = mBeanHandler.getName();
-            StandardMBean mbean = mBeanHandler.getMbean();
-            if (mbean != null) {
-                try {
-                    logger.log(LogService.LOG_INFO, "Unregistering " + mbean.getMBeanInterface().getName()
-                            + " to MBeanServer " + server + " with name " + name);
-                    server.unregisterMBean(new ObjectName(name));
-                } catch (MBeanRegistrationException e) {
-                    logger.log(LogService.LOG_ERROR, "Can't unregister MBean", e);
-                } catch (InstanceNotFoundException e) {
-                    logger.log(LogService.LOG_ERROR, "Mbena doesn't exist in the repository", e);
-                } catch (MalformedObjectNameException e) {
-                    logger.log(LogService.LOG_ERROR, "Try to unregister with no valid objectname", e);
-                } catch (NullPointerException e) {
-                    logger.log(LogService.LOG_ERROR, "Name of objectname can't be null ", e);
-                } 
-            }
-
+            try
+            {
+               String name = mBeanHandler.getName();
+               StandardMBean mbean = mBeanHandler.getMbean();
+               if (mbean != null) {
+                   logger.log(LogService.LOG_INFO, "Unregistering " + mbean.getMBeanInterface().getName()
+                         + " to MBeanServer " + server + " with name " + name);
+                   server.unregisterMBean(new ObjectName(name));
+               }
+            } catch (MBeanRegistrationException e) {
+               logger.log(LogService.LOG_ERROR, "Can't unregister MBean", e);
+            } catch (InstanceNotFoundException e) {
+               logger.log(LogService.LOG_ERROR, "Mbena doesn't exist in the repository", e);
+            } catch (MalformedObjectNameException e) {
+               logger.log(LogService.LOG_ERROR, "Try to unregister with no valid objectname", e);
+            } catch (NullPointerException e) {
+               logger.log(LogService.LOG_ERROR, "Name of objectname can't be null ", e);
+            } catch (Exception e) {
+               logger.log(LogService.LOG_ERROR, "Cannot unregister MBean: " + mBeanHandler, e);
+            } 
         }
-
     }
 
     /**
