@@ -216,6 +216,8 @@
                                 <exclude>**/appended-resources/**/*</exclude>
                                 <exclude>**/dependency-reduced-pom.xml</exclude> 
                                 <exclude>**/velocity.log</exclude>
+                                <!-- manifest files don't support comments so don't contain the ASL2.0 header -->
+                                <exclude>**/*.MF</exclude>
                                 <!--RAT doesn't seem to recognize MIT style licenses-->
                                 <exclude>manual/src/styles/print.css</exclude>
                             </excludes>
