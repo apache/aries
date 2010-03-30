@@ -140,7 +140,7 @@ public class FrameworkTest {
         Assert.assertNotNull(batch2.getError());
         Assert.assertEquals("file:test.jar", batch2.getBundleInError());
         Assert.assertNotNull(batch2.getRemainingLocationItems());
-        Assert.assertEquals(0, batch2.getRemainingLocationItems()); 
+        Assert.assertEquals(0, batch2.getRemainingLocationItems().length); 
     }
 
     @Test
@@ -166,12 +166,12 @@ public class FrameworkTest {
         BatchInstallResult batch2 = BatchInstallResult.from(data2);
         Assert.assertNotNull(batch2);
         Assert.assertNotNull(batch2.getCompleted());
-        Assert.assertEquals(0, batch2.getCompleted());
+        Assert.assertEquals(0, batch2.getCompleted().length);
         Assert.assertFalse(batch2.isSuccess());
         Assert.assertNotNull(batch2.getError());
         Assert.assertEquals("file:test.jar", batch2.getBundleInError());
         Assert.assertNotNull(batch2.getRemainingLocationItems());
-        Assert.assertEquals(0, batch2.getRemainingLocationItems());     
+        Assert.assertEquals(0, batch2.getRemainingLocationItems().length);     
     }
 
     @Test
