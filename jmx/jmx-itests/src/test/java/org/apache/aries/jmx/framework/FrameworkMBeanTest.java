@@ -45,7 +45,7 @@ import org.osgi.jmx.framework.FrameworkMBean;
 public class FrameworkMBeanTest extends AbstractIntegrationTest {    
 
     @Configuration
-    public static Option[] configuration() throws IOException, ClassNotFoundException {
+    public static Option[] configuration() {
         
         Option[] options = CoreOptions.options(
             CoreOptions.equinox(),
@@ -59,7 +59,7 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testMBeanInterface() throws IOException, ClassNotFoundException {
+    public void testMBeanInterface() throws IOException {
         FrameworkMBean framework = getMBean(FrameworkMBean.OBJECTNAME, FrameworkMBean.class);
         assertNotNull(framework);
         
