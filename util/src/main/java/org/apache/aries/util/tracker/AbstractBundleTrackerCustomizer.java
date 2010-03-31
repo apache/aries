@@ -29,9 +29,6 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 /**
  * This class provides code to track <code>CompositeBundle></code>s.
- * 
- * @author pradine
- *
  */
 public abstract class AbstractBundleTrackerCustomizer implements BundleTrackerCustomizer {
 
