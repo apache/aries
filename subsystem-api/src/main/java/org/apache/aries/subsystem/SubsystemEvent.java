@@ -18,7 +18,7 @@ import java.util.EventObject;
 /**
  * Event sent to listeners when an operation has been performed on a subsystem.
  */
-public class SubsystemEvent extends EventObject {
+public class SubsystemEvent {
 
     public enum Type {
         INSTALLED,
@@ -37,7 +37,6 @@ public class SubsystemEvent extends EventObject {
     private final Subsystem subsystem;
 
     public SubsystemEvent(Type type, long timestamp, Subsystem subsystem) {
-        super(subsystem);
         this.type = type;
         this.timestamp = timestamp;
         this.subsystem = subsystem;
