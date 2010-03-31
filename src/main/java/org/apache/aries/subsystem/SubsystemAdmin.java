@@ -86,6 +86,14 @@ public interface SubsystemAdmin {
     void uninstall(Subsystem subsystem) throws SubsystemException;
 
     /**
+     * Force the uninstallation of a subsystem.
+     * Any errors will be ignored.
+     *
+     * @param subsystem
+     */
+    void uninstallForced(Subsystem subsystem);
+
+    /**
      * Abort the current operation.
      * The installing thread must throw a SubsystemException if the operation
      * has actually been canceled and rolled back before terminating.
