@@ -23,18 +23,18 @@ public class SubsystemConstants {
     }
 
     public static final String SUBSYSTEM_MANIFESTVERSION = "Subsystem-ManifestVersion";
-    public static final String SUBSYSTEM_SYMBOLICNAME = "Subsystem-SymbolicName";
-    public static final String SUBSYSTEM_VERSION = "Subsystem-Version";
-    public static final String SUBSYSTEM_NAME = "Subsystem-Name";
-    public static final String SUBSYSTEM_DESCRIPTION = "Subsystem-Description";
-    public static final String SUBSYSTEM_CONTENT = "Subsystem-Content";
-    public static final String SUBSYSTEM_IMPORTPACKAGE = "Subsystem-ImportPackage";
-    public static final String SUBSYSTEM_EXPORTPACKAGE = "Subsystem-ExportPackage";
-    public static final String SUBSYSTEM_IMPORTSERVICE = "Subsystem-ImportService";
-    public static final String SUBSYSTEM_EXPORTSERVICE = "Subsystem-ExportService";
-    public static final String SUBSYSTEM_REQUIREBUNDLE = "Subsystem-RequireBundle";
-    public static final String SUBSYSTEM_LOCALIZATION = "Subsystem-Localization";
-    public static final String SUBSYSTEM_UPDATELOCATION = "Subsystem-UpdateLocation";
+    public static final String SUBSYSTEM_SYMBOLICNAME    = "Subsystem-SymbolicName";
+    public static final String SUBSYSTEM_VERSION         = "Subsystem-Version";
+    public static final String SUBSYSTEM_NAME            = "Subsystem-Name";
+    public static final String SUBSYSTEM_DESCRIPTION     = "Subsystem-Description";
+    public static final String SUBSYSTEM_CONTENT         = "Subsystem-Content";
+    public static final String SUBSYSTEM_IMPORTPACKAGE   = "Subsystem-ImportPackage";
+    public static final String SUBSYSTEM_EXPORTPACKAGE   = "Subsystem-ExportPackage";
+    public static final String SUBSYSTEM_IMPORTSERVICE   = "Subsystem-ImportService";
+    public static final String SUBSYSTEM_EXPORTSERVICE   = "Subsystem-ExportService";
+    public static final String SUBSYSTEM_REQUIREBUNDLE   = "Subsystem-RequireBundle";
+    public static final String SUBSYSTEM_LOCALIZATION    = "Subsystem-Localization";
+    public static final String SUBSYSTEM_UPDATELOCATION  = "Subsystem-UpdateLocation";
 
     /*
     String APPLICATION_SYMBOLICNAME = "Application-SymbolicName";
