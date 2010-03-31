@@ -22,19 +22,49 @@ public class SubsystemConstants {
         // non-instantiable
     }
 
+    /**
+     * The subsystem manifest version header must be present and equals to 1.0
+     * for this version of subsystems.
+     */
     public static final String SUBSYSTEM_MANIFESTVERSION = "Subsystem-ManifestVersion";
+
+    /**
+     * Symbolic name for the subsystem.  Must be present.
+     */
     public static final String SUBSYSTEM_SYMBOLICNAME    = "Subsystem-SymbolicName";
+
+    /**
+     * Version of the subsystem
+     */
     public static final String SUBSYSTEM_VERSION         = "Subsystem-Version";
+
+    /**
+     * Human readable name
+     */
     public static final String SUBSYSTEM_NAME            = "Subsystem-Name";
+
+    /**
+     * Human readable description
+     */
     public static final String SUBSYSTEM_DESCRIPTION     = "Subsystem-Description";
+
+
+    /**
+     * Name of the resource to use for localized headers
+     */
+    public static final String SUBSYSTEM_LOCALIZATION    = "Subsystem-Localization";
+
+    /**
+     * Location to use when updating the subsystem
+     */
+    public static final String SUBSYSTEM_UPDATELOCATION  = "Subsystem-UpdateLocation";
+
     public static final String SUBSYSTEM_CONTENT         = "Subsystem-Content";
     public static final String SUBSYSTEM_IMPORTPACKAGE   = "Subsystem-ImportPackage";
     public static final String SUBSYSTEM_EXPORTPACKAGE   = "Subsystem-ExportPackage";
     public static final String SUBSYSTEM_IMPORTSERVICE   = "Subsystem-ImportService";
     public static final String SUBSYSTEM_EXPORTSERVICE   = "Subsystem-ExportService";
     public static final String SUBSYSTEM_REQUIREBUNDLE   = "Subsystem-RequireBundle";
-    public static final String SUBSYSTEM_LOCALIZATION    = "Subsystem-Localization";
-    public static final String SUBSYSTEM_UPDATELOCATION  = "Subsystem-UpdateLocation";
 
     /*
     String APPLICATION_SYMBOLICNAME = "Application-SymbolicName";
