@@ -31,9 +31,6 @@ import org.osgi.util.tracker.BundleTracker;
  * order to use this class clients must create a subclass and implement the methods of the
  * <code>BundleTrackerCustomizer</code> interface. In spite of this, instances of this class
  * MUST NOT be passed as a parameter to any <code>BundleTracker</code>.</p> 
- * 
- * @author pradine
- *
  */
 public abstract class MultiBundleTracker extends AbstractBundleTrackerCustomizer {
     private static final int COMPOSITE_BUNDLE_MASK =
