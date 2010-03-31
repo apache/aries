@@ -25,6 +25,9 @@ import java.util.Collection;
  * they will be synchronized so that no two operations will be performed at the
  * same time.
  *
+ * This service will also be made available from managed subsystems, so that only subsystems
+ * from the current framework will be available, not nested frameworks.
+ *
  */
 public interface SubsystemAdmin {
 

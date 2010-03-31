@@ -45,12 +45,12 @@ public interface Subsystem {
     /**
      * Start the subsystem (i.e. start all its constituent bundles according to their start level).
      */
-    void start();
+    void start() throws SubsystemException;
 
     /**
      * Stop the subsystem (i.e. stop all its constituent bundles).
      */
-    void stop();
+    void stop() throws SubsystemException;
 
     /**
      * The identifier of the subsystem.  Must be unique in the framework.
