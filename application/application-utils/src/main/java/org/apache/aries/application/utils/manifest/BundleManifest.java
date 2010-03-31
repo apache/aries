@@ -40,9 +40,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Entity class to retrieve and represent a bundle manifest (valid or invalid).
- * 
- * @author mahrwald
- *
  */
 public class BundleManifest
 {
