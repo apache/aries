@@ -19,12 +19,7 @@ package org.apache.aries.samples.ariestrader.web.prims;
 import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-
 import org.apache.aries.samples.ariestrader.util.*;
-
-import org.apache.aries.samples.ariestrader.*;
 
 /**
  * 
@@ -64,11 +59,6 @@ public class PingServlet2JNDI extends HttpServlet
 
 		try
 			{
-
-			int iter = TradeConfig.getPrimIterations();
-			for (int ii = 0; ii < iter; ii++) {
-                            DataSource dataSource = (DataSource) ServiceUtilities.getOSGIService(DataSource.class.getName(),TradeConfig.OSGI_DS_NAME_FILTER);
-			}			
 
 			output.append(
 				"<html><head><title>Ping JNDI -- lookup of JDBC DataSource</title></head>"

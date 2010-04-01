@@ -195,7 +195,7 @@ public interface TradeServices extends Remote {
 	public Collection getHoldings(String userID) throws Exception, RemoteException;
 
    /**
-	 * Return a specific user stock holding identifed by the holdingID
+	 * Return a specific user stock holding identified by the holdingID
 	 *
 	 * @param holdingID the holdingID to return	 
 	 * @return a HoldingDataBean describing the holding

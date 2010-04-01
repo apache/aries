@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.aries.samples.ariestrader.api.TradeServices;
@@ -59,8 +58,6 @@ import org.apache.aries.samples.ariestrader.util.TradeConfig;
 public class TradeJpaCm implements TradeServices {
 
     private EntityManager entityManager;
-
-    private static BigDecimal ZERO = new BigDecimal(0.0);
 
     private static boolean initialized = false;
 
@@ -193,7 +190,7 @@ public class TradeJpaCm implements TradeServices {
             throw new RuntimeException(e);
         }
 
-        // after the purchase or sell of a stock, update the stocks volume and
+        // after the purchase or sale of a stock, update the stocks volume and
         // price
         updateQuotePriceVolume(symbol, TradeConfig.getRandomPriceChangeFactor(), quantity);
 
@@ -296,8 +293,6 @@ public class TradeJpaCm implements TradeServices {
         HoldingDataBean holding = order.getHolding();
         BigDecimal price = order.getPrice();
         double quantity = order.getQuantity();
-
-        String userID = account.getProfile().getUserID();
 
         if (Log.doTrace())
             Log.trace("TradeJpaCm:completeOrder--> Completing Order "
@@ -531,7 +526,7 @@ public class TradeJpaCm implements TradeServices {
 
         holdings = query.getResultList();
         /*
-         * Inflate the lazy data memebers
+         * Inflate the lazy data members
          */
         Iterator itr = holdings.iterator();
         while (itr.hasNext()) {

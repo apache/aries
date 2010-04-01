@@ -102,10 +102,6 @@ public class TradeAppServlet extends HttpServlet {
 
         String action = null;
         String userID = null;
-        // String to create full dispatch path to TradeAppServlet w/ request
-        // Parameters
-        String dispPath = null; // Dispatch Path to TradeAppServlet
-
         resp.setContentType("text/html");
 
         if (tradeServicesManager == null) {
@@ -126,7 +122,6 @@ public class TradeAppServlet extends HttpServlet {
         } else if (action.equals("login")) {
             userID = req.getParameter("uid");
             String passwd = req.getParameter("passwd");
-            String inScenario = req.getParameter("inScenario");
             tsAction.doLogin(ctx, req, resp, userID, passwd);
             return;
         } else if (action.equals("register")) {
@@ -194,13 +189,5 @@ public class TradeAppServlet extends HttpServlet {
                     "TradeAppServlet: Invalid Action" + action);
         }
     }
-
-    private void sendRedirect(HttpServletResponse resp, String page)
-            throws ServletException, IOException {
-        resp.sendRedirect(resp.encodeRedirectURL(page));
-    }
-
-    // URL Path Prefix for dispatching to TradeAppServlet
-    private final static String tasPathPrefix = "/app?action=";
 
 }

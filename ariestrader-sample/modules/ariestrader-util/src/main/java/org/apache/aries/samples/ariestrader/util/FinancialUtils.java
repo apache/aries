@@ -16,8 +16,6 @@
  */
 package org.apache.aries.samples.ariestrader.util;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.math.BigDecimal;
 
 public class FinancialUtils {
@@ -93,7 +91,6 @@ public class FinancialUtils {
 
     public static String printQuoteLink(String symbol)  
     {
-        String htmlString;
         return "<A href=\"app?action=quotes&symbols="+ symbol+"\">" + symbol + "</A>";
     }
 

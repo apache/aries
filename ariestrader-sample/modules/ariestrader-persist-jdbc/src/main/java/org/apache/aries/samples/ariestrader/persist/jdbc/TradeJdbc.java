@@ -19,8 +19,6 @@ package org.apache.aries.samples.ariestrader.persist.jdbc;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.ArrayList;
-import javax.naming.InitialContext;
-
 import javax.sql.DataSource;
 
 import org.apache.aries.samples.ariestrader.api.TradeServices;
@@ -40,13 +38,9 @@ import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.ServiceUtilities;
 import org.apache.aries.samples.ariestrader.util.TradeConfig;
 
-import java.rmi.RemoteException;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 
 
@@ -76,8 +70,6 @@ public class TradeJdbc implements TradeServices {
     private boolean inGlobalTxn = false;
 
     private boolean inSession = false;
-
-    private static InitialContext context;
 
     private static int connCount = 0;
 
@@ -245,7 +237,7 @@ public class TradeJdbc implements TradeServices {
             releaseConn(conn);
         }
 
-        //after the purchase or sell of a stock, update the stocks volume and
+        //after the purchase or sale of a stock, update the stocks volume and
         // price
         updateQuotePriceVolume(symbol, TradeConfig.getRandomPriceChangeFactor(), quantity);
 
@@ -455,7 +447,6 @@ public class TradeJdbc implements TradeServices {
      * @see TradeServices#cancelOrder(Integer, boolean)
      */
     public void cancelOrder(Integer orderID, boolean twoPhase) throws Exception {
-        OrderDataBean orderData = null;
         Connection conn = null;
         try {
             if (Log.doTrace())
@@ -485,7 +476,6 @@ public class TradeJdbc implements TradeServices {
 
     private HoldingDataBean createHolding(Connection conn, int accountID, String symbol, double quantity,
         BigDecimal purchasePrice) throws Exception {
-        HoldingDataBean holdingData = null;
 
         Timestamp purchaseDate = new Timestamp(System.currentTimeMillis());
         PreparedStatement stmt = getStatement(conn, createHoldingSQL);
@@ -497,7 +487,7 @@ public class TradeJdbc implements TradeServices {
         stmt.setDouble(4, quantity);
         stmt.setString(5, symbol);
         stmt.setInt(6, accountID);
-        int rowCount = stmt.executeUpdate();
+        stmt.executeUpdate();
 
         stmt.close();
 
@@ -508,7 +498,7 @@ public class TradeJdbc implements TradeServices {
         PreparedStatement stmt = getStatement(conn, removeHoldingSQL);
 
         stmt.setInt(1, holdingID);
-        int rowCount = stmt.executeUpdate();
+        stmt.executeUpdate();
         stmt.close();
 
         // set the HoldingID to NULL for the purchase and sell order now that
@@ -516,15 +506,13 @@ public class TradeJdbc implements TradeServices {
         stmt = getStatement(conn, removeHoldingFromOrderSQL);
 
         stmt.setInt(1, holdingID);
-        rowCount = stmt.executeUpdate();
+        stmt.executeUpdate();
         stmt.close();
 
     }
 
     private OrderDataBean createOrder(Connection conn, AccountDataBean accountData, QuoteDataBean quoteData,
         HoldingDataBean holdingData, String orderType, double quantity) throws Exception {
-        OrderDataBean orderData = null;
-
         Timestamp currentDate = new Timestamp(System.currentTimeMillis());
 
         PreparedStatement stmt = getStatement(conn, createOrderSQL);
@@ -543,7 +531,7 @@ public class TradeJdbc implements TradeServices {
         else
             stmt.setInt(9, holdingData.getHoldingID().intValue());
         stmt.setString(10, quoteData.getSymbol());
-        int rowCount = stmt.executeUpdate();
+        stmt.executeUpdate();
 
         stmt.close();
 
@@ -909,31 +897,6 @@ public class TradeJdbc implements TradeServices {
         return accountData;
     }
 
-    private AccountDataBean getAccountDataForUpdate(int accountID, Connection conn) throws Exception {
-        PreparedStatement stmt = getStatement(conn, getAccountForUpdateSQL);
-        stmt.setInt(1, accountID);
-        ResultSet rs = stmt.executeQuery();
-        AccountDataBean accountData = getAccountDataFromResultSet(rs);
-        stmt.close();
-        return accountData;
-    }
-
-    private QuoteDataBean getQuoteData(String symbol) throws Exception {
-        QuoteDataBean quoteData = null;
-        Connection conn = null;
-        try {
-            conn = getConn();
-            quoteData = getQuoteData(conn, symbol);
-            commit(conn);
-        } catch (Exception e) {
-            Log.error("TradeJdbc:getQuoteData -- error getting data", e);
-            rollBack(conn, e);
-        } finally {
-            releaseConn(conn);
-        }
-        return quoteData;
-    }
-
     private QuoteDataBean getQuoteData(Connection conn, String symbol) throws Exception {
         QuoteDataBean quoteData = null;
         PreparedStatement stmt = getStatement(conn, getQuoteSQL);
@@ -975,22 +938,6 @@ public class TradeJdbc implements TradeServices {
 
         stmt.close();
         return holdingData;
-    }
-
-    private OrderDataBean getOrderData(int orderID) throws Exception {
-        OrderDataBean orderData = null;
-        Connection conn = null;
-        try {
-            conn = getConn();
-            orderData = getOrderData(conn, orderID);
-            commit(conn);
-        } catch (Exception e) {
-            Log.error("TradeJdbc:getOrderData -- error getting data", e);
-            rollBack(conn, e);
-        } finally {
-            releaseConn(conn);
-        }
-        return orderData;
     }
 
     private OrderDataBean getOrderData(Connection conn, int orderID) throws Exception {
@@ -1043,26 +990,6 @@ public class TradeJdbc implements TradeServices {
         return accountProfileData;
     }
 
-    private AccountProfileDataBean getAccountProfileData(Integer accountID) throws Exception {
-        AccountProfileDataBean accountProfileData = null;
-        Connection conn = null;
-
-        try {
-            if (Log.doTrace())
-                Log.trace("TradeJdbc:getAccountProfileData", accountID);
-
-            conn = getConn();
-            accountProfileData = getAccountProfileData(conn, accountID);
-            commit(conn);
-        } catch (Exception e) {
-            Log.error("TradeJdbc:getAccountProfileData -- error getting profile data", e);
-            rollBack(conn, e);
-        } finally {
-            releaseConn(conn);
-        }
-        return accountProfileData;
-    }
-
     private AccountProfileDataBean getAccountProfileData(Connection conn, Integer accountID) throws Exception {
         PreparedStatement stmt = getStatement(conn, getAccountProfileForAccountSQL);
         stmt.setInt(1, accountID.intValue());
@@ -1106,7 +1033,7 @@ public class TradeJdbc implements TradeServices {
         stmt.setBigDecimal(1, credit);
         stmt.setInt(2, accountData.getAccountID().intValue());
 
-        int count = stmt.executeUpdate();
+        stmt.executeUpdate();
         stmt.close();
 
     }
@@ -1119,7 +1046,7 @@ public class TradeJdbc implements TradeServices {
 
         stmt.setTimestamp(1, ts);
         stmt.setInt(2, holdingID.intValue());
-        int count = stmt.executeUpdate();
+        stmt.executeUpdate();
         stmt.close();
     }
 
@@ -1129,7 +1056,7 @@ public class TradeJdbc implements TradeServices {
         stmt.setString(1, status);
         stmt.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
         stmt.setInt(3, orderID.intValue());
-        int count = stmt.executeUpdate();
+        stmt.executeUpdate();
         stmt.close();
     }
 
@@ -1138,7 +1065,7 @@ public class TradeJdbc implements TradeServices {
 
         stmt.setInt(1, holdingID);
         stmt.setInt(2, orderID);
-        int count = stmt.executeUpdate();
+        stmt.executeUpdate();
         stmt.close();
     }
 
@@ -1152,17 +1079,7 @@ public class TradeJdbc implements TradeServices {
         stmt.setString(5, creditcard);
         stmt.setString(6, userID);
 
-        int count = stmt.executeUpdate();
-        stmt.close();
-    }
-
-    private void updateQuoteVolume(Connection conn, QuoteDataBean quoteData, double quantity) throws Exception {
-        PreparedStatement stmt = getStatement(conn, updateQuoteVolumeSQL);
-
-        stmt.setDouble(1, quantity);
-        stmt.setString(2, quoteData.getSymbol());
-
-        int count = stmt.executeUpdate();
+        stmt.executeUpdate();
         stmt.close();
     }
 
@@ -1241,16 +1158,8 @@ public class TradeJdbc implements TradeServices {
         stmt.setDouble(3, newVolume);
         stmt.setString(4, symbol);
 
-        int count = stmt.executeUpdate();
+        stmt.executeUpdate();
         stmt.close();
-    }
-
-    private void publishQuotePriceChange(QuoteDataBean quoteData, BigDecimal oldPrice, BigDecimal changeFactor,
-        double sharesTraded) throws Exception {
-        if (!TradeConfig.getPublishQuotePriceChange())
-            return;
-        Log.error("TradeJdbc:publishQuotePriceChange - is not implemented for this runtime mode");
-        throw new UnsupportedOperationException("TradeJdbc:publishQuotePriceChange-  is not implemented for this runtime mode");
     }
 
     /**
@@ -1290,8 +1199,7 @@ public class TradeJdbc implements TradeServices {
             stmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
             stmt.setString(2, userID);
 
-            int rows = stmt.executeUpdate();
-            // ?assert rows==1?
+            stmt.executeUpdate();
             stmt.close();
 
             stmt = getStatement(conn, getAccountForUserSQL);
@@ -1581,8 +1489,6 @@ public class TradeJdbc implements TradeServices {
 
     private static final String getAccountSQL = "select * from accountejb a where a.accountid = ?";
 
-    private static final String getAccountForUpdateSQL = "select * from accountejb a where a.accountid = ? for update";
-
     private final static String getAccountProfileSQL =
         "select * from accountprofileejb ap where ap.userid = "
             + "(select profile_userid from accountejb a where a.profile_userid=?)";
@@ -1641,9 +1547,6 @@ public class TradeJdbc implements TradeServices {
 
     private static final String updateOrderHoldingSQL =
         "update orderejb set " + "holding_holdingID = ? " + "where orderid = ?";
-
-    private static final String updateQuoteVolumeSQL =
-        "update quoteejb set " + "volume = volume + ? " + "where symbol = ?";
 
     private static final String updateQuotePriceVolumeSQL =
         "update quoteejb set " + "price = ?, change1 = ? - open1, volume = ? " + "where symbol = ?";

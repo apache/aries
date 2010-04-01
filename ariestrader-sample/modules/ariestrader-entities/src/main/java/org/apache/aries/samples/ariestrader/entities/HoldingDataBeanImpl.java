@@ -77,9 +77,6 @@ public class HoldingDataBeanImpl implements HoldingDataBean, Serializable {
 	@JoinColumn(name = "QUOTE_SYMBOL")
 	private QuoteDataBeanImpl quote;
 
-	// @Version
-	// private Integer optLock;
-
 	public HoldingDataBeanImpl() {
 	}
 
