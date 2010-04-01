@@ -15,6 +15,7 @@ package org.apache.aries.subsystem.spi;
 
 import org.apache.aries.subsystem.Subsystem;
 import org.apache.aries.subsystem.SubsystemException;
+import org.osgi.framework.BundleContext;
 
 /**
  * A ResourceProcessor is an object that can manage a given resource type.
@@ -26,16 +27,20 @@ import org.apache.aries.subsystem.SubsystemException;
  */
 public interface ResourceProcessor {
 
-    void begin(Subsystem subsystem);
+    Session createSession(BundleContext context);
 
-    void process(Resource resource) throws SubsystemException;
+    public static interface Session {
 
-    void dropped(Resource resource) throws SubsystemException;
+        void process(Resource resource) throws SubsystemException;
 
-    void prepare() throws SubsystemException;
+        void dropped(Resource resource) throws SubsystemException;
 
-    void commit();
+        void prepare() throws SubsystemException;
 
-    void rollback();
+        void commit();
+
+        void rollback();
+
+    }
 
 }
