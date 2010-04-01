@@ -329,6 +329,28 @@ public class ProxySubclassGeneratorTest
     assertTrue("The proxy object should be equal to another proxy instance of the same delegate", o2.equals(o));
   }
   
+  private static class ProxyTestOverridesFinalize {
+      public boolean finalizeCalled = false;
+      
+      @Override
+      protected void finalize() {
+          finalizeCalled = true;
+      }
+  }
+  
+  @Test
+  public void testFinalizeNotCalled() throws Exception {
+      ProxyTestOverridesFinalize testObj = new ProxyTestOverridesFinalize();
+      InvocationHandler ih = new Collaborator(null, null, testObj);
+      Object o = ProxySubclassGenerator.newProxySubclassInstance(ProxyTestOverridesFinalize.class, ih);
+      
+      Method m = o.getClass().getDeclaredMethod("finalize");
+      m.setAccessible(true);
+      m.invoke(o);
+      
+      assertFalse(testObj.finalizeCalled);
+  }
+  
 
   private Class<?> getGeneratedSubclass() throws Exception
   {
