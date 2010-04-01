@@ -237,7 +237,7 @@
     </dependencyManagement>
 
     <modules>
-        <module>ariestrader-sample</module>
+        <module>ariestrader</module>
         <module>blog</module>
         <module>blueprint-sample-idverifier</module>
         <module>helloworld-samples</module>
