@@ -13,8 +13,6 @@
  */
 package org.apache.aries.subsystem;
 
-import java.util.EventObject;
-
 /**
  * Event sent to listeners when an operation has been performed on a subsystem.
  */

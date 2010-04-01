@@ -15,6 +15,7 @@ package org.apache.aries.subsystem;
 
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Subsystems administration interface.
@@ -32,18 +33,18 @@ import java.util.Collection;
 public interface SubsystemAdmin {
 
     /**
-     * Retrieve a subsystem given its id.
-     *
-     * @param id
-     * @return
-     */
-    Subsystem getSubsystem(long id);
-
-    /**
      * Retrieve all subsystems managed by this service
      * @return
      */
-    Collection<Subsystem> getSubsystems();
+    Map<Long, Subsystem> getSubsystems();
+
+    /**
+     * Retrieve a subsystem given its scope.
+     *
+     * @param scope
+     * @return
+     */
+    Subsystem getSubsystem(String scope);
 
     /**
      * Install a new subsystem.

@@ -60,11 +60,19 @@ public class SubsystemConstants {
     public static final String SUBSYSTEM_UPDATELOCATION  = "Subsystem-UpdateLocation";
 
     public static final String SUBSYSTEM_CONTENT         = "Subsystem-Content";
+    public static final String SUBSYSTEM_RESOURCES       = "Subsystem-Resources";
+
     public static final String SUBSYSTEM_IMPORTPACKAGE   = "Subsystem-ImportPackage";
     public static final String SUBSYSTEM_EXPORTPACKAGE   = "Subsystem-ExportPackage";
     public static final String SUBSYSTEM_IMPORTSERVICE   = "Subsystem-ImportService";
     public static final String SUBSYSTEM_EXPORTSERVICE   = "Subsystem-ExportService";
     public static final String SUBSYSTEM_REQUIREBUNDLE   = "Subsystem-RequireBundle";
+
+    /**
+     * Directive on the manifest header of a composite indicating the
+     * composite is managed as a subsystem.
+     */
+    public static final String SUBSYSTEM_DIRECTIVE       = "subsystem";
 
     /*
     String APPLICATION_SYMBOLICNAME = "Application-SymbolicName";
