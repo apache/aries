@@ -1132,8 +1132,12 @@ public class TradeJdbc implements TradeServices {
             }
 
             BigDecimal newPrice = changeFactor.multiply(oldPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal low = quoteData.getLow();
+            BigDecimal high= quoteData.getHigh();
+            if (newPrice.compareTo(high) == 1) high = newPrice;
+            else if (newPrice.compareTo(low) == -1) low = newPrice;
 
-            updateQuotePriceVolume(conn, quoteData.getSymbol(), newPrice, newVolume);
+            updateQuotePriceVolume(conn, quoteData.getSymbol(), newPrice, newVolume, low, high);
             quoteData = getQuote(conn, symbol);
 
             commit(conn);
@@ -1148,7 +1152,7 @@ public class TradeJdbc implements TradeServices {
         return quoteData;
     }
 
-    private void updateQuotePriceVolume(Connection conn, String symbol, BigDecimal newPrice, double newVolume)
+    private void updateQuotePriceVolume(Connection conn, String symbol, BigDecimal newPrice, double newVolume, BigDecimal low, BigDecimal high)
         throws Exception {
 
         PreparedStatement stmt = getStatement(conn, updateQuotePriceVolumeSQL);
@@ -1156,7 +1160,9 @@ public class TradeJdbc implements TradeServices {
         stmt.setBigDecimal(1, newPrice);
         stmt.setBigDecimal(2, newPrice);
         stmt.setDouble(3, newVolume);
-        stmt.setString(4, symbol);
+        stmt.setBigDecimal(4, low);
+        stmt.setBigDecimal(5, high);
+        stmt.setString(6, symbol);
 
         stmt.executeUpdate();
         stmt.close();
@@ -1549,7 +1555,7 @@ public class TradeJdbc implements TradeServices {
         "update orderejb set " + "holding_holdingID = ? " + "where orderid = ?";
 
     private static final String updateQuotePriceVolumeSQL =
-        "update quoteejb set " + "price = ?, change1 = ? - open1, volume = ? " + "where symbol = ?";
+        "update quoteejb set " + "price = ?, change1 = ? - open1, volume = ?, low = ?, high = ? " + "where symbol = ?";
 
     public void init() {
         if (initialized)
