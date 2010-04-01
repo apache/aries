@@ -30,6 +30,11 @@ public interface Resource {
     public static final String TYPE_BUNDLE = "bundle";
 
     /**
+     * Identify resources that are subsystems.
+     */
+    public static final String TYPE_SUBSYSTEM = "subsystem";
+
+    /**
      * Symbolic name of the resource
      *
      * @return
