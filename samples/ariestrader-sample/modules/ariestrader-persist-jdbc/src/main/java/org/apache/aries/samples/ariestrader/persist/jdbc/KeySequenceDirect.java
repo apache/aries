@@ -26,8 +26,6 @@ import java.sql.ResultSet;
 
 import org.apache.aries.samples.ariestrader.util.*;
 
-import org.apache.aries.samples.ariestrader.*;
-
 public class KeySequenceDirect {
 
     private static HashMap keyMap = new HashMap();
@@ -69,7 +67,7 @@ public class KeySequenceDirect {
                 int keyVal = 0;
                 stmt2.setString(1, keyName);
                 stmt2.setInt(2, keyVal);
-                int rowCount = stmt2.executeUpdate();
+                stmt2.executeUpdate();
                 stmt2.close();
                 stmt.close();
                 stmt = conn.prepareStatement(getKeyForUpdateSQL);
@@ -85,7 +83,7 @@ public class KeySequenceDirect {
             stmt = conn.prepareStatement(updateKeyValueSQL);
             stmt.setInt(1, keyVal + TradeConfig.KEYBLOCKSIZE);
             stmt.setString(2, keyName);
-            int rowCount = stmt.executeUpdate();
+            stmt.executeUpdate();
             stmt.close();
 
             Collection block = new KeyBlock(keyVal, keyVal + TradeConfig.KEYBLOCKSIZE - 1);

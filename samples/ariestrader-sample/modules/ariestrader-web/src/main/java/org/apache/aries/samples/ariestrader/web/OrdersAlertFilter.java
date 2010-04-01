@@ -88,7 +88,6 @@ public class OrdersAlertFilter implements Filter {
         }
 
         ServletContext sc = filterConfig.getServletContext();
-        //String xyz = (String) sc.getAttribute("hitCounter");
         chain.doFilter(req, resp/*wrapper*/);        
 
     }

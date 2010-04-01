@@ -65,9 +65,6 @@ public class AccountProfileDataBeanImpl implements AccountProfileDataBean, java.
 	@OneToOne(mappedBy="profile", fetch=FetchType.LAZY)
     private AccountDataBeanImpl account;
 
-//    @Version
-//    private Integer optLock;
-
     public AccountProfileDataBeanImpl() {
     }
 

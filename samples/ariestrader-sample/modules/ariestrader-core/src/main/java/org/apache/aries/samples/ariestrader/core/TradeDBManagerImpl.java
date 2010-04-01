@@ -16,8 +16,6 @@
  */
 package org.apache.aries.samples.ariestrader.core;
 
-import javax.naming.InitialContext;
-
 import javax.sql.DataSource;
 
 import org.apache.aries.samples.ariestrader.api.persistence.RunStatsDataBean;
@@ -37,7 +35,7 @@ import java.sql.Statement;
 
 /**
  * TradeDBManagerImpl centralizes and simplifies the DB
- * configuartion methods that are shared by some TradeServices
+ * configuration methods that are shared by some TradeServices
  * implementations.
  * 
  * @see
@@ -47,8 +45,6 @@ import java.sql.Statement;
 public class TradeDBManagerImpl implements TradeDBManager {
 
     private DataSource dataSource = null;
-
-    private static InitialContext context;
 
     private static boolean initialized = false;
 
@@ -207,23 +203,23 @@ public class TradeDBManagerImpl implements TradeDBManager {
             }
 
             stmt = getStatement(conn, "delete from holdingejb where holdingejb.account_accountid is null");
-            int x = stmt.executeUpdate();
+            stmt.executeUpdate();
             stmt.close();
 
             // Count and Delete newly registered users (users w/ id that start
             // "ru:%":
             stmt = getStatement(conn, "delete from accountprofileejb where userid like 'ru:%'");
-            int rowCount = stmt.executeUpdate();
+            stmt.executeUpdate();
             stmt.close();
 
             stmt = getStatement(conn,
                                 "delete from orderejb where account_accountid in (select accountid from accountejb a where a.profile_userid like 'ru:%')");
-            rowCount = stmt.executeUpdate();
+            stmt.executeUpdate();
             stmt.close();
 
             stmt = getStatement(conn,
                                 "delete from holdingejb where account_accountid in (select accountid from accountejb a where a.profile_userid like 'ru:%')");
-            rowCount = stmt.executeUpdate();
+            stmt.executeUpdate();
             stmt.close();
 
             stmt = getStatement(conn, "delete from accountejb where profile_userid like 'ru:%'");
@@ -266,7 +262,7 @@ public class TradeDBManagerImpl implements TradeDBManager {
 
             stmt =
             getStatement(conn, "update accountejb set logoutCount=0,loginCount=0 where profile_userID like 'uid:%'");
-            rowCount = stmt.executeUpdate();
+            stmt.executeUpdate();
             stmt.close();
 
             // count holdings for trade users
@@ -428,7 +424,7 @@ public class TradeDBManagerImpl implements TradeDBManager {
     }
 
     /*
-     * Allocate a new prepared statment for this connection
+     * Allocate a new prepared statement for this connection
      */
     private PreparedStatement getStatement(Connection conn, String sql) throws Exception {
         return conn.prepareStatement(sql);

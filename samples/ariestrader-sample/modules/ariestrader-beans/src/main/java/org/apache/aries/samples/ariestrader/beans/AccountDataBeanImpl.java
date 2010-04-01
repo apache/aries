@@ -61,8 +61,6 @@ public class AccountDataBeanImpl implements AccountDataBean, Serializable {
     
     private AccountProfileDataBean profile;
 
-//    @Version
-//    private Integer optLock;
 
     /* Accessor methods for relationship fields are only included for the AccountProfile profileID */
     
@@ -208,12 +206,6 @@ public class AccountDataBeanImpl implements AccountDataBean, Serializable {
     public void setProfileID(String profileID) {
         this.profileID = profileID;
     }
-
-    /* Disabled for D185273
-     public String getUserID() {
-         return getProfileID();
-     }
-     */
 
     public Collection<OrderDataBean> getOrders() {
         return orders;

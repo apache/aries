@@ -18,8 +18,6 @@ package org.apache.aries.samples.ariestrader.beans;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Collection;
-
 import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.TradeConfig;
 import org.apache.aries.samples.ariestrader.api.persistence.QuoteDataBean;

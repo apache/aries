@@ -52,9 +52,6 @@ public class HoldingDataBeanImpl implements HoldingDataBean, Serializable {
     
     private QuoteDataBean quote;
 
-//    @Version
-//    private Integer optLock;
-
     public HoldingDataBeanImpl() {
     }
 
@@ -164,12 +161,6 @@ public class HoldingDataBeanImpl implements HoldingDataBean, Serializable {
     public void setAccount(AccountDataBean account) {
         this.account = account;
     }
-
-    /* Disabled for D185273
-     public String getSymbol() {
-         return getQuoteID();
-     }
-     */
     
     public QuoteDataBean getQuote() {
         return quote;

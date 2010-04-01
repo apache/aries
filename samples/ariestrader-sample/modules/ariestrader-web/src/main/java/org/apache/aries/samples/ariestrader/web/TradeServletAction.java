@@ -17,12 +17,9 @@
  */
 package org.apache.aries.samples.ariestrader.web;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import org.apache.aries.samples.ariestrader.api.TradeServiceUtilities;
 import org.apache.aries.samples.ariestrader.api.TradeServices;
 import org.apache.aries.samples.ariestrader.api.persistence.*;
 import org.apache.aries.samples.ariestrader.util.*;
@@ -160,8 +157,7 @@ public class TradeServletAction {
             results = "Update profile error: please fill in all profile information fields";
             doUpdate = false;
         }
-//        AccountProfileDataBean accountProfileData = new AccountProfileDataBean(
-//                userID, password, fullName, address, email, creditcard);
+
         try {
             if (doUpdate) {
                 tradeServices.updateAccountProfile(userID, password, fullName, address, email, creditcard);
@@ -263,9 +259,6 @@ public class TradeServletAction {
             HttpServletResponse resp, String userID, String results)
             throws javax.servlet.ServletException, java.io.IOException {
         
-        BigDecimal balance;
-        String result = "";
-        
         try {
             AccountDataBean accountData = tradeServices.getAccountData(userID);
             Collection holdingDataBeans = tradeServices.getHoldings(userID);
@@ -291,7 +284,6 @@ public class TradeServletAction {
                       + "treating this as a user error and forwarding on to a new page",
                       e);
         } catch (Exception e) {
-            boolean javaee = false;
             throw new ServletException("TradeServletAction.doHome(...)" + " exception user =" + userID, e);
         }
 
@@ -420,7 +412,7 @@ public class TradeServletAction {
                             "illegal argument, information should be in exception string",
                             "treating this as a user error and forwarding on to a new page");
         } catch (Exception e) {
-            // log the exception and foward to a error page
+            // log the exception and forward to a error page
             Log.error(e, "TradeServletAction.doLogout(...):",
                     "Error logging out" + userID, "fowarding to an error page");
             // set the status_code to 500
@@ -472,7 +464,7 @@ public class TradeServletAction {
             throws ServletException, IOException {
 
         try {
-            // Get the holdiings for this user
+            // Get the holdings for this user
 
             Collection quoteDataBeans = new ArrayList();
             Collection holdingDataBeans = tradeServices.getHoldings(userID);
@@ -505,8 +497,7 @@ public class TradeServletAction {
                     .getPage(TradeConfig.PORTFOLIO_PAGE));
             // log the exception with an error level of 3 which means, handled
             // exception but would invalidate a automation run
-            Log
-                    .error(
+            Log.error(
                             e,
                             "TradeServletAction.doPortfolio(...)",
                             "illegal argument, information should be in exception string",
@@ -666,12 +657,10 @@ public class TradeServletAction {
             // just log the exception and then later on I will redisplay the
             // portfolio page
             // because this is just a user exception
-            Log
-                    .error(
-                            e,
-                            "TradeServletAction.doSell(...)",
-                            "illegal argument, information should be in exception string",
-                            "user error");
+            Log.error(e,
+                      "TradeServletAction.doSell(...)",
+                      "illegal argument, information should be in exception string",
+                      "user error");
         } catch (Exception e) {
             // log the exception with error page
             throw new ServletException("TradeServletAction.doSell(...)"
@@ -696,10 +685,5 @@ public class TradeServletAction {
             throws ServletException, IOException {
 
         ctx.getRequestDispatcher(page).include(req, resp);
-    }
-
-    private void sendRedirect(HttpServletResponse resp, String page)
-            throws ServletException, IOException {
-        resp.sendRedirect(resp.encodeRedirectURL(page));
     }
 }

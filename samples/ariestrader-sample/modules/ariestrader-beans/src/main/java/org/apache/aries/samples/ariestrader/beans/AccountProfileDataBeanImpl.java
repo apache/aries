@@ -45,9 +45,6 @@ public class AccountProfileDataBeanImpl implements AccountProfileDataBean, java.
     
     private AccountDataBean account;
 
-//    @Version
-//    private Integer optLock;
-
     public AccountProfileDataBeanImpl() {
     }
 
