@@ -643,6 +643,8 @@ public class TradeJpaAm implements TradeServices {
             quote.setPrice(newPrice);
             quote.setVolume(quote.getVolume() + sharesTraded);
             quote.setChange((newPrice.subtract(quote.getOpen()).doubleValue()));
+            if (newPrice.compareTo(quote.getHigh()) == 1) quote.setHigh(newPrice);
+            else if (newPrice.compareTo(quote.getLow()) == -1) quote.setLow(newPrice);
 
             entityManager.getTransaction().begin();
             entityManager.merge(quote);
