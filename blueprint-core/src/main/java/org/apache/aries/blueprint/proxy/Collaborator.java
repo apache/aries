@@ -135,6 +135,9 @@ class Collaborator implements InvocationHandler, Serializable {
                 args[0] = AsmInterceptorWrapper.unwrapObject(args[0]);
             }
             toReturn = delegate.invoke(proxy, method, args);
+        } else if (method.getName().equals("finalize") && method.getParameterTypes().length == 0) {
+            // special case finalize, don't route through to delegate because that will get its own call
+            toReturn = null;
         } else 
         // Proxy the call through to the delegate, wrapping call in 
         // interceptor invocations.
