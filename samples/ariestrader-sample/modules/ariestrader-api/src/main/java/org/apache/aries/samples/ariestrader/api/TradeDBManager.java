@@ -20,7 +20,7 @@ import org.apache.aries.samples.ariestrader.api.persistence.RunStatsDataBean;
 
 /**
   * TradeDBManager interface centralizes and simplifies the DB
-  * configuartion methods that are shared by some TradeServices
+  * configuration methods that are shared by some TradeServices
   * implementations.
   *
   */ 

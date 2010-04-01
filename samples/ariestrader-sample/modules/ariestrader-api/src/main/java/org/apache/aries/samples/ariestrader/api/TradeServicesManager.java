@@ -48,9 +48,9 @@ public interface TradeServicesManager {
 
     /**
       * Compute and return a snapshot of the current market
-      * conditions.  This includes the TSIA - and index of the prive
-      * of the top 100 Trade stock quotes.  Ths openTSIA(the index
-      * at the open), The volune of shares traded, Top Stocks gain
+      * conditions.  This includes the TSIA - and index of the 
+      * of the top 100 Trade stock quotes.  The openTSIA(the index
+      * at the open), The volume of shares traded, Top Stocks gain
       * and loss.
       * 
       * This is a special version of this function which will cache

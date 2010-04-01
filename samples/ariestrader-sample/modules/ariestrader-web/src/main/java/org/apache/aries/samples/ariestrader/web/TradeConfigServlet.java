@@ -103,13 +103,11 @@ public class TradeConfigServlet extends HttpServlet {
 	
 	
 	/**
-	 * Update Trade runtime configuration paramaters
+	 * Update Trade runtime configuration parameters
 	 * Creation date: (2/8/2000 3:44:24 PM)
 	 */
 	void doConfigUpdate(HttpServletRequest req, HttpServletResponse resp)
 		throws Exception {
-
-		TradeConfig currentConfig = new TradeConfig();
 
 		String currentConfigStr = "\n\n########## Trade configuration update. Current config:\n\n";
 		String runTimeModeStr = req.getParameter("RunTimeMode");
@@ -125,7 +123,6 @@ public class TradeConfigServlet extends HttpServlet {
 			}
 			catch (Exception e)
 			{
-				//>>rjm
 				Log.error(
 					e, 
 					"TradeConfigServlet.doConfigUpdate(..): minor exception caught", 
@@ -171,7 +168,6 @@ public class TradeConfigServlet extends HttpServlet {
 			}
 			catch (Exception e)
 			{
-				//>>rjm
 				Log.error(
 					e, 
 					"TradeConfigServlet.doConfigUpdate(..): minor exception caught", 
@@ -194,7 +190,6 @@ public class TradeConfigServlet extends HttpServlet {
 			}
 			catch (Exception e)
 			{
-				//>>rjm
 				Log.error(
 					e, 
 					"TradeConfigServlet.doConfigUpdate(..): minor exception caught", 
@@ -311,13 +306,11 @@ public class TradeConfigServlet extends HttpServlet {
 			}
 			catch (Exception e)
 			{
-				//>>rjm
 				Log.error(
 					e, 
 					"TradeConfigServlet: minor exception caught", 
 					"trying to set max_quotes, error on parsing int " + parm, 
 					"reverting to current value " + TradeConfig.getMAX_QUOTES());
-				//<<rjm
 
 			} //On error, revert to saved
 		}

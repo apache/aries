@@ -38,8 +38,6 @@ public class PingSession3Object implements Serializable {
 
 	String s1 = new String("123456789012");	 
 	String s2 = new String("abcdefghijkl");
-//										 String type size = ~2*12*16 =   384
-//										 Total blob size (w/o overhead) =  1024
 
 
 //	 The Session blob must be filled with data to avoid compression of the blob during serialization

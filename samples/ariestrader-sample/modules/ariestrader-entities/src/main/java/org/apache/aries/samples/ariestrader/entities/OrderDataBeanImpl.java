@@ -76,7 +76,7 @@ public class OrderDataBeanImpl implements OrderDataBean, Serializable {
 	@Column(name = "ORDERSTATUS")
 	private String orderStatus; /*
 								 * orderStatus (open, processing, completed,
-								 * closed, cancelled)
+								 * closed, canceled)
 								 */
 	@Column(name = "OPENDATE")
 	@Temporal(TemporalType.TIMESTAMP)

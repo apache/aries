@@ -59,26 +59,6 @@ public class MarketSummaryDataBean implements Serializable
 		
 	}
 	
-//	public static MarketSummaryDataBean getRandomInstance() {
-//		Collection gain = new ArrayList();
-//		Collection lose = new ArrayList();
-//		
-//		for (int ii = 0; ii < 5; ii++) {
-//			QuoteDataBean quote1 = QuoteDataBean.getRandomInstance();
-//			QuoteDataBean quote2 = QuoteDataBean.getRandomInstance();
-//			
-//			gain.add(quote1);
-//			lose.add(quote2);
-//		}
-//		
-//		return new MarketSummaryDataBean(
-//			TradeConfig.rndBigDecimal(1000000.0f),
-//			TradeConfig.rndBigDecimal(1000000.0f),
-//			TradeConfig.rndQuantity(),
-//			gain,
-//			lose
-//		);
-//	}
 
 	public String toString()
 	{

@@ -86,7 +86,7 @@ public class TradeConfig {
 	private static int MAX_USERS = 200;
 	private static int MAX_QUOTES = 400;
 
-	/* Trade Database specific paramters */
+	/* Trade Database specific parameters */
 	public static String JDBC_UID = null;
 	public static String JDBC_PWD = null;
 
@@ -105,14 +105,12 @@ public class TradeConfig {
 	public static int KEYBLOCKSIZE = 1000;
 	public static int QUOTES_PER_PAGE = 10;
 	public static boolean RND_USER = true;
-	//public static int		RND_SEED = 0;
 	private static int MAX_HOLDINGS = 10;
 	private static int count = 0;
 	private static Object userID_count_semaphore = new Object();
 	private static int userID_count = 0;
 	private static String hostName = null;
 	private static Random r0 = new Random(System.currentTimeMillis());
-	//private static Random r1 = new Random(RND_SEED);
 	private static Random randomNumberGenerator = r0;
 	public static final String newUserPrefix = "ru:";
 	public static final int verifyPercent = 5;
@@ -231,17 +229,6 @@ public class TradeConfig {
 		//JSP Interface	
 	};
 
-	// These are the property settings the VAJ access beans look for.	
-	private static final String NAMESERVICE_TYPE_PROPERTY =
-		"java.naming.factory.initial";
-	private static final String NAMESERVICE_PROVIDER_URL_PROPERTY =
-		"java.naming.provider.url";
-
-	// FUTURE:
-	// If a "trade2.properties" property file is supplied, reset the default values 
-	// to match those specified in the file. This provides a persistent runtime 
-	// property mechanism during server startup
-
 	/**
 	 * Return the hostname for this system
 	 * Creation date: (2/16/2000 9:02:25 PM)
@@ -251,7 +238,7 @@ public class TradeConfig {
 		try {
 			if (hostName == null) {
 				hostName = java.net.InetAddress.getLocalHost().getHostName();
-				//Strip of fully qualifed domain if necessary
+				//Strip of fully qualified domain if necessary
 				try {
 					hostName = hostName.substring(0, hostName.indexOf('.'));
 				} catch (Exception e) {
@@ -418,7 +405,6 @@ public class TradeConfig {
 	}
 	private final static BigDecimal ONE = new BigDecimal(1.0);
 	public static BigDecimal getRandomPriceChangeFactor() {
-		// CJB (DAYTRADER-25) - Vary change factor between 1.2 and 0.8
 		double percentGain = rndFloat(1) * 0.2;
 		if (random() < .5)
 			percentGain *= -1;
@@ -520,7 +506,6 @@ public class TradeConfig {
 					}
 				}
 			} catch (Exception e) {
-				//>>rjm
 				Log.error(
 					"TradeConfig.setConfigParm(..): minor exception caught"
 						+ "trying to set runtimemode to "
@@ -641,7 +626,6 @@ public class TradeConfig {
 			try {
 				MAX_QUOTES = Integer.parseInt(value);
 			} catch (Exception e) {
-				//>>rjm
 				Log.error(
 					"TradeConfig.setConfigParm(...) minor exception caught"
 						+ "Setting max_quotes, error parsing string to int "
@@ -649,7 +633,6 @@ public class TradeConfig {
 						+ "reverting to current value: "
 						+ MAX_QUOTES,
 					e);
-				//<<rjm
 			} //On error, revert to saved		
 		} else if (parm.equalsIgnoreCase("primIterations")) {
 			try {
@@ -847,7 +830,6 @@ public class TradeConfig {
 	
 	public static void setSoapURL(String value) {
 		SoapURL = value;
-//		TradeWebSoapProxy.updateServicePort();
 	}
 	
 	public static int getAccessMode() {
@@ -856,7 +838,6 @@ public class TradeConfig {
 	
 	public static void setAccessMode(int value) {
 		accessMode = value;
-//		TradeWebSoapProxy.updateServicePort();
 	}
 
     public static int getRunTimeMode() {

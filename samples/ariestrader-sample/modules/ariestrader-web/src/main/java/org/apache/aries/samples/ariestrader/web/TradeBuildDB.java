@@ -41,8 +41,6 @@ import org.apache.aries.samples.ariestrader.util.*;
  */
 public class TradeBuildDB {
 
-    private boolean verbose = true;
-    private TradeConfig t = new TradeConfig();
     private static TradeServicesManager tradeServicesManager = null;
     private static TradeDBManager tradeDBManager = null;
 
@@ -182,9 +180,8 @@ public class TradeBuildDB {
             symbol = "s:" + i;
             companyName = "S" + i + " Incorporated";
             try {
-                QuoteDataBean quoteData =
-                    tradeServices.createQuote(symbol, companyName,
-                        new java.math.BigDecimal(TradeConfig.rndPrice()));
+                tradeServices.createQuote(symbol, companyName,
+				    new java.math.BigDecimal(TradeConfig.rndPrice()));
                 if (i % 10 == 0) {
                     out.print("....." + symbol);
                     if (i % 100 == 0) {
@@ -223,7 +220,6 @@ public class TradeBuildDB {
                 AccountDataBean accountData =
                     tradeServices.register(userID, "xxx", fullname, address,
                         email, creditcard, new BigDecimal(initialBalance));
-                String results;
                 if (accountData != null) {
                     if (i % 50 == 0) {
                         out.print("<BR>Account# " + accountData.getAccountID()
@@ -233,13 +229,11 @@ public class TradeBuildDB {
                     // 0-MAX_HOLDING (inclusive), avg holdings per user = (MAX-0)/2
                     int holdings = TradeConfig.rndInt(TradeConfig.getMAX_HOLDINGS() + 1); 
                     double quantity = 0;
-                    OrderDataBean orderData;
                     for (int j = 0; j < holdings; j++) {
                         symbol = TradeConfig.rndSymbol();
                         quantity = TradeConfig.rndQuantity();
-                        orderData =
-                            tradeServices.buy(userID, symbol, quantity,
-                                TradeConfig.orderProcessingMode);
+                        tradeServices.buy(userID, symbol, quantity,
+						    TradeConfig.orderProcessingMode);
                     }
                     if (i % 50 == 0) {
                         out.println(" has " + holdings + " holdings.");
@@ -253,8 +247,6 @@ public class TradeBuildDB {
 
             } catch (Exception e) {
                 if (errorCount++ >= 10) {
-                    AccountProfileDataBean accountProfileData = null;
-
                     String error = "Populate Trade DB aborting after 10 user registration errors. "+
                         "Check the log for details. <BR><BR> Exception is: <BR>" + e.toString();
                     Log.error(e, error);
@@ -284,7 +276,6 @@ public class TradeBuildDB {
                     if (s.endsWith(";")) // reached end of sql statement
                     {
                         sql = sql.replace(';', ' '); // remove the semicolon
-                        // System.out.println (sql);
                         sqlBuffer.add(sql);
                         sql = "";
                     }

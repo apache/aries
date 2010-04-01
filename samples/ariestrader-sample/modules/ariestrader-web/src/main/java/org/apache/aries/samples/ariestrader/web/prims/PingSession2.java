@@ -114,9 +114,9 @@ public void doGet(HttpServletRequest request, HttpServletResponse response)
 
 	catch (Exception e)
 	{
-		//log the excecption
+		//log the exception
 		Log.error(e, "PingSession2.doGet(...): error."); 
-		//set the server responce to 500 and forward to the web app defined error page 
+		//set the server response to 500 and forward to the web app defined error page 
 		response.sendError(
 			500, 
 			"PingSession2.doGet(...): error. " + e.toString()); 

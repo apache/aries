@@ -41,13 +41,10 @@ import org.apache.aries.samples.ariestrader.api.TradeServices;
 public class TradeServicesManagerImpl implements TradeServicesManager {
 
     private static TradeServices[] tradeServicesList = new TradeServices[TradeConfig.runTimeModeNames.length] ;
-    private List tradeList = null;
-    private List tradeDBList = null;
 
     // This lock is used to serialize market summary operations.
     private static final Integer marketSummaryLock = new Integer(0);
     private static long nextMarketSummary = System.currentTimeMillis();
-//    private static MarketSummaryDataBean cachedMSDB = MarketSummaryDataBean.getRandomInstance();
     private static MarketSummaryDataBean cachedMSDB = null; 
     
     /**
@@ -89,7 +86,6 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
     public void setTradeServicesList(List tradeList) {
         if (Log.doTrace())
             Log.trace("TradeServicesManagerImpl:setTradeServicesList()" , tradeList);
-        this.tradeList = tradeList;
         Iterator it = tradeList.iterator();
         while (it.hasNext()) {  
             TradeServices tradeServices =  (TradeServices) it.next(); 

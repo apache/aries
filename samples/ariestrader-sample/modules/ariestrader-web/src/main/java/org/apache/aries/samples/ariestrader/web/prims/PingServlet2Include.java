@@ -22,8 +22,6 @@ import javax.servlet.http.*;
 
 import org.apache.aries.samples.ariestrader.util.*;
 
-import org.apache.aries.samples.ariestrader.*;
-
 /**
  *
  * PingServlet2Include tests servlet to servlet request dispatching. Servlet 1,
@@ -56,7 +54,6 @@ public class PingServlet2Include extends HttpServlet {
 	**/
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 		throws ServletException, IOException {
-		PingBean ab;
 		try {
 			res.setContentType("text/html");
 			
@@ -65,7 +62,6 @@ public class PingServlet2Include extends HttpServlet {
 				getServletConfig().getServletContext().getRequestDispatcher("/servlet/PingServlet2IncludeRcv").include(req, res);
 			}
 			
-//			ServletOutputStream out = res.getOutputStream();
 			java.io.PrintWriter out = res.getWriter();
 			out.println(
 				"<html><head><title>Ping Servlet 2 Include</title></head>"

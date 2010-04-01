@@ -46,7 +46,7 @@ public class RunStatsDataBean implements Serializable
 	private int buyOrderCount;
 	// count of sell orders of trade users			
 	private int sellOrderCount;
-	// count of cancelled orders of trade users			
+	// count of canceled orders of trade users			
 	private int cancelledOrderCount;
 	// count of open orders of trade users			
 	private int openOrderCount;
