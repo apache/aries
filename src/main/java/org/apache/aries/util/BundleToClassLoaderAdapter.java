@@ -21,6 +21,10 @@ package org.apache.aries.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -31,54 +35,85 @@ import org.osgi.framework.BundleReference;
 public class BundleToClassLoaderAdapter extends ClassLoader implements BundleReference
 {
   private Bundle b;
-  
+
   public BundleToClassLoaderAdapter(Bundle bundle)
   {
     b = bundle;
   }
-  
+
   @Override
-  public URL getResource(String name)
+  public URL getResource(final String name)
   {
-    return b.getResource(name);
+    return AccessController.doPrivileged(new PrivilegedAction<URL>() {
+      public URL run()
+      {
+        return b.getResource(name);
+      }
+    });
   }
 
   @Override
   public InputStream getResourceAsStream(String name)
   {
     URL url = getResource(name);
-    
+
     InputStream result = null;
-    
+
     if (url != null) {
       try {
         result = url.openStream();
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
       }
     }
-    
+
     return result;
   }
 
   @Override
-  public Enumeration<URL> getResources(String name) throws IOException
+  public Enumeration<URL> getResources(final String name) throws IOException
   {
-    @SuppressWarnings("unchecked")
-    Enumeration<URL> urls = b.getResources(name);
-    
+    Enumeration<URL> urls;
+    try {
+      urls = AccessController.doPrivileged(new PrivilegedExceptionAction<Enumeration<URL>>() {
+        @SuppressWarnings("unchecked")
+        public Enumeration<URL> run() throws IOException
+        {
+          return b.getResources(name);
+        }
+      });
+    } catch (PrivilegedActionException e) {
+      Exception cause = e.getException();
+
+      if (cause instanceof IOException) throw (IOException)cause;
+      if (cause instanceof RuntimeException) throw (RuntimeException)cause;
+      throw new IOException(name, cause);
+    }
+
     if (urls == null) {
       urls = Collections.enumeration(new ArrayList<URL>());
     }
-    
+
     return urls;
   }
 
   @Override
-  public Class<?> loadClass(String name) throws ClassNotFoundException
+  public Class<?> loadClass(final String name) throws ClassNotFoundException
   {
-    return b.loadClass(name);
+    try {
+      return AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
+        public Class<?> run() throws ClassNotFoundException
+        {
+          return b.loadClass(name);
+        }
+      });
+    } catch (PrivilegedActionException e) {
+      Exception cause = e.getException();
+
+      if (cause instanceof ClassNotFoundException) throw (ClassNotFoundException)cause;
+      if (cause instanceof RuntimeException) throw (RuntimeException)cause;
+
+      throw new ClassNotFoundException(name, cause);
+    }
   }
 
   public Bundle getBundle()
