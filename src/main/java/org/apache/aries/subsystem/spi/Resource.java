@@ -20,7 +20,8 @@ import org.osgi.framework.Version;
 
 /**
  * A resource is the representation of a uniquely identified and typed data.
- * A bundle is represented as a resource with a type {@link org.apache.aries.subsystem.SubsystemConstants#RESOURCE_TYPE_BUNDLE}.
+ * A bundle is represented as a resource with a type
+ * {@link org.apache.aries.subsystem.SubsystemConstants#RESOURCE_TYPE_BUNDLE}.
  */
 public interface Resource {
 
