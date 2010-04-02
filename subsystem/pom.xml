@@ -46,15 +46,33 @@
                 <version>${version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.aries.subsystem</groupId>
+                <artifactId>org.apache.aries.subsystem.core</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.subsystem</groupId>
+                <artifactId>org.osgi.service.composite</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>4.2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.utils</artifactId>
+                <version>1.0.0</version>
             </dependency>
 		</dependencies>
 	</dependencyManagement>
 
 	<modules>
-		<module>subsystem-api</module>
+        <module>subsystem-api</module>
+        <module>org.osgi.service.composite</module>
+        <module>subsystem-core</module>
+        <module>subsystem-install</module>
 	</modules>
 
 </project>
