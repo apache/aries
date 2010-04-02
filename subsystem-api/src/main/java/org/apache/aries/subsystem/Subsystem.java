@@ -85,7 +85,7 @@ public interface Subsystem {
     /**
      * Retrieve the scope of the subsystem.
      * The scope is computed as
-     *  <code>getSymbolicName() + getVersion().toString()</code>.
+     *  <code>getSymbolicName() + "_" + getVersion().toString()</code>.
      * It is guaranteed to be unique in the parent composite bundle
      * or framework, but it not guaranteed to be unique in the whole
      * OSGi framework, nor immutable as the value can change if
