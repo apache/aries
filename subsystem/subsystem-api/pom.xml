@@ -34,7 +34,7 @@
 
     <properties>
         <aries.osgi.export.pkg>
-            org.apache.aries.subsystem;
+            org.apache.aries.subsystem*
         </aries.osgi.export.pkg>
     </properties>
 
