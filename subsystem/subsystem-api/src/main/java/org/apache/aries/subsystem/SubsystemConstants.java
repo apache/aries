@@ -74,6 +74,10 @@ public class SubsystemConstants {
      */
     public static final String SUBSYSTEM_DIRECTIVE           = "subsystem";
 
+    /**
+     * Service property to be set on {@link org.apache.aries.subsystem.spi.ResourceProcessor}
+     * services to indicate which types of resource it can process.
+     */
     public static final String SERVICE_RESOURCE_TYPE         = "resource-type";
 
     /**
