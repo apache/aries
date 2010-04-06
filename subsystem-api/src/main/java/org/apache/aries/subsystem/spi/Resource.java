@@ -48,7 +48,7 @@ public interface Resource {
 
     /**
      * Location of the resource.
-     * Can be the real url of the resource, but not necesseraly.
+     * Can be the real url of the resource, but not necessarily.
      *
      * @return
      */
