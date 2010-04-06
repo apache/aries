@@ -16,7 +16,7 @@ package org.apache.aries.subsystem.spi;
 import org.apache.aries.subsystem.SubsystemException;
 
 /**
- * ResourceConverters are used to tranform resources into another kind of
+ * ResourceConverters are used to transform resources into another kind of
  * resources.  For example, convert a blueprint xml configuration file
  * into a deployable OSGi bundle
  *
