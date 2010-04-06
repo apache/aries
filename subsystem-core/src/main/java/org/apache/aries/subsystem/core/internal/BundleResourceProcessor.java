@@ -21,7 +21,6 @@ import org.apache.aries.subsystem.spi.Resource;
 import org.apache.aries.subsystem.spi.ResourceProcessor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 
 public class BundleResourceProcessor implements ResourceProcessor {
 
@@ -68,6 +67,7 @@ public class BundleResourceProcessor implements ResourceProcessor {
                     // Ignore
                 }
             }
+            installed.clear();
         }
     }
 
