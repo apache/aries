@@ -229,6 +229,7 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
                     // Ignore 
                 }
             }
+            installed.clear();
             closeTrackers();
         }
 
