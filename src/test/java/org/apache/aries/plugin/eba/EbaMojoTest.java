@@ -137,7 +137,7 @@ public class EbaMojoTest
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/" );
         expectedFiles.add( "META-INF/maven/" );
 //        expectedFiles.add( "META-INF/MANIFEST.MF" );
-        expectedFiles.add( "META-INF/application.mf" );
+        expectedFiles.add( "META-INF/APPLICATION.MF" );
         expectedFiles.add( "META-INF/" );
         expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
         expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
@@ -187,7 +187,7 @@ public class EbaMojoTest
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/" );
         expectedFiles.add( "META-INF/maven/" );
         expectedFiles.add( "META-INF/MANIFEST.MF" );
-        expectedFiles.add( "META-INF/application.mf" );
+        expectedFiles.add( "META-INF/APPLICATION.MF" );
         expectedFiles.add( "META-INF/" );
         expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
         expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
