@@ -30,6 +30,7 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 import javax.management.StandardMBean;
 
+import org.apache.aries.jmx.JMXThreadFactory;
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.MBeanHandler;
 import org.apache.aries.jmx.MBeanServiceTracker;
@@ -77,7 +78,7 @@ public class JMXAgentImpl implements JMXAgent {
     public JMXAgentImpl(Logger logger) {
         this.logger = logger;
         this.mbeansHandlers = new HashSet<MBeanHandler>();
-        this.registrationExecutor = Executors.newSingleThreadExecutor();
+        this.registrationExecutor = Executors.newSingleThreadExecutor(new JMXThreadFactory("JMX OSGi Agent"));
     }
 
     /**
