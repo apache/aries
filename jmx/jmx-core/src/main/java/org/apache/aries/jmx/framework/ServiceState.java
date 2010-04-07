@@ -37,6 +37,7 @@ import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
 
+import org.apache.aries.jmx.JMXThreadFactory;
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.codec.PropertyData;
 import org.apache.aries.jmx.codec.ServiceData;
@@ -160,7 +161,7 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
      */
     public void postRegister(Boolean registrationDone) {
         if (registrationDone && registrations.incrementAndGet() == 1) {
-            eventDispatcher = Executors.newSingleThreadExecutor();
+            eventDispatcher = Executors.newSingleThreadExecutor(new JMXThreadFactory("JMX OSGi Service State Event Dispatcher"));
             bundleContext.addServiceListener(serviceListener);
         }
     }

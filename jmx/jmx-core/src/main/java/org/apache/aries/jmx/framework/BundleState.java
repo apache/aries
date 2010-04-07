@@ -50,6 +50,7 @@ import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
 
+import org.apache.aries.jmx.JMXThreadFactory;
 import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.codec.BundleData;
 import org.apache.aries.jmx.codec.BundleEventData;
@@ -299,7 +300,7 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
      */
     public void postRegister(Boolean registrationDone) {
         if (registrationDone && registrations.incrementAndGet() == 1) {
-            eventDispatcher = Executors.newSingleThreadExecutor();
+            eventDispatcher = Executors.newSingleThreadExecutor(new JMXThreadFactory("JMX OSGi Bundle State Event Dispatcher"));
             bundleContext.addBundleListener(bundleListener);
         }
     }
