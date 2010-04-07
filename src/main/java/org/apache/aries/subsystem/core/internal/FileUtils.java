@@ -71,6 +71,7 @@ public class FileUtils {
                     entry = zis.getNextEntry();
                 } else {
                     mkdirs(file);
+                    entry = zis.getNextEntry();
                 }
             }//while
         } finally {
