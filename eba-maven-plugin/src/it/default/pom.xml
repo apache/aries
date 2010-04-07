@@ -33,13 +33,13 @@ under the License.
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.aries.application</groupId>
+                <groupId>org.apache.aries</groupId>
                 <artifactId>eba-maven-plugin</artifactId>
                 <version>@project.version@</version>
                 <extensions>true</extensions>
                 <configuration>
                     <includeJar>false</includeJar>
-                    <applicationManifestFile>src/main/custom/application.mf</applicationManifestFile>
+                    <applicationManifestFile>src/main/custom/APPLICATION.MF</applicationManifestFile>
                 </configuration>
             </plugin>
         </plugins>
