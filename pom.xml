@@ -65,7 +65,12 @@
                 <artifactId>org.apache.felix.utils</artifactId>
                 <version>1.0.0</version>
             </dependency>
-		</dependencies>
+	    <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.configadmin</artifactId>
+                <version>1.2.4</version>
+            </dependency>
+	</dependencies>
 	</dependencyManagement>
 
 	<modules>

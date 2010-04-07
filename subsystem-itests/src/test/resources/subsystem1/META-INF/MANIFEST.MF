@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Subsystem-ManifestVersion: 1.0
+Subsystem-SymbolicName: woodstox
+Subsystem-Version: 4.0.7
+Subsystem-Content: stax-api;location=mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/1.4.0
+
