@@ -64,7 +64,7 @@ class BlueprintEventDispatcher implements BlueprintListener, SynchronousBundleLi
 
     private final Set<BlueprintListener> listeners = new CopyOnWriteArraySet<BlueprintListener>();
     private final Map<Bundle, BlueprintEvent> states = new ConcurrentHashMap<Bundle, BlueprintEvent>();
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(new BlueprintThreadFactory("Blueprint Event Dispatcher"));
     private final ExecutorService sharedExecutor;
     private final EventAdminListener eventAdminListener;
     private final ServiceTracker containerListenerTracker;
