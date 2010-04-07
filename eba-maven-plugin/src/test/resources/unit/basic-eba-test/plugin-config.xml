@@ -24,7 +24,7 @@ under the License.
         <artifactId>eba-maven-plugin</artifactId>
 		<configuration>
 		  <ebaSourceDirectory>${basedir}/src/test/resources/unit/basic-eba-test/src/main/eba</ebaSourceDirectory>
-		  <applicationManifestFile>${basedir}/src/test/resources/unit/basic-eba-test/src/main/eba/META-INF/application.mf</applicationManifestFile>
+		  <applicationManifestFile>${basedir}/src/test/resources/unit/basic-eba-test/src/main/eba/META-INF/APPLICATION.MF</applicationManifestFile>
 		  <includeJar>true</includeJar>
           <addMavenDescriptor>true</addMavenDescriptor>
           <includeEmptyDirs>true</includeEmptyDirs>
