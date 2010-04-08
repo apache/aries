@@ -238,9 +238,7 @@
     </dependencyManagement>
 
     <modules>
-        <module>ariestrader</module>
-        <module>blog</module>
-        <module>blueprint</module>
+        <module>transaction-sample</module>
     </modules>
 
 </project>
