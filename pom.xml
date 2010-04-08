@@ -26,12 +26,12 @@
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint API</name>
     <description>
-        This bundle contains the blueprint api 1.0.0 and the corresponding xml schema.
+        This bundle contains the blueprint api 1.0.1 and the corresponding xml schema.
     </description>
 
     <properties>
          <aries.osgi.export>
-             org.osgi.service.blueprint*;version="1.0"
+             org.osgi.service.blueprint*;version="1.0.1"
          </aries.osgi.export>
          <aries.osgi.import>
              !org.osgi.service.blueprint*,
