@@ -57,27 +57,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     bundle = b;
     unit = parsedData;
     this.providerRef = providerRef;
-    //Override the default behaviour until OPENJPA-1491 is fixed, remove the inner class when
-    //it is
-    cl = new BundleDelegatingClassLoader(b){
-
-      @Override
-      protected Class<?> findClass(String className)
-          throws ClassNotFoundException {
-        try {
-         return super.findClass(className);
-        } catch (ClassNotFoundException cnfe) {
-          if("org.apache.openjpa.jdbc.kernel.JDBCBrokerFactory".equals(className))
-            try{
-              return providerRef.getBundle().loadClass(className);
-            } catch (ClassNotFoundException cnfe2) {
-              
-            }
-            throw cnfe;
-        }
-      }
-    };
-    //End temporary fix for OPENJPA-1491
+    cl = new BundleDelegatingClassLoader(b);
   }
   
   public void addTransformer(ClassTransformer arg0) {
