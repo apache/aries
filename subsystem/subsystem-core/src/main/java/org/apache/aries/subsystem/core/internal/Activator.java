@@ -39,9 +39,12 @@ public class Activator implements BundleActivator {
 
     private BundleContext context;
     private List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
+    private static SubsystemEventDispatcher eventDispatcher;
 
     public void start(BundleContext context) throws Exception {
         this.context = context;
+        eventDispatcher = new SubsystemEventDispatcher(context);
+        
         register(SubsystemAdmin.class, new SubsystemAdminFactory(), null);
         register(ResourceResolver.class,
                  new NoOpResolver(),
@@ -83,7 +86,7 @@ public class Activator implements BundleActivator {
             SubsystemAdminImpl admin = admins.get(systemBundleContext);
             long ref = 0;
             if (admin == null) {
-                admin = new SubsystemAdminImpl(systemBundleContext);
+                admin = new SubsystemAdminImpl(systemBundleContext, eventDispatcher);
                 admins.put(systemBundleContext, admin);
             } else {
                 ref = references.get(admin);

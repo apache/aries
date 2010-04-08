@@ -48,9 +48,11 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
     final Map<Long, Subsystem> subsystems = new HashMap<Long, Subsystem>();
     final ServiceTracker compositeAdminTracker;
     final ServiceTracker resourceResolverTracker;
+    final SubsystemEventDispatcher eventDispatcher;
 
-    public SubsystemAdminImpl(BundleContext context) {
+    public SubsystemAdminImpl(BundleContext context, SubsystemEventDispatcher eventDispatcher) {
         this.context = context;
+        this.eventDispatcher = eventDispatcher;
         this.compositeAdminTracker = new ServiceTracker(context, CompositeAdmin.class.getName(), null);
         this.compositeAdminTracker.open();
         this.resourceResolverTracker = new ServiceTracker(context, ResourceResolver.class.getName(), null);
