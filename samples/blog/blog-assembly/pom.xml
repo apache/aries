@@ -222,25 +222,21 @@
 		<dependency>
 			<groupId>org.apache.aries.samples.blog</groupId>
 			<artifactId>org.apache.aries.samples.blog.biz</artifactId>
-			<version>0.1-incubating-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.samples.blog</groupId>
 			<artifactId>org.apache.aries.samples.blog.api</artifactId>
-			<version>0.1-incubating-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.samples.blog</groupId>
 			<artifactId>org.apache.aries.samples.blog.persistence.jdbc</artifactId>
-			<version>0.1-incubating-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.samples.blog</groupId>
 			<artifactId>org.apache.aries.samples.blog.web</artifactId>
-			<version>0.1-incubating-SNAPSHOT</version>
 		</dependency>
 		
 		<!-- For the jpa persistence layer -->
@@ -248,14 +244,11 @@
 		<dependency>
 			<groupId>org.apache.aries.samples.blog</groupId>
 			<artifactId>org.apache.aries.samples.blog.datasource</artifactId>
-			<version>0.1-incubating-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.apache.aries.samples.blog</groupId>
 			<artifactId>org.apache.aries.samples.blog.persistence.jpa</artifactId>
-			<version>0.1-incubating-SNAPSHOT</version>
-			
 		</dependency>
 		
 	</dependencies>
