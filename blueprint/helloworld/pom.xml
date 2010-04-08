@@ -20,48 +20,47 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-	<groupId>org.apache.aries.samples.helloworld</groupId>
-	        <artifactId>helloworld</artifactId>
+	<groupId>org.apache.aries.samples.blueprint</groupId>
+	        <artifactId>blueprint</artifactId>
         <version>0.1-incubating-SNAPSHOT</version>
         </parent>
 
-	<groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
-	<artifactId>blueprint</artifactId>
+	<groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
+	<artifactId>helloworld</artifactId>
 	<name>Apache Aries Blueprint HelloWorld</name>
 	<packaging>pom</packaging>
 	<description>Example blueprint hello world application</description>
 
-
 	<dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
-                <artifactId>org.apache.aries.samples.helloworld.blueprint.api</artifactId>
+                <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
+                <artifactId>org.apache.aries.samples.blueprint.helloworld.api</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
-                <artifactId>org.apache.aries.samples.helloworld.blueprint.server</artifactId>
+                <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
+                <artifactId>org.apache.aries.samples.blueprint.helloworld.server</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
-                <artifactId>org.apache.aries.samples.helloworld.blueprint.client</artifactId>
+                <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
+                <artifactId>org.apache.aries.samples.blueprint.helloworld.client</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
-                <artifactId>org.apache.aries.samples.helloworld.blueprint.assembly</artifactId>
+                <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
+                <artifactId>org.apache.aries.samples.blueprint.helloworld.assembly</artifactId>
                 <version>${version}</version>
             </dependency>
         </dependencies>
 	</dependencyManagement>
 
 	<modules>
-		<module>blueprint-helloworld-api</module>
-		<module>blueprint-helloworld-server</module>
-		<module>blueprint-helloworld-client</module>
-		<module>blueprint-helloworld-assembly</module> 
+		<module>helloworld-api</module>
+		<module>helloworld-server</module>
+		<module>helloworld-client</module>
+		<module>helloworld-assembly</module> 
 	</modules>
 
 </project>
