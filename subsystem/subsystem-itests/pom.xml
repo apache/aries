@@ -42,9 +42,7 @@
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!--  this itests uses the rfc 138 impl in unreleased equinox 3.6.  pax exam/runner seems only recognize this version as latest
-        and don't like the v43prototype in the name.  You'll need to put this in your local .m2 repo manually for now 
-        and rename it to osgi-3.6.0.v20091204.jar / -->
+        <!--  see readme.txt to configure this in your local .m2 repo -->
         <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>osgi</artifactId>
