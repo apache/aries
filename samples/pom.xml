@@ -240,7 +240,7 @@
         <module>ariestrader</module>
         <module>blog</module>
         <module>blueprint-sample-idverifier</module>
-        <module>helloworld-samples</module>
+        <module>blueprint</module>
         <module>transaction-sample</module>
     </modules>
 
