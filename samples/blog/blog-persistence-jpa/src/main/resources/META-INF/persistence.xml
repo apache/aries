@@ -33,8 +33,6 @@
     
     
      <properties>
-      <property name="openjpa.ManagedRuntime" 
-        value="org.apache.openjpa.ee.JNDIManagedRuntime(TransactionManagerName=aries:services/javax.transaction.TransactionManager)"/>
     </properties>
    
   </persistence-unit>
