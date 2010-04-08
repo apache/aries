@@ -32,5 +32,6 @@
 
     <modules>
         <module>helloworld</module> 
+        <module>idverifier</module> 
     </modules>
 </project>
