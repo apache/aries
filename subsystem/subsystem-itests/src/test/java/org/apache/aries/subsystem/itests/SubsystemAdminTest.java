@@ -29,6 +29,7 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
@@ -37,11 +38,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.apache.aries.subsystem.Subsystem;
 import org.apache.aries.subsystem.SubsystemAdmin;
+import org.apache.aries.unittest.fixture.ArchiveFixture;
+import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
@@ -55,6 +59,26 @@ import org.osgi.service.composite.CompositeAdmin;
 @RunWith(JUnit4TestRunner.class)
 public class SubsystemAdminTest extends AbstractIntegrationTest {
 
+    /* Use @Before not @BeforeClass so as to ensure that these resources
+     * are created in the paxweb temp directory, and not in the svn tree 
+     */
+    static boolean createdApplications = false;
+    @Before
+    public static void createApplications() throws Exception {
+      if (createdApplications) { 
+        return;
+      }
+
+      ZipFixture testEba = ArchiveFixture.newZip();
+      
+      testEba = testEba.binary("META-INF/MANIFEST.MF", 
+              SubsystemAdminTest.class.getClassLoader().getResourceAsStream("subsystem1/META-INF/MANIFEST.MF"))
+          .end();
+      FileOutputStream fout = new FileOutputStream("test.eba");
+      testEba.writeOut(fout);
+      fout.close();
+      createdApplications = true;
+    }
     
     @Test
     public void test() throws Exception {
@@ -68,8 +92,7 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
         assertNotNull("subsystem admin should not be null", sa);
         System.out.println("able to get subsytem admin service");
         
-        // TODO need to provide some test project that provides test.eba and remove the hard code source dir
-        File f = new File("/Users/linsun/ariesN/trunk/subsystem/subsystem-itests/src/test/resources/subsystem1/subsystem1.eba");
+        File f = new File("test.eba");
         Subsystem subsystem = sa.install(f.toURL().toExternalForm());
         assertNotNull("subsystem should not be null", subsystem);
         
@@ -97,6 +120,7 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.core"),
             mavenBundle("org.osgi", "org.osgi.compendium"),
+            mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
             //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
             equinox().version("3.6.0")
