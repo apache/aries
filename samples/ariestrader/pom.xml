@@ -34,7 +34,6 @@
     <properties>
         <!-- set siteId to artifactId for any "top level" project rooting a website -->
         <siteId>ariestrader</siteId>
-        <ariesVersion>0.1-incubating-SNAPSHOT</ariesVersion>
     </properties>
 
 
