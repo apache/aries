@@ -1,3 +1,4 @@
+#!/bin/sh
 ################################################################################
 # Copyright 2010 
 # 
@@ -16,27 +17,5 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 ################################################################################
-
-Apache Aries Samples
-----------------------------------------------------------------------
-
-This sample demonstrates blueprint inlined managers usage.
-
-This README uses the following aliases to describe directories.  These aliases should be replaced with your actual directory paths.
-   %SAMPLE_HOME% refers to the root directory where Aries samples are extracted.
-   
-
-BUILD
------
-1. cd %SAMPLE_HOME%/blueprint-sample-idverifier
-2. maven clean install
-   
-
-RUN
----
-1. cd %SAMPLE_HOME%/blueprint-sample-idverifier/blueprint-sample-idverifier-assembly/target
-2. run.bat|.sh
-
-MEMO
-----
-After the sample is running, you can connect to it via JConsole to check the sample bundles via blueprint MBeans.
+JAVA_OPTS="-Dcom.sun.management.jmxremote.port=8888 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+java $JAVA_OPTS -jar bundles/org.apache.felix.main-2.0.4.jar

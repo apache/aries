@@ -35,20 +35,4 @@
             org.apache.aries.samples.blueprint.helloworld.api
         </aries.osgi.export.pkg>
     </properties>
-
-    <!--build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin
-                </artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-						<Export-Package>org.apache.aries.samples.blueprint.helloworld.api</Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build-->
 </project>

@@ -18,4 +18,4 @@
 @REM ################################################################################
 @echo off
 set JAVA_OPTS=-Dcom.sun.management.jmxremote.port=8888 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false
-java %JAVA_OPTS% -jar bundles/org.apache.felix.main-2.0.2.jar
+java %JAVA_OPTS% -jar bundles/org.apache.felix.main-2.0.4.jar

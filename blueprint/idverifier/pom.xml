@@ -21,13 +21,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.samples</groupId>
-        <artifactId>samples</artifactId>
+        <groupId>org.apache.aries.samples.blueprint</groupId>
+        <artifactId>blueprint</artifactId>
         <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.aries.samples</groupId>
-    <artifactId>blueprint-sample-idverifier</artifactId>
+    <groupId>org.apache.aries.samples.blueprint.idverifier</groupId>
+    <artifactId>idverifier</artifactId>
     <name>Apache Aries Blueprint Sample - ID Verifier</name>
     <packaging>pom</packaging>
 
@@ -35,23 +35,23 @@
         <dependencies>
 
             <dependency>
-                <groupId>org.apache.aries.samples</groupId>
+                <groupId>org.apache.aries.samples.blueprint.idverifier</groupId>
                 <artifactId>org.apache.aries.samples.blueprint.idverifier.api</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.aries.samples</groupId>
+                <groupId>org.apache.aries.samples.blueprint.idverifier</groupId>
                 <artifactId>org.apache.aries.samples.blueprint.idverifier.assembly</artifactId>
                 <type>eba</type>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.aries.samples</groupId>
+                <groupId>org.apache.aries.samples.blueprint.idverifier</groupId>
                 <artifactId>org.apache.aries.samples.blueprint.idverifier.client</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.aries.samples</groupId>
+                <groupId>org.apache.aries.samples.blueprint.idverifier</groupId>
                 <artifactId>org.apache.aries.samples.blueprint.idverifier.server</artifactId>
                 <version>${version}</version>
             </dependency>
@@ -60,10 +60,10 @@
     </dependencyManagement>
 
     <modules>
-        <module>blueprint-sample-idverifier-api</module>
-        <module>blueprint-sample-idverifier-server</module>
-        <module>blueprint-sample-idverifier-client</module>
-        <module>blueprint-sample-idverifier-assembly</module>
+        <module>idverifier-api</module>
+        <module>idverifier-server</module>
+        <module>idverifier-client</module>
+        <module>idverifier-assembly</module>
     </modules>
 
 </project>
