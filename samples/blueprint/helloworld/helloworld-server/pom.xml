@@ -20,12 +20,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
-        <artifactId>blueprint</artifactId>
+        <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
+        <artifactId>helloworld</artifactId>
         <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.apache.aries.samples.helloworld.blueprint.server</artifactId>
+    <artifactId>org.apache.aries.samples.blueprint.helloworld.server</artifactId>
     <name>Apache Aries Blueprint HelloWorldServer</name>
     <packaging>bundle</packaging>
     <description>Example blueprint hello world application - server</description>
@@ -46,8 +46,8 @@
     </build>
     <dependencies>
         <dependency>
-                <groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
-                <artifactId>org.apache.aries.samples.helloworld.blueprint.api</artifactId>
+                <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
+                <artifactId>org.apache.aries.samples.blueprint.helloworld.api</artifactId>
         </dependency>
     </dependencies>
 </project>

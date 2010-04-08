@@ -1,4 +1,4 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 	<!--
 		Licensed to the Apache Software Foundation (ASF) under one or more
 		contributor license agreements. See the NOTICE file distributed with
@@ -18,12 +18,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
-		<artifactId>blueprint</artifactId>
+		<groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
+		<artifactId>helloworld</artifactId>
 		<version>0.1-incubating-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.apache.aries.samples.helloworld.blueprint.client</artifactId>
+	<artifactId>org.apache.aries.samples.blueprint.helloworld.client</artifactId>
 	<name>Apache Aries Blueprint HelloWorldClient</name>
 	<packaging>bundle</packaging>
 	<description>Example blueprint hello world client application.</description>
@@ -44,8 +44,8 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.aries.samples.helloworld.blueprint</groupId>
-			<artifactId>org.apache.aries.samples.helloworld.blueprint.api</artifactId>
+			<groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
+			<artifactId>org.apache.aries.samples.blueprint.helloworld.api</artifactId>
 		</dependency>
 	</dependencies>
 </project>
