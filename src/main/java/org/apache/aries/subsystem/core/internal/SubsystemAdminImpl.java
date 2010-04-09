@@ -15,6 +15,7 @@ package org.apache.aries.subsystem.core.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import java.util.Map;
 import org.apache.aries.subsystem.Subsystem;
 import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemConstants;
+import org.apache.aries.subsystem.SubsystemEvent;
 import org.apache.aries.subsystem.SubsystemException;
 import org.apache.aries.subsystem.SubsystemListener;
 import org.apache.aries.subsystem.spi.Resource;
@@ -76,6 +78,7 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
     public void dispose() {
         compositeAdminTracker.close();
         resourceResolverTracker.close();
+        listenersTracker.close();
     }
 
     public void bundleChanged(BundleEvent event) {
@@ -120,7 +123,7 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
             String bsn = (String) bundle.getHeaders().get(Constants.BUNDLE_SYMBOLICNAME);
             Clause[] bsnClauses = Parser.parseHeader(bsn);
             if ("true".equals(bsnClauses[0].getDirective(SubsystemConstants.SUBSYSTEM_DIRECTIVE))) {
-                return new SubsystemImpl(this, (CompositeBundle) bundle);
+                return new SubsystemImpl(this, (CompositeBundle) bundle, eventDispatcher);
             }
         }
         return null;
@@ -198,29 +201,50 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
         }
 
         // let's get the one we just installed
-        toReturn = getInstalledSubsytem(url);       
-        if (toReturn != null) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Installing subsystem url {} is successful", url);
+        if (success) {
+            toReturn = getInstalledSubsytem(url);       
+            if (toReturn != null) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Installing subsystem url {} is successful", url);
+                }
+                
+                // emit the subsystem event
+                eventDispatcher.subsystemEvent(new SubsystemEvent(SubsystemEvent.Type.INSTALLED, System.currentTimeMillis(), toReturn));
+                
+                return toReturn;
             }
-            return toReturn;
         }
         
         throw new IllegalStateException();
     }
 
-    public void update(Subsystem subsystem) {
+    public void update(Subsystem subsystem) throws SubsystemException {
         update(subsystem, null);
     }
 
-    public void update(final Subsystem subsystem, final InputStream is) {
+    public void update(final Subsystem subsystem, final InputStream is) throws SubsystemException {
+        if (subsystem.getState().equals(Subsystem.State.UNINSTALLED)) {
+            throw new IllegalStateException("Unable to update subsystem as subsystem is already uninstalled");
+        }
+        
+        if (subsystem.getState().equals(Subsystem.State.ACTIVE) 
+                || subsystem.getState().equals(Subsystem.State.STARTING) 
+                || subsystem.getState().equals(Subsystem.State.STOPPING)) {
+            subsystem.stop();
+        }
+        
         Resource subsystemResource = new ResourceImpl(subsystem.getSymbolicName(), subsystem.getVersion(), SubsystemConstants.RESOURCE_TYPE_SUBSYSTEM, subsystem.getLocation(), Collections.<String, String>emptyMap()) {
             @Override
             public InputStream open() throws IOException {
                 if (is != null) {
                     return is;
                 }
-                // TODO: check update location first
+                // subsystem-updatelocation specified the manifest has higher priority than subsystem original location
+                String subsystemLoc = subsystem.getHeaders().get(SubsystemConstants.SUBSYSTEM_UPDATELOCATION);
+                if (subsystemLoc != null && subsystemLoc.length() > 0) {
+                    // we have a subsystem location let us use it
+                    return new URL(subsystemLoc).openStream();
+                }
                 return super.open();
             }
         };
@@ -232,6 +256,13 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
             session.prepare();
             session.commit();
             success = true;
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Updating subsystem {} is successful", subsystem.getSymbolicName());
+            }
+            
+            // emit the subsystem event
+            eventDispatcher.subsystemEvent(new SubsystemEvent(SubsystemEvent.Type.UPDATED, System.currentTimeMillis(), subsystem));
+ 
         } finally {
             if (!success) {
                 session.rollback();
@@ -240,6 +271,10 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
     }
 
     public void uninstall(Subsystem subsystem) {
+        if (subsystem.getState().equals(Subsystem.State.UNINSTALLED)) {
+            throw new IllegalStateException("Unable to uninstall subsystem as subsystem is already uninstalled");
+        }
+        
         Resource subsystemResource = new ResourceImpl(subsystem.getSymbolicName(), subsystem.getVersion(), SubsystemConstants.RESOURCE_TYPE_SUBSYSTEM, subsystem.getLocation(), Collections.<String, String>emptyMap());
         SubsystemResourceProcessor processor = new SubsystemResourceProcessor();
         SubsystemResourceProcessor.SubsystemSession session = processor.createSession(context);
@@ -249,6 +284,13 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
             session.prepare();
             session.commit();
             success = true;
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Uninstalling subsystem {} is successful", subsystem.getSymbolicName());
+            }
+            
+            // emit the subsystem event
+            eventDispatcher.subsystemEvent(new SubsystemEvent(SubsystemEvent.Type.UNINSTALLED, System.currentTimeMillis(), subsystem));
+ 
         } finally {
             if (!success) {
                 session.rollback();
