@@ -234,6 +234,23 @@
                 <scope>import</scope>
             </dependency>
 
+            <!-- internal dependencies -->
+            <dependency>
+                <groupId>org.apache.aries.samples.ariestrader</groupId>
+                <artifactId>ariestrader</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.blog</groupId>
+                <artifactId>blog</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.blueprint</groupId>
+                <artifactId>blueprint</artifactId>
+                <version>${version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
