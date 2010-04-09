@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.aries.subsystem</groupId>
         <artifactId>subsystem</artifactId>
-        <version>0.1-incubating-SNAPSHOT</version>
+        <version>0.2-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.subsystem.core</artifactId>
@@ -48,8 +48,9 @@
             <artifactId>org.apache.aries.subsystem.api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.subsystem</groupId>
-            <artifactId>org.osgi.service.composite</artifactId>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
