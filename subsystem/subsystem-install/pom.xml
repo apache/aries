@@ -44,10 +44,6 @@
             <artifactId>org.apache.aries.subsystem.api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.subsystem</groupId>
-            <artifactId>org.osgi.service.composite</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
