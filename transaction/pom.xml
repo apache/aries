@@ -60,18 +60,18 @@
                 <artifactId>org.apache.aries.transaction.wrappers</artifactId>
                 <version>${version}</version>
             </dependency>
-				<dependency>
-					<groupId>org.apache.aries.transaction</groupId>
-					<artifactId>org.apache.aries.transaction.testds</artifactId>
-					<version>${version}</version>
-					<scope>test</scope>
-				</dependency>
-				<dependency>
-					<groupId>org.apache.aries.transaction</groupId>
-					<artifactId>org.apache.aries.transaction.testbundle</artifactId>
-					<version>${version}</version>
-					<scope>test</scope>
-				</dependency>
+            <dependency>
+                <groupId>org.apache.aries.transaction</groupId>
+                <artifactId>org.apache.aries.transaction.testds</artifactId>
+                <version>${version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.transaction</groupId>
+                <artifactId>org.apache.aries.transaction.testbundle</artifactId>
+                <version>${version}</version>
+                <scope>test</scope>
+            </dependency>
             
             <!-- external dependencies -->
             <dependency>
@@ -105,27 +105,27 @@
                 <artifactId>spring-tx</artifactId>
                 <version>2.5.6</version>
             </dependency>
-			<dependency>
-				<groupId>asm</groupId>
-				<artifactId>asm-all</artifactId>
-				<version>3.1</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.derby</groupId>
-				<artifactId>derby</artifactId>
-				<version>10.5.3.0_1</version>
-			</dependency>
+            <dependency>
+                <groupId>asm</groupId>
+                <artifactId>asm-all</artifactId>
+                <version>3.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derby</artifactId>
+                <version>10.5.3.0_1</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <modules>
         <module>transaction-manager</module>
         <module>transaction-blueprint</module>
-		<module>transaction-wrappers</module>
-		<module>transaction-itests</module>
-		<module>transaction-testbundle</module>
-		<module>transaction-testds</module>
+        <module>transaction-wrappers</module>
+        <module>transaction-itests</module>
+        <module>transaction-testbundle</module>
+        <module>transaction-testds</module>
     </modules>
 
 </project>
