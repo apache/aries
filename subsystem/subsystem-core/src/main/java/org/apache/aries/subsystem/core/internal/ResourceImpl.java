@@ -16,6 +16,7 @@ package org.apache.aries.subsystem.core.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Map;
 
 import org.apache.aries.subsystem.spi.Resource;
 import org.osgi.framework.Version;
@@ -26,12 +27,14 @@ public class ResourceImpl implements Resource {
     private final Version version;
     private final String type;
     private final String location;
+    private final Map<String,String> attributes;
 
-    public ResourceImpl(String symbolicName, Version version, String type, String location) {
+    public ResourceImpl(String symbolicName, Version version, String type, String location, Map<String,String> attributes) {
         this.symbolicName = symbolicName;
         this.version = version;
         this.type = type;
         this.location = location;
+        this.attributes = attributes;
     }
 
     public String getSymbolicName() {
@@ -48,6 +51,10 @@ public class ResourceImpl implements Resource {
 
     public String getLocation() {
         return location;
+    }
+
+    public Map<String, String> getAttributes() {
+        return attributes;
     }
 
     public InputStream open() throws IOException {

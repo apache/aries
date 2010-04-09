@@ -15,6 +15,7 @@ package org.apache.aries.subsystem.spi;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.osgi.framework.Version;
 
@@ -53,6 +54,14 @@ public interface Resource {
      * @return
      */
     String getLocation();
+
+    /**
+     * Attributes associated to this resource.  Those may contain informations
+     * for {@link ResourceConverter}s or {@link ResourceProcessor}s.
+     *  
+     * @return
+     */
+    Map<String, String> getAttributes();
 
     /**
      * Open the resource for reading.

@@ -129,7 +129,8 @@ public class SubsystemEventDispatcher implements SubsystemListener, SynchronousB
 
     @SuppressWarnings( { "ThrowableResultOfMethodCallIgnored" })
     private static String toString(SubsystemEvent event) {
-        return "SubsystemEvent[subsystem=" + event.getSubsystem().getScope()
+        return "SubsystemEvent[subsystem=" + event.getSubsystem().getSymbolicName() + "/"
+                + event.getSubsystem().getVersion()
                 + " type=" + event.getType() + "]";
     }
 

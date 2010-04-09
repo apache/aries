@@ -95,7 +95,7 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
         System.out.println("able to get subsytem admin service");
         
         File f = new File("test.eba");
-        Subsystem subsystem = sa.install(f.toURL().toExternalForm());
+        Subsystem subsystem = sa.install(f.toURI().toURL().toExternalForm());
         assertNotNull("subsystem should not be null", subsystem);
         
         assertTrue("subsystem should have a unique id", subsystem.getSubsystemId() > 0);
@@ -125,7 +125,6 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
             // Bundles
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.core"),
-            mavenBundle("org.osgi", "org.osgi.compendium"),
             mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
             //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
