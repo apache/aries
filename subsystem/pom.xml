@@ -18,14 +18,14 @@
 	<parent>
 		<groupId>org.apache.aries</groupId>
 		<artifactId>java5-parent</artifactId>
-		<version>0.1-incubating-SNAPSHOT</version>
+		<version>0.2-incubating-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.aries.subsystem</groupId>
 	<artifactId>subsystem</artifactId>
 	<name>Apache Aries Subsystem</name>
-	<version>0.1-incubating-SNAPSHOT</version>
+	<version>0.2-incubating-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<description>
@@ -70,17 +70,21 @@
                 <artifactId>org.apache.felix.utils</artifactId>
                 <version>1.0.0</version>
             </dependency>
-	    <dependency>
+	        <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.configadmin</artifactId>
                 <version>1.2.4</version>
             </dependency>
-	</dependencies>
+            <dependency>
+                <groupId>org.eclipse</groupId>
+                <artifactId>osgi</artifactId>
+                <version>v43prototype-3.6.0.201003231329</version>
+            </dependency>
+	    </dependencies>
 	</dependencyManagement>
 
 	<modules>
         <module>subsystem-api</module>
-        <module>org.osgi.service.composite</module>
         <module>subsystem-core</module>
         <module>subsystem-install</module>
         <module>subsystem-itests</module>

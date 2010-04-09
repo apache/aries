@@ -49,6 +49,7 @@ import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.container.def.PaxRunnerOptions;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -122,14 +123,15 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
             systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
 
             // Bundles
-            mavenBundle("org.apache.aries.subsystem", "org.osgi.service.composite"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.core"),
             mavenBundle("org.osgi", "org.osgi.compendium"),
             mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
             //org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
 
-            equinox().version("3.6.0")
+            PaxRunnerOptions.rawPaxRunnerOption("config", "classpath:ss-runner.properties"),
+
+            equinox().version("v43prototype-3.6.0.201003231329")
         );
         options = updateOptions(options);
         return options;
