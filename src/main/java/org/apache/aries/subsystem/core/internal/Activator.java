@@ -29,6 +29,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The bundle activator for the this bundle.
@@ -36,12 +38,16 @@ import org.osgi.framework.ServiceRegistration;
  * and register the SubsystemAdmin service.
  */
 public class Activator implements BundleActivator {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
+    
     private BundleContext context;
     private List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
     private static SubsystemEventDispatcher eventDispatcher;
 
     public void start(BundleContext context) throws Exception {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("subsystem activator starting");
+        }
         this.context = context;
         eventDispatcher = new SubsystemEventDispatcher(context);
         
@@ -66,13 +72,17 @@ public class Activator implements BundleActivator {
     }
 
     public void stop(BundleContext context) throws Exception {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("subsystem activator stopping");
+        }
         for (ServiceRegistration r : registrations) {
             try {
                 r.unregister();
             } catch (Exception e) {
-                // Ignore
+                LOGGER.warn("Subsystem Activator shut down", e);
             }
         }
+        eventDispatcher.destroy();
     }
 
 
@@ -82,6 +92,9 @@ public class Activator implements BundleActivator {
         private final Map<SubsystemAdminImpl, Long> references = new HashMap<SubsystemAdminImpl, Long>();
 
         public synchronized Object getService(Bundle bundle, ServiceRegistration registration) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Get SubsystemAdmin service from bundle symbolic name {} version {}", bundle.getSymbolicName(), bundle.getVersion());
+            }
             BundleContext systemBundleContext = bundle.getBundleContext().getBundle(0).getBundleContext();
             SubsystemAdminImpl admin = admins.get(systemBundleContext);
             long ref = 0;
@@ -96,6 +109,9 @@ public class Activator implements BundleActivator {
         }
 
         public synchronized void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Unget SubsystemAdmin service {} from bundle symbolic name {} version {}", new Object[] {service, bundle.getSymbolicName(), bundle.getVersion()});
+            }
             SubsystemAdminImpl admin = (SubsystemAdminImpl) service;
             long ref = references.get(admin) - 1;
             if (ref == 0) {

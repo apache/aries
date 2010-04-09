@@ -68,11 +68,10 @@ public class FileUtils {
                         closeQuietly(fos);
                     }
                     zis.closeEntry();
-                    entry = zis.getNextEntry();
                 } else {
                     mkdirs(file);
-                    entry = zis.getNextEntry();
                 }
+                entry = zis.getNextEntry();
             }//while
         } finally {
             closeQuietly(zis, is);
