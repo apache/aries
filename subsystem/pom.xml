@@ -83,6 +83,7 @@
         <module>org.osgi.service.composite</module>
         <module>subsystem-core</module>
         <module>subsystem-install</module>
+        <module>subsystem-itests</module>
 	</modules>
 
 </project>
