@@ -14,7 +14,9 @@
 package org.apache.aries.subsystem.core.internal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemException;
@@ -22,6 +24,8 @@ import org.apache.aries.subsystem.spi.Resource;
 import org.apache.aries.subsystem.spi.ResourceProcessor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.service.composite.CompositeBundle;
 
 public class BundleResourceProcessor implements ResourceProcessor {
 
@@ -33,6 +37,8 @@ public class BundleResourceProcessor implements ResourceProcessor {
 
         private final BundleContext context;
         private final List<Bundle> installed = new ArrayList<Bundle>();
+        private final Map<Resource, Bundle> updated = new HashMap<Resource, Bundle>();
+        private final Map<Resource, Bundle> removed = new HashMap<Resource, Bundle>();
 
         public BundleSession(BundleContext context) {
             this.context = context;
@@ -40,15 +46,30 @@ public class BundleResourceProcessor implements ResourceProcessor {
 
         public void process(Resource resource) throws SubsystemException {
             try {
-                // TODO: found bundle and update or do nothing if needed
-                Bundle bundle = context.installBundle(resource.getLocation(), resource.open());
+                // find the bundle
+                Bundle bundle = findBundle(resource);
+                
+                if (bundle == null) {
+                    // fresh install
+                    bundle = context.installBundle(resource.getLocation(), resource.open());
+                    installed.add(bundle);
+                } else {
+                    // update
+                    bundle.update(resource.open());
+                    updated.put(resource, bundle);
+                }
 
-                if ("true".equals(resource.getAttributes().get(SubsystemConstants.RESOURCE_START_ATTRIBUTE))) {
+                String startAttribute = resource.getAttributes().get(SubsystemConstants.RESOURCE_START_ATTRIBUTE);
+                
+                if (startAttribute == null || startAttribute.length() == 0) {
+                    // defaults to true
+                    startAttribute = "true";
+                }
+                if ("true".equals(startAttribute)) {
                     // This will only mark the bundle as persistently started as the composite is supposed
-                    // to be stoped
+                    // to be stopped
                     bundle.start();
                 }
-                installed.add(bundle);
             } catch (SubsystemException e) {
                 throw e;
             } catch (Exception e) {
@@ -57,14 +78,29 @@ public class BundleResourceProcessor implements ResourceProcessor {
         }
 
         public void dropped(Resource resource) throws SubsystemException {
-            // TODO: uninstall bundle
+            // find the bundle
+            Bundle bundle = findBundle(resource);
+            
+            if (bundle == null) {
+                throw new SubsystemException("Unable to find the resource to be dropped");
+            } else {
+                try {
+                    bundle.uninstall();
+                    removed.put(resource, bundle);
+                } catch (BundleException be) {
+                    throw new SubsystemException("Unable to drop resource", be);
+                }
+            }
         }
 
         public void prepare() throws SubsystemException {
+            // no-op
         }
 
         public void commit() {
             installed.clear();
+            updated.clear();
+            removed.clear();
         }
 
         public void rollback() {
@@ -76,6 +112,26 @@ public class BundleResourceProcessor implements ResourceProcessor {
                 }
             }
             installed.clear();
+            
+            // TODO handle updated and removed bundle - is it correct to remove the updated bundle??
+            
+            updated.clear();
+            removed.clear();
+        }
+        
+        protected Bundle findBundle(Resource resource) {
+            for (Bundle b : context.getBundles()) {
+                if (resource.getLocation().equals(b.getLocation())) {
+                    if (b instanceof CompositeBundle) {
+                        throw new SubsystemException("A bundle with the same location already exists!");
+                    } else {
+                        return b;
+
+                    }
+                }
+            }
+            
+            return null;
         }
     }
 
