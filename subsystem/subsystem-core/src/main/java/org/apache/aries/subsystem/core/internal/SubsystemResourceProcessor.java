@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.apache.aries.subsystem.Subsystem;
 import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemException;
@@ -43,6 +42,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 import org.osgi.service.composite.CompositeAdmin;
 import org.osgi.service.composite.CompositeBundle;
+import org.osgi.service.composite.CompositeConstants;
 import org.osgi.util.tracker.ServiceTracker;
 
 import static org.apache.aries.subsystem.core.internal.FileUtils.closeQuietly;
@@ -119,57 +119,24 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
 
                 List<Resource> additional = resolver.resolve(content, resource);
 
-                // Check subsystem manifest required headers
-                String mfv = manifest.getMainAttributes().getValue(SUBSYSTEM_MANIFESTVERSION);
-                if (mfv == null || mfv.length() == 0) {
-                    throw new SubsystemException("Invalid subsystem manifest version: " + mfv);
-                }
-                try {
-                    Version v = Version.parseVersion(mfv);
-                    if (!SUBSYSTEM_MANIFEST_VERSION.equals(v)) {
-                        throw new SubsystemException("Unsupported subsystem manifest version: " + mfv);
-                    }
-                } catch (IllegalArgumentException e) {
-                    throw new SubsystemException("Invalid subsystem manifest version: " + mfv, e);
-                }
+                // check manifest header to see if they are valid
                 String ssn = manifest.getMainAttributes().getValue(SUBSYSTEM_SYMBOLICNAME);
-                if (ssn == null || ssn.length() == 0) {
-                    throw new SubsystemException("Invalid subsystem symbolic name: " + ssn);
-                }
-                // TODO: check attributes / directives on the subsystem symbolic name ?
                 String sv = manifest.getMainAttributes().getValue(SUBSYSTEM_VERSION);
-                if (sv == null || sv.length() == 0) {
-                    throw new SubsystemException("Invalid subsystem version: " + sv);
-                }
-                try {
-                    new Version(sv);
-                } catch (IllegalArgumentException e) {
-                    throw new SubsystemException("Invalid subsystem version: " + sv, e);
-                }
-                // Grab all headers
-                Map<String, String> headers = new HashMap<String, String>();
-                Iterator it = manifest.getMainAttributes().entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry e = (Map.Entry) it.next();
-                    String name = e.getKey().toString();
-                    String value = e.getValue().toString();
-                    headers.put(name, value);
-                }
-                // Create the required composite headers
-                headers.put(BUNDLE_SYMBOLICNAME, ssn + ";" + COMPOSITE_DIRECTIVE + ":=true;" + SUBSYSTEM_DIRECTIVE + ":=true");
-                headers.put(BUNDLE_VERSION, sv);
-                // TODO: compute other composite manifest entries
-                // TODO: compute list of bundles
+                checkManifestHeaders(manifest, ssn, sv);
+                
+                Map<String, String> headers = computeCompositeHeaders(manifest, ssn, sv);
 
                 // Check existing bundles
                 CompositeBundle composite = findSubsystemComposite(res);
                 if (composite == null) {
+                    // brand new install
                     composite = admin.installCompositeBundle(
                                                 res.getLocation(),
                                                 headers,
                                                 Collections.<String, String>emptyMap());
                     installed.put(res, composite);
                 } else {
+                    // update
                     String previousContentHeader = (String) composite.getHeaders().get(SUBSYSTEM_CONTENT);
                     Clause[] previousContentClauses = Parser.parseHeader(previousContentHeader);
                     for (Clause c : previousContentClauses) {
@@ -341,5 +308,103 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
             trackers.clear();
         }
     }
+    
+    private static void checkManifestHeaders(Manifest manifest, String ssn, String sv) {
+        // Check subsystem manifest required headers
+        String mfv = manifest.getMainAttributes().getValue(SUBSYSTEM_MANIFESTVERSION);
+        if (mfv == null || mfv.length() == 0) {
+            throw new SubsystemException("Invalid subsystem manifest version: " + mfv);
+        }
+        try {
+            Version v = Version.parseVersion(mfv);
+            if (!SUBSYSTEM_MANIFEST_VERSION.equals(v)) {
+                throw new SubsystemException("Unsupported subsystem manifest version: " + mfv + ". Supported " 
+                        + SubsystemConstants.SUBSYSTEM_MANIFESTVERSION + " is " + SUBSYSTEM_MANIFEST_VERSION);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new SubsystemException("Invalid subsystem manifest version: " + mfv, e);
+        }
+        
+        if (ssn == null || ssn.length() == 0) {
+            throw new SubsystemException("Invalid subsystem symbolic name: " + ssn);
+        }
+        // check attributes / directives on the subsystem symbolic name 
+        // TODO add any other symbolic name to check
+        Clause[] ssnClauses = Parser.parseHeader(ssn);
+        String ssDirective = ssnClauses[0].getDirective(SUBSYSTEM_DIRECTIVE);
+        String comDirective = ssnClauses[0].getDirective(COMPOSITE_DIRECTIVE);
+        if (ssDirective != null && ssDirective.equalsIgnoreCase("false")) {
+            throw new SubsystemException("Invalid " +  SUBSYSTEM_DIRECTIVE + " directive in " + SUBSYSTEM_SYMBOLICNAME + ": " + ssDirective);
+        }
+        
+        if (ssDirective != null && comDirective.equalsIgnoreCase("false")) {
+            throw new SubsystemException("Invalid " +  COMPOSITE_DIRECTIVE + " directive in " + SUBSYSTEM_SYMBOLICNAME + ": " + comDirective);
+        }
+        
+        if (sv == null || sv.length() == 0) {
+            throw new SubsystemException("Invalid subsystem version: " + sv);
+        }
+        try {
+            new Version(sv);
+        } catch (IllegalArgumentException e) {
+            throw new SubsystemException("Invalid subsystem version: " + sv, e);
+        }
+        
+        // TODO: do we want to check other headers such as subsystem-importpackage, subsystem-exportpackage, etc.
+
+    }
+    
+    // if the ssn already contains COMPOSITE_DIRECTIVE or SUBSYSTEM_DIRECTIVE directive
+    // let's not add them again
+    private static String getCompositeSymbolicName(String ssn) {
+        Clause[] ssnClauses = Parser.parseHeader(ssn);
+        String ssDirective = ssnClauses[0].getDirective(SUBSYSTEM_DIRECTIVE);
+        String comDirective = ssnClauses[0].getDirective(COMPOSITE_DIRECTIVE);
+        
+        if (ssDirective == null && comDirective == null) {
+            ssn = ssn + ";" + COMPOSITE_DIRECTIVE + ":=true;" + SUBSYSTEM_DIRECTIVE + ":=true";
+        } else if (ssDirective == null) {
+            ssn = ssn + ";" + COMPOSITE_DIRECTIVE + ":=true;";
+        } else if (comDirective == null){
+            ssn = ssn + ";" + SUBSYSTEM_DIRECTIVE + ":=true;";
+        }
+        
+        return ssn;
+    }
+    
+    private static Map<String, String> computeCompositeHeaders(Manifest manifest, String ssn, String sv) {
+        // Grab all headers
+        Map<String, String> headers = new HashMap<String, String>();
+        Iterator it = manifest.getMainAttributes().entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry e = (Map.Entry) it.next();
+            String name = e.getKey().toString();
+            String value = e.getValue().toString();
+            headers.put(name, value);
+        }
+        
+        // Create the required composite headers
+        headers.put(BUNDLE_SYMBOLICNAME, getCompositeSymbolicName(ssn));
+        headers.put(BUNDLE_VERSION, sv);
+        
+        String subImportPkg = headers.get(SUBSYSTEM_IMPORTPACKAGE);
+        String subExportPkg = headers.get(SUBSYSTEM_EXPORTPACKAGE);
+        if (subImportPkg != null && subImportPkg.length() > 0) {
+            // use subsystem-importpackage for composite-importpackage
+            headers.put(CompositeConstants.COMPOSITE_PACKAGE_IMPORT_POLICY, subImportPkg);
+        } else {
+            // TODO: let's compute the import package for the subsystem
+        }
+        if (subExportPkg != null && subExportPkg.length() > 0) {
+            // use subsystem-importpackage for composite-importpackage
+            headers.put(CompositeConstants.COMPOSITE_PACKAGE_EXPORT_POLICY, subExportPkg);
+        }
+        
+        // TODO: compute other composite manifest entries
+        // TODO: compute list of bundles
+        
+        return headers;
+    }
+    
 
 }
