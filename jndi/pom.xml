@@ -28,7 +28,7 @@
     <groupId>org.apache.aries.jndi</groupId>
     <artifactId>jndi</artifactId>
     <name>Apache Aries JNDI</name>
-    <version>0.1-incubating</version>
+    <version>0.2-incubating-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
@@ -36,9 +36,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/jndi-0.1-incubating</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/jndi-0.1-incubating</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/tags/jndi-0.1-incubating</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/jndi</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/jndi</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/jndi</url>
     </scm>
     
     <dependencyManagement>
