@@ -16,8 +16,7 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.aries</groupId>
@@ -27,16 +26,16 @@
 
     <artifactId>org.apache.aries.util</artifactId>
     <packaging>bundle</packaging>
-    <version>0.1-incubating-SNAPSHOT</version>
+    <version>0.1-incubating</version>
     <name>Apache Aries Util</name>
     <description>
         This bundle contains the OSGi common util for Apache Aries
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/util</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/util</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/util</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/org.apache.aries.util-0.1-incubating</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/org.apache.aries.util-0.1-incubating</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/tags/org.apache.aries.util-0.1-incubating</url>
     </scm>
 
     <properties>
