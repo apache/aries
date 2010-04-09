@@ -36,6 +36,20 @@
         <siteId>ariestrader</siteId>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.aries.samples.ariestrader</groupId>
+                <artifactId>modules</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.ariestrader</groupId>
+                <artifactId>assemblies</artifactId>
+                <version>${version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <modules>
         <!-- application components-->
