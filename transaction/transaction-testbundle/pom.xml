@@ -27,7 +27,6 @@
   <groupId>org.apache.aries.transaction</groupId>
   <artifactId>org.apache.aries.transaction.testbundle</artifactId>
   <packaging>bundle</packaging>
-  <version>0.1-incubating-SNAPSHOT</version>
   <name>Apache Aries Transaction Test Bundle</name>
 
   <properties>
