@@ -16,8 +16,7 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.apache.aries</groupId>
@@ -29,7 +28,7 @@
     <groupId>org.apache.aries.testsupport</groupId>
     <artifactId>testsupport</artifactId>
     <name>Apache Aries Test Support</name>
-    <version>0.1-incubating-SNAPSHOT</version>
+    <version>0.1-incubating</version>
     <packaging>pom</packaging>
 
     <description>
@@ -37,9 +36,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/testsupport</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/testsupport</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/testsupport</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/testsupport-0.1-incubating</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/testsupport-0.1-incubating</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/tags/testsupport-0.1-incubating</url>
     </scm>
 
     <modules>
