@@ -16,6 +16,7 @@ package org.apache.aries.subsystem.core.internal;
 import java.util.*;
 
 import org.apache.aries.subsystem.Subsystem;
+import org.apache.aries.subsystem.SubsystemEvent;
 import org.apache.aries.subsystem.SubsystemException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
@@ -27,11 +28,13 @@ public class SubsystemImpl implements Subsystem {
     final long id;
     final SubsystemAdminImpl admin;
     final CompositeBundle composite;
+    final SubsystemEventDispatcher eventDispatcher;
 
-    public SubsystemImpl(SubsystemAdminImpl admin, CompositeBundle composite) {
+    public SubsystemImpl(SubsystemAdminImpl admin, CompositeBundle composite, SubsystemEventDispatcher eventDispatcher) {
         this.admin = admin;
         this.composite = composite;
         this.id = composite.getBundleId();
+        this.eventDispatcher = eventDispatcher;
     }
 
     public State getState() {
@@ -55,7 +58,9 @@ public class SubsystemImpl implements Subsystem {
 
     public void start() throws SubsystemException {
         try {
+            eventDispatcher.subsystemEvent(new SubsystemEvent(SubsystemEvent.Type.STARTING, System.currentTimeMillis(), this));
             composite.start();
+            eventDispatcher.subsystemEvent(new SubsystemEvent(SubsystemEvent.Type.STARTED, System.currentTimeMillis(), this));
         } catch (BundleException e) {
             throw new SubsystemException("Unable to start subsystem", e);
         }
@@ -63,7 +68,9 @@ public class SubsystemImpl implements Subsystem {
 
     public void stop() throws SubsystemException {
         try {
+            eventDispatcher.subsystemEvent(new SubsystemEvent(SubsystemEvent.Type.STOPPING, System.currentTimeMillis(), this));
             composite.stop();
+            eventDispatcher.subsystemEvent(new SubsystemEvent(SubsystemEvent.Type.STOPPED, System.currentTimeMillis(), this));
         } catch (BundleException e) {
             throw new SubsystemException("Unable to stop subsystem", e);
         }
