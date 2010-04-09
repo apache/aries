@@ -63,7 +63,7 @@ public interface SubsystemAdmin {
     /**
      * Install a new subsystem from the specified location identifier.
      * 
-     * This method performs the same function as calling <code>install(String, InputStream)</code> with the specified 
+     * This method performs the same function as calling {@link #install(String, InputStream)} with the specified 
      * location identifier and a null InputStream.
      *
      * @param location
@@ -72,13 +72,22 @@ public interface SubsystemAdmin {
     Subsystem install(String location) throws SubsystemException;
 
     /**
-     * Install a new subsystem from the specified InputStream object.  If the specified InputStream is null,
-     * the InputStream must be created from the specified location.
+     * Install a new subsystem from the specified <code>InputStream</code> object.  
+     * 
+     * If the specified <code>InputStream</code> is <code>null</code>,
+     * the <code>InputStream</code> must be created from the specified location.
      * 
      * The specified location identifier will be used as the identity of the subsystem. 
      * Every installed subsystem is uniquely identified by its location identifier which is typically in the form of a URL.
      * 
-     * If a subsystem containing the same location identifier is already installed, the Subsystem object for that subsystem is returned.
+     * The following steps are required to install a subsystem:
+     * 
+     * 1. If a subsystem containing the same location identifier is already installed, the <code>Subsystem</code> object for that subsystem is returned.
+     * 2. The subsystem's content is read from the input stream.  If this fails, a SubsystemException is thrown.
+     * 3. The subsystem's associated resources are located
+     * 4. The subsystem's state is set to <code>INSTALLED</code>
+     * 5. The subsystem event of type INSTALLED is fired.
+     * 6. The subsystem object for the newly installed subsystem is returned
      * 
      * @param location
      * @param content
@@ -89,16 +98,19 @@ public interface SubsystemAdmin {
     /**
      * Update the given subsystem.
      *
-     * The updated subsystem metadata will be loaded from
-     * the subsystem location, or from the subsystem update location
-     * if specified.
-     *
+     * This method performs the same function as calling {@link #update(Subsystem, InputStream)} 
+     * with the specified subsystem and a <code>null</code> InputStream.
+     * 
      * @param subsystem
      */
     void update(Subsystem subsystem) throws SubsystemException;
 
     /**
-     * Update the given subsystem
+     * Update the given subsystem from an <code>InputStream</code>.  
+     * 
+     * If the specified <code>InputStream</code> is <code>null</code>, the InputStream must be created from
+     * the subsystem's {@link SubsystemConstants#SUBSYSTEM_UPDATELOCATION Subsystem-UpdateLocation} Manifest header 
+     * if present, or this subsystem's original location.
      *
      * @param subsystem
      * @param content
