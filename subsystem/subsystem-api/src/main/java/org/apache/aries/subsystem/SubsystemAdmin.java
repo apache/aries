@@ -47,7 +47,10 @@ public interface SubsystemAdmin {
     Subsystem getSubsystem(String scope);
 
     /**
-     * Install a new subsystem.
+     * Install a new subsystem from the specified location identifier.
+     * 
+     * This method performs the same function as calling <code>install(String, InputStream)</code> with the specified 
+     * location identifier and a null InputStream.
      *
      * @param location
      * @return
@@ -55,8 +58,14 @@ public interface SubsystemAdmin {
     Subsystem install(String location) throws SubsystemException;
 
     /**
-     * Install a new subsystem.
-     *
+     * Install a new subsystem from the specified InputStream object.  If the specified InputStream is null,
+     * the InputStream must be created from the specified location.
+     * 
+     * The specified location identifier will be used as the identity of the subsystem. 
+     * Every installed subsystem is uniquely identified by its location identifier which is typically in the form of a URL.
+     * 
+     * If a subsystem containing the same location identifier is already installed, the Subsystem object for that subsystem is returned.
+     * 
      * @param location
      * @param content
      * @return
