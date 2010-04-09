@@ -134,7 +134,6 @@
         <module>blueprint-sample</module>
         <module>blueprint-testbundlea</module>
         <module>blueprint-testbundleb</module>
-        <module>blueprint-itests</module>
     </modules>
 
 </project>
