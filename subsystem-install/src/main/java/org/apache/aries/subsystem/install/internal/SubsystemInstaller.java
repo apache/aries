@@ -15,10 +15,12 @@ package org.apache.aries.subsystem.install.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.apache.aries.subsystem.Subsystem;
 import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.felix.fileinstall.ArtifactInstaller;
@@ -36,19 +38,32 @@ public class SubsystemInstaller implements ArtifactInstaller {
     }
 
     public void install(File file) throws Exception {
-        if (file.isDirectory()) {
-            subsystemAdmin.install("jardir:" + file.getPath());
-        } else {
-            subsystemAdmin.install(file.toURI().toURL().toExternalForm());
-        }
+        subsystemAdmin.install(getLocation(file));
     }
 
     public void update(File file) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
+        subsystemAdmin.update(getSubsystem(getLocation(file)));
     }
 
     public void uninstall(File file) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
+        subsystemAdmin.uninstall(getSubsystem(getLocation(file)));
+    }
+
+    protected Subsystem getSubsystem(String location) {
+        for (Subsystem s : subsystemAdmin.getSubsystems()) {
+            if (s.getLocation().equals(location)) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    protected String getLocation(File file) throws MalformedURLException {
+        if (file.isDirectory()) {
+            return "jardir:" + file.getPath();
+        } else {
+            return file.toURI().toURL().toExternalForm();
+        }
     }
 
     public boolean canHandle(File artifact)
