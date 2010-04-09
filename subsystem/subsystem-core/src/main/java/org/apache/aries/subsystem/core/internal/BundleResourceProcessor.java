@@ -16,6 +16,7 @@ package org.apache.aries.subsystem.core.internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemException;
 import org.apache.aries.subsystem.spi.Resource;
 import org.apache.aries.subsystem.spi.ResourceProcessor;
@@ -39,7 +40,14 @@ public class BundleResourceProcessor implements ResourceProcessor {
 
         public void process(Resource resource) throws SubsystemException {
             try {
+                // TODO: found bundle and update or do nothing if needed
                 Bundle bundle = context.installBundle(resource.getLocation(), resource.open());
+
+                if ("true".equals(resource.getAttributes().get(SubsystemConstants.RESOURCE_START_ATTRIBUTE))) {
+                    // This will only mark the bundle as persistently started as the composite is supposed
+                    // to be stoped
+                    bundle.start();
+                }
                 installed.add(bundle);
             } catch (SubsystemException e) {
                 throw e;
@@ -49,7 +57,7 @@ public class BundleResourceProcessor implements ResourceProcessor {
         }
 
         public void dropped(Resource resource) throws SubsystemException {
-            //To change body of implemented methods use File | Settings | File Templates.
+            // TODO: uninstall bundle
         }
 
         public void prepare() throws SubsystemException {
