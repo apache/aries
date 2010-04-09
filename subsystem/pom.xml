@@ -51,11 +51,6 @@
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.aries.subsystem</groupId>
-                <artifactId>org.osgi.service.composite</artifactId>
-                <version>${version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.aries.testsupport</groupId>
                 <artifactId>org.apache.aries.testsupport.unit</artifactId>
                 <version>${version}</version>
