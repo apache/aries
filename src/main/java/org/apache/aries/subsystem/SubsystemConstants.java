@@ -48,7 +48,6 @@ public class SubsystemConstants {
      */
     public static final String SUBSYSTEM_DESCRIPTION         = "Subsystem-Description";
 
-
     /**
      * Name of the resource to use for localized headers
      */
@@ -99,6 +98,21 @@ public class SubsystemConstants {
      * Attribute to indicate the type on a resource
      */
     public static final String RESOURCE_LOCATION_ATTRIBUTE   = "location";
+
+    /**
+     * Attribute to indicate a bundle needs to be started, defaults to <code>true</code>
+     */
+    public static final String RESOURCE_START_ATTRIBUTE      = "start";
+
+    /**
+     * Attribute to indicate a bundle needs to be forced updated, even if the version is the same, defaults to <code>false</code>
+     */
+    public static final String RESOURCE_UPDATE_ATTRIBUTE     = "update";
+
+    /**
+     * Attribute to indicate the start level that must be associated to a constituent bundle or subsystem 
+     */
+    public static final String RESOURCE_START_LEVEL_ATTRIBUTE      = "start-level";
 
     /*
     String APPLICATION_SYMBOLICNAME = "Application-SymbolicName";

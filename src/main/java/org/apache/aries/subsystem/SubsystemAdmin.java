@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 
+import org.osgi.framework.Version;
+
 /**
  * Subsystems administration interface.
  *
@@ -33,18 +35,30 @@ import java.util.Map;
 public interface SubsystemAdmin {
 
     /**
-     * Retrieve all subsystems managed by this service
+     * Retrieve all subsystems managed by this service.
+     * This includes all the top-level subsystems installed in the composite
+     * which this service has been retrieved from.
+     *
      * @return
      */
-    Map<Long, Subsystem> getSubsystems();
+    Collection<Subsystem> getSubsystems();
 
     /**
-     * Retrieve a subsystem given its scope.
+     * Retrieve a subsystem given its id.
      *
-     * @param scope
+     * @param id
      * @return
      */
-    Subsystem getSubsystem(String scope);
+    Subsystem getSubsystem(long id);
+
+    /**
+     * Retrieve a subsystem given its symbolic name and id
+     *
+     * @param symbolicName
+     * @param version
+     * @return
+     */
+    Subsystem getSubsystem(String symbolicName, Version version);
 
     /**
      * Install a new subsystem from the specified location identifier.
@@ -97,14 +111,6 @@ public interface SubsystemAdmin {
      * @param subsystem
      */
     void uninstall(Subsystem subsystem) throws SubsystemException;
-
-    /**
-     * Force the uninstallation of a subsystem.
-     * Any errors will be ignored.
-     *
-     * @param subsystem
-     */
-    void uninstallForced(Subsystem subsystem);
 
     /**
      * Abort the current operation.
