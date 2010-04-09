@@ -19,12 +19,12 @@
     <parent>
         <groupId>org.apache.aries.jmx</groupId>
         <artifactId>jmx</artifactId>
-        <version>0.1-incubating</version>
+        <version>0.2-incubating-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.aries.jmx</groupId>
     <artifactId>org.apache.aries.jmx.itests</artifactId>
-    <version>0.1-incubating</version>
+    <version>0.2-incubating-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Apache Aries JMX integration tests</name>
     <description>
