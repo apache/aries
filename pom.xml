@@ -21,14 +21,14 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.1-incubating-SNAPSHOT</version>
+        <version>0.1-incubating</version>
     </parent>  
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.jndi</groupId>
     <artifactId>jndi</artifactId>
     <name>Apache Aries JNDI</name>
-    <version>0.1-incubating-SNAPSHOT</version>
+    <version>0.1-incubating</version>
     <packaging>pom</packaging>
 
     <description>
@@ -36,9 +36,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/jndi</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/jndi</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/jndi</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/jndi-0.1-incubating</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/jndi-0.1-incubating</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/tags/jndi-0.1-incubating</url>
     </scm>
     
     <dependencyManagement>
@@ -63,12 +63,12 @@
             <dependency>
                 <groupId>org.apache.aries.testsupport</groupId>
                 <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                <version>0.1-incubating-SNAPSHOT</version>
+                <version>0.1-incubating</version>
             </dependency>
             <dependency>
             	<groupId>org.apache.aries</groupId>
             	<artifactId>org.apache.aries.util</artifactId>
-            	<version>0.1-incubating-SNAPSHOT</version>
+            	<version>0.1-incubating</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
