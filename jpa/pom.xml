@@ -28,11 +28,11 @@
     <artifactId>jpa</artifactId>
     <packaging>pom</packaging>
     <name>Aries JPA Component</name>
-    <version>0.1-incubating</version>
+    <version>0.2-incubating-SNAPSHOT</version>
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/jpa-0.1-incubating</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/jpa-0.1-incubating</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/tags/jpa-0.1-incubating</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/jpa</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/jpa</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/jpa</url>
     </scm>
     <dependencyManagement>
         <dependencies>
