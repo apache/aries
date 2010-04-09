@@ -1,0 +1,8 @@
+<platform>
+
+  <name>Equinox V43 Prototype 3.6.0</name>
+  <system>mvn:org.eclipse/osgi/v43prototype-3.6.0.201003231329</system>
+
+  <profile name="minimal" default="true"/>
+
+</platform>
