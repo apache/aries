@@ -95,7 +95,7 @@ public class SubsystemConstants {
     public static final String RESOURCE_TYPE_SUBSYSTEM       = "subsystem";
 
     /**
-     * Attribute to indicate the type on a resource
+     * Attribute to indicate the location of a resource
      */
     public static final String RESOURCE_LOCATION_ATTRIBUTE   = "location";
 
