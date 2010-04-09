@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Currency;
 import java.util.Hashtable;
 import java.util.HashMap;
@@ -96,7 +97,12 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
         Subsystem subsystem = sa.install(f.toURL().toExternalForm());
         assertNotNull("subsystem should not be null", subsystem);
         
-        
+        assertTrue("subsystem should have a unique id", subsystem.getSubsystemId() > 0);
+        assertTrue(subsystem.getLocation().indexOf("test.eba") != -1);
+        assertEquals("woodstox", subsystem.getSymbolicName());
+        assertEquals("4.0.7", subsystem.getVersion().toString());
+        Collection<Bundle> constituents = subsystem.getConstituents();
+        assertEquals("check constituents' size", 1, constituents.size());
 
     }
 
