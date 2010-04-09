@@ -23,7 +23,6 @@
 	</parent>
 	<groupId>org.apache.aries.transaction</groupId>
 	<artifactId>org.apache.aries.transaction.testds</artifactId>
-	<version>0.1-incubating-SNAPSHOT</version>
 	<name>Apache Aries Transaction Test Datasource Configuration</name>
 	<packaging>bundle</packaging>
 	<dependencies>
