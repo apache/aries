@@ -30,6 +30,21 @@
     <packaging>pom</packaging>
     <description>Samples demonstrating the Apache Aries Blueprint implementation</description>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.aries.samples.blueprint</groupId>
+                <artifactId>helloworld</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.blueprint</groupId>
+                <artifactId>idverifier</artifactId>
+                <version>${version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <modules>
         <module>helloworld</module> 
         <module>idverifier</module> 
