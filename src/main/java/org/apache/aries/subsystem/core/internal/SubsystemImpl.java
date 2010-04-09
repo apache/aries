@@ -13,10 +13,7 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.aries.subsystem.Subsystem;
 import org.apache.aries.subsystem.SubsystemException;
@@ -88,17 +85,13 @@ public class SubsystemImpl implements Subsystem {
         return composite.getVersion();
     }
 
-    public String getScope() {
-        return getSymbolicName() + "_" + getVersion().toString();
-    }
-
     public Map<String, String> getHeaders() {
         return getHeaders(null);
     }
 
     public Map<String, String> getHeaders(String locale) {
-        // TODO: retrieve headers
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        final Dictionary dict = composite.getHeaders(locale);
+        return new DictionaryAsMap(dict);
     }
 
     public Collection<Bundle> getConstituents() {
@@ -110,5 +103,42 @@ public class SubsystemImpl implements Subsystem {
             }
         }
         return list;
+    }
+
+    private static class DictionaryAsMap extends AbstractMap<String,String> {
+        private Dictionary dict;
+
+        private DictionaryAsMap(Dictionary dict) {
+            this.dict = dict;
+        }
+
+        @Override
+        public Set<Entry<String, String>> entrySet() {
+            return new AbstractSet<Entry<String, String>>() {
+                @Override
+                public Iterator<Entry<String, String>> iterator() {
+                    final Enumeration e = dict.keys();
+                    return new Iterator<Entry<String,String>>() {
+                        public boolean hasNext() {
+                            return e.hasMoreElements();
+                        }
+
+                        public Entry<String, String> next() {
+                            Object key = e.nextElement();
+                            Object val = dict.get(key);
+                            return new SimpleImmutableEntry<String,String>(key != null ? key.toString() : null, val != null ? val.toString() : null);
+                        }
+
+                        public void remove() {
+                            throw new UnsupportedOperationException();
+                        }
+                    };
+                }
+                @Override
+                public int size() {
+                    return dict.size();
+                }
+            };
+        }
     }
 }

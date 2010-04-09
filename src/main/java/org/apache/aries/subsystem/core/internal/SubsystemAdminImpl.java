@@ -15,15 +15,17 @@ package org.apache.aries.subsystem.core.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Semaphore;
 
 import org.apache.aries.subsystem.Subsystem;
 import org.apache.aries.subsystem.SubsystemAdmin;
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemException;
+import org.apache.aries.subsystem.SubsystemListener;
 import org.apache.aries.subsystem.spi.Resource;
 import org.apache.aries.subsystem.spi.ResourceResolver;
 import org.apache.felix.utils.manifest.Clause;
@@ -31,7 +33,6 @@ import org.apache.felix.utils.manifest.Parser;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.framework.Version;
@@ -45,12 +46,12 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
     private static final Logger LOGGER = LoggerFactory.getLogger(SubsystemAdminImpl.class);
     private static final Version SUBSYSTEM_MANIFEST_VERSION = new Version("1.0");
 
-    final Semaphore lock = new Semaphore(1);
     final BundleContext context;
     final Map<Long, Subsystem> subsystems = new HashMap<Long, Subsystem>();
     final ServiceTracker compositeAdminTracker;
     final ServiceTracker resourceResolverTracker;
     final SubsystemEventDispatcher eventDispatcher;
+    final ServiceTracker listenersTracker;
 
     public SubsystemAdminImpl(BundleContext context, SubsystemEventDispatcher eventDispatcher) {
         this.context = context;
@@ -59,6 +60,8 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
         this.compositeAdminTracker.open();
         this.resourceResolverTracker = new ServiceTracker(context, ResourceResolver.class.getName(), null);
         this.resourceResolverTracker.open();
+        this.listenersTracker = new ServiceTracker(context, SubsystemListener.class.getName(), null);
+        this.listenersTracker.open();
         // Track subsystems
         synchronized (subsystems) {
             this.context.addBundleListener(new SynchronousBundleListener() {
@@ -123,10 +126,10 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
         return null;
     }
 
-    public Subsystem getSubsystem(String scope) {
+    public Subsystem getSubsystem(long id) {
         synchronized (subsystems) {
             for (Subsystem s : subsystems.values()) {
-                if (s.getScope().equals(scope)) {
+                if (s.getSubsystemId() == id) {
                     return s;
                 }
             }
@@ -134,9 +137,20 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
         }
     }
 
-    public Map<Long, Subsystem> getSubsystems() {
+    public Subsystem getSubsystem(String symbolicName, Version version) {
         synchronized (subsystems) {
-            return Collections.unmodifiableMap(subsystems);
+            for (Subsystem s : subsystems.values()) {
+                if (s.getSymbolicName().equals(symbolicName) && s.getVersion().equals(version)) {
+                    return s;
+                }
+            }
+            return null;
+        }
+    }
+
+    public Collection<Subsystem> getSubsystems() {
+        synchronized (subsystems) {
+            return Collections.unmodifiableCollection(new ArrayList(subsystems.values()));
         }
     }
 
@@ -157,7 +171,7 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
             return toReturn;
         }
         
-        Resource subsystemResource = new ResourceImpl(null, null, SubsystemConstants.RESOURCE_TYPE_SUBSYSTEM, url) {
+        Resource subsystemResource = new ResourceImpl(null, null, SubsystemConstants.RESOURCE_TYPE_SUBSYSTEM, url, Collections.<String, String>emptyMap()) {
             @Override
             public InputStream open() throws IOException {
                 if (is != null) {
@@ -199,52 +213,56 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
         update(subsystem, null);
     }
 
-    public synchronized void update(Subsystem subsystem, InputStream content) {
-        // TODO: update
-    }
-
-    public synchronized void uninstall(Subsystem ss) {
-        if (!(ss instanceof SubsystemImpl)) {
-            throw new IllegalArgumentException("The given subsystem is not managed by the SubsystemAdmin instance");
-        }
-        if (ss.getState().equals(Subsystem.State.UNINSTALLED)) {
-            return;
-        }
-        SubsystemImpl subsystem = (SubsystemImpl) ss;
-        try {
-            subsystem.composite.uninstall();
-        } catch (BundleException e) {
-            // TODO: Rollback
-            throw new SubsystemException("Error while uninstalling the subsystem", e);
-        }
-    }
-
-    public void uninstallForced(Subsystem ss) {
-        if (!(ss instanceof SubsystemImpl)) {
-            throw new IllegalArgumentException("The given subsystem is not managed by the SubsystemAdmin instance");
-        }
-        if (ss.getState().equals(Subsystem.State.UNINSTALLED)) {
-            return;
-        }
-        SubsystemImpl subsystem = (SubsystemImpl) ss;
-        try {
-            subsystem.composite.uninstall();
-        } catch (BundleException e) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Uninstalling subsystem scope {} is not successful.  Removing the subsystem from  subsystems map being tracked", ss.getScope());
+    public void update(final Subsystem subsystem, final InputStream is) {
+        Resource subsystemResource = new ResourceImpl(subsystem.getSymbolicName(), subsystem.getVersion(), SubsystemConstants.RESOURCE_TYPE_SUBSYSTEM, subsystem.getLocation(), Collections.<String, String>emptyMap()) {
+            @Override
+            public InputStream open() throws IOException {
+                if (is != null) {
+                    return is;
+                }
+                // TODO: check update location first
+                return super.open();
             }
+        };
+        SubsystemResourceProcessor processor = new SubsystemResourceProcessor();
+        SubsystemResourceProcessor.SubsystemSession session = processor.createSession(context);
+        boolean success = false;
+        try {
+            session.process(subsystemResource);
+            session.prepare();
+            session.commit();
+            success = true;
         } finally {
-            this.subsystems.remove(subsystem.id);
+            if (!success) {
+                session.rollback();
+            }
         }
     }
 
-    public boolean cancel() {
+    public void uninstall(Subsystem subsystem) {
+        Resource subsystemResource = new ResourceImpl(subsystem.getSymbolicName(), subsystem.getVersion(), SubsystemConstants.RESOURCE_TYPE_SUBSYSTEM, subsystem.getLocation(), Collections.<String, String>emptyMap());
+        SubsystemResourceProcessor processor = new SubsystemResourceProcessor();
+        SubsystemResourceProcessor.SubsystemSession session = processor.createSession(context);
+        boolean success = false;
+        try {
+            session.dropped(subsystemResource);
+            session.prepare();
+            session.commit();
+            success = true;
+        } finally {
+            if (!success) {
+                session.rollback();
+            }
+        }
+    }
+
+        public boolean cancel() {
         // TODO
         return false;
     }
 
     private Subsystem getInstalledSubsytem(String url) {
-        for (Subsystem ss : getSubsystems().values()) {
+        for (Subsystem ss : getSubsystems()) {
             if (url.equals(ss.getLocation())) {
                 return ss;
             }

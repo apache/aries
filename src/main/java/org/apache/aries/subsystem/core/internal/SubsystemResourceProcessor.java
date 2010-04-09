@@ -34,6 +34,7 @@ import org.apache.aries.subsystem.spi.ResourceProcessor;
 import org.apache.aries.subsystem.spi.ResourceResolver;
 import org.apache.felix.utils.manifest.Clause;
 import org.apache.felix.utils.manifest.Parser;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -64,7 +65,9 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
 
         private final BundleContext context;
         private final Map<Resource, CompositeBundle> installed = new HashMap<Resource, CompositeBundle>();
+        private final Map<Resource, CompositeBundle> updated = new HashMap<Resource, CompositeBundle>();
         private final Map<Resource, CompositeBundle> removed = new HashMap<Resource, CompositeBundle>();
+        private final List<CompositeBundle> stopped = new ArrayList<CompositeBundle>();
         private final Map<String, ServiceTracker> trackers = new HashMap<String, ServiceTracker>();
         private final Map<BundleContext, Map<String, Session>> sessions = new HashMap<BundleContext, Map<String, Session>>();
 
@@ -74,8 +77,6 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
         }
 
         public void process(Resource res) throws SubsystemException {
-            CompositeBundle composite = null;
-            boolean success = false;
             try {
 
                 CompositeAdmin admin = getService(CompositeAdmin.class);
@@ -111,6 +112,8 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
                     Resource r = resolver.find(c.toString());
                     content.add(r);
                 }
+
+                List<Resource> previous = new ArrayList<Resource>();
 
                 // TODO: convert resources before calling the resolver?
 
@@ -158,43 +161,85 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
                 // TODO: compute other composite manifest entries
                 // TODO: compute list of bundles
 
-                composite = admin.installCompositeBundle(
-                                            res.getLocation(),
-                                            headers,
-                                            Collections.<String, String>emptyMap());
-                installed.put(res, composite);
+                // Check existing bundles
+                CompositeBundle composite = findSubsystemComposite(res);
+                if (composite == null) {
+                    composite = admin.installCompositeBundle(
+                                                res.getLocation(),
+                                                headers,
+                                                Collections.<String, String>emptyMap());
+                    installed.put(res, composite);
+                } else {
+                    String previousContentHeader = (String) composite.getHeaders().get(SUBSYSTEM_CONTENT);
+                    Clause[] previousContentClauses = Parser.parseHeader(previousContentHeader);
+                    for (Clause c : previousContentClauses) {
+                        Resource r = resolver.find(c.toString());
+                        previous.add(r);
+                    }
+                    if (composite.getState() == Bundle.ACTIVE) {
+                        composite.stop();
+                        stopped.add(composite);
+                    }
+                    composite.update(headers);
+                    updated.put(res, composite);
+                }
                 composite.getSystemBundleContext().registerService(SubsystemAdmin.class.getName(), new Activator.SubsystemAdminFactory(), null);
 
+                for (Resource r : previous) {
+                    boolean stillHere = false;
+                    for (Resource r2 : content) {
+                        if (r2.getSymbolicName().equals(r.getSymbolicName()) && r2.getVersion().equals(r.getVersion())) {
+                            stillHere = true;
+                            break;
+                        }
+                    }
+                    if (!stillHere) {
+                        getSession(composite.getSystemBundleContext(), r.getType()).dropped(r);
+                    }
+                }
                 for (Resource r : additional) {
                     getSession(context, r.getType()).process(r);
                 }
                 for (Resource r : content) {
                     getSession(composite.getSystemBundleContext(), r.getType()).process(r);
                 }
-
-                success = true;
-
             } catch (SubsystemException e) {
                 throw e;
             } catch (Exception e) {
                 throw new SubsystemException("Unable to install subsystem", e);
-            } finally {
-                if (!success && composite != null) {
-                    try {
-                        composite.uninstall();
-                    } catch (Exception e) {
-                        // TODO: log error
-                    }
-                }
             }
         }
 
-        public void dropped(Resource resource) throws SubsystemException {
-            // TODO: find corresponding subsystem
+        public void dropped(Resource res) throws SubsystemException {
+            CompositeBundle composite = findSubsystemComposite(res);
+            if (composite == null) {
+                throw new SubsystemException("Unable to find matching subsystem to uninstall");
+            }
+            try {
+                // TODO: iterate thorugh all resources and ask for a removal on each one
+                composite.uninstall();
+                removed.put(res, composite);
+            } catch (BundleException e) {
+                throw new SubsystemException("Unable to uninstall subsystem", e);
+            }
         }
 
-        protected Subsystem findSubsystem(Resource resource) {
-            // TODO
+        protected CompositeBundle findSubsystemComposite(Resource resource) {
+            for (Bundle bundle : context.getBundles()) {
+                if (resource.getLocation().equals(bundle.getLocation())) {
+                    if (bundle instanceof CompositeBundle) {
+                        CompositeBundle composite = (CompositeBundle) bundle;
+                        String bsn = (String) bundle.getHeaders().get(Constants.BUNDLE_SYMBOLICNAME);
+                        Clause[] bsnClauses = Parser.parseHeader(bsn);
+                        if ("true".equals(bsnClauses[0].getDirective(SubsystemConstants.SUBSYSTEM_DIRECTIVE))) {
+                            return composite;
+                        } else {
+                            throw new SubsystemException("A bundle with the same location already exists!");
+                        }
+
+                    }
+                }
+            }
             return null;
         }
 
@@ -202,6 +247,13 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
             for (Map<String, Session> sm : sessions.values()) {
                 for (Session s : sm.values()) {
                     s.prepare();
+                }
+            }
+            for (CompositeBundle composite : stopped) {
+                try {
+                    composite.start();
+                } catch (BundleException e) {
+                    throw new SubsystemException(e);
                 }
             }
         }
@@ -213,6 +265,8 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
                 }
             }
             installed.clear();
+            updated.clear();
+            removed.clear();
             closeTrackers();
         }
 
@@ -230,6 +284,7 @@ public class SubsystemResourceProcessor implements ResourceProcessor {
                 }
             }
             installed.clear();
+            // TODO: Handle updated and uninstalled subsystems
             closeTrackers();
         }
 
