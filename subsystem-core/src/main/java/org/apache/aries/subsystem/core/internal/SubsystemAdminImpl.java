@@ -36,7 +36,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.framework.Version;
 import org.osgi.service.composite.CompositeAdmin;
@@ -98,6 +97,13 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
                         LOGGER.debug("Adding bundle symbolic name {} version {} to subsystems map being tracked", bundle.getSymbolicName(), bundle.getVersion());
                     }
                     subsystems.put(s.getSubsystemId(), s);
+                }
+            }
+            if (event.getType() == BundleEvent.RESOLVED) {
+                Subsystem s = isSubsystem(bundle);
+                if (s != null) {
+                    // emit the subsystem resolved event
+                    eventDispatcher.subsystemEvent(new SubsystemEvent(SubsystemEvent.Type.RESOLVED, System.currentTimeMillis(), s));
                 }
             }
         }
