@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.aries.subsystem.SubsystemConstants;
 import org.apache.aries.subsystem.SubsystemException;
@@ -54,9 +56,12 @@ public class BundleResourceProcessor implements ResourceProcessor {
                     bundle = context.installBundle(resource.getLocation(), resource.open());
                     installed.add(bundle);
                 } else {
-                    // update
-                    bundle.update(resource.open());
-                    updated.put(resource, bundle);
+                    // update only if RESOURCE_UPDATE_ATTRIBUTE is set to true
+                    String updateAttribute = resource.getAttributes().get(SubsystemConstants.RESOURCE_UPDATE_ATTRIBUTE);
+                    if ("update".equals(updateAttribute)) {
+                        bundle.update(resource.open());
+                        updated.put(resource, bundle);
+                    }
                 }
 
                 String startAttribute = resource.getAttributes().get(SubsystemConstants.RESOURCE_START_ATTRIBUTE);
@@ -98,12 +103,11 @@ public class BundleResourceProcessor implements ResourceProcessor {
         }
 
         public void commit() {
-            installed.clear();
-            updated.clear();
-            removed.clear();
+            clearAll();
         }
 
         public void rollback() {
+            // rollback installed bundle
             for (Bundle bundle : installed) {
                 try {
                     bundle.uninstall();
@@ -111,12 +115,24 @@ public class BundleResourceProcessor implements ResourceProcessor {
                     // Ignore
                 }
             }
-            installed.clear();
             
-            // TODO handle updated and removed bundle - is it correct to remove the updated bundle??
+            // rollback updated bundle - not sure what we can do here
             
-            updated.clear();
-            removed.clear();
+            // rollback removed bundle
+            if (!removed.isEmpty()) {
+                Set<Entry<Resource, Bundle>> removedSet = removed.entrySet();
+                for (Entry<Resource, Bundle> entry : removedSet) {
+                    Bundle bundle = entry.getValue();
+                    Resource res = entry.getKey();
+                    try {
+                        context.installBundle(res.getLocation(), res.open());
+                    } catch (Exception e) {
+                        // Ignore
+                    }
+                }
+            }
+            
+            clearAll();
         }
         
         protected Bundle findBundle(Resource resource) {
@@ -133,6 +149,13 @@ public class BundleResourceProcessor implements ResourceProcessor {
             
             return null;
         }
+        
+        private void clearAll() {
+            installed.clear();
+            updated.clear();
+            removed.clear();
+        }
     }
+
 
 }
