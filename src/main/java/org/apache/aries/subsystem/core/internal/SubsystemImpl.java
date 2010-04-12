@@ -111,41 +111,4 @@ public class SubsystemImpl implements Subsystem {
         }
         return list;
     }
-
-    private static class DictionaryAsMap extends AbstractMap<String,String> {
-        private Dictionary dict;
-
-        private DictionaryAsMap(Dictionary dict) {
-            this.dict = dict;
-        }
-
-        @Override
-        public Set<Entry<String, String>> entrySet() {
-            return new AbstractSet<Entry<String, String>>() {
-                @Override
-                public Iterator<Entry<String, String>> iterator() {
-                    final Enumeration e = dict.keys();
-                    return new Iterator<Entry<String,String>>() {
-                        public boolean hasNext() {
-                            return e.hasMoreElements();
-                        }
-
-                        public Entry<String, String> next() {
-                            Object key = e.nextElement();
-                            Object val = dict.get(key);
-                            return new SimpleImmutableEntry<String,String>(key != null ? key.toString() : null, val != null ? val.toString() : null);
-                        }
-
-                        public void remove() {
-                            throw new UnsupportedOperationException();
-                        }
-                    };
-                }
-                @Override
-                public int size() {
-                    return dict.size();
-                }
-            };
-        }
-    }
 }
