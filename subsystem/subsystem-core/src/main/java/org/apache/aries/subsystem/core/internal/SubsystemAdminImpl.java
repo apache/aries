@@ -36,6 +36,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.framework.Version;
 import org.osgi.service.composite.CompositeAdmin;
@@ -54,7 +55,7 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
     final ServiceTracker resourceResolverTracker;
     final SubsystemEventDispatcher eventDispatcher;
     final ServiceTracker listenersTracker;
-
+    
     public SubsystemAdminImpl(BundleContext context, SubsystemEventDispatcher eventDispatcher) {
         this.context = context;
         this.eventDispatcher = eventDispatcher;
@@ -210,7 +211,7 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
                 
                 // emit the subsystem event
                 eventDispatcher.subsystemEvent(new SubsystemEvent(SubsystemEvent.Type.INSTALLED, System.currentTimeMillis(), toReturn));
-                
+
                 return toReturn;
             }
         }
@@ -259,7 +260,7 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Updating subsystem {} is successful", subsystem.getSymbolicName());
             }
-            
+ 
             // emit the subsystem event
             eventDispatcher.subsystemEvent(new SubsystemEvent(SubsystemEvent.Type.UPDATED, System.currentTimeMillis(), subsystem));
  
@@ -298,7 +299,7 @@ public class SubsystemAdminImpl implements SubsystemAdmin {
         }
     }
 
-        public boolean cancel() {
+    public boolean cancel() {
         // TODO
         return false;
     }
