@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.1-incubating</version>
+        <version>0.2-incubating-SNAPSHOT</version>
     </parent>  
 
     <modelVersion>4.0.0</modelVersion>
@@ -63,12 +63,12 @@
             <dependency>
                 <groupId>org.apache.aries.testsupport</groupId>
                 <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                <version>0.1-incubating</version>
+                <version>0.2-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
             	<groupId>org.apache.aries</groupId>
             	<artifactId>org.apache.aries.util</artifactId>
-            	<version>0.1-incubating</version>
+            	<version>0.2-incubating-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
