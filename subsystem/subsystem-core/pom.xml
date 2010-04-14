@@ -48,6 +48,19 @@
             <artifactId>org.apache.aries.subsystem.api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse</groupId>
             <artifactId>osgi</artifactId>
             <scope>provided</scope>
@@ -68,6 +81,16 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.service.obr</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
