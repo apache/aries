@@ -56,6 +56,21 @@
                 <version>${version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.api</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.utils</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries</groupId>
+                <artifactId>org.apache.aries.util</artifactId>
+                <version>${version}</version>
+            </dependency>  
+            <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>4.2.0</version>
@@ -75,6 +90,24 @@
                 <artifactId>osgi</artifactId>
                 <version>v43prototype-3.6.0.201003231329</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.osgi.service.obr</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>org.osgi.core</artifactId>
+                    </exclusion>
+                </exclusions>
+                <version>1.0.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.bundlerepository</artifactId>
+                <version>1.4.3</version>
+            </dependency>
+            
+            
 	    </dependencies>
 	</dependencyManagement>
 

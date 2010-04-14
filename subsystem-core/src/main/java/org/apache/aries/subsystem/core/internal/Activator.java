@@ -55,6 +55,9 @@ public class Activator implements BundleActivator {
         register(ResourceResolver.class,
                  new NoOpResolver(),
                  DictionaryBuilder.build(Constants.SERVICE_RANKING, Integer.MIN_VALUE));
+        register(ResourceResolver.class,
+                new ResourceResolverImpl(this.context),
+                DictionaryBuilder.build(Constants.SERVICE_RANKING, 0));
         register(ResourceProcessor.class,
                 new BundleResourceProcessor(),
                 DictionaryBuilder.build(SubsystemConstants.SERVICE_RESOURCE_TYPE, SubsystemConstants.RESOURCE_TYPE_BUNDLE));
