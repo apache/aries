@@ -97,6 +97,8 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
         System.out.println("able to get subsytem admin service");
         
         File f = new File("test.eba");
+        // capture initial bundle size
+        int init = bundleContext.getBundles().length;
         Subsystem subsystem = sa.install(f.toURI().toURL().toExternalForm());
         assertNotNull("subsystem should not be null", subsystem);
         
@@ -106,7 +108,11 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
         assertEquals("2.0.8", subsystem.getVersion().toString());
         Collection<Bundle> constituents = subsystem.getConstituents();
         assertEquals("check constituents' size", 1, constituents.size());
-
+        // recapture bundle size
+        int later = bundleContext.getBundles().length;
+        // we expect the number would increase 4, one is composite bundle, three are the required resources of the subsystem content
+        assertEquals(4, later - init);
+        subsystem.start();
     }
 
     @org.ops4j.pax.exam.junit.Configuration
