@@ -63,6 +63,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.aries</groupId>
+            <artifactId>org.apache.aries.util</artifactId>
+            <scope>test</scope>
+        </dependency>        
+        <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
             <scope>test</scope>
@@ -111,7 +116,21 @@
             <artifactId>pax-url-mvn</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.service.obr</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.bundlerepository</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.utils</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

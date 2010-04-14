@@ -59,7 +59,7 @@ import org.osgi.service.composite.CompositeAdmin;
 
 
 @RunWith(JUnit4TestRunner.class)
-public class SubsystemAdminTest extends AbstractIntegrationTest {
+public class SubsystemAdmin2Test extends AbstractIntegrationTest {
 
     /* Use @Before not @BeforeClass so as to ensure that these resources
      * are created in the paxweb temp directory, and not in the svn tree 
@@ -74,14 +74,12 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
       ZipFixture testEba = ArchiveFixture.newZip();
       
       testEba = testEba.binary("META-INF/MANIFEST.MF", 
-              SubsystemAdminTest.class.getClassLoader().getResourceAsStream("subsystem1/META-INF/MANIFEST.MF"))
+              SubsystemAdminTest.class.getClassLoader().getResourceAsStream("subsystem2/META-INF/MANIFEST.MF"))
           .end();
       FileOutputStream fout = new FileOutputStream("test.eba");
       testEba.writeOut(fout);
       fout.close();
       createdApplications = true;
-      
-      
     }
     
     @Test
@@ -102,7 +100,7 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
         
         assertTrue("subsystem should have a unique id", subsystem.getSubsystemId() > 0);
         assertTrue(subsystem.getLocation().indexOf("test.eba") != -1);
-        assertEquals("felix-file-install", subsystem.getSymbolicName());
+        assertEquals("felix-file-install2", subsystem.getSymbolicName());
         assertEquals("2.0.8", subsystem.getVersion().toString());
         Collection<Bundle> constituents = subsystem.getConstituents();
         assertEquals("check constituents' size", 1, constituents.size());
@@ -126,8 +124,8 @@ public class SubsystemAdminTest extends AbstractIntegrationTest {
 
             // Bundles
             mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
-            mavenBundle("org.apache.aries", "org.apache.aries.util"),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
+            mavenBundle("org.apache.aries", "org.apache.aries.util"),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
             mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
