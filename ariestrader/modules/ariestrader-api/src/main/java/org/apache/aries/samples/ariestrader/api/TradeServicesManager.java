@@ -36,12 +36,6 @@ public interface TradeServicesManager {
     public ArrayList<Integer> getCurrentModes();
 
     /**
-      * Set TradeServicesList reference
-      */
-    public void setTradeServicesList(List tradeList);
-
-
-    /**
       * Get the currently selected TradeServices
       */
     public TradeServices getTradeServices();
