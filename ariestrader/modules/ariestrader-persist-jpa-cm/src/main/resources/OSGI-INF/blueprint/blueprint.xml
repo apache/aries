@@ -31,7 +31,7 @@
   
   <service id="tradeServicesJPA-CM" ref="tradeServicesBeanJPA-CM" interface="org.apache.aries.samples.ariestrader.api.TradeServices">
       <service-properties>
-          <entry key="mode" value="jpa-cm"/>
+          <entry key="mode" value="JPA_CM"/>
       </service-properties>
   </service>
 

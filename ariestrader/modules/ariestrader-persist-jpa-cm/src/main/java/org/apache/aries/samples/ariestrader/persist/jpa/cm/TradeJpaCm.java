@@ -755,10 +755,10 @@ public class TradeJpaCm implements TradeServices {
     /**
      * Get mode - returns the persistence mode (TradeConfig.JPA)
      * 
-     * @return int mode
+     * @return TradeConfig.ModeType
      */
-    public int getMode() {
-        return TradeConfig.JPA_CM;
+    public TradeConfig.ModeType getMode() {
+        return TradeConfig.ModeType.JPA_CM;
     }
 
 }
