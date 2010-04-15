@@ -23,53 +23,52 @@
 <%@ page import="org.apache.aries.samples.ariestrader.util.*,org.apache.aries.samples.ariestrader.api.*,org.apache.aries.samples.ariestrader.api.persistence.*" session="false" %>
 
 <%!
-int hitCount = 0;
-String initTime = new java.util.Date().toString();
+    int hitCount = 0;
+    String initTime = new java.util.Date().toString();
+    TradeServicesManager tradeServicesManager = null;
 %>
  
 <%
-// setup some variables to work with later
-int someint1 = TradeConfig.rndInt(100) + 1;
-pageContext.setAttribute("someint1", new Integer(someint1));
-int someint2 = TradeConfig.rndInt(100) + 1;
-pageContext.setAttribute("someint2", new Integer(someint2));
-float somefloat1 = TradeConfig.rndFloat(100) + 1.0f;
-pageContext.setAttribute("somefloat1", new Float(somefloat1));
-float somefloat2 = TradeConfig.rndFloat(100) + 1.0f;
-pageContext.setAttribute("somefloat2", new Float(somefloat2));
+    // setup some variables to work with later
+    int someint1 = TradeConfig.rndInt(100) + 1;
+    pageContext.setAttribute("someint1", new Integer(someint1));
+    int someint2 = TradeConfig.rndInt(100) + 1;
+    pageContext.setAttribute("someint2", new Integer(someint2));
+    float somefloat1 = TradeConfig.rndFloat(100) + 1.0f;
+    pageContext.setAttribute("somefloat1", new Float(somefloat1));
+    float somefloat2 = TradeConfig.rndFloat(100) + 1.0f;
+    pageContext.setAttribute("somefloat2", new Float(somefloat2));
 
-TradeServicesManager tradeServicesManager = null;
+    if (tradeServicesManager == null) {
+        tradeServicesManager = TradeServiceUtilities.getTradeServicesManager();
+    }
+    TradeServices tradeServices = tradeServicesManager.getTradeServices();
 
-if (tradeServicesManager == null) {
-    tradeServicesManager = TradeServiceUtilities.getTradeServicesManager();
-}
-TradeServices tradeServices = tradeServicesManager.getTradeServices();
+    QuoteDataBean quoteData0=null, quoteData1=null, quoteData2=null, quoteData3=null;
 
-QuoteDataBean quoteData0=null, quoteData1=null, quoteData2=null, quoteData3=null;
+    try { 
+    	quoteData0 = tradeServices.getQuote(TradeConfig.rndSymbol());
+    	quoteData1 = tradeServices.getQuote(TradeConfig.rndSymbol());
+    	quoteData2 = tradeServices.getQuote(TradeConfig.rndSymbol());
+    	quoteData3 = tradeServices.getQuote(TradeConfig.rndSymbol());
+    }
+    catch (Exception e)
+    {
+        Log.error("PingJspEL.jsp  exception", e);
+    }
 
-try { 
-	quoteData0 = tradeServices.getQuote(TradeConfig.rndSymbol());
-	quoteData1 = tradeServices.getQuote(TradeConfig.rndSymbol());
-	quoteData2 = tradeServices.getQuote(TradeConfig.rndSymbol());
-	quoteData3 = tradeServices.getQuote(TradeConfig.rndSymbol());
-}
-catch (Exception e)
-{
-    Log.error("PingJspEL.jsp  exception", e);
-}
+    pageContext.setAttribute("quoteData0", quoteData0);
+    pageContext.setAttribute("quoteData1", quoteData1);
+    pageContext.setAttribute("quoteData2", quoteData2);
+    pageContext.setAttribute("quoteData3", quoteData3);
 
-pageContext.setAttribute("quoteData0", quoteData0);
-pageContext.setAttribute("quoteData1", quoteData1);
-pageContext.setAttribute("quoteData2", quoteData2);
-pageContext.setAttribute("quoteData3", quoteData3);
+    QuoteDataBean quoteData[] = new QuoteDataBean[4];
+    quoteData[0] = quoteData0;
+    quoteData[1] = quoteData1;
+    quoteData[2] = quoteData2;
+    quoteData[3] = quoteData3;
 
-QuoteDataBean quoteData[] = new QuoteDataBean[4];
-quoteData[0] = quoteData0;
-quoteData[1] = quoteData1;
-quoteData[2] = quoteData2;
-quoteData[3] = quoteData3;
-
-pageContext.setAttribute("quoteData", quoteData);
+    pageContext.setAttribute("quoteData", quoteData);
 %>
   
 <HR>

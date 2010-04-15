@@ -24,9 +24,10 @@
 <%@ page import="java.util.ArrayList, org.apache.aries.samples.ariestrader.util.TradeConfig, org.apache.aries.samples.ariestrader.api.*"
 	session="false" isThreadSafe="true" isErrorPage="false"%>
 
-<% 
+<%! 
     TradeServicesManager tradeServicesManager = null;
-
+%>
+<% 
     if (tradeServicesManager == null) {
         tradeServicesManager = TradeServiceUtilities.getTradeServicesManager();
     }
@@ -168,49 +169,26 @@ if (status != null) {
 
 		<TR>
 			<TD align="left"><B>WebInterface</B>
-			<P align="left"><%configParm = "WebInterface";
-names = TradeConfig.webInterfaceNames;
-index = TradeConfig.webInterface;
-for (int i = 0; i < names.length; i++) {
-	out.print(
-		"<INPUT type=\"radio\" name=\""
-			+ configParm
-			+ "\" value=\""
-			+ i
-			+ "\" ");
-	if (index == i)
-		out.print("checked");
-	out.print("> " + names[i] + "<BR>");
-}
-%></P>
+                <P align="left">
+                <%
+                    configParm = "WebInterface";
+                    names = TradeConfig.webInterfaceNames;
+                    index = TradeConfig.webInterface;
+                    for (int i = 0; i < names.length; i++) {
+                        out.print("<INPUT type=\"radio\" name=\""
+                                 + configParm
+                                 + "\" value=\""
+                                 + i
+                                 + "\" ");
+                        if (index == i) out.print("checked");
+                        out.print("> " + names[i] + "<BR>");
+                    }
+                %>
+                </P>
 			</TD>
 			<TD>This setting determines the Web interface technology used, JSPs
 			or JSPs with static images and GIFs.</TD>
 		</TR>
-		<!--		<TR>
-			<TD align="left">
-			<B>Caching Type</B>
-			<P align="left"><%configParm = "CachingType";
-names = TradeConfig.cachingTypeNames;
-index = TradeConfig.cachingType;
-for (int i = 0; i < names.length; i++) {
-	out.print(
-		"<INPUT type=\"radio\" name=\""
-			+ configParm
-			+ "\" value=\""
-			+ i
-			+ "\" ");
-	if (index == i)
-		out.print("checked");
-	out.print("> " + names[i] + "<BR>");
-}
-%></P>
-			</TD>
-			<TD>
-			This setting determines the caching technology used for data caching
-			, DistributedMap, Command Caching or No Caching.
-			</TD>
-		</TR>-->
 		<TR>
 			<TD colspan="2" align="center"><B>Miscellaneous Settings</B></TD>
 		</TR>
@@ -241,15 +219,6 @@ for (int i = 0; i < names.length; i++) {
 			web request. Change this value to repeat operations multiple times
 			per web request.</TD>
 		</TR>
-<!--		<TR>
-			<TD align="left"><INPUT type="checkbox"
-                <%=TradeConfig.getPublishQuotePriceChange() ? "checked" : ""%>
-                name="EnablePublishQuotePriceChange"> <B><FONT size="-1">Publish Quote Updates</FONT></B><BR>
-            </TD>
-            <TD>
-                Publish quote price changes to a JMS topic.<BR>
-            </TD>
-        </TR> -->
 		<TR>
 			<TD align="left"><INPUT type="checkbox"
                 <%=TradeConfig.getLongRun() ? "checked" : ""%>
