@@ -28,6 +28,7 @@ import org.apache.aries.samples.ariestrader.api.persistence.HoldingDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.MarketSummaryDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.OrderDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.QuoteDataBean;
+import org.apache.aries.samples.ariestrader.util.TradeConfig;
 
 /**
   * TradeServices interface specifies the business methods provided by the Trade online broker application.
@@ -276,9 +277,9 @@ public interface TradeServices extends Remote {
     * Get mode - returns the persistence mode
     * (TradeConfig.JDBC, JPA, etc...)
     *
-    * @return int mode
+    * @return TradeConfig.ModeType
     */
-    public int getMode();
+    public TradeConfig.ModeType getMode();
 
 }   
 

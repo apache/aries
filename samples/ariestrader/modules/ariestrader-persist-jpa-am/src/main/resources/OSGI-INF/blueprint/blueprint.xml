@@ -29,7 +29,7 @@
   
   <service id="tradeServicesJPA-AM" ref="tradeServicesBeanJPA-AM" interface="org.apache.aries.samples.ariestrader.api.TradeServices">
       <service-properties>
-          <entry key="mode" value="jpa-am"/>
+          <entry key="mode" value="JPA_AM"/>
       </service-properties>
   </service>
 
