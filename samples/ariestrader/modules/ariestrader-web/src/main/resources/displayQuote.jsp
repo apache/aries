@@ -17,9 +17,11 @@
 <%@ page
 	import="java.math.BigDecimal, org.apache.aries.samples.ariestrader.api.*, org.apache.aries.samples.ariestrader.api.persistence.*, org.apache.aries.samples.ariestrader.util.*"
 	session="true" isThreadSafe="true" isErrorPage="false"%>
+<%! 
+    TradeServicesManager tradeServicesManager = null;
+%>
 <% 
     String symbol = request.getParameter("symbol");
-    TradeServicesManager tradeServicesManager = null;
 
     if (tradeServicesManager == null) {
         tradeServicesManager = TradeServiceUtilities.getTradeServicesManager();

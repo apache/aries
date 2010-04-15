@@ -18,14 +18,15 @@
 	import="java.util.Collection, java.util.Iterator, org.apache.aries.samples.ariestrader.api.*, org.apache.aries.samples.ariestrader.api.persistence.*, org.apache.aries.samples.ariestrader.util.*"
 	session="true" isThreadSafe="true" isErrorPage="false"%>
 
+<%! 
+    TradeServicesManager tradeServicesManager = null;
+%>
 <%
-TradeServicesManager tradeServicesManager = null;
+    if (tradeServicesManager == null) {
+        tradeServicesManager = TradeServiceUtilities.getTradeServicesManager();
+    }
 
-if (tradeServicesManager == null) {
-    tradeServicesManager = TradeServiceUtilities.getTradeServicesManager();
-}
-
-MarketSummaryDataBean marketSummaryData = tradeServicesManager.getMarketSummary();
+    MarketSummaryDataBean marketSummaryData = tradeServicesManager.getMarketSummary();
 %>
 <TABLE border="1" bgcolor="#ffffff" width="100%"
 	style="font-size: smaller">
