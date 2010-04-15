@@ -89,7 +89,7 @@ public class BlueprintContainerBTCustomizerTest extends AbstractIntegrationTest 
 
             BundleContext compositeBundleContext = cb.getCompositeFramework().getBundleContext();
             // install the blueprint sample onto the framework associated with the composite bundle
-            MavenArtifactProvisionOption mapo = CoreOptions.mavenBundle().groupId("org.apache.aries.blueprint").artifactId("org.apache.aries.blueprint.sample").version( "0.1-incubating-SNAPSHOT");
+            MavenArtifactProvisionOption mapo = mavenBundleInTest("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample");
             // let's use input stream to avoid invoking mvn url handler which isn't avail in the child framework.
             InputStream is = new URL(mapo.getURL()).openStream();
             Bundle bundle = compositeBundleContext.installBundle(mapo.getURL(), is);
