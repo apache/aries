@@ -62,7 +62,7 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
 		newPrice = TradeConfig.getRandomPriceChangeFactor();
 
 		//TradeJdbc via TradeServices makes use of prepared statements so I am going to reuse the existing code.
-                TradeServices tradeServices = TradeServiceUtilities.getTradeServices("(mode=jdbc)");
+                TradeServices tradeServices = TradeServiceUtilities.getTradeServices("(mode=JDBC)");
 
 		//update the price of our symbol
 		QuoteDataBean quoteData = null;

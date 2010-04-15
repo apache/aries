@@ -1601,10 +1601,10 @@ public class TradeJdbc implements TradeServices {
     /**
      * Get mode - returns the persistence mode (TradeConfig.JDBC)
      * 
-     * @return int mode
+     * @return TradeConfig.ModeType
      */
-    public int getMode() {
-        return TradeConfig.JDBC;
+    public TradeConfig.ModeType getMode() {
+        return TradeConfig.ModeType.JDBC;
     }
 
 }
