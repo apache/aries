@@ -32,19 +32,11 @@ public class TradeConfig {
 	/* Trade Runtime Configuration Parameters */
 
 	/* Trade Runtime Mode parameters */
-    public static String[] runTimeModeNames = { "Full EJB3", 
-                                                "Direct (JDBC)", 
-                                                "Session (EJB3) To Direct", 
-                                                "JDBC", 
+    public static String[] runTimeModeNames = { "JDBC", 
                                                 "JPA App Managed",
                                                 "JPA Container Managed"};
-    public static final int EJB3 = 0;
-    public static final int DIRECT = 1;
-    public static final int SESSION3 = 2;
-    public static final int JDBC = 3;
-    public static final int JPA_AM = 4;
-    public static final int JPA_CM = 5;
-    public static int runTimeMode = JDBC;
+    public static enum ModeType{JDBC,JPA_AM,JPA_CM}
+    public static ModeType runTimeMode = ModeType.JDBC;
 	
     /* Trade JPA Layer parameters */
 	public static String[] jpaLayerNames = {"OpenJPA", "Hibernate"};
@@ -501,7 +493,7 @@ public class TradeConfig {
 			try {
 				for (int i = 0; i < runTimeModeNames.length; i++) {
 					if (value.equalsIgnoreCase(runTimeModeNames[i])) {
-						setRunTimeMode(i);
+						setRunTimeMode(ModeType.values()[i]);
 						break;
 					}
 				}
@@ -511,7 +503,7 @@ public class TradeConfig {
 						+ "trying to set runtimemode to "
 						+ value
 						+ "reverting to current value: "
-						+ runTimeModeNames[getRunTimeMode()],
+						+ runTimeModeNames[getRunTimeMode().ordinal()],
 					e);
 			} // If the value is bad, simply revert to current
 		} else if (parm.equalsIgnoreCase("orderProcessingMode")) {
@@ -840,11 +832,11 @@ public class TradeConfig {
 		accessMode = value;
 	}
 
-    public static int getRunTimeMode() {
+    public static ModeType getRunTimeMode() {
         return runTimeMode;
     }
     
-    public static void setRunTimeMode(int value) {
+    public static void setRunTimeMode(ModeType value) {
         runTimeMode = value;
     }
 

@@ -104,7 +104,7 @@ if (status != null) {
                 ArrayList activeModes = tradeServicesManager.getCurrentModes();
                 configParm = "RunTimeMode";
                 names = TradeConfig.runTimeModeNames;
-                index = TradeConfig.runTimeMode;
+                index = TradeConfig.getRunTimeMode().ordinal();
                 for (int i = 0; i < activeModes.size(); i++) {
                     out.print("<INPUT type=\"radio\" name=\""
                              + configParm

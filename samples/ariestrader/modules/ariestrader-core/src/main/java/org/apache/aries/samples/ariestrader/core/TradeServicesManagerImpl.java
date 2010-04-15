@@ -74,23 +74,10 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
         for (int i=0; i<tradeServicesList.length; i++) {
             TradeServices tradeServicesRef = tradeServicesList[i];
             if (tradeServicesRef != null) {
-                modes.add(tradeServicesRef.getMode());
+                modes.add(i);
             }
         }
         return modes;
-    }
-
-    /**
-      * Set TradeServicesList reference
-      */
-    public void setTradeServicesList(List tradeList) {
-        if (Log.doTrace())
-            Log.trace("TradeServicesManagerImpl:setTradeServicesList()" , tradeList);
-        Iterator it = tradeList.iterator();
-        while (it.hasNext()) {  
-            TradeServices tradeServices =  (TradeServices) it.next(); 
-            this.tradeServicesList[tradeServices.getMode()] = tradeServices;
-        }  
     }
 
     /**
@@ -99,7 +86,7 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
     public TradeServices getTradeServices() {
         if (Log.doTrace()) 
             Log.trace("TradeServicesManagerImpl:getTradeServices()");
-        return tradeServicesList[TradeConfig.runTimeMode];
+        return tradeServicesList[TradeConfig.getRunTimeMode().ordinal()];
     }
 
     /**
@@ -109,7 +96,8 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
         if (Log.doTrace())
             Log.trace("TradeServicesManagerImpl:bindService()", tradeServices, props);
         if (tradeServices != null) {
-            tradeServicesList[tradeServices.getMode()] = tradeServices;
+            String mode = (String) props.get("mode");
+            tradeServicesList[Enum.valueOf(TradeConfig.ModeType.class, mode).ordinal()] = tradeServices;
         }
     }
 
@@ -120,7 +108,8 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
         if (Log.doTrace())
             Log.trace("TradeServicesManagerImpl:unbindService()", tradeServices, props);
         if (tradeServices != null) {
-            tradeServicesList[tradeServices.getMode()] = null;
+            String mode = (String) props.get("mode");
+            tradeServicesList[Enum.valueOf(TradeConfig.ModeType.class, mode).ordinal()] = null;
         }
     }
 
@@ -200,7 +189,7 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
             Log.trace("TradeAction:getMarketSummaryInternal()");
         }
         MarketSummaryDataBean marketSummaryData = null;
-        marketSummaryData = tradeServicesList[TradeConfig.runTimeMode].getMarketSummary();
+        marketSummaryData = tradeServicesList[TradeConfig.getRunTimeMode().ordinal()].getMarketSummary();
         return marketSummaryData;
     }
 

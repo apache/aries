@@ -118,7 +118,7 @@ public class TradeConfigServlet extends HttpServlet {
 				int i = Integer.parseInt(runTimeModeStr);
 				if ((i >= 0) && (i < TradeConfig.runTimeModeNames.length)) //Input validation
                                 {
-                                    TradeConfig.setRunTimeMode(i);
+                                    TradeConfig.setRunTimeMode(TradeConfig.ModeType.values()[i]);
                                 }
 			}
 			catch (Exception e)
@@ -131,7 +131,7 @@ public class TradeConfigServlet extends HttpServlet {
 
 			} // If the value is bad, simply revert to current
 		}
-		currentConfigStr += "\t\tRunTimeMode:\t\t" + TradeConfig.runTimeModeNames[TradeConfig.getRunTimeMode()] + "\n";
+		currentConfigStr += "\t\tRunTimeMode:\t\t" + TradeConfig.runTimeModeNames[TradeConfig.getRunTimeMode().ordinal()] + "\n";
 		
 		/* Add JPA layer choice to avoid some ugly Hibernate bugs */
 		String jpaLayerStr = req.getParameter("JPALayer");
