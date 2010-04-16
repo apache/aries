@@ -80,17 +80,20 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     if(jarFiles != null) {
       for(String jarFile : jarFiles){
         URL url = bundle.getResource(jarFile);
-        if(url == null)
+        if(url == null) {
           _logger.error("The persistence unit {} in bundle {} listed the jar file {}, but " +
           		"{} could not be found in the bundle", new Object[]{getPersistenceUnitName(),
               bundle.getSymbolicName() + "_" + bundle.getVersion(), jarFile, jarFile});
+        } else {
+            urls.add(url);
+        }
       }
     }
     return urls;
   }
 
   public DataSource getJtaDataSource() {
-    String jndiString = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.NON_JTA_DATASOURCE);
+    String jndiString = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.JTA_DATASOURCE);
     DataSource toReturn = null;
     if(jndiString != null) {
       try {
