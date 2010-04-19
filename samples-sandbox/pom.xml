@@ -32,9 +32,9 @@
     <packaging>pom</packaging>
   
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/samples-sandbox</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/samples-sandbox</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/samples-sandbox</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RC1/samples-sandbox</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RC1/samples-sandbox</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.1-incubating-RC1/samples-sandbox</url>
     </scm>
 
     <properties>

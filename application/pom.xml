@@ -19,14 +19,14 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.1-incubating</version>
+        <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.application</groupId>
     <artifactId>application</artifactId>
     <name>Apache Aries Application</name>
-    <version>0.2-incubating-SNAPSHOT</version>
+    <version>0.1-incubating-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
@@ -34,9 +34,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/application</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/application</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/application</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RC1/application</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RC1/application</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.1-incubating-RC1/application</url>
     </scm>
 
     <dependencyManagement>
@@ -49,22 +49,22 @@
             <dependency>
                 <groupId>org.apache.aries</groupId>
                 <artifactId>org.apache.aries.util</artifactId>
-                <version>0.1-incubating</version>
+                <version>0.1-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint</artifactId>
-                <version>0.1-incubating</version>
+                <version>0.1-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.testsupport</groupId>
                 <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                <version>0.1-incubating</version>
+                <version>0.1-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.web</groupId>
                 <artifactId>org.apache.aries.web.urlhandler</artifactId>
-                <version>0.1-incubating</version>
+                <version>0.1-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
