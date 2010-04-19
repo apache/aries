@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.apache.aries.testsupport</groupId>
     <artifactId>testsupport</artifactId>
-    <version>0.2-incubating-SNAPSHOT</version>
+    <version>0.1-incubating-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.apache.aries.testsupport.unit</artifactId>

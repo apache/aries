@@ -21,14 +21,14 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.2-incubating-SNAPSHOT</version>
+        <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.testsupport</groupId>
     <artifactId>testsupport</artifactId>
     <name>Apache Aries Test Support</name>
-    <version>0.2-incubating-SNAPSHOT</version>
+    <version>0.1-incubating-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
@@ -36,9 +36,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/testsupport</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/testsupport</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/testsupport</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RC1/testsupport</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RC1/testsupport</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.1-incubating-RC1/testsupport</url>
     </scm>
 
     <modules>
