@@ -29,7 +29,7 @@ under the License.
     </parent>
     
     <artifactId>eba-maven-plugin</artifactId>
-    <version>0.1-incubating</version>
+    <version>0.2-incubating-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Aries Maven EBA Plugin</name>
@@ -37,9 +37,9 @@ under the License.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/eba-maven-plugin-0.1-incubating</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/eba-maven-plugin-0.1-incubating</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/tags/eba-maven-plugin-0.1-incubating</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/eba-maven-plugin</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/eba-maven-plugin</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.1-incubating-RCx/eba-maven-plugin</url>
     </scm>
     
     <dependencies>
