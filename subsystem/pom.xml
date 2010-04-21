@@ -33,9 +33,9 @@
     </description>
 
 	<scm>
-		<connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RC1/subsystem</connection>
-		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RC1/subsystem</developerConnection>
-		<url>http://svn.apache.org/viewvc/incubator/aries/branches/0.1-incubating-RC1/subsystem</url>
+		<connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/subsystem</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/subsystem</developerConnection>
+		<url>http://svn.apache.org/viewvc/incubator/aries/branches/0.1-incubating-RCx/subsystem</url>
 	</scm>
 
 	<dependencyManagement>
