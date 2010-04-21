@@ -36,9 +36,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RC1/testsupport</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RC1/testsupport</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.1-incubating-RC1/testsupport</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/testsupport</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/testsupport</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.1-incubating-RCx/testsupport</url>
     </scm>
 
     <modules>
