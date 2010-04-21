@@ -37,9 +37,9 @@ under the License.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RC1/eba-maven-plugin</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RC1/eba-maven-plugin</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.1-incubating-RC1/eba-maven-plugin</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/eba-maven-plugin</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/eba-maven-plugin</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.1-incubating-RCx/eba-maven-plugin</url>
     </scm>
     
     <dependencies>
