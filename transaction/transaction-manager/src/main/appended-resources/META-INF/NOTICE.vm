@@ -1,0 +1,3 @@
+#if(${projectName})${projectName}#else${project.name}#end includes code from ObjectWeb HOWL.
+  Distributed under the BSD license.
+  Copyright (c) 2004, Bull S.A.
