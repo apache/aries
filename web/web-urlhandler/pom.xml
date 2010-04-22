@@ -20,7 +20,7 @@
     <parent>
         <artifactId>web</artifactId>
         <groupId>org.apache.aries.web</groupId>
-        <version>0.1-incubating-SNAPSHOT</version>
+        <version>0.1-incubating</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
