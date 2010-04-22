@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.aries.subsystem</groupId>
         <artifactId>subsystem</artifactId>
-        <version>0.2-incubating-SNAPSHOT</version>
+        <version>0.1-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.subsystem.install</artifactId>
