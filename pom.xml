@@ -26,15 +26,15 @@
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>org.apache.aries.samples</groupId>
-    <version>0.1-incubating-SNAPSHOT</version>
+    <version>0.1-incubating</version>
     <artifactId>samples</artifactId>
     <name>Apache Aries Samples</name>
     <packaging>pom</packaging>
   
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/samples</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/samples</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.1-incubating-RCx/samples</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/samples-0.1-incubating</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/samples-0.1-incubating</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/tags/samples-0.1-incubating</url>
     </scm>
 
     <properties>
