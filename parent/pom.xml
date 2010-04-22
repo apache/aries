@@ -31,7 +31,7 @@
     <groupId>org.apache.aries</groupId>
     <artifactId>parent</artifactId>
     <name>Aries :: Top Parent POM</name>
-    <version>0.1-incubating</version>
+    <version>0.1-incubating-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
@@ -48,9 +48,9 @@
     <inceptionYear>2009</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/parent-0.1-incubating</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/parent-0.1-incubating</developerConnection>
-        <url>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/parent-0.1-incubating</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/parent-0.1-incubating-SNAPSHOT</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/parent-0.1-incubating-SNAPSHOT</developerConnection>
+        <url>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/parent-0.1-incubating-SNAPSHOT</url>
     </scm>
 
     <issueManagement>
