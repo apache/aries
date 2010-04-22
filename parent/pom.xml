@@ -48,9 +48,9 @@
     <inceptionYear>2009</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/parent-0.1-incubating-SNAPSHOT</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/parent-0.1-incubating-SNAPSHOT</developerConnection>
-        <url>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/parent-0.1-incubating-SNAPSHOT</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/parent</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/parent</developerConnection>
+        <url>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/parent</url>
     </scm>
 
     <issueManagement>
