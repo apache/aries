@@ -28,7 +28,7 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>blueprint</artifactId>
     <name>Apache Aries Blueprint</name>
-    <version>0.1-incubating-SNAPSHOT</version>
+    <version>0.1-incubating</version>
     <packaging>pom</packaging>
 
     <description>
@@ -36,9 +36,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/blueprint</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.1-incubating-RCx/blueprint</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.1-incubating-RCx/blueprint</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/blueprint-0.1-incubating</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/blueprint-0.1-incubating</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/tags/blueprint-0.1-incubating</url>
     </scm>
     
     <dependencyManagement>
