@@ -1,0 +1,160 @@
+##
+#macro (renderPage $title)
+    #set($globalHelper = $action.getGlobalHelper())
+    #set($renderer = $globalHelper.getWikiStyleRenderer())
+    #foreach ($child in $page.space.pages)
+        #if ($child.title.equals($title))
+            #set ($content =
+$renderer.convertWikiToXHtml($child.toPageContext(),
+$child.content).trim())
+            $content
+        #end
+    #end
+#end
+##
+#macro (renderMenuPage $title)
+    #set($globalHelper = $action.getGlobalHelper())
+    #set($renderer = $globalHelper.getWikiStyleRenderer())
+    #foreach ($child in $page.space.pages)
+        #if ($child.title.equals($title))
+            #set ($content =
+$renderer.convertWikiToXHtml($child.toPageContext(),
+$child.content).trim())
+            #set ($content =
+$content.replaceAll("<LI>([^<]*\\S)(\\s*)<UL", "<li><div
+onclick='SwitchMenu(this)'><h3>$1</h3>$2<ul"))
+            #set ($content = $content.replaceAll("</UL>(\\s*)</LI>",
+"</ul>$1</div></li>"))
+            $content
+        #end
+    #end
+#end
+##
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd";>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements. See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License. You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<html>
+  <head>
+    <link type="text/css" rel="stylesheet"
+href="http://incubator.apache.org/aries/resources/site.css";></link>
+    <script src="http://incubator.apache.org/aries/resources/space.js";
+type="text/javascript"></script>
+<meta name="keywords" content="..."/>
+<meta name="description" content="..." />
+    <title>
+Apache Aries (incubating) -- $page.title
+    </title>
+  </head>
+<body onload="init()">
+
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr width="100%">
+    <td id="cell-0-0" colspan="2">&nbsp;</td>
+    <td id="cell-0-1">&nbsp;</td>
+    <td id="cell-0-2" colspan="2">&nbsp;</td>
+  </tr>
+  <tr width="100%">
+    <td id="cell-1-0">&nbsp;</td>
+    <td id="cell-1-1">&nbsp;</td>
+    <td id="cell-1-2">
+      <div style="padding: 5px;">
+        <div id="banner">
+          <!-- Banner -->
+#renderPage("Banner")
+          <!-- Banner -->
+        </div>
+      </div>
+      <div id="top-menu">
+        <table border="0" cellpadding="1" cellspacing="0" width="100%">
+          <tr>
+            <td>
+              <div align="left">
+                <!-- Breadcrumbs -->
+$autoexport.breadcrumbs($page)
+                <!-- Breadcrumbs -->
+              </div>
+            </td>
+            <td>
+              <div align="right">
+                <!-- Quicklinks -->
+#renderPage("QuickLinks")
+                <!-- Quicklinks -->
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </td>
+    <td id="cell-1-3">&nbsp;</td>
+    <td id="cell-1-4">&nbsp;</td>
+  </tr>
+  <tr width="100%">
+    <td id="cell-2-0" colspan="2">&nbsp;</td>
+    <td id="cell-2-1">
+      <table>
+        <tr height="100%" valign="top">
+          <td height="100%">
+            <div id="wrapper-menu-page-right">
+              <div id="wrapper-menu-page-top">
+                <div id="wrapper-menu-page-bottom">
+                  <div id="menu-page">
+                    <!-- NavigationBar -->
+#renderPage("Navigation")
+                <!-- NavigationBar -->
+              </div>
+            </div>
+          </div>
+         </td>
+         <td height="100%" width="100%">
+           <!-- Content -->
+           <div class="wiki-content">$body</div>
+           <!-- Content -->
+         </td>
+        </tr>
+      </table>
+   </td>
+   <td id="cell-2-2" colspan="2">&nbsp;</td>
+  </tr>
+  <tr width="100%">
+   <td id="cell-3-0">&nbsp;</td>
+   <td id="cell-3-1">&nbsp;</td>
+   <td id="cell-3-2">
+     <div id="footer">
+       <!-- Footer -->
+       <div id="site-footer">
+         <a href="http://incubator.apache.org/aries/privacy-policy.html";>Privacy
+Policy</a> -
+         #editReport()
+         (<a href="$confluenceUri/pages/editpage.action?pageId=$page.id">edit
+page</a>)
+       </div>
+       <!-- Footer -->
+     </div>
+   </td>
+   <td id="cell-3-3">&nbsp;</td>
+   <td id="cell-3-4">&nbsp;</td>
+  </tr>
+  <tr width="100%">
+    <td id="cell-4-0" colspan="2">&nbsp;</td>
+    <td id="cell-4-1">&nbsp;</td>
+    <td id="cell-4-2" colspan="2">&nbsp;</td>
+  </tr>
+</table>
+</body>
+</html> 
