@@ -1,37 +1,7 @@
-##
-#macro (renderPage $title)
-    #set($globalHelper = $action.getGlobalHelper())
-    #set($renderer = $globalHelper.getWikiStyleRenderer())
-    #foreach ($child in $page.space.pages)
-        #if ($child.title.equals($title))
-            #set ($content =
-$renderer.convertWikiToXHtml($child.toPageContext(),
-$child.content).trim())
-            $content
-        #end
-    #end
-#end
-##
-#macro (renderMenuPage $title)
-    #set($globalHelper = $action.getGlobalHelper())
-    #set($renderer = $globalHelper.getWikiStyleRenderer())
-    #foreach ($child in $page.space.pages)
-        #if ($child.title.equals($title))
-            #set ($content =
-$renderer.convertWikiToXHtml($child.toPageContext(),
-$child.content).trim())
-            #set ($content =
-$content.replaceAll("<LI>([^<]*\\S)(\\s*)<UL", "<li><div
-onclick='SwitchMenu(this)'><h3>$1</h3>$2<ul"))
-            #set ($content = $content.replaceAll("</UL>(\\s*)</LI>",
-"</ul>$1</div></li>"))
-            $content
-        #end
-    #end
-#end
-##
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd";>
+#set($globalHelper = $action.getHelper())
+#set($renderer = $globalHelper.getWikiStyleRenderer())
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd";>
 <!--
 
     Licensed to the Apache Software Foundation (ASF) under one or more
@@ -76,7 +46,9 @@ Apache Aries (incubating) -- $page.title
       <div style="padding: 5px;">
         <div id="banner">
           <!-- Banner -->
-#renderPage("Banner")
+#set($child = $pageManager.getPage($page.space.key,"Banner"))
+#set($content = $renderer.convertWikiToXHtml($child.toPageContext(), $child.content).trim())
+$content
           <!-- Banner -->
         </div>
       </div>
@@ -93,7 +65,9 @@ $autoexport.breadcrumbs($page)
             <td>
               <div align="right">
                 <!-- Quicklinks -->
-#renderPage("QuickLinks")
+#set($child = $pageManager.getPage($page.space.key,"QuickLinks"))
+#set($content = $renderer.convertWikiToXHtml($child.toPageContext(), $child.content).trim())
+$content
                 <!-- Quicklinks -->
               </div>
             </td>
@@ -115,17 +89,20 @@ $autoexport.breadcrumbs($page)
                 <div id="wrapper-menu-page-bottom">
                   <div id="menu-page">
                     <!-- NavigationBar -->
-#renderPage("Navigation")
-                <!-- NavigationBar -->
+#set($child = $pageManager.getPage($page.space.key,"Navigation"))
+#set($content = $renderer.convertWikiToXHtml($child.toPageContext(), $child.content).trim())
+$content
+                    <!-- NavigationBar -->
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-         </td>
-         <td height="100%" width="100%">
-           <!-- Content -->
-           <div class="wiki-content">$body</div>
-           <!-- Content -->
-         </td>
+          </td>
+          <td height="100%" width="100%">
+            <!-- Content -->
+            <div class="wiki-content">$body</div>
+            <!-- Content -->
+          </td>
         </tr>
       </table>
    </td>
