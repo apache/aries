@@ -26,7 +26,7 @@ under the License.
     <parent>
         <groupId>org.apache.aries.samples.blog</groupId>
         <artifactId>blog</artifactId>
-        <version>0.1-incubating-SNAPSHOT</version>
+        <version>0.1-incubating</version>
     </parent>
 
     <groupId>org.apache.aries.samples.blog</groupId>
