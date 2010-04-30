@@ -21,7 +21,7 @@
     <parent>
         <artifactId>jpa</artifactId>
         <groupId>org.apache.aries.jpa</groupId>
-        <version>0.1-incubating-SNAPSHOT</version>
+        <version>0.1-incubating</version>
     </parent>
     <name>Aries JPA Container blueprint integration for Aries blueprint</name>
     <modelVersion>4.0.0</modelVersion>
