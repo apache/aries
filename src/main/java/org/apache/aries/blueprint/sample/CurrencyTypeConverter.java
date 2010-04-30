@@ -18,9 +18,13 @@ package org.apache.aries.blueprint.sample;
 
 import java.util.Currency;
 
+import org.apache.aries.blueprint.annotation.Bean;
+import org.apache.aries.blueprint.annotation.Blueprint;
 import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.container.ReifiedType;
 
+@Blueprint
+@Bean(id="converter2")
 public class CurrencyTypeConverter implements Converter {
 
     public boolean canConvert(Object fromValue, ReifiedType toType) {

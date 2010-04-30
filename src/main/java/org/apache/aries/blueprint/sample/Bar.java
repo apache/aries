@@ -19,14 +19,14 @@ package org.apache.aries.blueprint.sample;
 import java.util.List;
 
 import org.osgi.framework.BundleContext;
-import org.osgi.service.blueprint.annotation.Bean;
-import org.osgi.service.blueprint.annotation.Blueprint;
-import org.osgi.service.blueprint.annotation.Inject;
-import org.osgi.service.blueprint.annotation.Element;
-import org.osgi.service.blueprint.annotation.Element.ElementType;
+import org.apache.aries.blueprint.annotation.Blueprint;
+import org.apache.aries.blueprint.annotation.Bean;
+import org.apache.aries.blueprint.annotation.Inject;
+import org.apache.aries.blueprint.annotation.Element;
+import org.apache.aries.blueprint.annotation.Element.ElementType;
 
 @Blueprint
-@Bean
+@Bean(id="bar")
 public class Bar {
     
     @Inject(value="Hello Bar")
@@ -36,7 +36,7 @@ public class Bar {
     private BundleContext context;
 
     @Inject 
-    @org.osgi.service.blueprint.annotation.List ({ 
+    @org.apache.aries.blueprint.annotation.List ({ 
         @Element(value="a list element"), 
         @Element(value="5", type=ElementType.INTEGER) 
     })

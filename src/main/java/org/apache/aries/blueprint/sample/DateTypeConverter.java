@@ -20,13 +20,19 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.aries.blueprint.annotation.Inject;
+import org.apache.aries.blueprint.annotation.Bean;
+import org.apache.aries.blueprint.annotation.Blueprint;
 import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.container.ReifiedType;
 
+@Blueprint
+@Bean(id="converter1")
 public class DateTypeConverter implements Converter {
 
     DateFormat dateFormat;
     
+    @Inject(value="yyyy.MM.dd")
     public void setFormat(String format) {
         dateFormat = new SimpleDateFormat(format);
     }

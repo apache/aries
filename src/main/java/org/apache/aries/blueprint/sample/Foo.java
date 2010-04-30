@@ -31,7 +31,7 @@ import org.apache.aries.blueprint.annotation.Service;
 
 @Blueprint
 @Bean(id="foo")
-@Service(autoExport="all-classes",  registerationListener = @RegistrationListener(id="fooRegistrationListener"))
+@Service(autoExport="all-classes",  registerationListener = @RegistrationListener(id="fooRegistrationListener"), ranking=0)
 public class Foo implements Serializable {
     
     @Inject(value="5")
@@ -40,7 +40,7 @@ public class Foo implements Serializable {
     @Inject(value="${key.b}")
     private int b;
     
-    @Inject
+    @Inject(ref="bar")
     private Bar bar;
     
     @Inject(value="PLN")

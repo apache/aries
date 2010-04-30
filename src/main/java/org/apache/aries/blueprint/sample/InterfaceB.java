@@ -16,11 +16,11 @@
  */
 package org.apache.aries.blueprint.sample;
 
-import org.apache.aries.blueprint.annotation.Reference;
+import org.apache.aries.blueprint.annotation.ReferenceList;
 import org.apache.aries.blueprint.annotation.ReferenceListener;
 
-@Reference (referenceListener = {@ReferenceListener(ref="bindingListener")})
-public interface InterfaceA {
+@ReferenceList (referenceListener = @ReferenceListener(ref="bindingListener"))
+public interface InterfaceB {
 
     String hello(String msg);
 }

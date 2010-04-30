@@ -18,14 +18,15 @@ package org.apache.aries.blueprint.sample;
 
 import java.util.Map;
 import java.util.List;
-import java.io.Serializable;
 
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.annotation.Bean;
-import org.osgi.service.blueprint.annotation.Blueprint;
-
+import org.apache.aries.blueprint.annotation.Bean;
+import org.apache.aries.blueprint.annotation.Blueprint;
+import org.apache.aries.blueprint.annotation.Init;
+import org.apache.aries.blueprint.annotation.Bind;
+import org.apache.aries.blueprint.annotation.Unbind;
 @Blueprint
-@Bean
+@Bean(id="bindingListener")
 public class BindingListener {
 
     private InterfaceA a;
@@ -53,23 +54,28 @@ public class BindingListener {
         this.list = list;
     }
 
+    @Init
     public void init() {
     }
 
+    @Bind
     public void bind(InterfaceA a, Map props) {
         this.a = a;
         this.props = props;
     }
 
+    @Bind
     public void bind(ServiceReference ref) {
         this.reference = ref;
     }
 
+    @Unbind
     public void unbind(InterfaceA a, Map props) {
         this.a = null;
         this.props = null;
     }
 
+    @Unbind
     public void unbind(ServiceReference ref) {
         this.reference = null;
     }
