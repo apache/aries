@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * used to annotation registration-methodd in blueprint registration listener
+ * used to annotation registration-method in blueprint registration listener
  *
  */
 @Target(ElementType.METHOD)

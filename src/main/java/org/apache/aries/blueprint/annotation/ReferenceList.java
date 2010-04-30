@@ -21,54 +21,42 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/*
- * To annotate a bean as a blueprint bean, use @Bean
- */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Bean {
-    
+public @interface ReferenceList
+{    
     /**
-     * id, activation, dependsOn comes from Tcomponent
-     * the id property for the bean
-     * should this be auto generated if none is specified?
-     */
-    String id() default "";
-    
-    /**
-     * the activation property for the bean
-     * This can either be "eager" or "lazy".  If not specified, it
-     * defaults to default-activation attribute of the enclosing
-     * <blueprint> element.
-     */
-    String activation() default "";
-    
-    /**
-     *  the components that the bean depends on
-     */
-    String[] dependsOn() default ""; 
-    
-    
-    // TODO:  add the argument for the bean
-    
-    /**
-     * the description property for the bean
+     * the description property of the service reference
      */
     String description() default "";
     
     /**
-     * the scope property for the bean. value can be prototype or singleton
+     * the name of the interface type that a matching service must support.
      */
-    String scope() default "";
-
-    /**
-     * the reference to the factory component on which to invoke the
-     * factory method for the bean.
-     */
-    String factoryRef() default "";
+    String publishInterface() default "";
     
     /**
-     *  the name of the factory method for the bean.
+     * the filter expression that a matching service must match.
      */
-    String factoryMethod() default "";
+    String filter() default "";
+    
+    /**
+     * the <code>component-name</code> attribute of the service reference.
+     */
+    String componentName() default "";
+    
+    /**
+     * whether or not a matching service is required at all times.  either optional or mandatory.
+     */
+    String availability() default "";
+    
+    /**
+     * the reference listener for the service reference, to receive bind and unbind events.
+     */
+    ReferenceListener[] referenceListener();
+    
+    /**
+     * the value of the memberType property.
+     */
+    String memberType() default "service-object";
 }

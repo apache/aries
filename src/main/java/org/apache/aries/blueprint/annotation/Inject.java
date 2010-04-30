@@ -27,4 +27,5 @@ public @interface Inject {
     String value() default "";
     String name() default "";
     String description() default "";
+    String ref() default "";
 }
