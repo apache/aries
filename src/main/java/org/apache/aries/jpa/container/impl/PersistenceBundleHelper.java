@@ -113,8 +113,14 @@ public class PersistenceBundleHelper
         break;
       }     
     }
-   return persistenceXmlFiles;
- }
+    
+    if (persistenceXmlFiles.isEmpty()) {
+      _logger.warn("The bundle "+bundle.getSymbolicName() + "_" + bundle.getVersion() + " specified the Meta-Persistence header. However, no persistence descriptors " + 
+        "could be located. The following locations were searched: " + locations.toString());
+    }
+
+    return persistenceXmlFiles;
+  }
 
   /**
    * Locate a persistence descriptor file in a bundle
