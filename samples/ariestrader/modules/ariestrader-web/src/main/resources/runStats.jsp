@@ -117,7 +117,7 @@ if ( status != null )out.print(status);
 								</TR>
 								<TR>
 									<TD colspan="2"><A href="docs/glossary.html">Run-Time Mode</A></TD>
-									<TD colspan="3"><B><%= (TradeConfig.getRunTimeModeNames())[TradeConfig.runTimeMode] %></B></TD>
+									<TD colspan="3"><B><%= (TradeConfig.getRunTimeModeNames())[TradeConfig.getRunTimeMode().ordinal()] %></B></TD>
 								</TR>
 								<TR>
 									<TD colspan="2"><A href="docs/glossary.html">Order-Processing
