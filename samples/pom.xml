@@ -20,13 +20,13 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.1-incubating</version>
+        <version>0.1-incubating-SNAPSHOT</version>
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>org.apache.aries.samples</groupId>
-    <version>0.2-incubating-SNAPSHOT</version>
+    <version>0.1-incubating-SNAPSHOT</version>
     <artifactId>samples</artifactId>
     <name>Apache Aries Samples</name>
     <packaging>pom</packaging>
@@ -38,14 +38,14 @@
     </scm>
 
     <properties>
-        <ariesApplicationVersion>0.1-incubating</ariesApplicationVersion>
-        <ariesBlueprintVersion>0.1-incubating</ariesBlueprintVersion>
-        <ariesJmxVersion>0.1-incubating</ariesJmxVersion>
-        <ariesJndiVersion>0.1-incubating</ariesJndiVersion>
-        <ariesJpaVersion>0.1-incubating</ariesJpaVersion>
-        <ariesTransactionVersion>0.1-incubating</ariesTransactionVersion>
-        <ariesUtilVersion>0.1-incubating</ariesUtilVersion>
-        <ariesWebVersion>0.1-incubating</ariesWebVersion>
+        <ariesApplicationVersion>0.1-incubating-SNAPSHOT</ariesApplicationVersion>
+        <ariesBlueprintVersion>0.1-incubating-SNAPSHOT</ariesBlueprintVersion>
+        <ariesJmxVersion>0.1-incubating-SNAPSHOT</ariesJmxVersion>
+        <ariesJndiVersion>0.1-incubating-SNAPSHOT</ariesJndiVersion>
+        <ariesJpaVersion>0.1-incubating-SNAPSHOT</ariesJpaVersion>
+        <ariesTransactionVersion>0.1-incubating-SNAPSHOT</ariesTransactionVersion>
+        <ariesUtilVersion>0.1-incubating-SNAPSHOT</ariesUtilVersion>
+        <ariesWebVersion>0.1-incubating-SNAPSHOT</ariesWebVersion>
         <openjpaVersion>2.0.0-beta3</openjpaVersion>
     </properties>
     
