@@ -60,5 +60,10 @@ public @interface Reference
      * the default-timeout value is inherited from the encapsulating
      * <code><blueprint></code> definition.
      */
-    int timeout() default 300000;
+    int timeout() default 0;
+    
+    /**
+     * the id for the reference
+     */
+    String id() default "";
 }

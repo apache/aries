@@ -28,4 +28,6 @@ public @interface RegistrationListener {
      * the component that will receive registration and unregistration events.
      */
     String id() default "";
+    String register() default "";
+    String unregister() default "";
 }

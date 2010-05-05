@@ -21,8 +21,7 @@ import java.net.URL;
 import org.osgi.framework.Bundle;
 
 public interface BlueprintAnnotationScanner {
-    public boolean foundBlueprintAnnotation(Bundle bundle);
-    
-    public URL generateBlueprintModel(Bundle bundle);
+
+    public URL createBlueprintModel(Bundle bundle);
     
 }

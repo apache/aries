@@ -28,4 +28,6 @@ public @interface ReferenceListener {
      * the component that will receive bind and unbind events.
      */
     String ref() default "";
+    String bind() default "";
+    String unbind() default "";
 }

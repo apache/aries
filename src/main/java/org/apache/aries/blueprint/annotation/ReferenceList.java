@@ -59,4 +59,9 @@ public @interface ReferenceList
      * the value of the memberType property.
      */
     String memberType() default "service-object";
+    
+    /**
+     * the id for the referencelist
+     */
+    String id() default "";
 }

@@ -29,7 +29,7 @@ public @interface Service {
      * the registration listeners to be notified when the service is
      * registered and unregistered with the framework.
      */
-    RegistrationListener registerationListener();
+    RegistrationListener[] registerationListener();
     
     /**
      *  the ranking value to use when advertising the service.  If the
@@ -42,7 +42,7 @@ public @interface Service {
      *  the auto-export mode for the service.  
      *  possible values are disabled, interfaces, class_hierarchy, all_classes
      */
-    String autoExport() default "disabled";
+    String autoExport() default "";
     
     /**
      *  the names of the interfaces that the service should be advertised as supporting.
@@ -52,5 +52,5 @@ public @interface Service {
     /**
      * the user declared properties to be advertised with the service.
      */
-    Properties[] serviceProperties();
+    ServiceProperty[] serviceProperties() default {};
 }

@@ -21,37 +21,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * this is really bundle level declaration
- *
- */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Blueprint {
-    
+public @interface ServiceProperty {
     /**
-     * Specifies the default activation setting that will be defined
-     * for components.  If not specified, the global default is "eager".
-     * Individual components may override the default value.
+     * the key of the property
      */
-    String defaultActivation() default "eager";
+    String key() default "";
     
     /**
-     * Specifies the default timeout value to be used when operations
-     * are invoked on unsatisfied service references.  If the
-     * reference does not change to a satisfied state within the timeout
-     * window, an error is raised on the method invocation.  The
-     * default timeout value is 300 seconds and individual
-     * <reference> element can override the specified configuration default.
-     */   
-    int defaultTimeout() default 300;
-    
-    /**
-     * Specifies the default availability value to be used for
-     * <reference>, and <reference-list> components.  The
-     * normal default is "mandatory", and can be changed by individual
-     * service reference components. 
+     * the value of the property
      */
-    String defaultAvailability() default "mandatory";
-    
+    String value() default "";
 }
