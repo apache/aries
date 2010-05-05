@@ -57,7 +57,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlSeeAlso({
     TinlinedReferenceList.class
 })
-@XmlRootElement(name = "referenceList")
+@XmlRootElement(name = "reference-list")
 public class TreferenceList
     extends TserviceReference
 {

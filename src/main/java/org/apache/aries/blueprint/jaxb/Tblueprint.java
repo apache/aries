@@ -123,6 +123,9 @@ public class Tblueprint {
      *     
      */
     public TtypeConverters getTypeConverters() {
+        if (typeConverters == null) {
+            typeConverters = new TtypeConverters();
+        }
         return typeConverters;
     }
 

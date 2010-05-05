@@ -143,10 +143,15 @@ public abstract class Tcomponent {
      * 
      */
     public List<String> getDependsOn() {
-        if (dependsOn == null) {
-            dependsOn = new Vector<String>();
-        }
+        //if (dependsOn == null) {
+        //    dependsOn = new Vector<String>();
+        //}
         return this.dependsOn;
     }
+    
+    public void setDependsOn(List<String> dependsOn) {
+        this.dependsOn = dependsOn;
+    }
+    
 
 }
