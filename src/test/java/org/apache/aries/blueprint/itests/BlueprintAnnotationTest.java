@@ -31,6 +31,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
 import java.util.Hashtable;
+import java.util.Set;
 
 import org.apache.aries.blueprint.sample.Bar;
 import org.apache.aries.blueprint.sample.Foo;
@@ -54,7 +55,8 @@ public class BlueprintAnnotationTest extends AbstractIntegrationTest {
 
         assertNotNull(blueprintContainer);
 
-        Object obj = blueprintContainer.getComponentInstance("Bar");
+        Set<String> ids = blueprintContainer.getComponentIds();
+        Object obj = blueprintContainer.getComponentInstance("bar");
         assertNotNull(obj);
         assertEquals(Bar.class, obj.getClass());
         Bar bar = (Bar) obj;
@@ -82,6 +84,7 @@ public class BlueprintAnnotationTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.xbean", "xbean-finder"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.annotation.api"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.annotation.impl"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample-annotation"),
             //mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample"),
             mavenBundle("org.osgi", "org.osgi.compendium"),

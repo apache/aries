@@ -65,6 +65,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.sample-annotation</artifactId>
+            <version>${version}</version>
             <scope>test</scope>
         </dependency>        
         <dependency>
@@ -147,7 +148,11 @@
             <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
             <version>${version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.annotation.impl</artifactId>
+            <version>${version}</version>
+        </dependency>
     </dependencies>
 
     <build>
