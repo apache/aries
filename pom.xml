@@ -37,10 +37,11 @@
           org.apache.aries.blueprint.annotation.impl.Activator
       </aries.osgi.activator>
       <aries.osgi.export.pkg>
-          org.apache.aries.blueprint.jaxb.*, org.aoache.aries.blueprint.annotation.*
+          org.apache.aries.blueprint.jaxb.*, org.apache.aries.blueprint.annotation.impl
       </aries.osgi.export.pkg>
       <aries.osgi.import>
           !org.apache.aries.blueprint.jaxb.*,
+          !org.apache.aries.blueprint.annotation.impl,
           org.apache.aries.blueprint.annotation,
         *
       </aries.osgi.import>
