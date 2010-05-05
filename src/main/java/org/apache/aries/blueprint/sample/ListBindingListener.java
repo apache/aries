@@ -26,8 +26,8 @@ import org.apache.aries.blueprint.annotation.Init;
 import org.apache.aries.blueprint.annotation.Bind;
 import org.apache.aries.blueprint.annotation.Unbind;
 
-@Bean(id="bindingListener")
-public class BindingListener {
+@Bean(id="listBindingListener")
+public class ListBindingListener {
 
     private InterfaceA a;
     private Map props;

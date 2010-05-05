@@ -36,6 +36,10 @@
         <aries.osgi.activator>
             org.apache.aries.blueprint.sample.Activator
         </aries.osgi.activator>
+        <aries.osgi.import>
+            org.apache.aries.blueprint.annotation,
+            *
+        </aries.osgi.import>
     </properties>
 
     <dependencies>
@@ -54,5 +58,29 @@
             <version>${version}</version>
         </dependency>
     </dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-bundle-plugin</artifactId>
+					<extensions>true</extensions>
+					<inherited>true</inherited>
+					<configuration>
+						<excludeDependencies>${aries.osgi.exclude.dependencies}</excludeDependencies>
+						<instructions>
+							<Bundle-Blueprint-Annotation>true</Bundle-Blueprint-Annotation>
+						</instructions>
+						<versions>
+							<aries.osgi.version.clean>${project.version}</aries.osgi.version.clean>
+						</versions>
+					</configuration>
+				</plugin>
+
+			</plugins>
+		</pluginManagement>
+	</build>
+    
 
 </project>

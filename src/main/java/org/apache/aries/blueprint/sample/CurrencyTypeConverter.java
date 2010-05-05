@@ -23,7 +23,6 @@ import org.apache.aries.blueprint.annotation.Blueprint;
 import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.container.ReifiedType;
 
-@Blueprint
 @Bean(id="converter2")
 public class CurrencyTypeConverter implements Converter {
 

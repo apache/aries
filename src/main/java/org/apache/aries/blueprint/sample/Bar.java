@@ -25,21 +25,21 @@ import org.apache.aries.blueprint.annotation.Inject;
 import org.apache.aries.blueprint.annotation.Element;
 import org.apache.aries.blueprint.annotation.Element.ElementType;
 
-@Blueprint
+@Blueprint(defaultActivation="eager", defaultTimeout=300, defaultAvailability="optional")
 @Bean(id="bar")
 public class Bar {
     
     @Inject(value="Hello Bar")
     private String value;
 
-    @Inject
+    @Inject(ref="blueprintBundleContext")
     private BundleContext context;
 
-    @Inject 
+    /*@Inject 
     @org.apache.aries.blueprint.annotation.List ({ 
         @Element(value="a list element"), 
         @Element(value="5", type=ElementType.INTEGER) 
-    })
+    })*/
     private List list;
 
     public BundleContext getContext() {

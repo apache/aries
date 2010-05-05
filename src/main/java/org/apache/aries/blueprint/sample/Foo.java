@@ -22,22 +22,22 @@ import java.util.Date;
 import java.util.Map;
 
 import org.apache.aries.blueprint.annotation.Bean;
-import org.apache.aries.blueprint.annotation.Blueprint;
 import org.apache.aries.blueprint.annotation.Destroy;
 import org.apache.aries.blueprint.annotation.Init;
 import org.apache.aries.blueprint.annotation.Inject;
 import org.apache.aries.blueprint.annotation.RegistrationListener;
 import org.apache.aries.blueprint.annotation.Service;
 
-@Blueprint
 @Bean(id="foo")
-@Service(autoExport="all-classes",  registerationListener = @RegistrationListener(id="fooRegistrationListener"), ranking=0)
+@Service(autoExport="all-classes",  
+        registerationListener = @RegistrationListener(id="fooRegistrationListener", register="serviceRegistered", unregister="serviceUnregistered"), 
+        ranking=0)
 public class Foo implements Serializable {
     
     @Inject(value="5")
     private int a;
     
-    @Inject(value="${key.b}")
+    //@Inject(value="${key.b}")
     private int b;
     
     @Inject(ref="bar")

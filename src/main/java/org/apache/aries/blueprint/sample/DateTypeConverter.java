@@ -26,19 +26,18 @@ import org.apache.aries.blueprint.annotation.Blueprint;
 import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.container.ReifiedType;
 
-@Blueprint
 @Bean(id="converter1")
 public class DateTypeConverter implements Converter {
 
-    DateFormat dateFormat;
-    
     @Inject(value="yyyy.MM.dd")
+    DateFormat format;
+    
     public void setFormat(String format) {
-        dateFormat = new SimpleDateFormat(format);
+        this.format = new SimpleDateFormat(format);
     }
     
     public Object convert(Object source, ReifiedType toType) throws Exception {
-        return dateFormat.parse(source.toString());
+        return format.parse(source.toString());
     }
 
     public boolean canConvert(Object fromValue, ReifiedType toType) {
