@@ -55,12 +55,29 @@ public class BlueprintAnnotationTest extends AbstractIntegrationTest {
 
         assertNotNull(blueprintContainer);
 
-        Set<String> ids = blueprintContainer.getComponentIds();
         Object obj = blueprintContainer.getComponentInstance("bar");
         assertNotNull(obj);
         assertEquals(Bar.class, obj.getClass());
         Bar bar = (Bar) obj;
-        assertEquals("Hello Bar", bar.getValue());
+        assertEquals("Hello FooBar", bar.getValue());
+        
+        obj = blueprintContainer.getComponentInstance("foo");
+        assertNotNull(obj);
+        assertEquals(Foo.class, obj.getClass());
+        Foo foo = (Foo) obj;
+        assertEquals(5, foo.getA());
+       // assertEquals(10, foo.getB());
+        assertSame(bar, foo.getBar());
+        assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
+        assertEquals(new SimpleDateFormat("yyyy.MM.dd").parse("2009.04.17"),
+                foo.getDate());
+
+        assertTrue(foo.isInitialized());
+        assertFalse(foo.isDestroyed());
+
+       obj = getOsgiService(bundleContext, Foo.class, null, 5000);
+        assertNotNull(obj);
+        assertSame(foo, obj);
     }
 
     @org.ops4j.pax.exam.junit.Configuration
