@@ -34,6 +34,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.apache.aries.util.VersionRange;
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfoFactory;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
@@ -41,21 +42,21 @@ import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParser;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParserException;
 import org.apache.aries.jpa.container.unit.impl.ManagedPersistenceUnitInfoFactoryImpl;
-import org.apache.aries.util.VersionRange;
-import org.apache.aries.util.tracker.MultiBundleTracker;
+import org.apache.aries.util.tracker.RecursiveBundleTracker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
+import org.osgi.util.tracker.BundleTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This class locates, parses and manages persistence units defined in OSGi bundles.
  */
-public class PersistenceBundleManager extends MultiBundleTracker
+public class PersistenceBundleManager implements BundleTrackerCustomizer
 {
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
@@ -86,6 +87,7 @@ public class PersistenceBundleManager extends MultiBundleTracker
   private PersistenceDescriptorParser parser;
   /** Configuration for this extender */
   private Properties config;
+  private final RecursiveBundleTracker tracker;
 
   /**
    * Create the extender. Note that it will not start tracking 
@@ -94,9 +96,9 @@ public class PersistenceBundleManager extends MultiBundleTracker
    */
   public PersistenceBundleManager(BundleContext ctx) 
   {
-	  super(ctx, Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING |
-			  Bundle.ACTIVE | Bundle.STOPPING);
     this.ctx = ctx;
+    tracker = new RecursiveBundleTracker(ctx, Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING |
+        Bundle.ACTIVE | Bundle.STOPPING, this);
   }
 
   /**
@@ -109,7 +111,6 @@ public class PersistenceBundleManager extends MultiBundleTracker
 
   
   @SuppressWarnings("unchecked")
-  @Override
   public void open() {
     //Create the pluggable ManagedPersistenceUnitInfoFactory
     String className = config.getProperty(ManagedPersistenceUnitInfoFactory.DEFAULT_PU_INFO_FACTORY_KEY);
@@ -127,9 +128,15 @@ public class PersistenceBundleManager extends MultiBundleTracker
     if(persistenceUnitFactory == null)
       persistenceUnitFactory = new ManagedPersistenceUnitInfoFactoryImpl();
     
-    super.open();
+     tracker.open();
   }
   
+  public void close()
+  {
+    if (tracker != null) {
+      tracker.close();
+    }
+  } 
   public Object addingBundle(Bundle bundle, BundleEvent event) 
   {
     EntityManagerFactoryManager mgr = setupManager(bundle, null, true);
