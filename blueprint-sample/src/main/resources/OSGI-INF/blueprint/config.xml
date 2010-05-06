@@ -1,120 +1,153 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--
-    Licensed to the Apache Software Foundation (ASF) under one or more
-    contributor license agreements.  See the NOTICE file distributed with
-    this work for additional information regarding copyright ownership.
-    The ASF licenses this file to You under the Apache License, Version 2.0
-    (the "License"); you may not use this file except in compliance with
-    the License.  You may obtain a copy of the License at
+	<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to You under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
--->
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
-           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
-           default-availability="optional">
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
+	default-availability="optional">
 
-    <type-converters>
-        <bean id="converter1" class="org.apache.aries.blueprint.sample.DateTypeConverter">
-            <property name="format" value="yyyy.MM.dd"/>
-        </bean>
-        <bean id="converter2" class="org.apache.aries.blueprint.sample.CurrencyTypeConverter"/>
+	<type-converters>
+		<bean id="converter1" class="org.apache.aries.blueprint.sample.DateTypeConverter">
+			<property name="format" value="yyyy.MM.dd" />
+		</bean>
+		<bean id="converter2"
+			class="org.apache.aries.blueprint.sample.CurrencyTypeConverter" />
 
-    </type-converters>
+	</type-converters>
 
-    <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]" ignore-missing-locations="true" system-properties="override">
-        <ext:default-properties>
-            <ext:property name="name" value="value"/>
-        </ext:default-properties>
-        <ext:location>file://url</ext:location>
-    </ext:property-placeholder>
+	<ext:property-placeholder placeholder-prefix="$["
+		placeholder-suffix="]" ignore-missing-locations="true"
+		system-properties="override">
+		<ext:default-properties>
+			<ext:property name="name" value="value" />
+		</ext:default-properties>
+		<ext:location>file://url</ext:location>
+	</ext:property-placeholder>
 
-    <cm:managed-service-factory id="managed-service-factory" factory-pid="blueprint-sample-managed-service-factory"
-            interface="org.apache.aries.blueprint.sample.Foo"
-            ext:system-properties="fallback">
-        <service-properties>
-            <entry key="key1" value="value1"/>
-        </service-properties>
-        <cm:managed-component class="org.apache.aries.blueprint.sample.Foo"/>
-    </cm:managed-service-factory>
+	<cm:managed-service-factory id="managed-service-factory"
+		factory-pid="blueprint-sample-managed-service-factory" interface="org.apache.aries.blueprint.sample.Foo"
+		ext:system-properties="fallback">
+		<service-properties>
+			<entry key="key1" value="value1" />
+		</service-properties>
+		<cm:managed-component class="org.apache.aries.blueprint.sample.Foo" />
+	</cm:managed-service-factory>
 
-    <cm:property-placeholder id="property-placeholder" persistent-id="blueprint-sample-placeholder">
-        <cm:default-properties>
-            <cm:property name="key.b" value="-1"/>
-        </cm:default-properties>
-    </cm:property-placeholder>
+	<cm:property-placeholder id="property-placeholder"
+		persistent-id="blueprint-sample-placeholder">
+		<cm:default-properties>
+			<cm:property name="key.b" value="-1" />
+		</cm:default-properties>
+	</cm:property-placeholder>
 
-    <bean id="none-managed" class="org.apache.aries.blueprint.sample.Foo">
-        <cm:managed-properties persistent-id="blueprint-sample-managed.none" update-strategy="none"/>
-    </bean>
+	<bean id="none-managed" class="org.apache.aries.blueprint.sample.Foo">
+		<cm:managed-properties persistent-id="blueprint-sample-managed.none"
+			update-strategy="none" />
+	</bean>
 
-    <bean id="component-managed" class="org.apache.aries.blueprint.sample.Foo">
-        <cm:managed-properties persistent-id="blueprint-sample-managed.component" update-strategy="component-managed" update-method="update"/>
-    </bean>
+	<bean id="component-managed" class="org.apache.aries.blueprint.sample.Foo">
+		<cm:managed-properties persistent-id="blueprint-sample-managed.component"
+			update-strategy="component-managed" update-method="update" />
+	</bean>
 
-    <bean id="container-managed" class="org.apache.aries.blueprint.sample.Foo">
-        <cm:managed-properties persistent-id="blueprint-sample-managed.container" update-strategy="container-managed"/>
-    </bean>
+	<bean id="container-managed" class="org.apache.aries.blueprint.sample.Foo">
+		<cm:managed-properties persistent-id="blueprint-sample-managed.container"
+			update-strategy="container-managed" />
+	</bean>
 
-    <bean id="foo" class="org.apache.aries.blueprint.sample.Foo" init-method="init" destroy-method="destroy">
-        <property name="a" value="5" />
-        <property name="b" value="${key.b}" />
-        <property name="bar" ref="bar" />
-        <property name="currency">
-            <value>PLN</value>
-        </property>
-        <property name="date">
-              <value>2009.04.17</value>
-        </property>
-    </bean>
+	<bean id="foo" class="org.apache.aries.blueprint.sample.Foo"
+		init-method="init" destroy-method="destroy">
+		<property name="a" value="5" />
+		<property name="b" value="${key.b}" />
+		<property name="bar" ref="bar" />
+		<property name="currency">
+			<value>PLN</value>
+		</property>
+		<property name="date">
+			<value>2009.04.17</value>
+		</property>
+	</bean>
 
-    <bean id="bar" class="org.apache.aries.blueprint.sample.Bar">
-        <property name="value"><value>Hello FooBar</value></property>
-        <property name="context" ref="blueprintBundleContext"/>
-        <property name="list">
-            <list>
-                <value>a list element</value>
-                <value type = "java.lang.Integer">5</value>
-            </list>        
-        </property>
-    </bean>
+	<bean id="bar" class="org.apache.aries.blueprint.sample.Bar">
+		<property name="value">
+			<value>Hello FooBar</value>
+		</property>
+		<property name="context" ref="blueprintBundleContext" />
+		<property name="list">
+			<list>
+				<value>a list element</value>
+				<value type="java.lang.Integer">5</value>
+			</list>
+		</property>
+	</bean>
 
-    <service ref="foo" auto-export="all-classes">
-        <service-properties>
-            <entry key="key" value="value"/>
-        </service-properties>
-        <registration-listener ref="fooRegistrationListener"
-                               registration-method="serviceRegistered"
-                               unregistration-method="serviceUnregistered"/>
-    </service>
-    
-    <bean id="fooRegistrationListener" class="org.apache.aries.blueprint.sample.FooRegistrationListener"/>
+	<service ref="foo" auto-export="all-classes">
+		<service-properties>
+			<entry key="key" value="value" />
+		</service-properties>
+		<registration-listener ref="fooRegistrationListener"
+			registration-method="serviceRegistered" unregistration-method="serviceUnregistered" />
+	</service>
 
-    <reference id="ref2" interface="org.apache.aries.blueprint.sample.InterfaceA" timeout="100">
-        <reference-listener bind-method="bind" unbind-method="unbind" ref="bindingListener" />
-    </reference>
+	<bean id="fooRegistrationListener"
+		class="org.apache.aries.blueprint.sample.FooRegistrationListener" />
 
-    <bean id="bindingListener" class="org.apache.aries.blueprint.sample.BindingListener"/>
+	<reference id="ref2" interface="org.apache.aries.blueprint.sample.InterfaceA"
+		timeout="100">
+		<reference-listener bind-method="bind"
+			unbind-method="unbind" ref="bindingListener" />
+	</reference>
 
-    <reference-list id="ref-list" interface="org.apache.aries.blueprint.sample.InterfaceA">
-        <reference-listener bind-method="bind" unbind-method="unbind" ref="listBindingListener" />
-    </reference-list>
+	<bean id="bindingListener" class="org.apache.aries.blueprint.sample.BindingListener" />
 
-    <bean id="listBindingListener" class="org.apache.aries.blueprint.sample.BindingListener"/>
+	<reference-list id="ref-list"
+		interface="org.apache.aries.blueprint.sample.InterfaceA">
+		<reference-listener bind-method="bind"
+			unbind-method="unbind" ref="listBindingListener" />
+	</reference-list>
 
-    <bean id="circularReference" class="org.apache.aries.blueprint.sample.BindingListener" init-method="init">
-        <property name="list">
-            <reference-list interface="org.apache.aries.blueprint.sample.InterfaceA" availability="optional">
-                <reference-listener bind-method="bind" unbind-method="unbind" ref="circularReference"/>
-            </reference-list>
-        </property>
-    </bean>
+	<bean id="listBindingListener" class="org.apache.aries.blueprint.sample.BindingListener" />
 
+	<bean id="circularReference" class="org.apache.aries.blueprint.sample.BindingListener"
+		init-method="init">
+		<property name="list">
+			<reference-list interface="org.apache.aries.blueprint.sample.InterfaceA"
+				availability="optional">
+				<reference-listener bind-method="bind"
+					unbind-method="unbind" ref="circularReference" />
+			</reference-list>
+		</property>
+	</bean>
+
+	<bean id="accountOne" class="org.apache.aries.blueprint.sample.Account">
+		<argument value="1" />
+	</bean>
+
+	<bean id="accountTwo" class="org.apache.aries.blueprint.sample.StaticAccountFactory"
+		factory-method="createAccount">
+		<argument value="2" />
+	</bean>
+
+	<bean id="accountFactory" class="org.apache.aries.blueprint.sample.AccountFactory">
+		<argument value="account factory" />
+	</bean>
+
+	<bean id="accountThree" factory-ref="accountFactory"
+		factory-method="createAccount">
+		<argument value="3" />
+	</bean>
 </blueprint>
 
