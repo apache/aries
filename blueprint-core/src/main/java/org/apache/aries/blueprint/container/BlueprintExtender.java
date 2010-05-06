@@ -37,7 +37,7 @@ import org.apache.aries.blueprint.ParserService;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.aries.blueprint.utils.HeaderParser;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
-import org.apache.aries.util.tracker.AriesBundleTrackerCustomizer;
+import org.apache.aries.util.tracker.RecursiveBundleTracker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -54,8 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the blueprint extender that listens to blueprint bundles.  it implements the sync
- * bundle listener but it doesn't register the listener and uses the bundle tracker instead.
+ * This is the blueprint extender that listens to blueprint bundles.  
  *
  * @version $Rev$, $Date$
  */
@@ -68,7 +67,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     private Map<Bundle, BlueprintContainerImpl> containers;
     private BlueprintEventDispatcher eventDispatcher;
     private NamespaceHandlerRegistry handlers;
-    private BundleTracker bt;
+    private RecursiveBundleTracker bt;
     private ServiceRegistration parserServiceReg;
 
     public void start(BundleContext context) {
@@ -80,13 +79,9 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         eventDispatcher = new BlueprintEventDispatcher(context, executors);
         containers = new HashMap<Bundle, BlueprintContainerImpl>();
 
-        ServiceReference sr = this.context.getServiceReference("org.osgi.service.framework.CompositeBundleFactory");
-        if (sr == null) {
-            bt = new BundleTracker(context, Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING, new BlueprintBundleTrackerCustomizer()); 
-        } else {
-            // composite bundle factory service is active, let's track blueprint bundles installed in the child frameworks too.
-            bt = new BundleTracker(context, Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING, new BlueprintMutilBundleTrackerCustomizer());   
-        }
+        int stateMask = Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE
+        | Bundle.STOPPING;
+        bt = new RecursiveBundleTracker(context, stateMask, new BlueprintBundleTrackerCustomizer());
         bt.open();
 
         // Create and publish a ParserService
@@ -374,44 +369,4 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         }
     }
     
-    // blueprint bundle tracker calls bundleChanged to minimize changes.
-    // this bundle tracker customizer handles bundles installed in the child framework as well
-    private class BlueprintMutilBundleTrackerCustomizer extends
-            AriesBundleTrackerCustomizer {
-
-        public BlueprintMutilBundleTrackerCustomizer() {
-        }
-
-        public Object addingBundle(Bundle b, BundleEvent event) {
-            
-            super.addingBundle(b, event);
-            
-            if (event == null) {
-                // existing bundles first added to the tracker with no event change
-                checkInitialBundle(b);
-            } else {        
-                bundleChanged(event);
-            }
-
-            return b;
-        }
-
-        public void modifiedBundle(Bundle b, BundleEvent event, Object arg2) {
-
-            super.modifiedBundle(b, event, arg2);
-            
-            if (event == null) {
-                // cannot think of why we would be interested in a modified bundle with no bundle event
-                return;
-            } else {
-                bundleChanged(event);
-            }
-
-        }
-
-        // don't think we would be interested in removedBundle, as that is
-        // called when bundle is removed from the tracker
-        public void removedBundle(Bundle b, BundleEvent event, Object arg2) {
-        }
-    }
 }
