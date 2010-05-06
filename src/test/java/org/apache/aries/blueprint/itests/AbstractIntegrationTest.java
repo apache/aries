@@ -34,6 +34,8 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.aries.blueprint.sample.Account;
+import org.apache.aries.blueprint.sample.AccountFactory;
 import org.apache.aries.blueprint.sample.Bar;
 import org.apache.aries.blueprint.sample.Foo;
 import org.junit.After;
@@ -258,7 +260,27 @@ public abstract class AbstractIntegrationTest {
         obj = getOsgiService(bc == null ? bundleContext : bc, Foo.class, null, 5000);
         assertNotNull(obj);
         assertSame(foo, obj);
-
+        
+        obj = blueprintContainer.getComponentInstance("accountOne");
+        assertNotNull(obj);
+        Account account = (Account)obj;
+        assertEquals(1, account.getAccountNumber());
+     
+        obj = blueprintContainer.getComponentInstance("accountTwo");
+        assertNotNull(obj);
+        account = (Account)obj;
+        assertEquals(2, account.getAccountNumber());
+        
+        obj = blueprintContainer.getComponentInstance("accountThree");
+        assertNotNull(obj);
+        account = (Account)obj;
+        assertEquals(3, account.getAccountNumber());
+        
+        obj = blueprintContainer.getComponentInstance("accountFactory");
+        assertNotNull(obj);
+        AccountFactory accountFactory = (AccountFactory)obj;
+        assertEquals("account factory", accountFactory.getFactoryName());
+        
         bundle.stop();
 
         Thread.sleep(1000);
