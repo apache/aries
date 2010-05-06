@@ -40,7 +40,7 @@ public class Foo implements Serializable {
     //@Inject(value="${key.b}")
     private int b;
     
-    @Inject(ref="bar")
+    //@Inject(ref="bar")
     private Bar bar;
     
     @Inject(value="PLN")
@@ -73,6 +73,7 @@ public class Foo implements Serializable {
         return bar;
     }
 
+    @Inject(ref="bar")
     public void setBar(Bar b) {
         bar = b;
     }

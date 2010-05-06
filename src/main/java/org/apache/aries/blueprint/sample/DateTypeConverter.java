@@ -29,15 +29,15 @@ import org.osgi.service.blueprint.container.ReifiedType;
 @Bean(id="converter1")
 public class DateTypeConverter implements Converter {
 
-    @Inject(value="yyyy.MM.dd")
-    DateFormat format;
+    @Inject(name="format", value="yyyy.MM.dd")
+    DateFormat dateFormat;
     
     public void setFormat(String format) {
-        this.format = new SimpleDateFormat(format);
+        this.dateFormat = new SimpleDateFormat(format);
     }
     
     public Object convert(Object source, ReifiedType toType) throws Exception {
-        return format.parse(source.toString());
+        return this.dateFormat.parse(source.toString());
     }
 
     public boolean canConvert(Object fromValue, ReifiedType toType) {

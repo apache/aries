@@ -29,7 +29,7 @@ import org.apache.aries.blueprint.annotation.Element.ElementType;
 @Bean(id="bar")
 public class Bar {
     
-    @Inject(value="Hello Bar")
+    @Inject(value="Hello FooBar")
     private String value;
 
     @Inject(ref="blueprintBundleContext")
