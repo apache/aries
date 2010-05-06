@@ -238,36 +238,8 @@ public class BlueprintAnnotationScannerImpl implements
 
             Field[] fields = clazz.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
-                if (fields[i].isAnnotationPresent(Inject.class)) {
-                    Inject inj = fields[i].getAnnotation(Inject.class);
-                    String value = inj.value();
-                    String ref = inj.ref();
-                    String name = inj.name();
-                    String desp = inj.description();
-                    
-                    
-                    Tproperty tp = new Tproperty();
-                    tp.setName(fields[i].getName());
-                    if (value.length() > 0) {
-                        Tvalue tvalue = new Tvalue();
-                        tvalue.setContent(value);
-                        tp.setValue(tvalue);
-                    }
-                    
-                    if (ref.length() > 0) {
-                        tp.setRefAttribute(ref);
-                    }
-                    
-                    if (name.length() > 0) {
-                        tp.setName(name);
-                    }
-                    
-                    if (desp.length() > 0) {
-                        Tdescription tdesp = new Tdescription();
-                        tdesp.getContent().add(desp);
-                        tp.setDescription(tdesp);
-                        
-                    }
+                if (fields[i].isAnnotationPresent(Inject.class)) {          
+                    Tproperty tp = createTproperty(fields[i].getName(), fields[i].getAnnotation(Inject.class));
                     props.add(tp);
                 }
             }
@@ -279,7 +251,12 @@ public class BlueprintAnnotationScannerImpl implements
                     tbean.setInitMethod(methods[i].getName());
                 } else if (methods[i].isAnnotationPresent(Destroy.class)) {
                     tbean.setDestroyMethod(methods[i].getName());
-                } 
+                } else if (methods[i].isAnnotationPresent(Inject.class)) {
+                    String propertyName = convertFromMethodName(methods[i].getName());
+                    Tproperty tp = createTproperty(propertyName, methods[i].getAnnotation(Inject.class));
+                    props.add(tp);
+                }
+                
             }
             
             // check if the bean also declares service
@@ -310,6 +287,59 @@ public class BlueprintAnnotationScannerImpl implements
         }
 
         return tblueprint;
+    }
+
+    private String convertFromMethodName(String name) {
+        if (name.length() > 3) {
+            name = name.substring(3);
+        } else {
+            throw new BlueprintAnnotationException("The annotated method name " + name + " is invalid");
+        }
+        String firstChar = name.substring(0, 1).toLowerCase();
+        
+        if (name.length() == 1) {
+            return firstChar;
+        } else {
+            return firstChar + name.substring(1);
+        }
+    }
+
+    /**
+     * @param nm    method or field name
+     * @param inj   inject annotation
+     * @return
+     */
+    private Tproperty createTproperty(String nm, Inject inj) {
+        String value = inj.value();
+        String ref = inj.ref();
+        String name = inj.name();
+        String desp = inj.description();
+                         
+        Tproperty tp = new Tproperty();
+        if (value.length() > 0) {
+            Tvalue tvalue = new Tvalue();
+            tvalue.setContent(value);
+            tp.setValue(tvalue);
+        }
+        
+        if (ref.length() > 0) {
+            tp.setRefAttribute(ref);
+        }
+        
+        if (name.length() > 0) {
+            tp.setName(name);
+        } else {
+            tp.setName(nm);
+        }
+        
+        if (desp.length() > 0) {
+            Tdescription tdesp = new Tdescription();
+            tdesp.getContent().add(desp);
+            tp.setDescription(tdesp);
+            
+        }
+        
+        return tp;
     }
 
     private boolean isConverter(Class clazz) {

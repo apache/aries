@@ -27,6 +27,8 @@ import org.apache.aries.blueprint.jaxb.Tbean;
 import org.apache.aries.blueprint.jaxb.Tblueprint;
 import org.apache.aries.blueprint.jaxb.Tproperty;
 import org.apache.aries.blueprint.jaxb.Tvalue;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.Version;
 
 import junit.framework.TestCase;
 
