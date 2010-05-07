@@ -16,12 +16,9 @@
  */
 package org.apache.aries.blueprint.annotation.impl;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
@@ -34,28 +31,10 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.apache.xbean.finder.BundleAnnotationFinder;
-import org.apache.aries.blueprint.annotation.impl.BlueprintAnnotationException;
-import org.apache.aries.blueprint.annotation.service.BlueprintAnnotationScanner;
-import org.apache.aries.blueprint.jaxb.Tbean;
-import org.apache.aries.blueprint.jaxb.Tdescription;
-import org.apache.aries.blueprint.jaxb.Tinterfaces;
-import org.apache.aries.blueprint.jaxb.Tproperty;
-import org.apache.aries.blueprint.jaxb.Tref;
-import org.apache.aries.blueprint.jaxb.Treference;
-import org.apache.aries.blueprint.jaxb.TreferenceList;
-import org.apache.aries.blueprint.jaxb.TreferenceListener;
-import org.apache.aries.blueprint.jaxb.TregistrationListener;
-import org.apache.aries.blueprint.jaxb.Tservice;
-import org.apache.aries.blueprint.jaxb.TtypeConverters;
-import org.apache.aries.blueprint.jaxb.Tvalue;
-import org.apache.aries.blueprint.jaxb.Tblueprint;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.apache.aries.blueprint.annotation.Bean;
 import org.apache.aries.blueprint.annotation.Blueprint;
 import org.apache.aries.blueprint.annotation.Destroy;
+import org.apache.aries.blueprint.annotation.FactoryMethod;
 import org.apache.aries.blueprint.annotation.Init;
 import org.apache.aries.blueprint.annotation.Inject;
 import org.apache.aries.blueprint.annotation.Reference;
@@ -63,6 +42,24 @@ import org.apache.aries.blueprint.annotation.ReferenceList;
 import org.apache.aries.blueprint.annotation.ReferenceListener;
 import org.apache.aries.blueprint.annotation.RegistrationListener;
 import org.apache.aries.blueprint.annotation.Service;
+import org.apache.aries.blueprint.annotation.service.BlueprintAnnotationScanner;
+import org.apache.aries.blueprint.jaxb.Targument;
+import org.apache.aries.blueprint.jaxb.Tbean;
+import org.apache.aries.blueprint.jaxb.Tblueprint;
+import org.apache.aries.blueprint.jaxb.Tdescription;
+import org.apache.aries.blueprint.jaxb.Tinterfaces;
+import org.apache.aries.blueprint.jaxb.Tproperty;
+import org.apache.aries.blueprint.jaxb.Treference;
+import org.apache.aries.blueprint.jaxb.TreferenceList;
+import org.apache.aries.blueprint.jaxb.TreferenceListener;
+import org.apache.aries.blueprint.jaxb.TregistrationListener;
+import org.apache.aries.blueprint.jaxb.Tservice;
+import org.apache.aries.blueprint.jaxb.TtypeConverters;
+import org.apache.aries.blueprint.jaxb.Tvalue;
+import org.apache.xbean.finder.BundleAnnotationFinder;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.packageadmin.PackageAdmin;
 
@@ -245,7 +242,7 @@ public class BlueprintAnnotationScannerImpl implements
                 }
             }
                     
-            // check if the bean also declares init and destroy annotation
+            // check if the bean also declares init, destroy or inject or factoryMethod annotation on methods
             Method[] methods = clazz.getDeclaredMethods();
             for (int i = 0; i < methods.length; i++) {
                 if (methods[i].isAnnotationPresent(Init.class)) {
@@ -256,8 +253,40 @@ public class BlueprintAnnotationScannerImpl implements
                     String propertyName = convertFromMethodName(methods[i].getName());
                     Tproperty tp = createTproperty(propertyName, methods[i].getAnnotation(Inject.class));
                     props.add(tp);
+                } else if (methods[i].isAnnotationPresent(FactoryMethod.class)) {
+                    FactoryMethod fm = (FactoryMethod)methods[i].getAnnotation(FactoryMethod.class);
+                    tbean.setFactoryMethod(methods[i].getName());
+                    String[] values = fm.values();
+                    for (int j = 0; j < fm.values().length; j++) {
+                        Targument targument = new Targument();
+                        targument.setValueAttribute(fm.values()[j]);
+                        props.add(targument);
+                    }
+                    
+                    
+                    
                 }
                 
+            }
+            
+            // check if the bean also declared inject annotation on constructors
+            Constructor[] constructors = clazz.getConstructors();
+            for (int i = 0; i < constructors.length; i++) {
+                if (constructors[i].isAnnotationPresent(Inject.class)) {
+                    Inject inj = (Inject)constructors[i].getAnnotation(Inject.class);
+                    
+                    if (inj.value().length() > 0) {
+                        Targument targument = new Targument();
+                        targument.setValueAttribute(inj.value());
+                        props.add(targument);
+                    } else if (inj.values().length > 0) {
+                        for (int j = 0; j < inj.values().length; j++) {
+                            Targument targument = new Targument();
+                            targument.setValueAttribute(inj.values()[j]);
+                            props.add(targument);
+                        }
+                    }
+                } 
             }
             
             // check if the bean also declares service
