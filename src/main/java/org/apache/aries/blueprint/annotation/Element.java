@@ -21,6 +21,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * used to annotate the element of the list.
+ *
+ */
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Element {
@@ -29,8 +33,11 @@ public @interface Element {
     
     public enum ElementType {
         STRING,
-        INTEGER,
-        DATE
+        LONG,
+        BYTE,
+        BOOLEAN,
+        INT,
+        SHORT
     }
 
 }

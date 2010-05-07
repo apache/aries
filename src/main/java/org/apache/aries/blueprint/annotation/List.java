@@ -21,9 +21,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * used to annotate list value in property
+ * I am not convinced that we want to support this via annotation
+ *
+ */
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface List {
-  public Element[] value();
+    
+    // the element of the list
+    public Element[] value();
   
 }
