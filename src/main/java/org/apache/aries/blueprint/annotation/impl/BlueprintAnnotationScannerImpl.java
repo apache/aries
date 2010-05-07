@@ -39,6 +39,7 @@ import org.apache.aries.blueprint.annotation.impl.BlueprintAnnotationException;
 import org.apache.aries.blueprint.annotation.service.BlueprintAnnotationScanner;
 import org.apache.aries.blueprint.jaxb.Tbean;
 import org.apache.aries.blueprint.jaxb.Tdescription;
+import org.apache.aries.blueprint.jaxb.Tinterfaces;
 import org.apache.aries.blueprint.jaxb.Tproperty;
 import org.apache.aries.blueprint.jaxb.Tref;
 import org.apache.aries.blueprint.jaxb.Treference;
@@ -382,7 +383,7 @@ public class BlueprintAnnotationScannerImpl implements
         String compName = ref.componentName();
         String desp = ref.description();
         String filter = ref.filter();
-        String pubInterface = ref.publishInterface();
+        Class<?> serviceInterface = ref.serviceInterface();
         ReferenceListener[] refListeners = ref.referenceListener();
         int timeout = ref.timeout();
         Treference tref = new Treference();
@@ -408,8 +409,8 @@ public class BlueprintAnnotationScannerImpl implements
         if (filter.length() > 0) {
             tref.setFilter(filter);
         }
-        if (pubInterface.length() > 0) {
-            tref.setInterface(pubInterface);
+        if (serviceInterface != Object.class) {
+            tref.setInterface(serviceInterface.getName());
         } else {
             boolean isInterface =  refClass.isInterface();
             if (isInterface) {
@@ -445,7 +446,7 @@ public class BlueprintAnnotationScannerImpl implements
         String compName = ref.componentName();
         String desp = ref.description();
         String filter = ref.filter();
-        String pubInterface = ref.publishInterface();
+        Class<?> serviceInterface = ref.serviceInterface();
         ReferenceListener[] refListeners = ref.referenceListener();
         TreferenceList tref = new TreferenceList();
         
@@ -470,8 +471,8 @@ public class BlueprintAnnotationScannerImpl implements
         if (filter.length() > 0) {
             tref.setFilter(filter);
         }
-        if (pubInterface.length() > 0) {
-            tref.setInterface(pubInterface);
+        if (serviceInterface  != Object.class) {
+            tref.setInterface(serviceInterface.getName());
         } else {
             boolean isInterface =  refClass.isInterface();
             if (isInterface) {
@@ -496,7 +497,7 @@ public class BlueprintAnnotationScannerImpl implements
     
     private Tservice generateTservice(Class clazz, String id) {
         Service service = (Service) clazz.getAnnotation(Service.class);
-        String pInterface = service.publishInterface();
+        Class<?>[] interfaces = service.interfaces();
         int ranking = service.ranking();
         String autoExport = service.autoExport();
         RegistrationListener[] regListeners = service.registerationListener();
@@ -515,9 +516,12 @@ public class BlueprintAnnotationScannerImpl implements
         if (ranking > 0) {
             tservice.setRanking(ranking);
         }
-        if (pInterface.length() > 0) {
-            // TODO add support for multiple interfaces
-            tservice.setInterface(pInterface);
+        for (Class<?> interf : interfaces) {
+            Tinterfaces tInterfaces = new Tinterfaces();
+            if (interf != null) {
+                tInterfaces.getValue().add(interf.getName());
+            }
+            tservice.setInterfaces(tInterfaces);
         }
         
         for (RegistrationListener regListener : regListeners) {
