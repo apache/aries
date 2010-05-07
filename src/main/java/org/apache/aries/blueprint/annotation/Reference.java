@@ -31,9 +31,9 @@ public @interface Reference
     String description() default "";
     
     /**
-     * the name of the interface type that a matching service must support.
+     * the interface type that a matching service must support.
      */
-    String publishInterface() default "";
+    Class<?> serviceInterface() default Object.class;
     
     /**
      * the filter expression that a matching service must match.

@@ -21,13 +21,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.TYPE)
+/**
+ * used to annotation factory-method in blueprint beans
+ *
+ */
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ReferenceListener {
-    /**
-     * the component that will receive bind and unbind events.
-     */
-    String ref();
-    String bind();
-    String unbind();
+public @interface FactoryMethod {
+    String[] values();
 }

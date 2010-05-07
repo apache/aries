@@ -66,9 +66,5 @@ public @interface Bean {
      * factory method for the bean.
      */
     String factoryRef() default "";
-    
-    /**
-     *  the name of the factory method for the bean.
-     */
-    String factoryMethod() default "";
+  
 }

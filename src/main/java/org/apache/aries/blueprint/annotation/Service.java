@@ -45,9 +45,9 @@ public @interface Service {
     String autoExport() default "";
     
     /**
-     *  the names of the interfaces that the service should be advertised as supporting.
+     *  the interfaces that the service should be advertised as supporting.
      */
-    String publishInterface() default "";
+    Class<?>[] interfaces() default {};
     
     /**
      * the user declared properties to be advertised with the service.
