@@ -27,9 +27,11 @@ import org.apache.aries.blueprint.annotation.Init;
 import org.apache.aries.blueprint.annotation.Inject;
 import org.apache.aries.blueprint.annotation.RegistrationListener;
 import org.apache.aries.blueprint.annotation.Service;
+import org.apache.aries.blueprint.annotation.ServiceProperty;
 
 @Bean(id="foo")
-@Service(autoExport="all-classes",  
+@Service(autoExport="all-classes",
+        serviceProperties = @ServiceProperty(key="blueprint.annotation.sample", value="true"),
         registerationListener = @RegistrationListener(id="fooRegistrationListener", register="serviceRegistered", unregister="serviceUnregistered"), 
         ranking=0)
 public class Foo implements Serializable {
