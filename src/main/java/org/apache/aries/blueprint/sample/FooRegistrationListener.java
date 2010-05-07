@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.aries.blueprint.annotation.Bean;
-import org.apache.aries.blueprint.annotation.Blueprint;
 
 
 @Bean(id="fooRegistrationListener")

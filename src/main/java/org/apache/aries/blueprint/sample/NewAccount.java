@@ -18,7 +18,7 @@ package org.apache.aries.blueprint.sample;
 
 import org.apache.aries.blueprint.annotation.Bean;
 
-@Bean(id="accountThree", factoryRef="accountFactory")
+//@Bean(id="accountThree", factoryRef="accountFactory")
 public class NewAccount {
     
     private long accountNumber;

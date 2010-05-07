@@ -16,15 +16,12 @@
  */
 package org.apache.aries.blueprint.sample;
 
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
-import org.osgi.framework.ServiceReference;
 import org.apache.aries.blueprint.annotation.Bean;
-import org.apache.aries.blueprint.annotation.Blueprint;
 import org.apache.aries.blueprint.annotation.Init;
-import org.apache.aries.blueprint.annotation.Bind;
-import org.apache.aries.blueprint.annotation.Unbind;
+import org.osgi.framework.ServiceReference;
 
 @Bean(id="listBindingListener")
 public class ListBindingListener {

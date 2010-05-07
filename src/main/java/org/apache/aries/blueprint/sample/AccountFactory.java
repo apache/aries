@@ -20,16 +20,16 @@ import org.apache.aries.blueprint.annotation.Bean;
 import org.apache.aries.blueprint.annotation.Inject;
 import org.apache.aries.blueprint.annotation.FactoryMethod;
 
-@Bean(id="accountFactory")
+//@Bean(id="accountFactory")
 public class AccountFactory {
     private String factoryName;
 
-    @Inject(value="account factory")
+    //@Inject(value="account factory")
     public AccountFactory(String factoryName) {
         this.factoryName = factoryName;
     }
 
-    @FactoryMethod(values="3")
+    //@FactoryMethod(values="3")
     public NewAccount createAccount(long number) {
         return new NewAccount(number);
     }
