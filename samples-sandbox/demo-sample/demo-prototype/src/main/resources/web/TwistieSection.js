@@ -45,7 +45,9 @@ dojo.declare("TwistieSection", null, {
 	twistieText: null,
 	itemTexts: null,
 	
-	constructor: function(name, parentGroup, owningBundle, x, y, getItemsCallBack) {
+	bundleAppearance: null,
+	
+	constructor: function(name, parentGroup, owningBundle, x, y, getItemsCallBack, bundleAppearance) {
 	this.surface=surface;
 	this.name=name;
 	this.parentGroup=parentGroup;
@@ -54,6 +56,7 @@ dojo.declare("TwistieSection", null, {
 	this.y=y;
 	this.isOpen=false;
 	this.getItemsCallback = getItemsCallBack;
+	this.bundleAppearance=bundleAppearance;
 
 	this.items=["Loading..."];
 	this.itemTexts = new Array();
@@ -71,8 +74,8 @@ createText: function(name){
 	var textOffset = this.y + 8;
 	var x = this.x + 17;
 	this.twistieText = this.twistieGroup.createText({x: x, y: textOffset, text: name, align: "start"})
-    .setFont({family: "times", size: "8pt"})
-	.setFill("#000000");	
+    .setFont({family: this.bundleAppearance.fontFamily, size: "8pt"})
+	.setFill(this.bundleAppearance.textFill);	
 },
 createTwistie: function(){
 	var pys = this.y;
@@ -83,7 +86,7 @@ createTwistie: function(){
 	var pxe = this.x + 15;
 	this.twistieHandle = this.twistieHandleGroup.createPolyline([{x:px,y:pys},{x:pxe,y:pym},{x:px,y:pye}])
 	//.setStroke({width: 2, color: '#808080'})
-	.setFill("#000000");
+	.setFill(this.bundleAppearance.textFill);
 	
 	if(this.isOpen){
 		this.twistieHandle.setShape([{x:px,y:pys},{x:pxe,y:pys},{x:pxm,y:pye}]);
@@ -134,8 +137,8 @@ addItemsToDisplay: function(){
 			if(this.isOpen){
 
 				this.itemTexts[idx] = this.twistieGroup.createText({x: pxt, y: pyt, text: this.items[idx], align: "start"})
-				.setFont({family: "times", size: "8pt"})
-				.setFill("#000000");
+				.setFont({family: this.bundleAppearance.fontFamily, size: "8pt"})
+				.setFill(this.bundleAppearance.textFill);
 								
 				pyt = pyt + 10;
 				if(maxLengthSeen< this.items[idx].length){
@@ -181,6 +184,11 @@ twistieHandler: function() {
 		this.removeItemsFromDisplay();
 	}
 	this.owningBundle.resize();	
+},
+update: function() {
+	this.twistieText.setFont({family: this.bundleAppearance.fontFamily, size: "8pt"});
+	this.twistieText.setFill(this.bundleAppearance.textFill);	
+	this.twistieHandle.setFill(this.bundleAppearance.textFill);
 }
 
 });

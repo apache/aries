@@ -47,7 +47,7 @@ public class BundleContextInfoProvider implements BundleInfoProvider, BundleList
 	}
 	
 	
-	@Override
+	// @Override
 	public BundleInfo[] getBundles() {
 		Bundle[] bundles = this.ctx.getBundles();
 		BundleInfo[] result = new BundleInfo[bundles.length];
@@ -59,13 +59,13 @@ public class BundleContextInfoProvider implements BundleInfoProvider, BundleList
 		return result;
 	}
 
-	@Override
+	// @Override
 	public void registerBundleInfoListener(BundleInfoListener listener) {
 		listeners.add(listener);
 	}
 
 
-	@Override
+	// @Override
 	public BundleInfo getBundleForId(long id) {
 		Bundle b = ctx.getBundle(id);		
 		BundleInfoImpl bii = new BundleInfoImpl();
@@ -135,7 +135,7 @@ public class BundleContextInfoProvider implements BundleInfoProvider, BundleList
 	}
 
 
-	@Override
+	// @Override
 	public void bundleChanged(BundleEvent arg0) {
 		BundleInfo bi = getBundleForId(arg0.getBundle().getBundleId());
 		for(BundleInfoListener bil : listeners){
