@@ -1,22 +1,22 @@
 /**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with this
+ * work for additional information regarding copyright ownership. The ASF
+ * licenses this file to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 dojo.provide("Bundle");
+dojo.require("org.apache.aries.samples.demo.prototype.Preferences");
+dojo.require("org.apache.aries.samples.demo.prototype.BundleAppearance");
 dojo.require("TwistieSection");
 dojo.require("dojox.gfx");
 dojo.require("dojox.gfx.fx");
@@ -25,14 +25,14 @@ dojo.require("dojo.data.ItemFileWriteStore");
 
 dojo.declare("Bundle", null, {
 
-	//properties
+	// properties
 	id: null,
 	name: null,
 	state: null,	
 	version: null,
 	hidden: false,
 
-	//gfx objects
+	// gfx objects
 	group: null,
 	surface: null,
 	outline: null,
@@ -49,10 +49,14 @@ dojo.declare("Bundle", null, {
 	textVersion: null,
 	versionRule: null,
 	
-	//underlying datastore
+	// underlying datastore
 	jsonStore: null,
+
+	// configuration preferences
+	preferences: null, 
+	bundleAppearance: null,
 	
-	//dimensions/coords
+	// dimensions/coords
 	x: 0,
 	y: 0,
 	minWidth: 150,
@@ -65,7 +69,8 @@ dojo.declare("Bundle", null, {
 	linesFrom: null,
 	linesTo: null,	
 	
-	constructor: function(surface, id, name, state, version, jsonStore) {
+	
+	constructor: function(surface, id, name, state, version, jsonStore, preferences) {
 	this.surface=surface;
 	this.id=id;
 	this.name=name;
@@ -74,9 +79,12 @@ dojo.declare("Bundle", null, {
 	this.x=0;
 	this.y=0;
 	this.jsonStore=jsonStore;
+	this.preferences=new org.apache.aries.samples.demo.prototype.Preferences();
+	this.bundleAppearance=new org.apache.aries.samples.demo.prototype.BundleAppearance(state, this.preferences);
+	
 	this.height=100;
 	this.width=this.minWidth;
-	
+		
 	this.linesFrom = new Array();
 	this.linesTo = new Array();
 	
@@ -108,15 +116,14 @@ dojo.declare("Bundle", null, {
 		ServerSideClass.getPackageExports(id, exportCallback);
 	};
 	
-	//name, parentGroup, owningBundle, x, y
+	// name, parentGroup, owningBundle, x, y
 	var impy = (this.ruleHeight*2)+this.ruleOffset+25;
 	var expy = impy+12;
-	this.importTwistie=new TwistieSection("Imports", this.group, this, 5, impy, importCallBack);
-	this.exportTwistie=new TwistieSection("Exports", this.group, this, 5, expy, exportCallBack);
+	this.importTwistie=new TwistieSection("Imports", this.group, this, 5, impy, importCallBack, this.bundleAppearance);
+	this.exportTwistie=new TwistieSection("Exports", this.group, this, 5, expy, exportCallBack, this.bundleAppearance);
 	
-	//update size to account for twisties.
+	// update size to account for twisties.
 	this.resize();
-
 	var mover = new dojox.gfx.Moveable(this.group);
     dojo.connect(mover, "onMoved", this, "onMoved");  
     
@@ -127,54 +134,110 @@ dojo.declare("Bundle", null, {
 initGfx: function() {
 	this.group = this.surface.createGroup();
 
-	this.outline = this.group.createRect({x: 0, y: 0, width: this.width, height: this.height, r: 5})
-	.setStroke({width: 2, color: '#808080'})
-	.setFill({type: "linear",  x1: 0, y1: 0, x2: 150, y2: 80,
-			colors: [{ offset: 0, color: "#ffff80" },{ offset: 1, color: "#ffffff" } ]});
+	this.outline = this.group.createRect({x: 0, y: 0, width: this.width, height: this.height, r: 5});
 	
+	this.drawState(this.state);
+
 	this.createNameRule(this.width);
 	this.createStateRule(this.width);
 	this.createVersionRule(this.width);
 
-	var stateidstr = "" + this.id + ":" + this.state;
-	
 	this.createNameText(this.name);
-	this.createStateText(stateidstr);
+	this.createStateText(this.state, this.id);
 	this.createVersionText(this.version);
         
 },
 createNameText: function(name){
+	if (this.textName != null)
+	{
+		this.group.remove(this.textName);
+	}
 	var y = (this.ruleHeight*0.5)+this.ruleOffset+5;
 	this.textName = this.group.createText({x: 5, y: y, text: name, align: "start"})
-	.setFont({family: "times", size: "12pt"})
-	.setFill("#000000");	
+	.setFont({family: this.bundleAppearance.fontFamily, fontStretch: this.bundleAppearance.fontStretch, size: "12pt"})
+	.setFill(this.bundleAppearance.textFill);	
 },
 createVersionText: function(version){
-	var y = (this.ruleHeight*1.5)+this.ruleOffset+5;
-	this.textVersion = this.group.createText({x: 5, y: y, text: version, align: "start"})
-	.setFont({family: "times", size: "12pt"})
-	.setFill("#000000");	
+	if (this.textVersion != null)
+	{
+		this.group.remove(this.textVersion);
+	}
+
+	if (this.preferences.showVersion) {
+		var y = (this.ruleHeight*1.5)+this.ruleOffset+5;
+		this.textVersion = this.group.createText({x: 5, y: y, text: version, align: "start"})
+		.setFont({family: this.bundleAppearance.fontFamily, fontStretch: this.bundleAppearance.fontStretch, size: "12pt"})
+		.setFill(this.bundleAppearance.textFill);
+	}
 },
-createStateText: function(state){
-	var y = (this.ruleHeight*2.5)+this.ruleOffset+5;
-	this.textState = this.group.createText({x: 5, y: y, text: state, align: "start"})
-	.setFont({family: "times", size: "12pt"})
-	.setFill("#000000");	
+drawState: function(state){
+	this.outline.setStroke({width: 2, color: this.bundleAppearance.lineColour, style: this.bundleAppearance.lineStyle});
+	this.outline.setFill({type: "linear",  x1: 0, y1: 0, x2: 150, y2: 80,
+			colors: [{ offset: 0, color: this.bundleAppearance.backgroundColour },{ offset: 1, color: "white" } ]});
+
+},
+createStateText: function(state, id){
+	if (this.textState != null)
+	{
+		this.group.remove(this.textState);
+	}
+	if (this.preferences.showState)
+	{
+		var stateidstr = "" + id + ":" + state;
+		var multiplier=2.5; 
+		// We need to draw things slightly higher if we didn't have a line for the version
+		if (!this.preferences.showVersion)
+		{
+			multiplier = 1.5;
+		}
+		var y = (this.ruleHeight*multiplier)+this.ruleOffset+5;
+		this.textState = this.group.createText({x: 5, y: y, text: stateidstr, align: "start"})
+		.setFont({family: this.bundleAppearance.fontFamily, fontStretch: this.bundleAppearance.fontStretch, size: "12pt"})
+		.setFill(this.bundleAppearance.textFill);	
+	}
 },
 createNameRule: function(width){
+	// Clean up the previous line
+	if (this.versionRule != null)
+	{
+		this.group.remove(this.nameRule);
+	}
 	var y = (this.ruleHeight+this.ruleOffset);
 	this.nameRule = this.group.createLine({x1:0, y1: y, x2: width, y2: y})
 	.setStroke({width:1, color: '#808080'});
 },
 createVersionRule: function(width){
-	var y = (this.ruleHeight*2)+this.ruleOffset;
-	this.versionRule = this.group.createLine({x1:0, y1:y, x2: width, y2: y})
-	.setStroke({width:1, color: '#808080'});
+	// Clean up the previous line
+	if (this.versionRule != null)
+	{
+		this.group.remove(this.versionRule);
+	}
+	if (this.preferences.showVersion)
+	{
+		var y = (this.ruleHeight*2)+this.ruleOffset;
+		this.versionRule = this.group.createLine({x1:0, y1:y, x2: width, y2: y})
+		.setStroke({width:1, color: '#808080'});
+	}
 },
 createStateRule: function(width){
-	var y = (this.ruleHeight*3)+this.ruleOffset;
-	this.stateRule = this.group.createLine({x1:0, y1:y, x2: width, y2: y})
-	.setStroke({width:1, color: '#808080'});
+	// Clean up the previous line
+	if (this.stateRule != null)
+	{
+		this.group.remove(this.stateRule);
+	}
+	// Only add a rule if we're going to be adding a line for the state
+	if (this.preferences.showState)
+	{
+		// We need to draw things slightly higher if we didn't have a line for the version
+		var multiplier=3;
+		if (!this.preferences.showVersion)
+		{
+			multiplier = 2;
+		}
+		var y = (this.ruleHeight*multiplier)+this.ruleOffset;
+		this.stateRule = this.group.createLine({x1:0, y1:y, x2: width, y2: y})
+		.setStroke({width:1, color: '#808080'});
+	} 	
 },
 resize: function(){
 	var width = this.width;
@@ -191,14 +254,23 @@ resize: function(){
 		height = height + this.exportTwistie.height;	
 	}
 	
-	var impy = (this.ruleHeight*2)+this.ruleOffset+25;
+	var multiplier=2;
+	if (!this.preferences.showState)
+	{
+		multiplier=multiplier - 1; 
+	}
+	if (!this.preferences.showVersion)
+	{
+		multiplier=multiplier - 1; 
+	}
+	height = height - this.ruleHeight*(2 - multiplier);
+	
+	var impy = ((this.ruleHeight)*multiplier)+this.ruleOffset+25;
 	var expy = impy+12+this.importTwistie.height;
-	//make the export twistie appear in the correct location.
+	// make the twisties appear in the correct location.
+	this.importTwistie.updatePosition(5,(impy));
 	this.exportTwistie.updatePosition(5,(expy));
-
-	this.group.remove(this.nameRule);
-	this.group.remove(this.versionRule);
-	this.group.remove(this.stateRule);
+	
 	this.createNameRule(width);
 	this.createStateRule(width);
 	this.createVersionRule(width);
@@ -209,7 +281,7 @@ resize: function(){
 	dojo.forEach(this.linesFrom, function(line){ line.updateLine() });
 },
 calcWidthBasedOnContent: function(){
-	//adjust the width, based on the name length
+	// adjust the width, based on the name length
 	if(this.name.length > 18){
 		var extra = this.name.length - 18;
 		extra = extra * 6;
@@ -218,7 +290,7 @@ calcWidthBasedOnContent: function(){
 			this.width = proposedNewWidth;
 		}	
 	}
-	//adjust the width, based on the version length
+	// adjust the width, based on the version length
 	if(this.version.length > 18){
 		var extra = this.name.length - 18;
 		extra = extra * 6;
@@ -234,6 +306,7 @@ update: function(id, name, state, version) {
 		this.state = state;
 		this.version = version;
 		
+		this.bundleAppearance.update(state);
 		this.calcWidthBasedOnContent();
 		
 		var _this=this;
@@ -242,15 +315,15 @@ update: function(id, name, state, version) {
 	        _this.jsonStore.setValue(item[0], "state", _this.state);
 	    }});	
 	
-		this.group.remove(this.textName);
+	    this.drawState(state);
 		this.createNameText(this.name);
 
-		this.group.remove(this.textState);
-		var stateidstr = "" + id + ":" + this.state;
-		this.createStateText(this.state);
+		this.createStateText(this.state, this.id);
 		
-		this.group.remove(this.versionText);
 		this.createVersionText(this.version);
+		
+		this.importTwistie.update();
+		this.exportTwistie.update();
 	}
 },
 moveToNewPlace: function(x, y) {
@@ -268,16 +341,16 @@ toggleHidden: function(){
     }});
 	
 	if(hideMe){
-		//cheat.. move it off canvas..
+		// cheat.. move it off canvas..
 		this.group.setTransform({dx:-1000, dy:-1000});	
 	}else{
-		//bring it back =) good job we remembered where it was supposed to go !
+		// bring it back =) good job we remembered where it was supposed to go !
 		this.group.setTransform({dx:this.x, dy:this.y});	
 	}
 		
 	this.hidden = hideMe;
 	
-	//en/disable all lines to/from..
+	// en/disable all lines to/from..
 	dojo.forEach(this.linesTo, function(line){  line.updateVisibility(); line.updateLine() });
 	dojo.forEach(this.linesFrom, function(line){ line.updateVisibility(); line.updateLine() });
 },
@@ -305,20 +378,22 @@ onClick: function() {
 	    duration: 500,
 	    color: {start: "#6F0000", end: "#FF3030"},
 	    width: {start:10, end: 2},
-	    join:  {values: ["miter", "bevel", "round"]}
+	    join:  {values: ["miter", "bevel", "round"]},
+	    style: this.lineStyle
 	}).play();
 },
 onMouseEnter: function() {
-	this.outline.setStroke({width: 3, color: '#FF3030'});
+	this.outline.setStroke({width: 3, color: '#FF3030', style: this.lineStyle});
 },
 onMouseLeave: function() {
-	//this.outline.setStroke({width: 2, color: '#808080'});
+	// this.outline.setStroke({width: 2, color: '#808080'});
 	dojox.gfx.fx.animateStroke({
 	    shape: this.outline,
 	    duration: 500,
-	    color: {start: "#FF3030", end: "#808080"},
+	    color: {start: "#FF3030", end: this.bundleAppearance.lineColour},
 	    width: {end: 2},
-	    join:  {values: ["miter", "bevel", "round"]}
+	    join:  {values: ["miter", "bevel", "round"]},
+	    style: this.lineStyle
 	}).play();
 }
 

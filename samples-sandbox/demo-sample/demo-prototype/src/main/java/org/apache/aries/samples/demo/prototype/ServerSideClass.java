@@ -264,13 +264,13 @@ public class ServerSideClass implements Runnable, BundleInfoProvider.BundleInfoL
 		}});      
 	}
 
-	@Override
+	// @Override
 	public void addNewBundleInfo(BundleInfo b) {
 		//todo: only issue the add for the new bundle, and affected other bundles.
 		getInitialBundles();
 	}
 
-	@Override
+	// @Override
 	public void updateBundleInfo(BundleInfo b) {
 		//todo: only issue the add for the new bundle, and affected other bundles.
 		getInitialBundles();
