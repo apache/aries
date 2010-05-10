@@ -22,6 +22,8 @@ public interface BlueprintConstants  {
    
     public static final String BUNDLE_BLUEPRINT_HEADER = "Bundle-Blueprint";
     
+    public static final String BUNDLE_BLUEPRINT_ANNOTATION_HEADER = "Bundle-Blueprint-Annotation";
+    
     public static final String TIMEOUT_DIRECTIVE = "blueprint.timeout";
     
     public static final String GRACE_PERIOD = "blueprint.graceperiod";
