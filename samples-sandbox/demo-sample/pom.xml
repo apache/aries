@@ -33,7 +33,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.apache.aries.samples.demo</groupId>
-                <artifactId>org.apache.aries.samples.demo.assembly</artifactId>
+                <artifactId>org.apache.aries.samples.demo.api</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
@@ -41,13 +41,19 @@
                 <artifactId>org.apache.aries.samples.demo.prototype</artifactId>
                 <version>${version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.demo</groupId>
+                <artifactId>org.apache.aries.samples.demo.assembly</artifactId>
+                <version>${version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
 
     <modules>
-        <module>demo-assembly</module>
+        <module>demo-api</module>
         <module>demo-prototype</module>
+        <module>demo-assembly</module>
     </modules>
 
 </project>
