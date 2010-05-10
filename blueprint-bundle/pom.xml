@@ -45,6 +45,7 @@
             net.sf.cglib*;resolution:=optional,
             org.objectweb.asm*;version="[3.1,4)";resolution:=optional,
             org.osgi.service.cm;version="[1.2.0,2.0.0)",
+            org.apache.aries.blueprint.annotation.service;resolution:=optional,
             *
         </aries.osgi.import>
         <!--

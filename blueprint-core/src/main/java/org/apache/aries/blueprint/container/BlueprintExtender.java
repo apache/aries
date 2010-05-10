@@ -34,6 +34,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ParserService;
+import org.apache.aries.blueprint.annotation.service.BlueprintAnnotationScanner;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.aries.blueprint.utils.HeaderParser;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
@@ -50,6 +51,7 @@ import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
+import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +71,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     private NamespaceHandlerRegistry handlers;
     private RecursiveBundleTracker bt;
     private ServiceRegistration parserServiceReg;
+    private ServiceTracker st;
 
     public void start(BundleContext context) {
         LOGGER.debug("Starting blueprint extender...");
@@ -208,6 +211,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
         try {
             List<Object> pathList = new ArrayList<Object>();
             String blueprintHeader = (String) bundle.getHeaders().get(BlueprintConstants.BUNDLE_BLUEPRINT_HEADER);
+            String blueprintHeaderAnnotation = (String) bundle.getHeaders().get(BlueprintConstants.BUNDLE_BLUEPRINT_ANNOTATION_HEADER);
             if (blueprintHeader == null) {
                 blueprintHeader = "OSGI-INF/blueprint/";
             } 
@@ -233,7 +237,26 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                         addEntry(bundle, name, pathList);
                     }                    
                 }
-            }            
+            }
+            
+            if (pathList.isEmpty() && blueprintHeaderAnnotation.trim().equalsIgnoreCase("true")) {
+                LOGGER.debug("Scanning bundle {} for blueprint annotations", bundle.getSymbolicName());
+                ServiceReference sr = this.context.getServiceReference("org.apache.aries.blueprint.annotation.service.BlueprintAnnotationScanner");
+                           
+                if (sr != null) {
+                    BlueprintAnnotationScanner bas = (BlueprintAnnotationScanner)this.context.getService(sr);
+                    // try to generate the blueprint definition XML
+                    URL url = bas.createBlueprintModel(bundle);
+                        
+                    if (url != null) {
+                        pathList.add(url);
+                    }
+                    
+                    this.context.ungetService(sr);
+                }
+             
+            }
+            
             if (!pathList.isEmpty()) {
                 LOGGER.debug("Found blueprint application in bundle {} with paths: {}", bundle.getSymbolicName(), pathList);
                 // Check compatibility
@@ -250,13 +273,13 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 }
 
             } else {
-                LOGGER.debug("No blueprint application found in bundle {}", bundle.getSymbolicName());
+                LOGGER.debug("No blueprint application found in bundle {}", bundle.getSymbolicName());   
             }
         } catch (Throwable t) {
             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, bundle, context.getBundle(), t));
         }
     }
-    
+
     private boolean isCompatible(Bundle bundle) {
         // Check compatibility
         boolean compatible;
