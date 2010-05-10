@@ -231,7 +231,7 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
         rv.addReferenceListenerValidator(rlrv_1);
         rv.validate(metadataProxy.getComponentMetadata(sampleBlueprintContainerServiceId, "ref2"));
         
-        // bean：bindingListener
+        // bean: bindingListener
         BeanValidator bv_bindingListener = new BeanValidator("org.apache.aries.blueprint.sample.BindingListener");
         bv_bindingListener.validate(metadataProxy.getComponentMetadata(sampleBlueprintContainerServiceId, "bindingListener"));
 
