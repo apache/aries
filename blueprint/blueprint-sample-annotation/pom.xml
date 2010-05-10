@@ -1,0 +1,86 @@
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+    
+       http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.aries.blueprint</groupId>
+        <artifactId>blueprint</artifactId>
+        <version>0.2-incubating-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>org.apache.aries.blueprint.sample-annotation</artifactId>
+    <name>Apache Aries Blueprint Sample for Testing Annotation</name>
+    <packaging>bundle</packaging>
+    <description>
+        Example blueprint application, mostly used for annotation tests.
+    </description>
+
+    <properties>
+		<aries.osgi.export>
+			org.apache.aries.blueprint.sample;-noimport:=true
+		</aries.osgi.export>
+        <aries.osgi.activator>
+            org.apache.aries.blueprint.sample.Activator
+        </aries.osgi.activator>
+        <aries.osgi.import>
+            org.apache.aries.blueprint.annotation,
+            *
+        </aries.osgi.import>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
+            <version>${version}</version>
+        </dependency>
+    </dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-bundle-plugin</artifactId>
+					<extensions>true</extensions>
+					<inherited>true</inherited>
+					<configuration>
+						<excludeDependencies>${aries.osgi.exclude.dependencies}</excludeDependencies>
+						<instructions>
+							<Bundle-Blueprint-Annotation>true</Bundle-Blueprint-Annotation>
+						</instructions>
+						<versions>
+							<aries.osgi.version.clean>${project.version}</aries.osgi.version.clean>
+						</versions>
+					</configuration>
+				</plugin>
+
+			</plugins>
+		</pluginManagement>
+	</build>
+    
+
+</project>
