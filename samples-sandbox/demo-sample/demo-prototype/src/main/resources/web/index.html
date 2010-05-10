@@ -6,9 +6,9 @@
     The ASF licenses this file to You under the Apache License, Version 2.0
     (the "License"); you may not use this file except in compliance with
     the License.  You may obtain a copy of the License at
-
+    
        http://www.apache.org/licenses/LICENSE-2.0
-
+    
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,10 +30,11 @@
 }
 </style>
 
-<title>Apache Aries System</title>
+<title>My Index HTML</title>
 
 <!-- DWR Includes and Setup -->
-<script src='/org.apache.aries.samples.demo.prototype/dwr/engine.js'></script>
+<script src='../dwr/engine.js'></script>
+
 <script type='text/javascript'  src='/org.apache.aries.samples.demo.prototype/dwr/util.js'> </script>
 <script type='text/javascript'	src='/org.apache.aries.samples.demo.prototype/dwr/interface/ServerSideClass.js'></script>
 <script type='text/javascript'	src='/org.apache.aries.samples.demo.prototype/dwr/interface/BundleDependencies.js'></script>
@@ -43,92 +44,83 @@
 </script>
 
 <script type="text/javascript" src="/org.apache.aries.samples.demo.prototype/dojo/dojo.js"
-	djConfig="isDebug:true, parseOnLoad: true"></script>
-	
-<script type="text/javascript" src="/org.apache.aries.samples.demo.prototype/web/Dependency.js"></script>
-<script type="text/javascript" src="/org.apache.aries.samples.demo.prototype/web/TwistieSection.js"></script>
-<script type="text/javascript" src="/org.apache.aries.samples.demo.prototype/web/Preferences.js"></script>
-<script type="text/javascript" src="/org.apache.aries.samples.demo.prototype/web/BundleAppearance.js"></script>
-<script type="text/javascript" src="/org.apache.aries.samples.demo.prototype/web/Bundle.js"></script>
+	djConfig="isDebug:true, parseOnLoad: true, debugAtAllCosts: true"></script>
 
 <script type='text/javascript'>
 
+    dojo.registerModulePath("demo", "/org.apache.aries.samples.demo.prototype/web/demo");
+
 	dojo.require("dojox.gfx");
 	dojo.require("dojox.gfx.move");
-	dojo.require("dojox.grid.DataGrid");
-	dojo.require("dojo.data.ItemFileWriteStore");
-	dojo.require("dijit.form.Button");
+
+
 	dojo.require("dojo.parser");
 	dojo.require("dojo.cookie");
-	dojo.require("Bundle");
+	dojo.require("dojo.data.ItemFileWriteStore");
+	
+	dojo.require("dijit.form.Button");
+	dojo.require("dijit.form.Select");
+	dojo.require("dijit.form.TextBox");
+	dojo.require("dijit.Dialog");
+	
+	dojo.require("demo.Bundle");
+	dojo.require("demo.Dependency");
+	dojo.require("demo.ProviderSelector");
+	dojo.require("demo.LayoutManager");
+	dojo.require("demo.BundleStatusGrid");
+	dojo.require("demo.SimpleInitialLayout");
+	dojo.require("demo.DwrLoadingDialog");
 
+	//provides the basic layout when 1st loading up bundles.
+    var initialLayout = null;
+    //tracks the current provider for the app.
+    var providerSelector = null;
+    
+    //the global bundle array, indexed by bundle id.
 	var bundles = new Array();
-	var container = null, surface = null, surface_size = null;
+	
+	//various gfx decls.
+	var container = null, surface = null, surface_size = null;	
 
-	function initGfx() {
+	function setup() {
 		container = dojo.byId("gfx_holder");
 		surface = dojox.gfx.createSurface(container, 1000, 1000);
 		surface_size = {
 			width : 1000,
 			height : 1000
 		};
+		initialLayout = new demo.SimpleInitialLayout(1000,1000);
+		var loadingDialog = new demo.DwrLoadingDialog();
+		var bundleStatusGrid = new demo.BundleStatusGrid("stateTableID");
+		providerSelector = new demo.ProviderSelector("providerSelectorID");		
+		var loadSave = new demo.LayoutManager("loadSaveLayoutID");
 	}
 
-	dojo.addOnLoad(initGfx);
+	dojo.addOnLoad(setup);
 
-	var rotate=0;
-	var rotatechar = [ ":","/","-","\"" ];
-    var statusColors = [ "#404040", "#606060", "#808080", "#A0A0A0" ];			
-	function testJS(message) {
-		if(rotate<3){
-			rotate = rotate + 1;
-		}else{
-			rotate=0;
-		}
-		var jsmsg="";
-		var n;
-		for(n=0; n<8; n++){
-			jsmsg = jsmsg + rotatechar[rotate];
-		}
-		
-		dwr.util.setValue("javascriptMessage", jsmsg);
-		//dwr.util.setValue("statusLED", "<table width='100%' height='100%'><tr><td bgcolor="+statusColors[rotate]+"</td></tr></table>");
-	}
-
-	function test2(){
-	    var reply8 = function(data)
-	    {
-	      if (data != null && typeof data == 'object'){
-		      alert(dwr.util.toDescriptiveString(data, 2));		      
-	      }else{
-		      console.log(data);
-	      }
-	    };
-			
-		ServerSideClass.getPackageImports(2, reply8);
-		//var result = ServerSideClass.getPackageImports(0);
-		//console.log(result);
-	}
-
+	//the last fn that needs reworking here in index.html
 	function setBundleDependencies( data ){
-		console.log("******************* Dep data **************");
-		console.log(data);
+		//console.log("******************* Dep data **************");
+		//console.log(data);
 
 		//assumption here is that all bundles exist.. 
-		console.log("There are "+bundles.length+" bundles known");
+		//console.log("There are "+bundles.length+" bundles known");
+		//console.log("bundles..");
+		//console.log(bundles);
 
+		//console.log("processing bundles..");
 		dojo.forEach(bundles, function(bundle){
+			if(bundle!=null){
+			console.log(bundle);
 			var deps = data.packageImportDependencies[bundle.id];
-			console.log("Processing bundle "+bundle.id+"..");
+			//console.log("Processing bundle "+bundle.name+" ["+bundle.id+"]..");			
 			if(deps!=null){
-				console.log(deps);
+				//console.log("Non null deps");
 				dojo.forEach(deps, function(importDep){
-					console.log(".. Wired to.. ");
-					console.log(importDep);
-					console.log(bundles[importDep]);
+					//console.log("..wiring import to "+bundles[importDep].name+" ["+importDep+"]");
 					//ignore self wiring!!
 					if(importDep != bundle.id){
-						var depline = new Dependency(surface,"import",bundle,bundles[importDep]);
+						var depline = new demo.Dependency(surface,"import","packageImport",bundle,bundles[importDep]);
 						bundle.linesFrom[bundle.linesFrom.length] = depline;
 		
 						//TODO: be cuter about wiring, dont wire if already wired etc.. 
@@ -138,250 +130,89 @@
 			}else{
 				console.log("..No wiring..");
 			}
+
+			deps = data.packageExportDependencies[bundle.id];
+			if(deps!=null){
+				//console.log("Non null deps");
+				dojo.forEach(deps, function(exportDep){
+					//console.log("..wiring export to "+bundles[exportDep].name+" ["+exportDep+"]");
+					//ignore self wiring!!
+					if(exportDep != bundle.id){						
+						var depline = new demo.Dependency(surface,"export","packageExport",bundle,bundles[exportDep]);
+						bundle.linesFrom[bundle.linesFrom.length] = depline;
+		
+						//TODO: be cuter about wiring, dont wire if already wired etc.. 
+						bundles[exportDep].linesTo[bundles[exportDep].linesTo.length] = depline;
+					}
+				});
+			}else{
+				console.log("..No wiring..");
+			}
+
+			console.log("done wiring bundle");
+			}
 		});
+		console.log("done wiring bundles");
 	}
-	
-    var lastCreatedX;
-    var lastCreatedWidth;
-    var lastCreatedY;
-    var lastCreatedHeight;    	
+	  	
+	//callback from dwr.
 	function addBundle(id, name, state, version) {
 		//if we dont know about the id yet, setup a new bundle.
 		if (bundles[id] == null) {
 			//create the bundle display object			
-			bundles[id] = new Bundle( surface, id, name, state, version, jsonStore);
+			bundles[id] = new demo.Bundle( surface, id, name, state, version);
 
-			//add the bundle to the backing store
-			if (jsonStore != null) {
-				jsonStore.newItem(bundles[id]);
-			}
-
-			//Move the new bundle so it appears in a nice way
-			var end = lastCreatedX + lastCreatedWidth + 5;
-			if (end + bundles[id].width < 1000) {
-				bundles[id].moveToNewPlace(end, lastCreatedY);
-			} else {
-				if ((lastCreatedY + lastCreatedHeight + 5) < 1000) {
-					bundles[id].moveToNewPlace(5, (lastCreatedY
-							+ lastCreatedHeight + 5));		
-				}			
-			}	
-			lastCreatedX = bundles[id].x;
-			lastCreatedWidth = bundles[id].width;
-			lastCreatedY = bundles[id].y;
-			lastCreatedHeight = bundles[id].height;
-
+			//put it somewhere sensible.
+			initialLayout.placeBundle(bundles[id]);
 		} else {
 			//otherwise, we knew about the bundle, so update it.
 			bundles[id].update(id,name,state,version);			
-		}
+		}	
+		//console.log("Done adding bundle");
 	}
 
+	//not sure this is used now?
 	function moveBundle(bundle, x, y){
 		bundle.moveToNewPlace(x,y);
 	}
 
-	function saveCoords() {
-			var bundle_coords = new Array();
-			var idx=0;
-			var coords_cookie="";
-			dojo.forEach(bundles, function(bundle){
-				id = bundle.id;
-				x=bundle.x;
-				y=bundle.y;		
-				h=bundle.hidden ? 1 : 0;
-				bundle_coords[idx] = {$dwrClassName:'BundleCoords', id:id, x:x, y:y};
-				coords_cookie += ""+id+","+x+","+y+","+h+"XX";
-				idx++;
-				dwr.util.setValue("coords_status", "Processing Bundle "+bundle.id+" coords...");		
-			});
-			//remove trailing "XX"
-			coords_cookie=coords_cookie.substring(0,coords_cookie.length-2);
-			dojo.cookie("ozzy.demo.ui.coords", coords_cookie);
-			dwr.util.setValue("coords_status", "Done");
-	}
-
-	function loadCoords() {
-		var bundle_coords_str = dojo.cookie("ozzy.demo.ui.coords");
-		var bundle_coords = bundle_coords_str.split("XX");
-		dojo.forEach(bundle_coords, function(bundle_info){
-			//console.log("Processing "+bundle_info);
-			var info = bundle_info.split(",");
-			if(info!=null && info.length==4){
-				var id = 1*info[0];
-				var x = 1*info[1];
-				var y = 1*info[2];
-				var h = 1*info[3];
-				//we may not know the bundle yet.. just ignore it for now.
-				if(bundles[id]!=null){				
-					bundles[id].x = x;
-					bundles[id].y = y;	
-					moveBundle(bundles[id], x, y);
-					if( (h==0 && bundles[id].hidden) ||
-						(h==1 && !bundles[id].hidden) ){
-						bundles[id].toggleHidden();
-					}
-				}
-				dwr.util.setValue("coords_status", "Processing Bundle "+bundle_info.id+" coords...");
-			}		
-		});
-		dwr.util.setValue("coords_status", "Done");
-    }	
-
+	//call back from bundlestatusgrid to hide bundles.. todo, remove this.
     function hideBundle(bundleid){
         bundles[bundleid].toggleHidden();
     }
 
-	function makeHideButton (pk){
-		var checked="";
-		var text="Show "+bundles[pk].name;
-		if(!bundles[pk].hidden){
-			checked="checked";
-			text="Hide "+bundles[pk].name;
-		}
-		var showBox = "<div dojoType=\"dijit.form.Button\">";
-		showBox = showBox + "<input type=\"checkbox\" ";
-		showBox = showBox + "title=\""+text+"\" ";
-		showBox = showBox + "onClick=\"hideBundle('"+pk+"')\" "+checked+">";
-		showBox = showBox + "</div>";
-		
-		//return hideButton;
-		return showBox;
+	//callback from dwr, used to remove everything on a provider switch.
+	function forgetAboutAllBundles(){
+		console.log("forgetting about everything.. ");
+		dojo.forEach(bundles, function(bundle){
+			if(bundle!=null){
+				console.log("invoking removeself on "+bundle.id);
+				bundle.removeSelf();
+			}
+		});
+		bundles = new Array();
+		console.log("making sure absolutely..");
+		initialLayout.reset();
 	}
 
-	function makeHideStatus(hidden){
-		var img;
-		if(hidden){
-			img="\"../dojo/dojo/resources/images/dndCopy.png\"";
-		}else{
-			img="\"../dojo/dojo/resources/images/dndNoCopy.png\"";
-		}
-		var hideButton = "<img src="+img;
-		hideButton = hideButton + " width=\"18\" height=\"18\"";
-		hideButton = hideButton + "\">";
-		return hideButton;		
-	}
-
-	function makeStateImage(state){
-		var img=null;
-
-	    if(state=="UNINSTALLED"){
-		    img = "../images/dndNoMove.png";
-	    }else if(state=="INSTALLED"){
-		    img = "../images/dndCopy.png";
-	    }else if(state=="RESOLVED"){
-		    img = "../images/dndNoCopy.png";
-	    }else if(state=="STARTING"){
-		    //todo: starting img
-		    img = "../images/resolved.png";
-	    }else if(state=="STOPPING"){
-	    	//todo: stopping img
-		    img = "../images/resolved.png";
-	    }else if(state=="ACTIVE"){
-		    img = "../images/running.png";
-	    }	
-	    var hideButton = "";
-	    if(img!=null){
-		hideButton = hideButton + "<img src=\""+img;
-		hideButton = hideButton + "\" width=\"12\" height=\"12\" alt=\"";
-		hideButton = hideButton + state + "\" title=\""+state+"\">";
-	    }
-		return hideButton;		    		
-	}
-	
-	var jsonStore = null;
-
-	var dataItems = {
-		identifier : 'id',
-		label : 'name',
-		items : []
-	};
-
-	dojo.addOnLoad(function() {
+	//no longer used?
+	function getInitialBundles(){
 		//ask the server to tell us about bundles..
 		ServerSideClass.getInitialBundles();
-		
-		var layout = [ {
-			name : "ID",
-			field : "id",
-			width : "20px"
-		}, {
-			name : "SymbolicName",
-			field : "name",
-			width : "155px"
-		}, {
-			name : "State",
-			field : "state",
-			width : "12px",
-			formatter : makeStateImage
-		}, {
-			name : "x",
-			field : "x",
-			width : "15px"
-		}, {
-			name : "y",
-			field : "y",
-			width : "15px"
-		},
-		{name: 'Show', field: 'id', width: '22px', formatter: makeHideButton},		
-		 ];
-
-		jsonStore = new dojo.data.ItemFileWriteStore( {
-			data : dataItems
-		});
-
-		var grid = new dojox.grid.DataGrid( {
-			structure : layout,
-			store : jsonStore
-		}, 'programmatic_grid');
-		grid.startup();
-		dojo.connect(window, "onresize", grid, "resize");
-
-	});
+	}
 </script>
 
 </head>
 <body class="tundra">
-<table border='1'>
-	<tr>
-	    <td rowspan=3>
-	       <B>Bundle Explorer</b><br>
-	       Please do not play with the 'Start/Stop' or 'Test ...' buttons.<br>
-	       Drag the Bundles around, show/hide them with the tick boxes in the table, 
-	       then save your configuration with 'Save Coords'.<br>Next time you return, you can 
-	       reload your layout with 'Load Coords'.	       
-	    </td>
-		<td><input type="button" value="Start / Stop"
-			onclick="ServerSideClass.toggle();" /></td>
-		<td colspan=2>
-		<div id="displayMessage"></div>
-		</td>
-	</tr>
-	<tr>
-		<td><input type="button" value="Test JScript"
-			onclick="testJS('button');" /></td>
-		<td>
-		<div id="javascriptMessage"></div>		
-		</td>
-		<td><input type="button" value="Test Method"
-			onclick="test2();" /></td>
-	</tr>
-	<tr>
-		<td><input type="button" value="Save Coords"
-			onclick="saveCoords();" /></td>
-		<td><input type="button" value="Load Coords"
-			onclick="loadCoords();" /></td>			
-		<td>
-		<div id="coords_status"></div>
-		</td>
-	</tr>
-</table>
-<div id="stateTable"></div>
-<hr />
 <table style="width: 1300px;">
+    <tr>
+      <td colspan=2>
+      		<span id="providerSelectorID"></span><span id="loadSaveLayoutID"></span>
+      </td>  
+    </tr>
 	<tr>
 		<td style="width: 300px;">
-		<div style="width: 300px;" id="programmatic_grid"></div>
+		<div style="width: 300px;" id="stateTableID"></div>
 		</td>
 		<td>
 		<div id="gfx_holder" style="width: 1000px; height: 1000px; border:2px black solid;"></div>

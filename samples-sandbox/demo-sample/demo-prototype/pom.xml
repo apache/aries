@@ -50,6 +50,11 @@
 			<groupId>org.apache.aries.application</groupId>
 			<artifactId>org.apache.aries.application.utils</artifactId>
 		</dependency>
+        <dependency>
+			<groupId>org.apache.aries.samples.demo</groupId>
+			<artifactId>org.apache.aries.samples.demo.api</artifactId>
+			<version>0.2-incubating-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
     
