@@ -71,7 +71,6 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     private NamespaceHandlerRegistry handlers;
     private RecursiveBundleTracker bt;
     private ServiceRegistration parserServiceReg;
-    private ServiceTracker st;
 
     public void start(BundleContext context) {
         LOGGER.debug("Starting blueprint extender...");
@@ -239,7 +238,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
                 }
             }
             
-            if (pathList.isEmpty() && blueprintHeaderAnnotation.trim().equalsIgnoreCase("true")) {
+            if (pathList.isEmpty() && blueprintHeaderAnnotation != null && blueprintHeaderAnnotation.trim().equalsIgnoreCase("true")) {
                 LOGGER.debug("Scanning bundle {} for blueprint annotations", bundle.getSymbolicName());
                 ServiceReference sr = this.context.getServiceReference("org.apache.aries.blueprint.annotation.service.BlueprintAnnotationScanner");
                            
