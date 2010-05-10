@@ -44,6 +44,7 @@
         org.apache.aries.util.tracker;resolution:=optional,
         org.osgi.service.event*;resolution:=optional,
         org.osgi.service.framework;resolution:=optional,
+        org.apache.aries.blueprint.annotation.service;resolution:=optional,
         *
       </aries.osgi.import>
       <aries.osgi.export.service>
@@ -55,6 +56,11 @@
       <dependency>
           <groupId>org.apache.aries.blueprint</groupId>
           <artifactId>org.apache.aries.blueprint.api</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.aries.blueprint</groupId>
+          <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
+          <version>${version}</version>
       </dependency>
       <dependency>
           <groupId>org.apache.aries</groupId>
