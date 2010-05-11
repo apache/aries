@@ -54,6 +54,7 @@ public class ConfigurationAdminTest {
         String fpid = "org.apache.aries.jmx.mock.factory";
         Configuration config = mock(Configuration.class);
         
+        when(admin.createFactoryConfiguration(eq(fpid))).thenReturn(config);
         when(admin.createFactoryConfiguration(eq(fpid), anyString())).thenReturn(config);
         when(config.getPid()).thenReturn(fpid + "-1260133982371-0");
         
