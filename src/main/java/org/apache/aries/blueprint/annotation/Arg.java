@@ -16,17 +16,38 @@
  */
 package org.apache.aries.blueprint.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
- * used to annotation factory-method in blueprint beans
+ * used to describe argument of the bean constructor
+ * or the argument of the factory method for the bean
+ * 
+ * this is mapped to Targument for the Tbean
  *
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface FactoryMethod {
-    String[] values();
+public @interface Arg {
+
+    /**
+     * the value of the argument
+     */
+    String value() default "";
+    
+    /**
+     * the value of the ref attribute of the argument
+     */
+    String ref() default "";
+    
+    /**
+     * the description of the argument
+     */
+    String description() default "";
+    
+    /**
+     *  the zero-based index into the parameter list of the factory method
+     *  or constructor to be invoked for this argument. This is determined by
+     *  specifying the <code>index</code> attribute for the bean. If not
+     *  explicitly set, this will return -1 and the initial ordering is defined
+     *  by its position in the args[] list.
+     */
+    int index() default -1;
+    
 }
