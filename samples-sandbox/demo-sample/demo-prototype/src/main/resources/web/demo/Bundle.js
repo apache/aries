@@ -378,11 +378,11 @@ updateAfterMove: function(){
 	dojo.publish("demo.bundle.move",[this.id,this.x,this.y]);
 },
 pulse: function() {
-	var endColor = this.selected ? "#FF3030" : "#808080";
+	var endColor = this.selected ? "#CEBEEE" : "#808080";
 	dojox.gfx.fx.animateStroke({
 	    shape: this.outline,
 	    duration: 500,
-	    color: {start: "#6F0000", end: endColor},
+	    color: {start: "#CEBEEE", end: endColor},
 	    width: {start:10, end: 2},
 	    join:  {values: ["miter", "bevel", "round"]}
 	}).play();
@@ -390,7 +390,7 @@ pulse: function() {
 		dojox.gfx.fx.animateStroke({
 		    shape: line.line,
 		    duration: 500,
-		    color: {start: "#6F0000", end: line.stroke},
+		    color: {start: "#CEBEEE", end: line.stroke},
 		    join:  {values: ["miter", "bevel", "round"]}
 		}).play();
 	});
@@ -398,18 +398,18 @@ pulse: function() {
 		dojox.gfx.fx.animateStroke({
 		    shape: line.line,
 		    duration: 500,
-		    color: {start: "#6F0000", end: line.stroke},
+		    color: {start: "#CEBEEE", end: line.stroke},
 		    join:  {values: ["miter", "bevel", "round"]}
 		}).play();
 	});
 },
 glow: function(){
-	var endColor = this.selected ? "#FF3030" : "#808080";
+	var endColor = this.selected ? "#BA98E2" : "#808080";
 	//this.outline.setStroke({width: 2, color: '#808080'});
 	dojox.gfx.fx.animateStroke({
 	    shape: this.outline,
 	    duration: 500,
-	    color: {start: "#FF3030", end: endColor},
+	    color: {start: "#BA98E2", end: endColor},
 	    width: {start: 3, end: 2},
 	    join:  {values: ["miter", "bevel", "round"]}
 	}).play();	
@@ -420,7 +420,7 @@ onClick: function() {
 	//this.selected=!this.selected;
 },
 onMouseEnter: function() {
-	this.outline.setStroke({width: 3, color: '#FF3030', style: this.bundleAppearance.lineStyle});
+	this.outline.setStroke({width: 3, color: '#682DAE', style: this.bundleAppearance.lineStyle});
 	this.selected=true;
 },
 onMouseLeave: function() {
