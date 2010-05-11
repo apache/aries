@@ -64,18 +64,19 @@ constructor: function(surface, name, type, fromBundle, toBundle) {
     //this.line.connect("onmouseleave",dojo.hitch(this,"onMouseLeave"));
 },
 setStroke: function(){	
+	//Fixed to make all lines go over each other
 	if(this.type=="packageImport"){
-		this.typeOffset=5;
-		this.stroke = '#F08080';
+		this.typeOffset=0;
+		this.stroke = '#80F080';
 	}else if(this.type=="packageExport"){
 		this.stroke = '#80F080';
-		this.typeOffset=-5;
+		this.typeOffset=-0;
 	}else if(this.type=="serviceExport"){
-		this.stroke = '#F080F0';
-		this.typeOffset=10;
+		this.stroke = '#80F080';
+		this.typeOffset=0;
 	}else if(this.type=="serviceImport"){
 		this.stroke = '#8080F0';
-		this.typeOffset=-10;
+		this.typeOffset=0;
 	}
 },
 updateVisibility: function(){
