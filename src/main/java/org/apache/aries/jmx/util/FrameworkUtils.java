@@ -64,7 +64,7 @@ public class FrameworkUtils {
         }
         Bundle bundle = bundleContext.getBundle(bundleId);
         if (bundle == null) {
-            throw new IllegalArgumentException("Bundle with id [" + bundleId + "] Not Found");
+            throw new IllegalArgumentException("Bundle with id [" + bundleId + "] not found");
         }
         return bundle;
     }
@@ -77,9 +77,27 @@ public class FrameworkUtils {
      * @return bundleIds in sequence
      */
     public static long[] getBundleIds(Bundle[] bundles) {
-        long[] result = (bundles == null) ? new long[0] : new long[bundles.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = bundles[i].getBundleId();
+        long[] result;
+        if (bundles == null) {
+            result = new long[0];
+        } else {
+            result = new long[bundles.length];
+            for (int i = 0; i < bundles.length; i++) {
+                result[i] = bundles[i].getBundleId();
+            }
+        }
+        return result;
+    }
+    
+    public static long[] getBundleIds(List<Bundle> bundles) { 
+        long[] result;
+        if (bundles == null) {
+            result = new long[0];
+        } else {
+            result = new long[bundles.size()];
+            for (int i = 0; i < bundles.size(); i++) {
+                result[i] = bundles.get(i).getBundleId();
+            }
         }
         return result;
     }

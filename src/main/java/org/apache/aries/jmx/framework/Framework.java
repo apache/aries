@@ -27,7 +27,6 @@ import org.apache.aries.jmx.codec.BatchInstallResult;
 import org.apache.aries.jmx.util.FrameworkUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.jmx.framework.FrameworkMBean;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.startlevel.StartLevel;
@@ -80,7 +79,7 @@ public class Framework implements FrameworkMBean {
         try {
             Bundle bundle = context.installBundle(location);
             return bundle.getBundleId();
-        } catch (BundleException e) {
+        } catch (Exception e) {
             IOException ioex = new IOException("Can't install bundle with location " + location);
             ioex.initCause(e);
             throw ioex;
@@ -96,17 +95,17 @@ public class Framework implements FrameworkMBean {
             inputStream = createStream(url);
             Bundle bundle = context.installBundle(location, inputStream);
             return bundle.getBundleId();
-        } catch (BundleException e) {
+        } catch (Exception e) {
+            IOException ioex = new IOException("Can't install bundle with location " + location);
+            ioex.initCause(e);
+            throw ioex;
+        } finally {
             if (inputStream != null) {
                 try {
                     inputStream.close();
                 } catch (IOException ioe) {
-
                 }
             }
-            IOException ioex = new IOException("Can't install bundle with location " + location);
-            ioex.initCause(e);
-            throw ioex;
         }
     }
 
@@ -176,14 +175,11 @@ public class Framework implements FrameworkMBean {
     /**
      * @see org.osgi.jmx.framework.FrameworkMBean#refreshBundles(long[])
      */
-    public void refreshBundles(long[] bundleIdentifiers) throws IOException 
-    {
+    public void refreshBundles(long[] bundleIdentifiers) throws IOException {    
        Bundle[] bundles = null;
-       if(bundleIdentifiers != null)
-       {
+       if(bundleIdentifiers != null) {       
           bundles = new Bundle[bundleIdentifiers.length];
-          for (int i = 0; i < bundleIdentifiers.length; i++) 
-          {
+          for (int i = 0; i < bundleIdentifiers.length; i++) {           
               bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]); 
           }
        }
@@ -203,11 +199,9 @@ public class Framework implements FrameworkMBean {
      */
     public boolean resolveBundles(long[] bundleIdentifiers) throws IOException {
        Bundle[] bundles = null;
-       if(bundleIdentifiers != null)
-       {
+       if(bundleIdentifiers != null) {       
           bundles = new Bundle[bundleIdentifiers.length];
-          for (int i = 0; i < bundleIdentifiers.length; i++) 
-          {
+          for (int i = 0; i < bundleIdentifiers.length; i++) {          
               bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]); 
           }
        }
@@ -221,12 +215,11 @@ public class Framework implements FrameworkMBean {
         Bundle bundle = FrameworkUtils.resolveBundle(context, 0);
         try {
             bundle.update();
-        } catch (BundleException be) {
+        } catch (Exception be) {
             IOException ioex = new IOException("Failed to restart framework");
             ioex.initCause(be);
             throw ioex;
         }
-
     }
 
     /**
@@ -235,18 +228,17 @@ public class Framework implements FrameworkMBean {
     public void setBundleStartLevel(long bundleIdentifier, int newlevel) throws IOException {
         Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
         startLevel.setBundleStartLevel(bundle, newlevel);
-
     }
 
     /**
      * @see org.osgi.jmx.framework.FrameworkMBean#setBundleStartLevels(long[], int[])
      */
     public CompositeData setBundleStartLevels(long[] bundleIdentifiers, int[] newlevels) throws IOException {
-        if(bundleIdentifiers == null || newlevels == null){
+        if (bundleIdentifiers == null || newlevels == null) {
             return new BatchActionResult("Failed to setBundleStartLevels arguments can't be null").toCompositeData(); 
         }
         
-        if(bundleIdentifiers != null && newlevels != null && bundleIdentifiers.length != newlevels.length){
+        if (bundleIdentifiers != null && newlevels != null && bundleIdentifiers.length != newlevels.length) {
             return new BatchActionResult("Failed to setBundleStartLevels size of arguments should be same").toCompositeData(); 
         }
         for (int i = 0; i < bundleIdentifiers.length; i++) {
@@ -280,12 +272,11 @@ public class Framework implements FrameworkMBean {
         Bundle bundle = FrameworkUtils.resolveBundle(context, 0);
         try {
             bundle.stop();
-        } catch (BundleException be) {
+        } catch (Exception be) {
             IOException ioex = new IOException("Failed to shutdown framework");
             ioex.initCause(be);
             throw ioex;
         }
-
     }
 
     /**
@@ -293,14 +284,12 @@ public class Framework implements FrameworkMBean {
      */
     public void startBundle(long bundleIdentifier) throws IOException {
         Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
-        if (bundle != null) {
-            try {
-                bundle.start();
-            } catch (BundleException be) {
-                IOException ioex = new IOException("Failed to start bundle with id " + bundleIdentifier);
-                ioex.initCause(be);
-                throw ioex;
-            }
+        try {
+            bundle.start();
+        } catch (Exception be) {
+            IOException ioex = new IOException("Failed to start bundle with id " + bundleIdentifier);
+            ioex.initCause(be);
+            throw ioex;
         }
     }
 
@@ -308,9 +297,9 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#startBundles(long[])
      */
     public CompositeData startBundles(long[] bundleIdentifiers) throws IOException {
-        if(bundleIdentifiers == null){
+        if (bundleIdentifiers == null) {
             return new BatchActionResult("Failed to start bundles, bundle id's can't be null").toCompositeData(); 
-         }
+        }
         for (int i = 0; i < bundleIdentifiers.length; i++) {
             try {
                 startBundle(bundleIdentifiers[i]);
@@ -326,14 +315,12 @@ public class Framework implements FrameworkMBean {
      */
     public void stopBundle(long bundleIdentifier) throws IOException {
         Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
-        if (bundle != null) {
-            try {
-                bundle.stop();
-            } catch (BundleException e) {
-                IOException ioex = new IOException("Failed to stop bundle with id " + bundleIdentifier);
-                ioex.initCause(e);
-                throw ioex;
-            }
+        try {
+            bundle.stop();
+        } catch (Exception e) {
+            IOException ioex = new IOException("Failed to stop bundle with id " + bundleIdentifier);
+            ioex.initCause(e);
+            throw ioex;
         }
     }
 
@@ -341,9 +328,9 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#stopBundles(long[])
      */
     public CompositeData stopBundles(long[] bundleIdentifiers) throws IOException {
-        if(bundleIdentifiers == null){
+        if (bundleIdentifiers == null) {
             return new BatchActionResult("Failed to stop bundles, bundle id's can't be null").toCompositeData(); 
-         }
+        }
         for (int i = 0; i < bundleIdentifiers.length; i++) {
             try {
                 stopBundle(bundleIdentifiers[i]);
@@ -359,25 +346,22 @@ public class Framework implements FrameworkMBean {
      */
     public void uninstallBundle(long bundleIdentifier) throws IOException {
         Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
-        if (bundle != null) {
-            try {
-                bundle.uninstall();
-            } catch (BundleException be) {
-                IOException ioex = new IOException("Failed to uninstall bundle with id " + bundleIdentifier);
-                ioex.initCause(be);
-                throw ioex;
-            }
+        try {
+            bundle.uninstall();
+        } catch (Exception be) {
+            IOException ioex = new IOException("Failed to uninstall bundle with id " + bundleIdentifier);
+            ioex.initCause(be);
+            throw ioex;
         }
-
     }
 
     /**
      * @see org.osgi.jmx.framework.FrameworkMBean#uninstallBundles(long[])
      */
     public CompositeData uninstallBundles(long[] bundleIdentifiers) throws IOException {
-        if(bundleIdentifiers == null){
+        if (bundleIdentifiers == null) {
             return new BatchActionResult("Failed uninstall bundles, bundle id's can't be null").toCompositeData(); 
-         }
+        }
         for (int i = 0; i < bundleIdentifiers.length; i++) {
             try {
                 uninstallBundle(bundleIdentifiers[i]);
@@ -393,39 +377,37 @@ public class Framework implements FrameworkMBean {
      */
     public void updateBundle(long bundleIdentifier) throws IOException {
         Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
-
         try {
             bundle.update();
-        } catch (BundleException be) {
+        } catch (Exception be) {
             IOException ioex = new IOException("Failed to update bundle with id " + bundleIdentifier);
             ioex.initCause(be);
             throw ioex;
         }
-
     }
 
     /**
      * @see org.osgi.jmx.framework.FrameworkMBean#updateBundleFromURL(long, String)
      */
     public void updateBundleFromURL(long bundleIdentifier, String url) throws IOException {
-        Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);;
+        Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
         InputStream inputStream = null;
         try {
             inputStream = createStream(url);
             bundle.update(inputStream);
-        } catch (BundleException be) {
+        } catch (Exception be) {
+            IOException ioex = new IOException("Can't update system bundle");
+            ioex.initCause(be);
+            throw ioex;
+        } finally {
             if (inputStream != null) {
                 try {
                     inputStream.close();
                 } catch (IOException ioe) {
 
                 }
-            }
-            IOException ioex = new IOException("Can't update system bundle");
-            ioex.initCause(be);
-            throw ioex;
+            }          
         }
-
     }
 
     /**
@@ -473,12 +455,11 @@ public class Framework implements FrameworkMBean {
         Bundle bundle = FrameworkUtils.resolveBundle(context, 0);
         try {
             bundle.update();
-        } catch (BundleException be) {
+        } catch (Exception be) {
             IOException ioex = new IOException("Failed to update system bundle");
             ioex.initCause(be);
             throw ioex;
         }
-
     }
 
     /**

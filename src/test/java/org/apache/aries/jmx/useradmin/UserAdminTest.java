@@ -185,8 +185,12 @@ public class UserAdminTest {
      */
     @Test
     public void testCreateRole() throws IOException {
-        mbean.createRole("role1");
-        Mockito.verify(userAdmin).createRole("role1", Role.ROLE);
+        try {
+            mbean.createRole("role1");
+            Assert.fail("Function did not throw exception as expected");
+        } catch (IOException e) {
+            // expected
+        }
     }
 
     /**

@@ -56,7 +56,7 @@ public class ProvisioningService implements ProvisioningServiceMBean {
      */
     public void addInformationFromZip(String zipURL) throws IOException {
         if (zipURL == null || zipURL.length() < 1) {
-            throw new IllegalArgumentException("Argument zipURL cannot be null or empty");
+            throw new IOException("Argument zipURL cannot be null or empty");
         }
         InputStream is = createStream(zipURL);
         ZipInputStream zis = new ZipInputStream(is);
@@ -103,14 +103,13 @@ public class ProvisioningService implements ProvisioningServiceMBean {
     
     @SuppressWarnings("unchecked")
     protected Dictionary<String, Object> extractProvisioningDictionary(TabularData info) {
-        if (!PROPERTIES_TYPE.equals(info.getTabularType())) {
-            throw new IllegalArgumentException("Invalid TabularType ["  + info.getTabularType() + "]");
-        }
         Dictionary<String, Object> provisioningInfo = new Hashtable<String, Object>();
-        Collection<CompositeData> compositeData = (Collection<CompositeData>) info.values();
-        for (CompositeData row: compositeData) {
-            PropertyData<? extends Class> propertyData = PropertyData.from(row);
-            provisioningInfo.put(propertyData.getKey(), propertyData.getValue());
+        if (info != null) {
+            Collection<CompositeData> compositeData = (Collection<CompositeData>) info.values();
+            for (CompositeData row: compositeData) {
+                PropertyData<? extends Class> propertyData = PropertyData.from(row);
+                provisioningInfo.put(propertyData.getKey(), propertyData.getValue());
+            }
         }
         return provisioningInfo;
     }
