@@ -40,11 +40,5 @@
   </bean>
   
   <reference id="tm" interface="javax.transaction.TransactionManager"/>
-    
-  <service ref="txinterceptor" interface="org.apache.aries.blueprint.Interceptor">
-    <service-properties>
-      <entry key="namespace" value="http://aries.apache.org/xmlns/transactions/v1.0.0"/>
-    </service-properties> 
-  </service>
-    
+
 </blueprint>
