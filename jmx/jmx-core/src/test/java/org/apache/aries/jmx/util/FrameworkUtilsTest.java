@@ -60,7 +60,7 @@ public class FrameworkUtilsTest {
     @Test
     public void testGetBundleIds() throws Exception {
 
-        assertEquals(0, getBundleIds(null).length);
+        assertEquals(0, getBundleIds((Bundle[])null).length);
         assertEquals(0, getBundleIds(new Bundle[0]).length);
         
         Bundle b1 = mock(Bundle.class);

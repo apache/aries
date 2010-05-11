@@ -49,6 +49,9 @@ public class PermissionAdmin implements PermissionAdminMBean {
      * @see org.osgi.jmx.service.permissionadmin.PermissionAdminMBean#getPermissions(java.lang.String)
      */
     public String[] getPermissions(String location) throws IOException {
+        if (location == null) {
+            throw new IOException("Location cannot be null");
+        }
         PermissionInfo[] permissions = permAdmin.getPermissions(location);
         if (permissions != null) {
             String[] encoded = new String[permissions.length];
@@ -88,17 +91,8 @@ public class PermissionAdmin implements PermissionAdminMBean {
      * @see org.osgi.jmx.service.permissionadmin.PermissionAdminMBean#setDefaultPermissions(java.lang.String[])
      */
     public void setDefaultPermissions(String[] encodedPermissions) throws IOException {
-        if(encodedPermissions == null){
-            //default permissions are to be removed
-            permAdmin.setDefaultPermissions(null);
-            return;
-        }
-        PermissionInfo[] permissions = new PermissionInfo[encodedPermissions.length];
-        for (int i = 0; i < encodedPermissions.length; i++) {
-            permissions[i] = new PermissionInfo(encodedPermissions[i]);
-        }
+        PermissionInfo[] permissions = toPermissionInfo(encodedPermissions);
         permAdmin.setDefaultPermissions(permissions);
-
     }
 
     /**
@@ -106,16 +100,27 @@ public class PermissionAdmin implements PermissionAdminMBean {
      *      java.lang.String[])
      */
     public void setPermissions(String location, String[] encodedPermissions) throws IOException {
-        if(encodedPermissions == null){
-            //default permissions are to be removed
-            permAdmin.setPermissions(location, null);
-            return;
+        if (location == null) {
+            throw new IOException("Location cannot be null");
         }
-        PermissionInfo[] permissions = new PermissionInfo[encodedPermissions.length];
-        for (int i = 0; i < encodedPermissions.length; i++) {
-            permissions[i] = new PermissionInfo(encodedPermissions[i]);
-        }
+        PermissionInfo[] permissions = toPermissionInfo(encodedPermissions);
         permAdmin.setPermissions(location, permissions);
     }
 
+    private static PermissionInfo[] toPermissionInfo(String[] encodedPermissions) throws IOException {
+        if (encodedPermissions == null) {
+            return null;
+        }
+        PermissionInfo[] permissions = new PermissionInfo[encodedPermissions.length];
+        for (int i = 0; i < encodedPermissions.length; i++) {
+            try {
+                permissions[i] = new PermissionInfo(encodedPermissions[i]);
+            } catch (Exception e) {
+                IOException ex = new IOException("Invalid encoded permission: " + encodedPermissions[i]);
+                ex.initCause(e);
+                throw ex;
+            }
+        }
+        return permissions;
+    }
 }
