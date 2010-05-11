@@ -66,5 +66,17 @@ public @interface Bean {
      * factory method for the bean.
      */
     String factoryRef() default "";
+    
+    /**
+     * the factory method in the factoryRef referred factory component
+     * @return
+     */
+    String factoryMethod() default "";
+    
+    /**
+     * arguments for the bean constructor or the factory method of the bean
+     * @return
+     */
+    Arg[] args() default {};
   
 }
