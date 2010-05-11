@@ -16,16 +16,14 @@
  */
 package org.apache.aries.blueprint.sample;
 
-import org.apache.aries.blueprint.annotation.Inject;
+import org.apache.aries.blueprint.annotation.Arg;
 import org.apache.aries.blueprint.annotation.Bean;
 
-@Bean(id="accountOne")
+@Bean(id="accountOne", args=@Arg(value="1"))
 public class Account {
     
     private long accountNumber;
     
-    @Inject(value="1")
-    // @Inject(values={"1"})
     public Account(long number) {
         this.accountNumber = number;
     }

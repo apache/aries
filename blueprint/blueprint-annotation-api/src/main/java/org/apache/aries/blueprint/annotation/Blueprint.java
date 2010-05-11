@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * this is really bundle level declaration
+ * It is possible we want to eliminate this annotation and move the configuration to the bundle manifest header.
  *
  */
 @Target(ElementType.TYPE)

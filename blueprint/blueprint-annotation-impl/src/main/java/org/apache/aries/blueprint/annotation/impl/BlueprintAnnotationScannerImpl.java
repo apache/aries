@@ -31,10 +31,10 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.apache.aries.blueprint.annotation.Arg;
 import org.apache.aries.blueprint.annotation.Bean;
 import org.apache.aries.blueprint.annotation.Blueprint;
 import org.apache.aries.blueprint.annotation.Destroy;
-import org.apache.aries.blueprint.annotation.FactoryMethod;
 import org.apache.aries.blueprint.annotation.Init;
 import org.apache.aries.blueprint.annotation.Inject;
 import org.apache.aries.blueprint.annotation.Reference;
@@ -232,8 +232,33 @@ public class BlueprintAnnotationScannerImpl implements
                 }
             }
             
+            // process factory ref
+            String factoryRef = bean.factoryRef();
+            if (factoryRef.length() > 0) {
+                tbean.setFactoryRef(factoryRef);
+            }
+            
+            // process factory method
+            String factoryMethod = bean.factoryMethod();
+            if (factoryMethod.length() > 0) {
+                tbean.setFactoryMethod(factoryMethod);
+            }
+            
+
             List<Object> props = tbean.getArgumentOrPropertyOrAny();
 
+            // process args 
+            Arg[] args = bean.args();
+            
+            if (args.length > 0) {
+                for (int i = 0; i < args.length; i++) {
+                    Targument targ = createTargument(args[i]);
+                    if (targ != null) {
+                        props.add(targ);
+                    }
+                }
+            }
+            
             Field[] fields = clazz.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i].isAnnotationPresent(Inject.class)) {          
@@ -242,7 +267,7 @@ public class BlueprintAnnotationScannerImpl implements
                 }
             }
                     
-            // check if the bean also declares init, destroy or inject or factoryMethod annotation on methods
+            // check if the bean also declares init, destroy or inject annotation on methods
             Method[] methods = clazz.getDeclaredMethods();
             for (int i = 0; i < methods.length; i++) {
                 if (methods[i].isAnnotationPresent(Init.class)) {
@@ -252,41 +277,11 @@ public class BlueprintAnnotationScannerImpl implements
                 } else if (methods[i].isAnnotationPresent(Inject.class)) {
                     String propertyName = convertFromMethodName(methods[i].getName());
                     Tproperty tp = createTproperty(propertyName, methods[i].getAnnotation(Inject.class));
-                    props.add(tp);
-                } else if (methods[i].isAnnotationPresent(FactoryMethod.class)) {
-                    FactoryMethod fm = (FactoryMethod)methods[i].getAnnotation(FactoryMethod.class);
-                    tbean.setFactoryMethod(methods[i].getName());
-                    String[] values = fm.values();
-                    for (int j = 0; j < fm.values().length; j++) {
-                        Targument targument = new Targument();
-                        targument.setValueAttribute(fm.values()[j]);
-                        props.add(targument);
-                    }
-                    
-                    
-                    
+                    props.add(tp);     
+                } else if (methods[i].isAnnotationPresent(Arg.class)) {
+                    Targument targ = createTargument(methods[i].getAnnotation(Arg.class));
+                    props.add(targ);     
                 }
-                
-            }
-            
-            // check if the bean also declared inject annotation on constructors
-            Constructor[] constructors = clazz.getConstructors();
-            for (int i = 0; i < constructors.length; i++) {
-                if (constructors[i].isAnnotationPresent(Inject.class)) {
-                    Inject inj = (Inject)constructors[i].getAnnotation(Inject.class);
-                    
-                    if (inj.value().length() > 0) {
-                        Targument targument = new Targument();
-                        targument.setValueAttribute(inj.value());
-                        props.add(targument);
-                    } else if (inj.values().length > 0) {
-                        for (int j = 0; j < inj.values().length; j++) {
-                            Targument targument = new Targument();
-                            targument.setValueAttribute(inj.values()[j]);
-                            props.add(targument);
-                        }
-                    }
-                } 
             }
             
             // check if the bean also declares service
@@ -317,6 +312,27 @@ public class BlueprintAnnotationScannerImpl implements
         }
 
         return tblueprint;
+    }
+
+    private Targument createTargument(Arg arg) {
+        String value = arg.value();
+        String ref = arg.ref();
+        Targument targ = null;
+        if (value.length() > 0) {
+            targ = new Targument();
+            targ.setValueAttribute(value);
+        }
+        
+        if (ref.length() > 0) {
+            if (targ == null) {
+                targ = new Targument();
+            }
+            
+            targ.setRefAttribute(ref);
+        }
+        
+        // TODO process description, index of Arg annotation
+        return targ;
     }
 
     private String convertFromMethodName(String name) {
