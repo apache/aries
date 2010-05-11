@@ -1,21 +1,26 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 dojo.provide("demo.TwistieSection");
 dojo.require("dojox.gfx");
 dojo.require("dojox.gfx.Moveable");
 dojo.require("dojo.data.ItemFileWriteStore");
 
-//TwistieSection
-// Manages an expandable component in a bundle
-//
-// TODO:
-//  - update renderer to cope with massive import/exports, ie bundle 0)
-//    - render max no of rows, add scroller, all needs doing by hand.
-//    - needs careful thought
-//  - current 'items' array is just text, for the breakout dependency show, 
-//    will need individual attach coords for deplines. 
-//  - may need to add custom events to issue when mouseover per item.
-//  - may need to add custom events to issue when items are clicked? 
-//    -item being clickable may be troublesome, maybe use a small handle to click beside each item.
-//  - for services, render one triangle per expanded item, adjust any dependency to target triangle.
 dojo.declare("demo.TwistieSection", [], {
 	
 	//object properties	
@@ -39,8 +44,10 @@ dojo.declare("demo.TwistieSection", [], {
 	twistieHandle: null,
 	twistieText: null,
 	itemTexts: null,
+
+	bundleAppearance: null,
 	
-	constructor: function(name, parentGroup, owningBundle, x, y, getItemsCallBack) {
+	constructor: function(name, parentGroup, owningBundle, x, y, getItemsCallBack, bundleAppearance) {
 	this.surface=surface;
 	this.name=name;
 	this.parentGroup=parentGroup;
@@ -49,6 +56,7 @@ dojo.declare("demo.TwistieSection", [], {
 	this.y=y;
 	this.isOpen=false;
 	this.getItemsCallback = getItemsCallBack;
+	this.bundleAppearance=bundleAppearance;
 
 	this.items=["Loading..."];
 	this.itemTexts = new Array();
@@ -66,8 +74,8 @@ createText: function(name){
 	var textOffset = this.y + 8;
 	var x = this.x + 17;
 	this.twistieText = this.twistieGroup.createText({x: x, y: textOffset, text: name, align: "start"})
-    .setFont({family: "times", size: "8pt"})
-	.setFill("#000000");	
+    .setFont({family: this.bundleAppearance.fontFamily, size: "8pt"})
+	.setFill(this.bundleAppearance.textFill);	
 },
 createTwistie: function(){
 	var pys = this.y;
@@ -78,7 +86,7 @@ createTwistie: function(){
 	var pxe = this.x + 15;
 	this.twistieHandle = this.twistieHandleGroup.createPolyline([{x:px,y:pys},{x:pxe,y:pym},{x:px,y:pye}])
 	//.setStroke({width: 2, color: '#808080'})
-	.setFill("#000000");
+	.setFill(this.bundleAppearance.textFill);
 	
 	if(this.isOpen){
 		this.twistieHandle.setShape([{x:px,y:pys},{x:pxe,y:pys},{x:pxm,y:pye}]);
@@ -129,8 +137,8 @@ addItemsToDisplay: function(){
 			if(this.isOpen){
 
 				this.itemTexts[idx] = this.twistieGroup.createText({x: pxt, y: pyt, text: this.items[idx], align: "start"})
-				.setFont({family: "times", size: "8pt"})
-				.setFill("#000000");
+				.setFont({family: this.bundleAppearance.fontFamily, size: "8pt"})
+				.setFill(this.bundleAppearance.textFill);
 								
 				pyt = pyt + 10;
 				if(maxLengthSeen< this.items[idx].length){
@@ -176,6 +184,11 @@ twistieHandler: function() {
 		this.removeItemsFromDisplay();
 	}
 	this.owningBundle.resize();	
+},
+update: function() {
+	this.twistieText.setFont({family: this.bundleAppearance.fontFamily, size: "8pt"});
+    this.twistieText.setFill(this.bundleAppearance.textFill);
+    this.twistieHandle.setFill(this.bundleAppearance.textFill);
 }
 
 });

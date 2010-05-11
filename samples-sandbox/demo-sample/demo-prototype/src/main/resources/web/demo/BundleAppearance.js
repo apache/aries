@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-dojo.provide("org.apache.aries.samples.demo.prototype.BundleAppearance");
-dojo.require("org.apache.aries.samples.demo.prototype.Preferences");
+dojo.provide("demo.BundleAppearance");
+dojo.require("demo.Preferences");
 
 /* A little utility class for storing variables relating to the appearance
  * of a bundle.
  */
-dojo.declare("org.apache.aries.samples.demo.prototype.BundleAppearance", null, {	
+dojo.declare("demo.BundleAppearance", null, {	
 	preferences: null,
 	
 	fontFamily: null,

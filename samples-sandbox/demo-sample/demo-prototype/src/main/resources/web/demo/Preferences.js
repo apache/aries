@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-dojo.provide("org.apache.aries.samples.demo.prototype.Preferences");
+dojo.provide("demo.Preferences");
 
-dojo.declare("org.apache.aries.samples.demo.prototype.Preferences", null, {	
+dojo.declare("demo.Preferences", null, {	
 	
 	//object properties	
 	useColorsForState: null,
@@ -31,7 +31,7 @@ dojo.declare("org.apache.aries.samples.demo.prototype.Preferences", null, {
 constructor: function() {
 	this.useColorsForState=true;
 	this.showState=true;
-	this.showVersion=false;
+	this.showVersion=true;
 }
 
 });
