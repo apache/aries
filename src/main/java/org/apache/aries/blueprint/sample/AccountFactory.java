@@ -17,21 +17,18 @@
 package org.apache.aries.blueprint.sample;
 
 import org.apache.aries.blueprint.annotation.Bean;
-import org.apache.aries.blueprint.annotation.Inject;
-import org.apache.aries.blueprint.annotation.FactoryMethod;
+import org.apache.aries.blueprint.annotation.Arg;
 
-//@Bean(id="accountFactory")
+@Bean(id="accountFactory", args=@Arg(value="account factory"))
 public class AccountFactory {
     private String factoryName;
 
-    //@Inject(value="account factory")
     public AccountFactory(String factoryName) {
         this.factoryName = factoryName;
     }
 
-    //@FactoryMethod(values="3")
-    public NewAccount createAccount(long number) {
-        return new NewAccount(number);
+    public AccountNew createAccount(long number) {
+        return new AccountNew(number);
     }
     
     public String getFactoryName() {

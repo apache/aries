@@ -16,13 +16,14 @@
  */
 package org.apache.aries.blueprint.sample;
 
+import org.apache.aries.blueprint.annotation.Arg;
 import org.apache.aries.blueprint.annotation.Bean;
-import org.apache.aries.blueprint.annotation.FactoryMethod;
 
-@Bean(id="accountTwo")
+@Bean(id="accountTwo", 
+      factoryMethod="createAccount", 
+      args = @Arg(value="2"))
 public class StaticAccountFactory {
     
-    @FactoryMethod(values={"2"})
     public static Account createAccount(long number) {
         return new Account(number);
      }
