@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.management.openmbean.TabularData;
 
 import org.apache.aries.jmx.codec.PackageData;
+import org.apache.aries.jmx.util.FrameworkUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;
@@ -64,24 +65,21 @@ public class PackageState implements PackageStateMBean {
      * @see org.osgi.jmx.framework.PackageStateMBean#getExportingBundles(String, String)
      */
     public long[] getExportingBundles(String packageName, String version) throws IOException {
+        if (packageName == null || packageName.length() < 1) {
+            throw new IOException("Package name cannot be null or empty");
+        }
         ExportedPackage[] exportedPackages = packageAdmin.getExportedPackages(packageName);
         if (exportedPackages != null) {
             Version ver = Version.parseVersion(version);
-            List<Long> exportingBundles = new ArrayList<Long>();
+            List<Bundle> exportingBundles = new ArrayList<Bundle>();
             for (ExportedPackage exportedPackage : exportedPackages) {
                 if (exportedPackage.getVersion().equals(ver)) {
-                    long bundleId  = exportedPackage.getExportingBundle().getBundleId();
-                    exportingBundles.add(bundleId);
+                    Bundle bundle  = exportedPackage.getExportingBundle();
+                    exportingBundles.add(bundle);
                 }
             }
             
-            if(!exportingBundles.isEmpty()){
-                long[] convertedArray = new long[exportingBundles.size()];
-                for(int i=0; i < exportingBundles.size(); i++){
-                    convertedArray[i] = exportingBundles.get(i);
-                }
-                return convertedArray;
-            }
+            return FrameworkUtils.getBundleIds(exportingBundles);
         }
         return null;
     }
@@ -90,6 +88,9 @@ public class PackageState implements PackageStateMBean {
      * @see org.osgi.jmx.framework.PackageStateMBean#getImportingBundles(String, String, long)
      */
     public long[] getImportingBundles(String packageName, String version, long exportingBundle) throws IOException {
+        if (packageName == null || packageName.length() < 1) {
+            throw new IOException("Package name cannot be null or empty");
+        }
         ExportedPackage[] exportedPackages = packageAdmin.getExportedPackages(packageName);
         if (exportedPackages != null) {
             Version ver = Version.parseVersion(version);
@@ -98,11 +99,7 @@ public class PackageState implements PackageStateMBean {
                         && exportedPackage.getExportingBundle().getBundleId() == exportingBundle) {
                     Bundle[] bundles = exportedPackage.getImportingBundles();
                     if (bundles != null) {
-                        long[] importingBundles = new long[bundles.length];
-                        for (int i = 0; i < bundles.length; i++) {
-                            importingBundles[i] = bundles[i].getBundleId();
-                        }
-                        return importingBundles;
+                        return FrameworkUtils.getBundleIds(bundles);
                     }
                 }
             }
@@ -114,6 +111,9 @@ public class PackageState implements PackageStateMBean {
      * @see org.osgi.jmx.framework.PackageStateMBean#isRemovalPending(String, String, long)
      */
     public boolean isRemovalPending(String packageName, String version, long exportingBundle) throws IOException {
+        if (packageName == null || packageName.length() < 1) {
+            throw new IOException("Package name cannot be null or empty");
+        }
         ExportedPackage[] exportedPackages = packageAdmin.getExportedPackages(packageName);
         if (exportedPackages != null) {
             Version ver = Version.parseVersion(version);

@@ -66,22 +66,6 @@ public class UserAdmin implements UserAdminMBean {
     }
 
     /**
-     * @see org.osgi.jmx.service.useradmin.UserAdminMBean#addCredential(java.lang.String, byte[], java.lang.String)
-     */
-    public void addCredential(String key, byte[] value, String username) throws IOException {
-        Role role = userAdmin.getRole(username);
-        if (role == null) {
-            throw new IOException("Operation fails user with provided username = [" + username + "] doesn't exist");
-        }
-        validateRoleType(role, Role.USER);
-        Dictionary<String, Object> credentials = ((User) role).getCredentials();
-        if (credentials != null) {
-            credentials.put(key, value);
-        }
-
-    }
-
-    /**
      * Validate Role against roleType.
      * 
      * @see Role#USER
@@ -93,32 +77,54 @@ public class UserAdmin implements UserAdminMBean {
      * @param roleType
      *            role type.
      */
-    private void validateRoleType(Role role, int roleType) {
+    private void validateRoleType(Role role, int roleType) throws IOException {
         if (role.getType() != roleType) {
-            throw new IllegalArgumentException("Provided role is not a type " + roleType);
+            throw new IOException("Unexpected role type. Expected " + roleType + " but got " + role.getType());
         }
     }
 
     /**
+     * @see org.osgi.jmx.service.useradmin.UserAdminMBean#addCredential(java.lang.String, byte[], java.lang.String)
+     */
+    public void addCredential(String key, byte[] value, String username) throws IOException {
+        addCredential(key, (Object)value, username);
+    }
+    
+    /**
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#addCredentialString(String, String, String)
      */
     public void addCredentialString(String key, String value, String username) throws IOException {
+        addCredential(key, (Object)value, username);
+    }
+
+    private void addCredential(String key, Object value, String username) throws IOException {
+        if (username == null) {
+            throw new IOException("User name cannot be null");
+        }
+        if (key == null) {
+            throw new IOException("Credential key cannot be null");
+        }
         Role role = userAdmin.getRole(username);
         if (role == null) {
             throw new IOException("Operation fails user with provided username = [" + username + "] doesn't exist");
         }
-
         validateRoleType(role, Role.USER);
         Dictionary<String, Object> credentials = ((User) role).getCredentials();
         if (credentials != null) {
             credentials.put(key, value);
         }
     }
-
+    
     /**
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#addMember(java.lang.String, java.lang.String)
      */
     public boolean addMember(String groupname, String rolename) throws IOException {
+        if (groupname == null) {
+            throw new IOException("Group name cannot be null");
+        }
+        if (rolename == null) {
+            throw new IOException("Role name cannot be null");
+        }
         Role group = userAdmin.getRole(groupname);
         Role member = userAdmin.getRole(rolename);
         if (group == null) {
@@ -133,7 +139,6 @@ public class UserAdmin implements UserAdminMBean {
      */
     public void addPropertyString(String key, String value, String rolename) throws IOException {
         addRoleProperty(key, value, rolename);
-
     }
 
     /**
@@ -148,21 +153,32 @@ public class UserAdmin implements UserAdminMBean {
      * @see UserAdminMBean#addProperty(String, String, String)
      */
     private void addRoleProperty(String key, Object value, String rolename) throws IOException {
+        if (rolename == null) {
+            throw new IOException("Role name cannot be null");
+        }
+        if (key == null) {
+            throw new IOException("Property key cannot be null");
+        }
         Role role = userAdmin.getRole(rolename);
         if (role == null) {
             throw new IOException("Operation fails role with provided rolename = [" + rolename + "] doesn't exist");
         }
         Dictionary<String, Object>  properties = role.getProperties();
-        if(properties != null){
+        if (properties != null) {
             properties.put(key, value);
-        }
-        
+        }        
     }
 
     /**
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#addRequiredMember(java.lang.String, java.lang.String)
      */
     public boolean addRequiredMember(String groupname, String rolename) throws IOException {
+        if (groupname == null) {
+            throw new IOException("Group name cannot be null");
+        }
+        if (rolename == null) {
+            throw new IOException("Role name cannot be null");
+        }
         Role group = userAdmin.getRole(groupname);
         Role member = userAdmin.getRole(rolename);
         if (group == null) {
@@ -176,30 +192,37 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#createGroup(java.lang.String)
      */
     public void createGroup(String name) throws IOException {
+        if (name == null) {
+            throw new IOException("Group name cannot be null");
+        }
         userAdmin.createRole(name, Role.GROUP);
-
     }
 
     /**
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#createRole(java.lang.String)
      */
     public void createRole(String name) throws IOException {
-        userAdmin.createRole(name, Role.ROLE); // this is wrong should be only user and group type
+        throw new IOException("Deprecated: use createGroup or createUser");
     }
 
     /**
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#createUser(java.lang.String)
      */
     public void createUser(String name) throws IOException {
+        if (name == null) {
+            throw new IOException("User name cannot be null");
+        }
         userAdmin.createRole(name, Role.USER);
-
     }
 
     /**
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#getAuthorization(java.lang.String)
      */
-    public CompositeData getAuthorization(String user) throws IOException {
-        Role role = userAdmin.getRole(user);
+    public CompositeData getAuthorization(String username) throws IOException {
+        if (username== null) {
+            throw new IOException("User name cannot be null");
+        }
+        Role role = userAdmin.getRole(username);
         if (role == null) {
             return null;
         }
@@ -216,6 +239,9 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#getCredentials(java.lang.String)
      */
     public TabularData getCredentials(String username) throws IOException {
+        if (username == null) {
+            throw new IOException("User name cannot be null");
+        }
         Role role = userAdmin.getRole(username);
         if (role == null) {
             return null;
@@ -237,6 +263,9 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#getGroup(java.lang.String)
      */
     public CompositeData getGroup(String groupname) throws IOException {
+        if (groupname == null) {
+            throw new IOException("Group name cannot be null");
+        }
         Role role = userAdmin.getRole(groupname);
         if (role == null) {
             return null;
@@ -269,6 +298,9 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#getImpliedRoles(java.lang.String)
      */
     public String[] getImpliedRoles(String username) throws IOException {
+        if (username == null) {
+            throw new IOException("User name cannot be null");
+        }
         Role role = userAdmin.getRole(username);
         if (role != null) {
             validateRoleType(role, Role.USER);
@@ -284,6 +316,9 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#getMembers(java.lang.String)
      */
     public String[] getMembers(String groupname) throws IOException {
+        if (groupname == null) {
+            throw new IOException("Group name cannot be null");
+        }
         Role role = userAdmin.getRole(groupname);
         if (role != null) {
             validateRoleType(role, Role.GROUP);
@@ -303,6 +338,9 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#getProperties(java.lang.String)
      */
     public TabularData getProperties(String rolename) throws IOException {
+        if (rolename == null) {
+            throw new IOException("Role name cannot be null");
+        }
         Role role = userAdmin.getRole(rolename);
         if (role == null) {
             return null;
@@ -324,6 +362,9 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#getRequiredMembers(java.lang.String)
      */
     public String[] getRequiredMembers(String groupname) throws IOException {
+        if (groupname == null) {
+            throw new IOException("Group name cannot be null");
+        }
         Role role = userAdmin.getRole(groupname);
         if (role != null) {
             validateRoleType(role, Role.GROUP);
@@ -343,6 +384,9 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#getRole(java.lang.String)
      */
     public CompositeData getRole(String name) throws IOException {
+        if (name == null) {
+            throw new IOException("Role name cannot be null");
+        }
         Role role = userAdmin.getRole(name);
         if (role == null) {
             return null;
@@ -372,6 +416,9 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#getUser(java.lang.String)
      */
     public CompositeData getUser(String username) throws IOException {
+        if (username == null) {
+            throw new IOException("User name cannot be null");
+        }
         Role role = userAdmin.getRole(username);
         if (role == null) {
             return null;
@@ -384,6 +431,9 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#getUserWithProperty(String, String)
      */
     public String getUserWithProperty(String key, String value) throws IOException {
+        if (key == null) {
+            throw new IOException("Property key cannot be null");
+        }
         User user = userAdmin.getUser(key, value);
         if (user == null) {
             return null;
@@ -487,6 +537,12 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#removeCredential(java.lang.String, java.lang.String)
      */
     public void removeCredential(String key, String username) throws IOException {
+        if (username == null) {
+            throw new IOException("User name cannot be null");
+        }
+        if (key == null) {
+            throw new IOException("Credential key cannot be null");
+        }
         Role role = userAdmin.getRole(username);
         if (role == null) {
             throw new IOException("Operation fails can't find user with username = [" + username + "] doesn't exist");
@@ -499,6 +555,9 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#removeGroup(java.lang.String)
      */
     public boolean removeGroup(String name) throws IOException {
+        if (name == null) {
+            throw new IOException("Group name cannot be null");
+        }
         return userAdmin.removeRole(name);
     }
 
@@ -506,6 +565,12 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#removeMember(java.lang.String, java.lang.String)
      */
     public boolean removeMember(String groupname, String rolename) throws IOException {
+        if (groupname == null) {
+            throw new IOException("Group name cannot be null");
+        }
+        if (rolename == null) {
+            throw new IOException("Role name cannot be null");
+        }
         Role group = userAdmin.getRole(groupname);
         Role member = userAdmin.getRole(rolename);
         if (group == null) {
@@ -519,6 +584,9 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#removeProperty(java.lang.String, java.lang.String)
      */
     public void removeProperty(String key, String rolename) throws IOException {
+        if (rolename == null) {
+            throw new IOException("Role name cannot be null");
+        }
         Role role = userAdmin.getRole(rolename);
         if (role == null) {
             throw new IOException("Operation fails role with provided rolename = [" + rolename + "] doesn't exist");
@@ -530,6 +598,9 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#removeRole(java.lang.String)
      */
     public boolean removeRole(String name) throws IOException {
+        if (name == null) {
+            throw new IOException("Role name cannot be null");
+        }
         return userAdmin.removeRole(name);
     }
 
@@ -537,6 +608,9 @@ public class UserAdmin implements UserAdminMBean {
      * @see org.osgi.jmx.service.useradmin.UserAdminMBean#removeUser(java.lang.String)
      */
     public boolean removeUser(String name) throws IOException {
+        if (name == null) {
+            throw new IOException("User name cannot be null");
+        }
         return userAdmin.removeRole(name);
     }
 
