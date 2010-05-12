@@ -16,7 +16,7 @@
  */
 package org.apache.aries.jmx.cm;
 
-import static org.osgi.jmx.JmxConstants.*;
+import static org.osgi.jmx.JmxConstants.PROPERTIES_TYPE;
 
 import java.io.IOException;
 import java.util.ArrayList;

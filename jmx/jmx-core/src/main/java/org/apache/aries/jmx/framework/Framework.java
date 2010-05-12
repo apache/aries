@@ -179,8 +179,14 @@ public class Framework implements FrameworkMBean {
        Bundle[] bundles = null;
        if(bundleIdentifiers != null) {       
           bundles = new Bundle[bundleIdentifiers.length];
-          for (int i = 0; i < bundleIdentifiers.length; i++) {           
-              bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]); 
+          for (int i = 0; i < bundleIdentifiers.length; i++) {  
+              try {
+                  bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]);
+              } catch (Exception e) {
+                  IOException ex = new IOException("Unable to refresh bundles");
+                  ex.initCause(e);
+                  throw ex;
+              }
           }
        }
        packageAdmin.refreshPackages(bundles);
@@ -201,8 +207,14 @@ public class Framework implements FrameworkMBean {
        Bundle[] bundles = null;
        if(bundleIdentifiers != null) {       
           bundles = new Bundle[bundleIdentifiers.length];
-          for (int i = 0; i < bundleIdentifiers.length; i++) {          
-              bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]); 
+          for (int i = 0; i < bundleIdentifiers.length; i++) {       
+              try {
+                  bundles[i] = FrameworkUtils.resolveBundle(context, bundleIdentifiers[i]);
+              } catch (Exception e) {
+                  IOException ex = new IOException("Unable to resolve bundles");
+                  ex.initCause(e);
+                  throw ex;
+              }
           }
        }
        return packageAdmin.resolveBundles(bundles);
@@ -255,14 +267,26 @@ public class Framework implements FrameworkMBean {
      * @see org.osgi.jmx.framework.FrameworkMBean#setFrameworkStartLevel(int)
      */
     public void setFrameworkStartLevel(int newlevel) throws IOException {
-        startLevel.setStartLevel(newlevel);
+        try {
+            startLevel.setStartLevel(newlevel);
+        } catch (Exception e) {
+            IOException ioex = new IOException("Failed to set framework start level");
+            ioex.initCause(e);
+            throw ioex;
+        }
     }
 
     /**
      * @see org.osgi.jmx.framework.FrameworkMBean#setInitialBundleStartLevel(int)
      */
     public void setInitialBundleStartLevel(int newlevel) throws IOException {
-        startLevel.setInitialBundleStartLevel(newlevel);
+        try {
+            startLevel.setInitialBundleStartLevel(newlevel);
+        } catch (Exception e) {
+            IOException ioex = new IOException("Failed to set initial bundle start level");
+            ioex.initCause(e);
+            throw ioex;
+        }        
     }
 
     /**
