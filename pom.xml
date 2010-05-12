@@ -46,6 +46,11 @@
             <!-- internal dependencies -->
             <dependency>
                 <groupId>org.apache.aries.jndi</groupId>
+                <artifactId>org.apache.aries.jndi.api</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.jndi</groupId>
                 <artifactId>org.apache.aries.jndi.core</artifactId>
                 <version>${version}</version>
             </dependency>
@@ -82,6 +87,7 @@
     </dependencies>
 
     <modules>
+        <module>jndi-api</module>
         <module>jndi-core</module>
         <module>jndi-url</module>
         <module>jndi-bundle</module>
