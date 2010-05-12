@@ -43,6 +43,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.jndi.JNDIConstants;
 
 /**
  * This helper provides access to services registered in the OSGi service registry.
@@ -86,9 +87,12 @@ public final class ServiceHelper
     
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
-      if (pair.ref.getBundle() == null) {
-        if (dynamic) pair = findService(ctx, interfaceName, filter);
-        else pair = null;
+      if (pair == null || pair.ref.getBundle() == null) {
+        if (dynamic) {
+            pair = findService(ctx, interfaceName, filter);
+        } else {
+            pair = null;
+        }
       }
       
       if (pair == null) {
@@ -118,7 +122,7 @@ public final class ServiceHelper
   {
     BundleContext result = null;
     
-    Object bc = env.get("osgi.service.jndi.bundleContext");
+    Object bc = env.get(JNDIConstants.BUNDLE_CONTEXT);
     
     if (bc != null && bc instanceof BundleContext) result = (BundleContext) bc;
     else {
@@ -215,9 +219,9 @@ public final class ServiceHelper
     if (pair == null) {
       interfaceName = null;
       if (id == null) {
-        filter = "(osgi.jndi.service.name=" + serviceName + ')';
+        filter = "(" + JNDIConstants.JNDI_SERVICENAME + "=" + serviceName + ')';
       } else {
-        filter = "(&(" + Constants.SERVICE_ID + '=' + id + ")(osgi.jndi.service.name=" + serviceName + "))";
+        filter = "(&(" + Constants.SERVICE_ID + '=' + id + ")(" + JNDIConstants.JNDI_SERVICENAME + "=" + serviceName + "))";
       }
       pair = findService(ctx, interfaceName, filter);
     }
@@ -332,7 +336,7 @@ public final class ServiceHelper
       refs = ctx.getServiceReferences(interface1, filter);
       
       if (refs == null || refs.length == 0) {
-        refs = ctx.getServiceReferences(null, "(osgi.jndi.service.name=" + serviceName + ')');
+        refs = ctx.getServiceReferences(null, "(" + JNDIConstants.JNDI_SERVICENAME + "=" + serviceName + ')');
       }
     } catch (InvalidSyntaxException e) {
       throw (NamingException) new NamingException(e.getFilter()).initCause(e);
