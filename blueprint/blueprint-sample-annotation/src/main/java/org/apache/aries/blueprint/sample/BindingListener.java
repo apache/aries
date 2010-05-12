@@ -20,12 +20,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.aries.blueprint.annotation.Bean;
+import org.apache.aries.blueprint.annotation.Bind;
 import org.apache.aries.blueprint.annotation.Init;
+import org.apache.aries.blueprint.annotation.Inject;
+import org.apache.aries.blueprint.annotation.Reference;
+import org.apache.aries.blueprint.annotation.ReferenceListener;
+import org.apache.aries.blueprint.annotation.Unbind;
 import org.osgi.framework.ServiceReference;
 
 @Bean(id="bindingListener")
+@ReferenceListener
 public class BindingListener {
 
+    @Inject @Reference (id="ref2", 
+            serviceInterface = InterfaceA.class,
+            timeout=100, referenceListeners=@ReferenceListener(ref="bindingListener"))
     private InterfaceA a;
     private Map props;
     private ServiceReference reference;
@@ -55,20 +64,24 @@ public class BindingListener {
     public void init() {
     }
 
+    @Bind
     public void bind(InterfaceA a, Map props) {
         this.a = a;
         this.props = props;
     }
 
+    @Bind
     public void bind(ServiceReference ref) {
         this.reference = ref;
     }
 
+    @Unbind
     public void unbind(InterfaceA a, Map props) {
         this.a = null;
         this.props = null;
     }
 
+    @Unbind
     public void unbind(ServiceReference ref) {
         this.reference = null;
     }
