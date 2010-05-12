@@ -82,7 +82,7 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     /**
      * @see org.osgi.jmx.framework.ServiceStateMBean#getBundleIdentifier(long)
      */
-    public long getBundleIdentifier(long serviceId) throws IOException, IllegalArgumentException {
+    public long getBundleIdentifier(long serviceId) throws IOException {
         ServiceReference reference = resolveService(bundleContext, serviceId);
         return reference.getBundle().getBundleId();
     }
