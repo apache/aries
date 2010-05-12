@@ -18,14 +18,15 @@ package org.apache.aries.blueprint.annotation.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -33,6 +34,7 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.aries.blueprint.annotation.Arg;
 import org.apache.aries.blueprint.annotation.Bean;
+import org.apache.aries.blueprint.annotation.Bind;
 import org.apache.aries.blueprint.annotation.Blueprint;
 import org.apache.aries.blueprint.annotation.Destroy;
 import org.apache.aries.blueprint.annotation.Init;
@@ -40,8 +42,11 @@ import org.apache.aries.blueprint.annotation.Inject;
 import org.apache.aries.blueprint.annotation.Reference;
 import org.apache.aries.blueprint.annotation.ReferenceList;
 import org.apache.aries.blueprint.annotation.ReferenceListener;
+import org.apache.aries.blueprint.annotation.Register;
 import org.apache.aries.blueprint.annotation.RegistrationListener;
 import org.apache.aries.blueprint.annotation.Service;
+import org.apache.aries.blueprint.annotation.Unbind;
+import org.apache.aries.blueprint.annotation.Unregister;
 import org.apache.aries.blueprint.annotation.service.BlueprintAnnotationScanner;
 import org.apache.aries.blueprint.jaxb.Targument;
 import org.apache.aries.blueprint.jaxb.Tbean;
@@ -163,8 +168,10 @@ public class BlueprintAnnotationScannerImpl implements
 
         List<Class> blueprintClasses = baf.findAnnotatedClasses(Blueprint.class);
         List<Class> beanClasses = baf.findAnnotatedClasses(Bean.class);
-        List<Class> refClasses = baf.findAnnotatedClasses(Reference.class);
-        List<Class> refListClasses = baf.findAnnotatedClasses(ReferenceList.class);
+        List<Class> refListenerClasses = baf.findAnnotatedClasses(ReferenceListener.class);
+        List<Class> regListenerClasses = baf.findAnnotatedClasses(RegistrationListener.class);
+        Map<String, TreferenceListener> reflMap = new HashMap<String, TreferenceListener>();
+        Map<String, TregistrationListener> reglMap = new HashMap<String, TregistrationListener>();
         
         Tblueprint tblueprint = new Tblueprint();
         
@@ -178,6 +185,35 @@ public class BlueprintAnnotationScannerImpl implements
         }
 
         List<Object> components = tblueprint.getServiceOrReferenceListOrBean();
+        
+        // try to process classes that have @ReferenceListener or @RegistrationLister first
+        // as we want the refl and regl maps populated before processing @Bean annotation.
+        for (Class refListener : refListenerClasses) {
+            Bean bean = (Bean) refListener.getAnnotation(Bean.class);
+                       
+            // register the treference with its id
+            TreferenceListener tref = generateTrefListener(refListener);
+            
+            if (bean.id().length() > 0) {
+                reflMap.put(bean.id(), tref);
+            } else {
+                throw new BlueprintAnnotationException("Unable to find the id for the @ReferenceListener annotated class " + refListener.getName());
+            }
+        }
+        
+        
+        for (Class regListener : regListenerClasses) {
+            Bean bean = (Bean) regListener.getAnnotation(Bean.class);
+            
+            // register the tregistrationListener with its id
+            TregistrationListener tref = generateTregListener(regListener);
+            
+            if (bean.id().length() > 0) {
+                reglMap.put(bean.id(), tref);
+            } else {
+                throw new BlueprintAnnotationException("Unable to find the id for the @RegistrationListener annotated class " + regListener.getName());
+            }   
+        }
         
         for (Class clazz : beanClasses) {
             // @Bean annotation detected
@@ -261,9 +297,22 @@ public class BlueprintAnnotationScannerImpl implements
             
             Field[] fields = clazz.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
-                if (fields[i].isAnnotationPresent(Inject.class)) {          
-                    Tproperty tp = createTproperty(fields[i].getName(), fields[i].getAnnotation(Inject.class));
-                    props.add(tp);
+                if (fields[i].isAnnotationPresent(Inject.class)) { 
+                    if (fields[i].isAnnotationPresent(Reference.class)) {
+                        // the field is also annotated with @Reference
+                        Reference ref = (Reference)fields[i].getAnnotation(Reference.class);
+                        Treference tref = generateTref(ref, reflMap);
+                        components.add(tref);
+                    } else if (fields[i].isAnnotationPresent(ReferenceList.class)) {
+                        // the field is also annotated with @ReferenceList
+                        ReferenceList ref = (ReferenceList)fields[i].getAnnotation(ReferenceList.class);
+                        TreferenceList tref = generateTrefList(ref, reflMap);
+                        components.add(tref);
+                        
+                    } else {
+                        Tproperty tp = createTproperty(fields[i].getName(), fields[i].getAnnotation(Inject.class));
+                        props.add(tp);
+                    }
                 }
             }
                     
@@ -277,7 +326,7 @@ public class BlueprintAnnotationScannerImpl implements
                 } else if (methods[i].isAnnotationPresent(Inject.class)) {
                     String propertyName = convertFromMethodName(methods[i].getName());
                     Tproperty tp = createTproperty(propertyName, methods[i].getAnnotation(Inject.class));
-                    props.add(tp);     
+                    props.add(tp);  
                 } else if (methods[i].isAnnotationPresent(Arg.class)) {
                     Targument targ = createTargument(methods[i].getAnnotation(Arg.class));
                     props.add(targ);     
@@ -286,7 +335,7 @@ public class BlueprintAnnotationScannerImpl implements
             
             // check if the bean also declares service
             if (clazz.getAnnotation(Service.class) != null) {
-                Tservice tservice = generateTservice(clazz, id);
+                Tservice tservice = generateTservice(clazz, id, reglMap);
                 components.add(tservice);
             }
             
@@ -300,18 +349,89 @@ public class BlueprintAnnotationScannerImpl implements
                 components.add(tbean);
             }
         }
-        
-        for (Class refClass : refClasses) {
-            Treference tref = generateTref(refClass);
-            components.add(tref);
-        }
-
-        for (Class refListClass : refListClasses) {
-            TreferenceList trefList = generateTrefList(refListClass);
-            components.add(trefList);
-        }
 
         return tblueprint;
+    }
+
+    private TreferenceListener generateTrefListener(Class refListener) {
+        ReferenceListener rl = (ReferenceListener) refListener.getAnnotation(ReferenceListener.class);
+        
+        String ref = rl.ref();
+        String bind = null;
+        String unbind = null;
+        
+        // also check bind/unbind method
+        Method[] methods = refListener.getDeclaredMethods();
+        for (int i = 0; i < methods.length; i++) {
+            if (methods[i].isAnnotationPresent(Bind.class)) {
+                if (bind == null) {
+                    bind = methods[i].getName();
+                } else if (!bind.equals(methods[i].getName())) {
+                    throw new BlueprintAnnotationException("@Bind annottaed method for reference listener " + refListener.getName() + " are not consistent");       
+                }
+                continue;
+            }
+            if (methods[i].isAnnotationPresent(Unbind.class)) {
+                if (unbind == null) {
+                  unbind = methods[i].getName();
+                } else if (!unbind.equals(methods[i].getName())) {
+                    throw new BlueprintAnnotationException("@Unbind annotated method for reference listener " + refListener.getName() + " are not consistent");       
+                }
+                continue;
+            }
+        }
+        
+        TreferenceListener trl = new TreferenceListener();
+        if (bind != null) {
+            trl.setBindMethod(bind);
+        }
+        if (unbind != null) {
+            trl.setUnbindMethod(unbind);
+        }
+        
+        if (ref != null) {
+            trl.setRefAttribute(ref);
+        }
+        
+        return trl;
+    }
+    
+    private TregistrationListener generateTregListener(Class regListener) {
+        RegistrationListener rl = (RegistrationListener) regListener.getAnnotation(RegistrationListener.class);
+        
+        String register = null;
+        String unregister = null;
+        
+        // also check bind/unbind method
+        Method[] methods = regListener.getDeclaredMethods();
+        for (int i = 0; i < methods.length; i++) {
+            if (methods[i].isAnnotationPresent(Register.class)) {
+                if (register == null) {
+                    register = methods[i].getName();
+                } else if (!register.equals(methods[i].getName())) {
+                    throw new BlueprintAnnotationException("@Register annottaed method for registration listener " + regListener.getName() + " are not consistent");       
+                }
+                continue;
+            }
+            if (methods[i].isAnnotationPresent(Unregister.class)) {
+                if (unregister == null) {
+                  unregister = methods[i].getName();
+                } else if (!unregister.equals(methods[i].getName())) {
+                    throw new BlueprintAnnotationException("@Unregister annotated method for registration listener " + regListener.getName() + " are not consistent");       
+                }
+                continue;
+            }
+        }
+        
+        TregistrationListener trl = new TregistrationListener();
+        if (register != null) {
+            trl.setRegistrationMethod(register);
+        }
+        if (unregister != null) {
+            trl.setUnregistrationMethod(unregister);
+        }
+        
+        return trl;
     }
 
     private Targument createTargument(Arg arg) {
@@ -419,17 +539,15 @@ public class BlueprintAnnotationScannerImpl implements
                 + filePath;
     }
     
-    private Treference generateTref(Class refClass) {
-        // @Reference annotation detected
-        Reference ref = (Reference)refClass.getAnnotation(Reference.class);
-        
+    private Treference generateTref(Reference ref, Map<String, TreferenceListener> reflMap) {
+
         String id = ref.id();
         String availability = ref.availability();
         String compName = ref.componentName();
         String desp = ref.description();
         String filter = ref.filter();
         Class<?> serviceInterface = ref.serviceInterface();
-        ReferenceListener[] refListeners = ref.referenceListener();
+        ReferenceListener[] refListeners = ref.referenceListeners();
         int timeout = ref.timeout();
         Treference tref = new Treference();
         
@@ -456,43 +574,33 @@ public class BlueprintAnnotationScannerImpl implements
         }
         if (serviceInterface != Object.class) {
             tref.setInterface(serviceInterface.getName());
-        } else {
-            boolean isInterface =  refClass.isInterface();
-            if (isInterface) {
-                tref.setInterface(refClass.getName());
-            } else {
-                // should we throw an exception?  
-            }
         }
         
         if (timeout > 0) {
             tref.setTimeout(convertToBigInteger(timeout));
         }
         for (ReferenceListener rl : refListeners) {
-            TreferenceListener trl = new TreferenceListener();
             String rf = rl.ref();
-            String bindMethod = rl.bind();
-            String unbindMethod = rl.unbind();
-            trl.setRefAttribute(rf);
-            trl.setBindMethod(bindMethod);
-            trl.setUnbindMethod(unbindMethod);
-            tref.getReferenceListener().add(trl);
+            TreferenceListener trl = reflMap.get(rf);
+            if (trl != null) {
+                trl.setRefAttribute(rf);
+                tref.getReferenceListener().add(trl);
+            } else {
+                throw new BlueprintAnnotationException("Unable to find the ReferenceListener ref " + rf);
+            }
         }
         
         return tref;
     }
     
-    private TreferenceList generateTrefList(Class refClass) {
-        // @ReferenceList annotation detected
-        ReferenceList ref = (ReferenceList)refClass.getAnnotation(ReferenceList.class);
-        
+    private TreferenceList generateTrefList(ReferenceList ref, Map<String, TreferenceListener> reflMap) {
         String id = ref.id();
         String availability = ref.availability();
         String compName = ref.componentName();
         String desp = ref.description();
         String filter = ref.filter();
         Class<?> serviceInterface = ref.serviceInterface();
-        ReferenceListener[] refListeners = ref.referenceListener();
+        ReferenceListener[] refListeners = ref.referenceListeners();
         TreferenceList tref = new TreferenceList();
         
         // can not think of configuring depends on for referencelist
@@ -518,34 +626,28 @@ public class BlueprintAnnotationScannerImpl implements
         }
         if (serviceInterface  != Object.class) {
             tref.setInterface(serviceInterface.getName());
-        } else {
-            boolean isInterface =  refClass.isInterface();
-            if (isInterface) {
-                tref.setInterface(refClass.getName());
-            } else {
-                // should we throw an exception?  
-            }
-        }
+        } 
+        
         for (ReferenceListener rl : refListeners) {
-            TreferenceListener trl = new TreferenceListener();
             String rf = rl.ref();
-            String bindMethod = rl.bind();
-            String unbindMethod = rl.unbind();
-            trl.setRefAttribute(rf);
-            trl.setBindMethod(bindMethod);
-            trl.setUnbindMethod(unbindMethod);
-            tref.getReferenceListener().add(trl);
+            TreferenceListener trl = reflMap.get(rf);
+            if (trl != null) {
+                trl.setRefAttribute(rf);
+                tref.getReferenceListener().add(trl);
+            } else {
+                throw new BlueprintAnnotationException("Unable to find the ReferenceListener ref " + rf);
+            }
         }
         
         return tref;
     }
     
-    private Tservice generateTservice(Class clazz, String id) {
+    private Tservice generateTservice(Class clazz, String id, Map<String, TregistrationListener> reglMap) {
         Service service = (Service) clazz.getAnnotation(Service.class);
         Class<?>[] interfaces = service.interfaces();
         int ranking = service.ranking();
         String autoExport = service.autoExport();
-        RegistrationListener[] regListeners = service.registerationListener();
+        RegistrationListener[] regListeners = service.registerationListeners();
         
         Tservice tservice = new Tservice();
         
@@ -570,12 +672,10 @@ public class BlueprintAnnotationScannerImpl implements
         }
         
         for (RegistrationListener regListener : regListeners) {
-            String regListenerId = regListener.id();
-            if (regListenerId.length() > 0) {
-                TregistrationListener tregListener = new TregistrationListener();
-                tregListener.setRefAttribute(regListenerId);
-                tregListener.setRegistrationMethod(regListener.register());
-                tregListener.setUnregistrationMethod(regListener.unregister());
+            String ref = regListener.ref();
+            if (ref.length() > 0) {
+                TregistrationListener tregListener = reglMap.get(ref);
+                tregListener.setRefAttribute(ref);
                 tservice.getRegistrationListener().add(tregListener);
                 
             } else {

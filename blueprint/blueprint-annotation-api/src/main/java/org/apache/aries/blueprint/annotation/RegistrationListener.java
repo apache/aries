@@ -24,10 +24,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RegistrationListener {
-    /**
-     * the component that will receive registration and unregistration events.
-     */
-    String id();
-    String register();
-    String unregister();
+
+    String ref() default "";
 }
