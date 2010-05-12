@@ -121,7 +121,7 @@ public class FrameworkUtils {
             ServiceReference[] references = bundleContext.getAllServiceReferences(null, "(" + Constants.SERVICE_ID
                     + "=" + serviceId + ")");
             if (references == null || references.length < 1) {
-                throw new IllegalArgumentException("Service with id [" + serviceId + "] Not Found");
+                throw new IllegalArgumentException("Service with id [" + serviceId + "] not found");
             } else {
                 result = references[0];
             }
