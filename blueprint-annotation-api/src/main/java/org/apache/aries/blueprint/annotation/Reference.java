@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.TYPE)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Reference
 {    
@@ -51,9 +51,9 @@ public @interface Reference
     String availability() default "";
     
     /**
-     * the reference listener for the service reference, to receive bind and unbind events.
+     * the reference listeners for the service reference, to receive bind and unbind events.
      */
-    ReferenceListener[] referenceListener();
+    ReferenceListener[] referenceListeners() default {};
 
     /**
      * the timeout property.  If the timeout is not specified,

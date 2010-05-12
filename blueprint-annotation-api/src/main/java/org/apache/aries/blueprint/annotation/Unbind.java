@@ -21,36 +21,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.TYPE)
+/**
+ * used to annotation unbind-method in blueprint reference listeners
+ *
+ */
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Service {
-    
-    /**
-     * the registration listeners to be notified when the service is
-     * registered and unregistered with the framework.
-     */
-    RegistrationListener[] registerationListeners() default {};
-    
-    /**
-     *  the ranking value to use when advertising the service.  If the
-     *  ranking value is zero, the service must be registered without a
-     *  <code>service.ranking</code> service property. 
-     */
-    int ranking() default 0;
-    
-    /**
-     *  the auto-export mode for the service.  
-     *  possible values are disabled, interfaces, class_hierarchy, all_classes
-     */
-    String autoExport() default "";
-    
-    /**
-     *  the interfaces that the service should be advertised as supporting.
-     */
-    Class<?>[] interfaces() default {};
-    
-    /**
-     * the user declared properties to be advertised with the service.
-     */
-    ServiceProperty[] serviceProperties() default {};
+public @interface Unbind {
 }

@@ -27,8 +27,8 @@ public class AccountFactory {
         this.factoryName = factoryName;
     }
 
-    public AccountNew createAccount(long number) {
-        return new AccountNew(number);
+    public NewAccount createAccount(long number) {
+        return new NewAccount(number);
     }
     
     public String getFactoryName() {

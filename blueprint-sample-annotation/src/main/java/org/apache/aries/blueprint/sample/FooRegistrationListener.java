@@ -20,15 +20,20 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.aries.blueprint.annotation.Bean;
-
+import org.apache.aries.blueprint.annotation.Register;
+import org.apache.aries.blueprint.annotation.RegistrationListener;
+import org.apache.aries.blueprint.annotation.Unregister;
 
 @Bean(id="fooRegistrationListener")
+@RegistrationListener
 public class FooRegistrationListener {
         
+    @Register
     public void serviceRegistered(Serializable foo, Map props) {
         System.out.println("Service registration notification: " + foo + " " + props);
     }
     
+    @Unregister
     public void serviceUnregistered(Foo foo, Map props) {
         System.out.println("Service unregistration notification: " + foo + " " + props);
     }

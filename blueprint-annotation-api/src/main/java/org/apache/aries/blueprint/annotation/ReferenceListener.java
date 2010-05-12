@@ -24,10 +24,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ReferenceListener {
-    /**
-     * the component that will receive bind and unbind events.
-     */
-    String ref();
-    String bind();
-    String unbind();
+    String ref() default "";
 }
