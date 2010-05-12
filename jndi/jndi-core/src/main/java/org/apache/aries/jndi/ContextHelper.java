@@ -30,6 +30,7 @@ import javax.naming.spi.ObjectFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.jndi.JNDIConstants;
 
 /**
  * Provides helper methods for the DelegateContext. This provides the methods so
@@ -208,7 +209,7 @@ public final class ContextHelper
 
     try {
       ServiceReference[] services = context.getServiceReferences(ObjectFactory.class.getName(),
-          "(|(osgi.jndi.urlScheme=" + urlScheme + ")(urlScheme=" + urlScheme + "))");
+                                                                 "(" + JNDIConstants.JNDI_URLSCHEME + "=" + urlScheme + ")");
 
       if (services != null) {
         ref = services[0];
