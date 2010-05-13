@@ -21,6 +21,7 @@ package org.apache.aries.jndi;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -38,8 +39,11 @@ import org.osgi.service.jndi.JNDIConstants;
  * Provides helper methods for the DelegateContext. This provides the methods so
  * there can be many DelegateContexts, but few service trackers.
  */
-public final class ContextHelper
-{
+public final class ContextHelper {
+
+    public static final Comparator<ServiceReference> SERVICE_REFERENCE_COMPARATOR = 
+        new ServiceReferenceComparator();
+    
 	/** The bundle context we use for accessing the SR */
   private static BundleContext context;
   
@@ -187,7 +191,7 @@ public final class ContextHelper
                 }
                 if (references != null) {
                     Context initialContext = null;
-                    Arrays.sort(references, new ServiceReferenceComparator());
+                    Arrays.sort(references, SERVICE_REFERENCE_COMPARATOR);
                     for (ServiceReference reference : references) {
                         InitialContextFactory factory = (InitialContextFactory) context.getService(reference);
                         try {
@@ -216,7 +220,7 @@ public final class ContextHelper
 
             if (references != null && references.length > 0) {
                 Context initialContext = null;
-                Arrays.sort(references, new ServiceReferenceComparator());
+                Arrays.sort(references, SERVICE_REFERENCE_COMPARATOR);
                 ServiceReference reference = references[0];
                 InitialContextFactory factory = (InitialContextFactory) context.getService(reference);
                 try {
@@ -246,7 +250,7 @@ public final class ContextHelper
             ServiceReference[] refs = context.getAllServiceReferences(InitialContextFactoryBuilder.class.getName(), null);
             if (refs != null) {
                 InitialContextFactory factory = null;
-                Arrays.sort(refs, new ServiceReferenceComparator());
+                Arrays.sort(refs, SERVICE_REFERENCE_COMPARATOR);
                 for (ServiceReference ref : refs) {                    
                     InitialContextFactoryBuilder builder = (InitialContextFactoryBuilder) context.getService(ref);
                     try {
@@ -284,9 +288,22 @@ public final class ContextHelper
         }
     }
     
-    public static class ServiceReferenceComparator implements Comparator<ServiceReference> {
+    private static class ServiceReferenceComparator implements Comparator<ServiceReference> {        
         public int compare(ServiceReference o1, ServiceReference o2) {        
           return o2.compareTo(o1);
         }
+    }
+    
+    public static Hashtable toHashtable(Map map) {
+        Hashtable env;
+        if (map instanceof Hashtable) {
+            env = (Hashtable) map;
+        } else {
+            env = new Hashtable();
+            if (map != null) {
+                env.putAll(map);
+            }
+        }
+        return env;
     }
 }
