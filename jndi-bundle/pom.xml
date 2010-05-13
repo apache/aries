@@ -32,7 +32,7 @@
 
     <properties>
         <aries.osgi.export.pkg>
-            org.osgi.service.jndi;org.osgi.service.jndi.services
+            org.osgi.service.jndi
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.jndi*

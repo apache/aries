@@ -25,27 +25,20 @@ import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
 
-import org.osgi.framework.BundleContext;
+public class JREInitialContextFactoryBuilder implements InitialContextFactoryBuilder {
 
-public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBuilder, InitialContextFactory {
-
-	private BundleContext _context;
-	
-	public OSGiInitialContextFactoryBuilder(BundleContext context) {	
-		_context = context;
-	}
-	
-	public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> environment) 
-	    throws NamingException {
-	    return this;
-	}
-  
-	public Context getInitialContext(Hashtable<?, ?> environment) 
-	    throws NamingException {
-	    
-	    // TODO: use caller's bundle context
-	    
-	    return ContextHelper.getInitialContext(_context, environment);
-	}
-	
+    public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> environment)
+        throws NamingException {
+        String contextFactoryClass = (String) environment.get(Context.INITIAL_CONTEXT_FACTORY);
+        if (contextFactoryClass != null) {
+            try {
+                Class clazz = ClassLoader.getSystemClassLoader().loadClass(contextFactoryClass);
+                return InitialContextFactory.class.cast(clazz.newInstance());
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
+    }
+   
 }
