@@ -70,18 +70,9 @@ public class ContextManagerService implements JNDIContextManager {
         return DirContext.class.cast( getInitialContext(environment) );
     }
     
-    private Context getInitialContext(Map environment) throws NamingException {
-        Hashtable env;
-        if (environment instanceof Hashtable) {
-            env = (Hashtable) environment;
-        } else {
-            env = new Hashtable();
-            if (environment != null) {
-                env.putAll(environment);        
-            }
-        }
-        
+    private Context getInitialContext(Map environment) throws NamingException {        
         BundleContext bundleContext = bundle.getBundleContext();
+        Hashtable env = ContextHelper.toHashtable(environment);
         Context context = ContextHelper.getInitialContext(bundleContext, env);
         contexts.add(context);
         return context;
