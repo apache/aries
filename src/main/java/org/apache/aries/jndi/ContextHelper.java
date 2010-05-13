@@ -43,115 +43,66 @@ public final class ContextHelper {
 
     public static final Comparator<ServiceReference> SERVICE_REFERENCE_COMPARATOR = 
         new ServiceReferenceComparator();
-    
-	/** The bundle context we use for accessing the SR */
-  private static BundleContext context;
-  
-  /** Ensure no one constructs us */
-  private ContextHelper() { throw new RuntimeException(); }
-  
-  public static void setBundleContext(BundleContext ctx)
-  {
-  	context = ctx;
-  }
-      
-  private static Context createIcfContext(Hashtable<?,?> env) throws NamingException
-  {
-    String icfFactory = (String) env.get(Context.INITIAL_CONTEXT_FACTORY);
-    InitialContextFactory icf = null;
 
-    if (icfFactory != null) {
-      try {
-        Class<?> clazz = Class.forName(icfFactory, true, Thread.currentThread()
-            .getContextClassLoader());
-        icf = (InitialContextFactory) clazz.newInstance();
+    /** The bundle context we use for accessing the SR */
+    private static BundleContext context;
 
-      } catch (ClassNotFoundException e11) {
-        NamingException e4 = new NamingException("Argh this should never happen :)");
-        e4.initCause(e11);
-        throw e4;
-      } catch (InstantiationException e2) {
-        NamingException e4 = new NamingException("Argh this should never happen :)");
-        e4.initCause(e2);
-        throw e4;
-      } catch (IllegalAccessException e1) {
-        NamingException e4 = new NamingException("Argh this should never happen :)");
-        e4.initCause(e1);
-        throw e4;
-      }
-    }
-    Context ctx = null;
-
-    if (icf != null) {
-      ctx = icf.getInitialContext(env);
-    }    
-    
-    return ctx;
-  }
-  
-  /**
-   * This method is used to create a URL Context. It does this by looking for 
-   * the URL context's ObjectFactory in the service registry.
-   * 
-   * @param urlScheme
-   * @param env
-   * @return a Context
-   * @throws NamingException
-   */
-  public static Context createURLContext(String urlScheme, Hashtable<?, ?> env)
-      throws NamingException
-  {
-    ObjectFactory factory = null;
-    ServiceReference ref = null;
-
-    Context ctx = null;
-
-    try {
-      ServiceReference[] services = context.getServiceReferences(ObjectFactory.class.getName(),
-                                                                 "(" + JNDIConstants.JNDI_URLSCHEME + "=" + urlScheme + ")");
-
-      if (services != null) {
-        ref = services[0];
-        factory = (ObjectFactory) context.getService(ref);
-      }
-    } catch (InvalidSyntaxException e1) {
-      // TODO nls enable this.
-      NamingException e = new NamingException("Argh this should never happen :)");
-      e.initCause(e1);
-      throw e;
+    /** Ensure no one constructs us */
+    private ContextHelper() {
+        throw new RuntimeException();
     }
 
-    if (factory != null) {
-      try {
-        ctx = (Context) factory.getObjectInstance(null, null, null, env);
-      } catch (Exception e) {
-        NamingException e2 = new NamingException();
-        e2.initCause(e);
-        throw e2;
-      } finally {
-        if (ref != null) context.ungetService(ref);
-      }
+    public static void setBundleContext(BundleContext ctx) {
+        context = ctx;
     }
 
-    // TODO: This works for WAS - we believe - but is incorrect behaviour. We should not use an icf to generate the URLContext.
-    // Rather, the missing URLContext factories should be exported on behalf of WAS.
-    if (ctx == null) {
-      ctx = createIcfContext(env);
-    }
-    
-    if (ctx == null && factory == null) {
-      NamingException e = new NamingException("We could not find an ObjectFactory to use");
-      throw e;
-    } else if (ctx == null && factory != null) {
-      NamingException e = new NamingException("The ICF returned a null context");
-      throw e;
+    /**
+     * This method is used to create a URL Context. It does this by looking for
+     * the URL context's ObjectFactory in the service registry.
+     * 
+     * @param urlScheme
+     * @param env
+     * @return a Context
+     * @throws NamingException
+     */
+    public static Context createURLContext(String urlScheme, Hashtable<?, ?> env)
+        throws NamingException {
+        ServiceReference ref = null;
+        try {
+            ServiceReference[] services = context.getServiceReferences(ObjectFactory.class.getName(), 
+                                                                       "(" + JNDIConstants.JNDI_URLSCHEME + "=" + urlScheme + ")");
+
+            if (services != null) {
+                ref = services[0];
+            }
+        } catch (InvalidSyntaxException e1) {
+            NamingException e = new NamingException("Argh this should never happen :)");
+            e.initCause(e1);
+            throw e;
+        }
+
+        Context ctx = null; 
+        
+        if (ref != null) {
+            ObjectFactory factory = (ObjectFactory) context.getService(ref);
+            try {
+                ctx = (Context) factory.getObjectInstance(null, null, null, env);
+            } catch (Exception e) {
+                NamingException e2 = new NamingException();
+                e2.initCause(e);
+                throw e2;
+            } finally {
+                if (ref != null) {
+                    context.ungetService(ref);
+                }
+            }
+        }
+
+        return ctx;
     }
 
-    return ctx;
-  }
-  
     public static Context getInitialContext(BundleContext context, Hashtable<?, ?> environment)
-            throws NamingException {
+        throws NamingException {
         ContextProvider provider = getContextProvider(context, environment);
         String contextFactoryClass = (String) environment.get(Context.INITIAL_CONTEXT_FACTORY);
         if (contextFactoryClass == null) {
