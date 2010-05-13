@@ -64,10 +64,7 @@ public class ObjectFactoryTest
     Field f = ContextHelper.class.getDeclaredField("context");
     f.setAccessible(true);
     f.set(null, bc);
-    f = OSGiObjectFactoryBuilder.class.getDeclaredField("context");
-    f.setAccessible(true);
-    f.set(null, bc);
-
+    OSGiObjectFactoryBuilder.setBundleContext(bc);
   }
 
   /**

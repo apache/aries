@@ -29,12 +29,14 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.jndi.JNDIContextManager;
+import org.osgi.service.jndi.JNDIProviderAdmin;
 
 import org.apache.aries.jndi.ContextHelper;
 import org.apache.aries.jndi.ContextManagerServiceFactory;
 import org.apache.aries.jndi.JREInitialContextFactoryBuilder;
 import org.apache.aries.jndi.OSGiInitialContextFactoryBuilder;
 import org.apache.aries.jndi.OSGiObjectFactoryBuilder;
+import org.apache.aries.jndi.ProviderAdminService;
 
 /**
  * The activator for this bundle makes sure the static classes in it are
@@ -46,6 +48,10 @@ public class Activator implements BundleActivator {
     
     public void start(BundleContext context) {
   
+        registrations.add(context.registerService(JNDIProviderAdmin.class.getName(), 
+                                                  new ProviderAdminService(context), 
+                                                  null));
+        
         registrations.add(context.registerService(InitialContextFactoryBuilder.class.getName(), 
                                                  new JREInitialContextFactoryBuilder(), 
                                                  null));
