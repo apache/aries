@@ -22,6 +22,12 @@ public class SubsystemConstants {
         // non-instantiable
     }
 
+    //====================================================
+    //
+    //   Subsystem manifest headers
+    //
+    //====================================================
+
     /**
      * The subsystem manifest version header must be present and equals to 1.0
      * for this version of subsystems.
@@ -66,6 +72,66 @@ public class SubsystemConstants {
     public static final String SUBSYSTEM_IMPORTSERVICE       = "Subsystem-ImportService";
     public static final String SUBSYSTEM_EXPORTSERVICE       = "Subsystem-ExportService";
     public static final String SUBSYSTEM_REQUIREBUNDLE       = "Subsystem-RequireBundle";
+
+    //====================================================
+    //
+    //   Application manifest headers
+    //
+    //====================================================
+
+    /**
+     * The subsystem manifest version header must be present and equals to 1.0
+     * for this version of applications.
+     */
+    public static final String APPLICATION_MANIFESTVERSION   = "Application-ManifestVersion";
+
+    /**
+     * Symbolic name for the application.  Must be present.
+     */
+    public static final String APPLICATION_SYMBOLICNAME      = "Application-SymbolicName";
+
+    /**
+     * Version of the application
+     */
+    public static final String APPLICATION_VERSION           = "Application-Version";
+
+    /**
+     * Human readable name
+     */
+    public static final String APPLICATION_NAME              = "Application-Name";
+
+    //====================================================
+    //
+    //   Library manifest headers
+    //
+    //====================================================
+
+    /**
+     * The subsystem manifest version header must be present and equals to 1.0
+     * for this version of applications.
+     */
+    public static final String LIBRARY_MANIFESTVERSION       = "Library-ManifestVersion";
+
+    /**
+     * Symbolic name for the application.  Must be present.
+     */
+    public static final String LIBRARY_SYMBOLICNAME          = "Library-SymbolicName";
+
+    /**
+     * Version of the application
+     */
+    public static final String LIBRARY_VERSION               = "Library-Version";
+
+    /**
+     * Human readable name
+     */
+    public static final String LIBRARY_NAME                  = "Library-Name";
+
+    //====================================================
+    //
+    //   Attributes used in headers
+    //
+    //====================================================
 
     /**
      * Directive on the manifest header of a composite indicating the
@@ -114,14 +180,5 @@ public class SubsystemConstants {
      */
     public static final String RESOURCE_START_LEVEL_ATTRIBUTE      = "start-level";
 
-    /*
-    String APPLICATION_SYMBOLICNAME = "Application-SymbolicName";
-    String APPLICATION_VERSION = "Application-Version";
-    String APPLICATION_NAME = "Application-Name";
-
-    String LIBRARY_SYMBOLICNAME = "Library-SymbolicName";
-    String LIBRARY_VERSION = "Library-Version";
-    String LIBRARY_NAME = "Library-Name";
-    */
 
 }
