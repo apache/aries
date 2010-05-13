@@ -17,57 +17,57 @@
  under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.apache.aries.jndi</groupId>
-    <artifactId>jndi</artifactId>
-    <version>0.2-incubating-SNAPSHOT</version>
-  </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.aries.jndi</groupId>
+        <artifactId>jndi</artifactId>
+        <version>0.2-incubating-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>org.apache.aries.jndi.url</artifactId>
-  <packaging>bundle</packaging>
-  <name>Apache Aries JNDI URL Handler</name>
-  <description>
+    <artifactId>org.apache.aries.jndi.url</artifactId>
+    <packaging>bundle</packaging>
+    <name>Apache Aries JNDI URL Handler</name>
+    <description>
       This bundle contains the JNDI URL handler for OSGi
-  </description>
+    </description>
 
-  <properties>
-    <aries.osgi.export.pkg>
-        org.apache.aries.jndi.services
-    </aries.osgi.export.pkg>
-    <aries.osgi.private.pkg>
-        org.apache.aries.jndi.url
-    </aries.osgi.private.pkg>
-    <aries.osgi.activator>
-        org.apache.aries.jndi.url.Activator
-    </aries.osgi.activator>
-  </properties>
+    <properties>
+        <aries.osgi.export.pkg>
+            org.apache.aries.jndi.services
+        </aries.osgi.export.pkg>
+        <aries.osgi.private.pkg>
+            org.apache.aries.jndi.url
+        </aries.osgi.private.pkg>
+        <aries.osgi.activator>
+            org.apache.aries.jndi.url.Activator
+        </aries.osgi.activator>
+    </properties>
 
-  <dependencies>
-      <dependency>
-      	<groupId>org.apache.aries.jndi</groupId>
-      	<artifactId>org.apache.aries.jndi.api</artifactId>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-      	<groupId>org.apache.aries</groupId>
-      	<artifactId>org.apache.aries.util</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>org.osgi</groupId>
-          <artifactId>org.osgi.core</artifactId>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.aries.jndi</groupId>
-          <artifactId>org.apache.aries.jndi.core</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.aries.testsupport</groupId>
-          <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <scope>test</scope>
-      </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.aries.jndi</groupId>
+            <artifactId>org.apache.aries.jndi.api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries</groupId>
+            <artifactId>org.apache.aries.util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.jndi</groupId>
+            <artifactId>org.apache.aries.jndi.core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 </project>
