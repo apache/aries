@@ -100,6 +100,25 @@ public class SubsystemConstants {
      */
     public static final String APPLICATION_NAME              = "Application-Name";
 
+    /**
+     * Human readable description
+     */
+    public static final String APPLICATION_DESCRIPTION       = "Application-Description";
+
+    /**
+     * Name of the resource to use for localized headers
+     */
+    public static final String APPLICATION_LOCALIZATION      = "Application-Localization";
+
+    /**
+     * Location to use when updating the subsystem
+     */
+    public static final String APPLICATION_UPDATELOCATION    = "Application-UpdateLocation";
+
+    public static final String APPLICATION_CONTENT           = "Application-Content";
+    public static final String APPLICATION_RESOURCES         = "Application-Resources";
+
+
     //====================================================
     //
     //   Library manifest headers
@@ -126,6 +145,25 @@ public class SubsystemConstants {
      * Human readable name
      */
     public static final String LIBRARY_NAME                  = "Library-Name";
+
+    /**
+     * Human readable description
+     */
+    public static final String LIBRARY_DESCRIPTION           = "Library-Description";
+
+    /**
+     * Name of the resource to use for localized headers
+     */
+    public static final String LIBRARY_LOCALIZATION          = "Library-Localization";
+
+    /**
+     * Location to use when updating the subsystem
+     */
+    public static final String LIBRARY_UPDATELOCATION        = "Library-UpdateLocation";
+
+    public static final String LIBRARY_CONTENT               = "Library-Content";
+    public static final String LIBRARY_RESOURCES             = "Library-Resources";
+
 
     //====================================================
     //
