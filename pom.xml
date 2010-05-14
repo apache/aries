@@ -31,9 +31,9 @@
     </description>
 
     <properties>
-        <aries.osgi.export.pkg>
-            org.osgi.service.jndi
-        </aries.osgi.export.pkg>
+        <aries.osgi.export>
+            org.osgi.service.jndi;version="1.0"
+        </aries.osgi.export>
         <aries.osgi.private.pkg>
             org.apache.aries.jndi*
         </aries.osgi.private.pkg>
