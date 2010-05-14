@@ -18,6 +18,7 @@
  */
 package org.apache.aries.jndi;
 
+import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -34,17 +35,34 @@ import javax.naming.spi.DirObjectFactory;
 import javax.naming.spi.ObjectFactory;
 import javax.naming.spi.ObjectFactoryBuilder;
 
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jndi.JNDIConstants;
 
 public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirObjectFactory {
 
-    public Object getObjectInstance(Object obj,
-                                    Name name,
-                                    Context nameCtx,
-                                    Hashtable<?, ?> environment,
-                                    Attributes attrs) throws Exception {
+    public DirObjectFactoryHelper(BundleContext defaultContext, BundleContext callerContext) {
+        super(defaultContext, callerContext);
+    }
+    
+    public Object getObjectInstance(final Object obj,
+                                    final Name name,
+                                    final Context nameCtx,
+                                    final Hashtable<?, ?> environment,
+                                    final Attributes attrs) throws Exception {
+        return Utils.doPrivileged(new PrivilegedExceptionAction<Object>() {
+            public Object run() throws Exception {
+                return doGetObjectInstance(obj, name, nameCtx, environment, attrs);
+            }            
+        });
+    }
+    
+    private Object doGetObjectInstance(Object obj,
+                                       Name name,
+                                       Context nameCtx,
+                                       Hashtable<?, ?> environment,
+                                       Attributes attrs) throws Exception {
 
         // Step 1
         if (obj instanceof Referenceable) {
@@ -91,16 +109,16 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
         throws Exception {
         Object result = null;
         try {
-            ServiceReference[] refs = context.getAllServiceReferences(DirObjectFactory.class.getName(), null);
+            ServiceReference[] refs = callerContext.getServiceReferences(DirObjectFactory.class.getName(), null);
             if (refs != null) {
-                Arrays.sort(refs, ContextHelper.SERVICE_REFERENCE_COMPARATOR);
+                Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
                 for (ServiceReference ref : refs) {
-                    DirObjectFactory factory = (DirObjectFactory) context.getService(ref);
+                    DirObjectFactory factory = (DirObjectFactory) callerContext.getService(ref);
 
                     try {
                         result = factory.getObjectInstance(obj, name, nameCtx, environment, attrs);
                     } finally {
-                        context.ungetService(ref);
+                        callerContext.ungetService(ref);
                     }
 
                     // if the result comes back and is not null and not the reference
@@ -138,7 +156,7 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
                 DirObjectFactory factory = null;
                 ServiceReference ref = null;
                 try {
-                    ServiceReference[] services = context.getServiceReferences(DirObjectFactory.class.getName(), 
+                    ServiceReference[] services = callerContext.getServiceReferences(DirObjectFactory.class.getName(), 
                             "(&(" + JNDIConstants.JNDI_URLSCHEME + "=" + urlScheme + "))");
 
                     if (services != null && services.length > 0) {
@@ -150,13 +168,13 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
                 }
 
                 if (ref != null) {
-                    factory = (DirObjectFactory) context.getService(ref);
+                    factory = (DirObjectFactory) callerContext.getService(ref);
                     
                     String value = (String) address.getContent();
                     try {
                         result = factory.getObjectInstance(value, name, nameCtx, environment, attrs);
                     } finally {
-                        context.ungetService(ref);
+                        callerContext.ungetService(ref);
                     }
 
                     // if the result comes back and is not null and not the reference
@@ -183,7 +201,7 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
         ServiceReference serviceReference = null;
 
         try {
-            ServiceReference[] refs = context.getAllServiceReferences(className, null);
+            ServiceReference[] refs = defaultContext.getServiceReferences(className, null);
             if (refs != null && refs.length > 0) {
                 serviceReference = refs[0];
             }
@@ -195,11 +213,11 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
         Object result = null;
         
         if (serviceReference != null) {
-            DirObjectFactory factory = (DirObjectFactory) context.getService(serviceReference);
+            DirObjectFactory factory = (DirObjectFactory) defaultContext.getService(serviceReference);
             try {
                 result = factory.getObjectInstance(reference, name, nameCtx, environment, attrs);
             } finally {
-                context.ungetService(serviceReference);
+                defaultContext.ungetService(serviceReference);
             }
         }
 
@@ -214,17 +232,17 @@ public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirOb
         throws Exception {
         ObjectFactory factory = null;
         try {
-            ServiceReference[] refs = context.getServiceReferences(ObjectFactoryBuilder.class.getName(), null);
+            ServiceReference[] refs = callerContext.getServiceReferences(ObjectFactoryBuilder.class.getName(), null);
             if (refs != null) {
-                Arrays.sort(refs, ContextHelper.SERVICE_REFERENCE_COMPARATOR);
+                Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
                 for (ServiceReference ref : refs) {
-                    ObjectFactoryBuilder builder = (ObjectFactoryBuilder) context.getService(ref);
+                    ObjectFactoryBuilder builder = (ObjectFactoryBuilder) callerContext.getService(ref);
                     try {
                         factory = builder.createObjectFactory(obj, environment);
                     } catch (NamingException e) {
                         // TODO: log it
                     } finally {
-                        context.ungetService(ref);
+                        callerContext.ungetService(ref);
                     }
                     if (factory != null) {
                         break;
