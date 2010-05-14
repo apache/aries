@@ -27,7 +27,7 @@
     <name>Apache Aries JNDI Bundle</name>
     <description>
         This bundle contains the core JNDI along with the OSGi url handler.
-        It's composed of the jndi-core and jndi-url modules.
+        It's composed of the jndi-api, jndi-core and jndi-url modules.
     </description>
 
     <properties>
@@ -51,6 +51,10 @@
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.url</artifactId>
         </dependency>
+        <dependency>
+	        <groupId>org.apache.aries.jndi</groupId>
+	        <artifactId>org.apache.aries.jndi.api</artifactId>
+	      </dependency>			
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -77,6 +81,7 @@
                                 <includes>
                                     <include>org.apache.aries.jndi:org.apache.aries.jndi.core</include>
                                     <include>org.apache.aries.jndi:org.apache.aries.jndi.url</include>
+                                    <include>org.apache.aries.jndi:org.apache.aries.jndi.api</include>
                                 </includes>
                             </artifactSet>
                             <filters>
@@ -88,6 +93,12 @@
                                 </filter>
                                 <filter>
                                     <artifact>org.apache.aries.jndi:org.apache.aries.jndi.url</artifact>
+                                    <excludes>
+                                        <exclude>org/**</exclude>
+                                    </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>org.apache.aries.jndi:org.apache.aries.jndi.api</artifact>
                                     <excludes>
                                         <exclude>org/**</exclude>
                                     </excludes>
@@ -131,6 +142,11 @@
                                         <artifactItem>
                                             <groupId>org.apache.aries.jndi</groupId>
                                             <artifactId>org.apache.aries.jndi.url</artifactId>
+                                            <classifier>sources</classifier>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.apache.aries.jndi</groupId>
+                                            <artifactId>org.apache.aries.jndi.api</artifactId>
                                             <classifier>sources</classifier>
                                         </artifactItem>
                                     </artifactItems>
