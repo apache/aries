@@ -36,6 +36,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.jndi.JNDIConstants;
 
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
@@ -47,6 +48,7 @@ import org.apache.aries.mocks.BundleContextMock;
 public class ObjectFactoryTest
 {
   private BundleContext bc;
+  private Hashtable env;
 
   /**
    * This method does the setup .
@@ -60,11 +62,9 @@ public class ObjectFactoryTest
   {
     bc =  Skeleton.newMock(new BundleContextMock(), BundleContext.class);
     new Activator().start(bc);
-    
-    Field f = ContextHelper.class.getDeclaredField("context");
-    f.setAccessible(true);
-    f.set(null, bc);
-    OSGiObjectFactoryBuilder.setBundleContext(bc);
+        
+    env = new Hashtable();
+    env.put(JNDIConstants.BUNDLE_CONTEXT, bc);
   }
 
   /**
@@ -82,7 +82,7 @@ public class ObjectFactoryTest
   {
     Reference ref = new Reference(null);
     ref.add(new StringRefAddr("URL", "wibble"));
-    Object obj = NamingManager.getObjectInstance(ref, null, null, null);
+    Object obj = NamingManager.getObjectInstance(ref, null, null, env);
 
     assertSame("The naming manager should have returned the reference object", ref, obj);
   }
@@ -101,7 +101,7 @@ public class ObjectFactoryTest
 
     Reference ref = new Reference(null);
     ref.add(new StringRefAddr("URL", "wibble"));
-    Object obj = NamingManager.getObjectInstance(ref, null, null, null);
+    Object obj = NamingManager.getObjectInstance(ref, null, null, env);
     
     assertEquals("The naming manager should have returned the test object", testObject, obj);
   }
@@ -116,7 +116,7 @@ public class ObjectFactoryTest
     bc.registerService(ObjectFactory.class.getName(), factory, null);
 
     Reference ref = new Reference(null);
-    Object obj = NamingManager.getObjectInstance(ref, null, null, null);
+    Object obj = NamingManager.getObjectInstance(ref, null, null, env);
     
     assertEquals("The naming manager should have returned the test object", testObject, obj);
   }
@@ -133,7 +133,7 @@ public class ObjectFactoryTest
     bc.registerService(new String[] {ObjectFactory.class.getName(), factory.getClass().getName()}, 
                        factory, null);
 
-    Object obj = NamingManager.getObjectInstance(ref, null, null, null);
+    Object obj = NamingManager.getObjectInstance(ref, null, null, env);
     
     assertEquals("The naming manager should have returned the test object", testObject, obj);
   }
@@ -150,7 +150,7 @@ public class ObjectFactoryTest
     bc.registerService(new String[] {ObjectFactory.class.getName(), factory.getClass().getName()}, 
                        factory, null);
 
-    Object obj = NamingManager.getObjectInstance(ref, null, null, null);
+    Object obj = NamingManager.getObjectInstance(ref, null, null, env);
 
     assertSame("The naming manager should have returned the reference object", ref, obj);
   }
@@ -160,7 +160,7 @@ public class ObjectFactoryTest
   {
     Reference ref = new Reference("dummy.class.name");
 
-    Object obj = NamingManager.getObjectInstance(ref, null, null, null);
+    Object obj = NamingManager.getObjectInstance(ref, null, null, env);
 
     assertSame("The naming manager should have returned the reference object", ref, obj);
   }

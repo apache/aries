@@ -23,20 +23,20 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
-public class ContextManagerServiceFactory implements ServiceFactory {
+public class ProviderAdminServiceFactory implements ServiceFactory {
 
     private BundleContext defaultContext;
     
-    public ContextManagerServiceFactory(BundleContext defaultContext) {
+    public ProviderAdminServiceFactory(BundleContext defaultContext) {
         this.defaultContext = defaultContext;
     }
     
     public Object getService(Bundle bundle, ServiceRegistration registration) {
-        return new ContextManagerService(defaultContext, bundle.getBundleContext());
+        return new ProviderAdminService(defaultContext, bundle.getBundleContext());
     }
 
     public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
-        ((ContextManagerService) service).close();
+        ((ProviderAdminService) service).close();
     }
 
 }

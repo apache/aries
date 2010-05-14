@@ -36,7 +36,7 @@ import org.apache.aries.jndi.ContextManagerServiceFactory;
 import org.apache.aries.jndi.JREInitialContextFactoryBuilder;
 import org.apache.aries.jndi.OSGiInitialContextFactoryBuilder;
 import org.apache.aries.jndi.OSGiObjectFactoryBuilder;
-import org.apache.aries.jndi.ProviderAdminService;
+import org.apache.aries.jndi.ProviderAdminServiceFactory;
 
 /**
  * The activator for this bundle makes sure the static classes in it are
@@ -47,23 +47,7 @@ public class Activator implements BundleActivator {
     private List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
     
     public void start(BundleContext context) {
-  
-        registrations.add(context.registerService(JNDIProviderAdmin.class.getName(), 
-                                                  new ProviderAdminService(context), 
-                                                  null));
-        
-        registrations.add(context.registerService(InitialContextFactoryBuilder.class.getName(), 
-                                                 new JREInitialContextFactoryBuilder(), 
-                                                 null));
-        
-        ContextManagerServiceFactory contextManagerFactory = new ContextManagerServiceFactory();
-        registrations.add(context.registerService(JNDIContextManager.class.getName(), 
-                                                  contextManagerFactory, 
-                                                  null));
-        
-        ContextHelper.setBundleContext(context);
-        OSGiObjectFactoryBuilder.setBundleContext(context);
-  
+          
         try {
             if (!!!NamingManager.hasInitialContextFactoryBuilder()) {
                 NamingManager.setInitialContextFactoryBuilder(new OSGiInitialContextFactoryBuilder(context));
@@ -74,13 +58,25 @@ public class Activator implements BundleActivator {
         }
     
         try {
-            NamingManager.setObjectFactoryBuilder(new OSGiObjectFactoryBuilder());
+            NamingManager.setObjectFactoryBuilder(new OSGiObjectFactoryBuilder(context));
         } catch (NamingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
+        
+        registrations.add(context.registerService(JNDIProviderAdmin.class.getName(), 
+                          new ProviderAdminServiceFactory(context), 
+                          null));
+
+        registrations.add(context.registerService(InitialContextFactoryBuilder.class.getName(), 
+                          new JREInitialContextFactoryBuilder(), 
+                          null));
+
+        registrations.add(context.registerService(JNDIContextManager.class.getName(), 
+                          new ContextManagerServiceFactory(context),
+                          null));
     }
 
     public void stop(BundleContext context) {
