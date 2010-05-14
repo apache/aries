@@ -412,8 +412,7 @@ public class BundleContextMock
       e.printStackTrace();
     }
 
-    ServiceFactory factory = new MockServiceFactory(service);
-    return registerService(new String[] {interFace}, factory, properties);
+    return registerService(new String[] {interFace}, service, properties);
   }
   
   /**
