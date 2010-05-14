@@ -18,27 +18,20 @@
  */
 package org.apache.aries.jndi.url;
 
-import java.util.Hashtable;
-
-import javax.naming.spi.ObjectFactory;
-
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.jndi.JNDIConstants;
 
-public class Activator implements BundleActivator {
+/**
+ * A factory for the aries JNDI context
+ */
+public class OsgiURLContextServiceFactory implements ServiceFactory {
 
-    private ServiceRegistration reg;
-
-    public void start(BundleContext context) {
-        Hashtable<Object, Object> props = new Hashtable<Object, Object>();
-        props.put(JNDIConstants.JNDI_URLSCHEME, new String[] { "osgi", "aries" });
-        reg = context.registerService(ObjectFactory.class.getName(), new OsgiURLContextServiceFactory(), props);
+    public Object getService(Bundle bundle, ServiceRegistration registration) {
+        return new OsgiURLContextFactory(bundle.getBundleContext());
     }
 
-    public void stop(BundleContext context) {
-        reg.unregister();
+    public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
     }
 
 }

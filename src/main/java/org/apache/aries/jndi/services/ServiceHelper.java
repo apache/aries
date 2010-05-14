@@ -22,15 +22,11 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.naming.NamingException;
 
@@ -38,7 +34,6 @@ import org.apache.aries.jndi.url.OsgiName;
 import org.apache.aries.util.BundleToClassLoaderAdapter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleReference;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceException;
@@ -60,12 +55,6 @@ import org.osgi.service.jndi.JNDIConstants;
  */
 public final class ServiceHelper {
     
-    public static class StackFinder extends SecurityManager {
-        public Class<?>[] getClassContext() {
-            return super.getClassContext();
-        }
-    }
-
     private static class JNDIServiceDamper implements InvocationHandler {
         private BundleContext ctx;
 
@@ -115,92 +104,8 @@ public final class ServiceHelper {
         private Object service;
     }
 
-    /**
-     * @param env
-     * @return the bundle context for the caller.
-     * @throws NamingException
-     */
-    public static BundleContext getBundleContext(Map<String, Object> env) throws NamingException {
-        BundleContext result = null;
-
-        Object bc = env.get(JNDIConstants.BUNDLE_CONTEXT);
-
-        if (bc != null && bc instanceof BundleContext) {
-            result = (BundleContext) bc;
-        } else {
-            ClassLoader cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                public ClassLoader run() {
-                    return Thread.currentThread().getContextClassLoader();
-                }
-            });
-
-            result = getBundleContext(cl);
-        }
-
-        if (result == null) {
-            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-
-            StackFinder finder = new StackFinder();
-            Class<?>[] classStack = finder.getClassContext();
-
-            boolean found = false;
-            boolean foundLookup = false;
-            int i = 0;
-            for (; i < stackTrace.length && !!!found; i++) {
-                if (!!!foundLookup
-                    && ("lookup".equals(stackTrace[i].getMethodName())
-                        || "list".equals(stackTrace[i].getMethodName()) 
-                        || "listBindings".equals(stackTrace[i].getMethodName()))) {
-                    foundLookup = true;
-                } else if (foundLookup
-                           && !!!(stackTrace[i].getClassName().startsWith("org.apache.aries.jndi") 
-                                   || stackTrace[i].getClassName().startsWith("javax.naming"))) {
-                    found = true;
-                }
-            }
-
-            if (found) {
-                i--; // we need to move back an item because the previous loop
-                     // leaves us one after where we wanted to be
-                Set<Integer> classLoadersChecked = new HashSet<Integer>();
-                for (; i < classStack.length && result == null; i++) {
-                    ClassLoader cl = classStack[i].getClassLoader();
-                    int hash = System.identityHashCode(cl);
-                    if (!!!classLoadersChecked.contains(hash)) {
-                        classLoadersChecked.add(hash);
-                        result = getBundleContext(cl);
-                    }
-                }
-                // Now we walk the stack looking for the BundleContext
-            }
-        }
-
-        if (result == null) {
-            throw new NamingException("Unable to find BundleContext");
-        }
-        
-        return result;
-    }
-
-    private static BundleContext getBundleContext(final ClassLoader cl2) {
-        return AccessController.doPrivileged(new PrivilegedAction<BundleContext>() {
-            public BundleContext run() {
-                ClassLoader cl = cl2;
-                BundleContext result = null;
-                while (result == null && cl != null) {
-                    if (cl instanceof BundleReference) {
-                        result = ((BundleReference) cl).getBundle().getBundleContext();
-                    } else if (cl != null) {
-                        cl = cl.getParent();
-                    }
-                }
-
-                return result;
-            }
-        });
-    }
-
-    public static Object getService(OsgiName lookupName,
+    public static Object getService(BundleContext ctx,
+                                    OsgiName lookupName,
                                     String id,
                                     boolean dynamicRebind,
                                     Map<String, Object> env) throws NamingException {
@@ -209,8 +114,6 @@ public final class ServiceHelper {
         String interfaceName = lookupName.getInterface();
         String filter = lookupName.getFilter();
         String serviceName = lookupName.getServiceName();
-
-        BundleContext ctx = getBundleContext(env);
 
         if (id != null) {
             if (filter == null) {
@@ -243,23 +146,11 @@ public final class ServiceHelper {
         return result;
     }
 
-    private static Object proxy(final String interface1,
-                                final String filter,
-                                final boolean rebind,
-                                final BundleContext ctx,
-                                final ServicePair pair) {
-        return AccessController.doPrivileged(new PrivilegedAction<Object>() {
-            public Object run() {
-                return proxyPriviledged(interface1, filter, rebind, ctx, pair);
-            }
-        });
-    }
-
-    private static Object proxyPriviledged(String interface1,
-                                           String filter,
-                                           boolean dynamicRebind,
-                                           BundleContext ctx,
-                                           ServicePair pair) {
+    private static Object proxy(String interface1,
+                                String filter,
+                                boolean dynamicRebind,
+                                BundleContext ctx,
+                                ServicePair pair) {
         String[] interfaces = null;   
         if (interface1 != null) {
             interfaces = new String [] { interface1 };
@@ -358,12 +249,12 @@ public final class ServiceHelper {
         return p;
     }
 
-    public static ServiceReference[] getServiceReferences(String interface1,
+    public static ServiceReference[] getServiceReferences(BundleContext ctx,
+                                                          String interface1,
                                                           String filter,
                                                           String serviceName,
                                                           Map<String, Object> env)
             throws NamingException {
-        BundleContext ctx = getBundleContext(env);
         ServiceReference[] refs = null;
 
         try {
