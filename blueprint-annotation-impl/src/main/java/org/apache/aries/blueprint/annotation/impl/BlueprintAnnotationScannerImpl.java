@@ -45,6 +45,7 @@ import org.apache.aries.blueprint.annotation.ReferenceListener;
 import org.apache.aries.blueprint.annotation.Register;
 import org.apache.aries.blueprint.annotation.RegistrationListener;
 import org.apache.aries.blueprint.annotation.Service;
+import org.apache.aries.blueprint.annotation.ServiceProperty;
 import org.apache.aries.blueprint.annotation.Unbind;
 import org.apache.aries.blueprint.annotation.Unregister;
 import org.apache.aries.blueprint.annotation.service.BlueprintAnnotationScanner;
@@ -59,6 +60,8 @@ import org.apache.aries.blueprint.jaxb.TreferenceList;
 import org.apache.aries.blueprint.jaxb.TreferenceListener;
 import org.apache.aries.blueprint.jaxb.TregistrationListener;
 import org.apache.aries.blueprint.jaxb.Tservice;
+import org.apache.aries.blueprint.jaxb.TserviceProperties;
+import org.apache.aries.blueprint.jaxb.TservicePropertyEntry;
 import org.apache.aries.blueprint.jaxb.TtypeConverters;
 import org.apache.aries.blueprint.jaxb.Tvalue;
 import org.apache.xbean.finder.BundleAnnotationFinder;
@@ -647,6 +650,7 @@ public class BlueprintAnnotationScannerImpl implements
         Class<?>[] interfaces = service.interfaces();
         int ranking = service.ranking();
         String autoExport = service.autoExport();
+        ServiceProperty[] serviceProperties = service.serviceProperties();
         RegistrationListener[] regListeners = service.registerationListeners();
         
         Tservice tservice = new Tservice();
@@ -669,6 +673,21 @@ public class BlueprintAnnotationScannerImpl implements
                 tInterfaces.getValue().add(interf.getName());
             }
             tservice.setInterfaces(tInterfaces);
+        }
+        
+        // process service property.  only key value as string are supported for now
+        for (ServiceProperty sp : serviceProperties) {
+            if (sp != null) {
+                String key = sp.key();
+                String value = sp.value();
+                if (key.length() > 0 && value.length() > 0) {
+                    TservicePropertyEntry tsp = new TservicePropertyEntry();
+                    tsp.setKey(key);
+                    tsp.setValueAttribute(value);
+                    tservice.getServiceProperties().getEntry().add(tsp);
+                }
+                
+            }
         }
         
         for (RegistrationListener regListener : regListeners) {

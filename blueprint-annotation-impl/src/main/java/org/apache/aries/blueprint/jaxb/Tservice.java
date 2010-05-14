@@ -152,6 +152,9 @@ public class Tservice
      *     
      */
     public TserviceProperties getServiceProperties() {
+        if (serviceProperties == null) {
+            serviceProperties = new TserviceProperties();
+        }
         return serviceProperties;
     }
 
