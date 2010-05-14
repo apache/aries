@@ -18,6 +18,7 @@
  */
 package org.apache.aries.jndi;
 
+import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -38,17 +39,30 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.jndi.JNDIConstants;
 
 public class ObjectFactoryHelper implements ObjectFactory {
+    
+    protected BundleContext defaultContext;
+    protected BundleContext callerContext;
 
-    protected BundleContext context;
-
-    public void setBundleContext(BundleContext ctx) {
-        context = ctx;
+    public ObjectFactoryHelper(BundleContext defaultContext, BundleContext callerContext) {
+        this.defaultContext = defaultContext;
+        this.callerContext = callerContext;
     }
 
-    public Object getObjectInstance(Object obj,
-                                    Name name,
-                                    Context nameCtx,
-                                    Hashtable<?, ?> environment) throws Exception {
+    public Object getObjectInstance(final Object obj,
+                                    final Name name,
+                                    final Context nameCtx,
+                                    final Hashtable<?, ?> environment) throws Exception {
+        return Utils.doPrivileged(new PrivilegedExceptionAction<Object>() {
+            public Object run() throws Exception {
+                return doGetObjectInstance(obj, name, nameCtx, environment);
+            }            
+        });
+    }
+    
+    private Object doGetObjectInstance(Object obj,
+                                       Name name,
+                                       Context nameCtx,
+                                       Hashtable<?, ?> environment) throws Exception {
 
         // Step 1
         if (obj instanceof Referenceable) {
@@ -94,16 +108,16 @@ public class ObjectFactoryHelper implements ObjectFactory {
         throws Exception {
         Object result = null;
         try {
-            ServiceReference[] refs = context.getAllServiceReferences(ObjectFactory.class.getName(), null);
+            ServiceReference[] refs = callerContext.getServiceReferences(ObjectFactory.class.getName(), null);
             if (refs != null) {
-                Arrays.sort(refs, ContextHelper.SERVICE_REFERENCE_COMPARATOR);
+                Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
                 for (ServiceReference ref : refs) {
-                    ObjectFactory factory = (ObjectFactory) context.getService(ref);
+                    ObjectFactory factory = (ObjectFactory) callerContext.getService(ref);
 
                     try {
                         result = factory.getObjectInstance(obj, name, nameCtx, environment);
                     } finally {
-                        context.ungetService(ref);
+                        callerContext.ungetService(ref);
                     }
 
                     // if the result comes back and is not null and not the reference
@@ -145,7 +159,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
                 ObjectFactory factory = null;
                 ServiceReference ref = null;
                 try {
-                    ServiceReference[] services = context.getServiceReferences(ObjectFactory.class.getName(), 
+                    ServiceReference[] services = callerContext.getServiceReferences(ObjectFactory.class.getName(), 
                             "(&(" + JNDIConstants.JNDI_URLSCHEME + "=" + urlScheme + "))");
 
                     if (services != null && services.length > 0) {
@@ -157,13 +171,13 @@ public class ObjectFactoryHelper implements ObjectFactory {
                 }
 
                 if (ref != null) {
-                    factory = (ObjectFactory) context.getService(ref);
+                    factory = (ObjectFactory) callerContext.getService(ref);
                     
                     String value = (String) address.getContent();
                     try {
                         result = factory.getObjectInstance(value, name, nameCtx, environment);
                     } finally {
-                        context.ungetService(ref);
+                        callerContext.ungetService(ref);
                     }
                     
                     // if the result comes back and is not null and not the reference
@@ -189,7 +203,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
         ServiceReference serviceReference = null;
 
         try {
-            ServiceReference[] refs = context.getAllServiceReferences(className, null);
+            ServiceReference[] refs = defaultContext.getServiceReferences(className, null);
             if (refs != null && refs.length > 0) {
                 serviceReference = refs[0];
             }
@@ -201,11 +215,11 @@ public class ObjectFactoryHelper implements ObjectFactory {
         Object result = null;
         
         if (serviceReference != null) {
-            ObjectFactory factory = (ObjectFactory) context.getService(serviceReference);
+            ObjectFactory factory = (ObjectFactory) defaultContext.getService(serviceReference);
             try {
                 result = factory.getObjectInstance(reference, name, nameCtx, environment);
             } finally {
-                context.ungetService(serviceReference);
+                defaultContext.ungetService(serviceReference);
             }
         }
 
@@ -219,17 +233,17 @@ public class ObjectFactoryHelper implements ObjectFactory {
         throws Exception {
         ObjectFactory factory = null;
         try {
-            ServiceReference[] refs = context.getServiceReferences(ObjectFactoryBuilder.class.getName(), null);
+            ServiceReference[] refs = callerContext.getServiceReferences(ObjectFactoryBuilder.class.getName(), null);
             if (refs != null) {
-                Arrays.sort(refs, ContextHelper.SERVICE_REFERENCE_COMPARATOR);
+                Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
                 for (ServiceReference ref : refs) {
-                    ObjectFactoryBuilder builder = (ObjectFactoryBuilder) context.getService(ref);
+                    ObjectFactoryBuilder builder = (ObjectFactoryBuilder) callerContext.getService(ref);
                     try {
                         factory = builder.createObjectFactory(obj, environment);
                     } catch (NamingException e) {
                         // TODO: log it
                     } finally {
-                        context.ungetService(ref);
+                        callerContext.ungetService(ref);
                     }
                     if (factory != null) {
                         break;

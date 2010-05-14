@@ -204,7 +204,7 @@ public class DelegateContext implements DirContext {
         }
 
         if (toReturn != null) {
-            String packages = System.getProperty(Context.URL_PKG_PREFIXES, null);
+            String packages = Utils.getSystemProperty(Context.URL_PKG_PREFIXES, null);
 
             if (packages != null) {
                 toReturn.addToEnvironment(Context.URL_PKG_PREFIXES, packages);
@@ -237,7 +237,7 @@ public class DelegateContext implements DirContext {
         if (index != -1) {
             String scheme = name.substring(0, index);
 
-            ctx = ContextHelper.createURLContext(scheme, env);
+            ctx = ContextHelper.createURLContext(bundleContext, scheme, env);
         }
 
         if (ctx == null) {

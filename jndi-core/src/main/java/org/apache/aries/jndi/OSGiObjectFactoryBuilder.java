@@ -25,6 +25,8 @@ import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.spi.DirObjectFactory;
+import javax.naming.spi.DirectoryManager;
+import javax.naming.spi.NamingManager;
 import javax.naming.spi.ObjectFactory;
 import javax.naming.spi.ObjectFactoryBuilder;
 
@@ -32,10 +34,10 @@ import org.osgi.framework.BundleContext;
 
 public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFactory, DirObjectFactory {
 
-    private static DirObjectFactoryHelper helper = new DirObjectFactoryHelper();
+    private BundleContext defaultContext;
     
-    public static void setBundleContext(BundleContext ctx) {
-        helper.setBundleContext(ctx);
+    public OSGiObjectFactoryBuilder(BundleContext ctx) {
+        defaultContext = ctx;
     }
 
     public ObjectFactory createObjectFactory(Object obj, Hashtable<?, ?> environment)
@@ -47,6 +49,11 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
                                     Name name,
                                     Context nameCtx,
                                     Hashtable<?, ?> environment) throws Exception {
+        BundleContext callerContext = getCallerBundleContext(environment);
+        if (callerContext == null) {
+            return obj;
+        }
+        DirObjectFactoryHelper helper = new DirObjectFactoryHelper(defaultContext, callerContext);
         return helper.getObjectInstance(obj, name, nameCtx, environment);
     }
 
@@ -55,7 +62,19 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
                                     Context nameCtx,
                                     Hashtable<?, ?> environment,
                                     Attributes attrs) throws Exception {
+        BundleContext callerContext = getCallerBundleContext(environment);
+        if (callerContext == null) {
+            return obj;
+        }
+        DirObjectFactoryHelper helper = new DirObjectFactoryHelper(defaultContext, callerContext);
         return helper.getObjectInstance(obj, name, nameCtx, environment, attrs);
     }
 
+    private BundleContext getCallerBundleContext(Hashtable<?, ?> environment) throws NamingException {
+        BundleContext context = Utils.getBundleContext(environment, NamingManager.class.getName());        
+        if (context == null) {
+            context = Utils.getBundleContext(environment, DirectoryManager.class.getName());
+        }
+        return context;
+    }
 }

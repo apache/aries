@@ -21,7 +21,10 @@ package org.apache.aries.jndi;
 import java.util.Hashtable;
 
 import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.naming.NoInitialContextException;
+import javax.naming.directory.InitialDirContext;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
 
@@ -43,9 +46,15 @@ public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBu
 	public Context getInitialContext(Hashtable<?, ?> environment) 
 	    throws NamingException {
 	    
-	    // TODO: use caller's bundle context
-	    
-	    return ContextHelper.getInitialContext(_context, environment);
+	    BundleContext context = Utils.getBundleContext(environment, InitialContext.class.getName());	    
+	    if (context == null) {
+	        context = Utils.getBundleContext(environment, InitialDirContext.class.getName());
+	        if (context == null) {
+	            throw new NoInitialContextException("Unable to determine caller's BundleContext");
+	        }
+	    }
+	    	    
+	    return ContextHelper.getInitialContext(context, environment);
 	}
 	
 }

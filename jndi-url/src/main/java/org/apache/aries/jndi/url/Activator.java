@@ -29,19 +29,16 @@ import org.osgi.service.jndi.JNDIConstants;
 
 public class Activator implements BundleActivator {
 
-  private ServiceRegistration reg;
-	
-  public void start(BundleContext context)
-  {
-    Hashtable<Object, Object> props = new Hashtable<Object, Object>();
-    props.put(JNDIConstants.JNDI_URLSCHEME, new String[] {"osgi", "aries"} );
-    reg = context.registerService(ObjectFactory.class.getName(), new OsgiURLContextFactory(), props);
-  }
+    private ServiceRegistration reg;
 
+    public void start(BundleContext context) {
+        Hashtable<Object, Object> props = new Hashtable<Object, Object>();
+        props.put(JNDIConstants.JNDI_URLSCHEME, new String[] { "osgi", "aries" });
+        reg = context.registerService(ObjectFactory.class.getName(), new OsgiURLContextServiceFactory(), props);
+    }
 
-  public void stop(BundleContext context)
-  {
-	reg.unregister();
-  }
+    public void stop(BundleContext context) {
+        reg.unregister();
+    }
 
 }

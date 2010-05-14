@@ -55,6 +55,7 @@ import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.jndi.JNDIConstants;
 
 /**
  * Tests for our JNDI implementation for the service registry.
@@ -80,14 +81,9 @@ public class ServiceRegistryContextTest
   public void registerService() throws NamingException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException 
   {
     bc =  Skeleton.newMock(new BundleContextMock(), BundleContext.class);
-    new Activator().start(bc);
     new org.apache.aries.jndi.startup.Activator().start(bc);
-    
-    Field f = ContextHelper.class.getDeclaredField("context");
-    f.setAccessible(true);
-    f.set(null, bc);
-    OSGiObjectFactoryBuilder.setBundleContext(bc);
-
+    new Activator().start(bc);
+        
     service = Skeleton.newMock(Runnable.class);
     
     registerService(service);
@@ -200,7 +196,7 @@ public class ServiceRegistryContextTest
         
     InitialContext ctx = new InitialContext(new Hashtable<Object, Object>());
     
-    BundleMock mock = new BundleMock("scooby.doo", new Properties());
+    BundleMock mock = new BundleMock("scooby.doo.1", new Properties());
     
     Thread.currentThread().setContextClassLoader(mock.getClassLoader());
     
@@ -216,7 +212,9 @@ public class ServiceRegistryContextTest
     
     skel.assertCalled(new MethodCall(BundleContext.class, "getServiceReferences", "java.lang.Runnable", null));
 
-    mock = new BundleMock("scooby.doo", new Properties());
+    ctx = new InitialContext(new Hashtable<Object, Object>());
+    
+    mock = new BundleMock("scooby.doo.2", new Properties());
     
     Thread.currentThread().setContextClassLoader(mock.getClassLoader());
 
@@ -233,7 +231,7 @@ public class ServiceRegistryContextTest
     s.run();
     
     Skeleton.getSkeleton(service).assertCalledExactNumberOfTimes(new MethodCall(Runnable.class, "run"), 2);
-
+       
     skel = Skeleton.getSkeleton(mock.getBundleContext());
     skel.assertCalled(new MethodCall(BundleContext.class, "getServiceReferences", "java.lang.Runnable", null));
   }

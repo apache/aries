@@ -28,9 +28,12 @@ import javax.naming.NameParser;
 import javax.naming.NamingException;
 import javax.naming.OperationNotSupportedException;
 
+import org.osgi.framework.BundleContext;
+
 public abstract class AbstractServiceRegistryContext implements Context
 {
 
+  protected BundleContext callerContext;
   /** The environment for this context */
   protected Map<String, Object> env;
   /** The name parser for the service registry name space */
@@ -38,15 +41,17 @@ public abstract class AbstractServiceRegistryContext implements Context
   private static final String ARIES_SERVICES = "aries:services/";
 
   @SuppressWarnings("unchecked")
-  public AbstractServiceRegistryContext(Hashtable<?, ?> environment)
+  public AbstractServiceRegistryContext(BundleContext callerContext, Hashtable<?, ?> environment)
   {
+    this.callerContext = callerContext;
     env = new HashMap<String, Object>();
     env.putAll((Map<? extends String, ? extends Object>) environment);
   }
 
   @SuppressWarnings("unchecked")
-  public AbstractServiceRegistryContext(Map<?, ?> environment)
+  public AbstractServiceRegistryContext(BundleContext callerContext, Map<?, ?> environment)
   {
+    this.callerContext = callerContext;
     env = new HashMap<String, Object>();
     env.putAll((Map<? extends String, ? extends Object>) environment);
   }
