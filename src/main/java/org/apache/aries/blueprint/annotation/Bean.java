@@ -33,7 +33,7 @@ public @interface Bean {
      * the id property for the bean
      * should this be auto generated if none is specified?
      */
-    String id() default "";
+    String id();
     
     /**
      * the activation property for the bean
@@ -47,10 +47,7 @@ public @interface Bean {
      *  the components that the bean depends on
      */
     String[] dependsOn() default ""; 
-    
-    
-    // TODO:  add the argument for the bean
-    
+
     /**
      * the description property for the bean
      */
