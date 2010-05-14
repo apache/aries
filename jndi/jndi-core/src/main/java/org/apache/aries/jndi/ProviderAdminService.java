@@ -32,9 +32,8 @@ public class ProviderAdminService implements JNDIProviderAdmin {
 
     private DirObjectFactoryHelper helper;
     
-    public ProviderAdminService(BundleContext context) {
-        helper = new DirObjectFactoryHelper();
-        helper.setBundleContext(context);
+    public ProviderAdminService(BundleContext defaultContext, BundleContext callerContext) {
+        helper = new DirObjectFactoryHelper(defaultContext, callerContext);
     }
     
     public Object getObjectInstance(Object obj, 
@@ -42,7 +41,7 @@ public class ProviderAdminService implements JNDIProviderAdmin {
                                     Context context, 
                                     Map environment)
         throws Exception {
-        Hashtable env = ContextHelper.toHashtable(environment);
+        Hashtable env = Utils.toHashtable(environment);
         return helper.getObjectInstance(obj, name, context, env);
     }
 
@@ -52,8 +51,10 @@ public class ProviderAdminService implements JNDIProviderAdmin {
                                     Map environment,
                                     Attributes attributes) 
         throws Exception {
-        Hashtable env = ContextHelper.toHashtable(environment);
+        Hashtable env = Utils.toHashtable(environment);
         return helper.getObjectInstance(obj, name, context, env, attributes);
     }
 
+    public void close() {        
+    }
 }

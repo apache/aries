@@ -18,10 +18,9 @@
  */
 package org.apache.aries.jndi;
 
+import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Hashtable;
-import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -41,21 +40,22 @@ import org.osgi.service.jndi.JNDIConstants;
  */
 public final class ContextHelper {
 
-    public static final Comparator<ServiceReference> SERVICE_REFERENCE_COMPARATOR = 
-        new ServiceReferenceComparator();
-
-    /** The bundle context we use for accessing the SR */
-    private static BundleContext context;
-
     /** Ensure no one constructs us */
     private ContextHelper() {
         throw new RuntimeException();
     }
 
-    public static void setBundleContext(BundleContext ctx) {
-        context = ctx;
+    public static Context createURLContext(final BundleContext context,
+                                           final String urlScheme, 
+                                           final Hashtable<?, ?> env)
+        throws NamingException {
+        return Utils.doPrivilegedNaming(new PrivilegedExceptionAction<Context>() {
+            public Context run() throws Exception {
+                return doCreateURLContext(context, urlScheme, env);
+            }
+        });
     }
-
+    
     /**
      * This method is used to create a URL Context. It does this by looking for
      * the URL context's ObjectFactory in the service registry.
@@ -65,12 +65,12 @@ public final class ContextHelper {
      * @return a Context
      * @throws NamingException
      */
-    public static Context createURLContext(String urlScheme, Hashtable<?, ?> env)
+    private static Context doCreateURLContext(BundleContext context, String urlScheme, Hashtable<?, ?> env)
         throws NamingException {
         ServiceReference ref = null;
         try {
             ServiceReference[] services = context.getServiceReferences(ObjectFactory.class.getName(), 
-                                                                       "(" + JNDIConstants.JNDI_URLSCHEME + "=" + urlScheme + ")");
+                                                                       "(" + JNDIConstants.JNDI_URLSCHEME + "=" + urlScheme.trim() + ")");
 
             if (services != null) {
                 ref = services[0];
@@ -86,7 +86,7 @@ public final class ContextHelper {
         if (ref != null) {
             ObjectFactory factory = (ObjectFactory) context.getService(ref);
             try {
-                ctx = (Context) factory.getObjectInstance(null, null, null, env);
+                return (Context) factory.getObjectInstance(null, null, null, env);
             } catch (Exception e) {
                 NamingException e2 = new NamingException();
                 e2.initCause(e);
@@ -100,7 +100,7 @@ public final class ContextHelper {
 
         return ctx;
     }
-
+        
     public static Context getInitialContext(BundleContext context, Hashtable<?, ?> environment)
         throws NamingException {
         ContextProvider provider = getContextProvider(context, environment);
@@ -120,9 +120,19 @@ public final class ContextHelper {
         }
     }
 
-    public static ContextProvider getContextProvider(BundleContext context,
-                                                     Hashtable<?, ?> environment)
-            throws NamingException {
+    public static ContextProvider getContextProvider(final BundleContext context,
+                                                     final Hashtable<?, ?> environment)
+        throws NamingException {
+        return Utils.doPrivilegedNaming(new PrivilegedExceptionAction<ContextProvider>() {
+            public ContextProvider run() throws Exception {
+                return doGetContextProvider(context, environment);
+            }
+        });
+    }
+    
+    private static ContextProvider doGetContextProvider(BundleContext context,
+                                                        Hashtable<?, ?> environment)
+        throws NamingException {
         ContextProvider provider = null;
         String contextFactoryClass = (String) environment.get(Context.INITIAL_CONTEXT_FACTORY);
         if (contextFactoryClass == null) {
@@ -142,7 +152,7 @@ public final class ContextHelper {
                 }
                 if (references != null) {
                     Context initialContext = null;
-                    Arrays.sort(references, SERVICE_REFERENCE_COMPARATOR);
+                    Arrays.sort(references, Utils.SERVICE_REFERENCE_COMPARATOR);
                     for (ServiceReference reference : references) {
                         InitialContextFactory factory = (InitialContextFactory) context.getService(reference);
                         try {
@@ -171,7 +181,7 @@ public final class ContextHelper {
 
             if (references != null && references.length > 0) {
                 Context initialContext = null;
-                Arrays.sort(references, SERVICE_REFERENCE_COMPARATOR);
+                Arrays.sort(references, Utils.SERVICE_REFERENCE_COMPARATOR);
                 ServiceReference reference = references[0];
                 InitialContextFactory factory = (InitialContextFactory) context.getService(reference);
                 try {
@@ -201,7 +211,7 @@ public final class ContextHelper {
             ServiceReference[] refs = context.getAllServiceReferences(InitialContextFactoryBuilder.class.getName(), null);
             if (refs != null) {
                 InitialContextFactory factory = null;
-                Arrays.sort(refs, SERVICE_REFERENCE_COMPARATOR);
+                Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
                 for (ServiceReference ref : refs) {                    
                     InitialContextFactoryBuilder builder = (InitialContextFactoryBuilder) context.getService(ref);
                     try {
@@ -238,23 +248,5 @@ public final class ContextHelper {
             return (reference.getBundle() != null);
         }
     }
-    
-    private static class ServiceReferenceComparator implements Comparator<ServiceReference> {        
-        public int compare(ServiceReference o1, ServiceReference o2) {        
-          return o2.compareTo(o1);
-        }
-    }
-    
-    public static Hashtable toHashtable(Map map) {
-        Hashtable env;
-        if (map instanceof Hashtable) {
-            env = (Hashtable) map;
-        } else {
-            env = new Hashtable();
-            if (map != null) {
-                env.putAll(map);
-            }
-        }
-        return env;
-    }
+
 }

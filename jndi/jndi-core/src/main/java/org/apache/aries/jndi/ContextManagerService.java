@@ -28,17 +28,18 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.jndi.JNDIContextManager;
 
 public class ContextManagerService implements JNDIContextManager {
 
     private Set<Context> contexts = Collections.synchronizedSet(new HashSet<Context>());
-    private Bundle bundle;
+    private BundleContext defaultContext;
+    private BundleContext callerContext;
     
-    public ContextManagerService(Bundle bundle) { 
-        this.bundle = bundle;
+    public ContextManagerService(BundleContext defaultContext, BundleContext callerContext) {
+        this.defaultContext = defaultContext;
+        this.callerContext = callerContext;
     }
     
     public void close() {      
@@ -71,9 +72,8 @@ public class ContextManagerService implements JNDIContextManager {
     }
     
     private Context getInitialContext(Map environment) throws NamingException {        
-        BundleContext bundleContext = bundle.getBundleContext();
-        Hashtable env = ContextHelper.toHashtable(environment);
-        Context context = ContextHelper.getInitialContext(bundleContext, env);
+        Hashtable env = Utils.toHashtable(environment);
+        Context context = ContextHelper.getInitialContext(callerContext, env);
         contexts.add(context);
         return context;
     }
