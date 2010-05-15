@@ -72,6 +72,7 @@
 	dojo.require("demo.BundleStatusGrid");
 	dojo.require("demo.SimpleInitialLayout");
 	dojo.require("demo.DwrLoadingDialog");
+	dojo.require("demo.VisibilitySwitch");
 
 	//provides the basic layout when 1st loading up bundles.
     var initialLayout = null;
@@ -96,6 +97,7 @@
 		var bundleStatusGrid = new demo.BundleStatusGrid("stateTableID");
 		providerSelector = new demo.ProviderSelector("providerSelectorID");		
 		var loadSave = new demo.LayoutManager("loadSaveLayoutID");
+		//var visibilitySwitch = new demo.VisibilitySwitch("visibilitySwitchID");
 	}
 
 	dojo.addOnLoad(setup);
@@ -208,8 +210,8 @@
 <body class="tundra">
 <table style="width: 1300px;">
     <tr>
-      <td colspan=2>
-      		<span id="providerSelectorID"></span><span id="loadSaveLayoutID"></span>
+      <td colspan=3>
+      		<span id="providerSelectorID"></span><span id="loadSaveLayoutID"></span><span id="visibilitySwitchID"></span>
       </td>  
     </tr>
 	<tr>
