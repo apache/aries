@@ -58,6 +58,7 @@ dojo.require("dojo.data.ItemFileWriteStore");
 dojo.declare("demo.LayoutManager", [], {
 	loadButton:null,
 	saveButton:null,
+	switchButton:null,
 	layoutSelector:null,
 	disabled:true,
 	items:[],
@@ -70,6 +71,9 @@ dojo.declare("demo.LayoutManager", [], {
 	  this.saveButton = new dijit.form.Button( 
 			  {label: "Save Coords", onClick: function(){_this.saveCoords();} });
 	  
+	  this.switchButton = new dijit.form.Button( 
+			  {label: "Show/Hide", onClick: function(){_this.switchVisibility();} });  
+	  
       this.layouts = new dojo.data.ItemFileWriteStore( {data : {identifier: 'name', items: this.items }});
       
 	  this.layoutSelector = new dijit.form.ComboBox( {id: "BundleLayoutSelector",  store: this.layouts} );
@@ -79,10 +83,19 @@ dojo.declare("demo.LayoutManager", [], {
 	  dojo.byId(where).appendChild(this.layoutSelector.domNode);
 	  dojo.byId(where).appendChild(this.loadButton.domNode);
 	  dojo.byId(where).appendChild(this.saveButton.domNode);
+	  dojo.byId(where).appendChild(this.switchButton.domNode);
 	  	  
 	  this.disable();
 	  
 	  dojo.subscribe("demo.provider.change", this, this.onProviderChange);
+	},
+	switchVisibility: function() {
+		console.log("Switching visibility");
+		dojo.forEach(bundles, function(bundle){
+			if(bundle!=null){
+				bundle.toggleHidden();
+			}
+	    });
 	},
 	onProviderChange: function(evt){
 		  console.log("OnProviderChange");
