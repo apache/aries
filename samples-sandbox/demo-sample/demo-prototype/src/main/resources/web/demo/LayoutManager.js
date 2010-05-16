@@ -71,8 +71,11 @@ dojo.declare("demo.LayoutManager", [], {
 	  this.saveButton = new dijit.form.Button( 
 			  {label: "Save Coords", onClick: function(){_this.saveCoords();} });
 	  
-	  this.switchButton = new dijit.form.Button( 
-			  {label: "Show/Hide", onClick: function(){_this.switchVisibility();} });  
+	  this.hideButton = new dijit.form.Button( 
+			  {label: "Hide All", onClick: function(){_this.hideAll();} });  
+	  
+	  this.showButton = new dijit.form.Button( 
+			  {label: "Show All", onClick: function(){_this.showAll();} });  
 	  
       this.layouts = new dojo.data.ItemFileWriteStore( {data : {identifier: 'name', items: this.items }});
       
@@ -83,17 +86,34 @@ dojo.declare("demo.LayoutManager", [], {
 	  dojo.byId(where).appendChild(this.layoutSelector.domNode);
 	  dojo.byId(where).appendChild(this.loadButton.domNode);
 	  dojo.byId(where).appendChild(this.saveButton.domNode);
-	  dojo.byId(where).appendChild(this.switchButton.domNode);
+	  dojo.byId(where).appendChild(this.hideButton.domNode);
+	  dojo.byId(where).appendChild(this.showButton.domNode);
 	  	  
 	  this.disable();
 	  
 	  dojo.subscribe("demo.provider.change", this, this.onProviderChange);
 	},
-	switchVisibility: function() {
-		console.log("Switching visibility");
+	
+	hideAll: function() {
+		console.log("Hiding all bundles");
 		dojo.forEach(bundles, function(bundle){
 			if(bundle!=null){
-				bundle.toggleHidden();
+				//If it isn't hidden already
+				if(!bundle.hidden) {
+					bundle.toggleHidden();
+				}
+			}
+	    });
+	},
+	
+	showAll: function() {
+		console.log("Showing all bundles");
+		dojo.forEach(bundles, function(bundle){
+			if(bundle!=null){
+				//If bundle is hidden make it visible
+				if(bundle.hidden) {
+					bundle.toggleHidden();
+				}
 			}
 	    });
 	},
