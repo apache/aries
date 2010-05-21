@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -400,6 +401,7 @@ public class EbaMojo
 			} else {
 				artifacts = project.getDependencyArtifacts();
 			}
+			artifacts = selectArtifacts(artifacts);
 			Iterator<Artifact> iter = artifacts.iterator();
 
 			FileUtils.fileAppend(fileName, APPLICATION_CONTENT + ": ");
@@ -408,7 +410,7 @@ public class EbaMojo
 				FileUtils.fileAppend(fileName, maven2OsgiConverter
 						.getBundleSymbolicName(artifact)
 						+ ";version=\""
-						+ aQute.lib.osgi.Analyzer.cleanupVersion(artifact.getVersion())
+						+ Analyzer.cleanupVersion(artifact.getVersion())
 //						+ maven2OsgiConverter.getVersion(artifact.getVersion())
 						+ "\"");
 			}
@@ -417,7 +419,7 @@ public class EbaMojo
 				FileUtils.fileAppend(fileName, ",\n "
 						+ maven2OsgiConverter.getBundleSymbolicName(artifact)
 						+ ";version=\""
-						+ aQute.lib.osgi.Analyzer.cleanupVersion(artifact.getVersion())
+						+ Analyzer.cleanupVersion(artifact.getVersion())
 //						+ maven2OsgiConverter.getVersion(artifact.getVersion())
 						+ "\"");
 			}
@@ -471,5 +473,22 @@ public class EbaMojo
             File metaInfDir = new File(getBuildDir(), "META-INF");
             FileUtils.copyFileToDirectory( appMfFile, metaInfDir);
         }
+    }
+    
+    /**
+     * Return artifacts in 'compile' or 'runtime' scope only.   
+     */
+    private Set<Artifact> selectArtifacts(Set<Artifact> artifacts) 
+    {
+        Set<Artifact> selected = new LinkedHashSet<Artifact>();
+        for (Artifact artifact : artifacts) {
+            String scope = artifact.getScope();
+            if (scope == null 
+                || Artifact.SCOPE_COMPILE.equals(scope)
+                || Artifact.SCOPE_RUNTIME.equals(scope)) {
+                selected.add(artifact);
+            }
+        }
+        return selected;
     }
 }
