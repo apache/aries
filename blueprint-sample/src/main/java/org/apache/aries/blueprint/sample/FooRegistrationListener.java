@@ -21,12 +21,25 @@ import java.util.Map;
 
 public class FooRegistrationListener {
         
+    private Map props;
+    
+    private Object lock = new Object();
+    
     public void serviceRegistered(Serializable foo, Map props) {
         System.out.println("Service registration notification: " + foo + " " + props);
+        synchronized (lock) {
+            this.props = props;
+        }
     }
     
     public void serviceUnregistered(Foo foo, Map props) {
         System.out.println("Service unregistration notification: " + foo + " " + props);
+    }
+    
+    public Map getProperties() {
+        synchronized (lock) {
+            return this.props;
+        }
     }
 
 }

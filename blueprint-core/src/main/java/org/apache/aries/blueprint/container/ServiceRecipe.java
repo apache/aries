@@ -154,13 +154,14 @@ public class ServiceRecipe extends AbstractRecipe {
                 processor.updateProperties(new PropertiesUpdater(), props);
             }
 
+            registrationProperties = props;
+
             Set<String> classes = getClasses();
             String[] classArray = classes.toArray(new String[classes.size()]);
 
             LOGGER.debug("Registering service {} with interfaces {} and properties {}",
                          new Object[] { name, classes, props });
 
-            registrationProperties = props;
             registration = blueprintContainer.registerService(classArray, new TriggerServiceFactory(), props);            
         }
     }
