@@ -46,16 +46,15 @@ public class BlogAuthorManagerImpl implements BlogAuthorManager
     if(email == null) throw new IllegalArgumentException("Email must not be null");
    
     Date dateOfBirth;
-    
-	dateOfBirth = (dob == null || "".equals(dob)) ? null : new SimpleDateFormat("yyyy-MM-dd").parse(dob);
+    dateOfBirth = (dob == null || "".equals(dob)) ? null : new SimpleDateFormat("yyyy-MM-dd").parse(dob);
 	
     persistenceService.createAuthor(email, dateOfBirth, name, displayName, bio);
   }
   
   public List<? extends BlogAuthor> getAllAuthors()
   {
-	  List<? extends Author> authors = persistenceService.getAllAuthors();
-		return adaptAuthor(authors);
+    List<? extends Author> authors = persistenceService.getAllAuthors();
+    return adaptAuthor(authors);
   }
   
   public BlogAuthor getAuthor(String emailAddress)
@@ -63,9 +62,9 @@ public class BlogAuthorManagerImpl implements BlogAuthorManager
     if(emailAddress == null) throw new IllegalArgumentException("Email must not be null");
     Author a = persistenceService.getAuthor(emailAddress);
     if (a != null)
-		return new BlogAuthorImpl(a);
-	else
-		return null;
+      return new BlogAuthorImpl(a);
+    else
+      return null;
   }
   
   public void removeAuthor(String emailAddress)
@@ -76,16 +75,16 @@ public class BlogAuthorManagerImpl implements BlogAuthorManager
   
   public void updateAuthor(String email, String dob, String name, String displayName, String bio) throws ParseException
   { 
-	  if (email == null)
-			throw new IllegalArgumentException("Email must not be null");
-    Date dateOfBirth = (dob == null) ? null : new SimpleDateFormat("yyyy-MM-dd").parse(dob);
+    if(email == null) throw new IllegalArgumentException("Email must not be null");
+   
+    Date dateOfBirth;
+    dateOfBirth = (dob == null || "".equals(dob)) ? null : new SimpleDateFormat("yyyy-MM-dd").parse(dob);
+
     persistenceService.updateAuthor(email, dateOfBirth, name, displayName, bio);
   }
   
-	private List<? extends BlogAuthor> adaptAuthor(
-			List<? extends Author> authors) {
-			return new BlogListAdapter<BlogAuthor, Author>(authors, BlogAuthorImpl.class, Author.class);
-
-	}
+  private List<? extends BlogAuthor> adaptAuthor(List<? extends Author> authors) {
+    return new BlogListAdapter<BlogAuthor, Author>(authors, BlogAuthorImpl.class, Author.class);
+  }
  
 }
