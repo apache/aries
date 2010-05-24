@@ -149,7 +149,7 @@ public class EbaMojo
     /**
      * The Jar archiver.
      *
-     * @parameter expression="${component.org.codehaus.plexus.archiver.Archiver#zip}"
+     * @component role="org.codehaus.plexus.archiver.Archiver" roleHint="zip"
      * @required
      */
     private ZipArchiver zipArchiver;
