@@ -18,12 +18,14 @@
  */
 package org.apache.aries.jndi.startup;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactoryBuilder;
 import javax.naming.spi.NamingManager;
+import javax.naming.spi.ObjectFactoryBuilder;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -31,7 +33,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.jndi.JNDIContextManager;
 import org.osgi.service.jndi.JNDIProviderAdmin;
 
-import org.apache.aries.jndi.ContextHelper;
 import org.apache.aries.jndi.ContextManagerServiceFactory;
 import org.apache.aries.jndi.JREInitialContextFactoryBuilder;
 import org.apache.aries.jndi.OSGiInitialContextFactoryBuilder;
@@ -45,25 +46,29 @@ import org.apache.aries.jndi.ProviderAdminServiceFactory;
 public class Activator implements BundleActivator {
     
     private List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
+    private OSGiInitialContextFactoryBuilder icfBuilder;
+    private OSGiObjectFactoryBuilder ofBuilder;
     
     public void start(BundleContext context) {
           
         try {
-            if (!!!NamingManager.hasInitialContextFactoryBuilder()) {
-                NamingManager.setInitialContextFactoryBuilder(new OSGiInitialContextFactoryBuilder(context));
-            }
+            OSGiInitialContextFactoryBuilder builder = new OSGiInitialContextFactoryBuilder(context);
+            NamingManager.setInitialContextFactoryBuilder(builder);
+            icfBuilder = builder;
         } catch (NamingException e) {
-            //    TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (IllegalStateException e) {
+            System.err.println("Cannot set the InitialContextFactoryBuilder. Another builder is already installed");
         }
     
         try {
-            NamingManager.setObjectFactoryBuilder(new OSGiObjectFactoryBuilder(context));
+            OSGiObjectFactoryBuilder builder = new OSGiObjectFactoryBuilder(context);
+            NamingManager.setObjectFactoryBuilder(builder);
+            ofBuilder = builder;
         } catch (NamingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalStateException e) {
-            e.printStackTrace();
+            System.err.println("Cannot set the ObjectFactoryBuilder. Another builder is already installed");
         }
         
         registrations.add(context.registerService(JNDIProviderAdmin.class.getName(), 
@@ -80,9 +85,42 @@ public class Activator implements BundleActivator {
     }
 
     public void stop(BundleContext context) {
+        /*
+         * Try to reset the InitialContextFactoryBuilder and ObjectFactoryBuilder
+         * on the NamingManager. 
+         */
+        if (icfBuilder != null) {
+            unsetField(InitialContextFactoryBuilder.class);
+        }
+        if (ofBuilder != null) {
+            unsetField(ObjectFactoryBuilder.class);
+        }
+        
         for (ServiceRegistration registration : registrations) {
             registration.unregister();
         }
         registrations.clear();
+    }
+    
+    /*
+     * There are no public API to reset the InitialContextFactoryBuilder or
+     * ObjectFactoryBuilder on the NamingManager so try to use reflection. 
+     */
+    private static void unsetField(Class<?> expectedType) {
+        try {
+            for (Field field : NamingManager.class.getDeclaredFields()) {
+                if (expectedType.equals(field.getType())) {
+                    boolean accessible = field.isAccessible();
+                    field.setAccessible(true);
+                    try {
+                        field.set(null, null);
+                    } finally {
+                        field.setAccessible(accessible);
+                    }
+                }
+            }
+        } catch (Throwable t) {
+            // Ignore
+        }
     }
 }
