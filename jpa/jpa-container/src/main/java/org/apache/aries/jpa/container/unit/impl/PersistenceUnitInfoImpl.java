@@ -34,6 +34,7 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
+import org.apache.aries.jpa.transformer.TransformerAgent;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
@@ -49,19 +50,32 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   
   private final ServiceReference providerRef;
   
+  private final TransformerAgent agent;
+    
+  private final List<TransformerWrapper> transformers;
+  
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
   
-  public PersistenceUnitInfoImpl (Bundle b, ParsedPersistenceUnit parsedData, final ServiceReference providerRef)
+  public PersistenceUnitInfoImpl(Bundle bundle, 
+                                 ParsedPersistenceUnit parsedData, 
+                                 ServiceReference providerRef,
+                                 TransformerAgent agent)
   {
-    bundle = b;
+    this.bundle = bundle;
     unit = parsedData;
     this.providerRef = providerRef;
-    cl = new BundleDelegatingClassLoader(b);
+    this.agent = agent;
+    this.transformers = new ArrayList<TransformerWrapper>();
+    cl = new BundleDelegatingClassLoader(bundle);
   }
   
-  public void addTransformer(ClassTransformer arg0) {
-    // TODO Add support for class transformation from this method
+  public void addTransformer(ClassTransformer classTransformer) {
+      if (agent != null) {
+          TransformerWrapper transformer = new TransformerWrapper(classTransformer, bundle);
+          transformers.add(transformer);
+          agent.addTransformer(transformer);
+      }
   }
 
   public boolean excludeUnlistedClasses() {
@@ -192,6 +206,15 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     else
       return ValidationMode.valueOf(s);
 
+  }
+  
+  public void destroy() {  
+      if (agent != null) {
+          for (TransformerWrapper transformer : transformers) {
+              agent.removeTransformer(transformer);
+          }
+          transformers.clear();
+      }
   }
   
 }

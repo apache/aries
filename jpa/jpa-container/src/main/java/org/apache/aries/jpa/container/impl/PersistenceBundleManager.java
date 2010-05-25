@@ -187,7 +187,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer
         }
         mgr.destroy();
         if(infos != null)
-          persistenceUnitFactory.destroyPersistenceBundle(mgr.getBundle());
+          persistenceUnitFactory.destroyPersistenceBundle(ctx, mgr.getBundle());
         
         //Something better may have come along while we weren't synchronized
         setupManager(mgr.getBundle(), mgr, false);
@@ -219,7 +219,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer
       EntityManagerFactoryManager mgr = entry.getValue();
       if(mgr.providerRemoved(ref)) {
         Bundle bundle = entry.getKey();
-        persistenceUnitFactory.destroyPersistenceBundle(bundle);
+        persistenceUnitFactory.destroyPersistenceBundle(ctx, bundle);
         //Allow the manager to re-initialize with a new provider
         //No change to the units
         setupManager(bundle, mgr, false);
@@ -260,7 +260,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer
     //the EntityManagerFactoryManager
     if(event != null && event.getType() == BundleEvent.UPDATED) {
       mgr.destroy();
-      persistenceUnitFactory.destroyPersistenceBundle(bundle);
+      persistenceUnitFactory.destroyPersistenceBundle(ctx, bundle);
       //Don't add to the managersAwaitingProviders, the setupManager will do it
       setupManager(bundle, mgr, true);
     } else {
@@ -277,7 +277,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer
       } catch (InvalidPersistenceUnitException e) {
         logInvalidPersistenceUnitException(bundle, e);
         mgr.destroy();
-        persistenceUnitFactory.destroyPersistenceBundle(bundle);
+        persistenceUnitFactory.destroyPersistenceBundle(ctx, bundle);
         
         //Try re-initializing the manager immediately, this wasn't an
         //update so the units don't need to be re-parsed
@@ -289,7 +289,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer
   public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
     EntityManagerFactoryManager mgr = (EntityManagerFactoryManager) object;   
     mgr.destroy();
-    persistenceUnitFactory.destroyPersistenceBundle(bundle);
+    persistenceUnitFactory.destroyPersistenceBundle(ctx, bundle);
     //Remember to tidy up the map
     synchronized (this) {
       bundleToManagerMap.remove(bundle);
@@ -378,7 +378,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer
           logInvalidPersistenceUnitException(bundle, e);
           mgr.destroy();
           if(infos != null)
-            persistenceUnitFactory.destroyPersistenceBundle(bundle);
+            persistenceUnitFactory.destroyPersistenceBundle(ctx, bundle);
           //Put the manager into the list of managers waiting for a new
           //provider, one that might work!
           synchronized (this) {

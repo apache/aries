@@ -62,7 +62,8 @@
                         <Export-Package>
                             org.apache.aries.jpa.container.parsing;version="${pom.version}",
                             org.apache.aries.jpa.container;version="${pom.version}",
-                            org.apache.aries.jpa.container.context;version="${pom.version}"
+                            org.apache.aries.jpa.container.context;version="${pom.version}",
+                            org.apache.aries.jpa.transformer;version="${pom.version}"
                         </Export-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                         <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
