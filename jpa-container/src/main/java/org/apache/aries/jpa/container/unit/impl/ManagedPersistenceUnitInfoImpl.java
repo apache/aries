@@ -25,18 +25,19 @@ import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
+import org.apache.aries.jpa.transformer.TransformerAgent;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 
-public class ManagedPersistenceUnitInfoImpl implements
-    ManagedPersistenceUnitInfo {
+public class ManagedPersistenceUnitInfoImpl implements ManagedPersistenceUnitInfo {
 
-  private final PersistenceUnitInfo info;
+  private final PersistenceUnitInfoImpl info;
   
   public ManagedPersistenceUnitInfoImpl(Bundle persistenceBundle,
-      ParsedPersistenceUnit unit,
-      ServiceReference providerRef) {
-    info = new PersistenceUnitInfoImpl(persistenceBundle, unit, providerRef);
+                                        ParsedPersistenceUnit unit,
+                                        ServiceReference providerRef,
+                                        TransformerAgent agent) {
+    info = new PersistenceUnitInfoImpl(persistenceBundle, unit, providerRef, agent);
   }
 
   public Map<String, Object> getContainerProperties() {
@@ -47,5 +48,8 @@ public class ManagedPersistenceUnitInfoImpl implements
     return info;
   }
 
+  public void destroy() {
+    info.destroy();
+  }
 
 }
