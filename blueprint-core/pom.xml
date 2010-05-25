@@ -61,7 +61,7 @@
       <dependency>
           <groupId>org.apache.aries.blueprint</groupId>
           <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
-          <version>${version}</version>
+          <optional>true</optional>
       </dependency>
       <dependency>
           <groupId>org.apache.aries</groupId>
