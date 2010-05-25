@@ -48,34 +48,12 @@
             org.apache.aries.blueprint.annotation.service;resolution:=optional,
             *
         </aries.osgi.import>
-        <!--
         <aries.osgi.export>
             =org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.aries.blueprint,org.apache.aries.blueprint.ext,org.apache.aries.blueprint.mutable,org.apache.aries.blueprint.compendium.cm";version="1.0.1",
             org.osgi.service.blueprint.container;version="1.0.1",
             org.osgi.service.blueprint.reflect;version="1.0.1",
-
-            org.apache.aries.blueprint;version="${pom.version}",
-            org.apache.aries.blueprint.ext;version="${pom.version}",
-            org.apache.aries.blueprint.mutable;version="${pom.version}",
-            org.apache.aries.blueprint.compendium.cm;version="${pom.version}"
-        </aries.osgi.export>
-        <aries.osgi.private.pkg>
-                org.apache.aries.blueprint.container,
-            org.apache.aries.blueprint.di,
-            org.apache.aries.blueprint.namespace,
-            org.apache.aries.blueprint.proxy,
-            org.apache.aries.blueprint.reflect,
-            org.apache.aries.blueprint.utils,
-            org.apache.aries.util.tracker,
-            OSGI-INF*
-        </aries.osgi.private.pkg>
-        -->
-        <aries.osgi.export>
-            =org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.aries.blueprint,org.apache.aries.blueprint.ext,org.apache.aries.blueprint.mutable,org.apache.aries.blueprint.compendium.cm";version="1.0.1",
-            org.osgi.service.blueprint.container;version="1.0.1",
-            org.osgi.service.blueprint.reflect;version="1.0.1",
-
-            org.apache.aries.blueprint*;version="${pom.version}",
+            !org.apache.aries.blueprint.annotation*,
+            org.apache.aries.blueprint*;version="${pom.version}"
         </aries.osgi.export>
         <aries.osgi.private.pkg>
             org.apache.aries.util.tracker,
