@@ -31,7 +31,7 @@
 
     <properties>
          <aries.osgi.export>
-             org.apache.aries.blueprint.annotation.*;version="1.0.1"
+             org.apache.aries.blueprint.annotation.*;version="${pom.version}"
          </aries.osgi.export>
          <aries.osgi.import>
              !org.apache.aries.blueprint.annotation.*,
