@@ -110,7 +110,8 @@ public interface ManagedPersistenceUnitInfoFactory {
    * When this method is called implementations should clear up any resources associated with
    * persistence units defined by the persistence bundle. 
    * 
-   * @param bundle The persistence bundle that is no longer valid.
+   * @param containerContext  The {@link BundleContext} for the container bundle. 
+   * @param persistenceBundle The persistence bundle that is no longer valid.
    */
-  public void destroyPersistenceBundle(Bundle bundle);
+  public void destroyPersistenceBundle(BundleContext containerContext, Bundle persistenceBundle);
 }
