@@ -45,7 +45,7 @@ public class FragmentUtilsTest {
     @Test
     public void testFragmentCreation() throws Exception {
         Bundle exportBundle = makeBundleWithExports("export.bundle", "1.2.3",
-                "export.package;version=\"1.0.0\";singleton:=true");
+                "export.package;version=\"1.0.0\";uses:=\"foo.jar,bar.jar\";singleton:=true");
 
         Dictionary fragmentHeaders = makeFragmentFromExportBundle(exportBundle)
                 .getHeaders();
