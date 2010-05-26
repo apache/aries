@@ -41,16 +41,23 @@ public class FragmentBuilder {
     private List<String> exportPackages = new ArrayList<String>();
     private Bundle hostBundle;
     private String nameExtension;
+    private String bundleNameExtension;
     private String fragmentName;
     private Map<String, byte[]> files = new HashMap<String, byte[]>();
 
-    public FragmentBuilder(Bundle host, String extension) {
+    public FragmentBuilder(Bundle host) {
+        this(host, ".fragment", "Fragment");
+    }
+    
+    public FragmentBuilder(Bundle host, String symbolicNameSuffix, String bundleNameSuffix) {
         hostBundle = host;
-        nameExtension = extension;
+        nameExtension = symbolicNameSuffix;
+        bundleNameExtension = bundleNameSuffix;
 
         // make sure we have an initial '.'
-        if (!!!nameExtension.startsWith("."))
+        if (!!!nameExtension.startsWith(".")) {
             nameExtension = "." + nameExtension;
+        }
     }
 
     public void setName(String name) {
@@ -66,8 +73,7 @@ public class FragmentBuilder {
     }
 
     public void addImportsFromExports(Bundle exportBundle) {
-        String exportString = (String) exportBundle.getHeaders().get(
-                Constants.EXPORT_PACKAGE);
+        String exportString = (String) exportBundle.getHeaders().get(Constants.EXPORT_PACKAGE);
 
         if (exportString != null) {
             String exportVersion = exportBundle.getVersion().toString();
@@ -78,8 +84,7 @@ public class FragmentBuilder {
 
             List<String> exports = parseDelimitedString(exportString, ",", true);            
             for (String export : exports) {
-                importPackages.add(convertExportToImport(export,
-                        bundleConstraint, bundleVersionConstraint));
+                importPackages.add(convertExportToImport(export, bundleConstraint, bundleVersionConstraint));
             }
         }
     }
@@ -91,7 +96,8 @@ public class FragmentBuilder {
      * @return
      */
     private String convertExportToImport(String exportStatement,
-            String bundleConstraint, String bundleVersionConstraint) {
+                                         String bundleConstraint, 
+                                         String bundleVersionConstraint) {
         StringBuffer result = new StringBuffer();
 
         for (String fragment : exportStatement.split("\\s*;\\s*")) {
@@ -118,8 +124,7 @@ public class FragmentBuilder {
         files.put(path, content);
     }
 
-    public Bundle install(BundleContext ctx) throws IOException,
-            BundleException {
+    public Bundle install(BundleContext ctx) throws IOException, BundleException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JarOutputStream jos = null;
 
@@ -149,6 +154,18 @@ public class FragmentBuilder {
         return hostBundle.getSymbolicName() + nameExtension;
     }
 
+    public String getFragmentBundleName() {
+        if (fragmentName != null) {
+            return fragmentName;
+        } else {
+            String bundleName = (String) hostBundle.getHeaders().get(Constants.BUNDLE_NAME);
+            if (bundleName != null && bundleNameExtension != null) {
+                return bundleName.trim() + " " + bundleNameExtension.trim();
+            }
+        }
+        return null;
+    }
+    
     private Manifest makeManifest() {
         String commonVersion = hostBundle.getVersion().toString();
         String fragmentHost = hostBundle.getSymbolicName() + ";"
@@ -157,15 +174,17 @@ public class FragmentBuilder {
 
         Manifest m = new Manifest();
         Attributes manifestAttributes = m.getMainAttributes();
-        manifestAttributes.putValue(
-                Attributes.Name.MANIFEST_VERSION.toString(), "1.0");
+        manifestAttributes.putValue(Attributes.Name.MANIFEST_VERSION.toString(), "1.0");
         manifestAttributes.putValue(Constants.BUNDLE_MANIFESTVERSION, "2");
-        manifestAttributes.putValue(Constants.BUNDLE_SYMBOLICNAME,
-                getFragmentSymbolicName());
-        if (fragmentName != null)
-            manifestAttributes.putValue(Constants.BUNDLE_NAME, fragmentName);
+        manifestAttributes.putValue(Constants.BUNDLE_SYMBOLICNAME, getFragmentSymbolicName());   
+        
+        String bundleName = getFragmentBundleName();        
+        if (bundleName != null) {
+            manifestAttributes.putValue(Constants.BUNDLE_NAME, bundleName);
+        }
+            
         manifestAttributes.putValue(Constants.BUNDLE_VERSION, commonVersion);
-        manifestAttributes.putValue(Constants.BUNDLE_VENDOR, "IBM");
+        manifestAttributes.putValue(Constants.BUNDLE_VENDOR, "Apache");
         manifestAttributes.putValue(Constants.FRAGMENT_HOST, fragmentHost);
 
         addImportsAndExports(manifestAttributes);
@@ -175,13 +194,11 @@ public class FragmentBuilder {
 
     private void addImportsAndExports(Attributes attrs) {
         if (!!!importPackages.isEmpty()) {
-            attrs.putValue(Constants.IMPORT_PACKAGE, joinStrings(
-                    importPackages, ','));
+            attrs.putValue(Constants.IMPORT_PACKAGE, joinStrings(importPackages, ','));
         }
 
         if (!!!exportPackages.isEmpty()) {
-            attrs.putValue(Constants.EXPORT_PACKAGE, joinStrings(
-                    exportPackages, ','));
+            attrs.putValue(Constants.EXPORT_PACKAGE, joinStrings(exportPackages, ','));
         }
     }
 
