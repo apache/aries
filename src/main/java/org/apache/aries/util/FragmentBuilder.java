@@ -76,7 +76,8 @@ public class FragmentBuilder {
             String bundleVersionConstraint = Constants.BUNDLE_VERSION_ATTRIBUTE
                     + "=\"[" + exportVersion + "," + exportVersion + "]\"";
 
-            for (String export : exportString.split("\\s*,\\s*")) {
+            List<String> exports = parseDelimitedString(exportString, ",", true);            
+            for (String export : exports) {
                 importPackages.add(convertExportToImport(export,
                         bundleConstraint, bundleVersionConstraint));
             }
@@ -197,5 +198,55 @@ public class FragmentBuilder {
         }
 
         return result.toString();
+    }
+    
+    private static List<String> parseDelimitedString(String value, String delim, boolean includeQuotes) {   
+        if (value == null) {       
+            value = "";
+        }
+
+        List<String> list = new ArrayList<String>();
+
+        int CHAR = 1;
+        int DELIMITER = 2;
+        int STARTQUOTE = 4;
+        int ENDQUOTE = 8;
+
+        StringBuffer sb = new StringBuffer();
+
+        int expecting = (CHAR | DELIMITER | STARTQUOTE);
+
+        for (int i = 0; i < value.length(); i++) {        
+            char c = value.charAt(i);
+
+            boolean isDelimiter = (delim.indexOf(c) >= 0);
+            boolean isQuote = (c == '"');
+
+            if (isDelimiter && ((expecting & DELIMITER) > 0)) {            
+                list.add(sb.toString().trim());
+                sb.delete(0, sb.length());
+                expecting = (CHAR | DELIMITER | STARTQUOTE);
+            } else if (isQuote && ((expecting & STARTQUOTE) > 0)) { 
+                if (includeQuotes) {
+                    sb.append(c);
+                }
+                expecting = CHAR | ENDQUOTE;
+            } else if (isQuote && ((expecting & ENDQUOTE) > 0)) {    
+                if (includeQuotes) {
+                    sb.append(c);
+                }
+                expecting = (CHAR | STARTQUOTE | DELIMITER);
+            } else if ((expecting & CHAR) > 0) {            
+                sb.append(c);
+            } else {
+                throw new IllegalArgumentException("Invalid delimited string: " + value);
+            }
+        }
+
+        if (sb.length() > 0) {        
+            list.add(sb.toString().trim());
+        }
+
+        return list;
     }
 }
