@@ -100,11 +100,12 @@ body {
   padding: 0;
   padding-left: 35px;
   font-size: 75%;
+  text-transform: lowercase;
 }
 
 #menu-page h3 {
   font-size: 75%;
-  text-transform: uppercase;
+  text-transform: lowercase;
   margin: 1em 0 0.3em 0;
   color: #bfaecd;
   font-weight: normal;
@@ -118,7 +119,7 @@ body {
 }
 
 #menu-page a:link, #menu-page a:visited {
-  color: black;
+  color: #7b5d94;
 }
 
 #menu-page a:hover {
