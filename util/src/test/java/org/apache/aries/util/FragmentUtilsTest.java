@@ -53,14 +53,15 @@ public class FragmentUtilsTest {
         assertNotNull("No headers in the fragment", fragmentHeaders);
 
         assertEquals("Wrong symbolicName", "scooby.doo.test.fragment",
-                fragmentHeaders.get(Constants.BUNDLE_SYMBOLICNAME));
-        assertEquals("Wrong version", "0.0.0", fragmentHeaders
-                .get(Constants.BUNDLE_VERSION));
-        assertEquals("Wrong Bundle manifest version", "2", fragmentHeaders
-                .get(Constants.BUNDLE_MANIFESTVERSION));
-        assertEquals("Wrong Fragment host",
-                "scooby.doo;bundle-version=\"0.0.0\"", fragmentHeaders
-                        .get(Constants.FRAGMENT_HOST));
+                    fragmentHeaders.get(Constants.BUNDLE_SYMBOLICNAME));
+        assertEquals("Wrong version", "0.0.0", 
+                    fragmentHeaders.get(Constants.BUNDLE_VERSION));
+        assertEquals("Wrong Bundle manifest version", "2", 
+                    fragmentHeaders.get(Constants.BUNDLE_MANIFESTVERSION));
+        assertEquals("Wrong Fragment host", "scooby.doo;bundle-version=\"0.0.0\"", 
+                    fragmentHeaders.get(Constants.FRAGMENT_HOST));
+        assertEquals("Wrong Bundle Name", "Test Fragment bundle",
+                    fragmentHeaders.get(Constants.BUNDLE_NAME));
         assertEquals(
                 "Wrong Imports",
                 "export.package;version=\"1.0.0\";bundle-symbolic-name=\"export.bundle\";bundle-version=\"[1.2.3,1.2.3]\"",
@@ -79,8 +80,7 @@ public class FragmentUtilsTest {
 
     private Bundle makeFragmentFromExportBundle(Bundle exportBundle)
             throws Exception {
-        FragmentBuilder builder = new FragmentBuilder(hostBundle,
-                "test.fragment");
+        FragmentBuilder builder = new FragmentBuilder(hostBundle, "test.fragment", "fragment");
         builder.setName("Test Fragment bundle");
         builder.addImportsFromExports(exportBundle);
 
