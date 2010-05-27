@@ -33,6 +33,11 @@
     
     
      <properties>
+     <!-- These properties are creating the database on the fly. We are using them to avoid users having
+          to create a database to run the sample. This is not something that should be used in production.
+          See also the create=true line in the blog-datasource blueprint meta data -->
+     <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+     <property name="openjpa.jdbc.DBDictionary" value="derby"/>
     </properties>
    
   </persistence-unit>
