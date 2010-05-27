@@ -23,6 +23,9 @@
   
   <bean id="derbyXADataSource" class="org.apache.derby.jdbc.EmbeddedXADataSource">
     <property name="databaseName" value="blogDB"/>
+    <!-- This createst the database on the fly. See the persistence.xml  under blog-persistence-jpa for property
+         configuration. The DB is created from persistence entities, this is not recommended for production use.  -->
+    <property name="createDatabase" value="create" />
   </bean>
   
   <service id="xaDataSource" ref="derbyXADataSource" interface="javax.sql.XADataSource">

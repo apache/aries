@@ -43,7 +43,7 @@ public class AuthorImpl implements Author
 {
   /** The author's email address */
   @Id
-  @Column(nullable = false, unique = true)
+  @Column(nullable = false)
   private String email;
   
   /** The author's full name */
