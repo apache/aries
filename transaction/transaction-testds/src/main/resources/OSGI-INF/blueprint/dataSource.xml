@@ -23,7 +23,7 @@
             default-activation="lazy">
   
   <bean id="derbyXADataSource" class="org.apache.derby.jdbc.EmbeddedXADataSource">
-    <property name="databaseName" value="TESTDB"/>
+    <property name="databaseName" value="memory:TESTDB"/>
     <property name="createDatabase" value="create"/>
   </bean>
 
@@ -34,7 +34,7 @@
   </service>
   
   <bean id="derbyDataSource" class="org.apache.derby.jdbc.EmbeddedDataSource">
-    <property name="databaseName" value="TESTDB"/>
+    <property name="databaseName" value="memory:TESTDB"/>
     <property name="createDatabase" value="create"/>
   </bean>
   
