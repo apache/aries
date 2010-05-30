@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,6 +40,11 @@ import org.apache.aries.samples.blog.persistence.jdbc.entity.EntryImpl;
 public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	private DataSource dataSource;
 	
+    private Statements statements;
+
+    public BlogPersistenceServiceImpl() {
+        this.statements = new Statements();
+    }
 
 	/**
 	 * set data source
@@ -47,6 +53,69 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 		this.dataSource = dataSource;
 	}
 
+    public void init() {
+        Statement s = null;
+        Connection connection = null;
+
+        try {
+            connection = dataSource.getConnection();
+
+            s = connection.createStatement();
+            String[] createStatments = this.statements
+                    .getCreateSchemaStatements();
+            for (int i = 0; i < createStatments.length; i++) {
+                s.execute(createStatments[i]);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+            if (s != null) {
+                try {
+                    s.close();
+                } catch (Throwable e) {
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Throwable e) {
+                }
+            }
+        }
+    }
+
+    public void destroy() {
+        Statement s = null;
+        Connection connection = null;
+
+        try {
+            connection = dataSource.getConnection();
+
+            s = connection.createStatement();
+            String[] dropStatments = this.statements.getDropSchemaStatements();
+            for (int i = 0; i < dropStatments.length; i++) {
+                s.execute(dropStatments[i]);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+            if (s != null) {
+                try {
+                    s.close();
+                } catch (Throwable e) {
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (Throwable e) {
+                }
+            }
+        }
+    }
+	
 	/**
 	 * Create an author record
 	 * 

@@ -55,11 +55,13 @@
                 <groupId>org.apache.aries.samples.blog</groupId>
                 <artifactId>org.apache.aries.samples.blog.jdbc.eba</artifactId>
                 <version>${version}</version>
+                <type>eba</type>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.blog</groupId>
                 <artifactId>org.apache.aries.samples.blog.jpa.eba</artifactId>
                 <version>${version}</version>
+                <type>eba</type>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.blog</groupId>

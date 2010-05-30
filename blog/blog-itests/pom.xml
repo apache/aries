@@ -84,6 +84,25 @@
             <artifactId>org.apache.aries.samples.blog.persistence.jpa</artifactId>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>org.apache.aries.samples.blog</groupId>
+            <artifactId>org.apache.aries.samples.blog.persistence.jdbc</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.aries.samples.blog</groupId>
+            <artifactId>org.apache.aries.samples.blog.datasource</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.aries.samples.blog</groupId>
+            <artifactId>org.apache.aries.samples.blog.jdbc.eba</artifactId>
+            <scope>test</scope>
+            <type>eba</type>
+        </dependency>
 
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
@@ -348,12 +367,6 @@
 		<dependency>
 			<groupId>org.apache.aries.transaction</groupId>
 			<artifactId>org.apache.aries.transaction.wrappers</artifactId>
-            <scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.aries.samples.blog</groupId>
-			<artifactId>org.apache.aries.samples.blog.datasource</artifactId>
             <scope>test</scope>
 		</dependency>
 		
