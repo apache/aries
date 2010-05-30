@@ -20,10 +20,11 @@
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             
   <bean id="datasource" class="org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource">
-     <property name="databaseName" value="blogDB"/>
+     <property name="databaseName" value="memory:blogDB"/>
+     <property name="createDatabase" value="create" />
   </bean>
 
-  <bean id="persistenceImpl" class="org.apache.aries.samples.blog.persistence.jdbc.BlogPersistenceServiceImpl" activation="lazy">
+  <bean id="persistenceImpl" class="org.apache.aries.samples.blog.persistence.jdbc.BlogPersistenceServiceImpl" activation="lazy" init-method="init" destroy-method="destroy">
    <property name="dataSource" ref="datasource" />
   </bean>
 
