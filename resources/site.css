@@ -493,16 +493,17 @@ pre {
 }
 
 HR {
-	color: 7b5d94;
+	color: #7b5d94;
 	height: 1;
 }
 
 A:link, A:visited, A:active, A:hover {
-  color: #bfaecd;
+  color: #7b5d94;
 }
 
 A:hover {
   text-decoration: underline;
+	color: #bfaecd;
 }
 
 h1 A:link, h1 A:visited, h1 A:active {
