@@ -92,6 +92,7 @@
         <module>blog-persistence-jdbc</module>
         <module>blog-persistence-jpa</module>
         <module>blog-web</module>
+        <module>blog-itests</module>
     </modules>
 
 </project>
