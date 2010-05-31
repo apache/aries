@@ -41,6 +41,8 @@ public class BlogSampleTest extends AbstractIntegrationTest {
     @Test
     public void test() throws Exception {
 
+    /* Find and start all the blog sample bundles */
+
 	Bundle bapi = getInstalledBundle("org.apache.aries.samples.blog.api");
     assertNotNull(bapi);
     bapi.start();
@@ -56,43 +58,43 @@ public class BlogSampleTest extends AbstractIntegrationTest {
 	Bundle bper = getInstalledBundle("org.apache.aries.samples.blog.persistence.jpa");
     assertNotNull(bper);
     bper.start();
-
+ 
+    /* Datasource and transaction manager services are used by the blog sample */
 	Bundle bds = getInstalledBundle("org.apache.aries.samples.blog.datasource");
 	Bundle txs = getInstalledBundle("org.apache.aries.transaction.manager");
 
-
+    /*Wait for all the required services to be registered */
     waitForServices(bbiz, "org.apache.aries.samples.api.BloggingService");
     waitForServices(bper, "org.apache.aries.samples.api.BloggingService");
     waitForServices(bds, "java.sql.XADataSource");
     waitForServices(txs, "javax.transaction.TransactionManager");
 
 
+    /*Check that they haven't timed out trying to register*/
+	assertTrue("No services reistered for " + bbiz.getSymbolicName(), isServiceRegistered(bbiz));
+	assertTrue("No services reistered for " + bper.getSymbolicName(), isServiceRegistered(bper));
+	assertTrue("No services reistered for " + bds.getSymbolicName(), isServiceRegistered(bds));
+	assertTrue("No services reistered for " + txs.getSymbolicName(), isServiceRegistered(txs));
 
-	if(!isServiceRegistered(bbiz)) {
-		System.out.println("ZZZZZ No services registered for " +  bbiz.getSymbolicName());
-	}
-
-	if(!isServiceRegistered(bper)) {
-		System.out.println("ZZZZZ No services registered for " + bper.getSymbolicName());
-	}
-
-	if(!isServiceRegistered(bds)) {
-		System.out.println("ZZZZZ No services registered for " + bds.getSymbolicName());
-	}
+	/*Check what services are registered - uncomment for additional debug */
+	/*
+	listBundleServices(bbiz);
+	listBundleServices(bper);
+	listBundleServices(bds);
+	listBundleServices(txs);
     
+	System.out.println("In test and trying to get connection....");
+    */
 
-	if(!isServiceRegistered(txs)) {
-		System.out.println("ZZZZZ No services registered for " + txs.getSymbolicName());
-	}
-
-
-	System.out.println("ZZZZZ in test and trying to get connection....");
 	HttpURLConnection conn = makeConnection("http://localhost:8080/org.apache.aries.samples.blog.web/ViewBlog");
     String response = getHTTPResponse(conn);
+
+	/* Uncomment for additional debug */
+	/*
 	System.out.println("ZZZZZ " + response);
     System.out.println("ZZZZZ " + conn.getResponseCode());
     System.out.println("ZZZZZ " + HttpURLConnection.HTTP_OK);
-
+	*/
 
 
     assertEquals(HttpURLConnection.HTTP_OK,
