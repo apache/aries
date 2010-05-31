@@ -144,17 +144,18 @@ public abstract class AbstractIntegrationTest {
         }
     }
 
+	protected void listBundleServices(Bundle b) {
+    	ServiceReference []srb = b.getRegisteredServices();
+		for(ServiceReference sr:srb){
+			System.out.println(b.getSymbolicName() + " SERVICE: "+sr);
+    	}	
+	}
 
 	protected Boolean isServiceRegistered(Bundle b) {
-	ServiceReference []srb = b.getRegisteredServices();
-
-    	if(srb == null) {
+		ServiceReference []srb = b.getRegisteredServices();
+		if(srb == null) {
 			return false;
-    	}else {
-    		for(ServiceReference sr:srb){
-            	System.out.println(" ZZZZZZ SERVICES "+sr);
-        	}
-    	}
+		}
     	return true;
 	}
 
@@ -176,7 +177,7 @@ public abstract class AbstractIntegrationTest {
 			return;
 		} 
 		catch (Exception e) {
-			//and do something with it
+			System.out.println("Failed to register services for " + b.getSymbolicName() + e.getMessage());	
 		}
 	}
 
