@@ -163,16 +163,17 @@ public abstract class AbstractIntegrationTest {
 		try {
 			BundleContext bc = b.getBundleContext();
     		String bsn = b.getSymbolicName();
-    		Filter filter = bc
-    			.createFilter("(&(objectClass="
-        		+ sclass
-        		+ ")(Bundle-SymbolicName="
-        		+ bsn
-        		+ "))");
-
-    		ServiceTracker st = new ServiceTracker(bc, filter, null);
+			ServiceTracker st = new ServiceTracker(bc, sclass, null);
     		st.open();
     		Object bac = st.waitForService(DEFAULT_TIMEOUT);
+			/* Uncomment for debug */
+			/*
+			if(bac == null) {
+				System.out.println("SERVICE NOTFOUND " + bsn);
+			} else {
+				System.out.println("SERVICE FOUND " + bsn);
+			}
+			*/
 			st.close();
 			return;
 		} 
