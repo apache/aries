@@ -27,6 +27,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 
 import java.net.HttpURLConnection;
+import java.net.URL;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,30 +35,42 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 
+import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.AriesApplicationContext;
+import org.apache.aries.application.management.AriesApplicationManager;
+
+
 
 @RunWith(JUnit4TestRunner.class)
-public class BlogSampleTest extends AbstractIntegrationTest {
+public class JpaBlogSampleWithEbaTest extends AbstractIntegrationTest {
 
     @Test
     public void test() throws Exception {
+	
+	/* Install and start the blog eba */
+	URL urlToEba = getUrlToEba("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.jpa.eba");
+	AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+	AriesApplication app = manager.createApplication(urlToEba);
+	AriesApplicationContext ctx = manager.install(app);
+	ctx.start();
 
-    /* Find and start all the blog sample bundles */
+    /* Find and check all the blog sample bundles */
 
 	Bundle bapi = getInstalledBundle("org.apache.aries.samples.blog.api");
     assertNotNull(bapi);
-    bapi.start();
+	assertEquals(bapi.ACTIVE, bapi.getState());
 
 	Bundle bweb = getInstalledBundle("org.apache.aries.samples.blog.web");
     assertNotNull(bweb);
-    bweb.start();
+	assertEquals(bweb.ACTIVE, bweb.getState());
 
 	Bundle bbiz = getInstalledBundle("org.apache.aries.samples.blog.biz");
     assertNotNull(bbiz);
-    bbiz.start();
+	assertEquals(bbiz.ACTIVE, bbiz.getState());
 
 	Bundle bper = getInstalledBundle("org.apache.aries.samples.blog.persistence.jpa");
     assertNotNull(bper);
-    bper.start();
+	assertEquals(bper.ACTIVE, bper.getState());
  
     /* Datasource and transaction manager services are used by the blog sample */
 	Bundle bds = getInstalledBundle("org.apache.aries.samples.blog.datasource");
@@ -77,12 +90,14 @@ public class BlogSampleTest extends AbstractIntegrationTest {
 	assertTrue("No services reistered for " + txs.getSymbolicName(), isServiceRegistered(txs));
 
 	/*Check what services are registered - uncomment for additional debug */
+	/*
 	listBundleServices(bbiz);
 	listBundleServices(bper);
 	listBundleServices(bds);
 	listBundleServices(txs);
     
 	System.out.println("In test and trying to get connection....");
+	*/
 
 	HttpURLConnection conn = makeConnection("http://localhost:8080/org.apache.aries.samples.blog.web/ViewBlog");
     String response = getHTTPResponse(conn);
@@ -99,6 +114,9 @@ public class BlogSampleTest extends AbstractIntegrationTest {
         conn.getResponseCode());
 
     assertTrue("The response did not contain the expected content", response.contains("Blog home"));
+	ctx.stop();
+    manager.uninstall(ctx);
+
     }
 
 
@@ -151,10 +169,6 @@ bootDelegationPackages("javax.transaction", "javax.transaction.*"),
             mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint" ),
             mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.wrappers" ),
             mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.datasource" ),
-            mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.api" ).noStart(),
-            mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.web" ).noStart(),
-            mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.biz" ).noStart(),
-            mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.persistence.jpa" ).noStart(),
             mavenBundle("asm", "asm-all" ),
             equinox().version("3.5.0")
         );
