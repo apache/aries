@@ -105,6 +105,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.aries.samples.blog</groupId>
+            <artifactId>org.apache.aries.samples.blog.jpa.eba</artifactId>
+            <scope>test</scope>
+            <type>eba</type>
+        </dependency>
+
+        <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
             <scope>test</scope>
