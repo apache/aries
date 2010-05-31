@@ -64,9 +64,9 @@ public class BlogSampleTest extends AbstractIntegrationTest {
 	Bundle txs = getInstalledBundle("org.apache.aries.transaction.manager");
 
     /*Wait for all the required services to be registered */
-    waitForServices(bbiz, "org.apache.aries.samples.api.BloggingService");
-    waitForServices(bper, "org.apache.aries.samples.api.BloggingService");
-    waitForServices(bds, "java.sql.XADataSource");
+    waitForServices(bbiz, "org.apache.aries.samples.blog.api.BloggingService");
+    waitForServices(bper, "org.apache.aries.samples.blog.api.persistence.BlogPersistenceService");
+    waitForServices(bds, "javax.sql.XADataSource");
     waitForServices(txs, "javax.transaction.TransactionManager");
 
 
@@ -77,14 +77,12 @@ public class BlogSampleTest extends AbstractIntegrationTest {
 	assertTrue("No services reistered for " + txs.getSymbolicName(), isServiceRegistered(txs));
 
 	/*Check what services are registered - uncomment for additional debug */
-	/*
 	listBundleServices(bbiz);
 	listBundleServices(bper);
 	listBundleServices(bds);
 	listBundleServices(txs);
     
 	System.out.println("In test and trying to get connection....");
-    */
 
 	HttpURLConnection conn = makeConnection("http://localhost:8080/org.apache.aries.samples.blog.web/ViewBlog");
     String response = getHTTPResponse(conn);
