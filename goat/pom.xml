@@ -51,6 +51,11 @@
                 <artifactId>org.apache.aries.samples.goat.dummy</artifactId>
                 <version>${version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.aries.samples.goat</groupId>
+                <artifactId>org.apache.aries.samples.goat.bundlecontextmodel</artifactId>
+                <version>${version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -61,6 +66,7 @@
         <module>goat-dummy-provider</module>
         <module>goat-assembly</module>
     <!--    <module>goat-eba</module> -->
+        <module>goat-bundlecontext-modelprovider</module>
     </modules>
 
 </project>
