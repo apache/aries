@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Name: wordassociation.api
+Bundle-SymbolicName: wordassociation.api
+Bundle-Version: 1.0.0
+Bundle-ManifestVersion: 2
+Export-Package: org.apache.wordassociation
+
