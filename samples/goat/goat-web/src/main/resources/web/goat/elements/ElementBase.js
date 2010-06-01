@@ -19,8 +19,12 @@
 // dojo.provide allows pages use all types declared in this resource
 dojo.provide("goat.elements.ElementBase");
 
+dojo.require("goat.configuration.Theme");
+dojo.require("goat.configuration.ComponentAppearance");
+
 dojo.declare("goat.elements.ElementBase", [], {
 	
+		componentAppearance: null,
 	    type: null,
 	    component: null,
 	    x: 0,
@@ -29,7 +33,7 @@ dojo.declare("goat.elements.ElementBase", [], {
 		height: 0,
 		hint: "top",
 
-		constructor : function(component) {
+		constructor : function(component, componentAppearance) {
 			//not really called (naughty sub-classes dont chain their constructors..)
 	        
 	        //DO NOT put things onscreen during the constructor, delay that until 'render' is invoked if possible.
@@ -44,6 +48,9 @@ dojo.declare("goat.elements.ElementBase", [], {
 		getHeight: function() {
 			//called to obtain the height of this element for layout purposes
 			return -1;
+		},
+		apply: function() {
+			//called before render to initialise shared characteristics (like colour)
 		},
 		render: function() {
 			//called to add this element to the screen at this.x, this.y

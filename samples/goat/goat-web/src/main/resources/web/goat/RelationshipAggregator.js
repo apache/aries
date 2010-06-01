@@ -25,23 +25,25 @@ dojo.declare("goat.RelationshipAggregator", [], {
 		type: null,
 		relationships: null,
 		owningComponent: null,
+		componentAppearance: null,
 		
 		constructor : function(/*goat.Component*/owningComponent, type) {
 			this.type=type;
 			this.relationships=new Object();
 			this.owningComponent = owningComponent;
+			this.componentAppearance = owningComponent.getComponentAppearance();
 			
 			//add this aggregation to the component.
-			var property = this.owningComponent.elementRegistry.getProperty(this.owningComponent, "relationship.aggregation."+this.type, this);
+			var property = this.owningComponent.elementRegistry.getProperty(this.owningComponent, this.componentAppearance, "relationship.aggregation."+this.type, this);
 			this.owningComponent.elements["relationship.aggregation."+this.type]=property;
 		},
-		add: function(/*goat.RelationshipElement*/relationship){
+		add: function(/*goat.elements.RelationshipElement*/relationship){
 			var key = this.getKeyForRelationship(relationship);
 			this.relationships[key] = relationship;
 			//console.log("Aggregator annoucing add to '"+"goat.relationshipaggregator.add."+this.owningComponent.id+"."+"relationship.aggregation."+this.type+"'");
 			dojo.publish("goat.relationshipaggregator.add."+this.owningComponent.id+"."+"relationship.aggregation."+this.type, [relationship]);
 		},
-		remove: function(/*goat.RelationshipElement*/relationship){
+		remove: function(/*goat.elements.RelationshipElement*/relationship){
 			//console.log("RelationshipAggregator handling remove for..");
 			//console.log(relationship);
 			var key = this.getKeyForRelationship(relationship);
@@ -49,7 +51,7 @@ dojo.declare("goat.RelationshipAggregator", [], {
 			dojo.publish("goat.relationshipaggregator.remove."+this.owningComponent.id+"."+"relationship.aggregation."+this.type, [relationship]);
 			delete this.relationships[key];
 		},
-		getKeyForRelationship: function(/*goat.RelationshipElement*/relationship){
+		getKeyForRelationship: function(/*goat.elements.RelationshipElement*/relationship){
 			var key = ""+relationship.fromComponent.id+"!"+relationship.toComponent.id+"!"+relationship.name;
 			return key;
 		}
