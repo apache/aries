@@ -72,6 +72,8 @@
 	dojo.require("goat.SimpleInitialLayout");
 	dojo.require("goat.DwrLoadingDialog");
 
+	dojo.require("goat.configuration.Theme");
+	
 	//provides the basic layout when 1st loading up bundles.
     var initialLayout = null;
     //tracks the current provider for the app.
@@ -82,6 +84,8 @@
 	
 	//the global relationship array, indexed by relationship key.
 	var relationships = new Array();	
+
+	var theme = null;
 	
 	//various gfx decls.
 	var container = null, surface = null, surface_size = null;	
@@ -93,6 +97,9 @@
 			width : 1000,
 			height : 1000
 		};
+		//the global theme - in time, we may wish to make its initialization more sophisticated
+		theme = new goat.configuration.Theme();
+
 		initialLayout = new goat.SimpleInitialLayout(1000,1000);
 		var loadingDialog = new goat.DwrLoadingDialog();
 		var componentStatusGrid = new goat.ComponentStatusGrid("stateTableID");

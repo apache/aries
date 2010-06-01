@@ -18,19 +18,22 @@
  */
 //dojo.provide allows pages use all types declared in this resource
 dojo.provide("goat.Relationship");
-dojo.require("goat.RelationshipElement");
+dojo.require("goat.elements.RelationshipElement");
+dojo.require("goat.elements.TriangleDecorator");
 
 dojo.declare("goat.Relationship", [], {
 
 	key: null,
 	sscRelationship: null,
 	relationshipElements: null,
+	theme: null,
 
-constructor : function(sscRelationship) {
+constructor : function(sscRelationship, theme) {
 	//keep this lightweight.. these can be created ONLY to get the key via the next method.. 
 	//all normal constructor logic lives in activate.
 	this.sscRelationship = sscRelationship;
 	this.relationshipElements=new Array();
+	this.theme = theme;
 },
 getKey : function(){
 	if(this.key==null){
@@ -64,8 +67,38 @@ activate : function(){
 	dojo.forEach(this.sscRelationship.consumedBy, function(component){
 		//console.log("processing relationship prov by "+this.sscRelationship.providedBy.id+" to "+component.id);
 		
+		// What values do we expect for the types?
 		//surface, name, type, fromComponent, toComponent, aspects
-		var r = new goat.RelationshipElement(surface, this.sscRelationship.name, this.sscRelationship.type, components[this.sscRelationship.providedBy.id],components[component.id] );
+		var r = new goat.elements.RelationshipElement(surface, this.sscRelationship.name, this.sscRelationship.type, components[this.sscRelationship.providedBy.id],components[component.id] );
+		// Add a decorator if needed 
+		console.log("type is " + this.sscRelationship.type);
+		if(this.sscRelationship.type=="packageImport"){
+	//		this.typeOffset=5;
+	//		this.stroke = '#F08080';
+		}else if(this.sscRelationship.type=="packageExport"){
+	//		this.stroke = '#80F080';
+	//		this.typeOffset=-5;
+		} else if (this.sscRelationship.type == "serviceExport") {
+										// this.stroke = '#F080F0';
+										// this.typeOffset=10;
+										r
+												.addDecorator(new goat.elements.TriangleDecorator(
+														this.theme));
+									} else if (this.sscRelationship.type == "serviceImport") {
+										// this.stroke = '#8080F0';
+										// this.typeOffset=-10;
+										r
+												.addDecorator(new goat.elements.TriangleDecorator(
+														this.theme));
+									} else if (this.sscRelationship.type == "Service") {
+										//		this.stroke = '#8080F0';
+										//		this.typeOffset=-10;
+										var d = new goat.elements.TriangleDecorator(
+												this.theme);
+										r.addDecorator(d);
+									}
+
+		
 		//console.log("create of relationship element complete");
 		this.relationshipElements.push(r);
 		//hmm.. do we want to reverse-register the relationship like this?

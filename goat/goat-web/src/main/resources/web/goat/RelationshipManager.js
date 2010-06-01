@@ -37,7 +37,7 @@ constructor : function(/*goat.Component*/owningComponent) {
 	dojo.subscribe("goat.relationship.create."+owningComponent.id, this, this.registerRelationship);
 	dojo.subscribe("goat.relationship.remove."+owningComponent.id, this, this.removeRelationship);
 },
-registerRelationship: function(/*goat.RelationshipElement*/relationship){	
+registerRelationship: function(/*goat.elements.RelationshipElement*/relationship){	
 	//console.log(">registerRelationship");
 	//console.log(relationship);
 	var aggregator = this.relationships[relationship.type];
@@ -55,7 +55,7 @@ registerRelationship: function(/*goat.RelationshipElement*/relationship){
 	aggregator.add(relationship);	
 	//console.log("<registerRelationship");
 },
-removeRelationship: function(/*goat.RelationshipElement*/relationship){
+removeRelationship: function(/*goat.elements.RelationshipElement*/relationship){
 	//console.log("Relationship Manager for "+this.owningComponent.id+" handling removal for relationship..");
 	//console.log(relationship);
 	

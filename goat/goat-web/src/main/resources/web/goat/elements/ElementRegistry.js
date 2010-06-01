@@ -24,11 +24,13 @@ dojo.provide("goat.elements.ElementRegistry");
 
 dojo.require("goat.elements.TextComponentProperty");
 dojo.require("goat.elements.ComponentContainer");
-dojo.require("goat.elements.RelationshipAggregation");
-dojo.require("goat.elements.ComponentColorProperty");
+dojo.require("goat.elements.TwistieAggregation");
+dojo.require("goat.elements.ComponentColorElement");
+
+dojo.require("goat.configuration.ComponentAppearance");
 
 dojo.declare("goat.elements.ElementRegistry", [], {
-	
+
 constructor : function() {
 	if(registry==null){
 		registry = this;
@@ -44,17 +46,19 @@ constructor : function() {
 	return registry;
 },
 
-/*goat.elements.ElementBase*/ getProperty : function(component, /*String*/type, /*Object*/value){
+/*goat.elements.ElementBase*/ getProperty : function(component, /*goat.configuration.ComponentAppearance*/ componentAppearance, /*String*/type, /*Object*/value){
 	
+	// TODO fill in the rest of the arguments to the other elements
 	//this sort of resolution needs to be handled by Config.
 	if(type=="component.property.State"){
-		return new goat.elements.ComponentColorProperty(component,type,value);
+		console.log("constructing with " + value)
+		return new goat.elements.ComponentColorElement(component, componentAppearance, type,value);
 	}else if(type.match("^component.property.")=="component.property."){
 		return new goat.elements.TextComponentProperty(component,type,value);
 	}else if(type.match("^component.container")=="component.container"){
 		return new goat.elements.ComponentContainer(component, type, value);
 	}else if(type.match("^relationship.aggregation.")=="relationship.aggregation."){
-		return new goat.elements.RelationshipAggregation(component, type, value);
+		return new goat.elements.TwistieAggregation(component, type, value);
 	}
 	//else.. unknown property.. ignore it.
 }

@@ -17,6 +17,7 @@
  * under the License.
  */
 //callback from dwr, used to remove everything on a provider switch.
+
 function forgetAboutEverything(){
 	console.log("forgetting about everything.. ");
 	
@@ -57,11 +58,12 @@ function forgetAboutEverything(){
  */
 function addComponent(component) {
     console.log("******************* Component data **************");
-	
+
 	//if we dont know about the id yet, setup a new component.
 	if (components[component.id] == null) {
-		//create the component display object			
-		components[component.id] = new goat.Component( surface, component.id, component.componentProperties);
+		//create the component display object		
+		// pass in null for the children for the moment
+		components[component.id] = new goat.Component( surface, component.id, component.componentProperties, null, theme);
 
 		//put it somewhere sensible.
 		initialLayout.placeComponent(components[component.id]);
@@ -78,7 +80,7 @@ function addRelationship(relationship) {
 	console.log("******************* Relationship data **************");
 	console.log(relationship);
 	
-	var r=new goat.Relationship(relationship);
+	var r=new goat.Relationship(relationship, theme);
 	var key=r.getKey();
 	
 	console.log("checking relationship store for "+key);
