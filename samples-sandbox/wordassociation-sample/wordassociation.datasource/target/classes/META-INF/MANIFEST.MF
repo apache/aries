@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-DocURL: http://www.apache.org
+Built-By: mnuttall
+Bundle-SymbolicName: wordassociation.datasource
+Bundle-Version: 0.2.0.incubating-SNAPSHOT
+Bundle-Description: Aries top-level parent pom
+Build-Jdk: 1.6.0
+Bundle-Vendor: The Apache Software Foundation
+Bnd-LastModified: 1275396579286
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
+Bundle-Name: Apache Aries wordassociation demo datasource
+Tool: Bnd-0.0.357
+Created-By: Apache Maven Bundle Plugin
+Implementation-Version: 0.2-incubating-SNAPSHOT
+Implementation-Title: Apache Aries
+Bundle-ManifestVersion: 2
+Import-Package: javax.sql,org.apache.derby.jdbc
+

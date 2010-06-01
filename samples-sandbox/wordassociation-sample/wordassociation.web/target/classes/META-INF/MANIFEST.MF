@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-DocURL: http://www.apache.org
+Built-By: mnuttall
+Bundle-SymbolicName: wordassociation.web
+Web-JSPExtractLocation: /
+Bundle-Version: 0.2.0.incubating-SNAPSHOT
+Bundle-Description: Aries top-level parent pom
+Build-Jdk: 1.6.0
+Bundle-Vendor: The Apache Software Foundation
+Bnd-LastModified: 1275396587918
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
+Bundle-Name: Apache Aries wordassociation demo web component
+Tool: Bnd-0.0.357
+Web-ContextPath: /wordassociation.web
+Created-By: Apache Maven Bundle Plugin
+Implementation-Title: Apache Aries
+Implementation-Version: 0.2-incubating-SNAPSHOT
+Bundle-ManifestVersion: 2
+Import-Package: javax.naming,javax.servlet;version="2.5.0",javax.servl
+ et.http;version="2.5.0",org.apache.wordassociation
+

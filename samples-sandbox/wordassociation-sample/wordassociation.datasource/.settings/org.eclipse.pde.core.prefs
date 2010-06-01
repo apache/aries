@@ -1,0 +1,7 @@
+#Tue May 18 17:30:11 CEST 2010
+BUNDLE_ROOT_PATH=BundleContent
+eclipse.preferences.version=1
+pluginProject.extensions=false
+resolve.requirebundle=false
+manifest.exportWizard=com.ibm.etools.aries.bundle.export
+manifest.launchShortcuts=org.eclipse.wst.server.launchShortcut,org.eclipse.wst.server.launchShortcut

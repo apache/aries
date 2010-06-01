@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+  <bean id="derbyXADataSource" class="org.apache.derby.jdbc.EmbeddedXADataSource">
+    <property name="databaseName" value="wordassociationDB"/>
+  </bean>
+  
+  <service id="xaDataSource" ref="derbyXADataSource" interface="javax.sql.XADataSource">
+  <service-properties>
+    <entry key="osgi.jndi.service.name" value="jdbc/wordassociationdb"/>
+   </service-properties>
+  </service>
+
+  
+  <bean id="derbyDataSource" class="org.apache.derby.jdbc.EmbeddedDataSource">
+    <property name="databaseName" value="wordassociationDB"/>
+  </bean>
+  
+  <service ref="derbyDataSource" interface="javax.sql.DataSource">
+   <service-properties>
+     <entry key="osgi.jndi.service.name" value="jdbc/wordassociationdbnojta"/>
+   </service-properties>
+  </service>
+</blueprint>

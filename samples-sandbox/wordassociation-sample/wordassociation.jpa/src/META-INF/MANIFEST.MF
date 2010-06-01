@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: wordassociation.jpa
+Bundle-SymbolicName: wordassociation.jpa
+Bundle-Version: 1.0.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Meta-Persistence: META-INF/persistence.xml
+Import-Package: javax.persistence,
+ org.apache.openjpa.enhance,
+ org.apache.openjpa.util,
+ org.apache.wordassociation
