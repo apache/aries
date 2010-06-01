@@ -1,1 +1,0 @@
-aries.osgi.version.clean = 0.2.0.incubating-SNAPSHOT
