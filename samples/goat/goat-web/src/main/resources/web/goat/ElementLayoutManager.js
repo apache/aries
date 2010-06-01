@@ -52,6 +52,13 @@ doLayout: function(){
 	var maxWidth = 0;
     var sepYPos = new Array();
 	
+    // Go through the rendering in two passes, initialisation and then rendering
+	for ( var elementName in this.owningComponent.elements) {
+		var element = this.owningComponent.elements[elementName];
+		element.apply();
+	}
+
+	
 	//console.log("processing array.. ");
 	//walk through each element in the component, and position it relative to 0,0 inside the component.
 	for(var elementName in this.owningComponent.elements){
