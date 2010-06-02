@@ -22,31 +22,33 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfoFactory;
+import org.apache.aries.jpa.container.ManagedPersistenceUnitInfoFactoryListener;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.apache.aries.jpa.transformer.TransformerAgent;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
 public class ManagedPersistenceUnitInfoFactoryImpl implements ManagedPersistenceUnitInfoFactory {
 
   private Map<Bundle, PersistenceBundleInfo> map = 
       Collections.synchronizedMap(new HashMap<Bundle, PersistenceBundleInfo>());
-  
+    
   public Collection<ManagedPersistenceUnitInfo> createManagedPersistenceUnitMetadata(
       BundleContext containerContext, Bundle persistenceBundle,
       ServiceReference providerReference,
       Collection<ParsedPersistenceUnit> persistenceMetadata) {
     
-    //TODO add support for provider bundle imports (e.g. for weaving) here
-      
     // try to get TransformerAgent service
-    ServiceReference agentReference = containerContext.getServiceReference(TransformerAgent.class.getName());
     TransformerAgent agent = null;
+    ServiceReference agentReference = containerContext.getServiceReference(TransformerAgent.class.getName());   
     if (agentReference != null) {
         agent = (TransformerAgent) containerContext.getService(agentReference);
     }
@@ -55,14 +57,49 @@ public class ManagedPersistenceUnitInfoFactoryImpl implements ManagedPersistence
     for (ParsedPersistenceUnit unit : persistenceMetadata) {
       managedUnits.add(new ManagedPersistenceUnitInfoImpl(persistenceBundle, unit, providerReference, agent));
     }
+            
+    // try to get ManagedPersistenceUnitInfoFactoryListener service
+    ManagedPersistenceUnitInfoFactoryListener listener = null;
+    ServiceReference listenerReference = getManagedPersistenceUnitInfoFactoryListener(containerContext, providerReference);
+    if (listenerReference != null) {
+        listener = (ManagedPersistenceUnitInfoFactoryListener) containerContext.getService(listenerReference);
+    }
+        
+    if (listener != null) {
+        listener.persistenceUnitMetadataCreated(containerContext, persistenceBundle, providerReference, managedUnits);
+    }
     
     PersistenceBundleInfo info = new PersistenceBundleInfo();
     info.managedUnits = managedUnits;
-    info.agentReference = agentReference;
+    info.listener = listener;
+    info.references.add(agentReference);
+    info.references.add(listenerReference);
     
     map.put(persistenceBundle, info);
     
     return managedUnits;
+  }
+  
+  private ServiceReference getManagedPersistenceUnitInfoFactoryListener(BundleContext containerContext, 
+                                                                        ServiceReference providerReference) {
+     
+      if (providerReference != null) {
+          String providerName = (String) providerReference.getProperty("javax.persistence.provider");
+          if (providerName != null) {
+              String filter = "(javax.persistence.provider=" + providerName + ")";
+              try {
+                  ServiceReference[] refs = containerContext.getServiceReferences(ManagedPersistenceUnitInfoFactoryListener.class.getName(), filter);
+                  if (refs != null && refs.length > 0) {
+                      return refs[0];
+                  }
+              } catch (InvalidSyntaxException e) {
+                  // should not happen
+                  e.printStackTrace();
+              }
+          }
+      }
+      
+      return containerContext.getServiceReference(ManagedPersistenceUnitInfoFactoryListener.class.getName());
   }
   
   public void destroyPersistenceBundle(BundleContext containerContext, Bundle persistenceBundle) {
@@ -73,9 +110,12 @@ public class ManagedPersistenceUnitInfoFactoryImpl implements ManagedPersistence
               ((ManagedPersistenceUnitInfoImpl) unit).destroy();
           }
           info.managedUnits.clear();
-          // unget agent service
-          if (info.agentReference != null) {
-              containerContext.ungetService(info.agentReference);
+          if (info.listener != null) {
+              info.listener.persistenceBundleDestroyed(containerContext, persistenceBundle);
+          }
+          // unget services
+          for (ServiceReference ref : info.references) {
+              containerContext.ungetService(ref);
           }
       }
   }
@@ -85,8 +125,9 @@ public class ManagedPersistenceUnitInfoFactoryImpl implements ManagedPersistence
   }
     
   private static class PersistenceBundleInfo {
+      private List<ServiceReference> references = new LinkedList<ServiceReference>();
       private Collection<ManagedPersistenceUnitInfo> managedUnits;
-      private ServiceReference agentReference;
+      private ManagedPersistenceUnitInfoFactoryListener listener;
   }
   
   //Code that can be used to attach a fragment for provider wiring
