@@ -20,75 +20,40 @@ package org.apache.aries.jpa.container.unit.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfoFactory;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
-import org.apache.aries.jpa.transformer.TransformerAgent;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class ManagedPersistenceUnitInfoFactoryImpl implements ManagedPersistenceUnitInfoFactory {
+public class ManagedPersistenceUnitInfoFactoryImpl implements
+    ManagedPersistenceUnitInfoFactory {
 
-  private Map<Bundle, PersistenceBundleInfo> map = 
-      Collections.synchronizedMap(new HashMap<Bundle, PersistenceBundleInfo>());
-  
   public Collection<ManagedPersistenceUnitInfo> createManagedPersistenceUnitMetadata(
       BundleContext containerContext, Bundle persistenceBundle,
       ServiceReference providerReference,
       Collection<ParsedPersistenceUnit> persistenceMetadata) {
     
     //TODO add support for provider bundle imports (e.g. for weaving) here
-      
-    // try to get TransformerAgent service
-    ServiceReference agentReference = containerContext.getServiceReference(TransformerAgent.class.getName());
-    TransformerAgent agent = null;
-    if (agentReference != null) {
-        agent = (TransformerAgent) containerContext.getService(agentReference);
-    }
     
-    Collection<ManagedPersistenceUnitInfo> managedUnits = new ArrayList<ManagedPersistenceUnitInfo>();    
-    for (ParsedPersistenceUnit unit : persistenceMetadata) {
-      managedUnits.add(new ManagedPersistenceUnitInfoImpl(persistenceBundle, unit, providerReference, agent));
-    }
+    Collection<ManagedPersistenceUnitInfo> managedUnits = new ArrayList<ManagedPersistenceUnitInfo>();
     
-    PersistenceBundleInfo info = new PersistenceBundleInfo();
-    info.managedUnits = managedUnits;
-    info.agentReference = agentReference;
-    
-    map.put(persistenceBundle, info);
+    for(ParsedPersistenceUnit unit : persistenceMetadata)
+      managedUnits.add(new ManagedPersistenceUnitInfoImpl(persistenceBundle, unit, providerReference));
     
     return managedUnits;
   }
-  
-  public void destroyPersistenceBundle(BundleContext containerContext, Bundle persistenceBundle) {
-      PersistenceBundleInfo info = map.remove(persistenceBundle);
-      if (info != null) {
-          // destroy units
-          for (ManagedPersistenceUnitInfo unit : info.managedUnits) {
-              ((ManagedPersistenceUnitInfoImpl) unit).destroy();
-          }
-          info.managedUnits.clear();
-          // unget agent service
-          if (info.agentReference != null) {
-              containerContext.ungetService(info.agentReference);
-          }
-      }
+
+  public void destroyPersistenceBundle(BundleContext containerContext, Bundle bundle) {
+
   }
 
   public String getDefaultProviderClassName() {
-      return null;
+    return null;
   }
-    
-  private static class PersistenceBundleInfo {
-      private Collection<ManagedPersistenceUnitInfo> managedUnits;
-      private ServiceReference agentReference;
-  }
-  
+
   //Code that can be used to attach a fragment for provider wiring
   
 ////If we can't find a provider then bomb out
