@@ -42,6 +42,7 @@ import net.sf.cglib.proxy.Enhancer;
 
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
 import org.apache.aries.blueprint.ExtendedServiceReferenceMetadata;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
@@ -123,8 +124,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         ServiceReferenceMetadata metadata) {
       
       String typeName = metadata.getInterface();
-      
-      if (typeName == null) {
+      Class typeClass = metadata instanceof ExtendedServiceReferenceMetadata
+                                ? ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface() : null;
+      if (typeName == null && typeClass == null) {
         return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
           public ClassLoader run() {
             return new BundleDelegatingClassLoader(blueprintContainer.getBundleContext().getBundle(),
@@ -134,11 +136,15 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
       }
       
       final ClassLoader interfaceClassLoader;
-      try {
-        Bundle clientBundle = blueprintContainer.getBundleContext().getBundle();
-        interfaceClassLoader = clientBundle.loadClass(typeName).getClassLoader();
-      } catch (ClassNotFoundException cnfe) {
-        throw new ComponentDefinitionException("Unable to load class " + typeName + " from recipe " + this, cnfe);
+      if (typeClass != null) {
+          interfaceClassLoader = typeClass.getClassLoader();
+      } else {
+        try {
+          Bundle clientBundle = blueprintContainer.getBundleContext().getBundle();
+          interfaceClassLoader = clientBundle.loadClass(typeName).getClassLoader();
+        } catch (ClassNotFoundException cnfe) {
+          throw new ComponentDefinitionException("Unable to load class " + typeName + " from recipe " + this, cnfe);
+        }
       }
       
       return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
@@ -248,7 +254,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 List<Listener> listeners = (List<Listener>) listenersRecipe.create();
                 for (Listener listener : listeners) {
                     List<Class> cl = new ArrayList<Class>();
-                    if (metadata.getInterface() != null) {
+                    if (metadata instanceof ExtendedServiceReferenceMetadata && ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface() != null) {
+                        cl.add(((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface());
+                    } else if (metadata.getInterface() != null) {
                         cl.addAll(loadAllClasses(Collections.singletonList(metadata.getInterface())));
                     } else {
                         cl.add(Object.class);
@@ -289,11 +297,11 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
 
 
-    protected Object createProxy(final Callable<Object> dispatcher, Iterable<String> interfaces) throws Exception {
+    protected Object createProxy(final Callable<Object> dispatcher, Set<Class> interfaces) throws Exception {
         if (!interfaces.iterator().hasNext()) {
             return new Object();
         } else {
-            return getProxyFactory().createProxy(proxyClassLoader, toClassArray(loadAllClasses(interfaces)), dispatcher);
+            return getProxyFactory().createProxy(proxyClassLoader, toClassArray(interfaces), dispatcher);
         }
     }
 
@@ -303,9 +311,16 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             if (metadata instanceof ExtendedServiceReferenceMetadata) {
                 proxyClass = (((ExtendedServiceReferenceMetadata) metadata).getProxyMethod() & ExtendedServiceReferenceMetadata.PROXY_METHOD_CLASSES) != 0;
             }
-            List<Class> classes = loadAllClasses(Collections.singletonList(this.metadata.getInterface()));
             if (!proxyClass) {
-                for (Class cl : classes) {
+                Set<Class> interfaces = new HashSet<Class>();
+                if (metadata.getInterface() != null) {
+                    interfaces.add(loadClass(metadata.getInterface()));
+                }
+                if (metadata instanceof ExtendedReferenceListMetadata
+                            && ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface() != null) {
+                        interfaces.add(((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface());
+                    }
+                for (Class cl : interfaces) {
                     if (!cl.isInterface()) {
                         throw new ComponentDefinitionException("A class " + cl.getName() + " was found in the interfaces list, but class proxying is not allowed by default. The ext:proxy-method='classes' attribute needs to be added to this service reference.");
                     }
@@ -562,6 +577,9 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         }
         // Handle interfaces
         String interfaceName = metadata.getInterface();
+        if (metadata instanceof ExtendedServiceReferenceMetadata && ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface() != null) {
+            interfaceName = ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface().getName();
+        }
         if (interfaceName != null && interfaceName.length() > 0) {
             members.add("(" + Constants.OBJECTCLASS + "=" + interfaceName + ")");
         }
@@ -586,7 +604,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
 
     private static Class[] getInterfaces(Class[] classes) {
-        List<Class> interfaces = new ArrayList<Class>();
+        Set<Class> interfaces = new HashSet<Class>();
         for (Class clazz : classes) {
             if (clazz.isInterface()) {
                 interfaces.add(clazz);
@@ -595,7 +613,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return toClassArray(interfaces);
     }
 
-    private static Class[] toClassArray(List<Class> classes) {
+    private static Class[] toClassArray(Set<Class> classes) {
         return classes.toArray(new Class [classes.size()]);
     }
 

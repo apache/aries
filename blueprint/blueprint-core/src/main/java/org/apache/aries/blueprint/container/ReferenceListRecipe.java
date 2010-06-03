@@ -18,18 +18,12 @@
  */
 package org.apache.aries.blueprint.container;
 
-import java.util.AbstractCollection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.RandomAccess;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
+import org.apache.aries.blueprint.ExtendedServiceReferenceMetadata;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.utils.DynamicCollection;
@@ -117,14 +111,18 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
                     }
                 } else {
                     dispatcher = new ServiceDispatcher(reference);
-                    List<String> interfaces = new ArrayList<String>();
+                    Set<Class> interfaces = new HashSet<Class>();
                     if (metadata.getInterface() != null) {
-                        interfaces.add(metadata.getInterface());
+                        interfaces.add(loadClass(metadata.getInterface()));
                     }
                     if (metadata instanceof ExtendedReferenceListMetadata) {
+                        if (((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface() != null) {
+                            interfaces.add(((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface());
+                        }
                         boolean greedy = (((ExtendedReferenceListMetadata) metadata).getProxyMethod() & ExtendedReferenceListMetadata.PROXY_METHOD_GREEDY) != 0;
                         if (greedy) {
-                            interfaces = Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS));
+                            List<String> ifs = Arrays.asList((String[]) reference.getProperty(Constants.OBJECTCLASS));
+                            interfaces.addAll(loadAllClasses(ifs));
                         }
                     }
                     dispatcher.proxy = createProxy(dispatcher, interfaces);

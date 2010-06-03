@@ -40,6 +40,7 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
     protected String filter;
     protected Collection<ReferenceListener> referenceListeners;
     protected int proxyMethod;
+    protected Class runtimeInterface;
 
     public ServiceReferenceMetadataImpl() {
     }
@@ -126,4 +127,11 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
         this.proxyMethod = proxyMethod;
     }
 
+    public Class getRuntimeInterface() {
+        return runtimeInterface;
+    }
+
+    public void setRuntimeInterface(Class runtimeInterface) {
+        this.runtimeInterface = runtimeInterface;
+    }
 }
