@@ -31,6 +31,9 @@ dojo.declare("goat.configuration.Theme", [], {
 	showState : null,
 	showVersion : null,
 	bundleBackgroundColor: "#ffff80",
+	bundleOutlineColor0: "#808080",
+	bundleOutlineColor1: "#BA98E2",
+	bundleOutlineColor2: "#682DAE",
 
 	constructor : function() {
 		this.greyOutInactiveBundles = true;
