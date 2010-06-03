@@ -19,11 +19,14 @@
 package org.apache.aries.blueprint.container;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.apache.aries.blueprint.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.ExtendedServiceReferenceMetadata;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.osgi.framework.ServiceReference;
@@ -75,10 +78,14 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                 }
             }
             // Create the proxy
-            List<String> interfaces = new ArrayList<String>();
+            Set<Class> interfaces = new HashSet<Class>();
             if (this.metadata.getInterface() != null) {
-                interfaces.add(this.metadata.getInterface());
+                interfaces.add(loadClass(this.metadata.getInterface()));
             }
+            if (this.metadata instanceof ExtendedServiceReferenceMetadata && ((ExtendedServiceReferenceMetadata) this.metadata).getRuntimeInterface() != null) {
+                interfaces.add(((ExtendedServiceReferenceMetadata) this.metadata).getRuntimeInterface());
+            }
+
             proxy = createProxy(new ServiceDispatcher(), interfaces);
 
             // Add partially created proxy to the context
