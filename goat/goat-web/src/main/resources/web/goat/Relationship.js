@@ -42,23 +42,26 @@ getKey : function(){
 	return this.key;
 },
 update : function(sscRelationship){
-	//console.log("Updating relationship "+this.key+" with new data");
+	console.log("Updating relationship "+this.key+" with new data");
 	
-	//console.log("Removing old elements..");
+	console.log("Removing old elements..");
+    console.log(this.relationshipElements);
     //remove the old relationship elements .. 
 	dojo.forEach(this.relationshipElements, function(relationshipElement){
+        console.log("Removing.. ");
+        console.log(relationshipElement);
 		relationshipElement.removeSelf();
 		//delete relationshipElement;
 	},this);
 	
 	//new array...
-	//console.log("forgetting about the removed relationship elts");
+	console.log("forgetting about the removed relationship elts");
 	this.relationshipElements=new Array();
 	
-	//console.log("switching to the new sscRelationship...");
+	console.log("switching to the new sscRelationship...");
 	this.sscRelationship = sscRelationship;
 	
-	//console.log("kicking self to rebuild relationship elts");
+	console.log("kicking self to rebuild relationship elts");
 	this.activate();
 },
 activate : function(){
@@ -83,18 +86,18 @@ activate : function(){
 										// this.typeOffset=10;
 										r
 												.addDecorator(new goat.elements.TriangleDecorator(
-														this.theme));
+														this.theme,surface));
 									} else if (this.sscRelationship.type == "serviceImport") {
 										// this.stroke = '#8080F0';
 										// this.typeOffset=-10;
 										r
 												.addDecorator(new goat.elements.TriangleDecorator(
-														this.theme));
+														this.theme,surface));
 									} else if (this.sscRelationship.type == "Service") {
 										//		this.stroke = '#8080F0';
 										//		this.typeOffset=-10;
 										var d = new goat.elements.TriangleDecorator(
-												this.theme);
+												this.theme,surface);
 										r.addDecorator(d);
 									}
 

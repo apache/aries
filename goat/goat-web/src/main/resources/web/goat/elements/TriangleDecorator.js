@@ -26,18 +26,13 @@ dojo.require("goat.configuration.Theme");
 
 dojo.declare("goat.elements.TriangleDecorator", [], {
 
-	// relationship properties.
-	fromComponent : null,
-	toComponent : null,
-	name : null,
-	type : null,
-
 	// object properties
 	surface : null,
-	typeOffset : 0,
 
 	// gfx objects
 	line : null,
+    triangle : null,
+    trianglegroup : null,
 
 	// internals
 	stroke : null,
@@ -46,33 +41,37 @@ dojo.declare("goat.elements.TriangleDecorator", [], {
 	// am I deleted?
 	removed : false,
 
-	// for the up and coming relationship aspect info..
-	aspects : null,
+    // am I hidden?
+    hidden : false,
 
-	constructor : function(theme) {
+	constructor : function(theme, surface) {
 		this.theme = theme;
+        this.surface = surface;
+        this.trianglegroup = this.surface.createGroup();
 	},
 	makeInvisible : function() {
-		this.triangle.setShape( {
-			x1 : -1000,
-			y1 : -1000,
-			x2 : -1000,
-			y2 : -1000
-		});
-	},
-	setSurface : function(newSurface) {
-		this.surface = newSurface;
-	},
-	setStroke : function(newStroke) {
+        //console.log("Hiding triangle..");
+        if(this.trianglegroup!=null) {
+            this.surface.remove(this.trianglegroup);
+            this.hidden=true;
+        }
+   	},
+   	setStroke : function(newStroke) {
 		this.stroke = newStroke;
 	},
 	lineUpdated : function(line) {
-		if (this.removed) {
+		//if (this.removed) {
 			// console.log("ul EEK.. this line should be dead.. and its
 			// aliiiiiive "+this.type+" from "+this.fromComponent.id+" to
 			// "+this.toComponent.id);
 			// console.log(this);
-		}
+		//}
+
+        if(this.hidden) {
+            //console.log("Unhiding triangle..");
+            this.hidden=false;
+            this.surface.add(this.trianglegroup);
+        }
 
 		if (line != null) {
 			var shape = line.getShape();
@@ -81,118 +80,93 @@ dojo.declare("goat.elements.TriangleDecorator", [], {
 			var tox = shape.x2;
 			var toy = shape.y2;
 
-			// A somewhat awkwardly named method ...
-			var triangleSize = this.theme.getTriangleSize();
-			var deltax = tox - fromx;
-			var deltay = toy - fromy;
-			// Do a square root to work out the line length
-			// Will this hurt us on performance? An approximation would do
-			// if so ...
-			var lineLength = Math.sqrt(deltax * deltax + deltay * deltay);
-			// Assume the triangles are equilateral
-			var divider = lineLength / triangleSize;
-			// The triangle starts in the middle of the line
-			var tx1 = (fromx + tox) / 2;
-			var ty1 = (fromy + toy) / 2;
-			var tx2 = tx1 - deltax / divider + deltay / divider;
-			var ty2 = ty1 - deltay / divider - deltax / divider;
-			var tx3 = tx1 - deltax / divider - deltay / divider;
-			var ty3 = ty1 - deltay / divider + deltax / divider;
+            //avoid processing self-referential relationships
+            //not ideal, but serves the purpose until it's done differently.
+            if(fromx!=tox && fromy!=toy) {
+    
+    			// A somewhat awkwardly named method ...
+    			var triangleSize = this.theme.getTriangleSize();
+    			var deltax = tox - fromx;
+    			var deltay = toy - fromy;
+    			// Do a square root to work out the line length
+    			// Will this hurt us on performance? An approximation would do
+    			// if so ...
+    			var lineLength = Math.sqrt(deltax * deltax + deltay * deltay);
+    			// Assume the triangles are equilateral
+    			var divider = lineLength / triangleSize;
+    			// The triangle starts in the middle of the line
+    			var tx1 = (fromx + tox) / 2;
+    			var ty1 = (fromy + toy) / 2;
+    			var tx2 = tx1 - deltax / divider + deltay / divider;
+    			var ty2 = ty1 - deltay / divider - deltax / divider;
+    			var tx3 = tx1 - deltax / divider - deltay / divider;
+    			var ty3 = ty1 - deltay / divider + deltax / divider;
+        
+    			if (this.triangle == null) {
+    				this.triangle = this.trianglegroup.createPolyline( [ {
+    					x : tx1,
+    					y : ty1
+    				}, {
+    					x : tx2,
+    					y : ty2
+    				}, {
+    					x : tx3,
+    					y : ty3
+    				}, {
+    					x : tx1,
+    					y : ty1
+    				} ]);
+    				this.triangle.setStroke(this.stroke);
+    
+    			} else {
+    				this.triangle.setShape( [ {
+    					x : tx1,
+    					y : ty1
+    				}, {
+    					x : tx2,
+    					y : ty2
+    				}, {
+    					x : tx3,
+    					y : ty3
+    				}, {
+    					x : tx1,
+    					y : ty1
+    				} ]);
+                }
+    
+                if (this.theme.shouldUseLinearShading()) {
+                    this.triangle.setFill( {
+                        type : "linear",
+                        x1 : tx1,
+                        y1 : ty1,
+                        x2 : tx2,
+                        y2 : ty2,
+                        colors : [ {
+                            offset : 0,
+                            color : this.theme.getServiceBackgroundColor()
+                        }, {
+                            offset : 1,
+                            color : "white"
+                        } ]
+                    });   
+                 } else {
+                    this.triangle.setFill(this.theme
+                            .getServiceBackgroundColor());
+    
+                }
+            }
 
-			if (this.triangle == null) {
-				this.triangle = this.surface.createPolyline( [ {
-					x : tx1,
-					y : ty1
-				}, {
-					x : tx2,
-					y : ty2
-				}, {
-					x : tx3,
-					y : ty3
-				}, {
-					x : tx1,
-					y : ty1
-				} ]);
-				this.triangle.setStroke(this.stroke);
-
-			} else {
-				this.triangle.setShape( [ {
-					x : tx1,
-					y : ty1
-				}, {
-					x : tx2,
-					y : ty2
-				}, {
-					x : tx3,
-					y : ty3
-				}, {
-					x : tx1,
-					y : ty1
-				} ]);
-
-				if (this.theme.shouldUseLinearShading()) {
-					this.triangle.setFill( {
-						type : "linear",
-						x1 : tx1,
-						y1 : ty1,
-						x2 : tx2,
-						y2 : ty2,
-						colors : [ {
-							offset : 0,
-							color : this.theme.getServiceBackgroundColor()
-						}, {
-							offset : 1,
-							color : "white"
-						} ]
-					});
-				} else {
-					this.triangle.setFill(this.theme
-							.getServiceBackgroundColor());
-
-				}
-			}
 		}
 	},
 	removeSelf : function() {
 		if (!this.removed) {
 			this.removed = true;
-
-			this.surface.remove(this.triangle);
-			// console.log("Line from "+this.fromComponent.id+" to
-			// "+this.toComponent.id+" being marked as deleted");
+            if(this.triangle!=null) {
+                this.surface.remove(this.trianglegroup);
+                this.trianglegroup=null;
+                // console.log("Line from "+this.fromComponent.id+" to
+                // "+this.toComponent.id+" being marked as deleted");
+            }
 		}
-	},
-	getKey : function() {
-		var key = "" + this.fromComponent.id + "!" + this.toComponent.id + "!"
-				+ this.type + "!" + this.name;
-	},
-	onComponentMove : function(component) {
-		this.updateLine();
-	},
-	onComponentHidden : function(component) {
-		this.updateVisibility();
-	},
-	onComponentClick : function(component) {
-		if (this.removed) {
-			// console.log("occ EEK.. this line should be dead.. and its
-	// aliiiiiive "+this.type+" from "+this.fromComponent.id+" to
-	// "+this.toComponent.id);
-}
-
-dojox.gfx.fx.animateStroke( {
-	shape : this.triangle,
-	duration : 500,
-	color : {
-		start : "#FF3030",
-		end : this.stroke
-	},
-	width : {
-		start : 3,
-		end : 2
-	},
-	join : {
-		values : [ "miter", "bevel", "round" ]
 	}
-}).play();
-}
 });
