@@ -89,7 +89,6 @@ constructor: function(surface, name, type, fromComponent, toComponent, aspects) 
 },
 addDecorator: function(decorator) {
 	decorator.setStroke(this.stroke);
-	decorator.setSurface(this.surface);
 	this.decorators.push(decorator);
 },
 setStroke: function(){	
@@ -111,10 +110,10 @@ setStroke: function(){
 	}
 },
 updateVisibility: function(){
-	if(this.removed){
+	//if(this.removed){
 		//console.log("uv EEK.. this line should be dead.. and its aliiiiiive "+this.type+" from "+this.fromComponent.id+" to "+this.toComponent.id);
 		//console.log(this);
-	}
+	//}
 	
 	this.visible = (!this.fromComponent.hidden) && (!this.toComponent.hidden);
 	
@@ -123,9 +122,12 @@ updateVisibility: function(){
 			// No need to erase a line which doesn't exist ...
 		}else{
 			this.line.setShape({x1: -1000, y1: -1000, x2: -1000, y2: -1000});
+
+            //console.log("Hiding decorators..");
 			dojo.forEach(this.decorators, function(decorator){
+                //console.log("Hiding decorator..");
 				decorator.makeInvisible();
-			});
+			},this);
 
 		}
 	}else{
@@ -134,11 +136,12 @@ updateVisibility: function(){
 },
 updateLine: function(){
 	if(this.removed){
-		//console.log("ul EEK.. this line should be dead.. and its aliiiiiive "+this.type+" from "+this.fromComponent.id+" to "+this.toComponent.id);
-		//console.log(this);
+		console.log("ul EEK.. this line should be dead.. and its aliiiiiive "+this.type+" from "+this.fromComponent.id+" to "+this.toComponent.id);
+		console.log(this);
 	}
 	
 	if(this.visible){
+        //console.log("Updating VISIBLE line from "+this.fromComponent.id+" to "+this.toComponent.id);
 		var fromx = this.fromComponent.x + (this.fromComponent.width / 2) + this.typeOffset;
 		var fromy = this.fromComponent.y + (this.fromComponent.height / 2)+ this.typeOffset;
 		var tox = this.toComponent.x + (this.toComponent.width / 2)+ this.typeOffset;
@@ -150,31 +153,38 @@ updateLine: function(){
 		}else{
 			this.line.setShape({x1: fromx, y1: fromy, x2: tox, y2: toy});
 		}
-		
-		// Use a normal for loop since we'd have to hitch context with a
-		// dojo.forEach
-			if (this.decorators != null) {
-				for ( var i = 0; i < this.decorators.length; i++) {
-					this.decorators[i].lineUpdated(this.line);
-				}
-			}
 
-			// Our line should be underneath any decorations
-			this.line.moveToBack();
-		}
+        if (this.decorators != null) {
+            dojo.forEach(this.decorators, function(decorator){
+                decorator.lineUpdated(this.line);
+            },this);
+        }
+
+        // Our line should be underneath any decorations
+        this.line.moveToBack();
+	}
 	
 },
 removeSelf: function(){
 	//console.log("Line from "+this.fromComponent.id+" to "+this.toComponent.id+" being removed");
-	//console.log(this);
+    //console.log(this);
 	if(!this.removed){
 		this.removed = true;
 		
 		//console.log("Line from "+this.fromComponent.id+" to "+this.toComponent.id+" being removed from surface");
-		this.surface.remove(this.line);
+        //console.log(this);
+        if(this.line!=null) {
+            this.surface.remove(this.line);
+        }
+
+        //console.log("Removing decorators..");
 		dojo.forEach(this.decorators, function(decorator){
+            //console.log("Asking...");
+            //console.log(decorator);
+            //console.log("..to remove itself");
 			decorator.removeSelf();
 		});
+        this.decorators = new Array();
 		//console.log("Line from "+this.fromComponent.id+" to "+this.toComponent.id+" being marked as deleted");
 		
 		//console.log("Removing line subscriptions to components.");
@@ -201,16 +211,19 @@ onComponentHidden: function(component){
 	this.updateVisibility();
 },
 onComponentClick: function(component){
+    //console.log("OnClick "+component.id);
 	if(this.removed){
-		//console.log("occ EEK.. this line should be dead.. and its aliiiiiive "+this.type+" from "+this.fromComponent.id+" to "+this.toComponent.id);
+		console.log("occ EEK.. this line should be dead.. and its aliiiiiive "+this.type+" from "+this.fromComponent.id+" to "+this.toComponent.id);
 	}
-	
-	dojox.gfx.fx.animateStroke({
-	    shape: this.line,
-	    duration: 500,
-	    color: {start: "#FF3030", end: this.stroke},
-	    width: {start: 3, end: 2},
-	    join:  {values: ["miter", "bevel", "round"]}
-	}).play();	
+
+    if(this.line!=null) {
+        dojox.gfx.fx.animateStroke({
+            shape: this.line,
+            duration: 500,
+            color: {start: "#FF3030", end: this.stroke},
+            width: {start: 3, end: 2},
+            join:  {values: ["miter", "bevel", "round"]}
+        }).play();	
+    }
 }
 });
