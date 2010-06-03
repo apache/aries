@@ -31,4 +31,6 @@ public interface ExtendedServiceReferenceMetadata extends ServiceReferenceMetada
 
     int getProxyMethod();
 
+    Class getRuntimeInterface();
+
 }

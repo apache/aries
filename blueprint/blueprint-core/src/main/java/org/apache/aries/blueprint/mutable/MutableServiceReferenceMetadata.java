@@ -46,4 +46,6 @@ public interface MutableServiceReferenceMetadata extends ExtendedServiceReferenc
     void setProxyMethod(int proxyMethod);
 
     void setFilter(String filter);
+
+    void setRuntimeInterface(Class clazz);
 }
