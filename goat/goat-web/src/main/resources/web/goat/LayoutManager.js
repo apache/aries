@@ -70,6 +70,13 @@ dojo.declare("goat.LayoutManager", [], {
 	  this.saveButton = new dijit.form.Button( 
 			  {label: "Save Coords", onClick: function(){_this.saveCoords();} });
 	  
+	  this.hideButton = new dijit.form.Button(
+              {label: "Hide All", onClick: function(){_this.hideAll();} });
+
+      this.showButton = new dijit.form.Button(
+              {label: "Show All", onClick: function(){_this.showAll();} });
+
+	  
       this.layouts = new dojo.data.ItemFileWriteStore( {data : {identifier: 'name', items: this.items }});
       
 	  this.layoutSelector = new dijit.form.ComboBox( {id: "BundleLayoutSelector",  store: this.layouts} );
@@ -79,11 +86,45 @@ dojo.declare("goat.LayoutManager", [], {
 	  dojo.byId(where).appendChild(this.layoutSelector.domNode);
 	  dojo.byId(where).appendChild(this.loadButton.domNode);
 	  dojo.byId(where).appendChild(this.saveButton.domNode);
+	  dojo.byId(where).appendChild(this.hideButton.domNode);
+      dojo.byId(where).appendChild(this.showButton.domNode);
+
 	  	  
 	  this.disable();
 	  
 	  dojo.subscribe("goat.provider.change", this, this.onProviderChange);
 	},
+	
+	hideAll: function() {
+        console.log("Hiding all bundles");
+		for (var componentNumber in components) {
+			var component = components[componentNumber];
+			//console.log("got Comp");
+			//console.log(component);
+            if(component!=null){
+                //If it isn't hidden already
+                if(!component.hidden) {
+                    component.toggleHidden();
+                }
+            }
+        }
+    },
+
+    showAll: function() {
+        console.log("Showing all bundles");
+		for (var componentNumber in components) {
+			var component = components[componentNumber];
+			//console.log("got Comp");
+			//console.log(component);
+            if(component!=null){
+                //If bundle is hidden make it visible
+                if(component.hidden) {
+                    component.toggleHidden();
+                }
+            }
+        }
+    },
+    
 	onProviderChange: function(evt){
 		  console.log("OnProviderChange");
 		  console.log(evt);
@@ -189,7 +230,10 @@ dojo.declare("goat.LayoutManager", [], {
 		
 		var coord_data = new Array();
 		
-		dojo.forEach(components, function(component){
+		for (var componentNumber in components) {
+			var component = components[componentNumber];
+			console.log("In save coords");
+			console.log(component);
 			if(component!=null){
 				var x=component.x;
 				var y=component.y;		
@@ -199,7 +243,7 @@ dojo.declare("goat.LayoutManager", [], {
 				
 				coord_data.push( {name:name, ver:version, x: x, y: y, h: h});			
 			}		
-		});	
+		}	
 		var coords_json = dojo.toJson(coord_data);
 				
 		dojo.cookie("ozzy.demo.ui.coords."+providerSelector.getProvider()+"."+this.layoutSelector.attr('value'), coords_json);
@@ -232,7 +276,8 @@ dojo.declare("goat.LayoutManager", [], {
 			var component_coord_data = dojo.fromJson(component_coords_str);
 			dojo.forEach(component_coord_data, function(ci){
 				var id=-1;
-				dojo.forEach(components, function(c){ 
+				for (var componentNumber in components) {
+	            var c = components[componentNumber];
 						if(c!=null){
 							console.log(c);
 							console.log("Inside foreach");
@@ -242,7 +287,7 @@ dojo.declare("goat.LayoutManager", [], {
 								id=c.id;
 							} 
 						}
-					});
+					}
 				
 				console.log("id "+id);
 				

@@ -20,22 +20,27 @@
 
 function forgetAboutEverything(){
 	console.log("forgetting about everything.. ");
+
+	for (var relationshipNumber in relationships) {
+        var realtionship = realtionships[realtionshipNumber];
 	
-	dojo.forEach(relationships, function(relationship){
 		if(relationship!=null){
 			console.log("removing relationship "+relationship.getKey());
 			delete relationship;
 		}
-	});
+	}
 	relationships = new Array();
-	
-	dojo.forEach(components, function(component){
+
+	for (var componentNumber in components) {
+    var component = components[componentNumber];
+		console.log("Component here?");
+		console.log(component);
 		if(component!=null){
 			console.log("invoking removeself on "+component.id);
 			component.removeSelf();
 			delete component;
 		}
-	});
+	}
 	components = new Array();
 	
 
@@ -100,5 +105,7 @@ function addRelationship(relationship) {
 
 //call back from componentstatusgrid to hide component.. //TODO: see if this can be made unglobal.
 function hideComponent(id){
+	console.log("In ServerSide blah");
+	console.log(components[id]);
     components[id].toggleHidden();
 }
