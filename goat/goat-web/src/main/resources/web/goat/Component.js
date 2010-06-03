@@ -299,16 +299,20 @@ updateAfterMove : function() {
 	dojo.publish("goat.component.move." + this.id, [ this ]);
 },
 pulse : function() {
-	var endColor = this.selected ? "#FF3030" : "#808080";
+	if(this.selected) {
+		var endColor = theme.bundleOutlineColor1;
+	} else { 
+		var endColor = theme.bundleOutlineColor0;
+	}
 	dojox.gfx.fx.animateStroke( {
 		shape : this.outline,
 		duration : 500,
 		color : {
-			start : "#6F0000",
+			start : theme.bundleOutlineColor2,
 			end : endColor
 		},
 		width : {
-			start : 10,
+			start : 7,
 			end : 2
 		},
 		join : {
@@ -317,13 +321,16 @@ pulse : function() {
 	}).play();
 },
 glow : function() {
-	var endColor = this.selected ? "#FF3030" : "#808080";
-	// this.outline.setStroke({width: 2, color: '#808080'});
+	if(this.selected) {
+		var endColor = theme.bundleOutlineColor1;
+	} else {
+		var endColor = theme.bundleOutlneColor0;
+	}
 	dojox.gfx.fx.animateStroke( {
 		shape : this.outline,
 		duration : 500,
 		color : {
-			start : "#FF3030",
+			start : theme.bundleOutlineColor2,
 			end : endColor
 		},
 		width : {
@@ -343,7 +350,7 @@ onClick : function() {
 onMouseEnter : function() {
 	this.outline.setStroke( {
 		width : 3,
-		color : '#FF3030'
+		color : theme.bundleOutlineColor1 
 	});
 	this.selected = true;
 	dojo.publish("goat.component.onenter." + this.id, [ this ]);
