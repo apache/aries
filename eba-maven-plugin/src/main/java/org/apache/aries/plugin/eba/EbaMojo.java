@@ -386,8 +386,7 @@ public class EbaMojo
 			FileUtils.fileAppend(fileName, APPLICATION_SYMBOLICNAME + ": "
 					+ getApplicationSymbolicName(project.getArtifact()) + "\n");
 			FileUtils.fileAppend(fileName, APPLICATION_VERSION + ": "
-					+ aQute.lib.osgi.Analyzer.cleanupVersion(project.getVersion()) + "\n");
-//					+ maven2OsgiConverter.getVersion(project.getVersion()) + "\n");
+					+ getApplicationVersion() + "\n");
 			FileUtils.fileAppend(fileName, APPLICATION_NAME + ": " + project.getName() + "\n");
 			FileUtils.fileAppend(fileName, APPLICATION_DESCRIPTION + ": "
 					+ project.getDescription() + "\n");
@@ -450,6 +449,13 @@ public class EbaMojo
 			return instructions.get(APPLICATION_SYMBOLICNAME).toString();
 		}
     	return artifact.getGroupId() + "." + artifact.getArtifactId();
+    }
+    
+    private String getApplicationVersion() {
+        if (instructions.containsKey(APPLICATION_VERSION)) {
+            return instructions.get(APPLICATION_VERSION).toString();
+        }
+        return aQute.lib.osgi.Analyzer.cleanupVersion(project.getVersion());
     }
     
     protected File getBuildDir()
