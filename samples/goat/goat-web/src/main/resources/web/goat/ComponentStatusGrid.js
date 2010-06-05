@@ -122,10 +122,11 @@ onComponentCreate: function(/*goat.Component*/ component){
 	if (this.jsonStore != null) {
 			
 		//read through the property elements to their values.. 
-		var id = component.elements["component.property.BundleID"].value;
-		var name = component.elements["component.property.SymbolicName"].value;
-		var state = component.elements["component.property.State"].value;
-		var version = component.elements["component.property.Version"].value;
+		undefinedString = "undefined";
+		var id = component.elements["component.property.BundleID"] != null? component.elements["component.property.BundleID"].value: undefinedString;
+		var name = component.elements["component.property.SymbolicName"] != null? component.elements["component.property.SymbolicName"].value: undefinedString;
+		var state = component.elements["component.property.State"] != null? component.elements["component.property.State"].value: undefinedString;
+		var version = component.elements["component.property.Version"] != null? component.elements["component.property.Version"].value: undefinedString;
 		
 		this.jsonStore.newItem({id: component.id, bundleid: id, name: name, state: state, version: version, x: component.x, y: component.y});
 	}

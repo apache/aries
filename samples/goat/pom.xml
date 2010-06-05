@@ -56,6 +56,11 @@
                 <artifactId>org.apache.aries.samples.goat.bundlecontextmodel</artifactId>
                 <version>${version}</version>
             </dependency>
+            <dependency>
+                <groupId>${pom.groupId}</groupId>
+                <artifactId>org.apache.aries.samples.goat.info.enhancer</artifactId>
+                <version>${version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -67,6 +72,7 @@
         <module>goat-assembly</module>
     <!--    <module>goat-eba</module> -->
         <module>goat-bundlecontext-modelprovider</module>
+        <module>goat-info-enhancer</module>
     </modules>
 
 </project>

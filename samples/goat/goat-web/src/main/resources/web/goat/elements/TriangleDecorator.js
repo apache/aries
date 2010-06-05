@@ -97,10 +97,10 @@ dojo.declare("goat.elements.TriangleDecorator", [], {
     			// The triangle starts in the middle of the line
     			var tx1 = (fromx + tox) / 2;
     			var ty1 = (fromy + toy) / 2;
-    			var tx2 = tx1 - deltax / divider + deltay / divider;
-    			var ty2 = ty1 - deltay / divider - deltax / divider;
-    			var tx3 = tx1 - deltax / divider - deltay / divider;
-    			var ty3 = ty1 - deltay / divider + deltax / divider;
+    			var tx2 = tx1 + deltax / divider + deltay / divider;
+    			var ty2 = ty1 + deltay / divider - deltax / divider;
+    			var tx3 = tx1 + deltax / divider - deltay / divider;
+    			var ty3 = ty1 + deltay / divider + deltax / divider;
         
     			if (this.triangle == null) {
     				this.triangle = this.trianglegroup.createPolyline( [ {

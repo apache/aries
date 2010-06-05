@@ -18,51 +18,59 @@
  */
 package org.apache.aries.samples.goat.api;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Provides information about components within a model.
- *
- * Good usage practice would be to subscribe a listener .. and THEN call getComponents.. 
- * (doing it the other way round risks leaving a window during which a change could occur, and you not be informed).
- * (doing it this way round, at worst, you'll see an update before you handle getComponents, 
- *  and since an update can be an add, you'll just process it twice) 
- *
+ * 
+ * Good usage practice would be to subscribe a listener .. and THEN call
+ * getComponents.. (doing it the other way round risks leaving a window during
+ * which a change could occur, and you not be informed). (doing it this way
+ * round, at worst, you'll see an update before you handle getComponents, and
+ * since an update can be an add, you'll just process it twice)
+ * 
  */
 public interface ComponentInfoProvider {
-	
+
 	/**
-	 * Callback interface implemented by users of the ComponentInfoProvider interface, allowing 
-	 * notification of changes, or deletions to components they have been informed about.
+	 * Callback interface implemented by users of the ComponentInfoProvider
+	 * interface, allowing notification of changes, or deletions to components
+	 * they have been informed about.
 	 */
 	static interface ComponentInfoListener {
-		//called to add, or update a component.
+		// called to add, or update a component.
 		public void updateComponent(ComponentInfo b);
+
 		public void removeComponent(ComponentInfo b);
 	};
-	
+
 	/**
 	 * Gets the current set of 'top level' components in this model.
 	 * 
-	 * Any nested components are only obtainable via the 'getChildren' method on ComponentInfo.
+	 * Any nested components are only obtainable via the 'getChildren' method on
+	 * ComponentInfo.
 	 * 
 	 * @return
 	 */
-	List<ComponentInfo> getComponents();
-	
+	Collection<ComponentInfo> getComponents();
+
 	/**
-	 * Gets a component for an id previously returned via getComponents, or updateComponent
+	 * Gets a component for an id previously returned via getComponents, or
+	 * updateComponent
+	 * 
 	 * @param id
 	 * @return component, or null if component id is either unknown, or deleted.
 	 */
 	ComponentInfo getComponentForId(String id);
-	
+
 	/**
-	 * Add a listener to this Info Provider, to be informed of changes/deletions.
+	 * Add a listener to this Info Provider, to be informed of
+	 * changes/deletions.
+	 * 
 	 * @param listener
 	 */
 	public void registerComponentInfoListener(ComponentInfoListener listener);
-	
-	//TODO: unregisterComponentInfoListener ;-) 
+
+	// TODO: unregisterComponentInfoListener ;-)
 
 }
