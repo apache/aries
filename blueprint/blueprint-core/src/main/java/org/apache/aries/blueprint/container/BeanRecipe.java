@@ -26,6 +26,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -287,6 +288,13 @@ public class BeanRecipe extends AbstractRecipe {
                 it.remove();
             }
         }
+        
+        // on some JVMs (J9) hidden static methods are returned by Class.getMethods so we need to weed them out
+        // to reduce ambiguity
+        if (!instance) {
+        	methods = applyStaticHidingRules(methods);
+        }
+        
         // Find a direct match with assignment
         if (matches.size() != 1) {
             Map<Method, List<Object>> nmatches = new HashMap<Method, List<Object>>();
@@ -374,7 +382,48 @@ public class BeanRecipe extends AbstractRecipe {
                 matches = nmatches;
             }
         }
+        
         return matches;
+    }
+    
+    private static List<Method> applyStaticHidingRules(Collection<Method> methods) {
+    	List<Method> result = new ArrayList<Method>(methods.size());
+    	for (Method m : methods) {
+    		boolean toBeAdded = true;
+
+    		Iterator<Method> it = result.iterator();
+    		inner: while (it.hasNext()) {
+    			Method other = it.next();
+    			if (hasIdenticalParameters(m, other)) {
+    				Class<?> mClass = m.getDeclaringClass();
+    				Class<?> otherClass = other.getDeclaringClass();
+    				
+    				if (mClass.isAssignableFrom(otherClass)) {
+    					toBeAdded = false;
+    					break inner;
+    				} else if (otherClass.isAssignableFrom(mClass)) {
+    					it.remove();
+    				}
+    			}
+    		}
+    		
+    		if (toBeAdded) result.add(m);
+    	}
+    	
+    	return result;
+    }
+    
+    private static boolean hasIdenticalParameters(Method one, Method two) {
+		Class<?>[] oneTypes = one.getParameterTypes();
+		Class<?>[] twoTypes = two.getParameterTypes();
+    	
+		if (oneTypes.length != twoTypes.length) return false;
+		
+		for (int i=0; i<oneTypes.length; i++) {
+			if (!oneTypes[i].equals(twoTypes[i])) return false;
+		}
+		
+		return true;
     }
 
     private Map<Constructor, List<Object>> findMatchingConstructors(Class type, List<Object> args, List<ReifiedType> types) {
