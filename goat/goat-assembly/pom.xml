@@ -124,6 +124,10 @@
 			<groupId>org.apache.aries.samples.goat</groupId>
 			<artifactId>org.apache.aries.samples.goat.bundlecontextmodel</artifactId>
 		</dependency>
+        <dependency>
+			<groupId>org.apache.aries.samples.goat</groupId>
+			<artifactId>org.apache.aries.samples.goat.info.enhancer</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 

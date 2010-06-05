@@ -18,15 +18,17 @@
  */
 package org.apache.aries.samples.goat.api;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface RelationshipInfoProvider {
 	static interface RelationshipInfoListener {
 		public void updateRelationship(RelationshipInfo b);
+
 		public void removeRelationship(RelationshipInfo b);
 	};
-	
-	List<RelationshipInfo> getRelationships();
-	
-	public void registerRelationshipInfoListener(RelationshipInfoListener listener);
+
+	Collection<RelationshipInfo> getRelationships();
+
+	public void registerRelationshipInfoListener(
+			RelationshipInfoListener listener);
 }
