@@ -95,7 +95,9 @@ public class TradeBuildDB {
             try {
                 out.println("<BR>TradeBuildDB: **** Database Product detected: "
                     + dbProductName + " ****</BR>");
-                if (dbProductName.startsWith("DB2/")) { // if db is DB2
+                if (warPath.equals("")) { // if empty warPath provided assume this is Aries under the Equinox test harness
+                    ddlFile = new File("tradeDB.sql");                    
+                } else if (dbProductName.startsWith("DB2/")) { // if db is DB2
                     ddlFile = new File(warPath + File.separatorChar + "dbscripts"
                         + File.separatorChar + "db2" + File.separatorChar + "Table.ddl");
                 } else if (dbProductName.startsWith("Apache Derby")) { // if db is Derby

@@ -33,6 +33,11 @@
             <property name="openjpa.BrokerImpl" value="non-finalizing" /> 
             <property name="openjpa.Sequence" value="table(Table=OPENJPASEQ, Increment=100)"/>
             <property name="openjpa.jdbc.UpdateManager" value="org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager"/>
+            <!-- These properties are creating the database on the fly. We are using them to avoid users having
+            to create a database to run the sample. This is not something that should be used in production.
+            See also the create=true line in the ariestrader-derby-ds blueprint meta data -->
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
+            <property name="openjpa.jdbc.DBDictionary" value="derby"/>
         </properties>
     </persistence-unit>
         
@@ -52,16 +57,19 @@
             <property name="openjpa.BrokerImpl" value="non-finalizing" /> 
             <property name="openjpa.Sequence" value="table(Table=OPENJPASEQ, Increment=100)"/>
             <property name="openjpa.jdbc.UpdateManager" value="org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager"/>
+            <!-- These properties are creating the database on the fly. We are using them to avoid users having
+            to create a database to run the sample. This is not something that should be used in production.
+            See also the create=true line in the ariestrader-derby-ds blueprint meta data -->
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
+            <property name="openjpa.jdbc.DBDictionary" value="derby"/>
         </properties>
     </persistence-unit>
 
         <!-- 
         <properties>
-            <property name="openjpa.jdbc.DBDictionary" value="derby" />
             <property name="openjpa.ConnectionProperties" value="DriverClassName=com.ibm.db2.jcc.DB2Driver,URL=jdbc:db2://9.12.24.171:50000/TRADE61,MaxActive=50,MaxWait=10000,Username=db2inst1,Password=db2inst1"/>
             <property name="openjpa.ConnectionDriverName" value="org.apache.commons.dbcp.BasicDataSource"/>
             <property name="openjpa.jdbc.DBDictionary" value="db2(batchLimit=600)"/>
-            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
             <property name="openjpa.Multithreaded" value="true"/>
             <property name="openjpa.Compatibility" value="flushBeforeDetach=false"/>
             <property name="openjpa.jdbc.UpdateManager" value="com.ibm.ws.persistence.jdbc.kernel.OperationOrderUpdateManager(batchLimit=0)" /> 
