@@ -415,7 +415,9 @@ public class TradeConfigServlet extends HttpServlet {
             else if (action.equals("buildDBTables"))
             {
                 resp.setContentType("text/html");
-                new TradeBuildDB(resp.getWriter(), getServletConfig().getServletContext().getRealPath("/"));
+                String path = getServletConfig().getServletContext().getRealPath("/");
+                if (path == null) path="";  // if there is no real path assume this is Apache Aries in Equinox test harness
+                new TradeBuildDB(resp.getWriter(), path);
             }
 			doConfigDisplay(req, resp, result + "Current AriesTrader Configuration:");
 		}

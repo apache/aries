@@ -1,101 +1,107 @@
---
--- Licensed to the Apache Software Foundation (ASF) under one or more
--- contributor license agreements.  See the NOTICE file distributed with
--- this work for additional information regarding copyright ownership.
--- The ASF licenses this file to You under the Apache License, Version 2.0
--- (the "License"); you may not use this file except in compliance with
--- the License.  You may obtain a copy of the License at
---
---    http://www.apache.org/licenses/LICENSE-2.0
---
--- Unless required by applicable law or agreed to in writing, software
--- distributed under the License is distributed on an "AS IS" BASIS,
--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--- See the License for the specific language governing permissions and
--- limitations under the License.
---
+##    Licensed to the Apache Software Foundation (ASF) under one or more
+##    contributor license agreements.  See the NOTICE file distributed with
+##    this work for additional information regarding copyright ownership.
+##    The ASF licenses this file to You under the Apache License, Version 2.0
+##    (the "License"); you may not use this file except in compliance with
+##    the License.  You may obtain a copy of the License at
+##
+##       http://www.apache.org/licenses/LICENSE-2.0
+##
+##    Unless required by applicable law or agreed to in writing, software
+##    distributed under the License is distributed on an "AS IS" BASIS,
+##    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+##    See the License for the specific language governing permissions and
+##    limitations under the License.
 
-connect 'jdbc:derby:tradedb;create=true';
-create table holdingejb
-  (purchaseprice decimal(10, 2),
-   holdingid integer not null,
-   quantity double not null,
-   purchasedate timestamp,
-   account_accountid integer,
-   quote_symbol varchar(250),
-   optLock integer);
+# Each SQL statement in this file should terminate with a semicolon (;)
+# Lines starting with the pound character (#) are considered as comments
+DROP TABLE HOLDINGEJB;
+DROP TABLE ACCOUNTPROFILEEJB;
+DROP TABLE QUOTEEJB;
+DROP TABLE KEYGENEJB;
+DROP TABLE ACCOUNTEJB;
+DROP TABLE ORDEREJB;
 
-alter table holdingejb
-  add constraint pk_holdingejb primary key (holdingid);
+DROP TABLE OPENJPASEQ;
 
-create table accountprofileejb
-  (address varchar(250),
-   passwd varchar(250),
-   userid varchar(250) not null,
-   email varchar(250),
-   creditcard varchar(250),
-   fullname varchar(250),
-   optLock integer);
+create table OPENJPASEQ
+(ID SMALLINT NOT NULL PRIMARY KEY,
+SEQUENCE_VALUE BIGINT);
 
-alter table accountprofileejb
-  add constraint pk_accountprofile2 primary key (userid);
+CREATE TABLE HOLDINGEJB
+  (PURCHASEPRICE DECIMAL(14, 2),
+   HOLDINGID INTEGER NOT NULL,
+   QUANTITY DOUBLE NOT NULL,
+   PURCHASEDATE TIMESTAMP,
+   ACCOUNT_ACCOUNTID INTEGER,
+   QUOTE_SYMBOL VARCHAR(250));
 
-create table quoteejb
-  (low decimal(10, 2),
-   open1 decimal(10, 2),
-   volume double not null,
-   price decimal(10, 2),
-   high decimal(10, 2),
-   companyname varchar(250),
-   symbol varchar(250) not null,
-   change1 double not null,
-   optLock integer);
+ALTER TABLE HOLDINGEJB
+  ADD CONSTRAINT PK_HOLDINGEJB PRIMARY KEY (HOLDINGID);
 
-alter table quoteejb
-  add constraint pk_quoteejb primary key (symbol);
+CREATE TABLE ACCOUNTPROFILEEJB
+  (ADDRESS VARCHAR(250),
+   PASSWD VARCHAR(250),
+   USERID VARCHAR(250) NOT NULL,
+   EMAIL VARCHAR(250),
+   CREDITCARD VARCHAR(250),
+   FULLNAME VARCHAR(250));
 
-create table keygenejb
-  (keyval integer not null,
-   keyname varchar(250) not null);
+ALTER TABLE ACCOUNTPROFILEEJB
+  ADD CONSTRAINT PK_ACCOUNTPROFILE2 PRIMARY KEY (USERID);
 
-alter table keygenejb
-  add constraint pk_keygenejb primary key (keyname);
+CREATE TABLE QUOTEEJB
+  (LOW DECIMAL(14, 2),
+   OPEN1 DECIMAL(14, 2),
+   VOLUME DOUBLE NOT NULL,
+   PRICE DECIMAL(14, 2),
+   HIGH DECIMAL(14, 2),
+   COMPANYNAME VARCHAR(250),
+   SYMBOL VARCHAR(250) NOT NULL,
+   CHANGE1 DOUBLE NOT NULL);
 
-create table accountejb
-  (creationdate timestamp,
-   openbalance decimal(10, 2),
-   logoutcount integer not null,
-   balance decimal(10, 2),
-   accountid integer not null,
-   lastlogin timestamp,
-   logincount integer not null,
-   PROFILE_USERID VARCHAR(250),
-   optLock integer);
+ALTER TABLE QUOTEEJB
+  ADD CONSTRAINT PK_QUOTEEJB PRIMARY KEY (SYMBOL);
 
-alter table accountejb
-  add constraint pk_accountejb primary key (accountid);
+CREATE TABLE KEYGENEJB
+  (KEYVAL INTEGER NOT NULL,
+   KEYNAME VARCHAR(250) NOT NULL);
 
-create table orderejb
-  (orderfee decimal(10, 2),
-   completiondate timestamp,
-   ordertype varchar(250),
-   orderstatus varchar(250),
-   price decimal(10, 2),
-   quantity double not null,
-   opendate timestamp,
-   orderid integer not null,
-   account_accountid integer,
-   quote_symbol varchar(250),
-   holding_holdingid integer,
-   optLock integer);
+ALTER TABLE KEYGENEJB
+  ADD CONSTRAINT PK_KEYGENEJB PRIMARY KEY (KEYNAME);
 
-alter table orderejb
-  add constraint pk_orderejb primary key (orderid);
+CREATE TABLE ACCOUNTEJB
+  (CREATIONDATE TIMESTAMP,
+   OPENBALANCE DECIMAL(14, 2),
+   LOGOUTCOUNT INTEGER NOT NULL,
+   BALANCE DECIMAL(14, 2),
+   ACCOUNTID INTEGER NOT NULL,
+   LASTLOGIN TIMESTAMP,
+   LOGINCOUNT INTEGER NOT NULL,
+   PROFILE_USERID VARCHAR(250));
 
-create index profile_userid on accountejb(profile_userid);
-create index account_accountid on holdingejb(account_accountid);
-create index account_accountidt on orderejb(account_accountid);
-create index holding_holdingid on orderejb(holding_holdingid);
-create index orderstatus on orderejb(orderstatus);
-create index ordertype on orderejb(ordertype);
-exit;
+ALTER TABLE ACCOUNTEJB
+  ADD CONSTRAINT PK_ACCOUNTEJB PRIMARY KEY (ACCOUNTID);
+
+CREATE TABLE ORDEREJB
+  (ORDERFEE DECIMAL(14, 2),
+   COMPLETIONDATE TIMESTAMP,
+   ORDERTYPE VARCHAR(250),
+   ORDERSTATUS VARCHAR(250),
+   PRICE DECIMAL(14, 2),
+   QUANTITY DOUBLE NOT NULL,
+   OPENDATE TIMESTAMP,
+   ORDERID INTEGER NOT NULL,
+   ACCOUNT_ACCOUNTID INTEGER,
+   QUOTE_SYMBOL VARCHAR(250),
+   HOLDING_HOLDINGID INTEGER);
+
+ALTER TABLE ORDEREJB
+  ADD CONSTRAINT PK_ORDEREJB PRIMARY KEY (ORDERID);
+
+CREATE INDEX ACCOUNT_USERID ON ACCOUNTEJB(PROFILE_USERID);
+CREATE INDEX HOLDING_ACCOUNTID ON HOLDINGEJB(ACCOUNT_ACCOUNTID);
+CREATE INDEX ORDER_ACCOUNTID ON ORDEREJB(ACCOUNT_ACCOUNTID);
+CREATE INDEX ORDER_HOLDINGID ON ORDEREJB(HOLDING_HOLDINGID);
+CREATE INDEX CLOSED_ORDERS ON ORDEREJB(ACCOUNT_ACCOUNTID,ORDERSTATUS);
+
