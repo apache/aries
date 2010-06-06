@@ -34,7 +34,7 @@
 		<ext:default-properties>
 			<ext:property name="name" value="value" />
 		</ext:default-properties>
-		<ext:location>file://url</ext:location>
+		<ext:location>file:///url</ext:location>
 	</ext:property-placeholder>
 
 	<cm:managed-service-factory id="managed-service-factory"
