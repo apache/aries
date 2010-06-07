@@ -29,6 +29,11 @@
 	width: 70em;
 	height: 40em;
 }
+body, html {
+   width:100%;
+   height:100%;
+}
+
 </style>
 
 <title>Apache Aries GOAT</title>
@@ -45,7 +50,7 @@
 </script>
 
 <script type="text/javascript" src="../dojo/dojo.js"
-	djConfig="debugAtAllCosts:true, isDebug:true"></script>
+	djConfig="debugAtAllCosts:true, isDebug:true, parseOnLoad: true"></script>
 
 <script type='text/javascript'>
 
@@ -63,6 +68,9 @@
 	dojo.require("dijit.form.Select");
 	dojo.require("dijit.form.TextBox");
 	dojo.require("dijit.Dialog");
+	dojo.require("dijit.layout.BorderContainer");
+    dojo.require("dijit.layout.ContentPane");
+
 	
 	dojo.require("goat.Component");
 	dojo.require("goat.Relationship");
@@ -114,6 +122,27 @@
 
 </head>
 <body class="tundra">
+ <div dojoType="dijit.layout.BorderContainer" design="headline" 
+         style="width:100%; height:100%" liveSizing="true">
+
+         <div dojoType="dijit.layout.ContentPane" region="top" 
+              style="height:30px">
+				<span id="providerSelectorID"></span><span id="loadSaveLayoutID"></span>
+         </div>
+
+         <div dojoType="dijit.layout.ContentPane" region="leading" 
+              splitter="true" style="width:300px">
+             <div id="stateTableID" style="width: 300px; height: 700px;">
+             </div>
+         </div>
+
+         <div dojoType="dijit.layout.ContentPane" region="center">
+			<div id="gfx_holder" style="width: 100%; height: 100%;"></div>
+             </div>
+         </div>
+    </div>
+
+<!--
 <table style="width: 1300px;">
     <tr>
       <td colspan=2>
@@ -129,6 +158,6 @@
 		</td>
 	</tr>
 </table>
-
+-->
 </body>
 </html>
