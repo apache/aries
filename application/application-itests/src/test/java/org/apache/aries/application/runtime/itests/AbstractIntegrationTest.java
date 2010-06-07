@@ -16,6 +16,7 @@
  */
 package org.apache.aries.application.runtime.itests;
 
+import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
@@ -23,6 +24,8 @@ import static org.ops4j.pax.exam.OptionUtils.combine;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.aries.application.management.AriesApplicationResolver;
+import org.apache.aries.blueprint.BlueprintConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -33,6 +36,7 @@ import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
@@ -148,6 +152,27 @@ public class AbstractIntegrationTest {
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
+  }
+  
+  /**
+   * Checks if the OBR Resolver is available. If this test succeeds, it starts 
+   * the 'org.apache.aries.application.runtime' bundle. Of course this method 
+   * can only work properly if org.apache.aries.application.runtime was added
+   * to Pax Exam configuration with 'noStart()'. 
+   * @throws BundleException 
+   */
+  protected void startApplicationRuntimeBundle() throws BundleException{
+    // Need to make sure that the OBR resolver was made available. This 
+    // resolver is registered by the org.apache.aries.application.resolver.obr
+    // bundle with osgi.service.blueprint.compname=obr-resolver.
+    getOsgiService(AriesApplicationResolver.class, "(" + 
+        BlueprintConstants.COMPONENT_NAME_PROPERTY + "=obr-resolver)", 
+        DEFAULT_TIMEOUT);
+    // If we reached this point, initialization of the OBR resolver has been
+    // finished. Let's start the org.apache.aries.application.runtime bundle.
+    Bundle appRuntimeBundle = getBundle("org.apache.aries.application.runtime");
+    assertNotNull(appRuntimeBundle);
+    appRuntimeBundle.start();
   }
 
 }
