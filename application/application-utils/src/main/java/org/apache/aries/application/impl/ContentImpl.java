@@ -32,7 +32,7 @@ import org.osgi.framework.Version;
 
 
 /**
- * Implementation of Content 
+ * Implementation of Content
  *
  */
 public final class ContentImpl implements Content

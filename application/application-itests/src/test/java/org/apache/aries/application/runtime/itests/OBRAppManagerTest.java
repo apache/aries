@@ -107,6 +107,8 @@ public class OBRAppManagerTest extends AbstractIntegrationTest {
 
   @Test
   public void testAppWithApplicationManifest() throws Exception {
+    startApplicationRuntimeBundle();
+
     RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
     
     repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
@@ -160,7 +162,7 @@ public class OBRAppManagerTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime").noStart(),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
         mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces"),
