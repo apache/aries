@@ -67,8 +67,8 @@ public class OBRResolverTest extends AbstractIntegrationTest
 {
   public static final String CORE_BUNDLE_BY_VALUE = "core.bundle.by.value";
   public static final String CORE_BUNDLE_BY_REFERENCE = "core.bundle.by.reference";
-  public static final String TRANSITIVE_BUNDLE_BY_VALUE = "transitive.bundle.by.reference";
-  public static final String TRANSITIVE_BUNDLE_BY_REFERENCE = "transitive.bundle.by.value";
+  public static final String TRANSITIVE_BUNDLE_BY_VALUE = "transitive.bundle.by.value";
+  public static final String TRANSITIVE_BUNDLE_BY_REFERENCE = "transitive.bundle.by.reference";
   
   
   /* Use @Before not @BeforeClass so as to ensure that these resources
@@ -142,6 +142,8 @@ public class OBRResolverTest extends AbstractIntegrationTest
   @Test(expected=ResolverException.class)
   public void testBlogAppResolveFail() throws ResolverException, Exception
   {
+    startApplicationRuntimeBundle();
+
     generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + "_0.0.0.jar");
     
     RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
@@ -163,6 +165,8 @@ public class OBRResolverTest extends AbstractIntegrationTest
   @Test
   public void testBlogApp() throws Exception 
   {
+    startApplicationRuntimeBundle();
+
     generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar");
     
     RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
@@ -257,7 +261,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
-        mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime").noStart(),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
         mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces"),
