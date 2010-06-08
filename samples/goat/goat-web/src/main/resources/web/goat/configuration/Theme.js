@@ -31,9 +31,11 @@ dojo.declare("goat.configuration.Theme", [], {
 	showState : null,
 	showVersion : null,
 	bundleBackgroundColor: "#ffff80",
+	bundleBackgroundContrastColor: "#ffffff",
 	bundleOutlineColor0: "#808080",
 	bundleOutlineColor1: "#BA98E2",
 	bundleOutlineColor2: "#682DAE",
+	serviceBackgroundColor: "#FFFF33",
 
 	constructor : function() {
 		this.greyOutInactiveBundles = true;
@@ -50,8 +52,20 @@ dojo.declare("goat.configuration.Theme", [], {
 	getBundleBackgroundColor: function() {
 		return this.bundleBackgroundColor;
 	},
+	getBundleBackgroundContrastColor: function() {
+		return this.bundleBackgroundContrastColor;
+	},
 	getServiceBackgroundColor: function() {
-		return "#FFFF33";
+		return this.serviceBackgroundColor;
+	},
+	getBundleOutlineColor0: function() {
+		return this.bundleOutlineColor0;
+	},
+	getBundleOutlineColor1: function() {
+		return this.bundleOutlineColor1;
+	},
+	getBundleOutlineColor2: function() {
+		return this.bundleOutlineColor2;
 	},
 	getTriangleSize: function() {
 		return 20;

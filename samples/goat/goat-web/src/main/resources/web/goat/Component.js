@@ -177,7 +177,7 @@ initGfx : function() {
 		r : 5
 	}).setStroke( {
 		width : 2,
-		color : '#808080'
+		color : this.componentAppearance.getOutlineColor0()
 	})
 
 	if (this.componentAppearance.useLinearShading()) {
@@ -192,7 +192,7 @@ initGfx : function() {
 				color : this.componentAppearance.getBackgroundColor()
 			}, {
 				offset : 1,
-				color : "#ffffff"
+				color : this.componentAppearance.getBackgroundContrastColor()
 			} ]
 		});
 	} else {
@@ -227,7 +227,7 @@ refresh : function() {
 				color : this.componentAppearance.getBackgroundColor()
 			}, {
 				offset : 1,
-				color : "#ffffff"
+				color : this.componentAppearance.getBackgroundContrastColor() 
 			} ]
 		});
 	} else {
