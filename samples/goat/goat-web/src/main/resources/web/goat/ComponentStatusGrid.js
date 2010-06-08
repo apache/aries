@@ -21,6 +21,7 @@
 dojo.provide("goat.ComponentStatusGrid");
 dojo.require("dojox.grid.DataGrid");
 dojo.require("dojo.data.ItemFileWriteStore");
+dojo.require("dijit.form.Button");
 
 //TODO:
 
@@ -28,12 +29,26 @@ dojo.require("dojo.data.ItemFileWriteStore");
 //it knows too much about component properties at present.
 
 dojo.declare("goat.ComponentStatusGrid", [], {
+	hideButton: null,
+	showButton: null,
 	hidecoords: true,
 	grid:null,
 	jsonStore:null,
 	dataItems:{ identifier : 'id',	label : 'name',	items : [] },
 	lastMouseOverIndex:-1,
-constructor : function(where) {
+
+	constructor : function(where) {
+
+    this.hideButton = new dijit.form.Button(
+              {label: "Hide All", onClick: function(){_this.hideAll();} });
+
+    this.showButton = new dijit.form.Button(
+              {label: "Show All", onClick: function(){_this.showAll();} });
+
+	dojo.byId(where).appendChild(this.hideButton.domNode);
+    dojo.byId(where).appendChild(this.showButton.domNode);
+
+
 	var layout = [ 
 	{
 		name : "Unique ID",
@@ -51,7 +66,7 @@ constructor : function(where) {
 	}, {
 		name : "State",
 		field : "state",
-		width : "12px",
+		width : "30px",
 		formatter : this.makeStateImage
 	}, {
 		name : "x",
@@ -66,7 +81,7 @@ constructor : function(where) {
 	}, {
 		name: 'Show', 
 		field: 'id', 
-		width: '22px', 
+		width: '30px', 
 		formatter: this.makeHideButton
 	}		
 	];
@@ -78,8 +93,13 @@ constructor : function(where) {
 	var grid = new dojox.grid.DataGrid( {
 		structure : layout,
 		store : this.jsonStore
-	}, where);
+	});
+
+	dojo.byId(where).appendChild(grid.domNode);
+
 	grid.startup();
+	
+	console.log(dojo.byId(where));
 	
 	var _this=this;
 
@@ -238,5 +258,28 @@ makeStateImage: function(state){
 		hideButton = hideButton + state + "\" title=\""+state+"\">";
 	}
 	return hideButton;		    		
+},
+hideAll: function() {
+   console.log("Hiding all bundles");
+   for (var componentNumber in components) {
+       var component = components[componentNumber];
+       if(component!=null){
+           if(!component.hidden) {
+               component.toggleHidden();
+           }
+       }
+   }
+},
+
+showAll: function() {
+    console.log("Showing all bundles");
+    for (var componentNumber in components) {
+       var component = components[componentNumber];
+        if(component!=null){
+            if(component.hidden) {
+                component.toggleHidden();
+            }
+        }
+    }
 }
 });

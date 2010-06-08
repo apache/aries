@@ -70,12 +70,6 @@ dojo.declare("goat.LayoutManager", [], {
 	  this.saveButton = new dijit.form.Button( 
 			  {label: "Save Coords", onClick: function(){_this.saveCoords();} });
 	  
-	  this.hideButton = new dijit.form.Button(
-              {label: "Hide All", onClick: function(){_this.hideAll();} });
-
-      this.showButton = new dijit.form.Button(
-              {label: "Show All", onClick: function(){_this.showAll();} });
-
 	  
       this.layouts = new dojo.data.ItemFileWriteStore( {data : {identifier: 'name', items: this.items }});
       
@@ -86,8 +80,6 @@ dojo.declare("goat.LayoutManager", [], {
 	  dojo.byId(where).appendChild(this.layoutSelector.domNode);
 	  dojo.byId(where).appendChild(this.loadButton.domNode);
 	  dojo.byId(where).appendChild(this.saveButton.domNode);
-	  dojo.byId(where).appendChild(this.hideButton.domNode);
-      dojo.byId(where).appendChild(this.showButton.domNode);
 
 	  	  
 	  this.disable();
@@ -95,36 +87,6 @@ dojo.declare("goat.LayoutManager", [], {
 	  dojo.subscribe("goat.provider.change", this, this.onProviderChange);
 	},
 	
-	hideAll: function() {
-        console.log("Hiding all bundles");
-		for (var componentNumber in components) {
-			var component = components[componentNumber];
-			//console.log("got Comp");
-			//console.log(component);
-            if(component!=null){
-                //If it isn't hidden already
-                if(!component.hidden) {
-                    component.toggleHidden();
-                }
-            }
-        }
-    },
-
-    showAll: function() {
-        console.log("Showing all bundles");
-		for (var componentNumber in components) {
-			var component = components[componentNumber];
-			//console.log("got Comp");
-			//console.log(component);
-            if(component!=null){
-                //If bundle is hidden make it visible
-                if(component.hidden) {
-                    component.toggleHidden();
-                }
-            }
-        }
-    },
-    
 	onProviderChange: function(evt){
 		  console.log("OnProviderChange");
 		  console.log(evt);
