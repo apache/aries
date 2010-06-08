@@ -32,6 +32,10 @@ dojo.declare("goat.configuration.ComponentAppearance", [], {
 	lineColour : null,
 	lineWidth : null,
 	backgroundColour : null,
+	backgroundContrastColour : null,
+	outlineColor0 : null,
+	outlineColor1 : null,
+	outlineColor2 : null,
 
 	constructor : function(theme, parentAppearance) {
 		this.theme = theme;
@@ -46,8 +50,47 @@ dojo.declare("goat.configuration.ComponentAppearance", [], {
 			return this.theme.getBundleBackgroundColor();
 		}
 	},
+	getOutlineColor0 : function() {
+		if (this.outlineColor0 != null) {
+			return this.outlineColor0;
+		} else if (this.parentAppearance != null) {
+			return parentAppearance.getOutlineColor0();
+		} else {
+			return this.theme.getBundleOutlineColor0();
+		}
+	},
+	getOutlineColor1 : function() {
+		if (this.outlineColor1 != null) {
+			return this.outlineColor1;
+		} else if (this.parentAppearance != null) {
+			return parentAppearance.getOutlineColor1();
+		} else {
+			return this.theme.getBundleOutlineColor1();
+		}
+	},
+	getOutlineColor2 : function() {
+		if (this.outlineColor2 != null) {
+			return this.outlineColor2;
+		} else if (this.parentAppearance != null) {
+			return parentAppearance.getOutlineColor2();
+		} else {
+			return this.theme.getBundleOutlineColor2();
+		}
+	},
+	getBackgroundContrastColor : function() {
+		if (this.backgroundContrastColor != null) {
+			return this.backgroundContrastColor;
+		} else if (this.parentAppearance != null) {
+			return parentAppearance.getBackgroundContrastColor();
+		} else {
+			return this.theme.getBundleBackgroundContrastColor();
+		}
+	},
 	setBackgroundColor : function(backgroundColor) {
 		this.backgroundColor = backgroundColor;
+	},
+	setBackgroundContrastColor : function(backgroundContrastColor) {
+		this.backgroundContrastColor = backgroundContrastColor;
 	},
 
 	useLinearShading : function() {
