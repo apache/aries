@@ -300,15 +300,15 @@ updateAfterMove : function() {
 },
 pulse : function() {
 	if(this.selected) {
-		var endColor = theme.bundleOutlineColor1;
+		var endColor = this.componentAppearance.getOutlineColor1();
 	} else { 
-		var endColor = theme.bundleOutlineColor0;
+		var endColor =  this.componentAppearance.getOutlineColor0();
 	}
 	dojox.gfx.fx.animateStroke( {
 		shape : this.outline,
 		duration : 500,
 		color : {
-			start : theme.bundleOutlineColor2,
+			start :  this.componentAppearance.getOutlineColor2(),
 			end : endColor
 		},
 		width : {
@@ -322,15 +322,15 @@ pulse : function() {
 },
 glow : function() {
 	if(this.selected) {
-		var endColor = theme.bundleOutlineColor1;
+		var endColor =  this.componentAppearance.getOutlineColor1();
 	} else {
-		var endColor = theme.bundleOutlneColor0;
+		var endColor =  this.componentAppearance.getOutlineColor0(); 
 	}
 	dojox.gfx.fx.animateStroke( {
 		shape : this.outline,
 		duration : 500,
 		color : {
-			start : theme.bundleOutlineColor2,
+			start :  this.componentAppearance.getOutlineColor2(),
 			end : endColor
 		},
 		width : {
@@ -350,7 +350,7 @@ onClick : function() {
 onMouseEnter : function() {
 	this.outline.setStroke( {
 		width : 3,
-		color : theme.bundleOutlineColor1 
+		color :  this.componentAppearance.getOutlineColor1() 
 	});
 	this.selected = true;
 	dojo.publish("goat.component.onenter." + this.id, [ this ]);
