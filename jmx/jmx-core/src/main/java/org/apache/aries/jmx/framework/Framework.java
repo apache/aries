@@ -239,7 +239,11 @@ public class Framework implements FrameworkMBean {
      */
     public void setBundleStartLevel(long bundleIdentifier, int newlevel) throws IOException {
         Bundle bundle = FrameworkUtils.resolveBundle(context, bundleIdentifier);
-        startLevel.setBundleStartLevel(bundle, newlevel);
+        try {
+            startLevel.setBundleStartLevel(bundle, newlevel);
+        } catch (IllegalArgumentException e) {
+            throw new IOException("Unable to set bundle start level", e);
+        }
     }
 
     /**

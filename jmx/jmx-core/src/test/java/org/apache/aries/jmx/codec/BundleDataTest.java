@@ -50,8 +50,10 @@ import static org.osgi.jmx.framework.BundleStateMBean.VERSION;
 
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
@@ -180,7 +182,7 @@ public class BundleDataTest {
         
         assertArrayEquals(new String[] { "org.apache.aries.jmx;1.0.0"} , (String[]) compositeData.get(EXPORTED_PACKAGES));
         assertArrayEquals(new String[] { "org.apache.aries.jmx.b1;0.0.0" , "org.apache.aries.jmx.b2;2.0.1"}, (String[]) compositeData.get(IMPORTED_PACKAGES));
-        assertArrayEquals(new Long[] { new Long(44), new Long(66) }, (Long[]) compositeData.get(REQUIRED_BUNDLES));
+        assertEquals(toSet(new long[] { 44, 55, 66 }), toSet((Long[]) compositeData.get(REQUIRED_BUNDLES)));
         assertArrayEquals(new Long[] { new Long(15), new Long(16), new Long(17) },(Long[]) compositeData.get(SERVICES_IN_USE));
         assertEquals("UNKNOWN", compositeData.get(STATE)); //default no return stub
         assertEquals(0,((Long[]) compositeData.get(HOSTS)).length);
@@ -251,5 +253,21 @@ public class BundleDataTest {
         assertEquals("c", header.getKey());
         assertEquals("d", header.getValue());
         
+    }
+        
+    private static Set<Long> toSet(long[] array) {
+        Set<Long> set = new HashSet<Long>();
+        for (long value : array) {
+            set.add(value);
+        }
+        return set;
+    }
+    
+    private static Set<Long> toSet(Long[] array) {
+        Set<Long> set = new HashSet<Long>();
+        for (Long value : array) {
+            set.add(value);
+        }
+        return set;
     }
 }

@@ -57,8 +57,8 @@ public class GroupData extends UserData {
      */
     public GroupData(Group group) {
         super(group.getName(), Role.GROUP);
-        setRequiredMembers(group);
-        setMembers(group);
+        this.members = toArray(group.getMembers());
+        this.requiredMembers = toArray(group.getRequiredMembers());
     }
 
     /**
@@ -70,8 +70,8 @@ public class GroupData extends UserData {
      */
     public GroupData(String name, String[] members, String[] requiredMembers) {
         super(name, Role.GROUP);
-        this.members = members;
-        this.requiredMembers = requiredMembers;
+        this.members = (members == null) ? new String[0] : members;
+        this.requiredMembers = (requiredMembers == null) ? new String[0] : requiredMembers;
     }
 
     /**
@@ -123,34 +123,13 @@ public class GroupData extends UserData {
         return requiredMembers;
     }
 
-    /**
-     * Sets group basic members by getting them from Group object.
-     * @param group {@link Group} instance.
-     */
-    private void setMembers(org.osgi.service.useradmin.Group group) {
-        Role[] roles = group.getMembers();
+    private static String[] toArray(Role[] roles) {
+        List<String> members = new ArrayList<String>();
         if (roles != null) {
-            List<String> members = new ArrayList<String>();
             for (Role role : roles) {
                 members.add(role.getName());
             }
-            this.members = members.toArray(new String[roles.length]);
         }
+        return members.toArray(new String[members.size()]);
     }
-
-    /**
-     * Sets group required members by getting them from Group object.
-     * @param group {@link Group} instance.
-     */
-    private void setRequiredMembers(org.osgi.service.useradmin.Group group) {
-        Role[] requiredRoles = group.getRequiredMembers();
-        if (requiredRoles != null) {
-            List<String> reqMembers = new ArrayList<String>();
-            for (Role role : requiredRoles) {
-                reqMembers.add(role.getName());
-            }
-            this.requiredMembers = reqMembers.toArray(new String[requiredRoles.length]);
-        }
-    }
-
 }
