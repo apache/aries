@@ -203,8 +203,10 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
         //requiring bundles
         
         long[] requiring = mbean.getRequiringBundles(a.getBundleId());
-        assertEquals(1, requiring.length);
-        assertEquals(d.getBundleId(), requiring[0]);
+        assertEquals(3, requiring.length);
+        assertTrue(b.getSymbolicName(), arrayContains(frag.getBundleId(), requiring));
+        assertTrue(frag.getSymbolicName(), arrayContains(frag.getBundleId(), requiring));
+        assertTrue(d.getSymbolicName(), arrayContains(d.getBundleId(), requiring));
         
         //services in use
         
@@ -231,7 +233,7 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
         // isRequired
        
         assertTrue(mbean.isRequired(a.getBundleId()));
-        assertFalse(mbean.isRequired(b.getBundleId()));
+        assertTrue(mbean.isRequired(b.getBundleId())); 
         
         // listBundles
         
@@ -267,5 +269,12 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
         
     }
     
-
+    private static boolean arrayContains(long value, long[] values) {
+        for (long i : values) {
+            if (i == value) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

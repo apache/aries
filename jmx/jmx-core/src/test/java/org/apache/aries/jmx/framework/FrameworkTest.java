@@ -184,8 +184,8 @@ public class FrameworkTest {
 
         try {
             mbean.refreshBundle(2);
-            Assert.fail("Shouldn't happen illegal argument");
-        } catch (IllegalArgumentException iae) {
+            Assert.fail("IOException should be thrown");
+        } catch (IOException e) {
             // expected
         }
     }
@@ -304,8 +304,8 @@ public class FrameworkTest {
         Mockito.when(context.getBundle(6)).thenReturn(null);
         try {
             mbean.startBundle(6);
-            Assert.fail("IllegalArgumentException should be thrown");
-        } catch (IllegalArgumentException iae) {
+            Assert.fail("IOException should be thrown");
+        } catch (IOException e) {
             //expected
         }
     }
@@ -342,8 +342,8 @@ public class FrameworkTest {
         Mockito.when(context.getBundle(5)).thenReturn(null);
         try {
             mbean.stopBundle(5);
-            Assert.fail("IllegalArgumentException should be thrown");
-        } catch (IllegalArgumentException iae) {
+            Assert.fail("IOException should be thrown");
+        } catch (IOException e) {
             //expected
         }
        
