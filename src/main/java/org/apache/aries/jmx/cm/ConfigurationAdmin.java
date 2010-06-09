@@ -101,7 +101,7 @@ public class ConfigurationAdmin implements ConfigurationAdminMBean {
         try {
             configuations = configurationAdmin.listConfigurations(filter);
         } catch (InvalidSyntaxException e) {
-            throw new IllegalArgumentException("Invalid filter [" + filter + "] : " + e);
+            throw new IOException("Invalid filter [" + filter + "] : " + e);
         }
         if (configuations != null) {
             for (Configuration config : configuations) {
@@ -134,7 +134,7 @@ public class ConfigurationAdmin implements ConfigurationAdminMBean {
         try {
             configurations = configurationAdmin.listConfigurations(filter);
         } catch (InvalidSyntaxException e) {
-            throw new IllegalArgumentException("Invalid filter [" + filter + "] : " + e);
+            throw new IOException("Invalid filter [" + filter + "] : " + e);
         }
         if (configurations != null) {
             for (Configuration config : configurations) {
@@ -222,7 +222,7 @@ public class ConfigurationAdmin implements ConfigurationAdminMBean {
         }
                 
         if (!PROPERTIES_TYPE.equals(configurationTable.getTabularType())) {
-            throw new IllegalArgumentException("Invalid TabularType ["  + configurationTable.getTabularType() + "]");
+            throw new IOException("Invalid TabularType ["  + configurationTable.getTabularType() + "]");
         }
         Dictionary<String, Object> configurationProperties = new Hashtable<String, Object>();
         Collection<CompositeData> compositeData = (Collection<CompositeData>) configurationTable.values();

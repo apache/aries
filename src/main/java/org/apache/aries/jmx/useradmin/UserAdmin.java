@@ -79,7 +79,7 @@ public class UserAdmin implements UserAdminMBean {
      */
     private void validateRoleType(Role role, int roleType) throws IOException {
         if (role.getType() != roleType) {
-            throw new IllegalArgumentException("Unexpected role type. Expected " + roleType + " but got " + role.getType());
+            throw new IOException("Unexpected role type. Expected " + roleType + " but got " + role.getType());
         }
     }
 
