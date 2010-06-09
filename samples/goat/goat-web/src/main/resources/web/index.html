@@ -33,6 +33,10 @@ body, html {
    width:100%;
    height:100%;
 }
+#borderContainer {
+   width:100%;
+   height:100%;
+}
 
 </style>
 
@@ -70,6 +74,9 @@ body, html {
 	dojo.require("dijit.Dialog");
 	dojo.require("dijit.layout.BorderContainer");
     dojo.require("dijit.layout.ContentPane");
+    dojo.require("dijit.layout.AccordionContainer");
+	dojo.require("dijit.layout.AccordionPane");
+
 
 	
 	dojo.require("goat.Component");
@@ -110,7 +117,7 @@ body, html {
 
 		initialLayout = new goat.SimpleInitialLayout(1000,1000);
 		var loadingDialog = new goat.DwrLoadingDialog();
-		var componentStatusGrid = new goat.ComponentStatusGrid("stateTableID");
+		var componentStatusGrid = new goat.ComponentStatusGrid("hideShowButton","stateTableID");
 		providerSelector = new goat.ProviderSelector("providerSelectorID");		
 		var loadSave = new goat.LayoutManager("loadSaveLayoutID");
 	}
@@ -122,42 +129,20 @@ body, html {
 
 </head>
 <body class="tundra">
- <div dojoType="dijit.layout.BorderContainer" design="headline" 
-         style="width:100%; height:100%" liveSizing="true">
+<div dojoType="dijit.layout.BorderContainer" design="sidebar" gutters="true"
+		style="width: 100%; height: 100%;">
+		<div dojoType="dijit.layout.ContentPane" region="leading" splitter="true" style="width: 300px;">
+					<span id="hideShowButton"> </span>
+					<div style="width: 300px;" id="stateTableID"></div>
+		</div>
 
-         <div dojoType="dijit.layout.ContentPane" region="top" 
-              style="height:30px">
-				<span id="providerSelectorID"></span><span id="loadSaveLayoutID"></span>
-         </div>
-
-         <div dojoType="dijit.layout.ContentPane" region="leading" 
-              splitter="true" style="width:300px">
-             <div id="stateTableID" style="width: 300px; height: 700px;">
-             </div>
-         </div>
-
-         <div dojoType="dijit.layout.ContentPane" region="center">
+		<div dojoType="dijit.layout.ContentPane" region="top" style="height: 20px;">
+			 <span id="providerSelectorID"></span><span id="loadSaveLayoutID"></span>
+		</div>
+		<div dojoType="dijit.layout.ContentPane" region="center" style="padding: 10px;">
 			<div id="gfx_holder" style="width: 100%; height: 100%;"></div>
-             </div>
-         </div>
-    </div>
+		</div>
+	</div>
 
-<!--
-<table style="width: 1300px;">
-    <tr>
-      <td colspan=2>
-      		<span id="providerSelectorID"></span><span id="loadSaveLayoutID"></span>
-      </td>  
-    </tr>
-	<tr>
-		<td style="width: 300px;">
-		<div style="width: 300px;" id="stateTableID"></div>
-		</td>
-		<td>
-		<div id="gfx_holder" style="width: 1000px; height: 1000px; border:2px black solid;"></div>
-		</td>
-	</tr>
-</table>
--->
 </body>
 </html>
