@@ -29,25 +29,34 @@ dojo.require("dijit.form.Button");
 //it knows too much about component properties at present.
 
 dojo.declare("goat.ComponentStatusGrid", [], {
-	hideButton: null,
-	showButton: null,
+	hideshowButton: null,
 	hidecoords: true,
 	grid:null,
 	jsonStore:null,
 	dataItems:{ identifier : 'id',	label : 'name',	items : [] },
 	lastMouseOverIndex:-1,
 
-	constructor : function(where) {
+	constructor : function(where, wheregrid) {
 
-    this.hideButton = new dijit.form.Button(
-              {label: "Hide All", onClick: function(){_this.hideAll();} });
+	var _this=this;
 
-    this.showButton = new dijit.form.Button(
-              {label: "Show All", onClick: function(){_this.showAll();} });
-
-	dojo.byId(where).appendChild(this.hideButton.domNode);
-    dojo.byId(where).appendChild(this.showButton.domNode);
-
+	this.hideshowButton = new dijit.form.ToggleButton({
+            showLabel: true,
+            checked: true,
+            onChange: function(val) {
+			if(val) {
+				console.log("true");
+				_this.showAll();
+                this.attr('label', "Hide all");
+			} else {
+				console.log("false");
+				_this.hideAll();
+				label: "Hide all";
+                this.attr('label', "Show all");
+			}
+            },
+            label: "Hide all"
+        }, where);
 
 	var layout = [ 
 	{
@@ -93,15 +102,10 @@ dojo.declare("goat.ComponentStatusGrid", [], {
 	var grid = new dojox.grid.DataGrid( {
 		structure : layout,
 		store : this.jsonStore
-	});
-
-	dojo.byId(where).appendChild(grid.domNode);
+	}, wheregrid);
 
 	grid.startup();
-	
-	console.log(dojo.byId(where));
-	
-	var _this=this;
+
 
 	dojo.connect(window, "onresize", grid, "resize");
 	dojo.connect(grid, "onRowClick", function(evt){
