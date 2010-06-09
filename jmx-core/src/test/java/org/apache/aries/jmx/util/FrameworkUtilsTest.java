@@ -36,7 +36,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Set;
 
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -279,10 +281,15 @@ public class FrameworkUtilsTest {
         when(admin.getRequiredBundles("b2")).thenReturn(new RequiredBundle[] { rb2 });
         when(admin.getRequiredBundles("b3")).thenReturn(new RequiredBundle[] { rb3 });
         
-        assertArrayEquals(new long[] { 44, 66 }, getBundleDependencies(context, bundle, admin));
-        
-        
+        assertEquals(toSet(new long[] { 44, 66 }), toSet(getBundleDependencies(context, bundle, admin)));
     }
     
+    private static Set<Long> toSet(long[] array) {
+        Set<Long> set = new HashSet<Long>();
+        for (long value : array) {
+            set.add(value);
+        }
+        return set;
+    }
     
 }
