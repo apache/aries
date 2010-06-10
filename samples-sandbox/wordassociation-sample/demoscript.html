@@ -110,31 +110,22 @@ your Java 6 installation, and open_jpa_home which points to the root of the Open
 
 <h3>Database set-up</h3>
 
-<p>This is also best done before starting the demo. The sql for the database is
-in the root directory of the wordassociation sample. 
+<p>This is also best done before starting the demo. The sql for creating the database will be
+found in the target directory of the wordassociation-assembly project after it has been built. 
 </p>
 
 <p class="instruction">Run the following commands:
 </p>
 
-<p class="command">export CLASSPATH=$DERBY_INSTALL/lib/derby.jar:$DERBY_INSTALL/lib/derbytools.jar:.
+<p class="command">cd wordassociation-assembly/target
+export CLASSPATH=$DERBY_INSTALL/lib/derby.jar:$DERBY_INSTALL/lib/derbytools.jar:.
 java org.apache.derby.tools.ij createDB.sql
 </p>
 
-<p>The wordassociation.assembly includes a datasource bundle already.
+<p>The wordassociation-assembly includes a datasource bundle already.
 This is a minor sleight-of-hand, but coding up the datasource
 in front of a live audience and ensuring it loads before the
 jpa bundle doesn't add much value pedagogically.
-</p>
-
-<p class="instruction">Add the datasource jar to the assembly and the config.ini
-</p>
-
-<p class="field">wordassociation.datasource_1.0.0.jar@start,\
-</p>
-
-<p>
-If using a different assembly it's important that the datasource needs to be started before the rest of the application. 
 </p>
 
 <h3>Set-up verification</h3>
@@ -144,8 +135,17 @@ This demo involves a lot of live coding, so there is a possibility
 of things going wrong. In the event of demo accidents, it may be best
 to swap in the 'official' version of the problem jar. To confirm the
 official versions will work, and verify the assembly is correct, copy
-the *wordassociation* jars into the load directory of the wordassociation.assembly
-directory. Confirm that <a href=http://localhost:8080/wordassociation.web/AssociateWord>http://localhost:8080/wordassociation.web/AssociateWord</a> 
+the *wordassociation* jars into the load directory of the wordassociation-assembly
+directory. 
+</p>
+<p class="command">
+cd wordassociation-assembly/target 
+mkdir load
+cp ../../wordassociation-api/target/*.jar load 
+cp ../../wordassociation-web/target/*.jar load 
+cp ../../wordassociation-jpa/target/*.jar load
+</p>
+<p>Confirm that <a href=http://localhost:8080/wordassociation-web/AssociateWord>http://localhost:8080/wordassociation.web/AssociateWord</a> 
 URL works.
 </p>
 
