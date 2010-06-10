@@ -36,11 +36,11 @@ dojo.declare("goat.ComponentStatusGrid", [], {
 	dataItems:{ identifier : 'id',	label : 'name',	items : [] },
 	lastMouseOverIndex:-1,
 
-	constructor : function(where, wheregrid) {
+	constructor : function(wheregrid) {
 
 	var _this=this;
 
-	this.hideshowButton = new dijit.form.ToggleButton({
+	var hideshowButton = new dijit.form.ToggleButton({
             showLabel: true,
             checked: true,
             onChange: function(val) {
@@ -56,7 +56,8 @@ dojo.declare("goat.ComponentStatusGrid", [], {
 			}
             },
             label: "Hide all"
-        }, where);
+        });
+
 
 	var layout = [ 
 	{
@@ -102,8 +103,10 @@ dojo.declare("goat.ComponentStatusGrid", [], {
 	var grid = new dojox.grid.DataGrid( {
 		structure : layout,
 		store : this.jsonStore
-	}, wheregrid);
+	});
 
+	dojo.place(grid.domNode,wheregrid, "replace");
+	dojo.place(hideshowButton.domNode, grid.domNode, "before");
 	grid.startup();
 
 
