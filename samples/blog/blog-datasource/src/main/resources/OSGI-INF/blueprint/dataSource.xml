@@ -22,7 +22,11 @@
             default-activation="lazy">
   
   <bean id="derbyXADataSource" class="org.apache.derby.jdbc.EmbeddedXADataSource">
-    <property name="databaseName" value="blogDB"/>
+    <!-- If you want a DB created on disk you must uncomment the following line ..... -->
+    <!-- <property name="databaseName" value="blogDB"/> -->
+    <!-- ....and comment out the following line. -->
+    <property name="databaseName" value="memory:blogDB"/> 
+
     <!-- This createst the database on the fly. See the persistence.xml  under blog-persistence-jpa for property
          configuration. The DB is created from persistence entities, this is not recommended for production use.  -->
     <property name="createDatabase" value="create" />
@@ -36,7 +40,10 @@
 
   
   <bean id="derbyDataSource" class="org.apache.derby.jdbc.EmbeddedDataSource">
-    <property name="databaseName" value="blogDB"/>
+    <!-- If you want a DB created on disk you must uncomment the following line ..... -->
+    <!-- <property name="databaseName" value="blogDB"/> -->
+    <!-- ....and comment out the following line. -->
+    <property name="databaseName" value="memory:blogDB"/> 
   </bean>
   
   <service ref="derbyDataSource" interface="javax.sql.DataSource">
