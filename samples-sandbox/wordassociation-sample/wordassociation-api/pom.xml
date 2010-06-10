@@ -20,7 +20,7 @@
     <version>0.2-incubating-SNAPSHOT</version>
   </parent>
 
-  <artifactId>wordassociation.api</artifactId>
+  <artifactId>wordassociation-api</artifactId>
   <name>Apache Aries wordassociation demo API</name>
   <packaging>bundle</packaging>
 

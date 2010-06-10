@@ -39,27 +39,27 @@
         <dependencies>
             <dependency>
                 <groupId>wordassociation</groupId>
-                <artifactId>wordassociation.api</artifactId>
+                <artifactId>wordassociation-api</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>wordassociation</groupId>
-                <artifactId>wordassociation.assembly</artifactId>
+                <artifactId>wordassociation-assembly</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>wordassociation</groupId>
-                <artifactId>wordassociation.datasource</artifactId>
+                <artifactId>wordassociation-datasource</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>wordassociation</groupId>
-                <artifactId>wordassociation.jpa</artifactId>
+                <artifactId>wordassociation-jpa</artifactId>
                 <version>${version}</version>
             </dependency>
             <dependency>
                 <groupId>wordassociation</groupId>
-                <artifactId>wordassociation.web</artifactId>
+                <artifactId>wordassociation-web</artifactId>
                 <version>${version}</version>
             </dependency>
         </dependencies>
@@ -67,11 +67,11 @@
 
 
     <modules>
-        <module>wordassociation.assembly</module>
-        <module>wordassociation.datasource</module>
-        <module>wordassociation.api</module>
-        <module>wordassociation.jpa</module>
-        <module>wordassociation.web</module>
+        <module>wordassociation-assembly</module>
+        <module>wordassociation-datasource</module>
+        <module>wordassociation-api</module>
+        <module>wordassociation-jpa</module>
+        <module>wordassociation-web</module>
     </modules>
 
 </project>

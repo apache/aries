@@ -23,7 +23,7 @@
 		<version>0.2-incubating-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>wordassociation.assembly</artifactId>
+	<artifactId>wordassociation-assembly</artifactId>
 	<name>Apache Aries wordassociation demo assembly</name>
 	<packaging>pom</packaging>
 
@@ -214,10 +214,10 @@
 			<artifactId>org.apache.aries.transaction.wrappers</artifactId>
 		</dependency>
 		
-		<!-- Blog sample datasource -->
+		<!-- Word association sample datasource -->
 		<dependency>
 			<groupId>wordassociation</groupId>
-			<artifactId>wordassociation.datasource</artifactId>
+			<artifactId>wordassociation-datasource</artifactId>
 		</dependency>
 		
 	</dependencies>

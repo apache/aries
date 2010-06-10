@@ -21,7 +21,7 @@
   </parent>
 
   <groupId>wordassociation</groupId>
-  <artifactId>wordassociation.jpa</artifactId>
+  <artifactId>wordassociation-jpa</artifactId>
   <name>Apache Aries wordassociation demo persistence</name>
   <packaging>bundle</packaging>
 
@@ -89,7 +89,7 @@
   <dependencies>
     <dependency>
       <groupId>wordassociation</groupId>
-      <artifactId>wordassociation.api</artifactId>
+      <artifactId>wordassociation-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
