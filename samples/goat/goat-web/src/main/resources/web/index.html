@@ -117,7 +117,7 @@ body, html {
 
 		initialLayout = new goat.SimpleInitialLayout(1000,1000);
 		var loadingDialog = new goat.DwrLoadingDialog();
-		var componentStatusGrid = new goat.ComponentStatusGrid("hideShowButton","stateTableID");
+		var componentStatusGrid = new goat.ComponentStatusGrid("stateTableID");
 		providerSelector = new goat.ProviderSelector("providerSelectorID");		
 		var loadSave = new goat.LayoutManager("loadSaveLayoutID");
 	}
@@ -132,7 +132,6 @@ body, html {
 <div dojoType="dijit.layout.BorderContainer" design="sidebar" gutters="true"
 		style="width: 100%; height: 100%;">
 		<div dojoType="dijit.layout.ContentPane" region="leading" splitter="true" style="width: 300px;">
-					<span id="hideShowButton"> </span>
 					<div style="width: 300px;" id="stateTableID"></div>
 		</div>
 
