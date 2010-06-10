@@ -105,7 +105,7 @@ activate : function(){
 		//console.log("create of relationship element complete");
 		this.relationshipElements.push(r);
 		//hmm.. do we want to reverse-register the relationship like this?
-		//components[component.id].relationshipManager.registerRelationship(r);	
+		components[component.id].relationshipManager.registerRelationship(r);	
 	},this);	
 	//console.log(this.relationshipElements);
 	//console.log("<activate");
