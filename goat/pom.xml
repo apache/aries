@@ -70,7 +70,7 @@
         <module>goat-web</module>
         <module>goat-dummy-provider</module>
         <module>goat-assembly</module>
-    <!--    <module>goat-eba</module> -->
+        <module>goat-eba</module> 
         <module>goat-bundlecontext-modelprovider</module>
         <module>goat-info-enhancer</module>
     </modules>
