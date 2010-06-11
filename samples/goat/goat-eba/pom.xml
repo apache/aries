@@ -31,7 +31,7 @@ under the License.
 
     <groupId>org.apache.aries.samples.goat</groupId>
     <artifactId>org.apache.aries.samples.goat.eba</artifactId>
-    <name>Apache Aries GOAT Sample</name>
+    <name>Apache Aries GOAT Sample EBA</name>
     <description>
   This EBA contains the core bundles for the sample GOAT application.  
     </description>
