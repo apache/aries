@@ -230,6 +230,7 @@ public class RecipeBuilder {
         recipe.setPrototype(MetadataUtil.isPrototypeScope(beanMetadata));
         recipe.setInitMethod(beanMetadata.getInitMethod());
         recipe.setDestroyMethod(beanMetadata.getDestroyMethod());
+        recipe.setInterceptorLookupKey(beanMetadata);
         List<BeanArgument> beanArguments = beanMetadata.getArguments();
         if (beanArguments != null && !beanArguments.isEmpty()) {
             boolean hasIndex = (beanArguments.get(0).getIndex() >= 0);

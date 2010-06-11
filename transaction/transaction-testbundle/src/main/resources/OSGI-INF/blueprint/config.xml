@@ -69,19 +69,18 @@
        </service-properties>
    </service>
 
-   <bean id="requiresNewBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl" init-method="initialize">
-       <tx:transaction method="insertRow throw*" value="RequiresNew"/>
-       <tx:transaction method="countRows" value="NotSupported"/>
-       <property name="enlistingDataSource" ref="enlistingDataSource"/>
-       <property name="dataSource" ref="dataSource"/>
-       <property name="user" value="user"/>
-       <property name="password" value="password"/>
-   </bean>
-   
-   <service id="requiresNewBean" ref="requiresNewBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
+   <service id="requiresNewBean" interface="org.apache.aries.transaction.test.TestBean">
        <service-properties>
            <entry key="tranStrategy" value="RequiresNew"/>
        </service-properties>
+       <bean class="org.apache.aries.transaction.test.impl.TestBeanImpl" init-method="initialize">
+           <tx:transaction method="insertRow throw*" value="RequiresNew"/>
+           <tx:transaction method="countRows" value="NotSupported"/>
+           <property name="enlistingDataSource" ref="enlistingDataSource"/>
+           <property name="dataSource" ref="dataSource"/>
+           <property name="user" value="user"/>
+           <property name="password" value="password"/>
+       </bean>
    </service>
 
    <bean id="mandatoryBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl" init-method="initialize">
@@ -92,7 +91,7 @@
        <property name="user" value="user"/>
        <property name="password" value="password"/>
    </bean>
-   
+
    <service id="mandatoryBean" ref="mandatoryBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
        <service-properties>
            <entry key="tranStrategy" value="Mandatory"/>
