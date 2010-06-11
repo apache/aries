@@ -46,7 +46,6 @@ import org.apache.aries.blueprint.utils.ReflectionUtils.PropertyDescriptor;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +72,8 @@ public class BeanRecipe extends AbstractRecipe {
     private List<String> argTypes;
     private boolean reorderArguments;
     private final boolean allowsFieldInjection;
-
+    private BeanMetadata interceptorLookupKey;
+    
 
     public BeanRecipe(String name, ExtendedBlueprintContainer blueprintContainer, Object type, boolean allowsFieldInjection) {
         super(name);
@@ -138,6 +138,10 @@ public class BeanRecipe extends AbstractRecipe {
         this.explicitDependencies = explicitDependencies;
     }
 
+    public void setInterceptorLookupKey(BeanMetadata metadata) {
+    	interceptorLookupKey = metadata;
+    }
+    
     @Override
     public List<Recipe> getConstructorDependencies() {
         List<Recipe> recipes = new ArrayList<Recipe>();
@@ -668,11 +672,9 @@ public class BeanRecipe extends AbstractRecipe {
             throws ComponentDefinitionException {
 
         Object intercepted = null;
-        String beanName = getName();
         ComponentDefinitionRegistry reg = blueprintContainer
                 .getComponentDefinitionRegistry();
-        ComponentMetadata metaData = reg.getComponentDefinition(beanName);
-        List<Interceptor> interceptors = reg.getInterceptors(metaData);
+        List<Interceptor> interceptors = reg.getInterceptors(interceptorLookupKey);
         if (interceptors != null && interceptors.size() > 0) {
             boolean asmAvailable = false;
             try {
@@ -698,14 +700,14 @@ public class BeanRecipe extends AbstractRecipe {
                 // if asm is available we can proxy the original object with the
                 // AsmInterceptorWrapper
                 intercepted = AsmInterceptorWrapper.createProxyObject(original
-                        .getClass().getClassLoader(), metaData, interceptors,
+                        .getClass().getClassLoader(), interceptorLookupKey, interceptors,
                         original, original.getClass());
             } else {
                 LOGGER.debug("cglib available for interceptors");
                 // otherwise we're using cglib and need to use the interfaces
                 // with the CgLibInterceptorWrapper
                 intercepted = CgLibInterceptorWrapper.createProxyObject(
-                        original.getClass().getClassLoader(), metaData,
+                        original.getClass().getClassLoader(), interceptorLookupKey,
                         interceptors, original, original.getClass()
                                 .getInterfaces());
             }
