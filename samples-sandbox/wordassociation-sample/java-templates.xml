@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+<template autoinsert="true" context="java" deleted="false" description="" enabled="true" name="doget">PrintWriter out = response.getWriter(); 
+out.println("&lt;html&gt;"); 
+out.println("&lt;/html&gt;"); 
+</template>
+<template autoinsert="true" context="java" deleted="false" description="" enabled="true" name="dopost">		String word = request.getParameter("word");
+		String association = request.getParameter("association");
+
+		String previousAssociation = null;
+		if (recorder != null) {
+			previousAssociation = recorder.getLastAssociation(word);
+			recorder.recordAssociation(word, association);
+			PrintWriter out = response.getWriter();
+			out.println("The last person associated " + word + " with "
+					+ previousAssociation);
+		}
+</template>
+<template autoinsert="false" context="java" deleted="false" description="" enabled="true" name="webform">		out.println("&lt;/br&gt;");
+		out.println("&lt;form action=\"AssociateWord\" method=\"post\"&gt;");
+		out.println("What do you associate with "
+				+ randomWord
+				+ "?	    &lt;input type=\"text\" name=\"association\" /&gt; &lt;br /&gt;    ");
+		out.println("&lt;input type=\"hidden\" name=\"word\" value=\""
+				+ randomWord + "\"/&gt;");
+		out.println("&lt;input type=\"submit\" name=\"Submit\"/&gt;");
+		out.println("&lt;/form&gt;");
+</template>
+<template autoinsert="false" context="java" deleted="false" description="" enabled="true" name="getLastAssociation">			Association found = em.find(Association.class, word);
+		if (found != null) {
+			return found.getAssociated();
+		} else {
+			return "nothing";
+		}</template>
+<template autoinsert="false" context="java" deleted="false" description="" enabled="true" name="recordAssociation">			Association found = em.find(Association.class, word);
+		if (found != null) {
+			found.setAssociated(association);
+		} else {
+			Association a = new Association();
+			a.setWord(word);
+			a.setAssociated(association);
+			em.persist(a);
+		}</template>
+</templates>
