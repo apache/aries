@@ -101,6 +101,10 @@ doLayout: function(){
 	//console.log("Adjusting overall component dimensions");	
 	this.owningComponent.width=maxWidth;
 	this.owningComponent.height = currentYPos+yMargin;
+
+	//Publish the fact that component has resized so that relationship elements can re-draw
+    dojo.publish("goat.component.resize."+this.owningComponent.id, [this.owningComponent]);
+
 	
 	//now we know the width.. we can add our markup..
 	dojo.forEach(sepYPos, function(ypos){
