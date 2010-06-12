@@ -81,6 +81,11 @@ constructor: function(surface, name, type, fromComponent, toComponent, aspects) 
 	this.subs.push(dojo.subscribe("goat.component.hidden."+toComponent.id, this, this.onComponentHidden));
 	this.subs.push(dojo.subscribe("goat.component.onclick."+toComponent.id, this, this.onComponentClick));
 	this.subs.push(dojo.subscribe("goat.component.onclick."+fromComponent.id, this, this.onComponentClick));
+
+    // When a component is resized teh relationship line needs to eb re-drawn.
+    this.subs.push(dojo.subscribe("goat.component.resize."+fromComponent.id, this, this.onComponentResize));
+    this.subs.push(dojo.subscribe("goat.component.resize."+toComponent.id, this, this.onComponentResize));
+    
 	
 	this.decorators = new Array();
 	
@@ -205,6 +210,9 @@ getKey: function(){
 	var key = ""+this.fromComponent.id+"!"+this.toComponent.id+"!"+this.type+"!"+this.name;
 },
 onComponentMove: function(component){
+	this.updateLine();
+},
+onComponentResize: function(component){
 	this.updateLine();
 },
 onComponentHidden: function(component){
