@@ -72,7 +72,6 @@ constructor: function(surface, name, type, fromComponent, toComponent, aspects) 
 	this.stroke = '#000000';
     this.setStroke();
 	this.updateVisibility();
-	this.updateLine(); 
 		
 	this.subs=new Array();
 	this.subs.push(dojo.subscribe("goat.component.move."+fromComponent.id, this, this.onComponentMove));
@@ -121,12 +120,12 @@ updateVisibility: function(){
 		//console.log(this);
 	//}
 	
+	// Visible will be 'true' only if both componenets are not hidden (ie visible)
 	this.visible = (!this.fromComponent.hidden) && (!this.toComponent.hidden);
 	
 	if(!this.visible){
-		if(this.line==null){
-			// No need to erase a line which doesn't exist ...
-		}else{
+		if(this.line!=null){
+		//No need to hide a line that doesn't exist.
 			this.line.setShape({x1: -1000, y1: -1000, x2: -1000, y2: -1000});
 
             //console.log("Hiding decorators..");
