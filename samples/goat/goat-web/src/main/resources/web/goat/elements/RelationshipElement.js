@@ -82,15 +82,16 @@ constructor: function(surface, name, type, fromComponent, toComponent, aspects) 
 	this.subs.push(dojo.subscribe("goat.component.onclick."+toComponent.id, this, this.onComponentClick));
 	this.subs.push(dojo.subscribe("goat.component.onclick."+fromComponent.id, this, this.onComponentClick));
 
-    // When a component is resized teh relationship line needs to eb re-drawn.
+    // When a component is resized teh relationship line needs to be re-drawn.
     this.subs.push(dojo.subscribe("goat.component.resize."+fromComponent.id, this, this.onComponentResize));
     this.subs.push(dojo.subscribe("goat.component.resize."+toComponent.id, this, this.onComponentResize));
     
 	
 	this.decorators = new Array();
 	
-	//console.log("Publishing relationship create event");
+	console.log("Publishing relationship create to event", fromComponent.id, toComponent.id);
 	dojo.publish("goat.relationship.create."+fromComponent.id,[this]);
+	dojo.publish("goat.relationship.create."+toComponent.id,[this]);
 },
 addDecorator: function(decorator) {
 	decorator.setStroke(this.stroke);
