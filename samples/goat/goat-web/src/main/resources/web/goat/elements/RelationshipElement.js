@@ -48,6 +48,7 @@ dojo.declare("goat.elements.RelationshipElement", [], {
 	
 	//internals
 	stroke: null,
+    pulseColor: "#682DAE",
 	
 	//am I deleted?
 	removed: false,
@@ -211,7 +212,8 @@ onComponentClick: function(component){
         dojox.gfx.fx.animateStroke({
             shape: this.line,
             duration: 500,
-            color: {start: "#FF3030", end: this.stroke},
+            //color: {start: "#FF3030", end: this.stroke},
+            color: {start: this.pulseColor, end: this.stroke},
             width: {start: 3, end: 2},
             join:  {values: ["miter", "bevel", "round"]}
         }).play();	
