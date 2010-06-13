@@ -65,47 +65,32 @@ update : function(sscRelationship){
 	this.activate();
 },
 activate : function(){
-	//create relationship element for each connection defined by this relationship.
 	//console.log(">activate");
+	
+	//Create a relationship element for each consuming component. Use the consuming component because it's
+	//a 1:1 relationship whereas the providing component may provide the element to many different consuming
+	//components.
+	
 	dojo.forEach(this.sscRelationship.consumedBy, function(component){
 		//console.log("processing relationship prov by "+this.sscRelationship.providedBy.id+" to "+component.id);
 		
-		// What values do we expect for the types?
-		//surface, name, type, fromComponent, toComponent, aspects
 		var r = new goat.elements.RelationshipElement(surface, this.sscRelationship.name, this.sscRelationship.type, components[this.sscRelationship.providedBy.id],components[component.id] );
-		// Add a decorator if needed 
+
 		console.log("type is " + this.sscRelationship.type);
-		if(this.sscRelationship.type=="packageImport"){
-	//		this.typeOffset=5;
-	//		this.stroke = '#F08080';
-		}else if(this.sscRelationship.type=="packageExport"){
-	//		this.stroke = '#80F080';
-	//		this.typeOffset=-5;
-		} else if (this.sscRelationship.type == "serviceExport") {
-										// this.stroke = '#F080F0';
-										// this.typeOffset=10;
-										r
-												.addDecorator(new goat.elements.TriangleDecorator(
-														this.theme,surface));
-									} else if (this.sscRelationship.type == "serviceImport") {
-										// this.stroke = '#8080F0';
-										// this.typeOffset=-10;
-										r
-												.addDecorator(new goat.elements.TriangleDecorator(
-														this.theme,surface));
-									} else if (this.sscRelationship.type == "Service") {
-										//		this.stroke = '#8080F0';
-										//		this.typeOffset=-10;
-										var d = new goat.elements.TriangleDecorator(
-												this.theme,surface);
-										r.addDecorator(d);
-									}
+		//Add a service decorator if it is a service relationship
+		if (this.sscRelationship.type == "serviceExport") {
+			r.addDecorator(new goat.elements.TriangleDecorator(this.theme,surface));
+
+		} else if (this.sscRelationship.type == "serviceImport") {
+			r.addDecorator(new goat.elements.TriangleDecorator(this.theme,surface));
+
+		} else if (this.sscRelationship.type == "Service") {
+			r.addDecorator(new goat.elements.TriangleDecorator(this.theme,surface));
+		}
 
 		
 		//console.log("create of relationship element complete");
 		this.relationshipElements.push(r);
-		//hmm.. do we want to reverse-register the relationship like this?
-		components[component.id].relationshipManager.registerRelationship(r);	
 	},this);	
 	//console.log(this.relationshipElements);
 	//console.log("<activate");
