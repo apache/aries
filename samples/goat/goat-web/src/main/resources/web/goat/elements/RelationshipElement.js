@@ -39,7 +39,6 @@ dojo.declare("goat.elements.RelationshipElement", [], {
 	//object properties	
 	surface: null,
 	visible: null,
-	typeOffset: 0,
 	
 	//gfx objects
 	line: null,
