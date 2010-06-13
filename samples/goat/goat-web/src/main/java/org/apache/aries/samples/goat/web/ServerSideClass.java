@@ -113,7 +113,7 @@ public class ServerSideClass {
 			if (!(this.ModelInfoService == null)) {
 				// we already had a provider.. we need to shut down the existing
 				// components & relationships in the browsers..
-				addFunctionCall("forgetAboutAllEverything");
+				addFunctionCall("forgetAboutEverything");
 			}
 
 			ServletContext context = org.directwebremoting.ServerContextFactory
