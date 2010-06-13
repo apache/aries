@@ -69,8 +69,9 @@ constructor: function(surface, name, type, fromComponent, toComponent, aspects) 
 	this.toComponent=toComponent;
 	this.aspects=aspects;
 	
-	this.stroke = '#000000';
-    this.setStroke();
+	//This need to be replaced with a call to a configuration/theme
+	this.stroke = '#6D7B8D';
+
 	this.updateVisibility();
 		
 	this.subs=new Array();
@@ -91,28 +92,11 @@ constructor: function(surface, name, type, fromComponent, toComponent, aspects) 
 	console.log("Publishing relationship create to event", fromComponent.id, toComponent.id);
 	dojo.publish("goat.relationship.create."+fromComponent.id,[this]);
 	dojo.publish("goat.relationship.create."+toComponent.id,[this]);
+
 },
 addDecorator: function(decorator) {
 	decorator.setStroke(this.stroke);
 	this.decorators.push(decorator);
-},
-setStroke: function(){	
-	
-	//right idea.. wrong approach.. this needs the registry to provide the renderer for this relationship type.
-	
-	if(this.type=="packageImport"){
-		this.typeOffset=5;
-		this.stroke = '#F08080';
-	}else if(this.type=="packageExport"){
-		this.stroke = '#80F080';
-		this.typeOffset=-5;
-	}else if(this.type=="serviceExport"){
-		this.stroke = '#F080F0';
-		this.typeOffset=10;
-	}else if(this.type=="serviceImport"){
-		this.stroke = '#8080F0';
-		this.typeOffset=-10;
-	}
 },
 updateVisibility: function(){
 	//if(this.removed){
@@ -147,10 +131,10 @@ updateLine: function(){
 	
 	if(this.visible){
         //console.log("Updating VISIBLE line from "+this.fromComponent.id+" to "+this.toComponent.id);
-		var fromx = this.fromComponent.x + (this.fromComponent.width / 2) + this.typeOffset;
-		var fromy = this.fromComponent.y + (this.fromComponent.height / 2)+ this.typeOffset;
-		var tox = this.toComponent.x + (this.toComponent.width / 2)+ this.typeOffset;
-		var toy = this.toComponent.y + (this.toComponent.height / 2)+ this.typeOffset;
+		var fromx = this.fromComponent.x + (this.fromComponent.width / 2);
+		var fromy = this.fromComponent.y + (this.fromComponent.height / 2);
+		var tox = this.toComponent.x + (this.toComponent.width / 2);
+		var toy = this.toComponent.y + (this.toComponent.height / 2);
 			
 		if(this.line==null){
 			this.line = this.surface.createLine({x1: fromx, y1: fromy, x2: tox, y2: toy})
