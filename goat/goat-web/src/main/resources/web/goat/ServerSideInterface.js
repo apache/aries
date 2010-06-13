@@ -22,7 +22,7 @@ function forgetAboutEverything(){
 	console.log("forgetting about everything.. ");
 
 	for (var relationshipNumber in relationships) {
-        var realtionship = realtionships[realtionshipNumber];
+        var relationship = relationships[relationshipNumber];
 	
 		if(relationship!=null){
 			console.log("removing relationship "+relationship.getKey());
