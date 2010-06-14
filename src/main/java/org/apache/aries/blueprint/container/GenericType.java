@@ -23,6 +23,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,8 +67,8 @@ public class GenericType extends ReifiedType {
         this.parameters = parameters;
     }
 
-    public static GenericType parse(String type, Object loader) throws ClassNotFoundException, IllegalArgumentException {
-        type = type.trim();
+    public static GenericType parse(String rawType, final Object loader) throws ClassNotFoundException, IllegalArgumentException {
+        final String type = rawType.trim();
         // Check if this is an array
         if (type.endsWith("[]")) {
             GenericType t = parse(type.substring(0, type.length() - 2), loader);
@@ -93,7 +96,19 @@ public class GenericType extends ReifiedType {
         if (loader instanceof ClassLoader) {
             return new GenericType(((ClassLoader) loader).loadClass(type));
         } else if (loader instanceof Bundle) {
-            return new GenericType(((Bundle) loader).loadClass(type));
+            try {
+              return AccessController.doPrivileged(new PrivilegedExceptionAction<GenericType>() {
+                public GenericType run() throws ClassNotFoundException {
+                  return new GenericType(((Bundle) loader).loadClass(type));
+                }
+              });
+            } catch (PrivilegedActionException pae) {
+              Exception e = pae.getException();
+              if (e instanceof ClassNotFoundException) 
+                throw (ClassNotFoundException) e;
+              else
+                throw (RuntimeException) e;
+            }
         } else if (loader instanceof ExecutionContext) {
             return new GenericType(((ExecutionContext) loader).loadClass(type));
         } else if (loader instanceof ExtendedBlueprintContainer) {
