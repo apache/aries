@@ -29,10 +29,10 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
-import org.osgi.service.obr.Capability;
-import org.osgi.service.obr.Repository;
-import org.osgi.service.obr.Requirement;
-import org.osgi.service.obr.Resource;
+import org.apache.felix.bundlerepository.Capability;
+import org.apache.felix.bundlerepository.Repository;
+import org.apache.felix.bundlerepository.Requirement;
+import org.apache.felix.bundlerepository.Resource;
 
 public class ApplicationResourceImpl implements Resource
 {
@@ -145,5 +145,21 @@ public class ApplicationResourceImpl implements Resource
   public Version getVersion()
   {
     return _version;
+  }
+
+  public Long getSize()
+  {
+    return 0l;
+  }
+
+  public String getURI()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public boolean isLocal()
+  {
+    return false;
   }
 }

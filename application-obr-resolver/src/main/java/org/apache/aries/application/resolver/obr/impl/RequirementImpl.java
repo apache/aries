@@ -21,8 +21,8 @@
 package org.apache.aries.application.resolver.obr.impl;
 
 import org.osgi.framework.Filter;
-import org.osgi.service.obr.Capability;
-import org.osgi.service.obr.Requirement;
+import org.apache.felix.bundlerepository.Capability;
+import org.apache.felix.bundlerepository.Requirement;
 
 /**
  * @version $Rev$ $Date$
@@ -78,6 +78,6 @@ public class RequirementImpl implements Requirement
 
   public boolean isSatisfied(Capability capability)
   {
-    return filter.match(new MapToDictionary(capability.getProperties()));
+    return filter.match(new MapToDictionary(capability.getPropertiesAsMap()));
   }
 }

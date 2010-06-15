@@ -22,7 +22,7 @@
     <bean id="obr-resolver" class="org.apache.aries.application.resolver.obr.OBRAriesResolver" scope="singleton"
           activation="eager">
         <argument>
-            <reference interface="org.osgi.service.obr.RepositoryAdmin"/>
+            <reference interface="org.apache.felix.bundlerepository.RepositoryAdmin"/>
         </argument>
     </bean>
 

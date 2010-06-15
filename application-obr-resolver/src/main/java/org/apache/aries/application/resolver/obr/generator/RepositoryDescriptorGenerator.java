@@ -27,8 +27,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
+import org.apache.felix.bundlerepository.Resource;
 import org.osgi.framework.Constants;
-import org.osgi.service.obr.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

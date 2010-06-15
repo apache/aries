@@ -89,11 +89,6 @@
             <artifactId>org.apache.felix.bundlerepository</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.service.obr</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.osgi</groupId>
