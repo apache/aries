@@ -20,13 +20,16 @@
 
 package org.apache.aries.application.resolver.obr;
 
-import java.io.File;
-import java.net.URL;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.Attributes;
 
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -43,11 +46,15 @@ import org.apache.aries.application.resolver.obr.generator.RepositoryDescriptorG
 import org.apache.aries.application.resolver.obr.impl.ApplicationResourceImpl;
 import org.apache.aries.application.resolver.obr.impl.OBRBundleInfo;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
+import org.apache.felix.bundlerepository.DataModelHelper;
+import org.apache.felix.bundlerepository.Reason;
+import org.apache.felix.bundlerepository.Repository;
+import org.apache.felix.bundlerepository.RepositoryAdmin;
+import org.apache.felix.bundlerepository.Resolver;
+import org.apache.felix.bundlerepository.Resource;
+import org.osgi.framework.Constants;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
-import org.osgi.service.obr.RepositoryAdmin;
-import org.osgi.service.obr.Requirement;
-import org.osgi.service.obr.Resolver;
-import org.osgi.service.obr.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -70,56 +77,65 @@ public class OBRAriesResolver implements AriesApplicationResolver
    * This method is synchronized because it changes the repositories understood by OBR, and we don't
    * want one apps by value content being used to resolve another. I'll ask for an OBR enhancement.
    */
-  public synchronized Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) throws ResolverException
+  public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) throws ResolverException
   {
     log.trace("resolving {}", app);
-    Resolver obrResolver = repositoryAdmin.resolver();
-    
+    DataModelHelper helper = repositoryAdmin.getHelper();
+
     ApplicationMetadata appMeta = app.getApplicationMetadata();
-    
+
     String appName = appMeta.getApplicationSymbolicName();
     Version appVersion = appMeta.getApplicationVersion();
     List<Content> appContent = appMeta.getApplicationContents();
 
-    // add a resource describing the requirements of the application metadata.
-    obrResolver.add(new ApplicationResourceImpl(appName, appVersion, appContent));
-
-    URL appRepoURL = null;
+    Repository appRepo;
     
     try {
       Document doc = RepositoryDescriptorGenerator.generateRepositoryDescriptor(appName + "_" + appVersion, app.getBundleInfo());
       
-      File f = File.createTempFile(appName + "_" + appVersion, "repository.xml");
-      TransformerFactory.newInstance().newTransformer().transform(new DOMSource(doc), new StreamResult(f));
+      ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
       
-      appRepoURL = f.toURI().toURL();
+      TransformerFactory.newInstance().newTransformer().transform(new DOMSource(doc), new StreamResult(bytesOut));
       
-      repositoryAdmin.addRepository(appRepoURL);
-      f.delete();
+      appRepo = helper.readRepository(new InputStreamReader(new ByteArrayInputStream(bytesOut.toByteArray())));
     } catch (Exception e) {
       throw new ResolverException(e);
     } 
     
-    try {
-      if (obrResolver.resolve()) {
-        Set<BundleInfo> result = new HashSet<BundleInfo>();
-        for (Resource resource: obrResolver.getRequiredResources()) {
-          BundleInfo bundleInfo = toBundleInfo(resource);
-          result.add(bundleInfo);
-        }
-        for (Resource resource: obrResolver.getOptionalResources()) {
-          BundleInfo bundleInfo = toBundleInfo(resource);
-          result.add(bundleInfo);
-        }
-        return result;
-      } else {
-        throw new ResolverException("Could not resolve requirements: " + getUnsatisfiedRequirements(obrResolver));
-      }
-    } finally {
-      if (appRepoURL != null) {
-        repositoryAdmin.removeRepository(appRepoURL);
+    Repository[] repos = repositoryAdmin.listRepositories();
+    
+    List<Repository> resolveRepos = new ArrayList<Repository>();
+    resolveRepos.add(appRepo);
+    
+    for (Repository r : repos) {
+      if (!!!Repository.LOCAL.equals(r.getURI())) {
+        resolveRepos.add(r);
       }
     }
+    
+    Resolver obrResolver = repositoryAdmin.resolver(resolveRepos.toArray(new Repository[resolveRepos.size()]));
+    // add a resource describing the requirements of the application metadata.
+    obrResolver.add(createApplicationResource(helper, appName, appVersion, appContent));
+    if (obrResolver.resolve()) {
+      Set<BundleInfo> result = new HashSet<BundleInfo>();
+      for (Resource resource: obrResolver.getRequiredResources()) {
+        BundleInfo bundleInfo = toBundleInfo(resource);
+        result.add(bundleInfo);
+      }
+      for (Resource resource: obrResolver.getOptionalResources()) {
+        BundleInfo bundleInfo = toBundleInfo(resource);
+        result.add(bundleInfo);
+      }
+      return result;
+    } else {
+      throw new ResolverException("Could not resolve requirements: " + getUnsatisfiedRequirements(obrResolver));
+    }
+  }
+
+  private Resource createApplicationResource(DataModelHelper helper, String appName, Version appVersion,
+      List<Content> appContent)
+  {
+    return new ApplicationResourceImpl(appName, appVersion, appContent);
   }
 
   public BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion)
@@ -127,25 +143,30 @@ public class OBRAriesResolver implements AriesApplicationResolver
     Map<String, String> attribs = new HashMap<String, String>();
     attribs.put(Resource.VERSION, bundleVersion.toString());
     String filterString = ManifestHeaderProcessor.generateFilter(Resource.SYMBOLIC_NAME, bundleSymbolicName, attribs);
-    Resource[] resources = repositoryAdmin.discoverResources(filterString);
-    if (resources != null && resources.length > 0) {
-      return toBundleInfo(resources[0]);
-    } else {
+    Resource[] resources;
+    try {
+      resources = repositoryAdmin.discoverResources(filterString);
+      if (resources != null && resources.length > 0) {
+        return toBundleInfo(resources[0]);
+      } else {
+        return null;
+      }
+    } catch (InvalidSyntaxException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
       return null;
     }
   }
 
   private String getUnsatisfiedRequirements(Resolver resolver)
   {
-    Requirement[] reqs = resolver.getUnsatisfiedRequirements();
+    Reason[] reqs = resolver.getUnsatisfiedRequirements();
     if (reqs != null) {
       StringBuilder sb = new StringBuilder();
       for (int reqIdx = 0; reqIdx < reqs.length; reqIdx++) {
-        sb.append("   " + reqs[reqIdx].getFilter()).append("\n");
-        Resource[] resources = resolver.getResources(reqs[reqIdx]);
-        for (int resIdx = 0; resIdx < resources.length; resIdx++) {
-          sb.append("      " + resources[resIdx].getPresentationName()).append("\n");
-        }
+        sb.append("   " + reqs[reqIdx].getRequirement().getFilter()).append("\n");
+        Resource resource = reqs[reqIdx].getResource();
+        sb.append("      " + resource.getPresentationName()).append("\n");
       }
       return sb.toString();
     }
@@ -154,7 +175,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
 
   private BundleInfo toBundleInfo(Resource resource)
   {
-    String location = resource.getURL().toExternalForm();
+    String location = resource.getURI();
     return new OBRBundleInfo(resource.getSymbolicName(),
             resource.getVersion(),
             location,

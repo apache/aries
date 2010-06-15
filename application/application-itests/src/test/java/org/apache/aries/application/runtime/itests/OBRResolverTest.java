@@ -58,8 +58,8 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
-import org.osgi.service.obr.Repository;
-import org.osgi.service.obr.RepositoryAdmin;
+import org.apache.felix.bundlerepository.Repository;
+import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.w3c.dom.Document;
 
 @RunWith(JUnit4TestRunner.class)
@@ -150,7 +150,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     
     Repository[] repos = repositoryAdmin.listRepositories();
     for (Repository repo : repos) {
-      repositoryAdmin.removeRepository(repo.getURL());
+      repositoryAdmin.removeRepository(repo.getURI());
     }
     
     repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
@@ -173,7 +173,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     
     Repository[] repos = repositoryAdmin.listRepositories();
     for (Repository repo : repos) {
-      repositoryAdmin.removeRepository(repo.getURL());
+      repositoryAdmin.removeRepository(repo.getURI());
     }
     
     repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
