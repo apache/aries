@@ -124,7 +124,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
         
         // Validate: symbolic names must match
         String appSymbolicName = applicationMetadata.getApplicationSymbolicName();
-        String depSymbolicName = applicationMetadata.getApplicationSymbolicName();
+        String depSymbolicName = deploymentMetadata.getApplicationSymbolicName();
         if (!appSymbolicName.equals(depSymbolicName)) {
           throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0002E", ebaFile.getName(), appSymbolicName, depSymbolicName));
         }
