@@ -69,7 +69,7 @@
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.bundlerepository</artifactId>
-                <version>1.4.3</version>
+                <version>1.6.2</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
@@ -107,47 +107,47 @@
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.api</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.converters</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.install</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.management</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.resolver.obr</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.runtime</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.runtime.itests</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.utils</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
