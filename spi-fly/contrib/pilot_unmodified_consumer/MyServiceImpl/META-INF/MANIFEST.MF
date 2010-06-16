@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ServiceLoaderService
+Bundle-SymbolicName: MyServiceImpl
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.apache.aries.spifly.api,
+ org.apache.aries.spifly.mysvc,
+ org.osgi.framework
+Export-Package: org.apache.aries.spifly.mysvc.impl
+Bundle-Activator: org.apache.aries.spifly.mysvc.internal.Activator
+SPI-Provider: org.apache.aries.spifly.mysvc.SPIProvider
