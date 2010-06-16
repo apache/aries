@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
+import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
 import org.apache.aries.jmx.AbstractIntegrationTest;
@@ -58,6 +59,11 @@ public class FrameworkMBeanTest extends AbstractIntegrationTest {
         return options;
     }
 
+    @Override
+    public void doSetUp() throws Exception {
+        waitForMBean(new ObjectName(FrameworkMBean.OBJECTNAME));
+    }
+    
     @Test
     public void testMBeanInterface() throws IOException {
         FrameworkMBean framework = getMBean(FrameworkMBean.OBJECTNAME, FrameworkMBean.class);
