@@ -21,9 +21,6 @@ package org.apache.aries.jmx.test.blueprint;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
 import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
@@ -43,21 +40,14 @@ import org.apache.aries.jmx.test.blueprint.framework.ReferenceValidator;
 import org.apache.aries.jmx.test.blueprint.framework.RegistrationListenerValidator;
 import org.apache.aries.jmx.test.blueprint.framework.ServiceValidator;
 import org.apache.aries.jmx.test.blueprint.framework.ValueValidator;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.CoreOptions;
-import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
 public class BlueprintMBeanTest extends AbstractIntegrationTest {
@@ -79,27 +69,10 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
         return options;
     }  
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Before Test");
-       
-       // Wait MBeans register in server
-       int i=0;
-       while (true) {
-           try {
-               mbeanServer.getObjectInstance(new ObjectName(BlueprintStateMBean.OBJECTNAME));
-               mbeanServer.getObjectInstance(new ObjectName(BlueprintMetadataMBean.OBJECTNAME));
-               System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Found MBeans");
-               break;
-           } catch (InstanceNotFoundException e) {
-               if (i == 5) {
-                   throw new Exception(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BlueprintStateMBean & BlueprintMetadataMBean are not found in server");
-               }
-           }
-           i++;
-           Thread.sleep(100);
-       }
+    @Override
+    public void doSetUp() throws Exception {
+        waitForMBean(new ObjectName(BlueprintStateMBean.OBJECTNAME));
+        waitForMBean(new ObjectName(BlueprintMetadataMBean.OBJECTNAME));
        
        // Wait enough time for osgi framework and blueprint bundles to be set up
        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Waiting for bundles to be set up");

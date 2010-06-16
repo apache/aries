@@ -25,12 +25,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Collection;
 
-import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
 
 import org.apache.aries.jmx.AbstractIntegrationTest;
-import org.junit.Before;
 import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
@@ -53,22 +51,9 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
         return options;
     }
 
-    @Before
+    @Override
     public void doSetUp() throws Exception {
-        super.setUp();
-        int i = 0;
-        while (true) {
-            try {
-                mbeanServer.getObjectInstance(new ObjectName(PackageStateMBean.OBJECTNAME));
-                break;
-            } catch (InstanceNotFoundException e) {
-                if (i == 5) {
-                    throw new Exception("PackageStateMBean not available after waiting 5 seconds");
-                }
-            }
-            i++;
-            Thread.sleep(1000);
-        }
+        waitForMBean(new ObjectName(PackageStateMBean.OBJECTNAME));
     }
 
     @Test

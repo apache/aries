@@ -28,6 +28,7 @@ import static org.ops4j.pax.exam.OptionUtils.combine;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import static org.junit.Assert.*;
 
+import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.MBeanServerInvocationHandler;
@@ -49,6 +50,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
+import org.osgi.jmx.framework.BundleStateMBean;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -83,12 +85,42 @@ public class AbstractIntegrationTest {
         assertNotNull(reference);
         MBeanServer mbeanService = (MBeanServer) bundleContext.getService(reference);
         assertNotNull(mbeanService);
+        
+        doSetUp();
+    }
+    
+    /**
+     * A hook for subclasses.
+     * 
+     * @throws Exception
+     */
+    protected void doSetUp() throws Exception {           
     }
     
     @After
     public void tearDown() throws Exception {
         bundleContext.ungetService(reference);
         //plainRegistration.unregister();
+    }
+    
+    protected void waitForMBean(ObjectName name) throws Exception {
+        waitForMBean(name, 10);        
+    }
+    
+    protected void waitForMBean(ObjectName name, int timeoutInSeconds) throws Exception {
+        int i=0;
+        while (true) {
+            try {
+                mbeanServer.getObjectInstance(name);
+                break;
+            } catch (InstanceNotFoundException e) {
+                if (i == timeoutInSeconds) {
+                    throw new Exception(name + " mbean is not available after waiting " + timeoutInSeconds + " seconds");
+                }
+            }
+            i++;
+            Thread.sleep(1000);
+        }
     }
     
     @SuppressWarnings("unchecked")
