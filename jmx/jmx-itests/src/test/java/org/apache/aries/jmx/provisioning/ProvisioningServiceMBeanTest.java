@@ -31,13 +31,11 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
-import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
 
 import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.apache.aries.jmx.codec.PropertyData;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
@@ -70,27 +68,10 @@ public class ProvisioningServiceMBeanTest extends AbstractIntegrationTest {
         return options;
     }
 
-    @Before
+    @Override
     public void doSetUp() throws Exception {
-        super.setUp();
-        int i=0;
-        while (true) {
-            try {
-                mbeanServer.getObjectInstance(new ObjectName(ProvisioningServiceMBean.OBJECTNAME));
-                break;
-            } catch (InstanceNotFoundException e) {
-                if (i == 5) {
-                    throw new Exception("ProvisioningServiceMBean not available after waiting 5 seconds");
-                }
-            }
-            i++;
-            Thread.sleep(1000);
-        }
-       
-      
+        waitForMBean(new ObjectName(ProvisioningServiceMBean.OBJECTNAME));
     }
-    
-  
 
     @Ignore("For now.. Cannot find public repo for org.eclipse.equinox.ip")
     @Test

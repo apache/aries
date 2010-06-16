@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.management.InstanceNotFoundException;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
@@ -37,7 +36,6 @@ import javax.management.openmbean.TabularData;
 
 import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.apache.aries.jmx.codec.BundleData.Header;
-import org.junit.Before;
 import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
@@ -106,22 +104,9 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
         return options;
     }
     
-    @Before
+    @Override
     public void doSetUp() throws Exception {
-        super.setUp();
-        int i=0;
-        while (true) {
-            try {
-                mbeanServer.getObjectInstance(new ObjectName(BundleStateMBean.OBJECTNAME));
-                break;
-            } catch (InstanceNotFoundException e) {
-                if (i == 5) {
-                    throw new Exception("BundleStateMBean not available after waiting 5 seconds");
-                }
-            }
-            i++;
-            Thread.sleep(1000);
-        }
+        waitForMBean(new ObjectName(BundleStateMBean.OBJECTNAME));
     }
 
     @Test
@@ -204,7 +189,7 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
         
         long[] requiring = mbean.getRequiringBundles(a.getBundleId());
         assertEquals(3, requiring.length);
-        assertTrue(b.getSymbolicName(), arrayContains(frag.getBundleId(), requiring));
+        assertTrue(b.getSymbolicName(), arrayContains(b.getBundleId(), requiring));
         assertTrue(frag.getSymbolicName(), arrayContains(frag.getBundleId(), requiring));
         assertTrue(d.getSymbolicName(), arrayContains(d.getBundleId(), requiring));
         
