@@ -24,11 +24,9 @@ import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
 
 import java.io.IOException;
 
-import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
 
 import org.apache.aries.jmx.AbstractIntegrationTest;
-import org.junit.Before;
 import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
@@ -70,22 +68,9 @@ public class PermissionAdminMBeanTest extends AbstractIntegrationTest {
         return options;
     }
     
-    @Before
+    @Override
     public void doSetUp() throws Exception {
-        super.setUp();
-        int i = 0;
-        while (true) {
-            try {
-                mbeanServer.getObjectInstance(new ObjectName(PermissionAdminMBean.OBJECTNAME));
-                break;
-            } catch (InstanceNotFoundException e) {
-                if (i == 5) {
-                    throw new Exception("PermissionAdminMBean not available after waiting 5 seconds");
-                }
-            }
-            i++;
-            Thread.sleep(1000);
-        }
+        waitForMBean(new ObjectName(PermissionAdminMBean.OBJECTNAME));
     }
 
     @Test

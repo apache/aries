@@ -28,7 +28,6 @@ import static org.ops4j.pax.swissbox.tinybundles.core.TinyBundles.withBnd;
 import java.io.InputStream;
 import java.util.Dictionary;
 
-import javax.management.InstanceNotFoundException;
 import javax.management.ObjectName;
 import javax.management.openmbean.TabularData;
 
@@ -37,7 +36,6 @@ import org.apache.aries.jmx.codec.PropertyData;
 import org.apache.aries.jmx.test.bundlea.api.InterfaceA;
 import org.apache.aries.jmx.test.bundleb.api.InterfaceB;
 import org.apache.aries.jmx.test.bundleb.api.MSF;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
@@ -107,22 +105,9 @@ public class ConfigurationAdminMBeanTest extends AbstractIntegrationTest {
         return options;
     }
     
-    @Before
+    @Override
     public void doSetUp() throws Exception {
-        super.setUp();
-        int i=0;
-        while (true) {
-            try {
-                mbeanServer.getObjectInstance(new ObjectName(ConfigurationAdminMBean.OBJECTNAME));
-                break;
-            } catch (InstanceNotFoundException e) {
-                if (i == 5) {
-                    throw new Exception("ConfigurationAdminMBean not available after waiting 5 seconds");
-                }
-            }
-            i++;
-            Thread.sleep(1000);
-        }
+        waitForMBean(new ObjectName(ConfigurationAdminMBean.OBJECTNAME));
     }
     
     @Ignore("ManagedServiceFactory tests failing.. " +

@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.management.InstanceNotFoundException;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
@@ -40,7 +39,6 @@ import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.apache.aries.jmx.codec.PropertyData;
 import org.apache.aries.jmx.test.bundlea.api.InterfaceA;
 import org.apache.aries.jmx.test.bundleb.api.InterfaceB;
-import org.junit.Before;
 import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Customizer;
@@ -110,24 +108,10 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
         return options;
     }
     
-    @Before
+    @Override
     public void doSetUp() throws Exception {
-        super.setUp();
-        int i=0;
-        while (true) {
-            try {
-                mbeanServer.getObjectInstance(new ObjectName(ServiceStateMBean.OBJECTNAME));
-                break;
-            } catch (InstanceNotFoundException e) {
-                if (i == 5) {
-                    throw new Exception("ServiceStateMBean not available after waiting 5 seconds");
-                }
-            }
-            i++;
-            Thread.sleep(1000);
-        }
-    }
-    
+        waitForMBean(new ObjectName(ServiceStateMBean.OBJECTNAME));
+    }    
     
     @Test
     public void testMBeanInterface() throws Exception {
