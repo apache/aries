@@ -60,6 +60,11 @@ under the License.
         </dependency>
         <dependency>
             <groupId>org.apache.aries.samples.goat</groupId>
+            <artifactId>org.apache.aries.samples.goat.dummy2</artifactId>
+			<version>${version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.samples.goat</groupId>
             <artifactId>org.apache.aries.samples.goat.info.enhancer</artifactId>
 			<version>${version}</version>
         </dependency>
