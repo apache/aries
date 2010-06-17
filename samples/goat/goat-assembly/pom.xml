@@ -122,6 +122,10 @@
 		</dependency>
         <dependency>
 			<groupId>org.apache.aries.samples.goat</groupId>
+			<artifactId>org.apache.aries.samples.goat.dummy2</artifactId>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.aries.samples.goat</groupId>
 			<artifactId>org.apache.aries.samples.goat.bundlecontextmodel</artifactId>
 		</dependency>
         <dependency>
