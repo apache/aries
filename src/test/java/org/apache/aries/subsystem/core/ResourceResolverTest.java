@@ -51,5 +51,6 @@ public class ResourceResolverTest {
         rr.generateOBR();
         File file = new File(System.getProperty("user.home") + "/.m2/repository/repository.xml");
         assertTrue("file " + file.toString() + " should exist after generate OBR", file.exists());
+        file.delete();
     }
 }
