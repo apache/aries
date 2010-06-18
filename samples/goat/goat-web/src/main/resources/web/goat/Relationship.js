@@ -76,7 +76,7 @@ activate : function(){
 		
 		var r = new goat.elements.RelationshipElement(surface, this.sscRelationship.name, this.sscRelationship.type, components[this.sscRelationship.providedBy.id],components[component.id] );
 
-		console.log("type is " + this.sscRelationship.type);
+		//console.log("type is " + this.sscRelationship.type);
 		//Add a service decorator if it is a service relationship
 		if (this.sscRelationship.type == "serviceExport") {
 			r.addDecorator(new goat.elements.TriangleDecorator(this.theme,surface));

@@ -31,7 +31,7 @@ constructor : function(owningComponent) {
 	this.owningComponent = owningComponent;
 },
 doLayout: function(){	
-    console.log(">doLayout");
+    //console.log(">doLayout");
     //console.log(this.owningComponent.elements);
     
 	if(this.layoutElements!=null){
@@ -115,7 +115,7 @@ doLayout: function(){
 		.setStroke({width:1, color: '#808080'});
 	},this);
 	
-	console.log("<doLayout");
+	//console.log("<doLayout");
 	
 }
 
