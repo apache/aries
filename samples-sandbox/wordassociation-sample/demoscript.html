@@ -340,7 +340,7 @@ so we need a service that gives us a word to associate with.
 <p class="instruction">Right click on the newly created project, do <b>New&rarr;Interface</b>, and 
 </p>
 <p style="field">
-Package: org.apache.samples.wordassociation
+Package: org.apache.wordassociation
 Name: WordGetterService. 
 </p>
 Add the following method:
@@ -356,7 +356,7 @@ Add the following method:
 Right click on the newly created project, do <b>New&rarr;Interface</b>, and
 </p>
 <p style="field">
-Package: org.apache.samples.wordassociation
+Package: org.apache.wordassociation
 Name: AssociationRecorderService.
 </p>
 
@@ -509,8 +509,8 @@ Add the following content to the doPost() method using the <span class="template
 
                 String previousAssociation = null;
                 if (recorder != null) {
+                        pr33eviousAssociation = recorder.getLastAssociation(word);
                         recorder.recordAssociation(word, association);
-                        previousAssociation = recorder.getLastAssociation(word);
                 }
                 PrintWriter out = response.getWriter();
                 out.println("The last person associated " + word + " with "
@@ -624,7 +624,7 @@ org.apache.openjpa.enhance, and org.apache.openjpa.util.</p>
 Import-Package: javax.persistence,
  org.apache.openjpa.enhance,
  org.apache.openjpa.util,
- org.apache.samples.wordassociation
+ org.apache.wordassociation
  </p>
 
 <h4>Defining the entity</h4>
@@ -739,6 +739,16 @@ stubs for the interface methods.
 <p class="instruction">Create a field for the entity manager 
 and right click, choose <strong>Source&rarr;Generate getters and setters</strong>
 and generate a setter (but no getter).</p>
+
+<p class="code">
+    private EntityManager em;
+</p>
+
+<p class="code">
+    public void setEntityManager(EntityManager em) {
+      this.em = em;
+    }
+</p>
 
 <p class="dialogue">
 The cool thing here is that we didn't have to do anything to initialize the 
