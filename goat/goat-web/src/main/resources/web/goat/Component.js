@@ -163,8 +163,21 @@ updateProperties : function(props) {
 	// console.log("Properties processed.");
 },
 removeSelf : function() {
-	this.surface.remove(this.group);
+	//Remove this component and all the relationship elements attached to it.
+	//This one is subscribed to by RelationshipElement
+	dojo.publish("goat.component.delete." + this.id, [ this ]);
+
+	//This one is subscribed to by ComponentStatusGrid
 	dojo.publish("goat.component.delete", [ this ]);
+
+	this.surface.remove(this.group);
+	//Now we remove all other the elements
+	for (var type in this.elements) {
+		this.elements[type].remove();
+		delete this.elements[type];
+	}
+	this.relationshipManager.removeSelf();
+	delete this.RelationshipManager;
 },
 initGfx : function() {
 	this.group = this.surface.createGroup();

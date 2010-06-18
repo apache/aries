@@ -89,15 +89,17 @@ dojo.declare("goat.elements.TwistieAggregation", goat.elements.ElementBase, {
 			this.component.group.remove(this.group);
 			dojo.unsubscribe(this.addsub);
 			dojo.unsubscribe(this.removesub);
+
 		},		
 		onAdd: function(/*RelationshipElement[]*/args){
-			console.log("Aggregation Element notified of Relationship being added");
+		//console.log("I think I'm adding to this object ", this.component);
+			//console.log("Aggregation Element notified of Relationship being added");
 			//console.log(args[0]);
 			this.buildTwistie();
 			//notify parent we have altered our size.. 
 		}, 
 		onRemove: function(/*RelationshipElement[]*/args){
-			console.log("Aggregation Element notified of Relationship being removed");
+			//console.log("Aggregation Element notified of Relationship being removed");
 			//console.log(args[0]);
 			this.buildTwistie();
 			//notify parent we have altered our size.. 
@@ -105,7 +107,7 @@ dojo.declare("goat.elements.TwistieAggregation", goat.elements.ElementBase, {
 		buildTwistie: function(){
 			//flush the old twistie.. if we had one!
 			if(this.group!=null){
-				console.log("Flushing old twistie");
+				//console.log("Flushing old twistie");
 				this.component.group.remove(this.group);
 				this.group=this.component.group.createGroup();
 			}
@@ -130,7 +132,7 @@ dojo.declare("goat.elements.TwistieAggregation", goat.elements.ElementBase, {
 			var twistieName = this.type.substring("relationship.aggregation.".length, this.type.length);
 			this.twistie = new goat.TwistieSection(twistieName, this.group, this.component, this.x, this.y, getItemsCallBack);
 			
-			console.log("requesting component refresh as rebuilt twistie may not have same dimensions");
+			//console.log("requesting component refresh as rebuilt twistie may not have same dimensions");
 			this.component.refresh();
 		}		
 });

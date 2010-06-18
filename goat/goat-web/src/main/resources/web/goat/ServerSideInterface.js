@@ -21,20 +21,9 @@
 function forgetAboutEverything(){
 	console.log("forgetting about everything.. ");
 
-	for (var relationshipNumber in relationships) {
-        var relationship = relationships[relationshipNumber];
-	
-		if(relationship!=null){
-			console.log("removing relationship "+relationship.getKey());
-			delete relationship;
-		}
-	}
-	relationships = new Array();
 
 	for (var componentNumber in components) {
     var component = components[componentNumber];
-		console.log("Component here?");
-		console.log(component);
 		if(component!=null){
 			console.log("invoking removeself on "+component.id);
 			component.removeSelf();
@@ -44,6 +33,15 @@ function forgetAboutEverything(){
 	components = new Array();
 	
 
+	for (var relationshipNumber in relationships) {
+        var relationship = relationships[relationshipNumber];
+	
+		if(relationship!=null){
+			console.log("removing relationship "+relationship.getKey());
+			delete relationship;
+		}
+	}
+	relationships = new Array();
 	console.log("making sure absolutely..");
 	initialLayout.reset();
 }

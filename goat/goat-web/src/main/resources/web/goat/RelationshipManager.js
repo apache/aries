@@ -34,8 +34,8 @@ constructor : function(/*goat.Component*/owningComponent) {
 	this.owningComponent = owningComponent;
 	this.relationships = new Array();
 	
-	dojo.subscribe("goat.relationship.create."+owningComponent.id, this, this.registerRelationship);
-	dojo.subscribe("goat.relationship.remove."+owningComponent.id, this, this.removeRelationship);
+	this.createSub = dojo.subscribe("goat.relationship.create."+owningComponent.id, this, this.registerRelationship);
+	this.removeSub = dojo.subscribe("goat.relationship.remove."+owningComponent.id, this, this.removeRelationship);
 },
 registerRelationship: function(/*goat.elements.RelationshipElement*/relationship){	
 	//console.log(">registerRelationship");
@@ -56,7 +56,7 @@ registerRelationship: function(/*goat.elements.RelationshipElement*/relationship
 	//console.log("<registerRelationship");
 },
 removeRelationship: function(/*goat.elements.RelationshipElement*/relationship){
-	//console.log("Relationship Manager for "+this.owningComponent.id+" handling removal for relationship..");
+	//console.log("Z: RelationshipManager "+this.owningComponent.id+" handling removal for relationship..");
 	//console.log(relationship);
 	
 	var aggregator = this.relationships[relationship.type];
@@ -82,7 +82,7 @@ removeRelationship: function(/*goat.elements.RelationshipElement*/relationship){
 			delete this.owningComponent.elements["relationship.aggregation."+relationship.type];
 		}
 
-	    //console.log("Forgetting about the aggregator");
+	    //console.log("Z: Realtionship manager: Forgetting about the aggregator");
 		delete this.relationships[relationship.type];
 	}
 },
