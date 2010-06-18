@@ -86,6 +86,9 @@ constructor: function(surface, name, type, fromComponent, toComponent, aspects) 
     this.subs.push(dojo.subscribe("goat.component.resize."+fromComponent.id, this, this.onComponentResize));
     this.subs.push(dojo.subscribe("goat.component.resize."+toComponent.id, this, this.onComponentResize));
     
+    // When a component is deleted remove myself 
+    this.subs.push(dojo.subscribe("goat.component.delete."+fromComponent.id, this, this.removeSelf));
+    this.subs.push(dojo.subscribe("goat.component.delete."+toComponent.id, this, this.removeSelf));
 	
 	this.decorators = new Array();
 	
@@ -155,18 +158,18 @@ updateLine: function(){
 	
 },
 removeSelf: function(){
-	//console.log("Line from "+this.fromComponent.id+" to "+this.toComponent.id+" being removed");
+	console.log("Z: Line from "+this.fromComponent.id+" to "+this.toComponent.id+" being removed");
     //console.log(this);
 	if(!this.removed){
 		this.removed = true;
 		
-		//console.log("Line from "+this.fromComponent.id+" to "+this.toComponent.id+" being removed from surface");
+		//console.log("Z: Line from "+this.fromComponent.id+" to "+this.toComponent.id+" being removed from surface");
         //console.log(this);
         if(this.line!=null) {
             this.surface.remove(this.line);
         }
 
-        //console.log("Removing decorators..");
+        //console.log("Z: Removing decorators..");
 		dojo.forEach(this.decorators, function(decorator){
             //console.log("Asking...");
             //console.log(decorator);
@@ -184,8 +187,18 @@ removeSelf: function(){
 		});
 		
 		this.subs = new Array();
-		
-		dojo.publish("goat.relationship.remove."+this.fromComponent.id,[this]);
+
+		if(this.fromComponent.id != this.toComponent.id) {		
+			//console.log("Z:RelationshipElement -  publishing to this that I'm gone", this.fromComponent.id);
+			dojo.publish("goat.relationship.remove."+this.fromComponent.id,[this]);
+
+			//console.log("Z:RelationshipElement -  publishing to this that I'm gone", this.toComponent.id);
+			dojo.publish("goat.relationship.remove."+this.toComponent.id,[this]);
+		} else {
+			console.log("Z:RelationshipElement -  publishing to this that I'm gone", this.toComponent.id);
+        	dojo.publish("goat.relationship.remove."+this.toComponent.id,[this]);
+        }
+
 	}else{
 		console.log("Line from "+this.fromComponent.id+" to "+this.toComponent.id+" already marked as deleted");
 	}
