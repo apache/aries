@@ -506,11 +506,10 @@ Add the following content to the doPost() method using the <span class="template
 </p>
 <p class="code">                String word = request.getParameter("word");
                 String association = request.getParameter("association");
-                String person = request.getParameter("person");
 
                 String previousAssociation = null;
                 if (recorder != null) {
-                        recorder.recordAssociation(word, association, person);
+                        recorder.recordAssociation(word, association);
                         previousAssociation = recorder.getLastAssociation(word);
                 }
                 PrintWriter out = response.getWriter();
@@ -625,7 +624,7 @@ org.apache.openjpa.enhance, and org.apache.openjpa.util.</p>
 Import-Package: javax.persistence,
  org.apache.openjpa.enhance,
  org.apache.openjpa.util,
- org.apache.wordassociation
+ org.apache.samples.wordassociation
  </p>
 
 <h4>Defining the entity</h4>
@@ -713,10 +712,8 @@ have a very enterprise feel to it. What Aries allows us to do is
 register services declaratively in XML instead.</p>
 
 <p class="instruction">Add a bean and service definition for the 
-association recorder using the <span class="template>recorder</span>
-template. You should end up with the following:</p>
-
-&lt;p class="xml"&gt;	&lt;service interface="org.apache.wordassociation.AssociationRecorderService"
+association recorder using the <span class="template">recorder</span>
+template. You should end up with the following:</p><p class="xml">	&lt;service interface="org.apache.wordassociation.AssociationRecorderService"
 		ref="recorder" /&gt;
 	&lt;bean class="org.apache.wordassociation.jpa.Recorder" id="recorder"&gt;
 		&lt;jpa:context property="entityManager" unitname="wordassociation.jpa" /&gt;
