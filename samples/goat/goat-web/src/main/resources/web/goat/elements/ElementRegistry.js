@@ -51,7 +51,6 @@ constructor : function() {
 	// TODO fill in the rest of the arguments to the other elements
 	//this sort of resolution needs to be handled by Config.
 	if(type=="component.property.State"){
-		console.log("constructing with " + value)
 		return new goat.elements.ComponentColorElement(component, componentAppearance, type,value);
 	}else if(type.match("^component.property.")=="component.property."){
 		return new goat.elements.TextComponentProperty(component,type,value);
