@@ -37,7 +37,6 @@ function forgetAboutEverything(){
         var relationship = relationships[relationshipNumber];
 	
 		if(relationship!=null){
-			console.log("removing relationship "+relationship.getKey());
 			delete relationship;
 		}
 	}
@@ -86,13 +85,12 @@ function addRelationship(relationship) {
 	var r=new goat.Relationship(relationship, theme);
 	var key=r.getKey();
 	
-	console.log("checking relationship store for "+key);
+	//console.log("checking relationship store for "+key);
 	
 	if(relationships[key]!=null){
 		console.log("Found, issuing update");
 		relationships[key].update(relationship);
 	}else{
-		console.log("Not found, creating new..");
 		relationships[key]=r;
 		//because we use getKey to test the existence, the constructor for 
 		//Relationship is lazy, and we need to kick the instance to tell it

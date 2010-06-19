@@ -82,19 +82,14 @@ constructor: function(surface, name, type, fromComponent, toComponent, aspects) 
 	this.subs.push(dojo.subscribe("goat.component.onclick."+toComponent.id, this, this.onComponentClick));
 	this.subs.push(dojo.subscribe("goat.component.onclick."+fromComponent.id, this, this.onComponentClick));
 
-    // When a component is resized teh relationship line needs to be re-drawn.
+    // When a component is resized the relationship line needs to be re-drawn.
     this.subs.push(dojo.subscribe("goat.component.resize."+fromComponent.id, this, this.onComponentResize));
     this.subs.push(dojo.subscribe("goat.component.resize."+toComponent.id, this, this.onComponentResize));
     
-    // When a component is deleted remove myself 
-    this.subs.push(dojo.subscribe("goat.component.delete."+fromComponent.id, this, this.removeSelf));
-    this.subs.push(dojo.subscribe("goat.component.delete."+toComponent.id, this, this.removeSelf));
-	
-	this.decorators = new Array();
-	
-	console.log("Publishing relationship create to event", fromComponent.id, toComponent.id);
 	dojo.publish("goat.relationship.create."+fromComponent.id,[this]);
 	dojo.publish("goat.relationship.create."+toComponent.id,[this]);
+
+	this.decorators = new Array();
 
 },
 addDecorator: function(decorator) {
@@ -102,10 +97,6 @@ addDecorator: function(decorator) {
 	this.decorators.push(decorator);
 },
 updateVisibility: function(){
-	//if(this.removed){
-		//console.log("uv EEK.. this line should be dead.. and its aliiiiiive "+this.type+" from "+this.fromComponent.id+" to "+this.toComponent.id);
-		//console.log(this);
-	//}
 	
 	// Visible will be 'true' only if both componenets are not hidden (ie visible)
 	this.visible = (!this.fromComponent.hidden) && (!this.toComponent.hidden);
@@ -117,7 +108,6 @@ updateVisibility: function(){
 
             //console.log("Hiding decorators..");
 			dojo.forEach(this.decorators, function(decorator){
-                //console.log("Hiding decorator..");
 				decorator.makeInvisible();
 			},this);
 
@@ -127,13 +117,8 @@ updateVisibility: function(){
 	}
 },
 updateLine: function(){
-	if(this.removed){
-		console.log("ul EEK.. this line should be dead.. and its aliiiiiive "+this.type+" from "+this.fromComponent.id+" to "+this.toComponent.id);
-		console.log(this);
-	}
-	
+
 	if(this.visible){
-        //console.log("Updating VISIBLE line from "+this.fromComponent.id+" to "+this.toComponent.id);
 		var fromx = this.fromComponent.x + (this.fromComponent.width / 2);
 		var fromy = this.fromComponent.y + (this.fromComponent.height / 2);
 		var tox = this.toComponent.x + (this.toComponent.width / 2);
@@ -158,49 +143,34 @@ updateLine: function(){
 	
 },
 removeSelf: function(){
-	console.log("Z: Line from "+this.fromComponent.id+" to "+this.toComponent.id+" being removed");
-    //console.log(this);
 	if(!this.removed){
 		this.removed = true;
 		
-		//console.log("Z: Line from "+this.fromComponent.id+" to "+this.toComponent.id+" being removed from surface");
-        //console.log(this);
         if(this.line!=null) {
             this.surface.remove(this.line);
         }
 
-        //console.log("Z: Removing decorators..");
 		dojo.forEach(this.decorators, function(decorator){
-            //console.log("Asking...");
-            //console.log(decorator);
-            //console.log("..to remove itself");
 			decorator.removeSelf();
 		});
         this.decorators = new Array();
-		//console.log("Line from "+this.fromComponent.id+" to "+this.toComponent.id+" being marked as deleted");
 		
 		//console.log("Removing line subscriptions to components.");
 		dojo.forEach(this.subs, function(sub){
-			//console.log("unsubscribing.. ");
-			//console.log(sub);
 			dojo.unsubscribe(sub);
 		});
 		
 		this.subs = new Array();
 
 		if(this.fromComponent.id != this.toComponent.id) {		
-			//console.log("Z:RelationshipElement -  publishing to this that I'm gone", this.fromComponent.id);
 			dojo.publish("goat.relationship.remove."+this.fromComponent.id,[this]);
-
-			//console.log("Z:RelationshipElement -  publishing to this that I'm gone", this.toComponent.id);
 			dojo.publish("goat.relationship.remove."+this.toComponent.id,[this]);
 		} else {
-			console.log("Z:RelationshipElement -  publishing to this that I'm gone", this.toComponent.id);
         	dojo.publish("goat.relationship.remove."+this.toComponent.id,[this]);
         }
 
 	}else{
-		console.log("Line from "+this.fromComponent.id+" to "+this.toComponent.id+" already marked as deleted");
+		//console.log("Line from "+this.fromComponent.id+" to "+this.toComponent.id+" already marked as deleted");
 	}
 },
 getKey: function(){
@@ -216,10 +186,6 @@ onComponentHidden: function(component){
 	this.updateVisibility();
 },
 onComponentClick: function(component){
-    //console.log("OnClick "+component.id);
-	if(this.removed){
-		console.log("occ EEK.. this line should be dead.. and its aliiiiiive "+this.type+" from "+this.fromComponent.id+" to "+this.toComponent.id);
-	}
 
     if(this.line!=null) {
         dojox.gfx.fx.animateStroke({
