@@ -16,10 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-//dojo.provide allows pages use all types declared in this resource
 dojo.provide("goat.Relationship");
 dojo.require("goat.elements.RelationshipElement");
 dojo.require("goat.elements.TriangleDecorator");
+
+/* Relationship represents a relationship which is provided by one component but may be
+ * consumed by many. For example a package which is exported by component (bundle) A
+ * may be imported by components B, C, D...etc. Each two way relationship is represented
+ * by a RelationshipElement, for example A-B, A-C. Relationship maintains a list of 
+ * RelationshipElements.
+ */
 
 dojo.declare("goat.Relationship", [], {
 
@@ -29,11 +35,13 @@ dojo.declare("goat.Relationship", [], {
 	theme: null,
 
 constructor : function(sscRelationship, theme) {
-	//keep this lightweight.. these can be created ONLY to get the key via the next method.. 
-	//all normal constructor logic lives in activate.
 	this.sscRelationship = sscRelationship;
 	this.relationshipElements=new Array();
 	this.theme = theme;
+	this.subs = new Array();
+
+	//Subscribe to providing component deletion
+	this.providerSubs = dojo.subscribe("goat.component.delete." + this.sscRelationship.providedBy.id, this, this.removeSelf); 
 },
 getKey : function(){
 	if(this.key==null){
@@ -42,58 +50,57 @@ getKey : function(){
 	return this.key;
 },
 update : function(sscRelationship){
-	console.log("Updating relationship "+this.key+" with new data");
-	
-	console.log("Removing old elements..");
-    console.log(this.relationshipElements);
+
     //remove the old relationship elements .. 
-	dojo.forEach(this.relationshipElements, function(relationshipElement){
-        console.log("Removing.. ");
-        console.log(relationshipElement);
-		relationshipElement.removeSelf();
-		//delete relationshipElement;
-	},this);
-	
-	//new array...
-	console.log("forgetting about the removed relationship elts");
+    for(var index in this.relationshipElements) {
+		this.relationshipElements[index].removeSelf();
+	}
+
 	this.relationshipElements=new Array();
 	
-	console.log("switching to the new sscRelationship...");
 	this.sscRelationship = sscRelationship;
 	
-	console.log("kicking self to rebuild relationship elts");
 	this.activate();
 },
+removeElement : function(component) {
+	this.relationshipElements[component.id].removeSelf(); 
+	delete this.relationshipElements[component.id]; 
+	dojo.unsubscribe(this.subs[component.id]);
+},
+removeSelf : function() {
+	for(var index in this.relationshipElements) {
+		this.relationshipElements[index].removeSelf(); 
+	}
+	dojo.unsubscribe(this.providerSubs);
+},
 activate : function(){
-	//console.log(">activate");
-	
-	//Create a relationship element for each consuming component. Use the consuming component because it's
-	//a 1:1 relationship whereas the providing component may provide the element to many different consuming
-	//components.
-	
+	/*	
+	 * Create a relationship element for each consuming component. Use the consuming component because it's
+	 * a 1:1 relationship whereas the providing component may provide the element to many different consuming
+	 * components.
+	 */
 	dojo.forEach(this.sscRelationship.consumedBy, function(component){
-		//console.log("processing relationship prov by "+this.sscRelationship.providedBy.id+" to "+component.id);
 		
-		var r = new goat.elements.RelationshipElement(surface, this.sscRelationship.name, this.sscRelationship.type, components[this.sscRelationship.providedBy.id],components[component.id] );
+		var relationshipElement = new goat.elements.RelationshipElement(surface, 
+					this.sscRelationship.name, this.sscRelationship.type, 
+					components[this.sscRelationship.providedBy.id],components[component.id] );
 
-		//console.log("type is " + this.sscRelationship.type);
 		//Add a service decorator if it is a service relationship
 		if (this.sscRelationship.type == "serviceExport") {
-			r.addDecorator(new goat.elements.TriangleDecorator(this.theme,surface));
+			relationshipElement.addDecorator(new goat.elements.TriangleDecorator(this.theme,surface));
 
 		} else if (this.sscRelationship.type == "serviceImport") {
-			r.addDecorator(new goat.elements.TriangleDecorator(this.theme,surface));
+			relationshipElement.addDecorator(new goat.elements.TriangleDecorator(this.theme,surface));
 
 		} else if (this.sscRelationship.type == "Service") {
-			r.addDecorator(new goat.elements.TriangleDecorator(this.theme,surface));
+			relationshipElement.addDecorator(new goat.elements.TriangleDecorator(this.theme,surface));
 		}
 
 		
-		//console.log("create of relationship element complete");
-		this.relationshipElements.push(r);
+		//Add the relationship to a list and subscript to the deletion of the consuming component
+		this.relationshipElements[component.id] = relationshipElement;
+		this.subs[component.id] = dojo.subscribe("goat.component.delete." + component.id, this, this.removeElement);
+			
 	},this);	
-	//console.log(this.relationshipElements);
-	//console.log("<activate");
 }
-
 });

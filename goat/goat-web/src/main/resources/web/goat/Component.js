@@ -174,7 +174,7 @@ removeSelf : function() {
 	this.relationshipManager.removeSelf();
 	delete this.RelationshipManager;
 
-	//This one is subscribed to by RelationshipElement
+	//This one is subscribed to by Relationship
 	dojo.publish("goat.component.delete." + this.id, [ this ]);
 
 	//This one is subscribed to by ComponentStatusGrid
