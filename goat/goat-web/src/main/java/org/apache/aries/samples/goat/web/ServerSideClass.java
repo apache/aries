@@ -58,7 +58,9 @@ public class ServerSideClass {
 			if (this.server.equals(modelInfoServiceHint)) {
 				// todo: only issue the add for the new bundle, and affected
 				// other bundles.
-				getInitialComponents(modelInfoServiceHint);
+				//getInitialComponents(modelInfoServiceHint);
+				//System.out.println("State is: " + b.getComponentProperties().get("State"));
+				addFunctionCall("addComponent", b);
 			}
 		}
 

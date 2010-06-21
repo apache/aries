@@ -268,6 +268,7 @@ update : function(id, props, children) {
 
 	// tells everyone who cares that we just did that.
 	dojo.publish("goat.component.update." + this.id, [ this ]);
+	dojo.publish("goat.component.update", [ this ]);
 },
 moveToNewPlace : function(x, y) {
 	if (!this.hidden) {
