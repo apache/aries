@@ -175,14 +175,15 @@ onComponentDelete: function(component){
 },
 onComponentUpdate: function(component){
 	//console.log(">onComponentUpdate");
-
+	
+	var id = component.id;
 	var bid = component.elements["component.property.BundleID"].value;
 	var name = component.elements["component.property.SymbolicName"].value;
 	var state = component.elements["component.property.State"].value;
 	var version = component.elements["component.property.Version"].value;
 
 	var _this=this;
-	this.jsonStore.fetch({query: { id: id }, onComplete: function(item){
+	this.jsonStore.fetch({query: { id: component.id }, onComplete: function(item){
 		_this.jsonStore.setValue(item[0], "bundleid", bid);
 		_this.jsonStore.setValue(item[0], "name", name);
 		_this.jsonStore.setValue(item[0], "state", state);
