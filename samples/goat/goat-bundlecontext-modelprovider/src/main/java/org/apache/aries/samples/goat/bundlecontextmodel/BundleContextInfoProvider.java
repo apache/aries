@@ -148,10 +148,11 @@ public class BundleContextInfoProvider implements ModelInfoService, Relationship
 
 
 	public void bundleChanged(BundleEvent arg0) {
-		long id = arg0.getBundle().getBundleId();
+		String id = getKeyForBundle(arg0.getBundle());
 		if(biCache.containsKey(id)){
 			biCache.remove(id);
-		}		
+		}
+
 		ComponentInfo bi = getComponentForId(getKeyForBundle(arg0.getBundle()));
 		
 		for(ComponentInfoListener bil : clisteners){
