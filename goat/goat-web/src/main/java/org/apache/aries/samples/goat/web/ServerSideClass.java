@@ -29,6 +29,7 @@ import org.apache.aries.samples.goat.api.ComponentInfo;
 import org.apache.aries.samples.goat.api.ComponentInfoProvider;
 import org.apache.aries.samples.goat.api.ModelInfoService;
 import org.apache.aries.samples.goat.api.RelationshipInfo;
+import org.apache.aries.samples.goat.api.RelationshipInfoProvider;
 import org.directwebremoting.Browser;
 import org.directwebremoting.ScriptBuffer;
 import org.directwebremoting.ScriptSession;
@@ -44,13 +45,14 @@ public class ServerSideClass {
 
 	private ModelInfoService ModelInfoService = null;
 
-	private Map<ModelInfoService, ComponentInfoProvider.ComponentInfoListener> listeners = new HashMap<ModelInfoService, ComponentInfoProvider.ComponentInfoListener>();
+	private Map<ModelInfoService, ComponentInfoProvider.ComponentInfoListener> clisteners = new HashMap<ModelInfoService, ComponentInfoProvider.ComponentInfoListener>();
+	private Map<ModelInfoService, RelationshipInfoProvider.RelationshipInfoListener> rlisteners = new HashMap<ModelInfoService, RelationshipInfoProvider.RelationshipInfoListener>();
 
-	private class ListenerImpl implements
+	private class ComponentInfoListenerImpl implements
 			ComponentInfoProvider.ComponentInfoListener {
 		String server;
 
-		public ListenerImpl(String server) {
+		public ComponentInfoListenerImpl(String server) {
 			this.server = server;
 		}
 
@@ -65,6 +67,24 @@ public class ServerSideClass {
 		}
 
 		public void removeComponent(ComponentInfo b) {
+			// todo
+		}
+	}
+	private class RelationshipInfoListenerImpl implements
+			RelationshipInfoProvider.RelationshipInfoListener {
+		String server;
+
+		public RelationshipInfoListenerImpl(String server) {
+			this.server = server;
+		}
+
+		public void updateRelationship(RelationshipInfo r) {
+			if (this.server.equals(modelInfoServiceHint)) {
+				addFunctionCall("addRelationship", r);
+			}
+		}
+
+		public void removeRelationship(RelationshipInfo r) {
 			// todo
 		}
 	}
@@ -147,12 +167,20 @@ public class ServerSideClass {
 					}
 
 					if (this.ModelInfoService != null) {
-						if (!listeners.containsKey(this.ModelInfoService)) {
-							ComponentInfoProvider.ComponentInfoListener l = new ListenerImpl(
+						if (!rlisteners.containsKey(this.ModelInfoService)) {
+							RelationshipInfoProvider.RelationshipInfoListener rl = new RelationshipInfoListenerImpl(
 									this.modelInfoServiceHint);
-							listeners.put(this.ModelInfoService, l);
+							rlisteners.put(this.ModelInfoService, rl);
+							this.ModelInfoService.getRelationshipInfoProvider()
+									.registerRelationshipInfoListener(rl);
+						}
+
+						if (!clisteners.containsKey(this.ModelInfoService)) {
+							ComponentInfoProvider.ComponentInfoListener cl = new ComponentInfoListenerImpl(
+									this.modelInfoServiceHint);
+							clisteners.put(this.ModelInfoService, cl);
 							this.ModelInfoService.getComponentInfoProvider()
-									.registerComponentInfoListener(l);
+									.registerComponentInfoListener(cl);
 						}
 					}
 				}

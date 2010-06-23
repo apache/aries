@@ -101,7 +101,7 @@ function addRelationship(relationship) {
 
 //call back from componentstatusgrid to hide component.. //TODO: see if this can be made unglobal.
 function hideComponent(id){
-	console.log("In ServerSide blah");
+	console.log("Hiding or showing component");
 	console.log(components[id]);
     components[id].toggleHidden();
 }
