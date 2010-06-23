@@ -509,7 +509,7 @@ Add the following content to the doPost() method using the <span class="template
 
                 String previousAssociation = null;
                 if (recorder != null) {
-                        pr33eviousAssociation = recorder.getLastAssociation(word);
+                        previousAssociation = recorder.getLastAssociation(word);
                         recorder.recordAssociation(word, association);
                 }
                 PrintWriter out = response.getWriter();
@@ -792,7 +792,7 @@ a database, but it would look pretty similar to the recorder service, so
 for testing we'll just use a static list instead.</p>
 
 <p class="instruction">Navigate back to the blueprint.xml and add
-a declaration for the service using the <span class="template>lister</span>
+a declaration for the service using the <span class="template"">lister</span>
 template. You should end up with the following:</p>
 
 <p class="xml">
