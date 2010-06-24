@@ -80,7 +80,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     ZipFixture bundle = ArchiveFixture.newJar().manifest()
                             .attribute(Constants.BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_VALUE)
                             .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
-                            .attribute(Constants.IMPORT_PACKAGE, "p.q.r, x.y.z")
+                            .attribute(Constants.IMPORT_PACKAGE, "p.q.r, x.y.z, javax.naming, org.apache.aries.util")
                             .attribute(Constants.BUNDLE_VERSION, "1.0.0").end();
 
     

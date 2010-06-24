@@ -17,7 +17,6 @@
  * under the License.
  */
 
-
 package org.apache.aries.application.resolver.obr;
 
 import java.io.ByteArrayInputStream;
@@ -29,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.jar.Attributes;
 
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -66,17 +64,24 @@ public class OBRAriesResolver implements AriesApplicationResolver
 {
   private static Logger log = LoggerFactory.getLogger(OBRAriesResolver.class);
 
-  private final RepositoryAdmin repositoryAdmin;
-
+  private final RepositoryAdmin repositoryAdmin;  
+  private boolean returnOptionalResources = true;
+  
   public OBRAriesResolver(RepositoryAdmin repositoryAdmin)
   {
     this.repositoryAdmin = repositoryAdmin;
   }
 
-  /**
-   * This method is synchronized because it changes the repositories understood by OBR, and we don't
-   * want one apps by value content being used to resolve another. I'll ask for an OBR enhancement.
-   */
+  public void setReturnOptionalResources(boolean optional) 
+  {
+    this.returnOptionalResources = optional;
+  }
+  
+  public boolean getReturnOptionalResources() 
+  {
+    return returnOptionalResources;
+  }
+    
   public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) throws ResolverException
   {
     log.trace("resolving {}", app);
@@ -101,30 +106,38 @@ public class OBRAriesResolver implements AriesApplicationResolver
     } catch (Exception e) {
       throw new ResolverException(e);
     } 
-    
-    Repository[] repos = repositoryAdmin.listRepositories();
-    
+        
     List<Repository> resolveRepos = new ArrayList<Repository>();
+    
+    // add system repository
+    resolveRepos.add(repositoryAdmin.getSystemRepository());
+    
+    // add local repository
+    resolveRepos.add(repositoryAdmin.getLocalRepository());
+    
+    // add application repository
     resolveRepos.add(appRepo);
     
+    // add user-defined repositories
+    Repository[] repos = repositoryAdmin.listRepositories();
     for (Repository r : repos) {
-      if (!!!Repository.LOCAL.equals(r.getURI())) {
-        resolveRepos.add(r);
-      }
+      resolveRepos.add(r);      
     }
-    
+        
     Resolver obrResolver = repositoryAdmin.resolver(resolveRepos.toArray(new Repository[resolveRepos.size()]));
     // add a resource describing the requirements of the application metadata.
     obrResolver.add(createApplicationResource(helper, appName, appVersion, appContent));
     if (obrResolver.resolve()) {
       Set<BundleInfo> result = new HashSet<BundleInfo>();
       for (Resource resource: obrResolver.getRequiredResources()) {
-        BundleInfo bundleInfo = toBundleInfo(resource);
+        BundleInfo bundleInfo = toBundleInfo(resource, false);
         result.add(bundleInfo);
       }
-      for (Resource resource: obrResolver.getOptionalResources()) {
-        BundleInfo bundleInfo = toBundleInfo(resource);
-        result.add(bundleInfo);
+      if (returnOptionalResources) {
+        for (Resource resource: obrResolver.getOptionalResources()) {
+          BundleInfo bundleInfo = toBundleInfo(resource, true);
+          result.add(bundleInfo);
+        }
       }
       return result;
     } else {
@@ -147,13 +160,12 @@ public class OBRAriesResolver implements AriesApplicationResolver
     try {
       resources = repositoryAdmin.discoverResources(filterString);
       if (resources != null && resources.length > 0) {
-        return toBundleInfo(resources[0]);
+        return toBundleInfo(resources[0], false);
       } else {
         return null;
       }
     } catch (InvalidSyntaxException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      log.error("Invalid filter", e);
       return null;
     }
   }
@@ -173,19 +185,24 @@ public class OBRAriesResolver implements AriesApplicationResolver
     return null;
   }
 
-  private BundleInfo toBundleInfo(Resource resource)
+  private BundleInfo toBundleInfo(Resource resource, boolean optional)
   {
+    Map<String, String> directives = null;
+    if (optional) {
+      directives = new HashMap<String, String>();
+      directives.put(Constants.RESOLUTION_DIRECTIVE, Constants.RESOLUTION_OPTIONAL);
+    }
     String location = resource.getURI();
     return new OBRBundleInfo(resource.getSymbolicName(),
-            resource.getVersion(),
-            location,
-            null,
-            null,
-            null,
-            null,
-            null, 
-            null,
-            null,
-            null);
+                             resource.getVersion(),
+                             location,
+                             null,
+                             null,
+                             null,
+                             null,
+                             null, 
+                             null,
+                             directives,
+                             null);
   }
 }
