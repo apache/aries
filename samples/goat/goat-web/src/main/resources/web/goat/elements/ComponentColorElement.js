@@ -50,7 +50,10 @@ dojo
 							if (this.componentAppearance.greyOutInactiveBundles()) {
 								if (this.value != "ACTIVE") {
 									this.componentAppearance
-											.setBackgroundColor("#808080");
+											.setBackgroundColor("inactive");
+								} else {
+									this.componentAppearance
+											.setBackgroundColor("active");
 								}
 							}
 						}
