@@ -86,8 +86,13 @@ dojo.declare("goat.configuration.ComponentAppearance", [], {
 			return this.theme.getBundleBackgroundContrastColor();
 		}
 	},
-	setBackgroundColor : function(backgroundColor) {
-		this.backgroundColor = backgroundColor;
+	setBackgroundColor : function(state) {
+		this.backgroundColor = null;
+		if(state == "inactive") {
+			this.backgroundColor = this.theme.getBundleInactiveBackgroundColor();
+		} else {
+			this.backgroundColor = this.getBackgroundColor();
+		}
 	},
 	setBackgroundContrastColor : function(backgroundContrastColor) {
 		this.backgroundContrastColor = backgroundContrastColor;

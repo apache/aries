@@ -31,6 +31,7 @@ dojo.declare("goat.configuration.Theme", [], {
 	showState : null,
 	showVersion : null,
 	bundleBackgroundColor: "#ffff80",
+	bundleInactiveBackgroundColor : "#808080",
 	bundleBackgroundContrastColor: "#ffffff",
 	bundleOutlineColor0: "#808080",
 	bundleOutlineColor1: "#BA98E2",
@@ -51,6 +52,9 @@ dojo.declare("goat.configuration.Theme", [], {
 	},
 	getBundleBackgroundColor: function() {
 		return this.bundleBackgroundColor;
+	},
+	getBundleInactiveBackgroundColor: function() {
+		return this.bundleInactiveBackgroundColor;
 	},
 	getBundleBackgroundContrastColor: function() {
 		return this.bundleBackgroundContrastColor;
