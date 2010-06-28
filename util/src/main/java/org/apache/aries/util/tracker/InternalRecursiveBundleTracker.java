@@ -99,7 +99,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
   public void removedBundle(Bundle b, BundleEvent event, Object object)
   {
     if (b instanceof CompositeBundle) {
-      // We should have already picked up the stopping event on the CBA itself
+      customizedProcessBundle(this, b, event);
     } else {
       if (customizer != null) {
         customizer.removedBundle(b, event, object);
@@ -123,7 +123,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
           openTracker(btc, cb, bundleScope, mask);
         }
       } else {
-        if (event.getType() == BundleEvent.STOPPING) {
+        if (event.getType() == BundleEvent.STOPPED) {
           // if CompositeBundle is being stopped, let's remove the bundle
           // tracker(s) associated with the composite bundle
           BundleContext compositeBundleContext = ((CompositeBundle) b).getCompositeFramework()

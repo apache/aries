@@ -47,7 +47,7 @@ public final class RecursiveBundleTracker  {
      * 
      * @param context - The <code>BundleContext</code> against which the tracking is done.
      * @param stateMask - The bit mask of the ORing of the bundle states to be tracked. The
-     * mask must contain the flags <code>Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING</code>
+     * mask must contain the flags <code>Bundle.INSTALLED | Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING</code>
      * as a minimum.
      * @throws IllegalArgumentException - If the provided bit mask does not contain required
      * flags
