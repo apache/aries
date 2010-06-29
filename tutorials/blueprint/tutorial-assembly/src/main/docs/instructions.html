@@ -221,8 +221,8 @@ your blueprint xml file:</p>
 changed.</p>
 
 <p>To build the code, run the script build.sh (or build.bat) in the
-[toplevel]/scripts directory. If you are using your own Maven repository
-the commands are:</p>
+[toplevel]/scripts directory. 
+The commands are:</p>
 <div class=code>./build.sh org.apache.aries.tutorials.blueprint.greeter.api<br>
 ./build.sh org.apache.aries.tutorials.blueprint.greeter.client.osgi<br>
 ./build.sh org.apache.aries.tutorials.blueprint.greeter.server.osgi<br>
@@ -335,7 +335,7 @@ from the class constructor. Like this:
 <p>The last step is to modify the blueprint xml to reflect these
 changes. Edit the blueprint xml you created earlier:</p>
 <div class=code>
-[toplevel]/source/org.apache.aries.tutorials.blueprint.greeter.client.osgi/src/main/resources/OSGI_INF/blueprint/blueprint.xml
+[toplevel]/source/org.apache.aries.tutorials.blueprint.greeter.client.osgi/src/main/resources/OSGI-INF/blueprint/blueprint.xml
 </div>
 <p>Remove the following line from the blueprint xml</p>
 <div class=code>&lt;argument ref="blueprintBundleContext"/&gt;</div>

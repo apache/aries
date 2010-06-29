@@ -24,7 +24,7 @@
 	<artifactId>org.apache.aries.tutorials.blueprint.greeter.server.blueprint</artifactId>
 	<packaging>bundle</packaging>
 	<name>Greeter Blueprint Server</name>
-	<version>0.1-incubating-SNAPSHOT</version>
+	<version>0.2-incubating-SNAPSHOT</version>
 
         <description>
         This is the final greeter service. Students working through the tutorial
@@ -54,7 +54,7 @@
 		<dependency>
 			<groupId>org.apache.aries.tutorials.blueprint</groupId>
 			<artifactId>org.apache.aries.tutorials.blueprint.greeter.api</artifactId>
-			<version>0.1-incubating-SNAPSHOT</version>
+			<version>0.2-incubating-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

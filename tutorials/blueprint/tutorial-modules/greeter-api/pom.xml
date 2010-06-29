@@ -24,7 +24,7 @@
 	<artifactId>org.apache.aries.tutorials.blueprint.greeter.api</artifactId>
 	<packaging>bundle</packaging>
 	<name>Greeter API</name>
-	<version>0.1-incubating-SNAPSHOT</version>
+	<version>0.2-incubating-SNAPSHOT</version>
 
 	<description>
 	This is the API for the greeter service. It has no parent because it 
