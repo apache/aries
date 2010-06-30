@@ -308,7 +308,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
     
     private String cachePath(Bundle bundle, String filePath)
     {
-      return bundle.getSymbolicName() + "/" + bundle.getVersion() + "/" + filePath;
+      return Integer.toHexString(bundle.hashCode()) + "/" + filePath;
     }    
     
     private URL getOverrideURLForCachePath(String privatePath){
