@@ -16,18 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.web.converter.impl;
+
+package org.apache.aries.application.management;
 
 import java.io.IOException;
-import java.util.Properties;
+import java.io.InputStream;
 
-import org.apache.aries.web.converter.WabConversion;
-import org.apache.aries.web.converter.WarToWabConverter;
+import org.apache.aries.application.ApplicationMetadataFactory;
 
-public class WarToWabConverterService implements WarToWabConverter {
+/**
+ * A BundleConversion represents a .JAR file which has been converted in to 
+ * an well-formed OSGi bundle, or a .WAR file which has been converted into a .WAB 
+ * file
+ */
+public interface BundleConversion {
 
-  public WabConversion convert(InputStreamProvider input, String name, Properties properties) throws IOException {
-    return new WarToWabConverterImpl(input, name, properties);
-  }
-
+	/**
+	 * @return The InputStream to the converted bundle.
+	 */
+	public InputStream getInputStream() throws IOException;
+	
+	/** 
+	 * @param The ApplicationMetadataFactory used to parse the content of 
+	 * the converted bundle into a BundleInfo object
+	 * @return The bundle information for the converted bundle.
+	 */
+	public BundleInfo getBundleInfo(ApplicationMetadataFactory amf) throws IOException;
 }
