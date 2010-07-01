@@ -16,18 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.web.converter.impl;
+
+package org.apache.aries.web.converter;
 
 import java.io.IOException;
-import java.util.Properties;
+import java.io.InputStream;
+import java.util.jar.Manifest;
 
-import org.apache.aries.web.converter.WabConversion;
-import org.apache.aries.web.converter.WarToWabConverter;
+public interface WabConversion {
 
-public class WarToWabConverterService implements WarToWabConverter {
-
-  public WabConversion convert(InputStreamProvider input, String name, Properties properties) throws IOException {
-    return new WarToWabConverterImpl(input, name, properties);
-  }
-
+	/**
+	 * @return The WAB Manifest of the converted WAB
+	 */
+	public Manifest getWABManifest() throws IOException;
+	
+	/**
+	 * @return The InputStream to read the bytes of the converted WAB
+	 */
+	public InputStream getWAB() throws IOException;
 }
