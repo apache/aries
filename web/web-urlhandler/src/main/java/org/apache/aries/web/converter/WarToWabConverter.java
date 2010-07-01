@@ -21,7 +21,6 @@ package org.apache.aries.web.converter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.jar.Manifest;
 
 /**
  * Service interface for WAR to WAB conversion
@@ -37,16 +36,6 @@ public interface WarToWabConverter {
 
   public static final String WEB_CONTEXT_PATH = "Web-ContextPath";
 
-  
-  /**
-   * Generate the new manifest for the converted war file.
-   * @param input
-   * @param name The name of the war file
-   * @param properties Properties to influence the conversion as defined in RFC66 (see also {@link #convert} method)
-   * @return
-   */
-  Manifest generateManifest(InputStreamProvider input, String name, Properties properties) throws IOException;
-  
   /**
    * Generate the converter WAB file. This file includes all the files from the input
    * and has the new manifest.
@@ -69,5 +58,5 @@ public interface WarToWabConverter {
    * (if it exists) and also the results of the scan of the WAR file.
    * @return
    */
-  InputStream convert(InputStreamProvider input, String name, Properties properties) throws IOException;
+  WabConversion convert(InputStreamProvider input, String name, Properties properties) throws IOException;
 }
