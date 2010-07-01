@@ -38,11 +38,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
+import org.apache.aries.web.converter.WabConversion;
+import org.apache.aries.web.converter.WarToWabConverter;
 import org.apache.aries.web.converter.WarToWabConverter.InputStreamProvider;
 import org.objectweb.asm.ClassReader;
 import org.osgi.framework.Constants;
 
-public class WarToWabConverterImpl {
+public class WarToWabConverterImpl implements WabConversion {
   private static final String DEFAULT_BUNDLE_VERSION = "1.0";
   private static final String DEFAULT_BUNDLE_MANIFESTVERSION = "2";
   private static final String INITIAL_CLASSPATH_ENTRY = "WEB-INF/classes";
