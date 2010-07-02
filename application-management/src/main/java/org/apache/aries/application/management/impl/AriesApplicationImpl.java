@@ -35,6 +35,7 @@ import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.BundleConversion;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.LocalPlatform;
 import org.apache.aries.application.utils.AppConstants;
@@ -52,7 +53,7 @@ public class AriesApplicationImpl implements AriesApplication {
   private LocalPlatform _localPlatform;
   
   // Placeholders for information we'll need for store()
-  private Map<String, InputStream> _modifiedBundles = null;
+  private Map<String, BundleConversion> _modifiedBundles = null;
   
   public AriesApplicationImpl(ApplicationMetadata meta, Set<BundleInfo> bundleInfo,
       LocalPlatform lp) {
@@ -88,11 +89,11 @@ public class AriesApplicationImpl implements AriesApplication {
     _deploymentMetadata = dm;
   }
 
-  public Map<String, InputStream> getModifiedBundles() {
+  public Map<String, BundleConversion> getModifiedBundles() {
     return _modifiedBundles;
   }
 
-  public void setModifiedBundles (Map<String, InputStream> modifiedBundles) {
+  public void setModifiedBundles (Map<String, BundleConversion> modifiedBundles) {
     _modifiedBundles = modifiedBundles;
   }
   
@@ -177,10 +178,10 @@ public class AriesApplicationImpl implements AriesApplication {
 
     // Write the migrated bundles out
     if (_modifiedBundles != null) { 
-      for (Map.Entry<String, InputStream> modifiedBundle : _modifiedBundles.entrySet()) {
+      for (Map.Entry<String, BundleConversion> modifiedBundle : _modifiedBundles.entrySet()) {
         try { 
           out = IOUtils.getOutputStream(dir, modifiedBundle.getKey());
-          IOUtils.copy(modifiedBundle.getValue(), out);
+          IOUtils.copy(modifiedBundle.getValue().getInputStream(), out);
         } finally { 
           IOUtils.close(out);
         }
