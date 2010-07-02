@@ -46,6 +46,7 @@ import org.apache.aries.application.management.AriesApplicationContextManager;
 import org.apache.aries.application.management.AriesApplicationListener;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.management.AriesApplicationResolver;
+import org.apache.aries.application.management.BundleConversion;
 import org.apache.aries.application.management.BundleConverter;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ConversionException;
@@ -61,7 +62,6 @@ import org.apache.aries.application.utils.management.SimpleBundleInfo;
 import org.apache.aries.application.utils.manifest.BundleManifest;
 import org.apache.aries.application.utils.manifest.ManifestDefaultsInjector;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceException;
 import org.slf4j.Logger;
@@ -110,7 +110,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   public AriesApplication createApplication(IDirectory ebaFile) throws ManagementException {
     ApplicationMetadata applicationMetadata = null;
     DeploymentMetadata deploymentMetadata = null;
-    Map<String, InputStream> modifiedBundles = new HashMap<String, InputStream>();
+    Map<String, BundleConversion> modifiedBundles = new HashMap<String, BundleConversion>();
     AriesApplicationImpl application = null;
     
     try { 
@@ -149,7 +149,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
             throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0003E", f.getName(), ebaFile.getName()));
           } else { 
             // We have a jar that needs converting to a bundle, or a war to migrate to a WAB
-            InputStream convertedBinary = null;
+            BundleConversion convertedBinary = null;
             Iterator<BundleConverter> converters = _bundleConverters.iterator();
             List<ConversionException> conversionExceptions = Collections.emptyList();
             while (converters.hasNext() && convertedBinary == null) { 
