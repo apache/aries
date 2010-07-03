@@ -79,6 +79,10 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 			if(this.built) {this.twistieHandleGroup.remove(this.twistieHandle);}
 
 			this.createTwistie();
+			if(this.isOpen) {
+				this.removeItemsFromDisplay();
+				this.addItemsToDisplay();
+			}
 			this.component.group.add(this.twistieGroup);
 			console.log("Rendered, x = " + this.x + "y = " + this.y);
 		},
