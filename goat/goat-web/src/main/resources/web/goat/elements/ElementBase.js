@@ -55,7 +55,7 @@ dojo.declare("goat.elements.ElementBase", [], {
 		render: function() {
 			//called to add this element to the screen at this.x, this.y
 		},
-		remove: function() {
+		removeSelf: function() {
 			//called to remove this element from the screen
 		}
 		
