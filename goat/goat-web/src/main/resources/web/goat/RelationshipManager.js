@@ -76,7 +76,7 @@ removeRelationship: function(/*goat.elements.RelationshipElement*/relationship){
 	    if(this.owningComponent.elements["relationship.aggregation."+relationship.type] !=null ){
 	    	
 	    	//console.log("Found relationship's renderer inside the component.. issuing remove to it");	    	
-	    	this.owningComponent.elements["relationship.aggregation."+relationship.type].remove();
+	    	this.owningComponent.elements["relationship.aggregation."+relationship.type].removeSelf();
 	    	
 	    	//console.log("Deleting it");
 			delete this.owningComponent.elements["relationship.aggregation."+relationship.type];
