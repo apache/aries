@@ -60,8 +60,6 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 	
 			this.twistieHandleGroup.connect("onclick",dojo.hitch(this,"twistieHandler"));
 			
-			console.log("ZZX: New TA instance, type: " + type + " component: " + this.component.id); 
-
 			this.addsub=dojo.subscribe("goat.relationshipaggregator.add."+this.component.id+"."+this.type, this, this.onAdd);
 			this.removesub=dojo.subscribe("goat.relationshipaggregator.remove."+this.component.id+"."+this.type, this, this.onRemove);		
 		},
@@ -75,7 +73,6 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 			return this.height;
 		},
 		render: function(){
-			console.log("RENDERING...");
 			this.component.group.remove(this.twistieGroup);
 			if(this.built) {
 				this.twistieHandleGroup.remove(this.twistieHandle);
@@ -86,12 +83,13 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 			this.createTwistie();
 			this.createText();
 
+			// This may not be the secionn that has asked for a component refresh. If is is not and it is open
+			// we need to redraw as the section may have moved as a result of something else above it 
+			// being closed. If this IS the the section that requested the resize we shoudl ne need to re-add, but do anyway. 
 			if(this.isOpen) {
-				this.removeItemsFromDisplay();
 				this.addItemsToDisplay();
 			}
 			this.component.group.add(this.twistieGroup);
-			console.log("Rendered, x = " + this.x + "y = " + this.y);
 		},
 		update: function(value){
 		},
@@ -183,7 +181,7 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
     		}else{
         		this.removeItemsFromDisplay();
     		}
-    		console.log("twistie requesting refresh of component due to change in state/content");
+
     		this.component.refresh();
 		},
 		createText: function(){
@@ -195,7 +193,6 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 		},
 
 		createTwistie: function(){
-			console.log("in create twistie, x = " + this.x + " y = " + this.y);
     		var pys = this.y;
     		var pym = pys+5;
     		var pye = pys+10;
@@ -216,6 +213,7 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 			}
 			return false;
 		}
+	
 
 
 });
