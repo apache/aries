@@ -48,7 +48,8 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 			this.width=150;
 			this.height=12;
 			this.isOpen=false;
-			//maintains a list of relations ships to displsy - with dups removed.
+
+			//maintains a list of relationships to display - with dups removed.
 			this.items = new Array();
 			this.itemTexts = new Array();
 
