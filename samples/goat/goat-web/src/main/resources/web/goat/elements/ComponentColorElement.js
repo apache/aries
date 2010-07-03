@@ -62,7 +62,7 @@ dojo
 					update : function(value) {
 						this.value = value;
 					},
-					remove : function() {
+					removeSelf : function() {
 						// no op, we only exist due to the color of the owning
 						// component..
 				}

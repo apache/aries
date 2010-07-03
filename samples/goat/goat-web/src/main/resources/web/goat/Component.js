@@ -168,7 +168,8 @@ removeSelf : function() {
 	this.surface.remove(this.group);
 	//Now we remove all other the elements
 	for (var type in this.elements) {
-		this.elements[type].remove();
+		console.log("Removing element of type : " + type);
+		this.elements[type].removeSelf();
 		delete this.elements[type];
 	}
 	this.relationshipManager.removeSelf();

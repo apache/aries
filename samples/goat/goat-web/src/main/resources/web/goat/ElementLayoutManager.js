@@ -78,7 +78,7 @@ doLayout: function(){
 			element.x=0;
 			element.y=currentYPos;
 			
-			//console.log("Invoking element.render");
+			console.log("Invoking element.render" + this.owningComponent.id + " " + elementName);
 			
 			element.render();
 			
