@@ -82,13 +82,10 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 				this.twistieGroup.remove(this.twistieText);
 			}
 
+			//Create here because the component has reset this section's x, y cordinates.
 			this.createTwistie();
 			this.createText();
 
-			if(this.isOpen) {
-				this.removeItemsFromDisplay();
-				this.addItemsToDisplay();
-			}
 			this.component.group.add(this.twistieGroup);
 			console.log("Rendered, x = " + this.x + "y = " + this.y);
 		},
@@ -176,11 +173,6 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 		},
 		twistieHandler: function() {
     		this.isOpen=!this.isOpen;
-
-    		this.twistieHandleGroup.remove(this.twistieHandle);
-			this.twistieGroup.remove(this.twistieText);
-    		this.createTwistie();
-			this.createText();
 
     		if(this.isOpen){
             	this.addItemsToDisplay();
