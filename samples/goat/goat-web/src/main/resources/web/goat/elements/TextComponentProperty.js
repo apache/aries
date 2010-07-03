@@ -61,7 +61,7 @@ dojo.declare("goat.elements.TextComponentProperty", goat.elements.ElementBase, {
 		update: function(value){
 			this.value=value;
 		},
-		remove: function(){
+		removeSelf: function(){
 			if(this.text!=null){
 				this.component.group.remove(this.text);
 			}			

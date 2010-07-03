@@ -24,7 +24,7 @@ dojo.provide("goat.elements.ElementRegistry");
 
 dojo.require("goat.elements.TextComponentProperty");
 dojo.require("goat.elements.ComponentContainer");
-dojo.require("goat.elements.TwistieAggregation");
+dojo.require("goat.elements.TwistieSection");
 dojo.require("goat.elements.ComponentColorElement");
 
 dojo.require("goat.configuration.ComponentAppearance");
@@ -57,7 +57,7 @@ constructor : function() {
 	}else if(type.match("^component.container")=="component.container"){
 		return new goat.elements.ComponentContainer(component, type, value);
 	}else if(type.match("^relationship.aggregation.")=="relationship.aggregation."){
-		return new goat.elements.TwistieAggregation(component, type, value);
+		return new goat.elements.TwistieSection(component, type, value);
 	}
 	//else.. unknown property.. ignore it.
 }

@@ -38,7 +38,7 @@ dojo.declare("goat.elements.ComponentContainer", goat.elements.ElementBase, {
 			//TODO: better children merging.. handle add/remove/modify
 			this.children=children;
 		},
-		remove: function(){
+		removeSelf: function(){
 			
 		}
 			
