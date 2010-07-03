@@ -83,9 +83,11 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 			this.createTwistie();
 			this.createText();
 
-			// This may not be the secionn that has asked for a component refresh. If is is not and it is open
+			// This may not be the section that has asked for a component refresh. If is is not and it is open
 			// we need to redraw as the section may have moved as a result of something else above it 
-			// being closed. If this IS the the section that requested the resize we shoudl ne need to re-add, but do anyway. 
+			// being closed. If this IS the the section that requested the resize it has been resized in resizeOnOpen
+			// or resizeOnClose and the items need to be removed or added here.
+			this.removeItemsFromDisplay();
 			if(this.isOpen) {
 				this.addItemsToDisplay();
 			}
@@ -93,7 +95,7 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 		},
 		update: function(value){
 		},
-		remove: function(value){
+		removeSelf: function(value){
 			this.component.group.remove(this.twistieGroup);
 			dojo.unsubscribe(this.addsub);
 			dojo.unsubscribe(this.removesub);
@@ -108,7 +110,7 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 				this.built = true;
 			}
 			if (this.isOpen) {
-				this.addItemsToDisplay();
+				this.resizeOnOpen();
 				this.component.refresh();
 			}
 
@@ -120,48 +122,51 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 				}
 			}
 			if(this.isOpen) {
-				this.addItemsToDisplay;
+				this.resizeOnOpen();
 				this.component.refresh();
 			}
 		}, 
 		addItemsToDisplay: function(){
-    		var maxLengthSeen = 0;
-    		var extraHeight = 12;
-    		if(this.items!=null){
-        		extraHeight = extraHeight + (this.items.length * 10);
-        		var pyt = this.y + 18;
-        		var pxt = this.x + 17;
-        		var idx=0;
+            var pyt = this.y + 10;
+            var pxt = this.x + 17;
+       		for(idx=0; idx<this.items.length; idx++){
+                pyt = pyt + 10;
+          		this.itemTexts[idx] = this.twistieGroup.createText({x: pxt, y: pyt, text: this.items[idx], align: "start"})
+                	.setFont({family: "times", size: "8pt"})
+                	.setFill("#000000");
+            }
+		},
+		resizeOnOpen: function() {
+         	var maxLengthSeen = 0;
+            var extraHeight = 12;
+            if(this.items!=null){
+                extraHeight = extraHeight + (this.items.length * 10);
+                var idx=0;
 
-        		this.removeItemsFromDisplay();
-        		for(idx=0; idx<this.items.length; idx++){
-            		if(this.isOpen){
+                for(idx=0; idx<this.items.length; idx++){
+                        if(maxLengthSeen< this.items[idx].length){
+                            maxLengthSeen = this.items[idx].length;
+                        }
+                    }
+                }
 
-                		this.itemTexts[idx] = this.twistieGroup.createText({x: pxt, y: pyt, text: this.items[idx], align: "start"})
-                		.setFont({family: "times", size: "8pt"})
-                		.setFill("#000000");
+            var extraWidth = this.component.minWidth;
+            if(maxLengthSeen>25){
+                var extraW = maxLengthSeen-25;
+                extraW = extraW * 6;
+                extraWidth = extraWidth + extraW;
+            }
 
-                		pyt = pyt + 10;
-                		if(maxLengthSeen< this.items[idx].length){
-                    		maxLengthSeen = this.items[idx].length;
-                		}
-            		}
-        		}
-    		}
+            if(extraWidth<this.width){
+                extraWidth = this.component.width;
+            }
 
-    		var extraWidth = this.component.minWidth;
-    		if(maxLengthSeen>25){
-        		var extraW = maxLengthSeen-25;
-        		extraW = extraW * 6;
-        		extraWidth = extraWidth + extraW;
-    		}
-
-    		if(extraWidth<this.width){
-        		extraWidth = this.component.width;
-    		}
-
-    		this.height = extraHeight;
-    		this.width = extraWidth;
+            this.height = extraHeight;
+            this.width = extraWidth;
+		},
+		resizeOnClose: function() {
+    		this.height = 12;
+    		this.width = 150;
 		},
 
 		removeItemsFromDisplay: function(){
@@ -169,17 +174,15 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 				for (var k in this.itemTexts) {
 					this.twistieGroup.remove(this.itemTexts[k]);
     			}
-    			this.height = 12;
-    			this.width = 150;
 			}
 		},
 		twistieHandler: function() {
     		this.isOpen=!this.isOpen;
 
     		if(this.isOpen){
-            	this.addItemsToDisplay();
+            	this.resizeOnOpen();
     		}else{
-        		this.removeItemsFromDisplay();
+        		this.resizeOnClose();
     		}
 
     		this.component.refresh();
