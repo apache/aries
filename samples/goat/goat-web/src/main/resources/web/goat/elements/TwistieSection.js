@@ -52,6 +52,7 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 			this.items = new Array();
 			this.itemTexts = new Array();
 
+			this.name = this.type.substring("relationship.aggregation.".length, this.type.length);
 
 			this.twistieGroup = this.component.group.createGroup();
 			this.component.group.remove(this.twistieGroup);
@@ -76,9 +77,14 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
 		render: function(){
 			console.log("RENDERING...");
 			this.component.group.remove(this.twistieGroup);
-			if(this.built) {this.twistieHandleGroup.remove(this.twistieHandle);}
+			if(this.built) {
+				this.twistieHandleGroup.remove(this.twistieHandle);
+				this.twistieGroup.remove(this.twistieText);
+			}
 
 			this.createTwistie();
+			this.createText();
+
 			if(this.isOpen) {
 				this.removeItemsFromDisplay();
 				this.addItemsToDisplay();
@@ -172,7 +178,9 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
     		this.isOpen=!this.isOpen;
 
     		this.twistieHandleGroup.remove(this.twistieHandle);
+			this.twistieGroup.remove(this.twistieText);
     		this.createTwistie();
+			this.createText();
 
     		if(this.isOpen){
             	this.addItemsToDisplay();
@@ -182,6 +190,14 @@ dojo.declare("goat.elements.TwistieSection", goat.elements.ElementBase, {
     		console.log("twistie requesting refresh of component due to change in state/content");
     		this.component.refresh();
 		},
+		createText: function(){
+    		var textOffset = this.y + 10;
+    		var x = this.x + 17;
+    		this.twistieText = this.twistieGroup.createText({x: x, y: textOffset, text: this.name, align: "start"})
+    		.setFont({family: "times", size: "8pt"})
+    		.setFill("#000000");
+		},
+
 		createTwistie: function(){
 			console.log("in create twistie, x = " + this.x + " y = " + this.y);
     		var pys = this.y;
