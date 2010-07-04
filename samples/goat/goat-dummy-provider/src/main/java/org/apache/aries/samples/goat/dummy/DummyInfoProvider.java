@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.aries.samples.goat.api.ComponentInfoImpl;
+import org.apache.aries.samples.goat.info.ComponentInfoImpl;
 
 import org.apache.aries.samples.goat.api.ComponentInfo;
 import org.apache.aries.samples.goat.api.ComponentInfoProvider;

@@ -16,10 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.samples.goat.api;
+package org.apache.aries.samples.goat.info;
 
 import java.util.List;
 import java.util.Map;
+import org.apache.aries.samples.goat.api.ComponentInfo;
 
 public class ComponentInfoImpl implements ComponentInfo {
 

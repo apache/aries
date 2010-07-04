@@ -36,7 +36,8 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-						<Export-Package>org.apache.aries.samples.goat.api.*; version=${project.version}</Export-Package> 
+						<Export-Package>org.apache.aries.samples.goat.api; version=${project.version},
+					org.apache.aries.samples.goat.info;version=${project.version} </Export-Package>
 					</instructions>
 				</configuration>
 			</plugin>

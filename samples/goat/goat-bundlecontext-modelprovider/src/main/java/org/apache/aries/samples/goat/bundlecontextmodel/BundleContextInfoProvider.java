@@ -35,8 +35,10 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.packageadmin.ExportedPackage;
 import org.osgi.service.packageadmin.PackageAdmin;
-import org.apache.aries.samples.goat.api.ComponentInfoImpl;
-import org.apache.aries.samples.goat.api.RelationshipInfoImpl;
+
+import org.apache.aries.samples.goat.info.ComponentInfoImpl;
+import org.apache.aries.samples.goat.info.RelationshipInfoImpl;
+
 import org.apache.aries.samples.goat.api.ComponentInfo;
 import org.apache.aries.samples.goat.api.ComponentInfoProvider;
 import org.apache.aries.samples.goat.api.ModelInfoService;
