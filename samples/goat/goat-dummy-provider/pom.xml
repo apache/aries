@@ -33,10 +33,6 @@
 			<groupId>org.apache.aries.samples.goat</groupId>
 			<artifactId>org.apache.aries.samples.goat.api</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.samples.goat</groupId>
-			<artifactId>org.apache.aries.samples.goat.web</artifactId>
-		</dependency>
 	</dependencies>
 
     
