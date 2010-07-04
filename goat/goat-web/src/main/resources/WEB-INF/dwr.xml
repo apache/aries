@@ -22,7 +22,7 @@
     <create creator="new" scope="application">
       <param name="class" value="org.apache.aries.samples.goat.web.ServerSideClass"/>
     </create>
-	<convert converter="bean" match="org.apache.aries.samples.goat.info.ComponentInfoImpl" javascript="ComponentInfo"/>          
-	<convert converter="bean" match="org.apache.aries.samples.goat.info.RelationshipInfoImpl" javascript="RelationshipInfo"/> 
+	<convert converter="bean" match="org.apache.aries.samples.goat.api.ComponentInfoImpl" javascript="ComponentInfo"/>          
+	<convert converter="bean" match="org.apache.aries.samples.goat.api.RelationshipInfoImpl" javascript="RelationshipInfo"/> 
   </allow>
 </dwr>
