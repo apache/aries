@@ -16,8 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.samples.goat.api;
+package org.apache.aries.samples.goat.info;
 import java.util.List;
+import org.apache.aries.samples.goat.api.RelationshipInfo;
+import org.apache.aries.samples.goat.api.RelationshipAspect;
+import org.apache.aries.samples.goat.api.ComponentInfo;;
 
 public class RelationshipInfoImpl implements RelationshipInfo {
 	List<ComponentInfo> consumedBy;

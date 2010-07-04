@@ -21,7 +21,7 @@ package org.apache.aries.samples.goat.dummy2;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.aries.samples.goat.api.RelationshipInfoImpl;
+import org.apache.aries.samples.goat.info.RelationshipInfoImpl;
 
 import org.apache.aries.samples.goat.api.ComponentInfo;
 import org.apache.aries.samples.goat.api.ComponentInfoProvider;
