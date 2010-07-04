@@ -26,9 +26,11 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 
 import org.apache.aries.samples.goat.api.ComponentInfo;
+import org.apache.aries.samples.goat.api.ComponentInfoImpl;
 import org.apache.aries.samples.goat.api.ComponentInfoProvider;
 import org.apache.aries.samples.goat.api.ModelInfoService;
 import org.apache.aries.samples.goat.api.RelationshipInfo;
+import org.apache.aries.samples.goat.api.RelationshipInfoImpl;
 import org.apache.aries.samples.goat.api.RelationshipInfoProvider;
 import org.directwebremoting.Browser;
 import org.directwebremoting.ScriptBuffer;

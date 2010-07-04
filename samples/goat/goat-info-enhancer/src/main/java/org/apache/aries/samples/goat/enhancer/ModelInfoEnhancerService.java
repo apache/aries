@@ -30,8 +30,8 @@ import org.apache.aries.samples.goat.api.ComponentInfoProvider;
 import org.apache.aries.samples.goat.api.ModelInfoService;
 import org.apache.aries.samples.goat.api.RelationshipInfo;
 import org.apache.aries.samples.goat.api.RelationshipInfoProvider;
-import org.apache.aries.samples.goat.info.ComponentInfoImpl;
-import org.apache.aries.samples.goat.info.RelationshipInfoImpl;
+import org.apache.aries.samples.goat.api.ComponentInfoImpl;
+import org.apache.aries.samples.goat.api.RelationshipInfoImpl;
 
 public class ModelInfoEnhancerService implements ModelInfoService,
 		ComponentInfoProvider, RelationshipInfoProvider,
