@@ -93,7 +93,6 @@
 						<Web-ContextPath>/</Web-ContextPath>
 						<Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
 						<Private-Package>org.apache.aries.samples.goat.web.*</Private-Package>
-						<Export-Package>org.apache.aries.samples.goat.info;version=${project.version}</Export-Package> 
 						<Import-Package>
 							javax.imageio,
 							javax.jms,
