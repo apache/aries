@@ -50,12 +50,17 @@ public class ServiceInterceptor implements ServiceListener {
 			ServiceReference[] references = ctx.getAllServiceReferences(
 					ModelInfoService.class.getName(), null);
 
-			for (ServiceReference reference : references) {
-				registerServiceEnhancer(reference);
-			}
 
 			ctx.addServiceListener(this, "(objectclass='"
-					+ ModelInfoService.class.getName() + "')");
+						+ ModelInfoService.class.getName() + "')");
+
+			//If we found any service references...
+			if(references != null && references.length != 0) {
+				for (ServiceReference reference : references) {
+					registerServiceEnhancer(reference);
+				}
+			}
+
 
 		} catch (InvalidSyntaxException e) {
 			e.printStackTrace();
