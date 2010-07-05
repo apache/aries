@@ -40,37 +40,68 @@ public class SubsystemConstants {
     public static final String SUBSYSTEM_SYMBOLICNAME        = "Subsystem-SymbolicName";
 
     /**
-     * Version of the subsystem
+     * Version of the subsystem.  If not present, the default value is 0.0.0.
      */
     public static final String SUBSYSTEM_VERSION             = "Subsystem-Version";
 
     /**
-     * Human readable name
+     * The human readable subsystem name.
      */
     public static final String SUBSYSTEM_NAME                = "Subsystem-Name";
 
     /**
-     * Human readable description
+     * The human readable subsystem description.
      */
     public static final String SUBSYSTEM_DESCRIPTION         = "Subsystem-Description";
 
     /**
-     * Name of the resource to use for localized headers
+     * Name of the resource to use for localized headers.
      */
     public static final String SUBSYSTEM_LOCALIZATION        = "Subsystem-Localization";
 
     /**
-     * Location to use when updating the subsystem
+     * Location to use when updating the subsystem.
      */
     public static final String SUBSYSTEM_UPDATELOCATION      = "Subsystem-UpdateLocation";
 
+    /**
+     * The list of subsystem contents identified by a symbolic name and version.
+     */
     public static final String SUBSYSTEM_CONTENT             = "Subsystem-Content";
+
+    /**
+     * TODO: what is this for?
+     */
     public static final String SUBSYSTEM_RESOURCES           = "Subsystem-Resources";
 
+    /**
+     * The packages to be imported into the subsystem for use by the subsystem contents.
+     */
     public static final String SUBSYSTEM_IMPORTPACKAGE       = "Subsystem-ImportPackage";
+
+    /**
+     * The packages to be exported by the subsystem for use outside the
+     * subsystem. The packages declarations must match a package provide by a
+     * bundle listed in the subsystem content.
+     */
     public static final String SUBSYSTEM_EXPORTPACKAGE       = "Subsystem-ExportPackage";
+
+    /**
+     * A list of service filters used to identify services that this subsystem requires.
+     */
     public static final String SUBSYSTEM_IMPORTSERVICE       = "Subsystem-ImportService";
+
+    /**
+     * A list of service filters used to identify the services provided by
+     * bundles inside the subsystem that can be exported outside the subsystem.
+     */
     public static final String SUBSYSTEM_EXPORTSERVICE       = "Subsystem-ExportService";
+    
+    /**
+     * A list of Bundles the subsystem requires. These bundles are made
+     * available to satisfy Require-Bundle statements for the subsystem content
+     * bundles.
+     */
     public static final String SUBSYSTEM_REQUIREBUNDLE       = "Subsystem-RequireBundle";
 
     //====================================================
@@ -91,31 +122,38 @@ public class SubsystemConstants {
     public static final String APPLICATION_SYMBOLICNAME      = "Application-SymbolicName";
 
     /**
-     * Version of the application
+     * Version of the application.  If not present, the default value is 0.0.0.
      */
     public static final String APPLICATION_VERSION           = "Application-Version";
 
     /**
-     * Human readable name
+     * Human readable application name.
      */
     public static final String APPLICATION_NAME              = "Application-Name";
 
     /**
-     * Human readable description
+     * Human readable description.
      */
     public static final String APPLICATION_DESCRIPTION       = "Application-Description";
 
     /**
-     * Name of the resource to use for localized headers
+     * Name of the resource to use for localized headers.
      */
     public static final String APPLICATION_LOCALIZATION      = "Application-Localization";
 
     /**
-     * Location to use when updating the subsystem
+     * Location to use when updating the application.
      */
     public static final String APPLICATION_UPDATELOCATION    = "Application-UpdateLocation";
 
+    /**
+     * The list of application contents identified by a symbolic name and version.
+     */
     public static final String APPLICATION_CONTENT           = "Application-Content";
+    
+    /**
+     * TODO: what is this for?
+     */
     public static final String APPLICATION_RESOURCES         = "Application-Resources";
 
 
@@ -137,17 +175,17 @@ public class SubsystemConstants {
     public static final String LIBRARY_SYMBOLICNAME          = "Library-SymbolicName";
 
     /**
-     * Version of the application
+     * Version of the application.  If not present, the default value is 0.0.0.
      */
     public static final String LIBRARY_VERSION               = "Library-Version";
 
     /**
-     * Human readable name
+     * Human readable library name.
      */
     public static final String LIBRARY_NAME                  = "Library-Name";
 
     /**
-     * Human readable description
+     * Human readable library description.
      */
     public static final String LIBRARY_DESCRIPTION           = "Library-Description";
 
@@ -157,11 +195,18 @@ public class SubsystemConstants {
     public static final String LIBRARY_LOCALIZATION          = "Library-Localization";
 
     /**
-     * Location to use when updating the subsystem
+     * Location to use when updating the library
      */
     public static final String LIBRARY_UPDATELOCATION        = "Library-UpdateLocation";
 
+    /**
+     * The list of library contents identified by a symbolic name and version.
+     */
     public static final String LIBRARY_CONTENT               = "Library-Content";
+    
+    /**
+     * TODO: what is this for.
+     */
     public static final String LIBRARY_RESOURCES             = "Library-Resources";
 
 
@@ -189,7 +234,7 @@ public class SubsystemConstants {
     public static final String RESOURCE_TYPE_ATTRIBUTE       = "type";
 
     /**
-     * Identify resources that are bundles.
+     * Identify resources that are bundles (this is the default type).
      */
     public static final String RESOURCE_TYPE_BUNDLE          = "bundle";
 
