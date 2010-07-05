@@ -14,11 +14,20 @@
 package org.apache.aries.subsystem;
 
 /**
- * Registered OSGi services implementing this interface
- * will be delivered subsystem events.
+ * A listener for subsystem events (see {@link SubsystemEvent}).
+ * 
+ * Registered OSGi services implementing this interface will be notified of
+ * subsystem events when they occur. Notifications will only be delivered for
+ * subsystems that are at the same level. For example, events are not seen for
+ * parent or child subsystems.
  */
 public interface SubsystemListener {
 
+    /**
+     * Called to deliver a subsystem event to this subsystem listener.
+     * 
+     * @param event The subsystem event being delivered.
+     */
     void subsystemEvent(SubsystemEvent event);
 
 }
