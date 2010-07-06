@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: HelloWorldJar
+Bundle-SymbolicName: hello.world.jar
+Bundle-Version: 1.1.0
+Bundle-Vendor: Apache.org
+Export-Package: apache.org.helloWorldJar
+
+

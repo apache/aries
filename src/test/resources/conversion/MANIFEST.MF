@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: helloWorld.war
+Bundle-SymbolicName: helloWorld.war
+Bundle-Version: 0.0.0
+Bundle-Vendor: Apache.org
+Bundle-ContextPath: /test
+Export-Package: apache.org.helloWorldWar
+
+
+
