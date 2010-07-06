@@ -30,6 +30,7 @@ body {
   text-align: center;
   background: transparent;
 }
+
 #top-menu {
   margin: 0px 25px;
   padding: 2px; 
@@ -45,10 +46,12 @@ body {
   color: #ffffff;
   text-decoration: none;
 }
+
 #top-menu a:active, #top-menu a:hover {
   color: #bfaecd;
   text-decoration: underline;
 }
+
 #top-menu sup img {
   height: 0px;
   width: 0px;
@@ -62,10 +65,12 @@ body {
   font-size: 65%;
   font-family: Verdana, arial, sans-serif;
 }
+
 #footer a:link, #footer a:visited {
   color: white;
   text-decoration: none;
 }
+
 #footer a:hover {
   color: white;
   text-decoration: underline;
@@ -98,9 +103,23 @@ body {
 #menu-page ul {
   margin: 0;
   padding: 0;
-  padding-left: 35px;
-  font-size: 75%;
-  text-transform: lowercase;
+  list-style: none;
+  width: 200px;
+}
+
+#menu-page ul li {
+  position: relative;
+} 
+
+#menu-page li ul {
+  position: relative;
+  outline-style: groove;
+  outline-color: #bfaecd;
+  background-color: #ffffff;
+  display: none;
+}
+#menu-page li:hover ul {
+  display: block;
 }
 
 #menu-page h3 {
@@ -118,6 +137,19 @@ body {
   font-weight: bold;	
 }
 
+#menu-page h4 {
+  font-size: 50%;
+  text-transform: lowercase;
+  margin: 1em 0 0.3em 0;
+  color: #bfaecd;
+  font-weight: normal;
+  letter-spacing: 0.15em;
+  background: url('../images/LittleBullet.png') no-repeat 0pt;
+  background-position:left center;
+  margin-left:15px;
+  padding-left: 20px;
+  font-family: Verdana, arial, sans-serif;
+}
 #menu-page a:link, #menu-page a:visited {
   color: #7b5d94;
 }
@@ -134,7 +166,6 @@ body {
   width: 100%;
   color: black;
 }
-
 h2 {
   font-size: 110%;
 }
@@ -152,7 +183,6 @@ a:hover {
   color: #666;
   text-decoration: none;
 }
-
 
 table.align {
   padding: 0px;
@@ -176,12 +206,6 @@ td.align {
 	padding-top: 10px;
 	padding-bottom: 10px;
 }
-
-/*
-** when this stylesheet is used for the Tiny MCE Wysiwyg editor's edit area, we can't
-** use an id=PageContent or class=wiki-content, so we must
-** set the body style to that used for PageContent, and p to that used for wiki-content.
-*/
 
 .monospaceInput {
     font:12px monospace
@@ -533,25 +557,6 @@ textarea, textarea.editor {
 	font-size: 11px;
 	color: #333333;
 }
-
-/* use logoSpaceLink instead.
-.spacenametitle {
-	font: 21px/31px Impact, Arial, Helvetica;
-    font-weight: 100;
-    color: #999999;
-	margin: 0px;
-}
-.spacenametitle img {
-  margin: 0 0 -4px 0;
-}
-.spacenametitle a {
-    text-decoration: none;
-    color: #999999;
-}
-.spacenametitle a:visited {
-    text-decoration: none;
-    color: #999999;
-}*/
 
 .spacenametitle-printable {
 	font: 20px/25px Impact, Arial, Helvetica;
@@ -976,7 +981,7 @@ a.createlink {
 }
 
 .functionbox {
-    background-color: #f0f0f0;
+
  	border: 1px solid #7b5d94;
 	padding: 3px;
 	margin: 1px 1px 10px 1px;
