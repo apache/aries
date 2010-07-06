@@ -24,12 +24,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.jar.Manifest;
 
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.ApplicationMetadataFactory;
@@ -45,13 +48,14 @@ import org.apache.aries.application.impl.DeploymentContentImpl;
 import org.apache.aries.application.impl.DeploymentMetadataFactoryImpl;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationResolver;
+import org.apache.aries.application.management.BundleConversion;
 import org.apache.aries.application.management.BundleConverter;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.ConversionException;
 import org.apache.aries.application.management.LocalPlatform;
 import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
-import org.apache.aries.application.management.impl.AriesApplicationManagerImpl;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.filesystem.IOUtils;
 import org.apache.aries.application.utils.management.SimpleBundleInfo;
@@ -98,31 +102,79 @@ public class AriesApplicationManagerImplTest {
       return File.createTempFile("ebaTmp", null);
     }
   }
+  
+  static class DummyConverter implements BundleConverter {
+
+	public BundleConversion convert(IDirectory parentEba, IFile toBeConverted)
+			throws ConversionException {
+		if (toBeConverted.getName().equals("helloWorld.war")) {
+			InputStream is = null;
+            try {
+            	is = new FileInputStream(new File("../src/test/resources/conversion/MANIFEST.MF"));
+            	Manifest warManifest = new Manifest(is);            	
+            	IOUtils.jarUp(new File("../src/test/resources/conversion/conversion.eba/helloWorld.war"), new File("./ariesApplicationManagerImplTest/conversion/helloWorld.war"), warManifest);
+            	IOUtils.zipUp(new  File("../src/test/resources/conversion/conversion.eba/helloWorld.jar"), new File("./ariesApplicationManagerImplTest/conversion/helloWorld.jar"));
+            	
+            	IOUtils.zipUp(new File("./ariesApplicationManagerImplTest/conversion"), new File("./ariesApplicationManagerImplTest/conversion.eba"));
+            	final InputStream jarIs = new FileInputStream(new File("./ariesApplicationManagerImplTest/conversion.eba"));            	
+                final String location = toBeConverted.toString();                
+            	return new BundleConversion() {
+
+					public BundleInfo getBundleInfo(ApplicationMetadataFactory amf) throws IOException {
+						return new SimpleBundleInfo(amf, BundleManifest.fromBundle(jarIs), location);
+					}
+
+					public InputStream getInputStream() throws IOException {
+						return jarIs;
+					}
+                	
+                };
+            } catch (IOException e) {
+            	e.printStackTrace();                
+            } finally {
+            	try {
+            	if (is != null)
+            		is.close();
+            	} catch (Exception e) {
+            		e.printStackTrace();
+            	}
+            }
+        }
+
+        return null;
+    }
+	
+	  
+  }
+  
+
 
   static final String TEST_EBA = "./ariesApplicationManagerImplTest/test.eba";
-  
+  static final String CONVERSION_EBA = "./ariesApplicationManagerImplTest/conversion.eba";
   @BeforeClass 
   public static void preTest() throws Exception { 
-    new File("ariesApplicationManagerImplTest").mkdir();
+    new File("ariesApplicationManagerImplTest/conversion").mkdirs();
     EbaUnitTestUtils.createEba("../src/test/resources/bundles/test.eba", TEST_EBA);
     File src = new File ("../src/test/resources/bundles/repository/a.handy.persistence.library.jar");
     File dest = new File ("ariesApplicationManagerImplTest/a.handy.persistence.library.jar");
     IOUtils.zipUp(src, dest);
+    EbaUnitTestUtils.createEba("../src/test/resources/conversion/conversion.eba", CONVERSION_EBA);
   }
   
   AriesApplicationManagerImpl _appMgr;
   ApplicationMetadataFactory _appMetaFactory;
   DummyResolver _resolver;
-  
+  DummyConverter _converter;
   @Before
   public void setup() { 
     _appMgr = new AriesApplicationManagerImpl ();
     _appMetaFactory = new ApplicationMetadataFactoryImpl ();
 
     DeploymentMetadataFactory dmf = new DeploymentMetadataFactoryImpl();
+    _converter = new DummyConverter();
     List<BundleConverter> bundleConverters = new ArrayList<BundleConverter>();
-    _resolver = new DummyResolver();
-    
+    bundleConverters.add(_converter);
+    _resolver = new DummyResolver();    
     _appMgr.setApplicationMetadataFactory(_appMetaFactory);
     _appMgr.setDeploymentMetadataFactory(dmf);
     _appMgr.setBundleConverters(bundleConverters);
@@ -160,6 +212,36 @@ public class AriesApplicationManagerImplTest {
     assertEquals(1, dcList.size());
     assertTrue (dcList.contains(dc3));
 
+  }
+  
+  @Test
+  public void testCreateAndConversion() throws Exception {
+	  	AriesApplication app = createApplication (CONVERSION_EBA);	    
+	    ApplicationMetadata appMeta = app.getApplicationMetadata();	    
+	    assertEquals (appMeta.getApplicationName(), "conversion.eba");	   
+	    assertEquals (appMeta.getApplicationSymbolicName(), "conversion.eba");	    
+	    assertEquals (appMeta.getApplicationVersion(), new Version("0.0"));	    
+	    List<Content> appContent = appMeta.getApplicationContents();
+	    assertEquals (appContent.size(), 2);
+	    Content fbw = new ContentImpl("hello.world.jar;version=\"[1.1.0, 1.1.0]\"");
+	    Content mbl = new ContentImpl("helloWorld.war;version=\"[0.0.0, 0.0.0]\"");
+	    assertTrue (appContent.contains(fbw));
+	    assertTrue (appContent.contains(mbl));
+	    
+	    DeploymentMetadata dm = app.getDeploymentMetadata();
+	    List<DeploymentContent> dcList = dm.getApplicationDeploymentContents();
+
+	    assertEquals (2, dcList.size());
+	    DeploymentContent dc1 = new DeploymentContentImpl ("hello.world.jar;deployed-version=1.1.0");
+	    DeploymentContent dc2 = new DeploymentContentImpl ("helloWorld.war;deployed-version=0.0.0");
+	    DeploymentContent dc3 = new DeploymentContentImpl ("a.handy.persistence.library;deployed-version=1.1.0");
+	    assertTrue (dcList.contains(dc1));
+	    assertTrue (dcList.contains(dc2));
+	    
+	    dcList = dm.getApplicationProvisionBundles();
+	    
+	    assertEquals(1, dcList.size());
+	    assertTrue (dcList.contains(dc3));
   }
   
   @Test
@@ -211,7 +293,7 @@ public class AriesApplicationManagerImplTest {
     nextResolverResult.add(resolvedPersistenceLibrary);
     _resolver.setNextResult(nextResolverResult);
     
-    IDirectory testEba = FileSystem.getFSRoot(new File(TEST_EBA));
+    IDirectory testEba = FileSystem.getFSRoot(new File(fileName));    
     AriesApplication app = _appMgr.createApplication(testEba);
     app = _appMgr.resolve(app);
     return app;
