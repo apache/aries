@@ -81,6 +81,9 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
     
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
+    
+    // application name should be equal to eba name since application.mf is not provided
+    assertEquals("test.eba", app.getApplicationMetadata().getApplicationName());
     AriesApplicationContext ctx = manager.install(app);
     ctx.start();
     
@@ -96,6 +99,10 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
   public void testAppWithApplicationManifest() throws Exception {
     AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
     AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
+    
+    // application name should equal to whatever Application name provided in the application.mf
+    assertEquals("test application 2", app.getApplicationMetadata().getApplicationName());
+    
     AriesApplicationContext ctx = manager.install(app);
     ctx.start();
     
