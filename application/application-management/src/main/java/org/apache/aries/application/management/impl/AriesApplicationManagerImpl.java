@@ -112,16 +112,23 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     DeploymentMetadata deploymentMetadata = null;
     Map<String, BundleConversion> modifiedBundles = new HashMap<String, BundleConversion>();
     AriesApplicationImpl application = null;
-    String appName = ebaFile.getName();
-    //If the application name is null, we will try to get the file name.
-    if ((appName == null) || (appName.isEmpty())) {
-        String fullPath = ebaFile.toString();
-        if (fullPath.endsWith("/"))
-            fullPath = fullPath.substring(0, fullPath.length() -1);
-        int last_slash = fullPath.lastIndexOf("/");
-        appName = fullPath.substring(last_slash + 1, fullPath.length()); 
-    }
-    try { 
+    String appPath = ebaFile.toString();
+    try {   
+      // try to read the app name out of the application.mf
+      Manifest applicationManifest = parseApplicationManifest (ebaFile);
+      String appName = applicationManifest.getMainAttributes().getValue(AppConstants.APPLICATION_NAME);
+
+      //If the application name is null, we will try to get the file name.
+      if (appName == null || appName.isEmpty()) {
+          String fullPath = appPath;
+          if (fullPath.endsWith("/")) {
+            fullPath = fullPath.substring(0, fullPath.length() -1);  
+          }
+              
+          int last_slash = fullPath.lastIndexOf("/");
+          appName = fullPath.substring(last_slash + 1, fullPath.length()); 
+      }
+      
       IFile deploymentManifest = ebaFile.getFile(AppConstants.DEPLOYMENT_MF);
       /* We require that all other .jar and .war files included by-value be valid bundles
        * because a DEPLOYMENT.MF has been provided. If no DEPLOYMENT.MF, migrate 
@@ -165,7 +172,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
           }
         } 
       }
-      Manifest applicationManifest = parseApplicationManifest (ebaFile); 
+ 
       ManifestDefaultsInjector.updateManifest(applicationManifest, appName, ebaFile); 
       applicationMetadata = _applicationMetadataFactory.createApplicationMetadata(applicationManifest);
       
@@ -185,7 +192,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
       // Store a reference to any modified bundles
       application.setModifiedBundles (modifiedBundles);
     } catch (IOException iox) {
-      _logger.error ("APPMANAGEMENT0006E", new Object []{appName, iox});
+      _logger.error ("APPMANAGEMENT0006E", new Object []{appPath, iox});
       throw new ManagementException(iox);
     }
     return application;
