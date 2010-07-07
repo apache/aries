@@ -112,69 +112,63 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     DeploymentMetadata deploymentMetadata = null;
     Map<String, BundleConversion> modifiedBundles = new HashMap<String, BundleConversion>();
     AriesApplicationImpl application = null;
-    
+    String appName = ebaFile.getName();
+    //If the application name is null, we will try to get the file name.
+    if ((appName == null) || (appName.isEmpty())) {
+        String fullPath = ebaFile.toString();
+        if (fullPath.endsWith("/"))
+            fullPath = fullPath.substring(0, fullPath.length() -1);
+        int last_slash = fullPath.lastIndexOf("/");
+        appName = fullPath.substring(last_slash + 1, fullPath.length()); 
+    }
     try { 
-    	
-        /* We require that all other .jar and .war files included by-value be valid bundles
-         * because a DEPLOYMENT.MF has been provided. If no DEPLOYMENT.MF, migrate 
-         * wars to wabs, plain jars to bundles
-         */
-          
-        Set<BundleInfo> extraBundlesInfo = new HashSet<BundleInfo>();
-        for (IFile f : ebaFile) { 
-          if (f.isDirectory()) { 
-            continue;
-          }
-          
-          BundleManifest bm = getBundleManifest (f);
-          if (bm != null) {
-            if (bm.isValid()) {
-              extraBundlesInfo.add(new SimpleBundleInfo(_applicationMetadataFactory, bm, f.toURL().toExternalForm()));
-            } else if (deploymentMetadata != null) {
-              throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0003E", f.getName(), ebaFile.getName()));
-            } else { 
-              // We have a jar that needs converting to a bundle, or a war to migrate to a WAB             
-           	  BundleConversion convertedBinary = null;
-              Iterator<BundleConverter> converters = _bundleConverters.iterator();
-              List<ConversionException> conversionExceptions = Collections.emptyList();
-              while (converters.hasNext() && convertedBinary == null) { 
-                try {                 	
-                  convertedBinary = converters.next().convert(ebaFile, f);
-                } catch (ServiceException sx) {
-                  // We'll get this if our optional BundleConverter has not been injected. 
-                } catch (ConversionException cx) { 
-                  conversionExceptions.add(cx);
-                }
-              }
-              if (conversionExceptions.size() > 0) {
-                for (ConversionException cx : conversionExceptions) { 
-                  _logger.error("APPMANAGEMENT0004E", new Object[]{f.getName(), ebaFile.getName(), cx});
-                }
-                throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0005E", ebaFile.getName()));
-              }
-              if (convertedBinary != null) { 
-                modifiedBundles.put (f.getName(), convertedBinary);
-                bm = BundleManifest.fromBundle(f);
-                extraBundlesInfo.add(new SimpleBundleInfo(_applicationMetadataFactory, bm, f.getName()));
+      IFile deploymentManifest = ebaFile.getFile(AppConstants.DEPLOYMENT_MF);
+      /* We require that all other .jar and .war files included by-value be valid bundles
+       * because a DEPLOYMENT.MF has been provided. If no DEPLOYMENT.MF, migrate 
+       * wars to wabs, plain jars to bundles
+       */
+      Set<BundleInfo> extraBundlesInfo = new HashSet<BundleInfo>();
+      for (IFile f : ebaFile) { 
+        if (f.isDirectory()) { 
+          continue;
+        }
+        BundleManifest bm = getBundleManifest (f);
+        if (bm != null) {
+          if (bm.isValid()) {
+            extraBundlesInfo.add(new SimpleBundleInfo(_applicationMetadataFactory, bm, f.toURL().toExternalForm()));
+          } else if (deploymentManifest == null){ 
+            // We have a jar that needs converting to a bundle, or a war to migrate to a WAB 
+            // We only do this if a DEPLOYMENT.MF does not exist.
+            BundleConversion convertedBinary = null;
+            Iterator<BundleConverter> converters = _bundleConverters.iterator();
+            List<ConversionException> conversionExceptions = Collections.emptyList();
+            while (converters.hasNext() && convertedBinary == null) { 
+              try {
+                convertedBinary = converters.next().convert(ebaFile, f);
+              } catch (ServiceException sx) {
+                // We'll get this if our optional BundleConverter has not been injected. 
+              } catch (ConversionException cx) { 
+                conversionExceptions.add(cx);
               }
             }
-          } 
-        }
-      Manifest applicationManifest = parseApplicationManifest (ebaFile); 
-      String appName = ebaFile.getName();
-      //If the application name is null, we will try to get the file name.
-      if ((appName == null) || (appName.isEmpty())) {
-    	  String fullPath = ebaFile.toString();
-    	  if (fullPath.endsWith("/"))
-    		  fullPath = fullPath.substring(0, fullPath.length() -1);
-          int last_slash = fullPath.lastIndexOf("/");
-          appName = fullPath.substring(last_slash + 1, fullPath.length()); 
+            if (conversionExceptions.size() > 0) {
+              for (ConversionException cx : conversionExceptions) { 
+                _logger.error("APPMANAGEMENT0004E", new Object[]{f.getName(), appName, cx});
+              }
+              throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0005E", appName));
+            }
+            if (convertedBinary != null) { 
+              modifiedBundles.put (f.getName(), convertedBinary);
+              bm = BundleManifest.fromBundle(f);
+              extraBundlesInfo.add(new SimpleBundleInfo(_applicationMetadataFactory, bm, f.getName()));
+            } 
+          }
+        } 
       }
-      
-     
+      Manifest applicationManifest = parseApplicationManifest (ebaFile); 
       ManifestDefaultsInjector.updateManifest(applicationManifest, appName, ebaFile); 
       applicationMetadata = _applicationMetadataFactory.createApplicationMetadata(applicationManifest);
-      IFile deploymentManifest = ebaFile.getFile(AppConstants.DEPLOYMENT_MF);
+      
       if (deploymentManifest != null) { 
         deploymentMetadata = _deploymentMetadataFactory.createDeploymentMetadata(deploymentManifest);
         
@@ -182,18 +176,16 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
         String appSymbolicName = applicationMetadata.getApplicationSymbolicName();
         String depSymbolicName = deploymentMetadata.getApplicationSymbolicName();
         if (!appSymbolicName.equals(depSymbolicName)) {
-          throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0002E", ebaFile.getName(), appSymbolicName, depSymbolicName));
+          throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0002E", appName, appSymbolicName, depSymbolicName));
         }
       }
-      
-
 
       application = new AriesApplicationImpl (applicationMetadata, extraBundlesInfo, _localPlatform);
       application.setDeploymentMetadata(deploymentMetadata);
       // Store a reference to any modified bundles
       application.setModifiedBundles (modifiedBundles);
     } catch (IOException iox) {
-      _logger.error ("APPMANAGEMENT0006E", new Object []{ebaFile.getName(), iox});
+      _logger.error ("APPMANAGEMENT0006E", new Object []{appName, iox});
       throw new ManagementException(iox);
     }
     return application;
