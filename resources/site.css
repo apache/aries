@@ -127,7 +127,6 @@ body {
   text-transform: lowercase;
   margin: 1em 0 0.3em 0;
   color: #bfaecd;
-  font-weight: normal;
   letter-spacing: 0.15em;
   background: url('../images/BigBullet.png') no-repeat 0pt;
   background-position:left center;
@@ -136,12 +135,16 @@ body {
   font-family: Verdana, arial, sans-serif;
   font-weight: bold;	
 }
-
+#menu-page  ul li h4 a:link, #menu-page  ul li h4 a:visited {
+  color: #380b61; 
+}
+#menu-page  li h4 {
+  line-height: 10%;
+}
 #menu-page h4 {
-  font-size: 50%;
+  font-size: 60%;
   text-transform: lowercase;
-  margin: 1em 0 0.3em 0;
-  color: #bfaecd;
+  margin: 1em 0 0.3em 0; 
   font-weight: normal;
   letter-spacing: 0.15em;
   background: url('../images/LittleBullet.png') no-repeat 0pt;
@@ -151,11 +154,11 @@ body {
   font-family: Verdana, arial, sans-serif;
 }
 #menu-page a:link, #menu-page a:visited {
-  color: #7b5d94;
+  color: #7b5d94; 
 }
 
 #menu-page a:hover {
-  color: #bfaecd;
+   color: #bfaecd; 
 }
 
 #content {
