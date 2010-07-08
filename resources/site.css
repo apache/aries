@@ -112,7 +112,10 @@ body {
 } 
 
 #menu-page li ul {
-  position: relative;
+  /*position: relative;*/
+  position: absolute;
+  left: 150px;
+  top: 0;
   outline-style: groove;
   outline-color: #bfaecd;
   background-color: #ffffff;
