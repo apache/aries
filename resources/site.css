@@ -114,7 +114,7 @@ body {
 #menu-page li ul {
   /*position: relative;*/
   position: absolute;
-  left: 150px;
+  left: 170px;
   top: 0;
   outline-style: groove;
   outline-color: #bfaecd;
@@ -137,6 +137,7 @@ body {
   padding-left: 20px;
   font-family: Verdana, arial, sans-serif;
   font-weight: bold;	
+  line-height: 250%;
 }
 #menu-page  ul li h4 a:link, #menu-page  ul li h4 a:visited {
   color: #380b61; 
