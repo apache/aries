@@ -476,7 +476,7 @@ public class ServiceRegistryContextTest
     Binding bnd = ne.nextElement();
     
     assertEquals(String.valueOf(reg.getReference().getProperty(Constants.SERVICE_ID)), bnd.getName());
-    assertTrue("Class name not correct. Was: " + bnd.getClassName(), bnd.getClassName().contains("Proxy"));
+    assertTrue("Class name not correct. Was: " + bnd.getClassName(), bnd.getClassName().contains("Proxy") || bnd.getClassName().contains("EnhancerByCGLIB"));
     
     Runnable r = (Runnable) bnd.getObject();
     
@@ -492,7 +492,7 @@ public class ServiceRegistryContextTest
     bnd = ne.nextElement();
     
     assertEquals(String.valueOf(reg2.getReference().getProperty(Constants.SERVICE_ID)), bnd.getName());
-    assertTrue("Class name not correct. Was: " + bnd.getClassName(), bnd.getClassName().contains("Proxy"));
+    assertTrue("Class name not correct. Was: " + bnd.getClassName(), bnd.getClassName().contains("Proxy") || bnd.getClassName().contains("EnhancerByCGLIB"));
     
     r = (Runnable) bnd.getObject();
     
