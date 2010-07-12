@@ -169,7 +169,7 @@ public class ServiceRegistryListContext extends AbstractServiceRegistryContext i
   {
     Object result = null;
     
-    result = ServiceHelper.getService(callerContext, parentName, name, false, env);
+    result = ServiceHelper.getService(callerContext, parentName, name, false, env, true);
     
     if (result == null) {
       throw new NameNotFoundException(name.toString());

@@ -96,7 +96,7 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
                 }
             } else if ((OsgiName.SERVICE_PATH.equals(pathFragment) && OsgiName.OSGI_SCHEME.equals(schemeName))
                        || (OsgiName.SERVICES_PATH.equals(pathFragment) && OsgiName.ARIES_SCHEME.equals(schemeName))) {
-                result = ServiceHelper.getService(callerContext, validName, null, true, env);
+                result = ServiceHelper.getService(callerContext, validName, null, true, env, OsgiName.OSGI_SCHEME.equals(schemeName));
             } else if (OsgiName.SERVICE_LIST_PATH.equals(pathFragment)) {
                 result = new ServiceRegistryListContext(callerContext, env, validName);
             } else {
