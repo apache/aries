@@ -18,17 +18,14 @@
  */
 package org.apache.aries.transaction;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
 
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.junit.Test;
-
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
+import org.junit.Test;
 
 public class InterceptorTest {
     private Transaction t;
@@ -59,6 +56,6 @@ public class InterceptorTest {
     
     private TransactionToken newTranToken() {
         t = Skeleton.newMock(Transaction.class);
-        return new TransactionToken(t, null, TransactionStrategy.REQUIRED);
+        return new TransactionToken(t, null, TransactionAttribute.REQUIRED);
     }
 }

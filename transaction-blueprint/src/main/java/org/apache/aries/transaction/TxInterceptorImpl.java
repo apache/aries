@@ -58,7 +58,7 @@ public class TxInterceptorImpl implements Interceptor {
                  }
              }
 
-             token.getTransactionStrategy().finish(tm, token);
+             token.getTransactionAttribute().finish(tm, token);
          }
          catch (Exception e)
          {
@@ -77,7 +77,7 @@ public class TxInterceptorImpl implements Interceptor {
       {
         final TransactionToken token = (TransactionToken)preCallToken;
         try { 
-           token.getTransactionStrategy().finish(tm, token);
+           token.getTransactionAttribute().finish(tm, token);
         }
         catch (Exception e)
         {
@@ -93,14 +93,14 @@ public class TxInterceptorImpl implements Interceptor {
     public Object preCall(ComponentMetadata cm, Method m,
         Object... parameters) throws Throwable  {
       final String methodName = m.getName();
-      final String strategy = metaDataHelper.getComponentMethodTxStrategy(cm, methodName);
+      final String attribute = metaDataHelper.getComponentMethodTxAttribute(cm, methodName);
       
-      TransactionStrategy txStrategy = TransactionStrategy.fromValue(strategy);
+      TransactionAttribute txAttribute = TransactionAttribute.fromValue(attribute);
       
       if (LOGGER.isDebugEnabled())
-          LOGGER.debug("Method: " + m + ", has transaction strategy: " + txStrategy);
+          LOGGER.debug("Method: " + m + ", has transaction strategy: " + txAttribute);
 
-      return txStrategy.begin(tm);
+      return txAttribute.begin(tm);
     }
 
     public final void setTransactionManager(TransactionManager manager)

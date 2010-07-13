@@ -25,7 +25,7 @@ public interface TxComponentMetaDataHelper {
     public void setComponentTransactionData(ComponentMetadata component, String value,
         String method);
 
-    public String getComponentMethodTxStrategy(
+    public String getComponentMethodTxAttribute(
             ComponentMetadata component, String methodName);
 
 }
