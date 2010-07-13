@@ -34,7 +34,7 @@
    
    <service id="notSupportedBean" ref="notSupportedBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
        <service-properties>
-           <entry key="tranStrategy" value="NotSupported"/>
+           <entry key="tranAttribute" value="NotSupported"/>
        </service-properties>
    </service>
 
@@ -49,7 +49,7 @@
    
    <service id="requiredBean" ref="requiredBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
        <service-properties>
-           <entry key="tranStrategy" value="Required"/>
+           <entry key="tranAttribute" value="Required"/>
        </service-properties>
    </service>
 
@@ -65,13 +65,13 @@
    
    <service id="supportsBean" ref="supportsBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
        <service-properties>
-           <entry key="tranStrategy" value="Supports"/>
+           <entry key="tranAttribute" value="Supports"/>
        </service-properties>
    </service>
 
    <service id="requiresNewBean" interface="org.apache.aries.transaction.test.TestBean">
        <service-properties>
-           <entry key="tranStrategy" value="RequiresNew"/>
+           <entry key="tranAttribute" value="RequiresNew"/>
        </service-properties>
        <bean class="org.apache.aries.transaction.test.impl.TestBeanImpl" init-method="initialize">
            <tx:transaction method="insertRow throw*" value="RequiresNew"/>
@@ -94,7 +94,7 @@
 
    <service id="mandatoryBean" ref="mandatoryBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
        <service-properties>
-           <entry key="tranStrategy" value="Mandatory"/>
+           <entry key="tranAttribute" value="Mandatory"/>
        </service-properties>
    </service>
 
@@ -110,7 +110,7 @@
    
    <service id="neverBean" ref="neverBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
        <service-properties>
-           <entry key="tranStrategy" value="Never"/>
+           <entry key="tranAttribute" value="Never"/>
        </service-properties>
    </service>
 
@@ -125,7 +125,7 @@
    
    <service id="invalidBean" ref="invalidBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
        <service-properties>
-           <entry key="tranStrategy" value="Invalid"/>
+           <entry key="tranAttribute" value="Invalid"/>
        </service-properties>
    </service>
    

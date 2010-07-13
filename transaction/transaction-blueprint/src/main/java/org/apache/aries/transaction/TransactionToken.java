@@ -24,21 +24,21 @@ class TransactionToken
 {
    private Transaction activeTransaction;
    private Transaction suspendedTransaction;
-   private TransactionStrategy transactionStrategy;
+   private TransactionAttribute transactionAttribute;
    private boolean isCompletionAllowed;
    
    public TransactionToken(Transaction activeTransaction, Transaction suspendedTransaction,
-        TransactionStrategy transactionStrategy)
+           TransactionAttribute transactionAttribute)
    {
-    this(activeTransaction, suspendedTransaction, transactionStrategy, false);
+    this(activeTransaction, suspendedTransaction, transactionAttribute, false);
    }
 
    TransactionToken(Transaction activeTransaction, Transaction suspendedTransaction,
-           TransactionStrategy transactionStrategy, boolean isCompletionAllowed)
+           TransactionAttribute transactionAttribute, boolean isCompletionAllowed)
    {
        this.activeTransaction = activeTransaction;
        this.suspendedTransaction = suspendedTransaction;
-       this.transactionStrategy = transactionStrategy;
+       this.transactionAttribute = transactionAttribute;
        this.isCompletionAllowed = isCompletionAllowed;
    }
 
@@ -58,12 +58,12 @@ class TransactionToken
        this.suspendedTransaction = suspendedTransaction;
    }
 
-   public TransactionStrategy getTransactionStrategy() {
-       return transactionStrategy;
+   public TransactionAttribute getTransactionAttribute() {
+       return transactionAttribute;
    }
 
-   public void setTransactionStrategy(TransactionStrategy transactionStrategy) {
-       this.transactionStrategy = transactionStrategy;
+   public void setTransactionStrategy(TransactionAttribute transactionAttribute) {
+       this.transactionAttribute = transactionAttribute;
    }
 
    public boolean isCompletionAllowed() {
