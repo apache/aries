@@ -64,6 +64,7 @@ import org.apache.aries.unittest.utils.EbaUnitTestUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 
 /**
@@ -111,21 +112,18 @@ public class AriesApplicationManagerImplTest {
 			InputStream is = null;
             try {
             	is = new FileInputStream(new File("../src/test/resources/conversion/MANIFEST.MF"));
-            	Manifest warManifest = new Manifest(is);            	
-            	IOUtils.jarUp(new File("../src/test/resources/conversion/conversion.eba/helloWorld.war"), new File("./ariesApplicationManagerImplTest/conversion/helloWorld.war"), warManifest);
-            	IOUtils.zipUp(new  File("../src/test/resources/conversion/conversion.eba/helloWorld.jar"), new File("./ariesApplicationManagerImplTest/conversion/helloWorld.jar"));
-            	
-            	IOUtils.zipUp(new File("./ariesApplicationManagerImplTest/conversion"), new File("./ariesApplicationManagerImplTest/conversion.eba"));
-            	final InputStream jarIs = new FileInputStream(new File("./ariesApplicationManagerImplTest/conversion.eba"));            	
+            	Manifest warManifest = new Manifest(is);           
+            	final File convertedFile = new File("./ariesApplicationManagerImplTest/conversion/helloWorld.war");
+            	IOUtils.jarUp(new File("../src/test/resources/conversion/conversion.eba/helloWorld.war"), convertedFile, warManifest);            
                 final String location = toBeConverted.toString();                
             	return new BundleConversion() {
 
 					public BundleInfo getBundleInfo(ApplicationMetadataFactory amf) throws IOException {
-						return new SimpleBundleInfo(amf, BundleManifest.fromBundle(jarIs), location);
+						return new SimpleBundleInfo(amf, BundleManifest.fromBundle(convertedFile), location);
 					}
 
 					public InputStream getInputStream() throws IOException {
-						return jarIs;
+						return new FileInputStream(convertedFile);
 					}
                 	
                 };
@@ -222,7 +220,7 @@ public class AriesApplicationManagerImplTest {
 	    assertEquals (appMeta.getApplicationSymbolicName(), "conversion.eba");	    
 	    assertEquals (appMeta.getApplicationVersion(), new Version("0.0"));	    
 	    List<Content> appContent = appMeta.getApplicationContents();
-	    assertEquals (appContent.size(), 2);
+	    assertEquals (2, appContent.size());
 	    Content fbw = new ContentImpl("hello.world.jar;version=\"[1.1.0, 1.1.0]\"");
 	    Content mbl = new ContentImpl("helloWorld.war;version=\"[0.0.0, 0.0.0]\"");
 	    assertTrue (appContent.contains(fbw));
@@ -242,6 +240,26 @@ public class AriesApplicationManagerImplTest {
 	    
 	    assertEquals(1, dcList.size());
 	    assertTrue (dcList.contains(dc3));
+	    
+	    assertEquals(2, app.getBundleInfo().size());
+	    BundleInfo info;
+	    info = findBundleInfo(app.getBundleInfo(), "hello.world.jar");
+	    assertNotNull(info);
+	    assertEquals("HelloWorldJar", info.getHeaders().get(Constants.BUNDLE_NAME));
+	    
+	    info = findBundleInfo(app.getBundleInfo(), "helloWorld.war");
+        assertNotNull(info);
+        assertEquals("helloWorld.war", info.getHeaders().get(Constants.BUNDLE_NAME));
+        assertEquals("/test", info.getHeaders().get("Bundle-ContextPath"));
+  }
+  
+  private BundleInfo findBundleInfo(Set<BundleInfo> infos, String symbolicName) {
+      for (BundleInfo info : infos) {
+          if (symbolicName.equals(info.getSymbolicName())) {
+              return info;
+          }
+      }
+      return null;
   }
   
   @Test
