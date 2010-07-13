@@ -24,12 +24,12 @@ import javax.transaction.UserTransaction;
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
 
-public class RequiresNewTranStrategyTest extends AbstractIntegrationTest {
+public class RequiresNewTranAttributeTest extends AbstractIntegrationTest {
   
   @Test
   public void testRequiresNew() throws Exception {
-      TestBean rnBean = getOsgiService(TestBean.class, "(tranStrategy=RequiresNew)", DEFAULT_TIMEOUT);
-      TestBean rBean = getOsgiService(TestBean.class, "(tranStrategy=Required)", DEFAULT_TIMEOUT);
+      TestBean rnBean = getOsgiService(TestBean.class, "(tranAttribute=RequiresNew)", DEFAULT_TIMEOUT);
+      TestBean rBean = getOsgiService(TestBean.class, "(tranAttribute=Required)", DEFAULT_TIMEOUT);
       UserTransaction tran = getOsgiService(UserTransaction.class);
       
       //Test with client transaction - a container transaction is used to insert the row
