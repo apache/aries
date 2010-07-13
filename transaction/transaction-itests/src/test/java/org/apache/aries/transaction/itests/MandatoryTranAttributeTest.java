@@ -26,25 +26,23 @@ import javax.transaction.UserTransaction;
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
 
-public class SupportsTranStrategyTest extends AbstractIntegrationTest {
+public class MandatoryTranAttributeTest extends AbstractIntegrationTest {
   
   @Test
-  public void testSupports() throws Exception {
-      TestBean bean = getOsgiService(TestBean.class, "(tranStrategy=Supports)", DEFAULT_TIMEOUT);
+  public void testMandatory() throws Exception {
+      TestBean bean = getOsgiService(TestBean.class, "(tranAttribute=Mandatory)", DEFAULT_TIMEOUT);
       UserTransaction tran = getOsgiService(UserTransaction.class);
       
-      //Test with client transaction - the insert succeeds because the bean delegates to
-      //another bean with a transaction strategy of Mandatory, and the user transaction
-      //is delegated
+      //Test with client transaction - the user transaction is used to insert a row
       int initialRows = bean.countRows();
       
       tran.begin();
-      bean.insertRow("testWithClientTran", 1, true);
+      bean.insertRow("testWithClientTran", 1);
       tran.commit();
       
       int finalRows = bean.countRows();
       assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 1);
-      
+  
       //Test with client transaction and application exception - the user transaction is not rolled back
       initialRows = bean.countRows();
       
@@ -52,9 +50,8 @@ public class SupportsTranStrategyTest extends AbstractIntegrationTest {
       bean.insertRow("testWithClientTranAndWithAppException", 1);
       
       try {
-          bean.insertRow("testWithClientTranAndWithAppException", 2, new SQLException());
+          bean.insertRow("testWithClientTranAndWithAppException", 2, new SQLException("Dummy exception"));
       } catch (SQLException e) {
-          // TODO Auto-generated catch block
           e.printStackTrace();
       }
       
@@ -70,7 +67,7 @@ public class SupportsTranStrategyTest extends AbstractIntegrationTest {
       bean.insertRow("testWithClientTranAndWithRuntimeException", 1);
       
       try {
-          bean.insertRow("testWithClientTranAndWithRuntimeException", 2, new RuntimeException());
+          bean.insertRow("testWithClientTranAndWithRuntimeException", 2, new RuntimeException("Dummy exception"));
       } catch (RuntimeException e) {
           e.printStackTrace();
       }
@@ -85,18 +82,12 @@ public class SupportsTranStrategyTest extends AbstractIntegrationTest {
       finalRows = bean.countRows();
       assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 0);
       
-      //Test without client transaction - the insert fails because the bean delegates to
-      //another bean with a transaction strategy of Mandatory, and no transaction is available
-      initialRows = bean.countRows();
-      
+      //Test without client transaction - an exception is thrown because a transaction is mandatory
       try {
-          bean.insertRow("testWithoutClientTran", 1, true);
-          fail("Exception not thrown");
-      } catch (Exception e) {
+          bean.insertRow("testWithoutClientTran", 1);
+          fail("IllegalStateException not thrown");
+      } catch (IllegalStateException e) {
           e.printStackTrace();
       }
-      
-      finalRows = bean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 0);
   }
 }

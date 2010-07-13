@@ -28,7 +28,7 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-public enum TransactionStrategy {
+public enum TransactionAttribute {
     MANDATORY
     {
       public TransactionToken begin(TransactionManager man) throws SystemException
@@ -155,7 +155,7 @@ public enum TransactionStrategy {
       }
     };
 
-    public static TransactionStrategy fromValue(String value)
+    public static TransactionAttribute fromValue(String value)
     {
       return valueOf(value.toUpperCase());
     }
