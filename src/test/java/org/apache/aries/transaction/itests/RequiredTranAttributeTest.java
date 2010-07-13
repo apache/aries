@@ -26,11 +26,11 @@ import javax.transaction.UserTransaction;
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
 
-public class RequiredTranStrategyTest extends AbstractIntegrationTest {
+public class RequiredTranAttributeTest extends AbstractIntegrationTest {
   
   @Test
   public void testRequired() throws Exception {
-      TestBean bean = getOsgiService(TestBean.class, "(tranStrategy=Required)", DEFAULT_TIMEOUT);
+      TestBean bean = getOsgiService(TestBean.class, "(tranAttribute=Required)", DEFAULT_TIMEOUT);
       UserTransaction tran = getOsgiService(UserTransaction.class);
       
       //Test with client transaction - the user transaction is used to insert a row
