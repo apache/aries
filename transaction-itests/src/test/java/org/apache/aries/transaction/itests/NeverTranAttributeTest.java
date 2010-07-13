@@ -23,11 +23,11 @@ import javax.transaction.UserTransaction;
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
 
-public class NeverTranStrategyTest extends AbstractIntegrationTest {
+public class NeverTranAttributeTest extends AbstractIntegrationTest {
   
   @Test
   public void testNever() throws Exception {
-      TestBean bean = getOsgiService(TestBean.class, "(tranStrategy=Never)", DEFAULT_TIMEOUT);
+      TestBean bean = getOsgiService(TestBean.class, "(tranAttribute=Never)", DEFAULT_TIMEOUT);
       UserTransaction tran = getOsgiService(UserTransaction.class);
       
       //Test with client transaction - an exception is thrown because transactions are not allowed

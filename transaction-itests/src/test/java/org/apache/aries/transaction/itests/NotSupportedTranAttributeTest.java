@@ -25,12 +25,12 @@ import javax.transaction.UserTransaction;
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
 
-public class NotSupportedTranStrategyTest extends AbstractIntegrationTest {
+public class NotSupportedTranAttributeTest extends AbstractIntegrationTest {
   
   @Test
   public void testNotSupported() throws Exception {
-      TestBean nsBean = getOsgiService(TestBean.class, "(tranStrategy=NotSupported)", DEFAULT_TIMEOUT);
-      TestBean rBean = getOsgiService(TestBean.class, "(tranStrategy=Required)", DEFAULT_TIMEOUT);
+      TestBean nsBean = getOsgiService(TestBean.class, "(tranAttribute=NotSupported)", DEFAULT_TIMEOUT);
+      TestBean rBean = getOsgiService(TestBean.class, "(tranAttribute=Required)", DEFAULT_TIMEOUT);
       UserTransaction tran = getOsgiService(UserTransaction.class);
       
       //Test with client transaction - the insert fails because the bean delegates to another
