@@ -128,7 +128,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
           int last_slash = fullPath.lastIndexOf("/");
           appName = fullPath.substring(last_slash + 1, fullPath.length()); 
       }
-      
+                  
       IFile deploymentManifest = ebaFile.getFile(AppConstants.DEPLOYMENT_MF);
       /* We require that all other .jar and .war files included by-value be valid bundles
        * because a DEPLOYMENT.MF has been provided. If no DEPLOYMENT.MF, migrate 
@@ -143,7 +143,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
         if (bm != null) {
           if (bm.isValid()) {
             extraBundlesInfo.add(new SimpleBundleInfo(_applicationMetadataFactory, bm, f.toURL().toExternalForm()));
-          } else if (deploymentManifest == null){ 
+          } else if (deploymentManifest == null) { 
             // We have a jar that needs converting to a bundle, or a war to migrate to a WAB 
             // We only do this if a DEPLOYMENT.MF does not exist.
             BundleConversion convertedBinary = null;
@@ -165,14 +165,19 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
               throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0005E", appName));
             }
             if (convertedBinary != null) { 
-              modifiedBundles.put (f.getName(), convertedBinary);
-              bm = BundleManifest.fromBundle(f);
-              extraBundlesInfo.add(new SimpleBundleInfo(_applicationMetadataFactory, bm, f.getName()));
+              modifiedBundles.put (f.getName(), convertedBinary);             
+              extraBundlesInfo.add(convertedBinary.getBundleInfo(_applicationMetadataFactory));
             } 
           }
         } 
       }
  
+      // if Application-Content header was not specified build it based on the bundles included by value
+      if (applicationManifest.getMainAttributes().getValue(AppConstants.APPLICATION_CONTENT) == null) {
+          String appContent = buildAppContent(extraBundlesInfo);
+          applicationManifest.getMainAttributes().putValue(AppConstants.APPLICATION_CONTENT, appContent);
+      }
+      
       ManifestDefaultsInjector.updateManifest(applicationManifest, appName, ebaFile); 
       applicationMetadata = _applicationMetadataFactory.createApplicationMetadata(applicationManifest);
       
@@ -198,6 +203,30 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     return application;
   }
 
+  private String buildAppContent(Set<BundleInfo> bundleInfos) {
+      StringBuilder builder = new StringBuilder();
+      Iterator<BundleInfo> iterator = bundleInfos.iterator();
+      while (iterator.hasNext()) {
+          BundleInfo info = iterator.next();
+          builder.append(info.getSymbolicName());
+
+          // bundle version is not a required manifest header
+          if (info.getVersion() != null) {
+              String version = info.getVersion().toString();
+              builder.append(";version=\"[");
+              builder.append(version);
+              builder.append(',');
+              builder.append(version);
+              builder.append("]\"");
+          }
+
+          if (iterator.hasNext()) {
+              builder.append(",");
+          }
+      }
+      return builder.toString();
+  }
+  
   /**
    * Create an application from a URL. 
    * The first version of this method isn't smart enough to check whether
