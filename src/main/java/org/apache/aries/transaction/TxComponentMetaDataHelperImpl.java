@@ -40,37 +40,37 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
           cache = new ConcurrentHashMap<String, String>();
       }
       
-      public void add(Pattern pattern, String strategy) {
-          map.put(pattern, strategy);
+      public void add(Pattern pattern, String txAttribute) {
+          map.put(pattern, txAttribute);
       }
       
-      public String getStrategy(String name)
+      public String getAttribute(String name)
       {
-        String strategy = cache.get(name);
+        String txAttribute = cache.get(name);
         
-        if (strategy == null) {
+        if (txAttribute == null) {
             List<Pattern> matches = findMatches(name);
             int size = matches.size();
 
             if (size == 0) {
-                strategy = "Required";
+                txAttribute = "Required";
             }
             else if (size == 1) {
-                strategy = map.get(matches.get(0));
+                txAttribute = map.get(matches.get(0));
             }
             else {
                 matches = selectPatternsWithFewestWildcards(matches);
                 size = matches.size();
 
                 if (size == 1) {
-                    strategy = map.get(matches.get(0));
+                    txAttribute = map.get(matches.get(0));
                 }
                 else {
                     matches = selectLongestPatterns(matches);
                     size = matches.size();
 
                     if (size == 1) {
-                        strategy = map.get(matches.get(0));
+                        txAttribute = map.get(matches.get(0));
                     }
                     else {
                         throw new IllegalStateException("Unable to apply patterns: " + matches);
@@ -78,10 +78,10 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
                 }
             }
             
-            cache.put(name, strategy);
+            cache.put(name, txAttribute);
         }
         
-        return strategy;
+        return txAttribute;
       }
       
       private List<Pattern> findMatches(String name)
@@ -162,13 +162,13 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
       }
     }
 
-    public String getComponentMethodTxStrategy(ComponentMetadata component, String methodName)
+    public String getComponentMethodTxAttribute(ComponentMetadata component, String methodName)
     {
         TranData td = data.get(component);
         String result = null;
 
         if (td != null)
-            result = td.getStrategy(methodName);
+            result = td.getAttribute(methodName);
 
         return result;
     }

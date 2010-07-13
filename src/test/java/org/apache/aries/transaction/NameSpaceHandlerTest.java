@@ -93,8 +93,8 @@ public class NameSpaceHandlerTest {
       BeanMetadata anon = (BeanMetadata) ((BeanProperty) comp.getProperties().get(0)).getValue();
       BeanMetadata anonToo = (BeanMetadata) ((BeanProperty) comp.getProperties().get(1)).getValue();
 
-      assertEquals("Required", txenhancer.getComponentMethodTxStrategy(anon, "doSomething"));
-      assertEquals("Never", txenhancer.getComponentMethodTxStrategy(anonToo, "doSomething"));
+      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
+      assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
         
     }
 }
