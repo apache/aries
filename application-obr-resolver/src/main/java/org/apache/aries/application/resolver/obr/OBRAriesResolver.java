@@ -43,6 +43,7 @@ import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.resolver.obr.generator.RepositoryDescriptorGenerator;
 import org.apache.aries.application.resolver.obr.impl.ApplicationResourceImpl;
 import org.apache.aries.application.resolver.obr.impl.OBRBundleInfo;
+import org.apache.aries.application.resolver.obr.impl.ResourceWrapper;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.apache.felix.bundlerepository.DataModelHelper;
 import org.apache.felix.bundlerepository.Reason;
@@ -113,7 +114,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
     resolveRepos.add(repositoryAdmin.getSystemRepository());
     
     // add local repository
-    resolveRepos.add(repositoryAdmin.getLocalRepository());
+    resolveRepos.add(getLocalRepository(repositoryAdmin));
     
     // add application repository
     resolveRepos.add(appRepo);
@@ -145,6 +146,20 @@ public class OBRAriesResolver implements AriesApplicationResolver
     }
   }
 
+  private Repository getLocalRepository(RepositoryAdmin admin) 
+  {
+      Repository localRepository = repositoryAdmin.getLocalRepository();
+      
+      Resource[] resources = localRepository.getResources();
+
+      Resource[] newResources = new Resource[resources.length];
+      for (int i = 0; i < resources.length; i++) {
+          newResources[i] = new ResourceWrapper(resources[i]); 
+      }
+      
+      return repositoryAdmin.getHelper().repository(newResources);
+  }
+  
   private Resource createApplicationResource(DataModelHelper helper, String appName, Version appVersion,
       List<Content> appContent)
   {

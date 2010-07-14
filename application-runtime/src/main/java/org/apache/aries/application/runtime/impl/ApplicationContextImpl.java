@@ -39,6 +39,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
+import org.osgi.service.packageadmin.PackageAdmin;
 
 public class ApplicationContextImpl implements AriesApplicationContext {
   
@@ -53,47 +54,43 @@ public class ApplicationContextImpl implements AriesApplicationContext {
     _bundles = new HashMap<BundleInfo, Bundle>();
     
     DeploymentMetadata meta = _application.getDeploymentMetadata();
-    
+                
     AriesApplicationResolver resolver = null;
+    PackageAdmin packageAdmin = null;
     
-    ServiceReference ref = b.getServiceReference(AriesApplicationResolver.class.getName());
-
-    if (ref != null) resolver = (AriesApplicationResolver) b.getService(ref);
+    ServiceReference resolverRef = b.getServiceReference(AriesApplicationResolver.class.getName());
+    ServiceReference packageAdminRef = b.getServiceReference(PackageAdmin.class.getName());
     
-    if (resolver == null) {
-      throw new ManagementException(new ServiceException(AriesApplicationResolver.class.getName(), ServiceException.UNREGISTERED));
-    }
+    try {            
+      resolver = getService(resolverRef, AriesApplicationResolver.class);
+      packageAdmin = getService(packageAdminRef, PackageAdmin.class);
     
-    try {
       List<DeploymentContent> bundlesToInstall = new ArrayList<DeploymentContent>(meta.getApplicationDeploymentContents());
       bundlesToInstall.addAll(meta.getApplicationProvisionBundles());
-      
+    
       for (DeploymentContent content : bundlesToInstall) {
         String bundleSymbolicName = content.getContentName();
         Version bundleVersion = content.getExactVersion();
         
-        BundleInfo bundleInfo = null;
+        // Step 1: See if bundle is already installed in the framework
+        if (findBundleInFramework(packageAdmin, bundleSymbolicName, bundleVersion) != null) {
+            continue;
+        }
         
-        for (BundleInfo info : _application.getBundleInfo()) {
-          if (info.getSymbolicName().equals(bundleSymbolicName) &&
-              info.getVersion().equals(bundleVersion)) {
-            bundleInfo = info;
-            break;
-          }
+        // Step 2: See if the bundle is included in the application
+        BundleInfo bundleInfo = findBundleInfoInApplication(bundleSymbolicName, bundleVersion);
+        if (bundleInfo == null) {
+            // Step 3: Lookup bundle location using the resolver
+            bundleInfo = findBundleInfoUsingResolver(resolver, bundleSymbolicName, bundleVersion);
         }
         
         if (bundleInfo == null) {
-          // call out to the bundle repository.
-          bundleInfo = resolver.getBundleInfo(bundleSymbolicName, bundleVersion);
+            throw new ManagementException("Cound not find bundles: " + bundleSymbolicName + "_" + bundleVersion);
         }
-        
-        if (bundleInfo == null) {
-          throw new ManagementException("Cound not find bundles: " + bundleSymbolicName + "_" + bundleVersion);
-        }
-        
+            
         Bundle bundle = _bundleContext.installBundle(bundleInfo.getLocation());
-        
-        _bundles.put(bundleInfo, bundle);
+            
+        _bundles.put(bundleInfo, bundle);        
       }
     } catch (BundleException be) {
       for (Bundle bundle : _bundles.values()) {
@@ -104,12 +101,54 @@ public class ApplicationContextImpl implements AriesApplicationContext {
       
       throw be;
     } finally {
-      if (resolver != null) b.ungetService(ref);
+      if (resolver != null) {
+          b.ungetService(resolverRef);
+      }
+      if (packageAdmin != null) {
+          b.ungetService(packageAdminRef);
+      }
     }
     
     _state = ApplicationState.INSTALLED;
   }
 
+  private <T> T getService(ServiceReference ref, Class<T> type) throws ManagementException {
+      Object service = null;
+      if (ref != null) {
+          service = _bundleContext.getService(ref);
+      }
+      
+      if (service == null) {
+          throw new ManagementException(new ServiceException(type.getName(), ServiceException.UNREGISTERED));
+      }
+      
+      return type.cast(service);
+  }
+  
+  private Bundle findBundleInFramework(PackageAdmin admin, String symbolicName, Version version) {
+      String exactVersion = "[" + version + "," + version + "]";
+      Bundle[] bundles = admin.getBundles(symbolicName, exactVersion);
+      if (bundles != null && bundles.length == 1) {
+          return bundles[0];
+      } else {
+          return null;
+      }
+  }
+  
+  private BundleInfo findBundleInfoInApplication(String symbolicName, Version version) {
+      for (BundleInfo info : _application.getBundleInfo()) {
+          if (info.getSymbolicName().equals(symbolicName)
+              && info.getVersion().equals(version)) {
+              return info;
+          }
+      }
+      return null;
+  }
+  
+  private BundleInfo findBundleInfoUsingResolver(AriesApplicationResolver resolver, String symbolicName, Version version) {
+      return resolver.getBundleInfo(symbolicName, version);
+  }
+  
   public AriesApplication getApplication() {
     return _application;
   }
