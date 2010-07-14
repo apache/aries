@@ -17,7 +17,6 @@
  * under the License.
  */
 
-
 package org.apache.aries.application.resolver.obr.impl;
 
 import org.apache.aries.application.Content;
@@ -118,30 +117,30 @@ public class OBRBundleInfo implements BundleInfo
   {
     return requireBundle;
   }
-  
-  /**
-   * Equality is just based on the location. If you install a bundle from the same location string
-   * you get the same Bundle, even if the underlying bundle had a different symbolic name/version.
-   * This seems reasonable and quick.
-   */
-  public boolean equals(Object other)
-  {
-    if (other == null) return false;
-    if (other == this) return true;
-    if (other instanceof OBRBundleInfo) {
-      return location.equals(((OBRBundleInfo)other).location);
-    }
     
-    return false;
-  }
-  
-  public int hashCode()
-  {
-    return location.hashCode();
-  }
-  
   public String toString()
   {
     return symbolicName + "_" + version;
   }
+
+  public int hashCode() 
+  {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + symbolicName.hashCode();
+    result = prime * result + version.hashCode();
+    return result;
+  }
+
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) {
+        return false;
+    }
+    OBRBundleInfo other = (OBRBundleInfo) obj;
+    return (symbolicName.equals(other.symbolicName)
+            && version.equals(other.version));
+  }
+  
 }
