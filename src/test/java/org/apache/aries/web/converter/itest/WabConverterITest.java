@@ -27,7 +27,11 @@ import static org.ops4j.pax.exam.OptionUtils.combine;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.List;
 
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
@@ -47,7 +51,6 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.service.url.URLStreamHandlerService;
 import org.osgi.util.tracker.ServiceTracker;
@@ -58,42 +61,41 @@ public class WabConverterITest {
 
   @Inject
   protected BundleContext bundleContext;
+  
+  private List<ServiceTracker> srs;
 
   @Before
   public void setUp() throws Exception {
+    srs = new ArrayList<ServiceTracker>();
+    
     ZipFixture testWar = ArchiveFixture.newJar()
       .binary("WEB-INF/classes/org/apache/aries/web/test/TestClass.class", 
         getClass().getClassLoader().getResourceAsStream("org/apache/aries/web/test/TestClass.class"));
     
     FileOutputStream fout = new FileOutputStream("test.war");
     testWar.writeOut(fout);
+    fout.close();
   }
 
   @After
   public void tearDown() throws Exception {
     new File("test.war").delete();
+    for (ServiceTracker st : srs) {
+        if (st != null) {
+            st.close();
+        }  
+    }
   }
 
-  
   @Test
   public void getStarted() throws Exception {
-    Bundle warConverter = getBundle("org.apache.aries.web.urlhandler");
-    assertEquals(Bundle.ACTIVE, warConverter.getState());
-    
-    // wait for the blueprint container to do its work
-    int maxRepetition = 100;
-    while (maxRepetition-- > 0) {
-      ServiceReference[] ref = bundleContext.getServiceReferences(URLStreamHandlerService.class.getName(),
-          "(url.handler.protocol=webbundle)");
-      if (ref != null)
-        break;
-      
-      Thread.sleep(100);
-    }
     
     File testWar = new File("test.war");
-    Bundle converted = bundleContext.installBundle("webbundle:"+testWar.toURL().toExternalForm() 
-        + "?Bundle-SymbolicName=test.war.bundle&Web-ContextPath=foo");
+    String baseUrl = "webbundle:" + testWar.toURI().toURL().toExternalForm() ;
+
+    assertTrue("Time out waiting for webbundle URL handler", waitForURLHandler(baseUrl));
+    
+    Bundle converted = bundleContext.installBundle(baseUrl + "?Bundle-SymbolicName=test.war.bundle&Web-ContextPath=foo");
     
     assertNotNull(converted);
     Dictionary<String,String> man = converted.getHeaders();
@@ -101,6 +103,23 @@ public class WabConverterITest {
     assertEquals("test.war.bundle", man.get(Constants.BUNDLE_SYMBOLICNAME)); 
     assertEquals("/foo", man.get("Web-ContextPath"));
     assertTrue(man.get(Constants.IMPORT_PACKAGE).contains("javax.naming"));
+  }
+
+  private boolean waitForURLHandler(String url) {
+      int maxRepetition = 100;
+      for (int i = 0; i < maxRepetition; i++) {
+          try {
+              new URL(url);
+              return true;
+          } catch (MalformedURLException e) {
+              try {
+                  Thread.sleep(100);
+              } catch (InterruptedException ee) {
+                  return false;
+              }
+          }
+      }
+      return false;
   }
 
   @org.ops4j.pax.exam.junit.Configuration
@@ -207,8 +226,10 @@ public class WabConverterITest {
       tracker = new ServiceTracker(bc == null ? bundleContext : bc, osgiFilter,
           null);
       tracker.open();
-      // Note that the tracker is not closed to keep the reference
-      // This is buggy, has the service reference may change i think
+      
+      // add tracker to the list of trackers we close at tear down
+      srs.add(tracker);
+      
       Object svc = type.cast(tracker.waitForService(timeout));
       if (svc == null) {
         throw new RuntimeException("Gave up waiting for service " + flt);
