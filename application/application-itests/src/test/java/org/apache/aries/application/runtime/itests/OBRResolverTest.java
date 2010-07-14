@@ -69,6 +69,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
   public static final String CORE_BUNDLE_BY_REFERENCE = "core.bundle.by.reference";
   public static final String TRANSITIVE_BUNDLE_BY_VALUE = "transitive.bundle.by.value";
   public static final String TRANSITIVE_BUNDLE_BY_REFERENCE = "transitive.bundle.by.reference";
+  public static final String BUNDLE_IN_FRAMEWORK = "org.apache.aries.util";
   
   
   /* Use @Before not @BeforeClass so as to ensure that these resources
@@ -80,7 +81,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     ZipFixture bundle = ArchiveFixture.newJar().manifest()
                             .attribute(Constants.BUNDLE_SYMBOLICNAME, CORE_BUNDLE_BY_VALUE)
                             .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
-                            .attribute(Constants.IMPORT_PACKAGE, "p.q.r, x.y.z, javax.naming, org.apache.aries.util")
+                            .attribute(Constants.IMPORT_PACKAGE, "p.q.r, x.y.z, javax.naming, " + BUNDLE_IN_FRAMEWORK)
                             .attribute(Constants.BUNDLE_VERSION, "1.0.0").end();
 
     
@@ -188,7 +189,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     
     List<DeploymentContent> provision = depMeta.getApplicationProvisionBundles();
     
-    assertEquals(provision.toString(), 2, provision.size());
+    assertEquals(provision.toString(), 3, provision.size());
     
     List<String> bundleSymbolicNames = new ArrayList<String>();
     
@@ -198,6 +199,7 @@ public class OBRResolverTest extends AbstractIntegrationTest
     
     assertTrue("Bundle " + TRANSITIVE_BUNDLE_BY_REFERENCE + " not found.", bundleSymbolicNames.contains(TRANSITIVE_BUNDLE_BY_REFERENCE));
     assertTrue("Bundle " + TRANSITIVE_BUNDLE_BY_VALUE + " not found.", bundleSymbolicNames.contains(TRANSITIVE_BUNDLE_BY_VALUE));
+    assertTrue("Bundle " + BUNDLE_IN_FRAMEWORK + " not found.", bundleSymbolicNames.contains(BUNDLE_IN_FRAMEWORK));
     
     AriesApplicationContext ctx = manager.install(app);
     ctx.start();
