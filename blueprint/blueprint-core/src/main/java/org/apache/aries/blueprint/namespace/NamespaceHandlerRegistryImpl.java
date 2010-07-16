@@ -373,6 +373,8 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                                 }
                             } catch (ClassNotFoundException e) {
                                 // Ignore
+                            } catch (NoClassDefFoundError e) {
+                                // Ignore
                             }
                         }
                     }
