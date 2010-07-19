@@ -29,7 +29,7 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
 /**
- * @version $Rev: 467553 $ $Date: 2006-10-25 06:01:51 +0200 (Wed, 25 Oct 2006) $
+ * @version $Rev$ $Date$
  */
 public interface XATerminator {
     public void commit(Xid xid, boolean onePhase) throws XAException;
