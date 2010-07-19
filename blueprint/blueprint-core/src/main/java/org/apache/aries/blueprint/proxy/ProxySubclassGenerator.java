@@ -50,6 +50,8 @@ public class ProxySubclassGenerator
   // the map of
   // Class names to sub-Class names)
   private static final Map<ClassLoader, ConcurrentMap<String, String>> proxyClassesByClassLoader;
+  
+  private static final ClassLoader defaultClassLoader = new ClassLoader() {};
 
   static {
     // Ensure that this is a synchronized map as we may use it from multiple
@@ -67,10 +69,9 @@ public class ProxySubclassGenerator
     LOGGER.debug(AsmInterceptorWrapper.LOG_ENTRY, "getProxySubclass", new Object[] { aClass });
 
     ClassLoader loader = aClass.getClassLoader();
-    // in the special case where the loader is null we use the thread
-    // ContextClassLoader
-    // this is for subclassing java.* or javax.* packages
-    if (loader == null) loader = Thread.currentThread().getContextClassLoader();
+    // in the special case where the loader is null we use a default classloader
+    // this is for subclassing java.* or javax.* packages, so that one will do
+    if (loader == null) loader = defaultClassLoader;
 
     ConcurrentMap<String, String> proxyMap;
     synchronized (loader) {
