@@ -47,6 +47,21 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.configadmin</artifactId>
+                <version>1.2.4</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>org.osgi.compendium</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>org.osgi.core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.aries</groupId>
                 <artifactId>org.apache.aries.util</artifactId>
                 <version>0.2-incubating-SNAPSHOT</version>
@@ -72,7 +87,11 @@
             </dependency>
 
             <!-- internal -->
-
+            <dependency>
+                <groupId>org.apache.aries.spifly</groupId>
+                <artifactId>org.apache.aries.spifly.core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -86,6 +105,7 @@
 
     <modules>
         <module>spi-fly-core</module>
+        <module>spi-fly-itests</module>
     </modules>
 
 </project>
