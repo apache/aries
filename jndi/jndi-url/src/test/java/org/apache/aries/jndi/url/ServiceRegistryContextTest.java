@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -129,9 +130,13 @@ public class ServiceRegistryContextTest
      
      Context ctx2 = (Context) ctx.lookup("osgi:service");
      
-     Runnable r = (Runnable) ctx2.lookup("java.lang.Runnable");
+     Runnable r1 = (Runnable) ctx2.lookup("java.lang.Runnable");   
+     assertNotNull(r1);
+     assertTrue("expected proxied service class", r1 != service);
      
-     assertNotNull(r);
+     Runnable r2 = (Runnable) ctx.lookup("aries:services/java.lang.Runnable");
+     assertNotNull(r2);
+     assertTrue("expected non-proxied service class", r2 == service);
   }
   
   /**
@@ -200,7 +205,7 @@ public class ServiceRegistryContextTest
     
     Thread.currentThread().setContextClassLoader(mock.getClassLoader());
     
-    Runnable s = (Runnable) ctx.lookup("aries:services/java.lang.Runnable");
+    Runnable s = (Runnable) ctx.lookup("osgi:service/java.lang.Runnable");
     
     assertNotNull("We didn't get a service back from our lookup :(", s);
     
@@ -253,7 +258,7 @@ public class ServiceRegistryContextTest
 
     InitialContext ctx = new InitialContext();
     
-    Object s = ctx.lookup("aries:services/java.lang.Runnable/(rubbish=smelly)");
+    Object s = ctx.lookup("osgi:service/java.lang.Runnable/(rubbish=smelly)");
     
     assertNotNull("We didn't get a service back from our lookup :(", s);
     
@@ -281,7 +286,7 @@ public class ServiceRegistryContextTest
 
     InitialContext ctx = new InitialContext();
     
-    ctx.lookup("aries:services/java.lang.Runnable");
+    ctx.lookup("osgi:service/java.lang.Runnable");
   }
   
   /**
@@ -299,7 +304,7 @@ public class ServiceRegistryContextTest
 
     InitialContext ctx = new InitialContext();
     
-    ctx.lookup("aries:services/java.lang.Integer");
+    ctx.lookup("osgi:service/java.lang.Integer");
   }
   
   /**
@@ -312,7 +317,7 @@ public class ServiceRegistryContextTest
   {
     InitialContext ctx = new InitialContext();
     
-    NamingEnumeration<NameClassPair> serviceList = ctx.list("aries:services/java.lang.Runnable/(rubbish=smelly)");
+    NamingEnumeration<NameClassPair> serviceList = ctx.list("osgi:service/java.lang.Runnable/(rubbish=smelly)");
     
     checkThreadRetrievedViaListMethod(serviceList);
     
@@ -322,7 +327,7 @@ public class ServiceRegistryContextTest
     
     registerService(new Thread());
     
-    serviceList = ctx.list("aries:services/java.lang.Runnable/(rubbish=smelly)");
+    serviceList = ctx.list("osgi:service/java.lang.Runnable/(rubbish=smelly)");
     
     checkThreadRetrievedViaListMethod(serviceList);
     
@@ -591,7 +596,7 @@ public class ServiceRegistryContextTest
     
     assertEquals("The service retrieved was not of the correct type", "java.lang.Thread", ncp.getClassName());
     
-    assertEquals("aries:services/java.lang.Runnable/(rubbish=smelly)", ncp.getName().toString());
+    assertEquals("osgi:service/java.lang.Runnable/(rubbish=smelly)", ncp.getName().toString());
   }
   
   /**
@@ -604,7 +609,7 @@ public class ServiceRegistryContextTest
   {
     InitialContext ctx = new InitialContext();
     
-    NamingEnumeration<Binding> serviceList = ctx.listBindings("aries:services/java.lang.Runnable/(rubbish=smelly)");
+    NamingEnumeration<Binding> serviceList = ctx.listBindings("osgi:service/java.lang.Runnable/(rubbish=smelly)");
     
     Object returnedService = checkThreadRetrievedViaListBindingsMethod(serviceList);
     
@@ -616,7 +621,7 @@ public class ServiceRegistryContextTest
     Thread secondService = new Thread();
     registerService(secondService);
     
-    serviceList = ctx.listBindings("aries:services/java.lang.Runnable/(rubbish=smelly)");
+    serviceList = ctx.listBindings("osgi:service/java.lang.Runnable/(rubbish=smelly)");
     
     Object returnedService1 = checkThreadRetrievedViaListBindingsMethod(serviceList);
     
@@ -647,7 +652,7 @@ public class ServiceRegistryContextTest
     
     assertTrue("The service retrieved was not of the correct type", binding.getObject() instanceof Thread);
     
-    assertEquals("aries:services/java.lang.Runnable/(rubbish=smelly)", binding.getName().toString());
+    assertEquals("osgi:service/java.lang.Runnable/(rubbish=smelly)", binding.getName().toString());
     
     return binding.getObject();
   }
