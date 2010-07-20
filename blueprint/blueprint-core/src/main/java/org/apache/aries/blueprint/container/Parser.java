@@ -344,7 +344,7 @@ public class Parser {
         } else if (MapMetadata.class.isAssignableFrom(type)) {
             return type.cast(parseMap(element, enclosingComponent));
         } else if (BeanMetadata.class.isAssignableFrom(type)) {
-            return type.cast(parseBeanMetadata(element, false));
+            return type.cast(parseBeanMetadata(element, enclosingComponent == null));
         } else if (NullMetadata.class.isAssignableFrom(type)) {
             return type.cast(NullMetadata.NULL);
         } else if (CollectionMetadata.class.isAssignableFrom(type)) {
@@ -355,6 +355,8 @@ public class Parser {
             return type.cast(parseReference(element, enclosingComponent == null));
         } else if (ReferenceListMetadata.class.isAssignableFrom(type)) {
             return type.cast(parseRefList(element, enclosingComponent == null));
+        } else if (ServiceMetadata.class.isAssignableFrom(type)) {
+            return type.cast(parseService(element, enclosingComponent == null));
         } else if (IdRefMetadata.class.isAssignableFrom(type)) {
             return type.cast(parseIdRef(element));
         } else if (RefMetadata.class.isAssignableFrom(type)) {
