@@ -28,6 +28,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -208,9 +209,7 @@ public final class ServiceHelper
 
   public static Object getService(BundleContext ctx, OsgiName lookupName, String id,
                                   boolean dynamicRebind, Map<String, Object> env, boolean requireProxy) throws NamingException
-  {
-    Object result = null;
-
+  {    
     String interfaceName = lookupName.getInterface();
     String filter = lookupName.getFilter();
     String serviceName = lookupName.getServiceName();
@@ -240,20 +239,25 @@ public final class ServiceHelper
       pair = findService(ctx, interfaceName, filter);
     }
 
+    Object result = null;
+    
     if (pair != null) {
-      result = proxy(interfaceName, filter, dynamicRebind, ctx, pair, requireProxy);
+      if (requireProxy) {
+        result = proxy(interfaceName, filter, dynamicRebind, ctx, pair);
+      } else {
+        result = pair.service;
+      }
     }
 
     return result;
   }
 
   private static Object proxy(final String interface1, final String filter, final boolean rebind,
-                              final BundleContext ctx, final ServicePair pair, final boolean requireProxy)
+                              final BundleContext ctx, final ServicePair pair)
   {
     Object result = null;
     Bundle owningBundle = ctx.getBundle();
-    ServiceKey k = new ServiceKey(owningBundle, pair.ref.getBundle(), (Long) pair.ref
-        .getProperty(Constants.SERVICE_ID));
+    ServiceKey k = new ServiceKey(owningBundle, pair.ref.getBundle(), (Long) pair.ref.getProperty(Constants.SERVICE_ID));
 
     WeakReference<Object> proxyRef = proxyCache.get(k);
 
@@ -268,7 +272,7 @@ public final class ServiceHelper
       result = AccessController.doPrivileged(new PrivilegedAction<Object>() {
         public Object run()
         {
-          return proxyPriviledged(interface1, filter, rebind, ctx, pair, requireProxy);
+          return proxyPriviledged(interface1, filter, rebind, ctx, pair);
         }
       });
 
@@ -282,7 +286,7 @@ public final class ServiceHelper
     return result;
   }
 
-  private static Object proxyPriviledged(String interface1, String filter, boolean dynamicRebind, BundleContext ctx, ServicePair pair, boolean requireProxy)
+  private static Object proxyPriviledged(String interface1, String filter, boolean dynamicRebind, BundleContext ctx, ServicePair pair)
   {
     String[] interfaces = null;
     if (interface1 != null) {
@@ -323,32 +327,10 @@ public final class ServiceHelper
     for (String interfaceName : interfaces) {
       try {
         Class<?> potentialClass = serviceProviderBundle.loadClass(interfaceName);
-        if (Modifier.isFinal(potentialClass.getModifiers())) {
-          if (requireProxy) {
-            continue;
-          }
-          return pair.service;
-        }
-        if (!potentialClass.isInterface()) {
-          if (requireProxy && !proxyFactory.proxiesClasses()) {
-            continue;
-          }
-          try {
-            potentialClass.getConstructor(new Class[0]);
-          } catch (NoSuchMethodException e) {
-            if (requireProxy) {
-              continue;
-            }
-            return pair.service;
-          }
-        }
         if (pair.ref.isAssignableTo(owningBundle, interfaceName)) {
           clazz.add(potentialClass);
         }
       } catch (ClassNotFoundException e) {
-        if (!requireProxy) {
-          return pair.service;
-        }
       }
     }
 
@@ -364,13 +346,11 @@ public final class ServiceHelper
     // on this adapter.
 
     try {
-      return proxyFactory.createProxy(new BundleToClassLoaderAdapter(serviceProviderBundle), clazz
-          .toArray(new Class<?>[clazz.size()]), ih);
+      return proxyFactory.createProxy(new BundleToClassLoaderAdapter(serviceProviderBundle), toClassArray(clazz), ih);
     } catch (IllegalArgumentException e) {
-      if (requireProxy) {
-        throw e;
-      }
-      return pair.service;
+      throw e;
+    } catch (RuntimeException e) {
+      throw new IllegalArgumentException("Unable to create proxy for " + pair.ref, e);
     }
   }
 
@@ -453,7 +433,7 @@ public final class ServiceHelper
       pair.ref = ref;
       pair.service = service;
 
-      result = proxy(null, null, false, ctx, pair, true);
+      result = proxy(null, null, false, ctx, pair);
     }
 
     return result;
@@ -473,9 +453,9 @@ public final class ServiceHelper
     return proxyFactory;
   }
 
-  private static Class[] getInterfaces(Class[] classes) {
-    Set<Class> interfaces = new HashSet<Class>();
-    for (Class clazz : classes) {
+  private static Class<?>[] getInterfaces(Class<?>[] classes) {
+    Set<Class<?>> interfaces = new HashSet<Class<?>>();
+    for (Class<?> clazz : classes) {
       if (clazz.isInterface()) {
         interfaces.add(clazz);
       }
@@ -483,7 +463,7 @@ public final class ServiceHelper
     return toClassArray(interfaces);
   }
 
-  private static Class[] toClassArray(Set<Class> classes) {
+  private static Class<?>[] toClassArray(Collection<Class<?>> classes) {
     return classes.toArray(new Class[classes.size()]);
   }
 
@@ -497,7 +477,7 @@ public final class ServiceHelper
   public static class JdkProxyFactory implements ProxyFactory {
 
     public Object createProxy(final ClassLoader classLoader, final Class[] classes, final Callable<Object> dispatcher) {
-      return Proxy.newProxyInstance(classLoader, getInterfaces(classes), new InvocationHandler() {
+      return Proxy.newProxyInstance(classLoader, classes, new InvocationHandler() {
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
           try {
             return method.invoke(dispatcher.call(), args);
