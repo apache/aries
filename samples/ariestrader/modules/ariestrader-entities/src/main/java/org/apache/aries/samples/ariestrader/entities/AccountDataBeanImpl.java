@@ -103,7 +103,7 @@ public class AccountDataBeanImpl implements AccountDataBean, Serializable {
     private Collection<HoldingDataBeanImpl> holdings;
     
     @OneToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="PROFILE_USERID")
+    @JoinColumn(name="PROFILE_USERID", columnDefinition="VARCHAR(250)")
     private AccountProfileDataBeanImpl profile;
 
     /* Accessor methods for relationship fields are only included for the AccountProfile profileID */
