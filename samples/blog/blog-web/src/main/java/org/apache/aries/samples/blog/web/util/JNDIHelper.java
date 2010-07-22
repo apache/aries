@@ -30,7 +30,7 @@ public class JNDIHelper {
 		try {
 			InitialContext ic = new InitialContext();
 
-			return (BloggingService) ic.lookup("aries:services/"
+			return (BloggingService) ic.lookup("osgi:service/"
 					+ BloggingService.class.getName());
 		} catch (NamingException e) {
 			e.printStackTrace();
