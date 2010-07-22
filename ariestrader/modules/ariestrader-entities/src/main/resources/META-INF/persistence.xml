@@ -19,8 +19,8 @@
 
     <persistence-unit transaction-type="RESOURCE_LOCAL" name="ariestrader-am">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-        <jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/TradeDataSource)</jta-data-source>
-        <non-jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/NoTxTradeDataSource)</non-jta-data-source>
+        <jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/TradeDataSource)</jta-data-source>
+        <non-jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/NoTxTradeDataSource)</non-jta-data-source>
          
         <class>org.apache.aries.samples.ariestrader.entities.AccountDataBeanImpl</class>
         <class>org.apache.aries.samples.ariestrader.entities.AccountProfileDataBeanImpl</class>
@@ -43,8 +43,8 @@
         
     <persistence-unit transaction-type="JTA" name="ariestrader-cm">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-        <jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/TradeDataSource)</jta-data-source>
-        <non-jta-data-source>aries:services/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/NoTxTradeDataSource)</non-jta-data-source>
+        <jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/TradeDataSource)</jta-data-source>
+        <non-jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/NoTxTradeDataSource)</non-jta-data-source>
          
         <class>org.apache.aries.samples.ariestrader.entities.AccountDataBeanImpl</class>
         <class>org.apache.aries.samples.ariestrader.entities.AccountProfileDataBeanImpl</class>
