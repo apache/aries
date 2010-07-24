@@ -32,11 +32,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+
+import org.apache.aries.blueprint.container.GenericType;
+import org.apache.aries.blueprint.di.ExecutionContext;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 /**
  * TODO: javadoc
@@ -129,85 +134,71 @@ public class ReflectionUtils {
         }
         
         if (properties[index] == null) {
-            Map<String,PropertyDescriptor> props = new HashMap<String, PropertyDescriptor>();
+            Set<String> propertyNames = new HashSet<String>();
+            Map<String,Method> getters = new HashMap<String, Method>();
+            Map<String,List<Method>> setters = new HashMap<String, List<Method>>();
+            Set<String> illegalProperties = new HashSet<String>();
+            
             for (Method method : clazz.getMethods()) {
-                if (Modifier.isStatic(method.getModifiers()) || method.isBridge()) {
-                    continue;
-                }
+                if (Modifier.isStatic(method.getModifiers()) || method.isBridge()) continue;
+                
                 String name = method.getName();
                 Class<?> argTypes[] = method.getParameterTypes();
                 Class<?> resultType = method.getReturnType();
                 
-                Class<?> argType = resultType;
-                Method getter = null;
-                Method setter = null;
-                
                 if (name.length() > 3 && name.startsWith("set") && resultType == Void.TYPE && argTypes.length == 1) {
                     name = decapitalize(name.substring(3));
-                    setter = method;
-                    argType = argTypes[0];
-                } else if (name.length() > 3 && name.startsWith("get") && argTypes.length == 0) {
+                    if (!!!setters.containsKey(name)) setters.put(name, new ArrayList<Method>());
+                    setters.get(name).add(method);
+                    propertyNames.add(name);
+                } else if (name.length() > 3 && name.startsWith("get") && resultType != Void.TYPE && argTypes.length == 0) {
                     name = decapitalize(name.substring(3));
-                    getter = method;
+
+                    if (getters.containsKey(name)) illegalProperties.add(name);
+                    else propertyNames.add(name);
+                    
+                    getters.put(name, method);                    
                 } else if (name.length() > 2 && name.startsWith("is") && argTypes.length == 0 && resultType == boolean.class) {
                     name = decapitalize(name.substring(2));
-                    getter = method;
-                } else {
-                    continue;
+
+                    if (getters.containsKey(name)) illegalProperties.add(name);
+                    else propertyNames.add(name);
+                    
+                    getters.put(name, method);                    
                 }
                 
-                if (props.containsKey(name)) {
-                    PropertyDescriptor pd = props.get(name);
-                    if (pd != INVALID_PROPERTY) {
-                        if (!argType.equals(pd.type)) {
-                            props.put(name, INVALID_PROPERTY);
-                        } else if (getter != null) {
-                            if (pd.getter == null || pd.getter.equals(getter))
-                                pd.getter = getter;
-                            else
-                                props.put(name, INVALID_PROPERTY);
-                        } else if (setter != null) {
-                            if (pd.setter == null || pd.setter.equals(setter)) 
-                                pd.setter = setter;
-                            else
-                                props.put(name, INVALID_PROPERTY);
-                        }
-                    }
-                } else {
-                    props.put(name, new PropertyDescriptor(name, argType, getter, setter));
-                }
             }
+
+            Map<String, PropertyDescriptor> props = new HashMap<String, PropertyDescriptor>();
+            for (String propName : propertyNames) {
+                props.put(propName,
+                        new MethodPropertyDescriptor(propName, getters.get(propName), setters.get(propName)));
+            }            
             
             if (allowFieldInjection) {
                 for (Field field : clazz.getDeclaredFields()) {
-                    if (Modifier.isStatic(field.getModifiers())) {
-                        continue;
-                    }
-                    
-                    String name = decapitalize(field.getName());
-                    if (!props.containsKey(name)) {
-                        props.put(name, new PropertyDescriptor(name, field.getType(), field));
-                    } else {
-                        PropertyDescriptor pd = props.get(name);
-                        if (pd != INVALID_PROPERTY) {
-                            if (pd.type.equals(field.getType())) {
-                                pd.field = field;
-                            } 
-                            // no else, we don't require field implementations to have the same
-                            // type as the getter and setter
+                    if (!!!Modifier.isStatic(field.getModifiers())) {
+                        String name = decapitalize(field.getName());
+                        PropertyDescriptor desc = props.get(name);
+                        if (desc == null) {
+                            props.put(name, new FieldPropertyDescriptor(name, field));
+                        } else if (desc instanceof MethodPropertyDescriptor) {
+                            props.put(name, 
+                                    new JointPropertyDescriptor((MethodPropertyDescriptor) desc, 
+                                            new FieldPropertyDescriptor(name, field)));
+                        } else {
+                            illegalProperties.add(name);
                         }
                     }
                 }
             }
             
-            Iterator<PropertyDescriptor> it = props.values().iterator();
-            while (it.hasNext()) {
-                if (it.next() == INVALID_PROPERTY)
-                    it.remove();
+            List<PropertyDescriptor> result = new ArrayList<PropertyDescriptor>();
+            for (PropertyDescriptor prop : props.values()) {
+                if (!!!illegalProperties.contains(prop.getName())) result.add(prop);
             }
             
-            Collection<PropertyDescriptor> tmp = props.values();
-            properties[index] = tmp.toArray(new PropertyDescriptor[tmp.size()]); 
+            properties[index] = result.toArray(new PropertyDescriptor[result.size()]); 
         }
         return properties[index];
     }
@@ -273,41 +264,22 @@ public class ReflectionUtils {
         }
     }
     
-    private static final PropertyDescriptor INVALID_PROPERTY = new PropertyDescriptor(null, null, null, null);
-
-    public static class PropertyDescriptor {
-        private String name;
-        private Class<?> type;
-        private Method getter;
-        private Method setter;
-        private Field field;
-
-        public PropertyDescriptor(String name, Class<?> type, Method getter, Method setter) {
+    public static abstract class PropertyDescriptor {
+        private final String name;
+        
+        public PropertyDescriptor(String name) {
             this.name = name;
-            this.type = type;
-            this.getter = getter;
-            this.setter = setter;
         }
         
-        public PropertyDescriptor(String name, Class<?> type, Field field) {
-            this.name = name;
-            this.type = type;
-            this.field = field;
-            this.getter = null;
-            this.setter = null;
-        }
-
         public String getName() {
             return name;
         }
         
-        public boolean allowsGet() {
-            return getter != null || field != null;
-        }
+        public abstract boolean allowsGet();
+        public abstract boolean allowsSet();
         
-        public boolean allowsSet() {
-            return setter != null || field != null;
-        }
+        protected abstract Object internalGet(Object instance) throws Exception;
+        protected abstract void internalSet(Object instance, Object value) throws Exception;        
         
         public Object get(final Object instance, AccessControlContext acc) throws Exception {            
             if (acc == null) {
@@ -322,18 +294,6 @@ public class ReflectionUtils {
                 } catch (PrivilegedActionException e) {
                     throw e.getException();
                 }
-            }
-        }
-            
-        private Object internalGet(Object instance) 
-                throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-            if (getter != null) {
-                return getter.invoke(instance);
-            } else if (field != null) {
-                field.setAccessible(true);
-                return field.get(instance);
-            } else {
-                throw new UnsupportedOperationException();
             }
         }
 
@@ -354,31 +314,170 @@ public class ReflectionUtils {
             }            
         }
         
-        private void internalSet(Object instance, Object value) 
+        protected Object convert(Object obj, Type type) throws Exception {
+            return ExecutionContext.Holder.getContext().convert(obj, new GenericType(type));
+        }
+    }
+    
+    private static class JointPropertyDescriptor extends PropertyDescriptor {
+        private final MethodPropertyDescriptor mpd;
+        private final FieldPropertyDescriptor fpd;
+        
+        public JointPropertyDescriptor(MethodPropertyDescriptor mpd, FieldPropertyDescriptor fpd) {
+            super(mpd.getName());
+            this.mpd = mpd;
+            this.fpd = fpd;
+        }
+
+        @Override
+        public boolean allowsGet() {
+            return mpd.allowsGet() || fpd.allowsGet();
+        }
+
+        @Override
+        public boolean allowsSet() {
+            return mpd.allowsSet() || fpd.allowsSet();
+        }
+
+        @Override
+        protected Object internalGet(Object instance) throws Exception {
+            if (mpd.allowsGet()) return mpd.internalGet(instance);
+            else if (fpd.allowsGet()) return fpd.internalGet(instance);
+            else throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void internalSet(Object instance, Object value) throws Exception {
+            if (mpd.allowsSet()) mpd.internalSet(instance, value);
+            else if (fpd.allowsSet()) fpd.internalSet(instance, value);
+            else throw new UnsupportedOperationException();
+        }
+    }
+    
+    private static class FieldPropertyDescriptor extends PropertyDescriptor {
+        private final Field field;
+        
+        public FieldPropertyDescriptor(String name, Field field) {
+            super(name);
+            this.field = field;
+        }
+
+        public boolean allowsGet() {
+            return true;
+        }
+
+        public boolean allowsSet() {
+            return true;
+        }
+
+        protected Object internalGet(Object instance) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+            field.setAccessible(true);
+            return field.get(instance);
+        }
+
+        protected void internalSet(Object instance, Object value) throws Exception {
+            field.setAccessible(true);
+            field.set(instance, convert(value, field.getGenericType()));
+        }
+    }
+    
+    private static class MethodPropertyDescriptor extends PropertyDescriptor {
+        private final Method getter;
+        private final Collection<Method> setters;
+
+        private MethodPropertyDescriptor(String name, Method getter, Collection<Method> setters) {
+            super(name);
+            this.getter = getter;
+            this.setters = (setters != null) ? setters : Collections.<Method>emptyList();
+        }
+        
+        public boolean allowsGet() {
+            return getter != null;
+        }
+        
+        public boolean allowsSet() {
+            return !!!setters.isEmpty();
+        }
+        
+        protected Object internalGet(Object instance) 
                 throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-            if (setter != null) {
-                setter.invoke(instance, value);
-            } else if (field != null) {
-                field.setAccessible(true);
-                field.set(instance, value);
+            if (getter != null) {
+                return getter.invoke(instance);
             } else {
                 throw new UnsupportedOperationException();
             }
         }
         
-        public Type getGenericType() {
-            if (setter != null)
-                return setter.getGenericParameterTypes()[0];
-            else if (getter != null)
-                return getter.getGenericReturnType();
-            else 
-                return field.getGenericType();
+        protected void internalSet(Object instance, Object value) throws Exception {
+            
+            Method setterMethod = findSetter(value);
+
+            if (setterMethod != null) {
+                setterMethod.invoke(instance, convert(value, setterMethod.getGenericParameterTypes()[0]));
+            } else {
+                throw new ComponentDefinitionException(
+                        "No converter available to convert value "+value+" into a form applicable for the " + 
+                        "setters of property "+getName());
+            }
+        }
+        
+        private Method findSetter(Object value) {
+            Class<?> valueType = (value == null) ? null : value.getClass();
+            
+            Method result = findMethodByClass(valueType);
+            
+            if (result == null) result = findMethodWithConversion(value);
+                        
+            return result;
+        }
+        
+        private Method findMethodByClass(Class<?> arg) throws ComponentDefinitionException {
+            Method result = null;
+            
+            for (Method m : setters) {
+                Class<?> paramType = m.getParameterTypes()[0];
                 
+                if ((arg == null && Object.class.isAssignableFrom(paramType)) 
+                        || (arg != null && paramType.isAssignableFrom(arg))) {
+                    
+                    // pick the method that has the more specific parameter if any
+                    if (result != null) {
+                        Class<?> oldParamType = result.getParameterTypes()[0];
+                        if (paramType.isAssignableFrom(oldParamType)) {
+                            // do nothing, result is correct
+                        } else if (oldParamType.isAssignableFrom(paramType)) {
+                            result = m;
+                        } else {
+                            throw new ComponentDefinitionException(
+                                    "Ambiguous setter method for property "+getName()+
+                                    ". More than one method matches the  parameter type "+arg);
+                        }
+                    } else {
+                        result = m;
+                    }
+                }
+            }            
+            
+            return result;
+        }
+        
+        private Method findMethodWithConversion(Object value) throws ComponentDefinitionException {
+            ExecutionContext ctx = ExecutionContext.Holder.getContext();
+            List<Method> matchingMethods = new ArrayList<Method>();
+            for (Method m : setters) {
+                Type paramType = m.getGenericParameterTypes()[0];
+                if (ctx.canConvert(value, new GenericType(paramType))) matchingMethods.add(m);
+            }
+            
+            if (matchingMethods.isEmpty()) return null;
+            else if (matchingMethods.size() == 1) return matchingMethods.get(0);
+            else throw new ComponentDefinitionException(
+                    "Ambiguous setter method for property "+ getName() + 
+                    ". More than one method matches the parameter "+value+" after applying conversion.");
         }
         
         public String toString() {
-            return "PropertyDescriptor <name: "+name+", getter: "+getter+", setter: "+setter+
-                ", field: "+field+">";
+            return "PropertyDescriptor <name: "+getName()+", getter: "+getter+", setter: "+setters;
         }
     }
 

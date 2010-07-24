@@ -372,6 +372,10 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     public Object convert(Object value, ReifiedType type) throws Exception {
         return blueprintContainer.getConverter().convert(value, type);
     }
+    
+    public boolean canConvert(Object value, ReifiedType type) {
+        return blueprintContainer.getConverter().canConvert(value, type);
+    }
 
     public Class loadClass(String typeName) throws ClassNotFoundException {
         return blueprintContainer.loadClass(typeName);
