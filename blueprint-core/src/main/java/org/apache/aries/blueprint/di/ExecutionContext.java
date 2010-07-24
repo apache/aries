@@ -90,6 +90,8 @@ public interface ExecutionContext {
     public abstract Object getPartialObject(String name);
 
     public abstract Object convert(Object value, ReifiedType type) throws Exception;
+    
+    public abstract boolean canConvert(Object value, ReifiedType type);
 
     public abstract Class loadClass(String className) throws ClassNotFoundException;
 

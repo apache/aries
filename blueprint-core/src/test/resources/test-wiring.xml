@@ -131,5 +131,18 @@
     <bean id="FIFailureTest2Bean" class="org.apache.aries.blueprint.pojos.FITestBean" ext:field-injection="false">
         <property name="attr" value="value" />
     </bean>
+    
+    <bean id="ambiguousViaInt" class="org.apache.aries.blueprint.pojos.AmbiguousPojo">
+    	<property name="sum" value="5" />
+    </bean>
+    
+    <bean id="ambiguousViaList" class="org.apache.aries.blueprint.pojos.AmbiguousPojo">
+    	<property name="sum">
+    		<list>
+    			<value>3</value>
+    			<value>4</value>
+    		</list>
+    	</property>
+    </bean>
 
 </blueprint>
