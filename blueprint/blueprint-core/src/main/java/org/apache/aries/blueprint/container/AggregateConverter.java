@@ -111,11 +111,13 @@ public class AggregateConverter implements Converter {
             return true;
         }
         
-        // TODO
-        if (fromValue instanceof String) {
-            //
+        // TODO implement better logic ?!
+        try {
+            convert(fromValue, toType);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
     public Object convert(final Object fromValue, final ReifiedType type) throws Exception {

@@ -813,24 +813,26 @@ public class BeanRecipe extends AbstractRecipe {
                 throw new ComponentDefinitionException("No getter for " + names[i] + " property on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName());
             }
         }
+        
+        // Instantiate value
+        if (propertyValue instanceof Recipe) {
+            propertyValue = ((Recipe) propertyValue).create();
+        }
+
         final PropertyDescriptor pd = getPropertyDescriptor(clazz, names[names.length - 1]);
         if (pd.allowsSet()) {
             // convert the value to type of setter/field
-            Type type = pd.getGenericType();
-            // Instanciate value
-            if (propertyValue instanceof Recipe) {
-                propertyValue = ((Recipe) propertyValue).create();
-            }
-            try {
-                propertyValue = convert(propertyValue, type);
-            } catch (Exception e) {
-                    String valueType = propertyValue == null ? "null" : propertyValue.getClass().getName();
-                String memberType = type instanceof Class ? ((Class) type).getName() : type.toString();
-                throw new ComponentDefinitionException("Unable to convert property value" +
-                        " from " + valueType +
-                        " to " + memberType +
-                        " for injection " + pd, e);
-            }
+//            Type type = pd.getGenericType(propertyValue);
+//            try {
+//                propertyValue = convert(propertyValue, type);
+//            } catch (Exception e) {
+//                    String valueType = propertyValue == null ? "null" : propertyValue.getClass().getName();
+//                String memberType = type instanceof Class ? ((Class) type).getName() : type.toString();
+//                throw new ComponentDefinitionException("Unable to convert property value" +
+//                        " from " + valueType +
+//                        " to " + memberType +
+//                        " for injection " + pd, e);
+//            }
             try {
                 pd.set(instance, propertyValue, blueprintContainer.getAccessControlContext());
             } catch (Exception e) {
