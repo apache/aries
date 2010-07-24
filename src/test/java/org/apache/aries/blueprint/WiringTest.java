@@ -35,6 +35,7 @@ import org.apache.aries.blueprint.container.BlueprintRepository;
 import org.apache.aries.blueprint.di.CircularDependencyException;
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
+import org.apache.aries.blueprint.pojos.AmbiguousPojo;
 import org.apache.aries.blueprint.pojos.BeanD;
 import org.apache.aries.blueprint.pojos.BeanF;
 import org.apache.aries.blueprint.pojos.FITestBean;
@@ -136,6 +137,19 @@ public class WiringTest extends AbstractBlueprintTest {
         
         // test destroy-method
         assertEquals(true, pojob.getDestroyCalled());
+    }
+    
+    public void testSetterDisambiguation() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
+
+        AmbiguousPojo pojo = (AmbiguousPojo) repository.create("ambiguousViaInt");
+        assertEquals(5, pojo.getSum());
+        
+        pojo = (AmbiguousPojo) repository.create("ambiguousViaList");
+        assertEquals(7, pojo.getSum());
+        
+        
     }
     
     public void testFieldInjection() throws Exception {
