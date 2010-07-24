@@ -821,18 +821,6 @@ public class BeanRecipe extends AbstractRecipe {
 
         final PropertyDescriptor pd = getPropertyDescriptor(clazz, names[names.length - 1]);
         if (pd.allowsSet()) {
-            // convert the value to type of setter/field
-//            Type type = pd.getGenericType(propertyValue);
-//            try {
-//                propertyValue = convert(propertyValue, type);
-//            } catch (Exception e) {
-//                    String valueType = propertyValue == null ? "null" : propertyValue.getClass().getName();
-//                String memberType = type instanceof Class ? ((Class) type).getName() : type.toString();
-//                throw new ComponentDefinitionException("Unable to convert property value" +
-//                        " from " + valueType +
-//                        " to " + memberType +
-//                        " for injection " + pd, e);
-//            }
             try {
                 pd.set(instance, propertyValue, blueprintContainer.getAccessControlContext());
             } catch (Exception e) {
