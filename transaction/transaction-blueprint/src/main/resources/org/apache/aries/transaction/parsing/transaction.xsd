@@ -52,12 +52,13 @@
     <xsd:annotation>
       <xsd:documentation>
         <![CDATA[
-          Ttransaction defines one or more methods that are intercepted with the specified transaction attribute.   Multiple methods names can be wild-carded with '*'.  Methods can be whitespace separated and be a mixture of fixed string and wild-cards.
+          Ttransaction defines one or more methods that are intercepted with the specified transaction attribute.   Multiple methods names can be wild-carded with '*'.  Methods can be whitespace separated and be a mixture of fixed string and wild-cards.   Beans can be whitespace separated and be a mixture of fixed string and wild-cards.   Two wild-cards next to each other are not supported for both the bean or method attributes.
         ]]>
       </xsd:documentation>
       </xsd:annotation>
       <xsd:attribute name="method" type="xsd:string" />
       <xsd:attribute name="value" type="TtransactionAttribute" use="required" />
+      <xsd:attribute name="bean" type="xsd:string" />
   </xsd:complexType>
 
   <xsd:element name="transaction" type="Ttransaction">
