@@ -19,19 +19,21 @@
 package org.apache.aries.transaction;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
 public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper {
 
     private static class TranData
     {
-      private static final Pattern WILDCARD = Pattern.compile("\\Q.*\\E");
       private final Map<Pattern, String> map;
       private final Map<String, String> cache;
       
@@ -53,7 +55,8 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
             int size = matches.size();
 
             if (size == 0) {
-                txAttribute = "Required";
+                // we should default to no transaction since we cannot find a match
+                txAttribute = null;
             }
             else if (size == 1) {
                 txAttribute = map.get(matches.get(0));
@@ -78,7 +81,9 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
                 }
             }
             
-            cache.put(name, txAttribute);
+            if (txAttribute != null) {
+                cache.put(name, txAttribute);
+            }
         }
         
         return txAttribute;
@@ -101,7 +106,7 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
           
           for (Pattern p : matches) {
               String pattern = p.pattern();
-              Matcher m = WILDCARD.matcher(pattern);
+              Matcher m = Constants.WILDCARD.matcher(pattern);
               int count = 0;
               
               while (m.find()) {
@@ -144,7 +149,10 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
     }
     
     private final Map<ComponentMetadata, TranData> data = new ConcurrentHashMap<ComponentMetadata, TranData>();
-    
+    // bundle transaction map keeps track of the default transaction behavior for the bundle at the bundle-wide level.
+    // this is configured via top level tx:transaction element for the blueprint managed bundle
+    private ConcurrentHashMap<ComponentDefinitionRegistry, List<BundleWideTxData>> bundleTransactionMap = new ConcurrentHashMap<ComponentDefinitionRegistry, List<BundleWideTxData>>();
+
     public synchronized void setComponentTransactionData(ComponentMetadata component, String value, String method)
     {
       TranData td = data.get(component);
@@ -167,9 +175,61 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
         TranData td = data.get(component);
         String result = null;
 
-        if (td != null)
+        if (td != null) {
+            // bean level transaction always overwrite bundle wide transaction 
             result = td.getAttribute(methodName);
+        } 
+        
+        if (result != null) {
+            return result;
+        } else {
+            /* check the bundle wide transaction configuration in the following priority order from (high to low)
+             * 1. top level tx w/ method + bean
+             * 2. top level tx w/ bean
+             * 3. top level tx w/ method
+             * 4. top level tx w/ no other attribute
+             */
+            //result = calculateBundleWideTransaction(component, methodName);
+            String compId = component.getId();
+            ComponentDefinitionRegistry cdr = getComponentDefinitionRegistry(compId);
+            if (cdr == null) {
+                // no bundle wide transaction configuration avail
+                return null;
+            } else {
+                List<BundleWideTxData> bundleData = bundleTransactionMap.get(cdr);
+                result = BundleWideTxDataUtil.getAttribute(compId, methodName, bundleData);
+            }
+        }
 
         return result;
+    }
+    
+    public synchronized void populateBundleWideTransactionData(ComponentDefinitionRegistry cdr, String value,
+            String method, String bean) {
+        BundleWideTxData bundleWideTxData = new BundleWideTxData(value, method, bean);
+        List<BundleWideTxData> bundleData = bundleTransactionMap.get(cdr);
+        if (bundleData == null) {
+            bundleData = new ArrayList<BundleWideTxData>();
+            bundleData.add(bundleWideTxData);
+            bundleTransactionMap.put(cdr, bundleData);
+        } else {
+            bundleData.add(bundleWideTxData);
+        }
+        
+    }
+    
+    private ComponentDefinitionRegistry getComponentDefinitionRegistry(String compId) {
+        Enumeration<ComponentDefinitionRegistry> keys = bundleTransactionMap.keys();
+        while (keys.hasMoreElements()) {
+            ComponentDefinitionRegistry cdr = keys.nextElement();
+            Set<String> names = cdr.getComponentDefinitionNames();
+            for (String name : names) {
+                if (name.equals(compId)) {
+                    return cdr;
+                }
+            }
+        }
+        
+        return null;
     }
 }

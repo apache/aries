@@ -73,6 +73,11 @@ public class TxInterceptorImpl implements Interceptor {
     public void postCallWithReturn(ComponentMetadata cm, Method m,
         Object returnType, Object preCallToken) throws Exception
     {
+        // it is possible transaction is not involved at all
+        if (preCallToken == null) {
+            return;          
+        }
+        
       if (preCallToken instanceof TransactionToken)
       {
         final TransactionToken token = (TransactionToken)preCallToken;
@@ -95,6 +100,10 @@ public class TxInterceptorImpl implements Interceptor {
       final String methodName = m.getName();
       final String attribute = metaDataHelper.getComponentMethodTxAttribute(cm, methodName);
       
+      // attribute could be null here which means no transaction
+      if (attribute == null) {
+          return null;
+      }
       TransactionAttribute txAttribute = TransactionAttribute.fromValue(attribute);
       
       if (LOGGER.isDebugEnabled())

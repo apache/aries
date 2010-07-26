@@ -18,18 +18,34 @@
  */
 package org.apache.aries.transaction;
 
-import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import java.util.regex.Pattern;
 
-public interface TxComponentMetaDataHelper {
+public final class MatchedTxData
+{
+  private String value;
+  private Pattern method;
+  private Pattern bean;
+  
+  public MatchedTxData(String value,
+          Pattern method, Pattern bean) {
+      this.value = value;
+      this.method = method;
+      this.bean = bean;
+  }
 
-    public void setComponentTransactionData(ComponentMetadata component, String value,
-        String method);
-
-    public String getComponentMethodTxAttribute(
-            ComponentMetadata component, String methodName);
-    
-    public void populateBundleWideTransactionData(ComponentDefinitionRegistry cdr, String value,
-        String method, String bean);
-
+  public String getValue() {
+      return this.value;
+  }
+  
+  public Pattern getMethod() {
+      return this.method;
+  }
+  
+  public Pattern getBean() {
+      return this.bean;
+  }
+  
+  public String toString() {
+      return "bean element: " + this.bean + ",method element: " + this.method + ",transaction value: " + this.value;
+  }
 }

@@ -19,12 +19,16 @@
 package org.apache.aries.transaction.parsing;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
+import org.apache.aries.transaction.Constants;
 import org.apache.aries.transaction.TxComponentMetaDataHelper;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
@@ -40,6 +44,8 @@ public class TxElementHandler implements NamespaceHandler {
     private TxComponentMetaDataHelper metaDataHelper;
     private Interceptor interceptor = null;
 
+    private Set<ComponentDefinitionRegistry> registered = new HashSet<ComponentDefinitionRegistry>();
+
     private void parseElement(Element elt, ComponentMetadata cm, ParserContext pc)
     {
         if (LOGGER.isDebugEnabled())
@@ -50,13 +56,25 @@ public class TxElementHandler implements NamespaceHandler {
                 LOGGER.debug("parser adding interceptor for " + elt);
 
             ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
-            cdr.registerInterceptorWithComponent(cm, interceptor);
-            if (LOGGER.isDebugEnabled())
-                LOGGER.debug("parser setting comp trans data for " + elt.getAttribute("value") + "  "
-                        + elt.getAttribute("method"));
+            
+            if (cm == null) {
+                // if the enclosing component is null, then we assume this is the top element 
+                
+                
+                String bean = elt.getAttribute(Constants.BEAN);
+                registerComponentsWithInterceptor(cdr, bean);
 
-            metaDataHelper.setComponentTransactionData(cm, elt.getAttribute("value"), elt
-                    .getAttribute("method"));
+                metaDataHelper.populateBundleWideTransactionData(pc.getComponentDefinitionRegistry(), 
+                        elt.getAttribute(Constants.VALUE), elt.getAttribute(Constants.METHOD), bean);
+            } else {
+                cdr.registerInterceptorWithComponent(cm, interceptor);
+                if (LOGGER.isDebugEnabled())
+                    LOGGER.debug("parser setting comp trans data for " + elt.getAttribute(Constants.VALUE) + "  "
+                            + elt.getAttribute(Constants.METHOD));
+    
+                metaDataHelper.setComponentTransactionData(cm, elt.getAttribute(Constants.VALUE), elt
+                        .getAttribute(Constants.METHOD));
+            }
         }
         
         if (LOGGER.isDebugEnabled())
@@ -74,15 +92,13 @@ public class TxElementHandler implements NamespaceHandler {
 
     public Metadata parse(Element elt, ParserContext pc)
     {
-        //really not sure here if using enclosing component is valid...
-        //TODO: confirm if null may be better.
         parseElement(elt, pc.getEnclosingComponent(), pc);
         return null;
     }
 
     public URL getSchemaLocation(String arg0)
     {
-        return this.getClass().getResource("transaction.xsd");
+        return this.getClass().getResource(Constants.TX_SCHEMA);
     }
 
     public final void setTxMetaDataHelper(TxComponentMetaDataHelper transactionEnhancer)
@@ -103,4 +119,51 @@ public class TxElementHandler implements NamespaceHandler {
         // TODO Auto-generated method stub
         return null;
     }
+    
+    private boolean isRegistered(ComponentDefinitionRegistry cdr) {
+        for (ComponentDefinitionRegistry compdr : registered) {
+            if (compdr == cdr) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    private void registerComponentsWithInterceptor(ComponentDefinitionRegistry cdr, String bean) {
+        // if it is already registered all components in the component definition registry, do nothing
+        if (isRegistered(cdr)) {
+            return;
+        }
+        
+        Set<String> ids = cdr.getComponentDefinitionNames();
+        
+        if (bean == null || bean.isEmpty()) {
+            // in this case, let's attempt to register all components
+            // if the component has already been registered with this interceptor,
+            // the registration will be ignored.
+            for (String id : ids) {
+                ComponentMetadata componentMetadata = cdr.getComponentDefinition(id);
+                cdr.registerInterceptorWithComponent(componentMetadata, interceptor);
+            }
+            synchronized (registered) {
+                registered.add(cdr);
+            }
+        } else {
+            // register the beans specified
+            Pattern p = Pattern.compile(bean);
+            for (String id : ids) {
+                Matcher m = p.matcher(id);
+                if (m.matches()) {
+                    ComponentMetadata componentMetadata = cdr.getComponentDefinition(id);
+                    cdr.registerInterceptorWithComponent(componentMetadata, interceptor);
+                }
+            }
+        }
+    }
+    
+    // check if the beans pattern includes the particular component/bean id
+    /*private boolean includes(String beans, String id) {
+        return Pattern.matches(beans, id);
+    }*/
 }
