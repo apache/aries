@@ -19,32 +19,21 @@
 package org.apache.aries.jndi.services;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Proxy;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.naming.NamingException;
 
-import net.sf.cglib.proxy.Dispatcher;
-import net.sf.cglib.proxy.Enhancer;
 import org.apache.aries.jndi.url.OsgiName;
-import org.apache.aries.util.BundleToClassLoaderAdapter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -345,8 +334,9 @@ public final class ServiceHelper
     // wrapping the service provider bundle. The class is actually defined
     // on this adapter.
 
+    Class[] classArray = clazz.toArray(new Class[clazz.size()]);
     try {
-      return proxyFactory.createProxy(new BundleToClassLoaderAdapter(serviceProviderBundle), toClassArray(clazz), ih);
+      return proxyFactory.createProxy(serviceProviderBundle, classArray, ih);
     } catch (IllegalArgumentException e) {
       throw e;
     } catch (RuntimeException e) {
@@ -452,87 +442,5 @@ public final class ServiceHelper
     }
     return proxyFactory;
   }
-
-  private static Class<?>[] getInterfaces(Class<?>[] classes) {
-    Set<Class<?>> interfaces = new HashSet<Class<?>>();
-    for (Class<?> clazz : classes) {
-      if (clazz.isInterface()) {
-        interfaces.add(clazz);
-      }
-    }
-    return toClassArray(interfaces);
-  }
-
-  private static Class<?>[] toClassArray(Collection<Class<?>> classes) {
-    return classes.toArray(new Class[classes.size()]);
-  }
-
-  public static interface ProxyFactory {
-
-    Object createProxy(ClassLoader classLoader, Class[] classes, Callable<Object> dispatcher);
-
-    boolean proxiesClasses();
-  }
-
-  public static class JdkProxyFactory implements ProxyFactory {
-
-    public Object createProxy(final ClassLoader classLoader, final Class[] classes, final Callable<Object> dispatcher) {
-      return Proxy.newProxyInstance(classLoader, classes, new InvocationHandler() {
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-          try {
-            return method.invoke(dispatcher.call(), args);
-          } catch (InvocationTargetException ite) {
-            throw ite.getTargetException();
-          }
-        }
-      });
-    }
-
-    public boolean proxiesClasses() {
-      return false;
-    }
-
-  }
-
-  public static class CgLibProxyFactory implements ProxyFactory {
-
-    public Object createProxy(final ClassLoader classLoader, final Class[] classes, final Callable<Object> dispatcher) {
-      Enhancer e = new Enhancer();
-      e.setClassLoader(classLoader);
-      e.setSuperclass(getTargetClass(classes));
-      e.setInterfaces(getInterfaces(classes));
-      e.setInterceptDuringConstruction(false);
-      e.setCallback(new Dispatcher() {
-        public Object loadObject() throws Exception {
-          return dispatcher.call();
-        }
-      });
-      e.setUseFactory(false);
-      return e.create();
-    }
-
-    public boolean proxiesClasses() {
-      return true;
-    }
-
-    protected Class<?> getTargetClass(Class<?>[] interfaceNames) {
-      // Only allow class proxying if specifically asked to
-      Class<?> root = Object.class;
-      for (Class<?> clazz : interfaceNames) {
-        if (!clazz.isInterface()) {
-          if (root.isAssignableFrom(clazz)) {
-            root = clazz;
-          } else if (clazz.isAssignableFrom(root)) {
-            //nothing to do, root is correct
-          } else {
-            throw new IllegalArgumentException("Classes " + root.getClass().getName() + " and " + clazz.getName() + " are not in the same hierarchy");
-          }
-        }
-      }
-      return root;
-    }
-
-  }
-
-
+ 
 }
