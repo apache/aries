@@ -313,6 +313,9 @@ public class Parser {
         handleCustomAttributes(root.getAttributes(), null);
 
         // Parse elements
+        // Break into 2 loops to ensure we scan the blueprint elements before
+        // This is needed so that when we process the custom element, we know
+        // the component definition registry has populated all blueprint components.
         NodeList nl = root.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
@@ -321,7 +324,16 @@ public class Parser {
                 String namespaceUri = element.getNamespaceURI();
                 if (isBlueprintNamespace(namespaceUri)) {
                     parseBlueprintElement(element);
-                } else {
+                } 
+            }
+        }
+        
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node node = nl.item(i);
+            if (node instanceof Element) {
+                Element element = (Element) node;
+                String namespaceUri = element.getNamespaceURI();
+                if (!isBlueprintNamespace(namespaceUri)) {
                     Metadata component = parseCustomElement(element, null);
                     if (component != null) {
                         if (!(component instanceof ComponentMetadata)) {
@@ -329,7 +341,7 @@ public class Parser {
                         }
                         registry.registerComponentDefinition((ComponentMetadata) component);
                     }
-                }
+                } 
             }
         }
     }
