@@ -19,10 +19,10 @@
 -->
 <blueprint  xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0">
-	<tx:transaction bean="top" method="*" value="Required"/>
-	<tx:transaction bean="down" method="*" value="Never"/>
+	<tx:transaction bean="top1" method="*" value="Required"/>
+	<tx:transaction bean="down1" method="*" value="Never"/>
 	
-	<bean id="top" class="org.apache.aries.transaction.TestBean"/>
+	<bean id="top1" class="org.apache.aries.transaction.TestBean"/>
 	
-	<bean id="down" class="org.apache.aries.transaction.TestBean2"/>
+	<bean id="down1" class="org.apache.aries.transaction.TestBean2"/>
 </blueprint>
