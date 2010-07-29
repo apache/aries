@@ -19,9 +19,11 @@
 package org.apache.aries.transaction;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -38,11 +40,14 @@ import org.apache.aries.blueprint.container.Parser;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry.NamespaceHandlerSet;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.util.tracker.ServiceTracker;
 
 import org.apache.aries.transaction.TxComponentMetaDataHelperImpl;
 import org.apache.aries.transaction.TxInterceptorImpl;
@@ -51,29 +56,44 @@ import org.apache.aries.unittest.mocks.Skeleton;
 
 public class BundleWideNameSpaceHandlerTest {
     
+	Bundle b;
+	private NamespaceHandlerRegistry nhri;
+	private TxComponentMetaDataHelperImpl txenhancer;
+	
+    @Before
+    public void setUp() {
+        b = Skeleton.newMock(new BundleMock("org.apache.aries.tx", new Properties()), Bundle.class);
+        BundleContext ctx = b.getBundleContext();
+        nhri = new NamespaceHandlerRegistryImpl(ctx);
+        
+        TransactionManager tm = Skeleton.newMock(TransactionManager.class);
+        
+        txenhancer = new TxComponentMetaDataHelperImpl();
+        
+        TxInterceptorImpl txinterceptor = new TxInterceptorImpl();
+        txinterceptor.setTransactionManager(tm);
+        txinterceptor.setTxMetaDataHelper(txenhancer);
+        
+        TxElementHandler namespaceHandler = new TxElementHandler();
+        namespaceHandler.setTransactionInterceptor(txinterceptor);
+        namespaceHandler.setTxMetaDataHelper(txenhancer);
+            
+        Properties props = new Properties();
+        props.put("osgi.service.blueprint.namespace", "http://aries.apache.org/xmlns/transactions/v1.0.0");
+        ctx.registerService(NamespaceHandler.class.getName(), namespaceHandler, props);
+    }
+    
+    @After
+    public void tearDown() throws Exception{
+    	b = null;
+        nhri = null;
+        txenhancer = null;
+    }
     
     @Test
     public void testMultipleElements() throws Exception
     {
-      Bundle b = Skeleton.newMock(new BundleMock("org.apache.aries.tx", new Properties()), Bundle.class);
-      BundleContext ctx = b.getBundleContext();
-      NamespaceHandlerRegistry nhri = new NamespaceHandlerRegistryImpl(ctx);
-      
-      TransactionManager tm = Skeleton.newMock(TransactionManager.class);
-      
-      TxComponentMetaDataHelperImpl txenhancer = new TxComponentMetaDataHelperImpl();
-      
-      TxInterceptorImpl txinterceptor = new TxInterceptorImpl();
-      txinterceptor.setTransactionManager(tm);
-      txinterceptor.setTxMetaDataHelper(txenhancer);
-      
-      TxElementHandler namespaceHandler = new TxElementHandler();
-      namespaceHandler.setTransactionInterceptor(txinterceptor);
-      namespaceHandler.setTxMetaDataHelper(txenhancer);
-          
-      Properties props = new Properties();
-      props.put("osgi.service.blueprint.namespace", "http://aries.apache.org/xmlns/transactions/v1.0.0");
-      ctx.registerService(NamespaceHandler.class.getName(), namespaceHandler, props);
+
       Parser p = new Parser();
       
       URL bpxml = this.getClass().getResource("bundlewide-aries.xml");
@@ -87,9 +107,12 @@ public class BundleWideNameSpaceHandlerTest {
       
       ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
       p.populate(nshandlers, cdr);
+            
+      BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top1");
+      BeanMetadata compDown = (BeanMetadata) cdr.getComponentDefinition("down1");
       
-      BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top");
-      BeanMetadata compDown = (BeanMetadata) cdr.getComponentDefinition("down");
+      assertNotNull(compTop);
+      assertNotNull(compDown);
       
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compTop, "doSomething"));
       assertEquals("Never", txenhancer.getComponentMethodTxAttribute(compDown, "doSomething"));
@@ -99,25 +122,6 @@ public class BundleWideNameSpaceHandlerTest {
     @Test
     public void testMultipleElements2() throws Exception
     {
-      Bundle b = Skeleton.newMock(new BundleMock("org.apache.aries.tx", new Properties()), Bundle.class);
-      BundleContext ctx = b.getBundleContext();
-      NamespaceHandlerRegistry nhri = new NamespaceHandlerRegistryImpl(ctx);
-      
-      TransactionManager tm = Skeleton.newMock(TransactionManager.class);
-      
-      TxComponentMetaDataHelperImpl txenhancer = new TxComponentMetaDataHelperImpl();
-      
-      TxInterceptorImpl txinterceptor = new TxInterceptorImpl();
-      txinterceptor.setTransactionManager(tm);
-      txinterceptor.setTxMetaDataHelper(txenhancer);
-      
-      TxElementHandler namespaceHandler = new TxElementHandler();
-      namespaceHandler.setTransactionInterceptor(txinterceptor);
-      namespaceHandler.setTxMetaDataHelper(txenhancer);
-          
-      Properties props = new Properties();
-      props.put("osgi.service.blueprint.namespace", "http://aries.apache.org/xmlns/transactions/v1.0.0");
-      ctx.registerService(NamespaceHandler.class.getName(), namespaceHandler, props);
       Parser p = new Parser();
       
       URL bpxml = this.getClass().getResource("bundlewide-aries2.xml");
@@ -132,9 +136,13 @@ public class BundleWideNameSpaceHandlerTest {
       ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
       p.populate(nshandlers, cdr);
       
-      BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top");
-      BeanMetadata compDown = (BeanMetadata) cdr.getComponentDefinition("down");
-      BeanMetadata compMiddle = (BeanMetadata) cdr.getComponentDefinition("middle");
+      BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top2");
+      BeanMetadata compDown = (BeanMetadata) cdr.getComponentDefinition("down2");
+      BeanMetadata compMiddle = (BeanMetadata) cdr.getComponentDefinition("middle2");
+      
+      assertNotNull(compTop);
+      assertNotNull(compDown);
+      assertNotNull(compMiddle);
       
       assertEquals("RequiresNew", txenhancer.getComponentMethodTxAttribute(compTop, "update1234"));
       assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compTop, "update"));

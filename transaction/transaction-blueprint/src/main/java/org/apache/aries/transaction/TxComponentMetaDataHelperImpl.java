@@ -29,8 +29,13 @@ import java.util.regex.Pattern;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper {
+
+    private static final Logger LOGGER =
+        LoggerFactory.getLogger(TxComponentMetaDataHelperImpl.class);
 
     private static class TranData
     {
@@ -148,10 +153,10 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
       }
     }
     
-    private final Map<ComponentMetadata, TranData> data = new ConcurrentHashMap<ComponentMetadata, TranData>();
+    private static final Map<ComponentMetadata, TranData> data = new ConcurrentHashMap<ComponentMetadata, TranData>();
     // bundle transaction map keeps track of the default transaction behavior for the bundle at the bundle-wide level.
     // this is configured via top level tx:transaction element for the blueprint managed bundle
-    private ConcurrentHashMap<ComponentDefinitionRegistry, List<BundleWideTxData>> bundleTransactionMap = new ConcurrentHashMap<ComponentDefinitionRegistry, List<BundleWideTxData>>();
+    private static final ConcurrentHashMap<ComponentDefinitionRegistry, List<BundleWideTxData>> bundleTransactionMap = new ConcurrentHashMap<ComponentDefinitionRegistry, List<BundleWideTxData>>();
 
     public synchronized void setComponentTransactionData(ComponentMetadata component, String value, String method)
     {
@@ -172,6 +177,9 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
 
     public String getComponentMethodTxAttribute(ComponentMetadata component, String methodName)
     {
+    	if (LOGGER.isDebugEnabled()) {
+    	    LOGGER.debug("Getting the txAttribute for the component {0} and method {1}", component.getId(), methodName);
+    	}
         TranData td = data.get(component);
         String result = null;
 
@@ -181,6 +189,9 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
         } 
         
         if (result != null) {
+        	if (LOGGER.isDebugEnabled()) {
+        	    LOGGER.debug("Return the txAttribute {0} for the component and method", result);
+        	}
             return result;
         } else {
             /* check the bundle wide transaction configuration in the following priority order from (high to low)
@@ -194,24 +205,35 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
             ComponentDefinitionRegistry cdr = getComponentDefinitionRegistry(compId);
             if (cdr == null) {
                 // no bundle wide transaction configuration avail
-                return null;
+            	result = null;
             } else {
                 List<BundleWideTxData> bundleData = bundleTransactionMap.get(cdr);
                 result = BundleWideTxDataUtil.getAttribute(compId, methodName, bundleData);
             }
         }
 
+    	if (LOGGER.isDebugEnabled()) {
+    	    LOGGER.debug("Return the txAttribute {0} for the component and method", result);
+    	}
         return result;
     }
     
-    public synchronized void populateBundleWideTransactionData(ComponentDefinitionRegistry cdr, String value,
+    public void populateBundleWideTransactionData(ComponentDefinitionRegistry cdr, String value,
             String method, String bean) {
+    	if (LOGGER.isDebugEnabled()) {
+    	    LOGGER.debug("Start populating bundle wide transaction data value {0} method {1} bean {2} per component definition registry", new Object[]{value, method, bean});
+    	}
+
         BundleWideTxData bundleWideTxData = new BundleWideTxData(value, method, bean);
         List<BundleWideTxData> bundleData = bundleTransactionMap.get(cdr);
         if (bundleData == null) {
             bundleData = new ArrayList<BundleWideTxData>();
             bundleData.add(bundleWideTxData);
+            if (LOGGER.isDebugEnabled()) {
+        	    LOGGER.debug("Adding component definition registry and bundleData to the bundleTransactionMap", new Object[]{cdr, bundleData});
+            }
             bundleTransactionMap.put(cdr, bundleData);
+
         } else {
             bundleData.add(bundleWideTxData);
         }
