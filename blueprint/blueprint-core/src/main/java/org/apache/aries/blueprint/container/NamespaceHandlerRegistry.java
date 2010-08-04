@@ -26,7 +26,6 @@ import javax.xml.validation.Schema;
 
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.xml.sax.SAXException;
 
 /**
@@ -37,7 +36,7 @@ import org.xml.sax.SAXException;
 public interface NamespaceHandlerRegistry {
 
     /**
-     * Retrieve the <code>NamespaceHandler</code> for the specified URI
+     * Retrieve the <code>NamespaceHandler</code> for the specified URI. Make sure
      *
      * @param uri the namespace identifying the namespace handler
      * @param bundle the blueprint bundle to be checked for class space consistency
