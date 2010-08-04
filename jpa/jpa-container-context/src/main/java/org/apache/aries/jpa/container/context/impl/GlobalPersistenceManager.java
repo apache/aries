@@ -18,7 +18,6 @@
  */
 package org.apache.aries.jpa.container.context.impl;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -117,7 +116,7 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
     
     //We only care about bundles stopping
     if (event.getType() == BundleEvent.STOPPING) {
-      Set<String> contextsToBeRemoved = Collections.emptySet();
+      Set<String> contextsToBeRemoved = new HashSet<String>();
       Bundle frameworkBundle = bundle.getBundleContext().getBundle(0);
       PersistenceContextManager manager = null;
       boolean removeManager = false;
@@ -149,6 +148,12 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
           removeManager = true;
           manager = managers.remove(bundle);
           bundle.getBundleContext().removeBundleListener(this);
+          
+          for (Bundle b : bundle.getBundleContext().getBundles()) {
+              if (persistenceContexts.containsKey(b)) {
+                contextsToBeRemoved.addAll(persistenceContexts.remove(b));
+              }
+            }
         }
       }
       

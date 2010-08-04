@@ -203,6 +203,7 @@ public class BlueprintExtender implements BundleActivator, SynchronousBundleList
             LOGGER.debug("Destroying BlueprintContainer for bundle {}", bundle.getSymbolicName());
             blueprintContainer.destroy();
         }
+        eventDispatcher.removeBlueprintBundle(bundle);
     }
     
     private void checkBundle(Bundle bundle) {
