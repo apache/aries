@@ -73,12 +73,18 @@ public class ParserServiceImpl implements ParserService {
   private ComponentDefinitionRegistry validateAndPopulate (Parser parser, Bundle clientBundle, boolean validate) 
   throws IOException, SAXException { 
     Set<URI> nsuris = parser.getNamespaces();
+    ComponentDefinitionRegistry cdr;
     NamespaceHandlerSet nshandlers = _namespaceHandlerRegistry.getNamespaceHandlers(nsuris, clientBundle);
-    if (validate) { 
-      parser.validate( nshandlers.getSchema());
+    try {
+        if (validate) { 
+          parser.validate( nshandlers.getSchema());
+        }
+        cdr = new ComponentDefinitionRegistryImpl();
+        parser.populate(nshandlers, cdr);
+    } finally {
+        nshandlers.destroy();
     }
-    ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
-    parser.populate(nshandlers, cdr);
+    
     return cdr;   
   }
 
