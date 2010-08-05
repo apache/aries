@@ -72,7 +72,7 @@ public class NameSpaceHandlerTest {
       namespaceHandler.setTxMetaDataHelper(txenhancer);
           
       Properties props = new Properties();
-      props.put("osgi.service.blueprint.namespace", "http://aries.apache.org/xmlns/transactions/v1.0.0");
+      props.put("osgi.service.blueprint.namespace", new String[]{"http://aries.apache.org/xmlns/transactions/v1.0.0", "http://aries.apache.org/xmlns/transactions/v1.1.0"});
       ctx.registerService(NamespaceHandler.class.getName(), namespaceHandler, props);
       Parser p = new Parser();
       
