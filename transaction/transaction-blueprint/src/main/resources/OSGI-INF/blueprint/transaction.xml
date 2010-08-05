@@ -24,7 +24,12 @@
             
   <service interface="org.apache.aries.blueprint.NamespaceHandler">
         <service-properties>
-            <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/xmlns/transactions/v1.0.0"/>
+            <entry key="osgi.service.blueprint.namespace">
+            	<list>
+				    <value>http://aries.apache.org/xmlns/transactions/v1.0.0</value>
+				    <value>http://aries.apache.org/xmlns/transactions/v1.1.0</value>
+			    </list>
+			</entry>
         </service-properties>
         <bean class="org.apache.aries.transaction.parsing.TxElementHandler">
             <property ref="txenhancer" name="txMetaDataHelper"/>

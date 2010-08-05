@@ -98,7 +98,11 @@ public class TxElementHandler implements NamespaceHandler {
 
     public URL getSchemaLocation(String arg0)
     {
-        return this.getClass().getResource(Constants.TX_SCHEMA);
+    	if (arg0.equals(Constants.TRANSACTION10URI)) {
+    		return this.getClass().getResource(Constants.TX10_SCHEMA);
+    	} else {
+            return this.getClass().getResource(Constants.TX11_SCHEMA);
+    	}
     }
 
     public final void setTxMetaDataHelper(TxComponentMetaDataHelper transactionEnhancer)
