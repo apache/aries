@@ -19,6 +19,7 @@
 package org.apache.aries.jpa.container.context.transaction.impl;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -48,6 +49,12 @@ public class JTAEntityManager implements EntityManager {
   private final Map<String, Object> props;
   /** A registry for creating new persistence contexts */
   private final JTAPersistenceContextRegistry reg;
+  /** The number of EntityManager instances that are open */
+  private final AtomicLong instanceCount;
+  /** A callback for when we're quiescing */
+  private final DestroyCallback callback;
+  
+  
   /** 
    * The entity manager to use when there is no transaction. Note that there is one of these
    * per injection site.
@@ -55,10 +62,13 @@ public class JTAEntityManager implements EntityManager {
   private EntityManager detachedManager = null;
   
   public JTAEntityManager(EntityManagerFactory factory,
-      Map<String, Object> properties, JTAPersistenceContextRegistry registry) {
+      Map<String, Object> properties, JTAPersistenceContextRegistry registry, AtomicLong activeCount,
+      DestroyCallback onDestroy) {
     emf = factory;
     props = properties;
     reg = registry;
+    instanceCount = activeCount;
+    callback = onDestroy;
   }
 
   /**
@@ -70,10 +80,10 @@ public class JTAEntityManager implements EntityManager {
   private EntityManager getPersistenceContext(boolean forceTransaction) 
   {
     if (forceTransaction) {
-      return reg.getCurrentPersistenceContext(emf, props);
+      return reg.getCurrentPersistenceContext(emf, props, instanceCount, callback);
     } else {
       if (reg.isTransactionActive()) {
-        return reg.getCurrentPersistenceContext(emf, props);
+        return reg.getCurrentPersistenceContext(emf, props, instanceCount, callback);
       } else {
         if(!!!reg.jtaIntegrationAvailable() && _logger.isDebugEnabled())
           _logger.debug("No integration with JTA transactions is available. No transaction context is active.");
