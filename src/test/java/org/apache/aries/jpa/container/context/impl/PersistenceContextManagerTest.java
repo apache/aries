@@ -26,11 +26,16 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 import javax.persistence.EntityManagerFactory;
+import javax.transaction.TransactionSynchronizationRegistry;
 
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
+import org.apache.aries.jpa.container.context.transaction.impl.DestroyCallback;
+import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
+import org.apache.aries.jpa.container.context.transaction.impl.TranSyncRegistryMock;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
+import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.After;
 import org.junit.Before;
@@ -65,7 +70,7 @@ public class PersistenceContextManagerTest {
     emf1 = Skeleton.newMock(EntityManagerFactory.class);
     emf2 = Skeleton.newMock(EntityManagerFactory.class);
     context = Skeleton.newMock(new BundleMock("system.bundle", new Hashtable<Object, Object>()), Bundle.class).getBundleContext();
-    mgr = new PersistenceContextManager(context, null);
+    mgr = new PersistenceContextManager(context, new JTAPersistenceContextRegistry(context));
     mgr.open();
   }
   
@@ -92,7 +97,7 @@ public class PersistenceContextManagerTest {
     
     mgr.registerContext(unitName, client1, new HashMap<String, Object>());
     
-    assertContextRegistered(unitName);
+    assertUniqueContextRegistered(unitName);
   }
 
   /**
@@ -142,7 +147,7 @@ public class PersistenceContextManagerTest {
     
     reg1 = registerUnit(emf1, unitName, TRUE);
     
-    assertContextRegistered(unitName);
+    assertUniqueContextRegistered(unitName);
   }
 
   /**
@@ -203,11 +208,11 @@ public class PersistenceContextManagerTest {
     
     mgr.registerContext("unit", client1, new HashMap<String, Object>());
     
-    assertContextRegistered("unit");
+    assertUniqueContextRegistered("unit");
     
     mgr.unregisterContext("context", client1);
     
-    assertContextRegistered("unit");
+    assertUniqueContextRegistered("unit");
   }
   
   /**
@@ -220,9 +225,9 @@ public class PersistenceContextManagerTest {
   {
     testAddDifferentContext();
     reg2 = registerUnit(emf2, "context", TRUE);
-    assertContextRegistered("context");
+    assertUniqueContextRegistered("context");
     reg1.unregister();
-    assertContextRegistered("context");
+    assertUniqueContextRegistered("context");
     reg2.unregister();
     assertNoContextRegistered();
   }
@@ -237,15 +242,272 @@ public class PersistenceContextManagerTest {
     testContextThenUnit();
     
     mgr.registerContext("unit", client2, new HashMap<String, Object>());
-    assertContextRegistered("unit");
+    assertUniqueContextRegistered("unit");
     
     mgr.unregisterContext("unit", client1);
-    assertContextRegistered("unit");
+    assertUniqueContextRegistered("unit");
     
     mgr.unregisterContext("unit", client2);
     assertNoContextRegistered();
   }
   
+  /**
+   * Test that we can quiesce an unused context
+   * @throws InvalidSyntaxException
+   */
+  @Test
+  public void testNoOpQuiesce() throws InvalidSyntaxException
+  {
+    DestroyCallback cbk = Skeleton.newMock(DestroyCallback.class);
+    Bundle b = context.getBundle();
+    mgr.quiesceUnits(b, cbk);
+    
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(DestroyCallback.class,
+        "callback"), 1);
+    
+    assertNoContextRegistered();
+  }
+  
+  /**
+   * Test that we can quiesce an unused context
+   * @throws InvalidSyntaxException
+   */
+  @Test
+  public void testBasicQuiesce() throws InvalidSyntaxException
+  {
+    testContextThenUnit();
+    DestroyCallback cbk = Skeleton.newMock(DestroyCallback.class);
+    Bundle b = context.getBundle();
+    mgr.quiesceUnits(b, cbk);
+    
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(DestroyCallback.class,
+        "callback"), 1);
+    
+    assertNoContextRegistered();
+  }
+  
+  /**
+   * Test that we can quiesce multiple contexts
+   * @throws InvalidSyntaxException
+   */
+  @Test
+  public void testMultipleContextQuiesce() throws InvalidSyntaxException
+  {
+    assertNoContextRegistered();
+    
+    reg1 = registerUnit(emf1, "unit", TRUE);
+    mgr.registerContext("unit", client1, new HashMap<String, Object>());
+    
+    reg2 = registerUnit(emf1, "unit2", TRUE);
+    mgr.registerContext("unit2", client2, new HashMap<String, Object>());
+    
+    DestroyCallback cbk = Skeleton.newMock(DestroyCallback.class);
+    Bundle b = context.getBundle();
+    mgr.quiesceUnits(b, cbk);
+    
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(DestroyCallback.class,
+        "callback"), 1);
+    
+    assertNoContextRegistered();
+  }
+  
+  /**
+   * Test that we can quiesce multiple contexts
+   * @throws InvalidSyntaxException
+   */
+  @Test
+  public void testActiveContextsQuiesce() throws InvalidSyntaxException
+  {
+    TranSyncRegistryMock backingTSR = new TranSyncRegistryMock();
+    TransactionSynchronizationRegistry tsr = Skeleton.newMock(backingTSR, TransactionSynchronizationRegistry.class);
+    
+    context.registerService(TransactionSynchronizationRegistry.class.getName(), tsr, new Hashtable<String, Object>());
+    
+    assertNoContextRegistered();
+    
+    reg1 = registerUnit(emf1, "unit", TRUE);
+    mgr.registerContext("unit", client1, new HashMap<String, Object>());
+    
+    reg2 = registerUnit(emf2, "unit2", TRUE);
+    mgr.registerContext("unit2", client2, new HashMap<String, Object>());
+    
+    ServiceReference[] refs = context.getServiceReferences(EntityManagerFactory.class.getName(),"(&(" + 
+        PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=true)(osgi.unit.name=unit))");
+    
+    assertEquals("Wrong number of services found", 1, refs.length);
+    
+    ServiceReference[] refs2 = context.getServiceReferences(EntityManagerFactory.class.getName(),"(&(" + 
+        PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=true)(osgi.unit.name=unit2))");
+    
+    assertEquals("Wrong number of services found", 1, refs2.length);
+    
+    EntityManagerFactory emf = (EntityManagerFactory) context.getService(refs[0]);
+    
+    EntityManagerFactory emf2 = (EntityManagerFactory) context.getService(refs2[0]);
+    
+    backingTSR.setTransactionKey("new");
+    
+    emf.createEntityManager().persist(new Object());
+    emf2.createEntityManager().persist(new Object());
+    
+    
+    DestroyCallback cbk = Skeleton.newMock(DestroyCallback.class);
+    Bundle b = context.getBundle();
+    mgr.quiesceUnits(b, cbk);
+    
+    Skeleton.getSkeleton(cbk).assertNotCalled(new MethodCall(DestroyCallback.class,
+        "callback"));
+    
+    backingTSR.setTransactionKey("new2");
+    
+    emf2.createEntityManager().persist(new Object());
+    
+    Skeleton.getSkeleton(cbk).assertNotCalled(new MethodCall(DestroyCallback.class,
+        "callback"));
+    
+    backingTSR.afterCompletion("new");
+    
+    Skeleton.getSkeleton(cbk).assertNotCalled(new MethodCall(DestroyCallback.class,
+        "callback"));
+    
+    assertUniqueContextRegistered("unit2");
+    
+    backingTSR.afterCompletion("new2");
+    
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(DestroyCallback.class,
+        "callback"), 1);
+    
+    assertNoContextRegistered();
+  }
+  
+  /**
+   * Test that we can quiesce an unused context
+   * @throws InvalidSyntaxException
+   */
+  @Test
+  public void testNoOpQuiesceAll() throws InvalidSyntaxException
+  {
+    DestroyCallback cbk = Skeleton.newMock(DestroyCallback.class);
+    Bundle b = context.getBundle();
+    mgr.quiesceAllUnits(cbk);
+    
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(DestroyCallback.class,
+        "callback"), 1);
+    
+    assertNoContextRegistered();
+  }
+  
+  /**
+   * Test that we can quiesce an unused context
+   * @throws InvalidSyntaxException
+   */
+  @Test
+  public void testBasicQuiesceAll() throws InvalidSyntaxException
+  {
+    testContextThenUnit();
+    DestroyCallback cbk = Skeleton.newMock(DestroyCallback.class);
+    Bundle b = context.getBundle();
+    mgr.quiesceAllUnits(cbk);
+    
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(DestroyCallback.class,
+        "callback"), 1);
+    
+    assertNoContextRegistered();
+  }
+  
+  /**
+   * Test that we can quiesce multiple contexts
+   * @throws InvalidSyntaxException
+   */
+  @Test
+  public void testMultipleContextQuiesceAll() throws InvalidSyntaxException
+  {
+    assertNoContextRegistered();
+    
+    reg1 = registerUnit(emf1, "unit", TRUE);
+    mgr.registerContext("unit", client1, new HashMap<String, Object>());
+    
+    reg2 = registerUnit(emf1, "unit2", TRUE);
+    mgr.registerContext("unit2", client2, new HashMap<String, Object>());
+    
+    DestroyCallback cbk = Skeleton.newMock(DestroyCallback.class);
+    Bundle b = context.getBundle();
+    mgr.quiesceAllUnits(cbk);
+    
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(DestroyCallback.class,
+        "callback"), 1);
+    
+    assertNoContextRegistered();
+  }
+  
+  /**
+   * Test that we can quiesce multiple contexts
+   * @throws InvalidSyntaxException
+   */
+  @Test
+  public void testActiveContextsQuiesceAll() throws InvalidSyntaxException
+  {
+    TranSyncRegistryMock backingTSR = new TranSyncRegistryMock();
+    TransactionSynchronizationRegistry tsr = Skeleton.newMock(backingTSR, TransactionSynchronizationRegistry.class);
+    
+    context.registerService(TransactionSynchronizationRegistry.class.getName(), tsr, new Hashtable<String, Object>());
+    
+    assertNoContextRegistered();
+    
+    reg1 = registerUnit(emf1, "unit", TRUE);
+    mgr.registerContext("unit", client1, new HashMap<String, Object>());
+    
+    reg2 = registerUnit(emf2, "unit2", TRUE);
+    mgr.registerContext("unit2", client2, new HashMap<String, Object>());
+    
+    ServiceReference[] refs = context.getServiceReferences(EntityManagerFactory.class.getName(),"(&(" + 
+        PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=true)(osgi.unit.name=unit))");
+    
+    assertEquals("Wrong number of services found", 1, refs.length);
+    
+    ServiceReference[] refs2 = context.getServiceReferences(EntityManagerFactory.class.getName(),"(&(" + 
+        PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=true)(osgi.unit.name=unit2))");
+    
+    assertEquals("Wrong number of services found", 1, refs2.length);
+    
+    EntityManagerFactory emf = (EntityManagerFactory) context.getService(refs[0]);
+    
+    EntityManagerFactory emf2 = (EntityManagerFactory) context.getService(refs2[0]);
+    
+    backingTSR.setTransactionKey("new");
+    
+    emf.createEntityManager().persist(new Object());
+    emf2.createEntityManager().persist(new Object());
+    
+    
+    DestroyCallback cbk = Skeleton.newMock(DestroyCallback.class);
+    Bundle b = context.getBundle();
+    mgr.quiesceAllUnits(cbk);
+    
+    Skeleton.getSkeleton(cbk).assertNotCalled(new MethodCall(DestroyCallback.class,
+        "callback"));
+    
+    backingTSR.setTransactionKey("new2");
+    
+    emf2.createEntityManager().persist(new Object());
+    
+    Skeleton.getSkeleton(cbk).assertNotCalled(new MethodCall(DestroyCallback.class,
+        "callback"));
+    
+    backingTSR.afterCompletion("new");
+    
+    Skeleton.getSkeleton(cbk).assertNotCalled(new MethodCall(DestroyCallback.class,
+        "callback"));
+    
+    assertUniqueContextRegistered("unit2");
+    
+    backingTSR.afterCompletion("new2");
+    
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(DestroyCallback.class,
+        "callback"), 1);
+    
+    assertNoContextRegistered();
+  }
   
   private ServiceRegistration registerUnit(EntityManagerFactory emf, String name, Boolean managed) {
     
@@ -270,7 +532,7 @@ public class PersistenceContextManagerTest {
     assertNull(refs);
   }
   
-  private void assertContextRegistered(String name) throws InvalidSyntaxException {
+  private void assertUniqueContextRegistered(String name) throws InvalidSyntaxException {
     BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
     
     ServiceReference[] refs = context.getServiceReferences(EntityManagerFactory.class.getName(), "("+PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE+"=*)");

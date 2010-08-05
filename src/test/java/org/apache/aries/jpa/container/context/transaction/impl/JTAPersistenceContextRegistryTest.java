@@ -18,83 +18,30 @@
  */
 package org.apache.aries.jpa.container.context.transaction.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TransactionRequiredException;
-import javax.transaction.Status;
-import javax.transaction.Synchronization;
 import javax.transaction.TransactionSynchronizationRegistry;
 
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.Before;
 import org.junit.Test;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 public class JTAPersistenceContextRegistryTest {
 
-  private static class TranSyncRegistryMock
-  {
-    private String key;
-    
-    private Map<String, List<Synchronization>> syncs = new HashMap<String, List<Synchronization>>();
-    
-    private Map<String, Map<Object,Object>> resources = new HashMap<String, Map<Object,Object>>();
-    
-    public void setTransactionKey(String s)
-    {
-      key = s;
-    }
-    
-    public Object getTransactionKey() {
-      return key;
-    }
-
-    public void registerInterposedSynchronization(Synchronization arg0) {
-      List<Synchronization> list = syncs.get(key);
-      if(list == null) {
-        list = new ArrayList<Synchronization>();
-        syncs.put(key, list);
-      }
-       list.add(arg0);
-    }
-    
-    public Object getResource(Object o) {
-      Object toReturn = null;
-      Map<Object, Object> map = resources.get(key);
-      if(map != null)
-        toReturn = map.get(o);
-      return toReturn;
-    }
-    
-    public void putResource(Object resourceKey, Object value) {
-      Map<Object, Object> map = resources.get(key);
-      if(map == null) {
-        map = new HashMap<Object, Object>();
-        resources.put(key, map);
-      }
-      map.put(resourceKey, value);
-    }
-    
-    
-    public void afterCompletion(String s)
-    {
-      for(Synchronization sync : syncs.get(s))
-        sync.afterCompletion(Status.STATUS_COMMITTED);
-      
-      resources.remove(s);
-    }
-  }
-  
   private TranSyncRegistryMock reg;
   
   private EntityManagerFactory emf1;
@@ -103,11 +50,17 @@ public class JTAPersistenceContextRegistryTest {
   private Map<Object,Object> props2;
   
   private JTAPersistenceContextRegistry contexts;
+  private BundleContext ctx;
+  private TransactionSynchronizationRegistry tsr;
+
+  private ServiceReference ref;
   
   @Before
   public void setup() 
   {
     reg = new TranSyncRegistryMock();
+    tsr = Skeleton.newMock(reg, TransactionSynchronizationRegistry.class);
+    ctx = Skeleton.newMock(BundleContext.class);
 
     props1 = new HashMap<Object, Object>();
     props1.put("prop1", "value1");
@@ -130,9 +83,11 @@ public class JTAPersistenceContextRegistryTest {
         "createEntityManager", props2), Skeleton.newMock(EntityManager.class));
 
     
-    contexts = new JTAPersistenceContextRegistry();
-    contexts.setTranRegistry(Skeleton.newMock(reg, TransactionSynchronizationRegistry.class));
-    contexts.addRegistry(null);
+    contexts = new JTAPersistenceContextRegistry(ctx);
+    ref = Skeleton.newMock(ServiceReference.class);
+    Skeleton.getSkeleton(ctx).setReturnValue(new MethodCall(BundleContext.class,
+        "getService", ref), tsr);
+    contexts.addingService(ref);
   }
   
   @Test
@@ -150,50 +105,65 @@ public class JTAPersistenceContextRegistryTest {
   @Test
   public void testMultiGetsOneTran()
   {
+    AtomicLong useCount = new AtomicLong(0);
+    DestroyCallback cbk = Skeleton.newMock(DestroyCallback.class);
     reg.setTransactionKey("");
     
-    EntityManager em1a = contexts.getCurrentPersistenceContext(emf1, props1);
-    EntityManager em1b = contexts.getCurrentPersistenceContext(emf1, props1);
+    EntityManager em1a = contexts.getCurrentPersistenceContext(emf1, props1, useCount, cbk);
+    EntityManager em1b = contexts.getCurrentPersistenceContext(emf1, props1, useCount, cbk);
     
     Skeleton.getSkeleton(emf1).assertCalledExactNumberOfTimes(new MethodCall(EntityManagerFactory.class, "createEntityManager", props1), 1);
     Skeleton.getSkeleton(emf1).assertNotCalled(new MethodCall(EntityManagerFactory.class, "createEntityManager"));
     Skeleton.getSkeleton(em1a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
     assertSame("We should get the same delegate!", em1a, em1b);
+    assertEquals("Expected only one creation", 1, useCount.get());
+    Skeleton.getSkeleton(cbk).assertSkeletonNotCalled();
     
-    EntityManager em2a = contexts.getCurrentPersistenceContext(emf2, props1);
-    EntityManager em2b = contexts.getCurrentPersistenceContext(emf2, props1);
+    EntityManager em2a = contexts.getCurrentPersistenceContext(emf2, props1, useCount, cbk);
+    EntityManager em2b = contexts.getCurrentPersistenceContext(emf2, props1, useCount, cbk);
     
     Skeleton.getSkeleton(emf2).assertCalledExactNumberOfTimes(new MethodCall(EntityManagerFactory.class, "createEntityManager", props1), 1);
     Skeleton.getSkeleton(emf2).assertNotCalled(new MethodCall(EntityManagerFactory.class, "createEntityManager"));
     Skeleton.getSkeleton(em2a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
     assertSame("We should get the same delegate!", em2a, em2b);
+    assertEquals("Expected a second creation", 2, useCount.get());
+    Skeleton.getSkeleton(cbk).assertSkeletonNotCalled();
     
     reg.afterCompletion("");
     
     Skeleton.getSkeleton(em1a).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"),1);
     Skeleton.getSkeleton(em2a).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"),1);
+    assertEquals("Expected creations to be uncounted", 0, useCount.get());
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(DestroyCallback.class,
+        "callback"), 2);
   }
   
   @Test
   public void testMultiGetsMultiTrans()
   {
+    AtomicLong useCount = new AtomicLong(0);
+    DestroyCallback cbk = Skeleton.newMock(DestroyCallback.class);
+    
     reg.setTransactionKey("a");
-    EntityManager em1a = contexts.getCurrentPersistenceContext(emf1, props1);
+    EntityManager em1a = contexts.getCurrentPersistenceContext(emf1, props1, useCount, cbk);
     reg.setTransactionKey("b");
-    EntityManager em1b = contexts.getCurrentPersistenceContext(emf1, props2);
+    EntityManager em1b = contexts.getCurrentPersistenceContext(emf1, props2, useCount, cbk);
     
     Skeleton.getSkeleton(emf1).assertCalledExactNumberOfTimes(new MethodCall(EntityManagerFactory.class, "createEntityManager", props1), 1);
     Skeleton.getSkeleton(emf1).assertCalledExactNumberOfTimes(new MethodCall(EntityManagerFactory.class, "createEntityManager", props2), 1);
-   
+    
     assertNotSame("We should not get the same delegate!", em1a, em1b);
     
     Skeleton.getSkeleton(em1a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
     Skeleton.getSkeleton(em1b).assertNotCalled(new MethodCall(EntityManager.class, "close"));
     
+    assertEquals("Expected two creations", 2, useCount.get());
+    Skeleton.getSkeleton(cbk).assertSkeletonNotCalled();
+    
     reg.setTransactionKey("a");
-    EntityManager em2a = contexts.getCurrentPersistenceContext(emf2, props1);
+    EntityManager em2a = contexts.getCurrentPersistenceContext(emf2, props1, useCount, cbk);
     reg.setTransactionKey("b");
-    EntityManager em2b = contexts.getCurrentPersistenceContext(emf2, props2);
+    EntityManager em2b = contexts.getCurrentPersistenceContext(emf2, props2, useCount, cbk);
     
     Skeleton.getSkeleton(emf2).assertCalledExactNumberOfTimes(new MethodCall(EntityManagerFactory.class, "createEntityManager", props1), 1);
     Skeleton.getSkeleton(emf2).assertCalledExactNumberOfTimes(new MethodCall(EntityManagerFactory.class, "createEntityManager", props2), 1);
@@ -203,6 +173,9 @@ public class JTAPersistenceContextRegistryTest {
     Skeleton.getSkeleton(em2a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
     Skeleton.getSkeleton(em2b).assertNotCalled(new MethodCall(EntityManager.class, "close"));
     
+    assertEquals("Expected four creations", 4, useCount.get());
+    Skeleton.getSkeleton(cbk).assertSkeletonNotCalled();
+    
     reg.setTransactionKey("b");
     reg.afterCompletion("b");
     
@@ -211,6 +184,10 @@ public class JTAPersistenceContextRegistryTest {
     Skeleton.getSkeleton(em2a).assertNotCalled(new MethodCall(EntityManager.class, "close"));
     Skeleton.getSkeleton(em2b).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"), 1);
     
+    assertEquals("Expected two uncreations", 2, useCount.get());
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(DestroyCallback.class,
+    "callback"), 2);
+    
     reg.setTransactionKey("a");
     reg.afterCompletion("a");
     
@@ -218,41 +195,55 @@ public class JTAPersistenceContextRegistryTest {
     Skeleton.getSkeleton(em1b).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"), 1);
     Skeleton.getSkeleton(em2a).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"), 1);
     Skeleton.getSkeleton(em2b).assertCalledExactNumberOfTimes(new MethodCall(EntityManager.class, "close"), 1);
+    assertEquals("Expected no remaining instances", 0, useCount.get());
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(DestroyCallback.class,
+    "callback"), 4);
   }
   
   @Test
   public void testNoTranSyncRegistry() {
-    JTAPersistenceContextRegistry registry = new JTAPersistenceContextRegistry();
-    //blueprint will still call our setter
-    TransactionSynchronizationRegistry tranSyncReg = Skeleton.newMock(reg, TransactionSynchronizationRegistry.class);
-    registry.setTranRegistry(tranSyncReg);
+    JTAPersistenceContextRegistry registry = new JTAPersistenceContextRegistry(ctx);
     
     reg.setTransactionKey(null);
     
     assertFalse(registry.jtaIntegrationAvailable());
     assertFalse(registry.isTransactionActive());
     
-    Skeleton.getSkeleton(tranSyncReg).assertSkeletonNotCalled();
+    Skeleton.getSkeleton(tsr).assertSkeletonNotCalled();
     
     reg.setTransactionKey("");
     
     assertFalse(registry.jtaIntegrationAvailable());
     assertFalse(registry.isTransactionActive());
     
-    Skeleton.getSkeleton(tranSyncReg).assertSkeletonNotCalled();
+    reg.setTransactionKey(null);
+    contexts.removedService(ref, ref);
+    
+    assertFalse(contexts.jtaIntegrationAvailable());
+    assertFalse(contexts.isTransactionActive());
+    
+    Skeleton.getSkeleton(tsr).assertSkeletonNotCalled();
+    
+    reg.setTransactionKey("");
+    
+    assertFalse(contexts.jtaIntegrationAvailable());
+    assertFalse(contexts.isTransactionActive());
+    
+    
+    Skeleton.getSkeleton(tsr).assertSkeletonNotCalled();
   }
   
   @Test(expected=TransactionRequiredException.class)
   public void testGetNoTran() {
     reg.setTransactionKey(null);
-    contexts.getCurrentPersistenceContext(emf1, props1);
+    contexts.getCurrentPersistenceContext(emf1, props1, new AtomicLong(), Skeleton.newMock(DestroyCallback.class));
   }
   
   @Test(expected=TransactionRequiredException.class)
   public void testGetNoTranSyncRegistry() {
     reg.setTransactionKey("");
-    contexts.removeRegistry(null);
-    contexts.getCurrentPersistenceContext(emf1, props1);
+    contexts.removedService(ref, ref);
+    contexts.getCurrentPersistenceContext(emf1, props1, new AtomicLong(), Skeleton.newMock(DestroyCallback.class));
   }
   
 }
