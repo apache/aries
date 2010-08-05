@@ -165,9 +165,9 @@ public class BundleWideNameSpaceHandlerTest {
       ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
       p.populate(nshandlers, cdr);
       
-      BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top2");
-      BeanMetadata compDown = (BeanMetadata) cdr.getComponentDefinition("down2");
-      BeanMetadata compMiddle = (BeanMetadata) cdr.getComponentDefinition("middle2");
+      BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top3");
+      BeanMetadata compDown = (BeanMetadata) cdr.getComponentDefinition("down3");
+      BeanMetadata compMiddle = (BeanMetadata) cdr.getComponentDefinition("middle3");
       
       assertNotNull(compTop);
       assertNotNull(compDown);

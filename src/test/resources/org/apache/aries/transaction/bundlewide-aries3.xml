@@ -22,14 +22,14 @@
 	<tx:transaction bean="top*" method="*" value="NotSupported"/>
 	<tx:transaction bean="down* middle*" method="*" value="Required"/>
 	
-	<bean id="top2" class="org.apache.aries.transaction.TestBean">
+	<bean id="top3" class="org.apache.aries.transaction.TestBean">
 		<tx:transaction method="update*" value="Required"/>
 		<tx:transaction method="update123*" value="RequiresNew"/>
 	</bean>
 	
-    <bean id="down2" class="org.apache.aries.transaction.TestBean2">
+    <bean id="down3" class="org.apache.aries.transaction.TestBean2">
 	    <tx:transaction method="update*" value="NotSupported"/>
 	</bean>
 	
-	<bean id="middle2" class="org.apache.aries.transaction.TestBean3"/>
+	<bean id="middle3" class="org.apache.aries.transaction.TestBean3"/>
 </blueprint>
