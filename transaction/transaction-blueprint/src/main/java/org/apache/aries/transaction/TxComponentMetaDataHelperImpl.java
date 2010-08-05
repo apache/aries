@@ -167,6 +167,10 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
           data.put(component, td);
       }
       
+      if (method == null || method.isEmpty()) {
+    	  method = "*";
+      }
+      
       String[] names = method.split("[, \t]");
       
       for (int i = 0; i < names.length; i++) {
