@@ -15,16 +15,16 @@
 		the specific language governing permissions and limitations under the
 		License.
 	-->
-<xsd:schema xmlns="http://aries.apache.org/xmlns/transactions/v1.0.0"
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://aries.apache.org/xmlns/transactions/v1.0.0"
+<xsd:schema xmlns="http://aries.apache.org/xmlns/transactions/v1.1.0"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://aries.apache.org/xmlns/transactions/v1.1.0"
   elementFormDefault="qualified" attributeFormDefault="unqualified"
-  version="1.0.0">
+  version="1.1.0">
 
   <xsd:annotation>
     <xsd:documentation>
       <![CDATA[
-        This is the XML Schema for the OSGi Blueprint declarative transaction 1.0.0 development descriptor.  Blueprint declarative transaction is a custom namespace for OSGi Blueprint service 1.0.0 development descriptor.  It is designed to be used to decorate transaction attribute of the bean component.  Blueprint configuration files using this schema must indicate the schema using the transactions/v1.0.0 namespace.  For example,
-        <transaction xmlns="http://aries.apache.org/xmlns/transactions/v1.0.0">
+        This is the XML Schema for the OSGi Blueprint declarative transaction 1.1.0 development descriptor.  Blueprint declarative transaction is a custom namespace for OSGi Blueprint service 1.0.0 development descriptor.  It is designed to decorate transaction attribute of the bean components, which can be done at the bean level or at the bundle wide level.  In other words, the transaction element can reside in the bean element or in the root of the blueprint element as a top level transaction element. Blueprint configuration files using this schema must indicate the schema using the transactions/v1.1.0 namespace.  For example,        
+        <transaction xmlns="http://aries.apache.org/xmlns/transactions/v1.1.0">
         if used as a qualified namespace, "tx" is the recommended namespace prefix.
       ]]>
     </xsd:documentation>
@@ -52,8 +52,7 @@
     <xsd:annotation>
       <xsd:documentation>
         <![CDATA[
-          Ttransaction defines one or more methods that are intercepted with the specified transaction attribute.   Multiple methods names can be wild-carded with '*'.  Methods can be whitespace separated and be a mixture of fixed string and wild-cards.   Beans can be whitespace separated and be a mixture of fixed string and wild-cards.   Two wild-cards next to each other are not supported for both the bean or method attributes.
-        ]]>
+          Ttransaction defines one or more methods that are intercepted with the specified transaction attribute. Multiple methods names can be wild-carded with '*'.  Methods can be whitespace separated and be a mixture of fixed string and wild-cards. The bean attribute refers to the bean component id and can only be used for top level transaction element.  Similar as methods, beans can be whitespace separated and be a mixture of fixed string and wild-cards.   Two wild-cards next to each other are not supported for either the bean or method attribute.        ]]>
       </xsd:documentation>
       </xsd:annotation>
       <xsd:attribute name="method" type="xsd:string" />
