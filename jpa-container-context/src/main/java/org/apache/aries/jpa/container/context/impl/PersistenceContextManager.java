@@ -18,17 +18,23 @@
  */
 package org.apache.aries.jpa.container.context.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContextType;
 
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
+import org.apache.aries.jpa.container.context.transaction.impl.DestroyCallback;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -268,7 +274,7 @@ public class PersistenceContextManager extends ServiceTracker{
         }
 
         //Create the service factory
-        entityManagerServiceFactory = new ManagedPersistenceContextFactory(unit, props, persistenceContextRegistry);
+        entityManagerServiceFactory = new ManagedPersistenceContextFactory(name, unit, props, persistenceContextRegistry);
       }
      
       //Always register from outside a synchronized 
@@ -397,4 +403,117 @@ public class PersistenceContextManager extends ServiceTracker{
   public void open() {
     super.open(true);
   }
+
+  /**
+   * Call this method to quiesce a given bundle
+   * @param bundleToQuiesce The bundle to quiesce
+   * @param callback A callback indicating that we have finished quiescing
+   */
+  public void quiesceUnits(Bundle bundleToQuiesce, DestroyCallback callback) {
+    
+    //Find the units supplied by this bundle
+    List<String> units = new ArrayList<String>();
+    synchronized (this) {
+      Iterator<Entry<String, ServiceReference>> it = persistenceUnits.entrySet().iterator();
+      while(it.hasNext()) {
+        Entry<String, ServiceReference> entry = it.next();
+        ServiceReference value = entry.getValue();
+        //If the quiescing bundle supplies the unit then unget the unit and remove it
+        if(value.getBundle().equals(bundleToQuiesce)) {
+          units.add(entry.getKey());
+          context.ungetService(entry.getValue());
+          //remove it to prevent other units that start using it
+          it.remove();
+        }
+      }
+    }
+    //If there are no units then our work is done!
+    if(units.isEmpty()) {
+      callback.callback();
+    } else {
+      //Find the ManagedFactories for the persistence unit
+      List<ManagedPersistenceContextFactory> factoriesToQuiesce = new ArrayList<ManagedPersistenceContextFactory>();
+      synchronized (this) {
+        for(String name : units) {
+          ServiceRegistration reg = entityManagerRegistrations.get(name);
+          if(reg != null) {
+            ManagedPersistenceContextFactory fact = (ManagedPersistenceContextFactory) bundleToQuiesce.getBundleContext().getService(reg.getReference());
+            if(fact != null)
+              factoriesToQuiesce.add(fact);
+          }
+        }
+      }
+      //If no factories are registered then we're done
+      if(factoriesToQuiesce.isEmpty()) {
+        callback.callback();
+      } else { 
+        //Create a new Tidy up helper and tell the factories to tidy up
+        QuiesceTidyUp tidyUp = new QuiesceTidyUp(units, callback);
+        
+        for(ManagedPersistenceContextFactory fact : factoriesToQuiesce) {
+          fact.quiesce(tidyUp);
+        }
+      }
+    }
+  }
+  
+  /**
+   * Quiesce all the persistence units managed by this {@link PersistenceContextManager}
+   * @param callback
+   */
+  public void quiesceAllUnits(final DestroyCallback callback) {
+    
+    Collection<String> names = new ArrayList<String>();
+    Collection<ServiceRegistration> factoriesToQuiesce = new ArrayList<ServiceRegistration>();
+   
+    //Get all the resources
+    synchronized (this) {
+      names.addAll(entityManagerRegistrations.keySet());
+      factoriesToQuiesce.addAll(entityManagerRegistrations.values());
+    }
+    //If there are no names or factories then we're done
+    if(names.isEmpty() || factoriesToQuiesce.isEmpty()) {
+      callback.callback();
+    } else {
+      
+      //Register an async tidy up
+      QuiesceTidyUp tidyUp = new QuiesceTidyUp(names, callback);
+      
+      for(ServiceRegistration reg : factoriesToQuiesce) {
+        ManagedPersistenceContextFactory fact = (ManagedPersistenceContextFactory) reg.getReference().getBundle().getBundleContext().getService(reg.getReference());
+        fact.quiesce(tidyUp);
+      }
+    }
+  }
+  
+  /**
+   * An asynchronous tidy up operation
+   */
+  class QuiesceTidyUp {
+    //The units being tidied up
+    private final Set<String> units;
+    //The callback for when we're done
+    private final DestroyCallback dc;
+    
+    public QuiesceTidyUp(Collection<String> units,
+        DestroyCallback callback) {
+      this.units = new HashSet<String>(units);
+      dc = callback;
+    }
+    
+    public void unitQuiesced(String name) {
+      unregisterEM(name);
+      boolean winner;
+      synchronized(this) {
+        winner = units.remove(name) && units.isEmpty();
+      }
+      
+      if(winner) {
+        dc.callback();
+      }
+    }
+  }
+
+
+  
 }

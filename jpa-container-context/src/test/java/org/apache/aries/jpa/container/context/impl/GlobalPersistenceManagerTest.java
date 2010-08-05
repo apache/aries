@@ -45,7 +45,7 @@ public class GlobalPersistenceManagerTest {
     private Bundle framework;
     
     @Before
-    public void setup()
+    public void setup() throws Exception
     {
         framework = Skeleton.newMock(new BundleMock("framework", new Hashtable<Object, Object>()), Bundle.class);
 
@@ -59,8 +59,7 @@ public class GlobalPersistenceManagerTest {
         Skeleton.getSkeleton(otherClient).setReturnValue(new MethodCall(Bundle.class, "getBundleContext"), ctx);        
         
         sut = new GlobalPersistenceManager();
-        sut.setRegistry(new JTAPersistenceContextRegistry());
-        
+        sut.start(ctx);
         Skeleton.getSkeleton(framework.getBundleContext()).setReturnValue(
                 new MethodCall(BundleContext.class, "getBundles"), new Bundle[] {framework, client, otherClient});
     }
