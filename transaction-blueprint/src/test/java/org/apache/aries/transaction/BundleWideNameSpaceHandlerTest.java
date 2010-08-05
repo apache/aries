@@ -23,15 +23,12 @@ import static org.junit.Assert.assertNotNull;
 
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
 import javax.transaction.TransactionManager;
-
-import org.apache.aries.mocks.BundleMock;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.NamespaceHandler;
@@ -40,19 +37,15 @@ import org.apache.aries.blueprint.container.Parser;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry.NamespaceHandlerSet;
 import org.apache.aries.blueprint.namespace.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
+import org.apache.aries.mocks.BundleMock;
+import org.apache.aries.transaction.parsing.TxElementHandler;
+import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
-import org.osgi.service.blueprint.reflect.BeanProperty;
-import org.osgi.util.tracker.ServiceTracker;
-
-import org.apache.aries.transaction.TxComponentMetaDataHelperImpl;
-import org.apache.aries.transaction.TxInterceptorImpl;
-import org.apache.aries.transaction.parsing.TxElementHandler;
-import org.apache.aries.unittest.mocks.Skeleton;
 
 public class BundleWideNameSpaceHandlerTest {
     
@@ -79,7 +72,7 @@ public class BundleWideNameSpaceHandlerTest {
         namespaceHandler.setTxMetaDataHelper(txenhancer);
             
         Properties props = new Properties();
-        props.put("osgi.service.blueprint.namespace", "http://aries.apache.org/xmlns/transactions/v1.0.0");
+        props.put("osgi.service.blueprint.namespace", new String[]{"http://aries.apache.org/xmlns/transactions/v1.0.0", "http://aries.apache.org/xmlns/transactions/v1.1.0"});
         ctx.registerService(NamespaceHandler.class.getName(), namespaceHandler, props);
     }
     
