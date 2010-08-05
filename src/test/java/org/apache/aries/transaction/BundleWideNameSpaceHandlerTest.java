@@ -147,4 +147,40 @@ public class BundleWideNameSpaceHandlerTest {
       assertEquals(null, txenhancer.getComponentMethodTxAttribute(compMiddle, "doSomething"));
         
     }
+    
+    @Test
+    public void testMultipleElements3() throws Exception
+    {
+      Parser p = new Parser();
+      
+      URL bpxml = this.getClass().getResource("bundlewide-aries3.xml");
+      List<URL> bpxmlList = new LinkedList<URL>();
+      bpxmlList.add(bpxml); 
+      
+      p.parse(bpxmlList);
+      Set<URI> nsuris = p.getNamespaces();
+      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
+      p.validate(nshandlers.getSchema());
+      
+      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
+      p.populate(nshandlers, cdr);
+      
+      BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top2");
+      BeanMetadata compDown = (BeanMetadata) cdr.getComponentDefinition("down2");
+      BeanMetadata compMiddle = (BeanMetadata) cdr.getComponentDefinition("middle2");
+      
+      assertNotNull(compTop);
+      assertNotNull(compDown);
+      assertNotNull(compMiddle);
+      
+      assertEquals("RequiresNew", txenhancer.getComponentMethodTxAttribute(compTop, "update1234"));
+      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compTop, "update"));
+      assertEquals("NotSupported", txenhancer.getComponentMethodTxAttribute(compTop, "doSomething"));
+      
+      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compDown, "doSomething"));
+      assertEquals("NotSupported", txenhancer.getComponentMethodTxAttribute(compDown, "update1234"));
+      
+      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compMiddle, "doSomething"));
+        
+    }
 }
