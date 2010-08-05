@@ -20,7 +20,8 @@ package org.apache.aries.jpa.container.context.transaction.impl;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -28,14 +29,16 @@ import javax.persistence.TransactionRequiredException;
 import javax.transaction.Synchronization;
 import javax.transaction.TransactionSynchronizationRegistry;
 
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to manage the lifecycle of JTA peristence contexts
  */
-public final class JTAPersistenceContextRegistry {
+public final class JTAPersistenceContextRegistry extends ServiceTracker {
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container.context");
   /** The unique key we use to find our Map */
@@ -62,13 +65,15 @@ public final class JTAPersistenceContextRegistry {
    * The transaction synchronization registry, used to determine the currently
    * active transaction, and to register for post-commit cleanup. 
    */
-  private TransactionSynchronizationRegistry tranRegistry;
+  private final AtomicReference<TransactionSynchronizationRegistry> tranRegistry = new AtomicReference<TransactionSynchronizationRegistry>();
   
-  /** 
-   * A flag to indicate whether the {@link TransactionSynchronizationRegistry} is available. 
-   * The initial value is false, as defined by {@link AtomicBoolean#AtomicBoolean()}.
-   */
-  private final AtomicBoolean registryAvailable = new AtomicBoolean();
+  /** The reference for our TSR service */
+  private AtomicReference<ServiceReference> tranRegistryRef = new AtomicReference<ServiceReference>();
+
+  public JTAPersistenceContextRegistry(BundleContext context) {
+    super(context, TransactionSynchronizationRegistry.class.getName(), null);
+    open();
+  }
 
   /**
    * Get a PersistenceContext for the current transaction. The persistence context will 
@@ -77,13 +82,17 @@ public final class JTAPersistenceContextRegistry {
    * @param persistenceUnit The peristence unit to create the persitence context from
    * @param properties  Any properties that should be passed on the call to {@code createEntityManager()}. 
    * The properties are NOT used for retrieving an already created persistence context.
+   * @param activeCount The AtomicLong for counting instances
+   * @param cbk A callback called when the instance is destroyed
    * 
    * @return A persistence context associated with the current transaction. Note that this will
    *         need to be wrappered to obey the JPA spec by throwing the correct exceptions
    * @throws {@link TransactionRequiredException} if there is no active transaction.
    */
   @SuppressWarnings("unchecked")
-  public final EntityManager getCurrentPersistenceContext(EntityManagerFactory persistenceUnit, Map<?,?> properties) throws TransactionRequiredException
+  public final EntityManager getCurrentPersistenceContext(
+      EntityManagerFactory persistenceUnit, Map<?,?> properties, AtomicLong activeCount,
+      DestroyCallback cbk) throws TransactionRequiredException
   {
     //There will only ever be one thread associated with a transaction at a given time
     //As a result, it is only the outer map that needs to be thread safe.
@@ -98,11 +107,11 @@ public final class JTAPersistenceContextRegistry {
       }
     }
     EntityManager toReturn = null;
-    
+    TransactionSynchronizationRegistry tsr = tranRegistry.get();
     //Get hold of the Map. If there is no Map already registered then add one.
     //We don't need to worry about a race condition, as no other thread will
     //share our transaction and be able to access our Map
-    Map<EntityManagerFactory, EntityManager> contextsForTransaction = (Map<EntityManagerFactory, EntityManager>) tranRegistry.getResource(EMF_MAP_KEY);
+    Map<EntityManagerFactory, EntityManager> contextsForTransaction = (Map<EntityManagerFactory, EntityManager>) tsr.getResource(EMF_MAP_KEY);
     
     //If we have a map then find an EntityManager, else create a new Map add it to the registry, and register for cleanup
     if(contextsForTransaction != null) {
@@ -110,10 +119,10 @@ public final class JTAPersistenceContextRegistry {
     } else {
       contextsForTransaction = new IdentityHashMap<EntityManagerFactory, EntityManager>();
       try {
-        tranRegistry.putResource(EMF_MAP_KEY, contextsForTransaction);
+        tsr.putResource(EMF_MAP_KEY, contextsForTransaction);
       } catch (IllegalStateException e) {
-        _logger.warn("Unable to create a persistence context for the transaction {} because the is not active", new Object[] {tranRegistry.getTransactionKey()});
-        throw new TransactionRequiredException("Unable to assiociate resources with transaction " + tranRegistry.getTransactionKey());
+        _logger.warn("Unable to create a persistence context for the transaction {} because the is not active", new Object[] {tsr.getTransactionKey()});
+        throw new TransactionRequiredException("Unable to assiociate resources with transaction " + tsr.getTransactionKey());
       }
     }
     
@@ -121,18 +130,19 @@ public final class JTAPersistenceContextRegistry {
     if(toReturn == null) {
       toReturn = (properties == null) ? persistenceUnit.createEntityManager() : persistenceUnit.createEntityManager(properties);
       if(_logger.isDebugEnabled())
-        _logger.debug("Created a new persistence context {} for transaction {}.", new Object[] {toReturn, tranRegistry.getTransactionKey()});
+        _logger.debug("Created a new persistence context {} for transaction {}.", new Object[] {toReturn, tsr.getTransactionKey()});
       try {
-        tranRegistry.registerInterposedSynchronization(new EntityManagerClearUp(toReturn));
+        tsr.registerInterposedSynchronization(new EntityManagerClearUp(toReturn, activeCount, cbk));
       } catch (IllegalStateException e) {
-        _logger.warn("No persistence context could be created as the JPA container could not register a synchronization with the transaction {}.", new Object[] {tranRegistry.getTransactionKey()});
+        _logger.warn("No persistence context could be created as the JPA container could not register a synchronization with the transaction {}.", new Object[] {tsr.getTransactionKey()});
         toReturn.close();
-        throw new TransactionRequiredException("Unable to synchronize with transaction " + tranRegistry.getTransactionKey());
+        throw new TransactionRequiredException("Unable to synchronize with transaction " + tsr.getTransactionKey());
       }
       contextsForTransaction.put(persistenceUnit, toReturn);
+      activeCount.incrementAndGet();
     } else {
       if(_logger.isDebugEnabled())
-        _logger.debug("Re-using a persistence context for transaction " + tranRegistry.getTransactionKey());
+        _logger.debug("Re-using a persistence context for transaction " + tsr.getTransactionKey());
     }
     return toReturn;
   }
@@ -143,15 +153,8 @@ public final class JTAPersistenceContextRegistry {
    */
   public final boolean isTransactionActive()
   {
-    return registryAvailable.get() && tranRegistry.getTransactionKey() != null;
-  }
-  
-  /**
-   * Provide a {@link TransactionSynchronizationRegistry} to use
-   * @param tranRegistry
-   */
-  public final void setTranRegistry(TransactionSynchronizationRegistry tranRegistry) {
-    this.tranRegistry = tranRegistry;
+    TransactionSynchronizationRegistry tsr = tranRegistry.get();
+    return tsr != null && tsr.getTransactionKey() != null;
   }
 
   /**
@@ -161,34 +164,93 @@ public final class JTAPersistenceContextRegistry {
    */
   public final boolean jtaIntegrationAvailable()
   {
-    return registryAvailable.get();
+    return tranRegistry.get() != null;
   }
   
   /**
-   * Called by the blueprint container to indicate that a new {@link TransactionSynchronizationRegistry}
-   * will be used by the runtime
+   * Called by service tracker to indicate that a new {@link TransactionSynchronizationRegistry}
+   * is available in the runtime
    * @param ref
    */
-  public final void addRegistry(ServiceReference ref) {
-    boolean oldValue = registryAvailable.getAndSet(true);
-    if(oldValue) {
-      _logger.warn("The TransactionSynchronizationRegistry used to manage persistence contexts has been replaced." +
-      		" The new TransactionSynchronizationRegistry, {}, will now be used to manage persistence contexts." +
-      		" Managed persistence contexts may not work correctly unless the runtime uses the new JTA Transaction services implementation" +
-      		" to manage transactions.", new Object[] {ref});
-    } else {
-        _logger.info("A TransactionSynchronizationRegistry service is now available in the runtime. Managed persistence contexts will now" +
-        		"integrate with JTA transactions using {}.", new Object[] {ref});
+  @Override
+  public final Object addingService(ServiceReference ref) {
+    
+    if(tranRegistryRef.compareAndSet(null, ref)) 
+    {
+      TransactionSynchronizationRegistry tsr = (TransactionSynchronizationRegistry) context.getService(ref);
+      if(tsr != null) {
+        if(tranRegistry.compareAndSet(null, tsr)) {
+          _logger.info("A TransactionSynchronizationRegistry service is now available in the runtime. Managed persistence contexts will now" +
+              "integrate with JTA transactions using {}.", new Object[] {ref});
+        }
+        else
+        {
+          tranRegistry.set(tsr);
+          _logger.warn("The TransactionSynchronizationRegistry used to manage persistence contexts has been replaced." +
+              " The new TransactionSynchronizationRegistry, {}, will now be used to manage persistence contexts." +
+              " Managed persistence contexts may not work correctly unless the runtime uses the new JTA Transaction services implementation" +
+              " to manage transactions.", new Object[] {ref});
+        }
+      } else {
+        tranRegistryRef.compareAndSet(ref, null);
+      }
     }
+    return ref;
   }
   
-  public final void removeRegistry(ServiceReference ref) {
-    registryAvailable.set(false);
-    _logger.warn("The TransactionSynchronizationRegistry used to manage persistence contexts is no longer available." +
-        " Managed persistence contexts will no longer be able to integrate with JTA transactions, and will behave as if" +
-        " no there is no transaction context at all times until a new TransactionSynchronizationRegistry is available." +
-        " Applications using managed persistence contexts may not work correctly until a new JTA Transaction services" +
-        " implementation is available.");
+  @Override
+  public final void removedService(ServiceReference reference, Object o) {
+    if(tranRegistryRef.get() == reference) { 
+      //Our reference is going away, find a new one
+      ServiceReference[] refs = getServiceReferences();
+      ServiceReference chosenRef = null;
+      TransactionSynchronizationRegistry replacement = null;
+      if(refs != null) {
+        for(ServiceReference ref : refs) {
+          if(ref != reference) {
+            replacement = (TransactionSynchronizationRegistry) context.getService(ref);
+            if(replacement != null) {
+              chosenRef = ref;
+              break;
+            }
+          }
+        }
+      }
+      
+      if(replacement == null) {
+        TransactionSynchronizationRegistry old = tranRegistry.get();
+        tranRegistryRef.set(null);
+        tranRegistry.compareAndSet(old, null);
+        
+      _logger.warn("The TransactionSynchronizationRegistry used to manage persistence contexts is no longer available." +
+          " Managed persistence contexts will no longer be able to integrate with JTA transactions, and will behave as if" +
+          " no there is no transaction context at all times until a new TransactionSynchronizationRegistry is available." +
+          " Applications using managed persistence contexts may not work correctly until a new JTA Transaction services" +
+          " implementation is available.");
+      } else {
+        tranRegistryRef.set(chosenRef);
+        tranRegistry.set(replacement);
+      _logger.warn("The TransactionSynchronizationRegistry used to manage persistence contexts has been replaced." +
+          " The new TransactionSynchronizationRegistry, {}, will now be used to manage persistence contexts." +
+          " Managed persistence contexts may not work correctly unless the runtime uses the new JTA Transaction services implementation" +
+          " to manage transactions.", new Object[] {chosenRef});
+      }
+      context.ungetService(reference);
+      //If there was no replacement before, check again. This closes the short window if
+      //add and remove happen simultaneously
+      if(replacement == null) {
+        ServiceReference[] retryRefs = getServiceReferences();
+        if(refs != null) {
+          for(ServiceReference r : retryRefs) {
+            if(r != reference) {
+              addingService(r);
+              if(tranRegistryRef.get() != null)
+                break;
+            }
+          }
+        }
+      }
+    }
   }
   
   /**
@@ -199,13 +261,19 @@ public final class JTAPersistenceContextRegistry {
 
     private final EntityManager context;
     
+    private final AtomicLong activeCount;
+    
+    private final DestroyCallback callback;
+    
     /**
      * Create a Synchronization to clear up our EntityManagers
      * @param em
      */
-    public EntityManagerClearUp(EntityManager em)
+    public EntityManagerClearUp(EntityManager em, AtomicLong instanceCount, DestroyCallback cbk)
     {
       context = em;
+      activeCount = instanceCount;
+      callback = cbk;
     }
     
     public final void beforeCompletion() {
@@ -217,10 +285,16 @@ public final class JTAPersistenceContextRegistry {
       if(_logger.isDebugEnabled())
         _logger.debug("Clearing up EntityManager {} as the transaction has completed.", new Object[] {context});
       try {
-        context.close();
-      } catch (Exception e) {
-        _logger.warn("There was an error when the container closed an EntityManager", context);
+        activeCount.decrementAndGet();
+        callback.callback();
+      } finally {
+			  try{
+			    context.close();
+        } catch (Exception e) {
+          _logger.warn("There was an error when the container closed an EntityManager", context);
+        }
       }
     }
   }
+
 }

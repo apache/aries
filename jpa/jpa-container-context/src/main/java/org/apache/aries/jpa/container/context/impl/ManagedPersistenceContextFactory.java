@@ -20,7 +20,9 @@ package org.apache.aries.jpa.container.context.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.persistence.Cache;
 import javax.persistence.EntityManager;
@@ -31,6 +33,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
+import org.apache.aries.jpa.container.context.impl.PersistenceContextManager.QuiesceTidyUp;
+import org.apache.aries.jpa.container.context.transaction.impl.DestroyCallback;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAEntityManager;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
 import org.osgi.framework.ServiceReference;
@@ -41,8 +45,10 @@ import org.slf4j.LoggerFactory;
  * This is registered in the Service registry to be looked up by blueprint.
  * The EntityManagerFactory interface is used to ensure a shared class space
  * with the client. Only the createEntityManager() method is supported.
+ * 
+ * Also this class receives a callback on cleanup
  */
-public class ManagedPersistenceContextFactory implements EntityManagerFactory {
+public class ManagedPersistenceContextFactory implements EntityManagerFactory, DestroyCallback {
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container.context");
   
@@ -50,10 +56,15 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory {
   private final Map<String, Object> properties;
   private final JTAPersistenceContextRegistry registry;
   private final PersistenceContextType type;
-    
-  public ManagedPersistenceContextFactory(ServiceReference unit,
+  private final AtomicBoolean quiesce = new AtomicBoolean(false);
+  private final AtomicLong activeCount = new AtomicLong(0);
+  private final String unitName;
+  
+  private final AtomicReference<QuiesceTidyUp> tidyUp = new AtomicReference<QuiesceTidyUp>();
+  
+  public ManagedPersistenceContextFactory(String name, ServiceReference unit,
       Map<String, Object> props, JTAPersistenceContextRegistry contextRegistry) {
-
+      unitName = name;
       emf = unit;
       //Take a copy of the Map so that we don't modify the original
       properties = new HashMap<String, Object>(props);
@@ -70,7 +81,7 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory {
     EntityManagerFactory factory = (EntityManagerFactory) emf.getBundle().getBundleContext().getService(emf);
     
     if(type == PersistenceContextType.TRANSACTION || type == null)
-      return new JTAEntityManager(factory, properties, registry);
+      return new JTAEntityManager(factory, properties, registry, activeCount, this);
     else {
       _logger.error("There is currently no support for extended scope EntityManagers");
       return null;
@@ -110,4 +121,25 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * Register an async Quiesce operation with this peristence context
+   * @param tidyUp
+   */
+  public void quiesce(QuiesceTidyUp tidyUp) {
+    this.tidyUp.set(tidyUp);
+    quiesce.set(true);
+    if(activeCount.get() == 0) {
+      tidyUp.unitQuiesced(unitName);
+    }
+  }
+
+  /**
+   * Quiesce this unit after the last context is destroyed
+   */
+  public void callback() {
+    if(quiesce.get() && activeCount.get() == 0) {
+      tidyUp.get().unitQuiesced(unitName);
+    }
+  }
+  
 }
