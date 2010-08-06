@@ -25,8 +25,8 @@ import java.util.regex.Pattern;
 public final class BundleWideTxData
 {
   private String value;
-  private List<Pattern> method = new ArrayList<Pattern>();
-  private List<Pattern> bean = new ArrayList<Pattern>();
+  private List<Pattern> methodList = new ArrayList<Pattern>();
+  private List<Pattern> beanList = new ArrayList<Pattern>();
   
   public BundleWideTxData(String value,
           String method, String bean) {
@@ -35,18 +35,26 @@ public final class BundleWideTxData
   }
  
   private void setupPatterns(String method, String bean) {
+	  // when bean or method is not specified, the value is same as "*".
+	  if (method == null || method.isEmpty()) {
+		  method = "*";
+	  }
+	  if (bean == null || bean.isEmpty()) {
+		  bean = "*";
+	  }
+	  
       String[] names = method.split("[, \t]");
       
       for (int i = 0; i < names.length; i++) {
           Pattern p = Pattern.compile(names[i].replaceAll("\\*", ".*"));
-          this.method.add(p);
+          this.methodList.add(p);
       }
       
       names = bean.split("[, \t]");
       
       for (int i = 0; i < names.length; i++) {
           Pattern p = Pattern.compile(names[i].replaceAll("\\*", ".*"));
-          this.bean.add(p);
+          this.beanList.add(p);
       }
   }
   public String getValue() {
@@ -54,10 +62,10 @@ public final class BundleWideTxData
   }
   
   public List<Pattern> getMethod() {
-      return this.method;
+      return this.methodList;
   }
   
   public List<Pattern> getBean() {
-      return this.bean;
+      return this.beanList;
   }
 }
