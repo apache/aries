@@ -56,7 +56,6 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory, D
   private final Map<String, Object> properties;
   private final JTAPersistenceContextRegistry registry;
   private final PersistenceContextType type;
-  private final AtomicBoolean quiesce = new AtomicBoolean(false);
   private final AtomicLong activeCount = new AtomicLong(0);
   private final String unitName;
   
@@ -126,8 +125,7 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory, D
    * @param tidyUp
    */
   public void quiesce(QuiesceTidyUp tidyUp) {
-    this.tidyUp.set(tidyUp);
-    quiesce.set(true);
+    this.tidyUp.compareAndSet(null, tidyUp);
     if(activeCount.get() == 0) {
       tidyUp.unitQuiesced(unitName);
     }
@@ -137,7 +135,7 @@ public class ManagedPersistenceContextFactory implements EntityManagerFactory, D
    * Quiesce this unit after the last context is destroyed
    */
   public void callback() {
-    if(quiesce.get() && activeCount.get() == 0) {
+    if(tidyUp.get() != null && activeCount.get() == 0) {
       tidyUp.get().unitQuiesced(unitName);
     }
   }
