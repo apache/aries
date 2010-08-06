@@ -140,4 +140,35 @@ public class NameSpaceHandlerTest {
       assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
         
     }
+    
+    @Test
+    public void testBundleWideAndBeanLevelTx() throws Exception
+    {
+      Parser p = new Parser();
+      
+      URL bpxml = this.getClass().getResource("mixed-aries.xml");
+      List<URL> bpxmlList = new LinkedList<URL>();
+      bpxmlList.add(bpxml); 
+      
+      p.parse(bpxmlList);
+      Set<URI> nsuris = p.getNamespaces();
+      NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
+      p.validate(nshandlers.getSchema());
+      
+      ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
+      p.populate(nshandlers, cdr);
+      
+      BeanMetadata compRequiresNew = (BeanMetadata) cdr.getComponentDefinition("requiresNew");
+      BeanMetadata compNoTx = (BeanMetadata) cdr.getComponentDefinition("noTx");
+      BeanMetadata compSomeTx = (BeanMetadata) cdr.getComponentDefinition("someTx");
+      BeanMetadata compAnotherBean = (BeanMetadata) cdr.getComponentDefinition("anotherBean");
+
+      assertEquals("RequiresNew", txenhancer.getComponentMethodTxAttribute(compRequiresNew, "doSomething"));
+      assertEquals("Never", txenhancer.getComponentMethodTxAttribute(compNoTx, "doSomething"));
+      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compSomeTx, "doSomething"));
+      assertEquals("Mandatory", txenhancer.getComponentMethodTxAttribute(compSomeTx, "getRows"));
+      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compAnotherBean, "doSomething"));
+      assertEquals("Supports", txenhancer.getComponentMethodTxAttribute(compAnotherBean, "getWhatever"));
+        
+    }
 }
