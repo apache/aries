@@ -21,8 +21,8 @@
 package org.apache.aries.jpa.container;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -33,23 +33,25 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Properties;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
 
+import org.apache.aries.jpa.container.impl.CountingEntityManagerFactory;
 import org.apache.aries.jpa.container.impl.EntityManagerFactoryManager;
 import org.apache.aries.jpa.container.impl.PersistenceBundleManager;
-import org.apache.aries.jpa.container.parsing.impl.PersistenceDescriptorParserImpl;
-import org.apache.aries.jpa.container.util.FakeManagedPersistenceUnitFactory;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
+import org.apache.aries.quiesce.manager.QuiesceCallback;
+import org.apache.aries.quiesce.participant.QuiesceParticipant;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.After;
@@ -120,7 +122,7 @@ public class PersistenceBundleLifecycleTest
     BundleContextMock.clear();
   }
   
-  private BundleContext preExistingBundleSetup() {
+  private BundleContext preExistingBundleSetup() throws Exception {
     
     BundleContext extenderContext = extenderBundle.getBundleContext();
 
@@ -128,17 +130,16 @@ public class PersistenceBundleLifecycleTest
         new MethodCall(BundleContext.class, "getBundles"),
         new Bundle[] {persistenceBundle});
     
-    mgr = new PersistenceBundleManager(extenderContext);
-    mgr.setConfig(new Properties());
-    mgr.setParser(new PersistenceDescriptorParserImpl());
+    mgr = new PersistenceBundleManager();
+
     return extenderContext;
   }
   
   @Test
   public void testManager_NonPersistenceBundle() throws Exception
   {
-    preExistingBundleSetup();
-    mgr.open();
+    BundleContext ctx = preExistingBundleSetup();
+    mgr.start(ctx);
 
     //Check the persistence.xml was not looked for
     Skeleton.getSkeleton(persistenceBundle).assertNotCalled(new MethodCall(Bundle.class, "getEntry", String.class));
@@ -154,12 +155,12 @@ public class PersistenceBundleLifecycleTest
   @Test
   public void testManager_OnePreExistingPersistenceBundle_NoProvider() throws Exception
   {
-    preExistingBundleSetup();
+    BundleContext ctx = preExistingBundleSetup();
     
     //Set the persistence.xml etc
     setupPersistenceBundle("file4", "");
     
-    mgr.open();
+    mgr.start(ctx);
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -174,7 +175,7 @@ public class PersistenceBundleLifecycleTest
   @Test
   public void testManager_WABandJPABundle() throws Exception 
   {
-    preExistingBundleSetup();
+    BundleContext ctx = preExistingBundleSetup();
     setupPersistenceBundle("file23", "");
     persistenceBundle.getHeaders().put("Web-ContextPath", "/test");
 
@@ -184,11 +185,8 @@ public class PersistenceBundleLifecycleTest
     hash1.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE);
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
-    ServiceReference ppRef = reg.getReference();
-        
-    mgr.addingProvider(ppRef);
 
-    mgr.open();
+    mgr.start(ctx);
     
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
     assertNull("We should not have an EntityManagerFactoryManager", getTrackedObject());
@@ -205,11 +203,9 @@ public class PersistenceBundleLifecycleTest
         pp, hash1 );
     ServiceReference ref = reg.getReference();
     
-    mgr.addingProvider(ref);
-    
     setupPersistenceBundle("file4", "");
     
-    mgr.open();
+    mgr.start(extenderContext);
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -227,7 +223,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file4", "");
     
-    mgr.open();
+    mgr.start(extenderContext);
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -242,8 +238,6 @@ public class PersistenceBundleLifecycleTest
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
     ServiceReference ref = reg.getReference();
-    
-    mgr.addingProvider(ref);
     
     BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
     
@@ -258,7 +252,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file4", "");
     
-    mgr.open();
+    mgr.start(extenderContext);
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -274,8 +268,6 @@ public class PersistenceBundleLifecycleTest
         pp, hash1 );
     ServiceReference ref = reg.getReference();
     
-    mgr.addingProvider(ref);
-    
     BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
     
     testSuccessfulCreationEvent(ref, extenderContext, 1);
@@ -288,8 +280,6 @@ public class PersistenceBundleLifecycleTest
         pp, hash2 );
     ServiceReference ref2 = reg2.getReference();
     
-    mgr.addingProvider(ref2);
-    
     BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
     
     testSuccessfulCreationEvent(ref, extenderContext, 1);
@@ -301,7 +291,7 @@ public class PersistenceBundleLifecycleTest
     
     //Clear the registration call
     Skeleton.getSkeleton(persistenceBundleContext).clearMethodCalls();
-    mgr.removingProvider(ref);
+    reg.unregister();
     
     BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
     testSuccessfulCreationEvent(ref2, extenderContext, 1);
@@ -313,7 +303,7 @@ public class PersistenceBundleLifecycleTest
   {
     testManager_OnePreExistingPersistenceBundle_OneExistingProvider();
     
-    mgr.close();
+    mgr.stop(extenderBundle.getBundleContext());
     
     Skeleton.getSkeleton(pp).assertCalled(new MethodCall(EntityManagerFactory.class, "close"));
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
@@ -326,17 +316,14 @@ public class PersistenceBundleLifecycleTest
     
     BundleContext extenderContext = extenderBundle.getBundleContext();
     
-    mgr = new PersistenceBundleManager(extenderContext);
-    mgr.setConfig(new Properties());
-    mgr.setParser(new PersistenceDescriptorParserImpl());
-    mgr.open();
+    mgr = new PersistenceBundleManager();
+    mgr.start(extenderContext);
     
     Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
     ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName(), "no.such.Provider"} ,
         pp, hash1 );
     ServiceReference ref = reg.getReference();
-    mgr.addingProvider(ref);
     
     setupPersistenceBundle("file4", "");
     
@@ -417,8 +404,7 @@ public class PersistenceBundleLifecycleTest
         pp, hash1 );
     
     ServiceReference ref = reg.getReference();
-    mgr.addingProvider(ref);
-    mgr.open();
+    mgr.start(extenderContext);
 
     testSuccessfulCreationEvent(ref, extenderContext, 1);
     testSuccessfulRegistrationEvent(ref, extenderContext, 1);
@@ -462,8 +448,7 @@ public class PersistenceBundleLifecycleTest
         pp, hash1 );
     
     ServiceReference ref = reg.getReference();
-    mgr.addingProvider(ref);
-    mgr.open();
+    mgr.start(extenderContext);
 
     testSuccessfulCreationEvent(ref, extenderContext, 1);
     testSuccessfulRegistrationEvent(ref, extenderContext, 1);
@@ -496,15 +481,13 @@ public class PersistenceBundleLifecycleTest
         pp, hash1 );
     ServiceReference ref = reg.getReference();
     
-    mgr.addingProvider(ref);
-    
     setupPersistenceBundle("file4", "");
     
-    mgr.open();
+    mgr.start(extenderContext);
     testSuccessfulCreationEvent(ref, extenderContext, 1);
     testSuccessfulRegistrationEvent(ref, extenderContext, 1);
     
-    mgr.removingProvider(ref);
+    reg.unregister();
     
     Skeleton.getSkeleton(pp).assertCalled(new MethodCall(EntityManagerFactory.class, "close"));
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());    
@@ -518,9 +501,7 @@ public class PersistenceBundleLifecycleTest
   
     BundleContext extenderContext = extenderBundle.getBundleContext();
     
-    mgr = new PersistenceBundleManager(extenderContext);
-    mgr.setConfig(new Properties());
-    mgr.setParser(new PersistenceDescriptorParserImpl());
+    mgr = new PersistenceBundleManager();
     
     Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
@@ -528,11 +509,9 @@ public class PersistenceBundleLifecycleTest
         pp, hash1 );
     ServiceReference ref = reg.getReference();
     
-    mgr.addingProvider(ref);
-    
     setupPersistenceBundle("file3", "");
     
-    mgr.open();
+    mgr.start(extenderContext);
     
     Object o = mgr.addingBundle(persistenceBundle, null);
     
@@ -561,15 +540,14 @@ public class PersistenceBundleLifecycleTest
     ServiceRegistration reg2 = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp2, hash2 );
     
-    mgr.addingProvider(ppRef);
-    mgr.addingProvider(reg2.getReference());
     
     setupPersistenceBundle("file5", "");
     
-    mgr.open();
+    mgr.start(extenderContext);
     testSuccessfulCreationEvent(ppRef, extenderContext, 1);
     testSuccessfulRegistrationEvent(ppRef, extenderContext, 1);
-
+    Skeleton.getSkeleton(pp).clearMethodCalls();
+    testSuccessfulCreationEvent(reg2.getReference(), extenderContext, 0);
   }
   
   @Test
@@ -592,19 +570,19 @@ public class PersistenceBundleLifecycleTest
         pp2, hash2 );
     ServiceReference pp2Ref = reg2.getReference();
     
-    mgr.addingProvider(ppRef);
-    mgr.addingProvider(reg2.getReference());
     
     setupPersistenceBundle("file5", "");
     
-    Properties props = new Properties();
-    props.put("org.apache.aries.jpa.container.ManagedPersistenceUnitInfoFactory", FakeManagedPersistenceUnitFactory.class.getName());
+    Skeleton.getSkeleton(extenderBundle).setReturnValue(new MethodCall(Bundle.class, "getResource", ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES),
+        getClass().getClassLoader().getResource("testProps.props"));
     
-    mgr.setConfig(props);
-    
-    mgr.open();
+    mgr.start(extenderContext);
     testSuccessfulCreationEvent(ppRef, extenderContext, 1);
     testSuccessfulRegistrationEvent(ppRef, extenderContext, 1);
+    //Clear the call to createContainerEntityManagerFactory so that we can check nothing
+    //was done with the new reference
+    Skeleton.getSkeleton(pp).clearMethodCalls();
+    testSuccessfulCreationEvent(pp2Ref, extenderContext, 0);
   }
 
   @Test
@@ -625,12 +603,9 @@ public class PersistenceBundleLifecycleTest
     ServiceRegistration reg2 = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp2, hash2 );
     
-    mgr.addingProvider(ref);
-    mgr.addingProvider(reg2.getReference());
-    
     setupPersistenceBundle("file6", "");
     
-    mgr.open();
+    mgr.start(extenderContext);
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -662,12 +637,9 @@ public class PersistenceBundleLifecycleTest
     ServiceRegistration reg2 = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp2, hash2 );
     
-    mgr.addingProvider(ref);
-    mgr.addingProvider(reg2.getReference());
-    
     setupPersistenceBundle("file7", "");
     
-    mgr.open();
+    mgr.start(extenderContext);
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -698,13 +670,10 @@ public class PersistenceBundleLifecycleTest
     ServiceRegistration reg2 = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp2, hash2 );
     ServiceReference ref2 = reg2.getReference();
-    
-    mgr.addingProvider(ref);
-    mgr.addingProvider(ref2);
-    
+
     setupPersistenceBundle("file8", "");
     
-    mgr.open();
+    mgr.start(extenderContext);
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -715,9 +684,6 @@ public class PersistenceBundleLifecycleTest
     Skeleton.getSkeleton(extenderContext).assertNotCalled(new MethodCall(BundleContext.class, "ungetService", ServiceReference.class));
     Skeleton.getSkeleton(pp).assertNotCalled(new MethodCall(PersistenceProvider.class, "createContainerEntityManagerFactory", PersistenceUnitInfo.class, Map.class));
     Skeleton.getSkeleton(pp2).assertNotCalled(new MethodCall(PersistenceProvider.class, "createContainerEntityManagerFactory", PersistenceUnitInfo.class, Map.class));
-
-    
-  
   }
   
   @Test
@@ -729,7 +695,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file9", "");
 
-    mgr.open();
+    mgr.start(extenderContext);
     
     assertCorrectPersistenceProviderUsed(extenderContext, providerP100);
   }
@@ -743,7 +709,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file10", "");
 
-    mgr.open();
+    mgr.start(extenderContext);
     
     assertCorrectPersistenceProviderUsed(extenderContext, providerP101);
   }
@@ -757,7 +723,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file11", "");
 
-    mgr.open();
+    mgr.start(extenderContext);
     
     assertCorrectPersistenceProviderUsed(extenderContext, providerP101);
   }
@@ -771,7 +737,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file12", "");
 
-    mgr.open();
+    mgr.start(extenderContext);
     
     assertCorrectPersistenceProviderUsed(extenderContext, providerP111);
   }
@@ -785,7 +751,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file13", "");
 
-    mgr.open();
+    mgr.start(extenderContext);
 
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
 
@@ -802,7 +768,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file14", "");
 
-    mgr.open();
+    mgr.start(extenderContext);
     
     assertCorrectPersistenceProviderUsed(extenderContext, providerP101, 2);
   }
@@ -816,7 +782,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file15", "");
 
-    mgr.open();
+    mgr.start(extenderContext);
 
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
 
@@ -833,7 +799,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file16", "");
 
-    mgr.open();
+    mgr.start(extenderContext);
 
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
 
@@ -850,7 +816,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file17", "");
 
-    mgr.open();
+    mgr.start(extenderContext);
 
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
 
@@ -868,7 +834,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file18", "");
 
-    mgr.open();
+    mgr.start(extenderContext);
 
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
 
@@ -885,7 +851,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file19", "");
 
-    mgr.open();
+    mgr.start(extenderContext);
 
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
 
@@ -902,7 +868,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file20", "");
 
-    mgr.open();
+    mgr.start(extenderContext);
 
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
 
@@ -924,14 +890,267 @@ public class PersistenceBundleLifecycleTest
     ServiceReference ref = reg.getReference();
     setupPersistenceBundle21();
     
-    mgr.addingProvider(ref);
-    mgr.open();
+    mgr.start(extenderContext);
     
     testSuccessfulCreationEvent(ref, extenderContext, 4);
     testSuccessfulRegistrationEvent(ref, extenderContext, 4, "persistence", "found", "jar", "another");
     
   }
 
+  /**
+   * Quiesce a bundle that has no JPA content
+   * @throws Exception
+   */
+  @Test
+  public void testQuiesceNoOp() throws Exception
+  {
+    BundleContext ctx = preExistingBundleSetup();
+    mgr.start(ctx);
+    
+    QuiesceCallback cbk = Skeleton.newMock(QuiesceCallback.class);
+    
+    QuiesceParticipant p = (QuiesceParticipant) ctx.getService(ctx.getServiceReference(QuiesceParticipant.class.getName()));
+  
+    p.quiesce(cbk, Collections.singletonList(persistenceBundle));
+    
+    Thread.sleep(100);
+    
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(QuiesceCallback.class,
+        "bundleQuiesced", Bundle[].class), 1);
+  }
+  
+  /**
+   * Quiesce a JPA bundle that is not active
+   * @throws Exception
+   */
+  @Test
+  public void testQuiesceBasic() throws Exception
+  {
+    BundleContext ctx = preExistingBundleSetup();
+    
+    registerVersionedPersistenceProviders();
+    
+    setupPersistenceBundle("file14", "");
+
+    mgr.start(ctx);
+    
+    assertCorrectPersistenceProviderUsed(ctx, providerP101, 2);
+    
+    QuiesceCallback cbk = Skeleton.newMock(QuiesceCallback.class);
+    
+    QuiesceParticipant p = (QuiesceParticipant) ctx.getService(ctx.getServiceReference(QuiesceParticipant.class.getName()));
+  
+    p.quiesce(cbk, Collections.singletonList(persistenceBundle));
+    
+    Thread.sleep(100);
+    
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(QuiesceCallback.class,
+        "bundleQuiesced", Bundle[].class), 1);
+    
+    BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
+  }
+  
+  /**
+   * Quiesce multiple JPA units that are in use
+   * @throws Exception
+   */
+  @Test
+  public void testQuiesceComplex() throws Exception
+  {
+    BundleContext ctx = preExistingBundleSetup();
+    
+    registerVersionedPersistenceProviders();
+    
+    setupPersistenceBundle("file14", "");
+
+    mgr.start(ctx);
+    
+    assertCorrectPersistenceProviderUsed(ctx, providerP101, 2);
+    
+    EntityManager alpha = ((EntityManagerFactory) ctx.getService(ctx.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=alpha)")[0])).createEntityManager();
+    
+    EntityManager bravo = ((EntityManagerFactory) ctx.getService(ctx.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=bravo)")[0])).createEntityManager();
+    
+    QuiesceCallback cbk = Skeleton.newMock(QuiesceCallback.class);
+    
+    QuiesceParticipant p = (QuiesceParticipant) ctx.getService(ctx.getServiceReference(QuiesceParticipant.class.getName()));
+  
+    p.quiesce(cbk, Collections.singletonList(persistenceBundle));
+    
+    Thread.sleep(100);
+    
+    Skeleton.getSkeleton(cbk).assertNotCalled(new MethodCall(QuiesceCallback.class,
+        "bundleQuiesced", Bundle[].class));
+    
+    assertEquals("Should still be registered", 1, ctx.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=alpha)").length);
+    
+    assertEquals("Should still be registered", 1, ctx.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=bravo)").length);
+    
+    alpha.close();
+    
+    Skeleton.getSkeleton(cbk).assertNotCalled(new MethodCall(QuiesceCallback.class,
+        "bundleQuiesced", Bundle[].class));
+    
+    assertNull("Should be unregistered", ctx.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=alpha)"));
+    
+    assertEquals("Should still be registered", 1, ctx.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=bravo)").length);
+    
+    bravo.close();
+    
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(QuiesceCallback.class,
+        "bundleQuiesced", Bundle[].class), 1);
+    
+    BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
+  }
+  
+  /**
+   * Quiesce the JPA extender when there is nothing to do
+   * @throws Exception
+   */
+  @Test
+  public void testQuiesceAllNoOp() throws Exception
+  {
+    BundleContext ctx = preExistingBundleSetup();
+    mgr.start(ctx);
+    
+    QuiesceCallback cbk = Skeleton.newMock(QuiesceCallback.class);
+    
+    QuiesceParticipant p = (QuiesceParticipant) ctx.getService(ctx.getServiceReference(QuiesceParticipant.class.getName()));
+  
+    p.quiesce(cbk, Collections.singletonList(extenderBundle));
+    
+    Thread.sleep(100);
+    
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(QuiesceCallback.class,
+        "bundleQuiesced", Bundle[].class), 1);
+  }
+  
+  /**
+   * Quiesce the JPA container when it has some work to do
+   * @throws Exception
+   */
+  public void testQuiesceAllBasic() throws Exception
+  {
+    BundleContext ctx = preExistingBundleSetup();
+    
+    registerVersionedPersistenceProviders();
+    
+    setupPersistenceBundle("file14", "");
+
+    mgr.start(ctx);
+    
+    assertCorrectPersistenceProviderUsed(ctx, providerP101, 2);
+    
+    QuiesceCallback cbk = Skeleton.newMock(QuiesceCallback.class);
+    
+    QuiesceParticipant p = (QuiesceParticipant) ctx.getService(ctx.getServiceReference(QuiesceParticipant.class.getName()));
+  
+    p.quiesce(cbk, Collections.singletonList(extenderBundle));
+    
+    Thread.sleep(100);
+    
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(QuiesceCallback.class,
+        "bundleQuiesced", Bundle[].class), 1);
+    
+    BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
+  }
+  
+  /**
+   * Quiesce the container when there are multiple active persistence bundles
+   * @throws Exception
+   */
+  @Test
+  public void testQuiesceAllComplex() throws Exception
+  {
+    BundleContext ctx = preExistingBundleSetup();
+    
+    registerVersionedPersistenceProviders();
+    
+    setupPersistenceBundle("file14", "");
+    
+    Bundle persistenceBundle2 = Skeleton.newMock(new BundleMock("scrappy.doo", new Hashtable<String, Object>()), Bundle.class);
+
+    persistenceBundle2.getHeaders().put("Meta-Persistence", "");
+    
+    Skeleton skel = Skeleton.getSkeleton(persistenceBundle2);
+    
+    skel.setReturnValue(new MethodCall(Bundle.class, "getState"), Bundle.ACTIVE);
+    
+    URL rootURL = getClass().getClassLoader().getResource("file12");
+    URL xml = getClass().getClassLoader().getResource("file12" + "/META-INF/persistence.xml");
+    
+    skel.setReturnValue(new MethodCall(Bundle.class, "getResource", "/"), rootURL);
+    skel.setReturnValue(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"), xml);
+    skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("0.0.0"));
+    
+
+    mgr.start(ctx);
+    
+    mgr.addingBundle(persistenceBundle2, new BundleEvent(BundleEvent.STARTING, persistenceBundle2));
+    
+    ServiceReference[] alphas = ctx.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=alpha)");
+    
+    EntityManager alpha1 = ((EntityManagerFactory) ctx.getService(alphas[0])).createEntityManager();
+    
+    EntityManager alpha2 = ((EntityManagerFactory) ctx.getService(alphas[1])).createEntityManager();
+    
+    EntityManager bravo = ((EntityManagerFactory) ctx.getService(ctx.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=bravo)")[0])).createEntityManager();
+    
+    QuiesceCallback cbk = Skeleton.newMock(QuiesceCallback.class);
+    
+    QuiesceParticipant p = (QuiesceParticipant) ctx.getService(ctx.getServiceReference(QuiesceParticipant.class.getName()));
+  
+    p.quiesce(cbk, Collections.singletonList(extenderBundle));
+    
+    Thread.sleep(100);
+    
+    Skeleton.getSkeleton(cbk).assertNotCalled(new MethodCall(QuiesceCallback.class,
+        "bundleQuiesced", Bundle[].class));
+    
+    assertEquals("Two should still be registered", 2, ctx.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=alpha)").length);
+    
+    assertEquals("Should still be registered", 1, ctx.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=bravo)").length);
+    
+    alpha1.close();
+    
+    Skeleton.getSkeleton(cbk).assertNotCalled(new MethodCall(QuiesceCallback.class,
+        "bundleQuiesced", Bundle[].class));
+    
+    assertEquals("One should still be registered", 1, ctx.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=alpha)").length);
+    
+    assertEquals("Should still be registered", 1, ctx.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=bravo)").length);
+    
+    alpha2.close();
+    
+    Skeleton.getSkeleton(cbk).assertNotCalled(new MethodCall(QuiesceCallback.class,
+        "bundleQuiesced", Bundle[].class));
+    
+    assertNull("Should be unregistered", ctx.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=alpha)"));
+    
+    assertEquals("Should still be registered", 1, ctx.getServiceReferences(
+        EntityManagerFactory.class.getName(), "(osgi.unit.name=bravo)").length);
+    
+    bravo.close();
+    
+    Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(QuiesceCallback.class,
+        "bundleQuiesced", Bundle[].class), 1);
+    
+    BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
+  }
+  
   private void setupPersistenceBundle21() throws Exception {
     persistenceBundle.getHeaders().put("Meta-Persistence", "OSGI-INF/found.xml, jarfile.jar!/jar.xml,persistence/another.xml, does-not-exist.xml");
     
@@ -1013,19 +1232,15 @@ public class PersistenceBundleLifecycleTest
     hash1.put("javax.persistence.provider", "no.such.Provider");
     reg = providerBundleP100.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()},
             providerP100, hash1 );
-    mgr.addingProvider(reg.getReference());    
     
     reg = providerBundleP101.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()},
             providerP101, hash1 );
-    mgr.addingProvider(reg.getReference());
     
     reg = providerBundleP110.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()},
             providerP110, hash1 );
-    mgr.addingProvider(reg.getReference());
     
     reg = providerBundleP111.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()},
             providerP111, hash1 );
-    mgr.addingProvider(reg.getReference());
   }
   
 
@@ -1072,7 +1287,7 @@ public class PersistenceBundleLifecycleTest
     }
   }
   
-  private void assertCorrectPersistenceProviderUsed (BundleContext extenderContext, PersistenceProvider provider, int numEMFs) throws InvalidSyntaxException
+  private void assertCorrectPersistenceProviderUsed (BundleContext extenderContext, PersistenceProvider provider, int numEMFs) throws Exception
   {
       BundleContextMock.assertServiceExists(EntityManagerFactory.class.getName());
 
@@ -1083,13 +1298,20 @@ public class PersistenceBundleLifecycleTest
       Skeleton.getSkeleton(provider).assertCalledExactNumberOfTimes(new MethodCall(PersistenceProvider.class, "createContainerEntityManagerFactory", PersistenceUnitInfo.class, Map.class), numEMFs);
       
       for(ServiceReference emf : refs)
-        assertSame("The EMF came from the wrong provider", Skeleton.getSkeleton(provider), Skeleton.getSkeleton(persistenceBundleContext.getService(emf)));
+        assertSame("The EMF came from the wrong provider", Skeleton.getSkeleton(provider), Skeleton.getSkeleton(unwrap(persistenceBundleContext.getService(emf))));
       
       //More than one provider was instantiated
       Skeleton.getSkeleton(extenderContext).assertCalledExactNumberOfTimes(new MethodCall(BundleContext.class, "getService", ServiceReference.class), 1);
   }
 
-  private void assertCorrectPersistenceProviderUsed (BundleContext extenderContext, PersistenceProvider provider) throws InvalidSyntaxException
+  private Object unwrap(Object o) throws Exception {
+    Field f = CountingEntityManagerFactory.class.getDeclaredField("delegate");
+    f.setAccessible(true);
+    
+    return f.get(o);
+  }
+
+  private void assertCorrectPersistenceProviderUsed (BundleContext extenderContext, PersistenceProvider provider) throws Exception
   {
     assertCorrectPersistenceProviderUsed(extenderContext, provider, 1); 
   }
