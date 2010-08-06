@@ -19,6 +19,7 @@
 package org.apache.aries.jpa.container.context.impl;
 
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -102,6 +103,8 @@ public class QuiesceParticipantImpl implements QuiesceParticipant, DestroyCallba
 	/** The Global manager for persistence contexts */
 	private final GlobalPersistenceManager mgr;
 	
+  /** Some events that we need to tidy up */
+  private final BlockingQueue<DestroyCallback> unhandledQuiesces = new LinkedBlockingQueue<DestroyCallback>();
 	
 	public QuiesceParticipantImpl(GlobalPersistenceManager mgr) {
     this.mgr = mgr;
@@ -114,7 +117,7 @@ public class QuiesceParticipantImpl implements QuiesceParticipant, DestroyCallba
 		  try {
 		    executor.execute(new QuiesceBundle(qc, b, mgr));
 		  } catch (RejectedExecutionException re) {
-		    
+		    unhandledQuiesces.add(new QuiesceDelegatingCallback(qc, b));
 		  }
 		  //If we are quiescing, then we need to quiesce this threadpool!
 		  if(b.equals(mgr.getBundle()))
@@ -128,7 +131,9 @@ public class QuiesceParticipantImpl implements QuiesceParticipant, DestroyCallba
   public void callback() {
     executor.shutdown();
     try {
-      executor.awaitTermination(10, TimeUnit.SECONDS);
+      for(DestroyCallback cbk : unhandledQuiesces)
+        cbk.callback();
+      executor.awaitTermination(5, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
       //We don't care
     }
