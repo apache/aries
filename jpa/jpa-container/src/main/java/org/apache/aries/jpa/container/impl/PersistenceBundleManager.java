@@ -33,36 +33,48 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.aries.util.VersionRange;
+import javax.persistence.spi.PersistenceProvider;
+
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfoFactory;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParser;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParserException;
+import org.apache.aries.jpa.container.parsing.impl.PersistenceDescriptorParserImpl;
 import org.apache.aries.jpa.container.unit.impl.ManagedPersistenceUnitInfoFactoryImpl;
+import org.apache.aries.util.VersionRange;
 import org.apache.aries.util.tracker.RecursiveBundleTracker;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
+import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This class locates, parses and manages persistence units defined in OSGi bundles.
  */
-public class PersistenceBundleManager implements BundleTrackerCustomizer
+public class PersistenceBundleManager implements BundleTrackerCustomizer, ServiceTrackerCustomizer, BundleActivator
 {
+  /** The QuiesceParticipant implementation class name */
+  private static final String QUIESCE_PARTICIPANT_CLASS = "org.apache.aries.quiesce.participant.QuiesceParticipant";
+  
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
   
   /** The bundle context for this bundle */
   private BundleContext ctx = null;
+
   /** 
    * A map of providers to persistence bundles this is used to guarantee that 
    * when a provider service is removed we can access all of the bundles that
@@ -85,33 +97,22 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer
   private ManagedPersistenceUnitInfoFactory persistenceUnitFactory; 
   /** Parser for persistence descriptors */
   private PersistenceDescriptorParser parser;
+  /** Registration for the Parser */
+  private ServiceRegistration parserReg;
   /** Configuration for this extender */
   private Properties config;
-  private final RecursiveBundleTracker tracker;
+  private RecursiveBundleTracker tracker;
+  private ServiceTracker serviceTracker;
 
-  /**
-   * Create the extender. Note that it will not start tracking 
-   * until the {@code open()} method is called
-   * @param ctx The extender bundle's context
-   */
-  public PersistenceBundleManager(BundleContext ctx) 
-  {
-    this.ctx = ctx;
-    tracker = new RecursiveBundleTracker(ctx, Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING |
-        Bundle.ACTIVE | Bundle.STOPPING, this);
-  }
-
-  /**
-   * Provide a parser implementation
-   * @param parser
-   */
-  public void setParser(PersistenceDescriptorParser descriptorParser) {
-    parser = descriptorParser;
-  }
-
+  /** The quiesce participant service */
+  private ServiceRegistration quiesceReg;
+  /** A callback to shutdown the quiesce participant when it is done */
+  private DestroyCallback quiesceParticipant;
+  /** Are we quiescing */
+  private AtomicBoolean quiesce = new AtomicBoolean(false);
   
   @SuppressWarnings("unchecked")
-  public void open() {
+  private void open() {
     //Create the pluggable ManagedPersistenceUnitInfoFactory
     String className = config.getProperty(ManagedPersistenceUnitInfoFactory.DEFAULT_PU_INFO_FACTORY_KEY);
     
@@ -127,28 +128,38 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer
     
     if(persistenceUnitFactory == null)
       persistenceUnitFactory = new ManagedPersistenceUnitInfoFactoryImpl();
-    
+     serviceTracker.open();
      tracker.open();
   }
   
-  public void close()
+  private void close()
   {
     if (tracker != null) {
       tracker.close();
     }
+    
+    if (serviceTracker != null) {
+      serviceTracker.close();
+    }
   } 
   public Object addingBundle(Bundle bundle, BundleEvent event) 
   {
-    EntityManagerFactoryManager mgr = setupManager(bundle, null, true);
-    return mgr;
+    if(!!!quiesce.get()){
+      return setupManager(bundle, null, true);
+    }
+    return null;
   }
 
   /**
    * A provider is being added, add it to our Set
    * @param ref
    */
-  public void addingProvider(ServiceReference ref)
+  public Object addingService(ServiceReference ref)
   {
+    if(quiesce.get()){
+      return null;
+    }
+    
     Map<EntityManagerFactoryManager, ServiceReference> managersToManage = new HashMap<EntityManagerFactoryManager, ServiceReference>();
     synchronized (this) {
       if(_logger.isDebugEnabled())
@@ -193,6 +204,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer
         setupManager(mgr.getBundle(), mgr, false);
       }
     }
+    return ref;
   }
   
   /**
@@ -200,12 +212,8 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer
    * managers that it has been removed
    * @param ref
    */
-  public void removingProvider(ServiceReference ref)
-  {
-    //We may get a null reference if the ref-list is empty to start with
-    if(ref == null)
-      return;
-    
+  public void removedService(ServiceReference ref, Object o)
+  {    
     if(_logger.isDebugEnabled())
       _logger.debug("Removing a provider: {}", new Object[] {ref});
     
@@ -232,8 +240,8 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer
    * and override the supplied properties
    * @param props
    */
-  public void setConfig(Properties props) {
-    config = new Properties(props);
+  private void initConfig() {
+    config = new Properties();
     URL u = ctx.getBundle().getResource(ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES);
     
     if(u != null) {
@@ -586,5 +594,112 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer
       InvalidPersistenceUnitException e) {
     _logger.warn("The persistence units for bundle " + bundle.getSymbolicName() + "_" + bundle.getVersion()
         + " became invalid and will be destroyed.", e);
+  }
+
+  
+  public void modifiedService(ServiceReference reference, Object service) {
+    //Just remove and re-add as the properties have changed
+    removedService(reference, service);
+    addingService(reference);
+  }
+
+
+  public void start(BundleContext context) throws Exception {
+    
+    ctx = context;
+    
+    initConfig();
+    initParser();
+    
+    serviceTracker = new ServiceTracker(ctx, PersistenceProvider.class.getName(), this);
+    
+    tracker = new RecursiveBundleTracker(ctx, Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING |
+        Bundle.ACTIVE | Bundle.STOPPING, this);
+    
+    open();
+    
+    try{
+      context.getBundle().loadClass(QUIESCE_PARTICIPANT_CLASS);
+      //Class was loaded, register
+      quiesceParticipant = new QuiesceParticipantImpl(this);
+      quiesceReg = context.registerService(QUIESCE_PARTICIPANT_CLASS,
+         quiesceParticipant, null);
+    } catch (ClassNotFoundException e) {
+      _logger.info("No quiesce support is available, so persistence contexts will not participate in quiesce operations", e);
+    }
+  }
+
+  private void initParser() {
+    parser = new PersistenceDescriptorParserImpl();
+    parserReg = ctx.registerService(PersistenceDescriptorParser.class.getName(), parser, null);
+  }
+
+  public void stop(BundleContext context) throws Exception {
+    close();
+    unregister(parserReg);
+    unregister(quiesceReg);
+    quiesceParticipant.callback();
+  }
+  
+  /**
+   * Clean up a registration without throwing an exception
+   * @param reg
+   */
+  static void unregister(ServiceRegistration reg) {
+    if(reg != null)
+      try {
+        reg.unregister();
+      } catch (IllegalStateException ise) {
+        //we don't care
+      }
+  }
+  
+  public BundleContext getCtx() {
+    return ctx;
+  }
+
+  public void quiesceBundle(Bundle bundleToQuiesce, final DestroyCallback callback) {
+    
+    boolean thisBundle =  bundleToQuiesce.equals(ctx.getBundle());
+    
+    if(thisBundle) {
+      quiesce.compareAndSet(false, true);
+      unregister(quiesceReg);
+    }
+    
+    Collection<EntityManagerFactoryManager> toDestroyNow = new ArrayList<EntityManagerFactoryManager>();
+    final Collection<EntityManagerFactoryManager> quiesceNow = new ArrayList<EntityManagerFactoryManager>();
+    synchronized (this) {
+      if(thisBundle) {
+        toDestroyNow.addAll(managersAwaitingProviders);
+        managersAwaitingProviders.clear();
+        quiesceNow.addAll(bundleToManagerMap.values());
+        bundleToManagerMap.clear();
+        quiesceNow.removeAll(toDestroyNow);
+      } else {
+        EntityManagerFactoryManager emfm = bundleToManagerMap.get(bundleToQuiesce);
+        
+        if(emfm != null){
+          if(managersAwaitingProviders.remove(emfm))
+            toDestroyNow.add(emfm);
+          else
+            quiesceNow.add(emfm);
+        }
+      }
+    }
+    
+    for(EntityManagerFactoryManager emfm : toDestroyNow)
+      emfm.destroy();
+    
+    if(quiesceNow.isEmpty()) {
+      callback.callback();
+    } else {
+      DestroyCallback countdown = new CoundownCallback(quiesceNow.size(), callback);
+      
+      for(EntityManagerFactoryManager emfm : quiesceNow)
+        emfm.quiesce(countdown);
+      
+    }
+    
   }
 }

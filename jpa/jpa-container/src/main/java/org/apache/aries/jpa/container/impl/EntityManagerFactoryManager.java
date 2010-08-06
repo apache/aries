@@ -21,9 +21,13 @@ package org.apache.aries.jpa.container.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
@@ -44,6 +48,27 @@ import org.slf4j.LoggerFactory;
  */
 public class EntityManagerFactoryManager {
 
+  /**
+   * A callback for a named persistence units
+   */
+  class NamedCallback {
+    private final Set<String> names;
+    private final DestroyCallback callback;
+    public NamedCallback(Collection<String> names, DestroyCallback countdown) {
+      this.names = new HashSet<String>(names);
+      callback = countdown;
+    }
+
+    public void callback(String name) {
+      boolean winner;
+      synchronized (this) {
+        winner = !!!names.isEmpty() && names.remove(name) && names.isEmpty();
+      }
+      if(winner)
+        callback.callback();
+    }
+  }
+
   /** The container's {@link BundleContext} */
   private final BundleContext containerContext;
   /** The persistence bundle */
@@ -55,9 +80,11 @@ public class EntityManagerFactoryManager {
   /** The original parsed data */
   private Collection<ParsedPersistenceUnit> parsedData;
   /** A Map of created {@link EntityManagerFactory}s */
-  private Map<String, EntityManagerFactory> emfs = null;
+  private Map<String, CountingEntityManagerFactory> emfs = null;
   /** The {@link ServiceRegistration} objects for the {@link EntityManagerFactory}s */
-  private Collection<ServiceRegistration> registrations = null;
+  private ConcurrentMap<String, ServiceRegistration> registrations = null;
+  /** Quiesce this Manager */
+  private boolean quiesce = false;
 
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
@@ -98,7 +125,7 @@ public class EntityManagerFactoryManager {
    */
   public synchronized boolean providerRemoved(ServiceReference ref) {
     
-    boolean toReturn = ref == provider;
+    boolean toReturn = provider.equals(ref);
     
     if(toReturn)
       destroy();
@@ -146,7 +173,7 @@ public class EntityManagerFactoryManager {
   private void unregisterEntityManagerFactories() {
     //If we have registrations then unregister them
     if(registrations != null) {
-      for(ServiceRegistration reg : registrations) {
+      for(ServiceRegistration reg : registrations.values()) {
         try {
           reg.unregister();
         } catch (Exception e) {
@@ -168,11 +195,11 @@ public class EntityManagerFactoryManager {
   private void registerEntityManagerFactories() throws InvalidPersistenceUnitException {
     //Only register if there is a provider and we are not
     //already registered
-    if(provider != null && registrations == null) {
+    if(provider != null && registrations == null && !quiesce) {
       //Make sure the EntityManagerFactories are instantiated
       createEntityManagerFactories();
       
-      registrations = new ArrayList<ServiceRegistration>();
+      registrations = new ConcurrentHashMap<String, ServiceRegistration>();
       String providerName = (String) provider.getProperty("javax.persistence.provider");
       if(providerName == null) {
         _logger.warn("The PersistenceProvider for bundle {} did not specify a provider name in the \"javax.persistence.provider\" service property. " +
@@ -182,7 +209,7 @@ public class EntityManagerFactoryManager {
             new Object[] {bundle.getSymbolicName() + "_" + bundle.getVersion(), provider});
       }
       //Register each EMF
-      for(Entry<String, EntityManagerFactory> entry : emfs.entrySet())
+      for(Entry<String, ? extends EntityManagerFactory> entry : emfs.entrySet())
       {
         Properties props = new Properties();
         String unitName = entry.getKey();
@@ -194,7 +221,7 @@ public class EntityManagerFactoryManager {
         props.put(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT, Boolean.TRUE);
         props.put(PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME, "".equals(unitName));
         try {
-          registrations.add(bundle.getBundleContext().registerService(EntityManagerFactory.class.getCanonicalName(), entry.getValue(), props));
+          registrations.put(unitName, bundle.getBundleContext().registerService(EntityManagerFactory.class.getCanonicalName(), entry.getValue(), props));
         } catch (Exception e) {
           _logger.error("There was an error registering the persistence unit " 
               + unitName + " defined by the bundle " + bundle.getSymbolicName() + "_" + bundle.getVersion(), e);
@@ -212,9 +239,9 @@ public class EntityManagerFactoryManager {
   private void createEntityManagerFactories() throws InvalidPersistenceUnitException {
     //Only try if we have a provider and EMFs
     if(provider != null) {
-      if(emfs == null) {
+      if(emfs == null && !quiesce) {
         try {
-          emfs = new HashMap<String, EntityManagerFactory>();
+          emfs = new HashMap<String, CountingEntityManagerFactory>();
         
           //Get hold of the provider
           PersistenceProvider providerService = (PersistenceProvider) containerContext.getService(provider);
@@ -229,9 +256,9 @@ public class EntityManagerFactoryManager {
           for(ManagedPersistenceUnitInfo info : persistenceUnits){
             PersistenceUnitInfo pUnitInfo = info.getPersistenceUnitInfo();
         
-            emfs.put(pUnitInfo.getPersistenceUnitName(), 
+            emfs.put(pUnitInfo.getPersistenceUnitName(), new CountingEntityManagerFactory(
                 providerService.createContainerEntityManagerFactory(
-                    pUnitInfo, info.getContainerProperties()));
+                    pUnitInfo, info.getContainerProperties()), pUnitInfo.getPersistenceUnitName()));
           }
         } finally {
           //Remember to unget the provider
@@ -292,7 +319,7 @@ public class EntityManagerFactoryManager {
     if(registrations != null)
       unregisterEntityManagerFactories();
     if(emfs != null) {
-      for(Entry<String, EntityManagerFactory> entry : emfs.entrySet()) {
+      for(Entry<String, ? extends EntityManagerFactory> entry : emfs.entrySet()) {
         try {
           entry.getValue().close();
         } catch (Exception e) {
@@ -311,6 +338,32 @@ public class EntityManagerFactoryManager {
   public Collection<ParsedPersistenceUnit> getParsedPersistenceUnits()
   {
     return parsedData;
+  }
+  /** Quiesce this Manager */
+  public void quiesce(DestroyCallback countdown) {
+    
+    //Find the EMFs to quiesce, and their Service registrations
+    Map<CountingEntityManagerFactory, ServiceRegistration> entries = new HashMap<CountingEntityManagerFactory, ServiceRegistration>();
+    Collection<String> names = new ArrayList<String>();
+    synchronized(this) {
+      quiesce = true;
+      if(emfs != null) {
+        for(String key : emfs.keySet()) {
+          entries.put(emfs.get(key), registrations != null ? registrations.get(key) : null);
+          names.add(key);
+        }
+      }
+    }
+    //Quiesce as necessary
+    if(entries.isEmpty())
+      countdown.callback();
+    else {
+    NamedCallback callback = new NamedCallback(names, countdown);
+      for(Entry<CountingEntityManagerFactory, ServiceRegistration> entry : entries.entrySet()) {
+        CountingEntityManagerFactory emf = entry.getKey();
+        emf.quiesce(callback, entry.getValue());
+      }
+    }
   }
 
 }

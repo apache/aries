@@ -29,6 +29,7 @@ import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 import java.util.Collections;
 import java.util.HashMap;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContextType;
 import javax.transaction.UserTransaction;
@@ -58,7 +59,7 @@ import org.osgi.framework.Version;
 import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(JUnit4TestRunner.class)
-public class QuiesceJPAContextTest {
+public class QuiesceJPATest {
   
   private static class TestQuiesceCallback implements QuiesceCallback{
 
@@ -87,13 +88,17 @@ public class QuiesceJPAContextTest {
     b.stop();
     b.start();
     
+    b = getBundle("org.apache.aries.jpa.container");
+    b.stop();
+    b.start();
+    
     b = getBundle("org.apache.aries.jpa.container.context");
     b.stop();
     b.start();
   }
   
   @Test
-  public void testSimpleQuiesce() throws Exception {
+  public void testSimpleContextQuiesce() throws Exception {
 
     PersistenceContextProvider provider = getOsgiService(PersistenceContextProvider.class);
     
@@ -113,7 +118,7 @@ public class QuiesceJPAContextTest {
     participant.quiesce(callback, Collections.singletonList(getBundle(
         "org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle")));
     
-    Thread.sleep(5000);
+    Thread.sleep(1000);
     
     assertTrue("Quiesce not finished", callback.bundleClearedUp());
     
@@ -125,7 +130,7 @@ public class QuiesceJPAContextTest {
   }
 
   @Test
-  public void testComplexQuiesce() throws Exception {
+  public void testComplexContextQuiesce() throws Exception {
 
     PersistenceContextProvider provider = getOsgiService(PersistenceContextProvider.class);
     
@@ -151,9 +156,9 @@ public class QuiesceJPAContextTest {
     participant.quiesce(callback, Collections.singletonList(getBundle(
         "org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle")));
     
-    Thread.sleep(5000);
+    Thread.sleep(1000);
     
-    assertFalse("Quiesce not finished", callback.bundleClearedUp());
+    assertFalse("Quiesce finished", callback.bundleClearedUp());
     
     emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
         + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
@@ -171,7 +176,7 @@ public class QuiesceJPAContextTest {
   }
   
   @Test
-  public void testRuntimeQuiesce() throws Exception {
+  public void testContextRuntimeQuiesce() throws Exception {
 
     PersistenceContextProvider provider = getOsgiService(PersistenceContextProvider.class);
     
@@ -197,7 +202,7 @@ public class QuiesceJPAContextTest {
     participant.quiesce(callback, Collections.singletonList(getBundle(
         "org.apache.aries.jpa.container.context")));
     
-    Thread.sleep(5000);
+    Thread.sleep(1000);
     
     assertFalse("Quiesce not finished", callback.bundleClearedUp());
     
@@ -212,6 +217,96 @@ public class QuiesceJPAContextTest {
     ServiceReference[] refs = bundleContext.getAllServiceReferences(EntityManagerFactory.class.getName(), "(&(osgi.unit.name=test-unit)(" 
           + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
         "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))");
+    
+    assertNull("No context should exist",refs);
+  }
+  
+  @Test
+  public void testSimpleUnitQuiesce() throws Exception {
+
+    
+    EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+          + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+    
+    QuiesceParticipant participant = getParticipant("org.apache.aries.jpa.container");
+    
+    TestQuiesceCallback callback = new TestQuiesceCallback();
+    
+    participant.quiesce(callback, Collections.singletonList(getBundle(
+        "org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle")));
+    
+    Thread.sleep(1000);
+    
+    assertTrue("Quiesce not finished", callback.bundleClearedUp());
+    
+    ServiceReference[] refs = bundleContext.getAllServiceReferences(EntityManagerFactory.class.getName(), "(&(osgi.unit.name=test-unit)(" 
+          + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
+    
+    assertNull("No context should exist",refs);
+  }
+
+  @Test
+  public void testComplexUnitQuiesce() throws Exception {
+
+    
+    EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+          + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+    
+    EntityManager em = emf.createEntityManager();
+    
+    QuiesceParticipant participant = getParticipant("org.apache.aries.jpa.container");
+    
+    TestQuiesceCallback callback = new TestQuiesceCallback();
+    
+    participant.quiesce(callback, Collections.singletonList(getBundle(
+        "org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle")));
+    
+    Thread.sleep(1000);
+    
+    assertFalse("Quiesce finished", callback.bundleClearedUp());
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+    
+    em.close();
+    
+    assertTrue("Quiesce not finished", callback.bundleClearedUp());
+    
+    ServiceReference[] refs = bundleContext.getAllServiceReferences(EntityManagerFactory.class.getName(), "(&(osgi.unit.name=test-unit)(" 
+          + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
+    
+    assertNull("No context should exist",refs);
+  }
+  
+  @Test
+  public void testContainerRuntimeQuiesce() throws Exception {
+    
+    EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+          + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+    
+    
+    EntityManager em = emf.createEntityManager();
+    
+    QuiesceParticipant participant = getParticipant("org.apache.aries.jpa.container");
+    
+    TestQuiesceCallback callback = new TestQuiesceCallback();
+    
+    participant.quiesce(callback, Collections.singletonList(getBundle(
+        "org.apache.aries.jpa.container")));
+    
+    Thread.sleep(1000);
+    
+    assertFalse("Quiesce finished early", callback.bundleClearedUp());
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+
+    em.close();
+    
+    assertTrue("Quiesce not finished", callback.bundleClearedUp());
+    
+    ServiceReference[] refs = bundleContext.getAllServiceReferences(EntityManagerFactory.class.getName(), "(&(osgi.unit.name=test-unit)(" 
+          + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
     
     assertNull("No context should exist",refs);
   }

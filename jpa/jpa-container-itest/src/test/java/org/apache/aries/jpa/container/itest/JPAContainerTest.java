@@ -79,7 +79,6 @@ public class JPAContainerTest {
         // Bundles
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
-        mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
         mavenBundle("org.apache.geronimo.specs", "geronimo-jpa_2.0_spec"),
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api"),
         mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container"),

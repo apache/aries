@@ -1,0 +1,1 @@
+org.apache.aries.jpa.container.ManagedPersistenceUnitInfoFactory=org.apache.aries.jpa.container.util.FakeManagedPersistenceUnitFactory

@@ -27,6 +27,13 @@
     <artifactId>org.apache.aries.jpa.container</artifactId>
     <packaging>bundle</packaging>
     <name>Aries JPA Container</name>
+    
+    <properties>
+      <aries.osgi.activator>
+          org.apache.aries.jpa.container.impl.PersistenceBundleManager
+      </aries.osgi.activator>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -41,6 +48,11 @@
         <dependency>
             <artifactId>org.apache.aries.jpa.api</artifactId>
             <groupId>org.apache.aries.jpa</groupId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.quiesce</groupId>
+            <artifactId>org.apache.aries.quiesce.api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <artifactId>org.apache.aries.util</artifactId>
@@ -90,6 +102,8 @@
                             javax.persistence.metamodel;version="[1.1.0,2.1.0)";resolution:=optional,
                             org.apache.aries.jpa.container;version="[0.1.0,1.1.0)",
                             org.apache.aries.jpa.container.parsing;version="[0.1.0,1.1.0)",
+                            org.apache.aries.quiesce.manager;version="[0.2,1.0)";resolution:=optional,
+                            org.apache.aries.quiesce.participant;version="[0.2,0.3)";resolution:=optional,
                             *
                         </Import-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
