@@ -505,7 +505,7 @@ public class PersistenceContextManager extends ServiceTracker{
       unregisterEM(name);
       boolean winner;
       synchronized(this) {
-        winner = units.remove(name) && units.isEmpty();
+        winner = !!!units.isEmpty() && units.remove(name) && units.isEmpty();
       }
       
       if(winner) {
