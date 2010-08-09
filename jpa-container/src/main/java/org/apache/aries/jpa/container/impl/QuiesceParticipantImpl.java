@@ -87,6 +87,8 @@ public class QuiesceParticipantImpl implements QuiesceParticipant, DestroyCallba
     }
   }
 
+  private static final int QUIESCABLE_BUNDLE = Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING;
+  
   /**
    * A Threadpool for running quiesce operations
    */
@@ -114,7 +116,12 @@ public class QuiesceParticipantImpl implements QuiesceParticipant, DestroyCallba
     //Run a quiesce operation for each bundle being quiesced
     for(Bundle b : arg1) {
       try {
-        executor.execute(new QuiesceBundle(qc, b, mgr));
+        if((b.getState() & QUIESCABLE_BUNDLE) == 0) {
+          //This bundle is not in an "ACTIVE" state (or starting or stopping)
+          qc.bundleQuiesced(b);
+        } else {
+          executor.execute(new QuiesceBundle(qc, b, mgr));
+        }
       } catch (RejectedExecutionException re) {
         unhandledQuiesces.add(new QuiesceDelegatingCallback(qc, b));
       }

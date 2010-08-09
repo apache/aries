@@ -159,7 +159,10 @@ public class EntityManagerFactoryManager {
         break;
         //Stopping means the EMFs should
       case Bundle.STOPPING :
+        //If we're stopping we no longer need to be quiescing
+        quiesce = false;
         unregisterEntityManagerFactories();
+        
         break;
       case Bundle.INSTALLED :
         //Destroy everything
