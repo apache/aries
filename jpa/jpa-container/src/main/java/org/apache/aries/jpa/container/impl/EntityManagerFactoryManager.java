@@ -176,13 +176,14 @@ public class EntityManagerFactoryManager {
   private void unregisterEntityManagerFactories() {
     //If we have registrations then unregister them
     if(registrations != null) {
-      for(ServiceRegistration reg : registrations.values()) {
+      for(Entry<String, ServiceRegistration> entry : registrations.entrySet()) {
         try {
-          reg.unregister();
+          entry.getValue().unregister();
         } catch (Exception e) {
           _logger.error("There was an error unregistering the EntityManagerFactory services for bundle " 
               + bundle.getSymbolicName() + "_" + bundle.getVersion() , e);
         }
+        emfs.get(entry.getKey()).clearQuiesce();
       }
       // remember to set registrations to be null
       registrations = null;
@@ -349,7 +350,8 @@ public class EntityManagerFactoryManager {
     Map<CountingEntityManagerFactory, ServiceRegistration> entries = new HashMap<CountingEntityManagerFactory, ServiceRegistration>();
     Collection<String> names = new ArrayList<String>();
     synchronized(this) {
-      quiesce = true;
+      if((bundle.getState() & (Bundle.ACTIVE | Bundle.STARTING)) != 0)
+        quiesce = true;
       if(emfs != null) {
         for(String key : emfs.keySet()) {
           entries.put(emfs.get(key), registrations != null ? registrations.get(key) : null);

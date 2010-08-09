@@ -32,6 +32,7 @@ import java.util.HashMap;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContextType;
+import javax.sql.DataSource;
 import javax.transaction.UserTransaction;
 
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
@@ -173,8 +174,10 @@ public class QuiesceJPATest {
 
   @Test
   public void testComplexContextQuiesce() throws Exception {
-
-   // Get a managed context registered
+    //This is load bearing. we have to wait to create the EntityManager until the DataSource is available
+    getOsgiService(DataSource.class);
+    
+    // Get a managed context registered
     PersistenceContextProvider provider = getOsgiService(PersistenceContextProvider.class);
     
     HashMap<String, Object> props = new HashMap<String, Object>();
@@ -240,11 +243,43 @@ public class QuiesceJPATest {
     emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
         + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
       "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))", 100);
+    
+    //Test again to make sure we don't hold state over
+    
+    tm.begin();
+    
+    emf.createEntityManager().getProperties();
+    
+    callback = new TestQuiesceCallback();
+    
+    participant.quiesce(callback, Collections.singletonList(getBundle(
+        "org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle")));
+    
+    Thread.sleep(1000);
+    
+    assertFalse("Quiesce finished", callback.bundleClearedUp());
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
+      "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))", 100);
+    
+    tm.commit();
+    
+    assertTrue("Quiesce not finished", callback.bundleClearedUp());
+    
+    refs = bundleContext.getAllServiceReferences(EntityManagerFactory.class.getName(), "(&(osgi.unit.name=test-unit)(" 
+          + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
+        "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))");
+    
+    assertNull("No context should exist",refs);
+    
   }
   
   @Test
   public void testContextRuntimeQuiesce() throws Exception {
-
+    //This is load bearing. we have to wait to create the EntityManager until the DataSource is available
+    getOsgiService(DataSource.class);
+    
     PersistenceContextProvider provider = getOsgiService(PersistenceContextProvider.class);
     
     HashMap<String, Object> props = new HashMap<String, Object>();
@@ -322,7 +357,8 @@ public class QuiesceJPATest {
 
   @Test
   public void testComplexUnitQuiesce() throws Exception {
-
+    //This is load bearing. we have to wait to create the EntityManager until the DataSource is available
+    getOsgiService(DataSource.class);
     
     EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
           + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
@@ -365,10 +401,37 @@ public class QuiesceJPATest {
     
     emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
         + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", 100);
+    
+    //Test a second time to make sure state isn't held
+    
+    em = emf.createEntityManager();
+    
+    callback = new TestQuiesceCallback();
+    
+    participant.quiesce(callback, Collections.singletonList(getBundle(
+        "org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle")));
+    
+    Thread.sleep(1000);
+    
+    assertFalse("Quiesce finished", callback.bundleClearedUp());
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+    
+    em.close();
+    
+    assertTrue("Quiesce not finished", callback.bundleClearedUp());
+    
+    refs = bundleContext.getAllServiceReferences(EntityManagerFactory.class.getName(), "(&(osgi.unit.name=test-unit)(" 
+          + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
+    
+    assertNull("No context should exist",refs);
   }
   
   @Test
   public void testContainerRuntimeQuiesce() throws Exception {
+    //This is load bearing. we have to wait to create the EntityManager until the DataSource is available
+    getOsgiService(DataSource.class);
     
     EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
           + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
@@ -403,7 +466,10 @@ public class QuiesceJPATest {
   @Test
   public void testComplexQuiesceInteraction() throws Exception {
 
-   // Get a managed context registered
+    //This is load bearing. we have to wait to create the EntityManager until the DataSource is available
+    getOsgiService(DataSource.class);
+    
+    // Get a managed context registered
     PersistenceContextProvider provider = getOsgiService(PersistenceContextProvider.class);
     
     HashMap<String, Object> props = new HashMap<String, Object>();
@@ -491,8 +557,10 @@ public class QuiesceJPATest {
   
   @Test
   public void testComplexQuiesceInteraction2() throws Exception {
-
-   // Get a managed context registered
+    //This is load bearing. we have to wait to create the EntityManager until the DataSource is available
+    getOsgiService(DataSource.class);
+    
+    // Get a managed context registered
     PersistenceContextProvider provider = getOsgiService(PersistenceContextProvider.class);
     
     HashMap<String, Object> props = new HashMap<String, Object>();
