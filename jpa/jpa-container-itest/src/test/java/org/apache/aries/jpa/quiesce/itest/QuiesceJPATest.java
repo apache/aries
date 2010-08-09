@@ -58,6 +58,8 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.util.tracker.ServiceTracker;
 
+import com.sun.xml.internal.messaging.saaj.util.TeeInputStream;
+
 @RunWith(JUnit4TestRunner.class)
 public class QuiesceJPATest {
   
@@ -72,6 +74,35 @@ public class QuiesceJPATest {
     public boolean bundleClearedUp()
     {
       return calls == 1;
+    }
+  }
+  
+  private class MultiQuiesceCallback implements QuiesceCallback{
+
+    private int calls = 0;
+    
+    private boolean contextFirst = true;
+    
+    public void bundleQuiesced(Bundle... arg0) {
+      if(++calls == 1)
+        try {
+          getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+              + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+        } catch (Throwable t){
+          contextFirst = false;
+          if(t instanceof RuntimeException)
+            throw (RuntimeException) t;
+          else if (t instanceof Error)
+            throw (Error) t;
+          else
+            throw new RuntimeException(t);
+        }
+            
+    }
+
+    public boolean bundleClearedUp()
+    {
+      return calls == 2 && contextFirst;
     }
   }
   
@@ -100,6 +131,7 @@ public class QuiesceJPATest {
   @Test
   public void testSimpleContextQuiesce() throws Exception {
 
+    //Get a managed context registered
     PersistenceContextProvider provider = getOsgiService(PersistenceContextProvider.class);
     
     HashMap<String, Object> props = new HashMap<String, Object>();
@@ -111,6 +143,7 @@ public class QuiesceJPATest {
         "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))", DEFAULT_TIMEOUT);
     
     
+    //Quiesce it
     QuiesceParticipant participant = getParticipant("org.apache.aries.jpa.container.context");
     
     TestQuiesceCallback callback = new TestQuiesceCallback();
@@ -127,11 +160,21 @@ public class QuiesceJPATest {
         "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))");
     
     assertNull("No context should exist",refs);
+    
+    //Restart the bundle to check the context gets re-registered
+    Bundle b = getBundle("org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle");
+    b.stop();
+    b.start();
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
+      "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))", DEFAULT_TIMEOUT);
   }
 
   @Test
   public void testComplexContextQuiesce() throws Exception {
 
+   // Get a managed context registered
     PersistenceContextProvider provider = getOsgiService(PersistenceContextProvider.class);
     
     HashMap<String, Object> props = new HashMap<String, Object>();
@@ -143,6 +186,7 @@ public class QuiesceJPATest {
         "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))", DEFAULT_TIMEOUT);
     
     
+    //Set up a transaction so we can check the Quiesce waits properly
     UserTransaction tm = getOsgiService(UserTransaction.class);
     
     tm.begin();
@@ -173,6 +217,29 @@ public class QuiesceJPATest {
         "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))");
     
     assertNull("No context should exist",refs);
+    
+    
+    //Restart the bundle to check the context gets re-registered, then ensure it isn't
+    //tidied up immediately again!
+    Bundle b = getBundle("org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle");
+    b.stop();
+    b.start();
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
+      "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))", DEFAULT_TIMEOUT);
+    
+    tm.begin();
+    
+    emf.createEntityManager().getProperties();
+    
+    tm.commit();
+    
+    Thread.sleep(1000);
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
+      "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))", 100);
   }
   
   @Test
@@ -242,7 +309,15 @@ public class QuiesceJPATest {
     ServiceReference[] refs = bundleContext.getAllServiceReferences(EntityManagerFactory.class.getName(), "(&(osgi.unit.name=test-unit)(" 
           + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
     
-    assertNull("No context should exist",refs);
+    assertNull("No unit should exist",refs);
+    
+    //Restart the bundle to check the unit gets re-registered
+    Bundle b = getBundle("org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle");
+    b.stop();
+    b.start();
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
   }
 
   @Test
@@ -276,6 +351,20 @@ public class QuiesceJPATest {
           + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
     
     assertNull("No context should exist",refs);
+    
+    //Restart the bundle to check the unit gets re-registered and is not immediately unregistered
+    Bundle b = getBundle("org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle");
+    b.stop();
+    b.start();
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+    
+    em = emf.createEntityManager();
+    em.close();
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", 100);
   }
   
   @Test
@@ -310,6 +399,156 @@ public class QuiesceJPATest {
     
     assertNull("No context should exist",refs);
   }
+  
+  @Test
+  public void testComplexQuiesceInteraction() throws Exception {
+
+   // Get a managed context registered
+    PersistenceContextProvider provider = getOsgiService(PersistenceContextProvider.class);
+    
+    HashMap<String, Object> props = new HashMap<String, Object>();
+    props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
+    provider.registerContext("test-unit", bundleContext.getBundle(), props);
+    
+    EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+          + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
+        "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))", DEFAULT_TIMEOUT);
+    
+    
+    //Set up a transaction so we can check the Quiesce waits properly
+    UserTransaction tm = getOsgiService(UserTransaction.class);
+    
+    tm.begin();
+    
+    emf.createEntityManager().getProperties();
+    
+    //Quiesce the Unit, nothing should happen
+    QuiesceParticipant participant = getParticipant("org.apache.aries.jpa.container");
+    
+    TestQuiesceCallback unitCallback = new TestQuiesceCallback();
+    
+    participant.quiesce(unitCallback, Collections.singletonList(getBundle(
+        "org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle")));
+    
+    Thread.sleep(1000);
+    
+    assertFalse("Quiesce finished", unitCallback.bundleClearedUp());
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
+      "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))", DEFAULT_TIMEOUT);
+    
+    
+    //Quiesce the context, still nothing
+    
+    participant = getParticipant("org.apache.aries.jpa.container.context");
+    
+    TestQuiesceCallback contextCallback = new TestQuiesceCallback();
+    
+    participant.quiesce(contextCallback, Collections.singletonList(getBundle(
+    "org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle")));
+    
+    Thread.sleep(1000);
+    
+    assertFalse("Quiesce finished", unitCallback.bundleClearedUp());
+    assertFalse("Quiesce finished", contextCallback.bundleClearedUp());
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
+      "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))", DEFAULT_TIMEOUT);
+    
+    //Keep the unit alive
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+  
+  
+    EntityManager em = emf.createEntityManager();
+    
+    tm.commit();
+    
+    assertTrue("Quiesce not finished", contextCallback.bundleClearedUp());
+    
+    ServiceReference[] refs = bundleContext.getAllServiceReferences(EntityManagerFactory.class.getName(), "(&(osgi.unit.name=test-unit)(" 
+          + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
+        "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))");
+    
+    assertNull("No context should exist",refs);
+    
+    //Still a unit
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+    
+    em.close();
+    
+    assertTrue("Quiesce not finished", unitCallback.bundleClearedUp());
+    
+    refs = bundleContext.getAllServiceReferences(EntityManagerFactory.class.getName(), "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
+  
+    assertNull("No unit should exist",refs);
+  }
+  
+  @Test
+  public void testComplexQuiesceInteraction2() throws Exception {
+
+   // Get a managed context registered
+    PersistenceContextProvider provider = getOsgiService(PersistenceContextProvider.class);
+    
+    HashMap<String, Object> props = new HashMap<String, Object>();
+    props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
+    provider.registerContext("test-unit", bundleContext.getBundle(), props);
+    
+    EntityManagerFactory emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+          + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
+        "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))", DEFAULT_TIMEOUT);
+    
+    
+    //Set up a transaction so we can check the Quiesce waits properly
+    UserTransaction tm = getOsgiService(UserTransaction.class);
+    
+    tm.begin();
+    
+    emf.createEntityManager().getProperties();
+    
+    //Quiesce the Unit, nothing should happen
+    QuiesceParticipant participant = getParticipant("org.apache.aries.jpa.container");
+    
+    MultiQuiesceCallback callback = new MultiQuiesceCallback();
+    
+    participant.quiesce(callback, Collections.singletonList(getBundle(
+        "org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle")));
+    
+    //Quiesce the context, still nothing
+    participant = getParticipant("org.apache.aries.jpa.container.context");
+    
+    participant.quiesce(callback, Collections.singletonList(getBundle(
+       "org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle")));
+    
+    Thread.sleep(1000);
+    
+    assertFalse("Quiesce finished", callback.bundleClearedUp());
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true)" +
+      "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*))", DEFAULT_TIMEOUT);
+    
+    emf = getOsgiService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" 
+        + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))", DEFAULT_TIMEOUT);
+    
+    
+    tm.commit();
+    
+    assertTrue("Quiesce not finished", callback.bundleClearedUp());
+    
+    ServiceReference[] refs = bundleContext.getAllServiceReferences(EntityManagerFactory.class.getName(), "(&(osgi.unit.name=test-unit)(" 
+          + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
+    
+    assertNull("No context should exist",refs);
+    
+  }
+  
+  
   
   private QuiesceParticipant getParticipant(String bundleName) throws InvalidSyntaxException {
     ServiceReference[] refs = bundleContext.getServiceReferences(QuiesceParticipant.class.getName(), null);
