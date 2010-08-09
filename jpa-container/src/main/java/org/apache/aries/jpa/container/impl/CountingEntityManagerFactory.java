@@ -101,16 +101,31 @@ public class CountingEntityManagerFactory implements EntityManagerFactory, Destr
     this.callback.compareAndSet(null, callback);
     if(count.get() == 0) {
       PersistenceBundleManager.unregister(this.reg.getAndSet(null));
+      this.callback.set(null);
       callback.callback(name);
     }
   }
 
   public void callback() {
-    if(count.decrementAndGet() == 0 && callback.get() != null) {
-      PersistenceBundleManager.unregister(reg.getAndSet(null));
-      callback.get().callback(name);
+    
+    if(count.decrementAndGet() == 0) {
+      NamedCallback c = callback.getAndSet(null);
+      if(c != null) {
+        PersistenceBundleManager.unregister(reg.getAndSet(null));
+        c.callback(name);
+      }
     }
       
+  }
+
+  public void clearQuiesce() {
+    //We will already be unregistered
+    reg.set(null);
+    NamedCallback c = callback.getAndSet(null);
+    //If there was a callback then call it in case time hasn't run out.
+    if(c != null) {
+      c.callback(name);
+    }
   }
 
 }
