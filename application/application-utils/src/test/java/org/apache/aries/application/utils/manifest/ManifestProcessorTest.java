@@ -85,7 +85,7 @@ public class ManifestProcessorTest
   public void testManifestMetadata() throws Exception
   {
     ApplicationMetadataFactoryImpl manager = new ApplicationMetadataFactoryImpl();
-    InputStream in = getClass().getClassLoader().getResourceAsStream("META-INF/APPLICATION.MF");
+    InputStream in = getClass().getClassLoader().getResourceAsStream("META-INF/APPLICATION.MF");    
     ApplicationMetadata am = manager.parseApplicationMetadata(in);
     assertNotNull(am);
 

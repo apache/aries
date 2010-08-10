@@ -32,27 +32,42 @@ import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
 
-public class DeploymentMetadataFactoryImpl implements DeploymentMetadataFactory {
+public class DeploymentMetadataFactoryImpl implements DeploymentMetadataFactory
+{
 
   public DeploymentMetadata createDeploymentMetadata(AriesApplication app,
-                                                     Set<BundleInfo> additionalBundlesRequired) throws ResolverException {
+      Set<BundleInfo> additionalBundlesRequired) throws ResolverException
+  {
     return new DeploymentMetadataImpl(app, additionalBundlesRequired);
   }
-  
-  public DeploymentMetadata createDeploymentMetadata(IFile src) throws IOException { 
+
+  public DeploymentMetadata parseDeploymentMetadata(IFile src) throws IOException
+  {
     InputStream is = src.open();
-    try { 
-      return createDeploymentMetadata(is);
-    } finally { 
+    try {
+      return parseDeploymentMetadata(is);
+    } finally {
       is.close();
     }
   }
 
-  public DeploymentMetadata createDeploymentMetadata(InputStream in) throws IOException {
+  public DeploymentMetadata parseDeploymentMetadata(InputStream in) throws IOException
+  {
     return createDeploymentMetadata(ManifestProcessor.parseManifest(in));
   }
 
-  public DeploymentMetadata createDeploymentMetadata(Manifest manifest) throws IOException {
+  public DeploymentMetadata createDeploymentMetadata(Manifest manifest) throws IOException
+  {
     return new DeploymentMetadataImpl(manifest);
+  }
+
+  public DeploymentMetadata createDeploymentMetadata(IFile src) throws IOException
+  {
+    return parseDeploymentMetadata(src);
+  }
+
+  public DeploymentMetadata createDeploymentMetadata(InputStream in) throws IOException
+  {
+    return parseDeploymentMetadata(in);
   }
 }

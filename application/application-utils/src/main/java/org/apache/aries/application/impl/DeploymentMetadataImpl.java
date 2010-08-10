@@ -158,4 +158,14 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
       contents.add(new DeploymentContentImpl(s));
     }
   }
+
+  public List<DeploymentContent> getDeployedUseBundle()
+  {
+    return new ArrayList<DeploymentContent>();
+  }
+
+  public Set<Content> getImportPackage()
+  {
+    return null;
+  }
 }
