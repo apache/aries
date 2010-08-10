@@ -26,8 +26,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,12 +51,14 @@ import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleConversion;
 import org.apache.aries.application.management.BundleConverter;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.BundleRepository;
 import org.apache.aries.application.management.ConversionException;
 import org.apache.aries.application.management.LocalPlatform;
 import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.management.internal.MessageUtil;
+import org.apache.aries.application.management.repository.ApplicationRepository;
 import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.filesystem.IOUtils;
@@ -62,7 +66,9 @@ import org.apache.aries.application.utils.management.SimpleBundleInfo;
 import org.apache.aries.application.utils.manifest.BundleManifest;
 import org.apache.aries.application.utils.manifest.ManifestDefaultsInjector;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +81,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   private AriesApplicationResolver _resolver;
   private LocalPlatform _localPlatform;
   private AriesApplicationContextManager _applicationContextManager;
+  private BundleContext _bundleContext;
 
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.application.management.impl");
 
@@ -100,6 +107,11 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   
   public void setApplicationContextManager (AriesApplicationContextManager acm) { 
     _applicationContextManager = acm;
+  }
+  
+  public void setBundleContext(BundleContext b)
+  {
+    _bundleContext = b;
   }
   
   
@@ -142,7 +154,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
         BundleManifest bm = getBundleManifest (f);
         if (bm != null) {
           if (bm.isValid()) {
-            extraBundlesInfo.add(new SimpleBundleInfo(_applicationMetadataFactory, bm, f.toURL().toExternalForm()));
+            extraBundlesInfo.add(new SimpleBundleInfo(bm, f.toURL().toExternalForm()));
           } else if (deploymentManifest == null) { 
             // We have a jar that needs converting to a bundle, or a war to migrate to a WAB 
             // We only do this if a DEPLOYMENT.MF does not exist.
@@ -166,7 +178,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
             }
             if (convertedBinary != null) { 
               modifiedBundles.put (f.getName(), convertedBinary);             
-              extraBundlesInfo.add(convertedBinary.getBundleInfo(_applicationMetadataFactory));
+              extraBundlesInfo.add(convertedBinary.getBundleInfo());
             } 
           }
         } 
@@ -182,7 +194,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
       applicationMetadata = _applicationMetadataFactory.createApplicationMetadata(applicationManifest);
       
       if (deploymentManifest != null) { 
-        deploymentMetadata = _deploymentMetadataFactory.createDeploymentMetadata(deploymentManifest);
+        deploymentMetadata = _deploymentMetadataFactory.parseDeploymentMetadata(deploymentManifest);
         
         // Validate: symbolic names must match
         String appSymbolicName = applicationMetadata.getApplicationSymbolicName();
@@ -268,6 +280,14 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     if (!app.isResolved()) {
         app = resolve(app);
     }
+    
+    // Register an Application Repository for this application
+    Dictionary dict = new Hashtable();
+    dict.put(ApplicationRepository.REPOSITORY_SCOPE, app.getApplicationMetadata().getApplicationScope());
+    _bundleContext.registerService(BundleRepository.class.getName(), 
+        new ApplicationRepository(_resolver), 
+        dict);
+    
     AriesApplicationContext result = _applicationContextManager.getApplicationContext(app);
     return result;
   }

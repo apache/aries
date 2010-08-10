@@ -118,8 +118,8 @@ public class AriesApplicationManagerImplTest {
                 final String location = toBeConverted.toString();                
             	return new BundleConversion() {
 
-					public BundleInfo getBundleInfo(ApplicationMetadataFactory amf) throws IOException {
-						return new SimpleBundleInfo(amf, BundleManifest.fromBundle(convertedFile), location);
+					public BundleInfo getBundleInfo() throws IOException {
+						return new SimpleBundleInfo(BundleManifest.fromBundle(convertedFile), location);
 					}
 
 					public InputStream getInputStream() throws IOException {
@@ -304,7 +304,7 @@ public class AriesApplicationManagerImplTest {
     String persistenceLibraryLocation = "../src/test/resources/bundles/repository/a.handy.persistence.library.jar";
     File persistenceLibrary = new File (persistenceLibraryLocation);
     BundleManifest mf = BundleManifest.fromBundle(persistenceLibrary);
-    BundleInfo resolvedPersistenceLibrary = new SimpleBundleInfo(_appMetaFactory, mf, persistenceLibraryLocation); 
+    BundleInfo resolvedPersistenceLibrary = new SimpleBundleInfo(mf, persistenceLibraryLocation); 
     Field v = SimpleBundleInfo.class.getDeclaredField("_version");
     v.setAccessible(true);
     v.set(resolvedPersistenceLibrary, new Version("1.1.0"));
