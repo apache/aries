@@ -25,7 +25,7 @@
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.apache.aries.application.runtime.itests</artifactId>
+    <artifactId>org.apache.aries.application.runtime.isolated.itests</artifactId>
     <packaging>jar</packaging>
     <name>Apache Aries Application integration tests</name>
     <description>
@@ -89,25 +89,17 @@
             <artifactId>org.apache.felix.bundlerepository</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
-            <scope>test</scope>
-        </dependency>
-
+        </dependency>       
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.utils</artifactId>
             <scope>test</scope>
         </dependency>
-
+        
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
@@ -116,20 +108,71 @@
 
         <dependency>
             <groupId>org.apache.aries.application</groupId>
+            <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.management</artifactId>
             <scope>test</scope>
         </dependency>
-
+        
         <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.runtime</artifactId>
-            <scope>test</scope>
+        	<groupId>org.apache.aries.application</groupId>
+        	<artifactId>org.apache.aries.application.runtime.framework</artifactId>
+        	<scope>test</scope>
         </dependency>
-
+        
+        <dependency>
+        	<groupId>org.apache.aries.application</groupId>
+        	<artifactId>org.apache.aries.application.runtime.framework.management</artifactId>
+        	<scope>test</scope>
+        </dependency>
+        
+        <dependency>
+        	<groupId>org.apache.aries.application</groupId>
+        	<artifactId>org.apache.aries.application.runtime.repository</artifactId>
+        	<scope>test</scope>
+        </dependency>
+        
+        <dependency>
+        	<groupId>org.apache.aries.application</groupId>
+        	<artifactId>org.apache.aries.application.runtime.isolated</artifactId>
+        	<scope>test</scope>
+        </dependency>
+        
+        <dependency>
+        	<groupId>org.apache.aries.application</groupId>
+        	<artifactId>org.apache.aries.application.runtime</artifactId>
+        	<scope>test</scope>
+        </dependency>
+        
         <dependency>
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.resolver.obr</artifactId>
             <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+        	<groupId>org.apache.aries.transaction</groupId>
+        	<artifactId>org.apache.aries.transaction.blueprint</artifactId>
+        	<version>0.2-incubating-SNAPSHOT</version>
+        	<type>bundle</type>
+        	<scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.apache.geronimo.specs</groupId>
+        	<artifactId>geronimo-jta_1.1_spec</artifactId>
+        	<version>1.1.1</version>
+        	<scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.eclipse</groupId>
+        	<artifactId>osgi</artifactId>
+        	<version>3.5.0.v20090520</version>
+        	<type>jar</type>
+        	<scope>test</scope>
         </dependency>
     </dependencies>
 

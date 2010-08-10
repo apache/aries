@@ -38,7 +38,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.aries.application.ApplicationMetadataFactory;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
@@ -234,14 +233,12 @@ public class OBRResolverTest extends AbstractIntegrationTest
 
   private BundleInfo createBundleInfo(String urlToBundle) throws Exception
   {
-    ApplicationMetadataFactory factory = getOsgiService(ApplicationMetadataFactory.class);
-    
     Bundle b = getBundle("org.apache.aries.application.management");
     @SuppressWarnings("unchecked")
     Class<BundleInfo> clazz = b.loadClass("org.apache.aries.application.utils.management.SimpleBundleInfo");
-    Constructor<BundleInfo> c = clazz.getConstructor(ApplicationMetadataFactory.class, BundleManifest.class, String.class);
+    Constructor<BundleInfo> c = clazz.getConstructor(BundleManifest.class, String.class);
     
-    return c.newInstance(factory, BundleManifest.fromBundle(new URL(urlToBundle).openStream()), urlToBundle);
+    return c.newInstance(BundleManifest.fromBundle(new URL(urlToBundle).openStream()), urlToBundle);
   }
 
   @org.ops4j.pax.exam.junit.Configuration
