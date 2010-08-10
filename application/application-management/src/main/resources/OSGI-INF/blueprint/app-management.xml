@@ -26,6 +26,7 @@
     <property name="resolver" ref="resolver"/>
     <property name="localPlatform" ref="localPlatform"/>
     <property name="applicationContextManager" ref="application-context-manager"/>
+    <property name="bundleContext" ref="blueprintBundleContext"/>
   </bean>
   
   <reference id="app-metadata-factory" interface="org.apache.aries.application.ApplicationMetadataFactory"/>
