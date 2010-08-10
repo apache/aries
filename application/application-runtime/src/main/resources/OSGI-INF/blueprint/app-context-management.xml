@@ -24,18 +24,5 @@
   </bean>
 
   <service interface="org.apache.aries.application.management.AriesApplicationContextManager" ref="app-context-manager" />
-  
-  <!-- Default implementations of services that must be implemented against a 
-       particular application server environment follow -->
-
-  <bean id="default-local-platform" class="org.apache.aries.application.runtime.defaults.DefaultLocalPlatform"/>
-  <bean id="no-op-resolver" class="org.apache.aries.application.runtime.defaults.NoOpResolver"/>
-  
-  <service interface="org.apache.aries.application.management.LocalPlatform" 
-            ref="default-local-platform"
-            ranking="-1"/>
-  <service interface="org.apache.aries.application.management.AriesApplicationResolver" 
-            ref="no-op-resolver"
-            ranking="-1"/>
-  
+    
 </blueprint>
