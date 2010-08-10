@@ -103,17 +103,8 @@ public class ApplicationContextImpl implements AriesApplicationContext
     List<DeploymentContent> provisionBundlesToFind = new ArrayList<DeploymentContent>(_deploymentMF
         .getApplicationProvisionBundles());
 
-    // In release 1, we'll only support regular bundles in Deployed-Content or CompositeBundle-Content
-    // let's process provision bundle first.  if we find it, good, if not, install it
-    // please note that provision bundle may contain CBAs.
     provisionBundleInstall = install(provisionBundlesToFind, true);
-
-    // note that useBundle may contains CBAs
     useBundleInstall = install(useBundlesToFind, true);
-
-    // let's process application content/deployment content second.
-    // for isolated env, this means, we need to install all and there is no need 
-    // to find if it exists in the shared bundle space
     success = install(bundlesToFind, false);
 
     if (success && provisionBundleInstall && useBundleInstall) {
@@ -125,7 +116,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
       uninstall();
     }
 
-    // let's calculate installed again as we only claim install success 
+    // calculate installed again as we only claim install success 
     // when provision bundle and use bundle are installed too.
     success = success && provisionBundleInstall && useBundleInstall;
 
