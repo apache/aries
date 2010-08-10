@@ -136,12 +136,32 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.runtime.isolated</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
                 <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.runtime.itests</artifactId>
+                <artifactId>org.apache.aries.application.runtime.isolated.itests</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.runtime.framework</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.runtime.framework.management</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.runtime.repository</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -158,6 +178,10 @@
         <module>application-management</module>
         <module>application-converters</module>
         <module>application-runtime</module>
+	  <module>application-runtime-isolated</module>
+	  <module>application-runtime-framework</module>
+	  <module>application-runtime-framework-management</module>
+	  <module>application-runtime-repository</module>
         <module>application-itest-interface</module>
         <module>application-itests</module>
         <module>application-obr-resolver</module>
