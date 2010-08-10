@@ -33,4 +33,9 @@ public class ManagementException extends Exception {
   public ManagementException (String s) { 
     super(s);
   }
+  
+  public ManagementException(String s, Exception e)
+  {
+    super(s, e);
+  }
 }
