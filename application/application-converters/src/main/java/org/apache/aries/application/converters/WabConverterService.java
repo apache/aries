@@ -18,6 +18,7 @@
  */
 package org.apache.aries.application.converters;
 
+import java.beans.SimpleBeanInfo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -33,6 +34,8 @@ import org.apache.aries.application.utils.manifest.BundleManifest;
 import org.apache.aries.web.converter.WabConversion;
 import org.apache.aries.web.converter.WarToWabConverter;
 import org.apache.aries.web.converter.WarToWabConverter.InputStreamProvider;
+import org.apache.aries.application.utils.management.SimpleBundleInfo;
+import org.apache.aries.application.utils.manifest.BundleManifest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,8 +64,8 @@ public class WabConverterService implements BundleConverter {
             	            	
                 return new BundleConversion() {
 
-					public BundleInfo getBundleInfo(ApplicationMetadataFactory amf) throws IOException {
-						return new SimpleBundleInfo(amf, BundleManifest.fromBundle(conversion.getWAB()), toBeConverted.toString());
+					public BundleInfo getBundleInfo() throws IOException {
+						return new SimpleBundleInfo(BundleManifest.fromBundle(conversion.getWAB()), toBeConverted.toString());
 					}
 
 					public InputStream getInputStream() throws IOException {
