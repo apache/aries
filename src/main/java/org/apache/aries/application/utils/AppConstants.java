@@ -65,4 +65,11 @@ public interface AppConstants
    * to be deployed for a particular application. 
    */
   public static final String DEPLOYMENT_CONTENT = "Deployed-Content";
+  
+  /**
+   * Logging insert strings
+   */
+  public final static String LOG_ENTRY = "Method entry: {}, args {}";
+  public final static String LOG_EXIT = "Method exit: {}, returning {}";
+  public final static String LOG_EXCEPTION = "Caught exception";
 }
