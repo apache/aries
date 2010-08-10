@@ -25,4 +25,17 @@
   <bean id="deploymentMf-factory" class="org.apache.aries.application.impl.DeploymentMetadataFactoryImpl" />
   <service interface="org.apache.aries.application.DeploymentMetadataFactory" ref="deploymentMf-factory" />
   
+  <!-- Default implementations of services that must be implemented against a 
+       particular application server environment follow -->
+
+  <bean id="default-local-platform" class="org.apache.aries.application.utils.runtime.DefaultLocalPlatform" />
+  <bean id="no-op-resolver" class="org.apache.aries.application.utils.runtime.NoOpResolver" /> 
+ 
+  <service interface="org.apache.aries.application.management.LocalPlatform" 
+            ref="default-local-platform"
+            ranking="-1" />
+  <service interface="org.apache.aries.application.management.AriesApplicationResolver" 
+            ref="no-op-resolver"
+            ranking="-1" />
+            
 </blueprint>

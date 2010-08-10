@@ -408,7 +408,7 @@ public class ManifestHeaderProcessor
   public static NameValuePair<String, NameValueMap<String, String>> parseBundleSymbolicName(String s){
     return genericNameWithNameValuePairProcess(s).get(0); // should just return the first one
   }
-
+  
   /**
    * Parse a version range.. 
    * 
