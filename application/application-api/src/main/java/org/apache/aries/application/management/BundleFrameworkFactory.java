@@ -19,25 +19,23 @@
 
 package org.apache.aries.application.management;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.Properties;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 
-/**
- * A BundleConversion represents a .JAR file which has been converted in to 
- * an well-formed OSGi bundle, or a .WAR file which has been converted into a .WAB 
- * file
- */
-public interface BundleConversion {
-
-	/**
-	 * @return The InputStream to the converted bundle.
-	 */
-	public InputStream getInputStream() throws IOException;
-	
-	/** 
-	 * @param The ApplicationMetadataFactory used to parse the content of 
-	 * the converted bundle into a BundleInfo object
-	 * @return The bundle information for the converted bundle.
-	 */
-	public BundleInfo getBundleInfo() throws IOException;
+public interface BundleFrameworkFactory
+{
+  /**
+   * Creates a new isolated bundle framework with the properties provided. 
+   * @param bc The context in which to install the new framework
+   * @param frameworkId The id of the new framework
+   * @param frameworkConfig The config properties used to configure the new framework
+   * @param frameworkManifest The manifest used to install the new bundle associated with the framework
+   * @return
+   * @throws BundleException
+   */
+  public BundleFramework createBundleFramework(BundleContext bc, 
+      String frameworkId,
+      Properties frameworkConfig,
+      Properties frameworkManifest) throws BundleException;
 }

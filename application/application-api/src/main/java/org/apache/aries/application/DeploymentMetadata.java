@@ -22,7 +22,9 @@ package org.apache.aries.application;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.osgi.framework.Version;
 
@@ -55,6 +57,19 @@ public interface DeploymentMetadata {
    * @return
    */
   public List<DeploymentContent> getApplicationProvisionBundles();
+  
+  /**
+   * get the value of Deployed-Use-Bundle
+   * the bundle here can contain a range
+   * @return
+   */
+  public Collection<DeploymentContent> getDeployedUseBundle();
+  
+  /**
+   * get the value of Import-Package
+   * @return
+   */
+  public Collection<Content> getImportPackage();
 
   /**
    * Obtain the associated 
