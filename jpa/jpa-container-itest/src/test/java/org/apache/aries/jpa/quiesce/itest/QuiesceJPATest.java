@@ -58,8 +58,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.util.tracker.ServiceTracker;
 
-import com.sun.xml.internal.messaging.saaj.util.TeeInputStream;
-
 @RunWith(JUnit4TestRunner.class)
 public class QuiesceJPATest {
   
