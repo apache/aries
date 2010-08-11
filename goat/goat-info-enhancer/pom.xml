@@ -16,7 +16,7 @@
 	<parent>
 		<groupId>org.apache.aries.samples.goat</groupId>
 		<artifactId>goat</artifactId>
-		<version>0.2-incubating-SNAPSHOT</version>
+		<version>0.3-incubating-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>org.apache.aries.samples.goat.info.enhancer</artifactId>
