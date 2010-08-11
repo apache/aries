@@ -21,7 +21,7 @@
     <parent>
         <artifactId>jpa</artifactId>
         <groupId>org.apache.aries.jpa</groupId>
-        <version>0.2-incubating-SNAPSHOT</version>
+        <version>0.3-incubating-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.aries.jpa.container.context</artifactId>
@@ -107,7 +107,7 @@
                             javax.persistence.metamodel;version="[1.1.0,2.1.0)";resolution:=optional,
                             org.apache.aries.jpa.container.context;version="[0.1.0,1.1.0)",
                             org.apache.aries.quiesce.manager;version="[0.2,1.0)";resolution:=optional,
-                            org.apache.aries.quiesce.participant;version="[0.2,0.3)";resolution:=optional,
+                            org.apache.aries.quiesce.participant;version="[0.2,1.0)";resolution:=optional,
                             *
                         </Import-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
