@@ -21,7 +21,7 @@
     <parent>
         <artifactId>application</artifactId>
         <groupId>org.apache.aries.application</groupId>
-        <version>0.2-incubating-SNAPSHOT</version>
+        <version>0.3-incubating-SNAPSHOT</version>
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
@@ -157,7 +157,7 @@
         <dependency>
         	<groupId>org.apache.aries.transaction</groupId>
         	<artifactId>org.apache.aries.transaction.blueprint</artifactId>
-        	<version>0.2-incubating-SNAPSHOT</version>
+        	<version>0.3-incubating-SNAPSHOT</version>
         	<type>bundle</type>
         	<scope>test</scope>
         </dependency>
