@@ -24,8 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.persistence.SharedCacheMode;
 import javax.persistence.ValidationMode;
 import javax.persistence.spi.ClassTransformer;
@@ -96,13 +94,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     String jndiString = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.JTA_DATASOURCE);
     DataSource toReturn = null;
     if(jndiString != null) {
-      try {
-        InitialContext ctx = new InitialContext();
-        toReturn = (DataSource) ctx.lookup(jndiString);
-      } catch (NamingException e) {
-        _logger.error("No JTA datasource could be located using the JNDI name " + jndiString,
-            e);
-      }
+      toReturn = new DelayedLookupDataSource(jndiString);
     }
     return toReturn;
   }
@@ -134,13 +126,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     String jndiString = (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.NON_JTA_DATASOURCE);
     DataSource toReturn = null;
     if(jndiString != null) {
-      try {
-        InitialContext ctx = new InitialContext();
-        toReturn = (DataSource) ctx.lookup(jndiString);
-      } catch (NamingException e) {
-        _logger.error("No Non JTA datasource could be located using the JNDI name " + jndiString,
-            e);
-      }
+      toReturn = new DelayedLookupDataSource(jndiString);
     }
     return toReturn;
   }
