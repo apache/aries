@@ -29,7 +29,7 @@ under the License.
     </parent>
     
     <artifactId>eba-maven-plugin</artifactId>
-    <version>0.3-incubating-SNAPSHOT</version>
+    <version>0.2-incubating-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Aries Maven EBA Plugin</name>
