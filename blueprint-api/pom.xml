@@ -23,6 +23,7 @@
     </parent>
 
     <artifactId>org.apache.aries.blueprint.api</artifactId>
+  <version>0.2-incubating</version>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint API</name>
     <description>
@@ -47,4 +48,10 @@
         </dependency>
     </dependencies>
     
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/org.apache.aries.blueprint.api-0.2-incubating</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/org.apache.aries.blueprint.api-0.2-incubating</developerConnection>
+    <url>http://svn.apache.org/viewvc/incubator/aries/tags/org.apache.aries.blueprint.api-0.2-incubating</url>
+  </scm>
 </project>
