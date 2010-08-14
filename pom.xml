@@ -28,7 +28,7 @@
     <groupId>org.apache.aries.testsupport</groupId>
     <artifactId>testsupport</artifactId>
     <name>Apache Aries Test Support</name>
-    <version>0.2-incubating</version>
+    <version>0.2-incubating-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <description>
@@ -36,9 +36,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/testsupport-0.2-incubating</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/testsupport-0.2-incubating</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/tags/testsupport-0.2-incubating</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/testsupport</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/testsupport</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/testsupport</url>
     </scm>
 
     <modules>
