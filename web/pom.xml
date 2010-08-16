@@ -28,12 +28,12 @@
     <artifactId>web</artifactId>
     <packaging>pom</packaging>
     <name>Apache Aries Web Component</name>
-    <version>0.2-incubating-SNAPSHOT</version>
+    <version>0.2-incubating</version>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/web</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/web</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.2-incubating-RCx/web</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/web-0.2-incubating</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/web-0.2-incubating</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/tags/web-0.2-incubating</url>
     </scm>
 
     <modules>
