@@ -36,9 +36,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/blueprint</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/blueprint</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/blueprint</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/blueprint</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/blueprint</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.2-incubating-RCx/blueprint</url>
     </scm>
     
     <dependencyManagement>
