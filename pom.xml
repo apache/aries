@@ -37,9 +37,9 @@
     <name>Apache Aries Transaction</name>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/transaction</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/transaction</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/transaction</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/transaction</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/transaction</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.2-incubating-RCx/transaction</url>
     </scm>
 
     <dependencyManagement>
