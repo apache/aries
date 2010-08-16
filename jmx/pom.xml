@@ -28,15 +28,15 @@
     <groupId>org.apache.aries.jmx</groupId>
     <artifactId>jmx</artifactId>
     <name>Apache Aries JMX</name>
-    <version>0.2-incubating-SNAPSHOT</version>
+    <version>0.2-incubating</version>
     <packaging>pom</packaging>
 
 
     <description>Implementation of the JMX Management Model Specification</description>
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/jmx</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/jmx</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.2-incubating-RCx/jmx</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/jmx-0.2-incubating</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/jmx-0.2-incubating</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/tags/jmx-0.2-incubating</url>
     </scm>
     
     <dependencyManagement>
