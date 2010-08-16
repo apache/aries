@@ -25,12 +25,12 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>0.3-incubating-SNAPSHOT</version>
+        <version>0.2-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>default-parent</artifactId>
     <name>Aries :: Default Parent POM</name>
-    <version>0.3-incubating-SNAPSHOT</version>
+    <version>0.2-incubating-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <dependencyManagement>
