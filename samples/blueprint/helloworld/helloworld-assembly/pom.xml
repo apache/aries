@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
         <artifactId>helloworld</artifactId>
-        <version>0.2-incubating</version>
+        <version>0.3-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.samples.blueprint.helloworld.assembly</artifactId>
