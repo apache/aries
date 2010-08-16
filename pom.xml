@@ -31,9 +31,9 @@
     <version>0.2-incubating-SNAPSHOT</version>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/web</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/web</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/web</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/web</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/web</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.2-incubating-RCx/web</url>
     </scm>
 
     <modules>
