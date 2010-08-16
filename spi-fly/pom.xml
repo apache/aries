@@ -39,9 +39,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/spi-fly</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/spi-fly</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/spi-fly</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/spi-fly</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/spi-fly</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.2-incubating-RCx/spi-fly</url>
     </scm>
 
     <dependencyManagement>
