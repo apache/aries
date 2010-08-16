@@ -96,7 +96,7 @@
             <dependency>
                 <groupId>org.apache.aries.quiesce</groupId>
                 <artifactId>org.apache.aries.quiesce.api</artifactId>
-                <version>0.2-incubating-SNAPSHOT</version>
+                <version>0.2-incubating</version>
             </dependency>
 
             <dependency>
