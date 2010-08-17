@@ -150,18 +150,5 @@ public class BundleFrameworkImpl implements BundleFramework
   {
     b.uninstall();
     _bundles.remove(b);
-    
-    /* Call PackageAdmin.refreshPackages() after uninstall 
-	 * to clean out a partially removed bundle. Just to be sure. 
-	 */ 
-    PackageAdmin admin = null;
-    try {
-      if (_packageAdminTracker != null) {
-        admin = (PackageAdmin) _packageAdminTracker.getService();
-        admin.refreshPackages(new Bundle[]{b});
-      }
-    } catch (RuntimeException re) {
-      LOGGER.debug(LOG_EXCEPTION, re);
-    }
   }
 }
