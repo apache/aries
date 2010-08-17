@@ -33,8 +33,11 @@ import java.util.Set;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.utils.internal.MessageUtil;
 
 public class IOUtils
@@ -78,18 +81,18 @@ public class IOUtils
     {
       dirName = relativePath.substring(0, lastSeparatorIndex);
       fileName = relativePath.substring(lastSeparatorIndex + 1);
-
       outputDirectory = new File(outputDir, dirName);
       
-      if (!!!outputDirectory.exists() && !!!outputDirectory.mkdirs())
-        throw new IOException(MessageUtil.getMessage("APPUTILS0012E", relativePath));
     }
     else
     {
       outputDirectory = outputDir;
       fileName = relativePath;
     }
-    
+    if (!!!outputDirectory.exists() && !!!outputDirectory.mkdirs()) {
+        throw new IOException(MessageUtil.getMessage("APPUTILS0012E", relativePath));
+    }
+
     File outputFile = new File(outputDirectory, fileName);
     return new FileOutputStream(outputFile);
   }
@@ -200,6 +203,78 @@ public class IOUtils
       }
       return root.delete() && result;
     }
+  }
+  
+  /**
+   * Unpack the zip file into the outputDir
+   * @param zip
+   * @param outputDir
+   * @return true if the zip was expanded, false if the zip was found not to be a zip
+   * @throws IOException when there are unexpected issues handling the zip files.
+   */
+  public static boolean unpackZip(IFile zip, File outputDir) throws IOException{
+    boolean success=true;
+    //unpack from fileOnDisk into bundleDir.
+    ZipInputStream zis = null;
+    try{
+      boolean isZip = false;
+      ZipEntry zipEntry = null;
+      try {
+        zis = new ZipInputStream (zip.open());
+        zipEntry = zis.getNextEntry();
+        isZip = zipEntry != null; 
+      } catch (ZipException e) { // It's not a zip - that's ok, we'll return that below. 
+        isZip = false;
+      } catch (UnsupportedOperationException e) {  // This isn't declared, but is thrown in practice
+        isZip = false;                             // It's not a zip - that's ok, we'll return that below. 
+      }
+      if(isZip){
+        do { 
+          if (!zipEntry.isDirectory()) { 
+            writeOutAndDontCloseInputStream(outputDir, zipEntry.getName(), zis);
+          } else { 
+            File f = new File (outputDir, zipEntry.getName());
+            if (!f.exists()) { 
+              success &= f.mkdirs();
+            }
+          }
+          zis.closeEntry();
+          zipEntry = zis.getNextEntry();
+        } while (zipEntry != null);
+      }else{
+        success=false;
+      }
+    }finally{
+      IOUtils.close(zis);
+    }
+    return success;
+  }
+  
+  /**
+   * Write the given InputStream to a file given by a root directory (outputDir) and a relative directory.
+   * Necessary subdirectories will be created. This method will not close the supplied InputStream.
+   */
+  public static void writeOutAndDontCloseInputStream(File outputDir, String relativePath, InputStream content) throws IOException
+  {
+    OutputStream out = null;
+    try {
+      out = getOutputStream(outputDir, relativePath);
+      IOUtils.copyAndDoNotCloseInputStream(content, out);
+    }
+    finally {
+      close(out);
+    }
+  }
+  
+  /**
+   * Copy an InputStream to an OutputStream and do not close the InputStream afterwards.
+   */
+  public static void copyAndDoNotCloseInputStream(InputStream in, OutputStream out) throws IOException
+  {
+    int len;
+    byte[] b = new byte[1024];
+    while ((len = in.read(b)) != -1)
+      out.write(b,0,len);
   }
 }
 
