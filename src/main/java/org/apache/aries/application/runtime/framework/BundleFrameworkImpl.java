@@ -39,6 +39,8 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
 public class BundleFrameworkImpl implements BundleFramework
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(BundleFrameworkImpl.class);
@@ -68,23 +70,6 @@ public class BundleFrameworkImpl implements BundleFramework
 
   public void close() throws BundleException
   {
-    /**
-     * TODO: Remove this work-around code 
-     * 
-     * Workaround for IllegalArgumentException during PackagePermission check
-     * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=298894
-     */
-    BundleContext ctx = _compositeBundle.getBundleContext();
-    ServiceReference ref = ctx.getServiceReference(PackageAdmin.class.getName());
-    if (ref != null) {
-      try {
-        PackageAdmin pa = (PackageAdmin) ctx.getService(ref);
-        pa.refreshPackages(null);
-      } finally {
-        ctx.ungetService(ref);
-      }
-    }
-
     // close out packageadmin service tracker
     if (_packageAdminTracker != null) {
       try {
@@ -165,5 +150,18 @@ public class BundleFrameworkImpl implements BundleFramework
   {
     b.uninstall();
     _bundles.remove(b);
+    
+    /* Call PackageAdmin.refreshPackages() after uninstall 
+	 * to clean out a partially removed bundle. Just to be sure. 
+	 */ 
+    PackageAdmin admin = null;
+    try {
+      if (_packageAdminTracker != null) {
+        admin = (PackageAdmin) _packageAdminTracker.getService();
+        admin.refreshPackages(new Bundle[]{b});
+      }
+    } catch (RuntimeException re) {
+      LOGGER.debug(LOG_EXCEPTION, re);
+    }
   }
 }
