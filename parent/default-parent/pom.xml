@@ -247,7 +247,7 @@
                 <plugin>
                     <groupId>org.ops4j.pax.exam</groupId>
                     <artifactId>maven-paxexam-plugin</artifactId>
-                    <version>1.2.0</version>
+                    <version>1.2.1</version>
                 </plugin>
                 
             </plugins>
