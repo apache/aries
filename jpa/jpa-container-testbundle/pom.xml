@@ -21,7 +21,7 @@
     <parent>
         <artifactId>jpa</artifactId>
         <groupId>org.apache.aries.jpa</groupId>
-        <version>0.3-incubating-SNAPSHOT</version>
+        <version>0.2-incubating-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.aries.jpa.container.itest.bundle</artifactId>
@@ -68,12 +68,12 @@
                   <phase>process-classes</phase>
                   <configuration>
                     <tasks>
-                      <taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask" classpathref="maven.compile.classpath" />
+                      <taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask" classpathref="maven.compile.classpath"/>
                       <openjpac>
-                          <classpath refid="maven.compile.classpath"/> 
                           <classpath>
-                            <pathelement location="target/classes" />
-                            <pathelement location="src/main/resources" />
+                            <pathelement path="${maven.compile.classpath}"/>
+                            <pathelement location="target/classes"/>
+                            <pathelement location="src/main/resources"/>
                           </classpath>
                       </openjpac>
                     </tasks>
