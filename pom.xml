@@ -20,32 +20,32 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.2-incubating</version>
+        <version>0.2-incubating-SNAPSHOT</version>
     </parent>
     
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>org.apache.aries.samples</groupId>
-    <version>0.3-incubating-SNAPSHOT</version>
+    <version>0.2-incubating-SNAPSHOT</version>
     <artifactId>samples</artifactId>
     <name>Apache Aries Samples</name>
     <packaging>pom</packaging>
   
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/samples</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/samples</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.2-incubating-RCx/samples</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/trunk/samples</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/trunk/samples</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/trunk/samples</url>
     </scm>
 
     <properties>
-        <ariesApplicationVersion>0.2-incubating</ariesApplicationVersion>
-        <ariesBlueprintVersion>0.2-incubating</ariesBlueprintVersion>
-        <ariesJmxVersion>0.2-incubating</ariesJmxVersion>
-        <ariesJndiVersion>0.2-incubating</ariesJndiVersion>
-        <ariesJpaVersion>0.2-incubating</ariesJpaVersion>
-        <ariesTransactionVersion>0.2-incubating</ariesTransactionVersion>
-        <ariesUtilVersion>0.2-incubating</ariesUtilVersion>
-        <ariesWebVersion>0.2-incubating</ariesWebVersion>
+        <ariesApplicationVersion>0.2-incubating-SNAPSHOT</ariesApplicationVersion>
+        <ariesBlueprintVersion>0.2-incubating-SNAPSHOT</ariesBlueprintVersion>
+        <ariesJmxVersion>0.2-incubating-SNAPSHOT</ariesJmxVersion>
+        <ariesJndiVersion>0.2-incubating-SNAPSHOT</ariesJndiVersion>
+        <ariesJpaVersion>0.2-incubating-SNAPSHOT</ariesJpaVersion>
+        <ariesTransactionVersion>0.2-incubating-SNAPSHOT</ariesTransactionVersion>
+        <ariesUtilVersion>0.2-incubating-SNAPSHOT</ariesUtilVersion>
+        <ariesWebVersion>0.2-incubating-SNAPSHOT</ariesWebVersion>
         <openjpaVersion>2.0.0</openjpaVersion>
     </properties>
     
