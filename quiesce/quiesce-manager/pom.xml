@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.aries.quiesce</groupId>
         <artifactId>quiesce</artifactId>
-        <version>0.2-incubating</version>
+        <version>0.3-incubating-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.quiesce.manager</artifactId>
