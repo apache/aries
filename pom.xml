@@ -26,7 +26,7 @@
     <groupId>org.apache.aries.quiesce</groupId>
     <artifactId>quiesce</artifactId>
     <name>Apache Aries Quiesce</name>
-    <version>0.2-incubating-SNAPSHOT</version>
+    <version>0.2-incubating</version>
     <packaging>pom</packaging>
 
     <description>
@@ -34,9 +34,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/quiesce</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/quiesce</developerConnection>
-        <url>http://svn.apache.org/viewvc/incubator/aries/branches/0.2-incubating-RCx/quiesce</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/tags/quiesce-0.2-incubating</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/tags/quiesce-0.2-incubating</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/aries/tags/quiesce-0.2-incubating</url>
     </scm>
 
     <dependencyManagement>
