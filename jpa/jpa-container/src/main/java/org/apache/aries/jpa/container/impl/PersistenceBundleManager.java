@@ -625,7 +625,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
       quiesceReg = context.registerService(QUIESCE_PARTICIPANT_CLASS,
          quiesceParticipant, null);
     } catch (ClassNotFoundException e) {
-      _logger.info("No quiesce support is available, so persistence contexts will not participate in quiesce operations", e);
+      _logger.info("No quiesce support is available, so managed persistence units will not participate in quiesce operations");
     }
   }
 
@@ -638,7 +638,8 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     close();
     unregister(parserReg);
     unregister(quiesceReg);
-    quiesceParticipant.callback();
+    if(quiesceParticipant != null)
+      quiesceParticipant.callback();
   }
   
   /**
