@@ -67,6 +67,8 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
 
   /** The registration for the quiesce participant */
   private ServiceRegistration quiesceReg;
+  /** A callback to tidy up the quiesceParticipant */
+  private DestroyCallback quiesceTidyUp;
   /** The registration for the persistence context manager */
   private ServiceRegistration pcpReg;
   /** Our bundle */
@@ -243,11 +245,11 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
     try{
       context.getBundle().loadClass(QUIESCE_PARTICIPANT_CLASS);
       //Class was loaded, register
-      
+      quiesceTidyUp = new QuiesceParticipantImpl(this);
       quiesceReg = context.registerService(QUIESCE_PARTICIPANT_CLASS,
-          new QuiesceParticipantImpl(this), null);
+          quiesceTidyUp, null);
     } catch (ClassNotFoundException e) {
-      _logger.info("No quiesce support is available, so persistence contexts will not participate in quiesce operations", e);
+      _logger.info("No quiesce support is available, so persistence contexts will not participate in quiesce operations");
     }
   }
 
@@ -255,6 +257,8 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
     //Clean up
     unregister(pcpReg);
     unregister(quiesceReg);
+    if(quiesceTidyUp != null)
+      quiesceTidyUp.callback();
     Collection<PersistenceContextManager> mgrs = new ArrayList<PersistenceContextManager>();
     synchronized (persistenceContexts) {
       mgrs.addAll(managers.values());
