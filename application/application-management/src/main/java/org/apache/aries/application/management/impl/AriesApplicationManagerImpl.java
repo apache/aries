@@ -285,7 +285,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     Dictionary dict = new Hashtable();
     dict.put(ApplicationRepository.REPOSITORY_SCOPE, app.getApplicationMetadata().getApplicationScope());
     _bundleContext.registerService(BundleRepository.class.getName(), 
-        new ApplicationRepository(_resolver), 
+        new ApplicationRepository(app), 
         dict);
     
     AriesApplicationContext result = _applicationContextManager.getApplicationContext(app);
