@@ -21,14 +21,14 @@
     <parent>
         <artifactId>java5-parent</artifactId>
         <groupId>org.apache.aries</groupId>
-        <version>0.2-incubating</version>
+        <version>0.2-incubating-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.jpa</groupId>
     <artifactId>jpa</artifactId>
     <packaging>pom</packaging>
     <name>Aries JPA Component</name>
-    <version>0.3-incubating-SNAPSHOT</version>
+    <version>0.2-incubating-SNAPSHOT</version>
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/jpa</connection>
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/aries/branches/0.2-incubating-RCx/jpa</developerConnection>
@@ -81,22 +81,22 @@
             <dependency>
                 <groupId>org.apache.aries</groupId>
                 <artifactId>org.apache.aries.util</artifactId>
-                <version>0.2-incubating</version>
+                <version>0.2-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint</artifactId>
-                <version>0.2-incubating</version>
+                <version>0.2-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.testsupport</groupId>
                 <artifactId>org.apache.aries.testsupport.unit</artifactId>
-                <version>0.2-incubating</version>
+                <version>0.2-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.quiesce</groupId>
                 <artifactId>org.apache.aries.quiesce.api</artifactId>
-                <version>0.2-incubating</version>
+                <version>0.2-incubating-SNAPSHOT</version>
             </dependency>
 
             <dependency>
@@ -170,31 +170,31 @@
               <groupId>org.apache.aries.transaction</groupId>
               <artifactId>org.apache.aries.transaction.manager</artifactId>
               <scope>test</scope>
-              <version>0.2-incubating</version>
+              <version>0.2-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
               <groupId>org.apache.aries.transaction</groupId>
               <artifactId>org.apache.aries.transaction.testds</artifactId>
               <scope>test</scope>
-              <version>0.2-incubating</version>
+              <version>0.2-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
               <groupId>org.apache.aries.jndi</groupId>
               <artifactId>org.apache.aries.jndi.api</artifactId>
               <scope>test</scope>
-              <version>0.2-incubating</version>
+              <version>0.2-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
               <groupId>org.apache.aries.jndi</groupId>
               <artifactId>org.apache.aries.jndi.core</artifactId>
               <scope>test</scope>
-              <version>0.2-incubating</version>
+              <version>0.2-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
               <groupId>org.apache.aries.jndi</groupId>
               <artifactId>org.apache.aries.jndi.url</artifactId>
               <scope>test</scope>
-              <version>0.2-incubating</version>
+              <version>0.2-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.derby</groupId>
