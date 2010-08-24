@@ -18,9 +18,9 @@
  */
 package org.apache.aries.application.management.repository;
 
+import java.util.Collections;
 import java.util.Set;
 
-import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.management.AriesApplication;
@@ -36,12 +36,12 @@ public class ApplicationRepository implements BundleRepository
 {
   private static final int REPOSITORY_COST = 0;
   public static final String REPOSITORY_SCOPE = "repositoryScope";
-  
+  private AriesApplication app;
   AriesApplicationResolver resolver;
 
-  public ApplicationRepository(AriesApplicationResolver resolver)
+  public ApplicationRepository(AriesApplication app)
   {
-    this.resolver = resolver;
+    this.app = app;
   }
   
   public int getCost()
@@ -56,13 +56,20 @@ public class ApplicationRepository implements BundleRepository
 
   private class BundleSuggestionImpl implements BundleSuggestion
   {
-    private BundleInfo bundleInfo;
+    private BundleInfo bundleInfo = null;
     
     BundleSuggestionImpl(DeploymentContent content)
     {
-      this.bundleInfo = resolver.getBundleInfo(content.getContentName(), content.getExactVersion());
+      if ((app.getBundleInfo() != null) && (!app.getBundleInfo().isEmpty())) {
+        for (BundleInfo bi : app.getBundleInfo()) {
+          if (bi.getSymbolicName().equals(content.getContentName()) && (bi.getVersion().equals(content.getVersion().getExactVersion()))) {
+            bundleInfo = bi;
+            break;
+          }
+        }
+      }
     }
-    
+
     public int getCost()
     {
       return REPOSITORY_COST;
@@ -70,22 +77,40 @@ public class ApplicationRepository implements BundleRepository
 
     public Set<Content> getExportPackage()
     {
+      if (bundleInfo != null) {
       return bundleInfo.getExportPackage();
+      } else {
+        return null;
+      }
     }
 
     public Set<Content> getImportPackage()
     {
-      return bundleInfo.getImportPackage();
+      if (bundleInfo != null) {
+        return bundleInfo.getImportPackage();
+        } else {
+          return null;
+        }
+      
     }
 
-    public Version getVersion()
+    public Version getVersion() 
     {
-      return bundleInfo.getVersion();
+      if (bundleInfo != null) {
+        return bundleInfo.getVersion();
+        } else {        	
+          return null;
+        }
+      
     }
 
     public Bundle install(BundleContext ctx, AriesApplication app) throws BundleException
     {
-      return ctx.installBundle(bundleInfo.getLocation());
+      if (bundleInfo != null ) {
+        return ctx.installBundle(bundleInfo.getLocation());
+      } else {
+        throw new BundleException("Unable to install the bundle, as the BundleInfo is null.");
+      }
     }
     
   }
