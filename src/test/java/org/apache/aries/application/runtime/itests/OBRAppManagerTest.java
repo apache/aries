@@ -18,6 +18,7 @@
  */
 package org.apache.aries.application.runtime.itests;
 
+import static org.junit.Assert.assertEquals;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
@@ -29,8 +30,10 @@ import java.io.FileWriter;
 import java.io.InputStreamReader;
 
 import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.utils.filesystem.FileSystem;
+import org.apache.aries.sample.HelloWorld;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.junit.Before;
@@ -50,98 +53,97 @@ public class OBRAppManagerTest extends AbstractIntegrationTest {
    * are created in the paxweb temp directory, and not in the svn tree
    */
   static boolean createdApplications = false;
-  @Before
   public static void createApplications() throws Exception {
-    if (createdApplications) {
-      return;
-    }
-    ZipFixture testBundle = ArchiveFixture.newZip()
-        .manifest().symbolicName("org.apache.aries.sample")
-          .attribute("Bundle-Version", "1.0.0")
-          .attribute("Export-Package", "org.apache.aries.sample.impl")
-          .end()
-        .binary("org/apache/aries/sample/impl/HelloWorldImpl.class",
-            OBRAppManagerTest.class.getClassLoader().getResourceAsStream("org/apache/aries/sample/impl/HelloWorldImpl.class"))
-        .end();
+	    if (createdApplications) {
+	      return;
+	    }
+	    ZipFixture testBundle = ArchiveFixture.newZip()
+	        .manifest().symbolicName("org.apache.aries.sample.bundle")
+	          .attribute("Bundle-Version", "1.0.0")
+	          .attribute("Import-Package", "org.apache.aries.sample")
+	          .attribute("Export-Package", "org.apache.aries.sample.impl")
+	          .end()
+	        .binary("org/apache/aries/sample/impl/HelloWorldImpl.class",
+	            OBRAppManagerTest.class.getClassLoader().getResourceAsStream("org/apache/aries/sample/impl/HelloWorldImpl.class"))
+	        .end();
 
-    FileOutputStream fout = new FileOutputStream("bundle.jar");
-    testBundle.writeOut(fout);
-    fout.close();
+	    FileOutputStream fout = new FileOutputStream("bundle.jar");
+	    testBundle.writeOut(fout);
+	    fout.close();
 
-    ZipFixture testEba = ArchiveFixture.newZip()
-      .jar("sample.jar")
-        .manifest().symbolicName("org.apache.aries.sample")
-          .attribute("Bundle-Version", "1.0.0")
-          .attribute("Import-Package", "org.apache.aries.sample.impl")
-          .end()
-        .binary("OSGI-INF/blueprint/sample-blueprint.xml",
-            OBRAppManagerTest.class.getClassLoader().getResourceAsStream("basic/sample-blueprint.xml"))
-        .end()
-         .binary("META-INF/APPLICATION.MF",
-        OBRAppManagerTest.class.getClassLoader().getResourceAsStream("basic/APPLICATION.MF"))
-        .end();
-    fout = new FileOutputStream("test.eba");
-    testEba.writeOut(fout);
-    fout.close();
-    
-    StringBuilder repositoryXML = new StringBuilder();
-    
-    BufferedReader reader = new BufferedReader(new InputStreamReader(OBRAppManagerTest.class.getResourceAsStream("/obr/repository.xml")));
-    String line;
-    
-    while ((line = reader.readLine()) != null) {
-      repositoryXML.append(line);
-      repositoryXML.append("\r\n");
-    }
-    
-    String repo = repositoryXML.toString().replaceAll("bundle_location", new File("bundle.jar").getAbsolutePath());
-    
-    System.out.println(repo);
-    
-    FileWriter writer = new FileWriter("repository.xml");
-    writer.write(repo);
-    writer.close();
-    
-    createdApplications = true;
-  }
+	    ZipFixture testEba = ArchiveFixture.newZip()
+	      .jar("sample.jar")
+	        .manifest().symbolicName("org.apache.aries.sample")
+	          .attribute("Bundle-Version", "1.0.0")
+	          .attribute("Import-Package", "org.apache.aries.sample.impl,org.apache.aries.sample")
+	          .end()
+	        .binary("OSGI-INF/blueprint/sample-blueprint.xml",
+	            OBRAppManagerTest.class.getClassLoader().getResourceAsStream("basic/sample-blueprint.xml"))
+	        .end()
+	         .binary("META-INF/APPLICATION.MF",
+	        OBRAppManagerTest.class.getClassLoader().getResourceAsStream("basic/APPLICATION.MF"))
+	        .end();
+	    fout = new FileOutputStream("test.eba");
+	    testEba.writeOut(fout);
+	    fout.close();
+	    
+	    StringBuilder repositoryXML = new StringBuilder();
+	    
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(OBRAppManagerTest.class.getResourceAsStream("/obr/repository.xml")));
+	    String line;
+	    
+	    while ((line = reader.readLine()) != null) {
+	      repositoryXML.append(line);
+	      repositoryXML.append("\r\n");
+	    }
+	    
+	    String repo = repositoryXML.toString().replaceAll("bundle_location", new File("bundle.jar").toURI().toString());
+	    
+	    System.out.println(repo);
+	    
+	    FileWriter writer = new FileWriter("repository.xml");
+	    writer.write(repo);
+	    writer.close();
+	    
+	    createdApplications = true;
+	  }
 
-  @Test
-  public void testAppWithApplicationManifest() throws Exception {
-    startApplicationRuntimeBundle();
+	  @Test
+	  public void testAppWithApplicationManifest() throws Exception {
+	    startApplicationRuntimeBundle();
 
-    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
-    
-    repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
+	    RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+	    
+	    repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
-    Repository[] repos = repositoryAdmin.listRepositories();
-    
-    for (Repository repo : repos) {
-      Resource[] resources = repo.getResources();
-      
-      for (Resource r : resources) {
-        Capability[] cs = r.getCapabilities();
-        
-        for (Capability c : cs) {
-          System.out.println(c.getName() + " : " + c.getProperties());
-        }
-      }
-    }
-    
-    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
-    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
-    app = manager.resolve(app);
-    //installing requires a valid url for the bundle in repository.xml.
-//    ApplicationContext ctx = manager.install(app);
-//    ctx.start();
+	    Repository[] repos = repositoryAdmin.listRepositories();
+	    
+	    for (Repository repo : repos) {
+	      Resource[] resources = repo.getResources();
+	      
+	      for (Resource r : resources) {
+	        Capability[] cs = r.getCapabilities();
+	        
+	        for (Capability c : cs) {
+	          System.out.println(c.getName() + " : " + c.getProperties());
+	        }
+	      }
+	    }
+	    
+	    AriesApplicationManager manager = getOsgiService(AriesApplicationManager.class);
+	    AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
+	    app = manager.resolve(app);
+	    //installing requires a valid url for the bundle in repository.xml.
+	    AriesApplicationContext ctx = manager.install(app);
+	    ctx.start();
 
-//    HelloWorld hw = getOsgiService(HelloWorld.class);
-//    String result = hw.getMessage();
-//    assertEquals (result, "hello world");
-//
-//    ctx.stop();
-//    manager.uninstall(ctx);
-  }
+	    HelloWorld hw = getOsgiService(HelloWorld.class);
+	    String result = hw.getMessage();
+	    assertEquals (result, "hello world");
 
+	    ctx.stop();
+	    manager.uninstall(ctx);
+	  }
 
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
