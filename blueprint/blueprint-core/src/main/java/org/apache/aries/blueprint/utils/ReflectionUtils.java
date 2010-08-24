@@ -431,16 +431,28 @@ public class ReflectionUtils {
             return result;
         }
         
-        private Method findMethodByClass(Class<?> arg) throws ComponentDefinitionException {
+        private Method findMethodByClass(Class<?> arg)
+                throws ComponentDefinitionException {
             Method result = null;
+
+            if (!hasSameTypeSetter()) {
+                throw new ComponentDefinitionException(
+                        "At least one Setter method has to match the type of the Getter method for property "
+                                + getName());
+            }
+
+            if (setters.size() == 1) {
+                return setters.iterator().next();
+            }
             
             for (Method m : setters) {
                 Class<?> paramType = m.getParameterTypes()[0];
-                
-                if ((arg == null && Object.class.isAssignableFrom(paramType)) 
+
+                if ((arg == null && Object.class.isAssignableFrom(paramType))
                         || (arg != null && paramType.isAssignableFrom(arg))) {
-                    
-                    // pick the method that has the more specific parameter if any
+
+                    // pick the method that has the more specific parameter if
+                    // any
                     if (result != null) {
                         Class<?> oldParamType = result.getParameterTypes()[0];
                         if (paramType.isAssignableFrom(oldParamType)) {
@@ -449,18 +461,35 @@ public class ReflectionUtils {
                             result = m;
                         } else {
                             throw new ComponentDefinitionException(
-                                    "Ambiguous setter method for property "+getName()+
-                                    ". More than one method matches the  parameter type "+arg);
+                                    "Ambiguous setter method for property "
+                                            + getName()
+                                            + ". More than one method matches the  parameter type "
+                                            + arg);
                         }
                     } else {
                         result = m;
                     }
                 }
-            }            
-            
+            }
+
             return result;
         }
         
+        // ensure there is a setter that matches the type of the getter
+        private boolean hasSameTypeSetter() {
+            if (getter == null) {
+                return true;
+            }
+            Iterator<Method> it = setters.iterator();
+            while (it.hasNext()) {
+                Method m = it.next();
+                if (m.getParameterTypes()[0].equals(getter.getReturnType())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private Method findMethodWithConversion(Object value) throws ComponentDefinitionException {
             ExecutionContext ctx = ExecutionContext.Holder.getContext();
             List<Method> matchingMethods = new ArrayList<Method>();
