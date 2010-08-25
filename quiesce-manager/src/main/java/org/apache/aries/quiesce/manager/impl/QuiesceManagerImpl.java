@@ -14,16 +14,13 @@
 package org.apache.aries.quiesce.manager.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -33,6 +30,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.aries.quiesce.manager.QuiesceCallback;
 import org.apache.aries.quiesce.manager.QuiesceManager;
@@ -54,7 +52,14 @@ public class QuiesceManagerImpl implements QuiesceManager {
     /** The container's {@link BundleContext} */
     private BundleContext bundleContext = null;
     /** The thread pool to execute timeout commands */
-    private ScheduledExecutorService timeoutExecutor = Executors.newScheduledThreadPool(10);
+    private ScheduledExecutorService timeoutExecutor = Executors.newScheduledThreadPool(10, new ThreadFactory() {
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(r, "Quiesce Manager Timeout Thread");
+            t.setDaemon(true);
+            return t;
+        }
+    });
+    
     /** The thread pool to execute quiesce commands */
     private ExecutorService executor = new ThreadPoolExecutor(0, 10, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(),new ThreadFactory() {
 		
@@ -64,8 +69,9 @@ public class QuiesceManagerImpl implements QuiesceManager {
 			return t;
 		}
 	});
+    
     /** The map of bundles that are currently being quiesced */
-    private static ConcurrentHashMap<Long, Bundle> bundleMap = new ConcurrentHashMap<Long, Bundle>();
+    private static ConcurrentHashMap<Bundle, Bundle> bundleMap = new ConcurrentHashMap<Bundle, Bundle>();
 
 
     public QuiesceManagerImpl(BundleContext bc) {
@@ -79,22 +85,72 @@ public class QuiesceManagerImpl implements QuiesceManager {
      * need to listen for the resulting stop events. 
      */
     public void quiesce(long timeout, List<Bundle> bundles) {
-    	if (bundles != null && !!!bundles.isEmpty()) {
-			//check that bundle b is not already quiescing
-			Iterator<Bundle> it = bundles.iterator();
-			Set<Bundle> bundlesToQuiesce = new HashSet<Bundle>();
-			while(it.hasNext()) {
-				Bundle b = it.next();
-				Bundle priorBundle = bundleMap.putIfAbsent(b.getBundleId(), b);
-				if (priorBundle == null) {
-					bundlesToQuiesce.add(b);
-				}else{
-					LOGGER.warn("Already quiescing bundle "+ b.getSymbolicName());
-				}
-	  	  	}
-			Runnable command = new BundleQuiescer(bundlesToQuiesce, timeout, bundleMap);
-			executor.execute(command);
-    	}
+        quiesceWithFuture(timeout, bundles);
+    }
+    
+    public Future<?> quiesceWithFuture(List<Bundle> bundlesToQuiesce) {
+        return quiesceWithFuture(defaultTimeout, bundlesToQuiesce);
+    }
+    
+    public Future<?> quiesceWithFuture(long timeout, List<Bundle> bundles) {
+        QuiesceFuture result = new QuiesceFuture();
+        if (bundles != null && !!!bundles.isEmpty()) {
+            //check that bundle b is not already quiescing
+            Iterator<Bundle> it = bundles.iterator();
+            Set<Bundle> bundlesToQuiesce = new HashSet<Bundle>();
+            while(it.hasNext()) {
+                Bundle b = it.next();
+                Bundle priorBundle = bundleMap.putIfAbsent(b, b);
+                if (priorBundle == null) {
+                    bundlesToQuiesce.add(b);
+                }else{
+                    LOGGER.warn("Already quiescing bundle "+ b.getSymbolicName());
+                }
+            }
+            Runnable command = new BundleQuiescer(bundlesToQuiesce, timeout, result, bundleMap);
+            executor.execute(command);
+            
+            return result;
+        } else {
+            result.registerDone();
+        }
+        
+        return result;
+    }
+    
+    private static class QuiesceFuture implements Future<Object> {
+        private CountDownLatch latch = new CountDownLatch(1);
+        
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            throw new UnsupportedOperationException("Quiesce operations can be cancelled");
+        }
+
+        public Object get() throws InterruptedException, ExecutionException {
+            latch.await();
+            return null;
+        }
+
+        public Object get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+            if (!!!latch.await(timeout, unit))
+                throw new TimeoutException();
+            
+            return null;
+        }
+
+        public boolean isCancelled() {
+            return false;
+        }
+
+        public boolean isDone() {
+            return latch.getCount() == 0;
+        }
+        
+        public void registerDone() {
+            if (!!!isDone()) {
+                latch.countDown();
+            }
+        }
+        
     }
 
     /**
@@ -108,15 +164,33 @@ public class QuiesceManagerImpl implements QuiesceManager {
     	quiesce(defaultTimeout, bundlesToQuiesce);
     }
   
-    private static boolean stopBundle(Bundle bundleToStop) {
+    /**
+     * Stop a bundle that was to be quiesced. This happens either when all the participants
+     * are finished or when the timeout has occurred.
+     * 
+     * The set of all bundles to quiesce is used to track stops, so that they do not occur twice.
+     * @param bundleToStop
+     * @param bundlesToStop
+     * @return
+     */
+    private static boolean stopBundle(Bundle bundleToStop, Set<Bundle> bundlesToStop) {
     	try {
-    		bundleToStop.stop();
-    		bundleMap.remove(bundleToStop.getBundleId());
-    	}catch (BundleException be) {
+    	    synchronized (bundlesToStop) {
+    	        if (bundlesToStop.remove(bundleToStop)) {
+    	            bundleToStop.stop();
+    	            bundleMap.remove(bundleToStop);
+    	        }
+    	    }
+    	} catch (BundleException be) {
     		return false;
     	}
     	return true;
     }
+    
+    private static boolean stillQuiescing(Bundle bundleToStop) {
+        return bundleMap.containsKey(bundleToStop);
+    }
+    
 
     /**
      * BundleQuiescer is used for each bundle to quiesce. It creates a callback object for each 
@@ -127,12 +201,14 @@ public class QuiesceManagerImpl implements QuiesceManager {
      */
     private class BundleQuiescer implements Runnable {
 	  
-    	private Set<Bundle> bundlesToQuiesce;
-    	private long timeout;
+    	private final Set<Bundle> bundlesToQuiesce;
+    	private final long timeout;
+    	private final QuiesceFuture future;
     	
-    	public BundleQuiescer(Set<Bundle> bundlesToQuiesce, long timeout, ConcurrentHashMap<Long, Bundle> bundleMap) {
+    	public BundleQuiescer(Set<Bundle> bundlesToQuiesce, long timeout, QuiesceFuture future, ConcurrentHashMap<Bundle, Bundle> bundleMap) {
     		this.bundlesToQuiesce = new HashSet<Bundle>(bundlesToQuiesce);
     		this.timeout = timeout;
+    		this.future = future;
     	}
 
     	public void run() {
@@ -142,14 +218,28 @@ public class QuiesceManagerImpl implements QuiesceManager {
 					if (serviceRefs != null) {
 						List<QuiesceParticipant> participants = new ArrayList<QuiesceParticipant>();
 						final List<QuiesceCallbackImpl> callbacks = new ArrayList<QuiesceCallbackImpl>();
-						Set<Bundle> copyOfBundles = new HashSet<Bundle>(bundlesToQuiesce);
-						Timer timer = new Timer();
+						List<Bundle> copyOfBundles = new ArrayList<Bundle>(bundlesToQuiesce);
+						
+						ScheduledFuture<?> timeoutFuture = timeoutExecutor.schedule(new Runnable() {
+						    public void run() {
+						        LOGGER.warn("Quiesce timed out");
+						        synchronized (bundlesToQuiesce) {
+						            for (Bundle b : new ArrayList<Bundle>(bundlesToQuiesce)) {
+    						            LOGGER.warn("Could not quiesce within timeout, so stopping bundle "+ b.getSymbolicName());
+    						            stopBundle(b, bundlesToQuiesce);
+						            }
+						        }
+						        future.registerDone();
+						        LOGGER.debug("Quiesce complete");
+						    }
+						}, timeout, TimeUnit.MILLISECONDS);
+
 						
 						//Create callback objects for all participants
 						for( ServiceReference sr : serviceRefs ) {
 							QuiesceParticipant participant = (QuiesceParticipant) bundleContext.getService(sr);
 							participants.add(participant);
-							callbacks.add(new QuiesceCallbackImpl(copyOfBundles, callbacks, timer));
+							callbacks.add(new QuiesceCallbackImpl(bundlesToQuiesce, callbacks, future, timeoutFuture));
 						}
 						
 						//Quiesce each participant and wait for an interrupt from a callback 
@@ -157,45 +247,24 @@ public class QuiesceManagerImpl implements QuiesceManager {
 						for( int i=0; i<participants.size(); i++ ) {
 							QuiesceParticipant participant = participants.get(i);
 							QuiesceCallbackImpl callback = callbacks.get(i);
-							List<Bundle> participantBundles = new ArrayList<Bundle>();
-							//deep copy
-							for (Bundle b : copyOfBundles) {
-								participantBundles.add(b);
-							}
-							participant.quiesce(callback, participantBundles);
-						}
-						timer.schedule(new TimerTask() {
-
-							@Override
-							public void run() {
-								//stop bundles
-								//go through callbacks and cancel all bundles
-								for ( Enumeration<Bundle> remainingBundles = bundleMap.elements(); remainingBundles.hasMoreElements(); ) {
-									Bundle b = remainingBundles.nextElement();
-									LOGGER.warn("Could not quiesce, so stopping bundle "+ b.getSymbolicName());
-									stopBundle(b);
-								}
-								/*
-								for ( QuiesceCallbackImpl cb : callbacks ) {
-									System.out.println("Clearing callback");
-									cb.clear();
-									}
-									*/
-							}
-							
-						}, timeout);
-					}else{
-						LOGGER.warn("No participants, so stopping bundles");
-						for ( Enumeration<Bundle> remainingBundles = bundleMap.elements(); remainingBundles.hasMoreElements(); ) {
-							Bundle b = remainingBundles.nextElement();
-							stopBundle(b);
-						}
-					}
-				}
-			} catch (InvalidSyntaxException e) {
-				LOGGER.warn("Exception trying to get service references for quiesce participants "+ e.getMessage());
-			}
-		}
+							participant.quiesce(callback, copyOfBundles);
+						}                        
+                    }else{
+                        LOGGER.warn("No quiesce participants, so stopping bundles");
+                        for (Bundle b : bundlesToQuiesce) {
+                            stopBundle(b, bundlesToQuiesce);
+                        }
+                        future.registerDone();
+                    }
+                }
+            } catch (InvalidSyntaxException e) {
+                LOGGER.warn("Exception trying to get service references for quiesce participants, so stopping bundles."+ e.getMessage());
+                for (Bundle b : bundlesToQuiesce) {
+                    stopBundle(b, bundlesToQuiesce);
+                }
+                future.registerDone();
+            }
+        }
 	}
  
     /**
@@ -205,22 +274,23 @@ public class QuiesceManagerImpl implements QuiesceManager {
     private static class QuiesceCallbackImpl implements QuiesceCallback {
     	//Must be a copy
     	private final Set<Bundle> toQuiesce;
+    	// Must not be a copy
+    	private final Set<Bundle> toQuiesceShared;    	
     	//Must not be a copy
     	private final List<QuiesceCallbackImpl> allCallbacks;
     	//Timer so we can cancel the alarm if all done
-    	private final Timer timer;
+    	private final QuiesceFuture future;
+    	//The cleanup action that runs at timeout
+    	private final ScheduledFuture<?> timeoutFuture;
     	
-    	public QuiesceCallbackImpl(Collection<Bundle> toQuiesce, List<QuiesceCallbackImpl> allCallbacks, Timer timer) 
+    	public QuiesceCallbackImpl(Set<Bundle> toQuiesce, List<QuiesceCallbackImpl> allCallbacks, QuiesceFuture future, ScheduledFuture<?> timeoutFuture) 
     	{
     		this.toQuiesce = new HashSet<Bundle>(toQuiesce);
+    		this.toQuiesceShared = toQuiesce;
     		this.allCallbacks = allCallbacks;
-    		this.timer = timer;
+    		this.future = future;
+    		this.timeoutFuture = timeoutFuture;
     	}
-
-    	public void clear() {
-			// TODO Auto-generated method stub
-			
-		}
 
 		/** 
     	 * Removes the bundles from the list of those to quiesce. 
@@ -233,17 +303,32 @@ public class QuiesceManagerImpl implements QuiesceManager {
     	 */
     	public void bundleQuiesced(Bundle... bundlesQuiesced) {
     		
-    		synchronized (allCallbacks) {
-			  for(Bundle b : bundlesQuiesced) {
-				  if(toQuiesce.remove(b)) {
-					  if(checkOthers(b)){
-						 QuiesceManagerImpl.stopBundle(b);
-						 if(allCallbacksComplete()){
-							 timer.cancel();
-						 }
-					  }
-				  }
-			  }
+            boolean timeoutOccurred = false; 
+            
+            synchronized (allCallbacks) {
+                for(Bundle b : bundlesQuiesced) {
+                    if(QuiesceManagerImpl.stillQuiescing(b)) {
+                        if(toQuiesce.remove(b)) {
+                            if(checkOthers(b)){
+                                QuiesceManagerImpl.stopBundle(b, toQuiesceShared);
+                                if(allCallbacksComplete()){
+                                    future.registerDone();
+                                    timeoutFuture.cancel(false);
+                                    LOGGER.debug("Quiesce complete");
+                                }
+                            }
+                        }
+                    } else {
+                        timeoutOccurred = true;
+                        break;
+                    }
+                }
+                if (timeoutOccurred) {
+                        Iterator<QuiesceCallbackImpl> it = allCallbacks.iterator();
+                        while (it.hasNext()) {
+                            it.next().toQuiesce.clear();
+                        }
+                }
 			}
     	}
 
@@ -260,7 +345,8 @@ public class QuiesceManagerImpl implements QuiesceManager {
 			boolean allDone = true;
 			Iterator<QuiesceCallbackImpl> it = allCallbacks.iterator();
 			while (allDone && it.hasNext()) {
-				allDone = !!!it.next().toQuiesce.isEmpty();
+                QuiesceCallbackImpl next = it.next();
+                if (!!!next.toQuiesce.isEmpty()) allDone = false;
 			}
 			return allDone;
 		}		

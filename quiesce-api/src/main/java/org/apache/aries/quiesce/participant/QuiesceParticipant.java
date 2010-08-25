@@ -22,7 +22,20 @@ import java.util.List;
 import org.apache.aries.quiesce.manager.QuiesceCallback;
 import org.osgi.framework.Bundle;
 
+/**
+ * Interface for OSGi containers / extenders to hook into the quiesce mechanism. An extender such
+ * as Blueprint should implement a {@link QuiesceParticipant} and register it as a service in the service 
+ * registry.
+ */
 public interface QuiesceParticipant
 {
+  /**
+   * Request a number of bundles to be quiesced by this participant
+   * 
+   * This method must be non-blocking.
+   * @param callback The callback with which to alert the manager of successful quiesce completion (from the view of this
+   * participant)
+   * @param bundlesToQuiesce The bundles scheduled to be quiesced
+   */
   public void quiesce(QuiesceCallback callback, List<Bundle> bundlesToQuiesce);
 }
