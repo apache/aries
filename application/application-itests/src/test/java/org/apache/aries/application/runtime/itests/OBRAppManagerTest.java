@@ -53,6 +53,8 @@ public class OBRAppManagerTest extends AbstractIntegrationTest {
    * are created in the paxweb temp directory, and not in the svn tree
    */
   static boolean createdApplications = false;
+  
+  @Before
   public static void createApplications() throws Exception {
 	    if (createdApplications) {
 	      return;
