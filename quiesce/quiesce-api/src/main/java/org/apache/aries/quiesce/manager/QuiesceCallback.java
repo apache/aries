@@ -18,9 +18,19 @@
  */
 package org.apache.aries.quiesce.manager;
  
+import org.apache.aries.quiesce.participant.QuiesceParticipant;
 import org.osgi.framework.Bundle;
 
+/**
+ * Callback that allows a {@link QuiesceParticipant} to alert the {@link QuiesceManager} that
+ * bundles are quiesced (from the point of view of the participant)
+ */
 public interface QuiesceCallback
 {
+  /**
+   * Notify the quiesce manager that the given bundles are quiesced 
+   * (from the point of view of the calling participant)
+   * @param bundlesQuiesced
+   */
   public void bundleQuiesced(Bundle ... bundlesQuiesced);
 }
