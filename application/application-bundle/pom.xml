@@ -95,7 +95,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.apache.aries.application:org.apache.aries.application.api</include>
-                                    <include>org.apache.aries.application:org.apache.aries.application.managment</include>
+                                    <include>org.apache.aries.application:org.apache.aries.application.management</include>
                                     <include>org.apache.aries.application:org.apache.aries.application.runtime</include>
                                     <include>org.apache.aries.application:org.apache.aries.application.utils</include>
                                 </includes>
