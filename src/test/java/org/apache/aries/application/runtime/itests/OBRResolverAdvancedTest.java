@@ -50,7 +50,6 @@ import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
 import org.apache.aries.sample.HelloWorld;
-import org.apache.aries.sample.HelloWorldManager;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
 import org.apache.felix.bundlerepository.Repository;
@@ -63,6 +62,10 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+
+import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+
 @RunWith(JUnit4TestRunner.class)
 public class OBRResolverAdvancedTest extends AbstractIntegrationTest 
 {
@@ -365,6 +368,11 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
     AriesApplicationContext ctx = manager.install(app);
     ctx.start();
     
+    // Wait 5 seconds just to give the blueprint-managed beans a chance to come up
+    try { 
+    	Thread.sleep(5000);
+    } catch (InterruptedException ix) {}
+    
     HelloWorld hw = getOsgiService(HelloWorld.class);
     String result = hw.getMessage();
     assertEquals (result, "hello world");
@@ -445,9 +453,9 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 
         /* For debugging, uncomment the next two lines */
-        /*vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5010"),
+        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5010"),
         waitForFrameworkStartup(),
-*/
+
         /* For debugging, add these imports:
         import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
         import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
