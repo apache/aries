@@ -47,12 +47,12 @@ import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationContextManager;
 import org.apache.aries.application.management.AriesApplicationListener;
 import org.apache.aries.application.management.AriesApplicationManager;
-import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleConversion;
 import org.apache.aries.application.management.BundleConverter;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.BundleRepository;
 import org.apache.aries.application.management.ConversionException;
+import org.apache.aries.application.management.DeploymentManifestManager;
 import org.apache.aries.application.management.LocalPlatform;
 import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.ResolveConstraint;
@@ -68,7 +68,6 @@ import org.apache.aries.application.utils.manifest.ManifestDefaultsInjector;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,11 +77,13 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   private ApplicationMetadataFactory _applicationMetadataFactory;
   private DeploymentMetadataFactory _deploymentMetadataFactory;
   private List<BundleConverter> _bundleConverters;
-  private AriesApplicationResolver _resolver;
+
   private LocalPlatform _localPlatform;
   private AriesApplicationContextManager _applicationContextManager;
   private BundleContext _bundleContext;
 
+  private DeploymentManifestManager deploymentManifestManager;
+  
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.application.management.impl");
 
   public void setApplicationMetadataFactory (ApplicationMetadataFactory amf) { 
@@ -97,8 +98,8 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     _bundleConverters = bcs;
   }
   
-  public void setResolver (AriesApplicationResolver resolver) { 
-    _resolver = resolver;
+  public void setDeploymentManifestManager(DeploymentManifestManager dm) {
+    this.deploymentManifestManager = dm;
   }
 
   public void setLocalPlatform (LocalPlatform lp) { 
@@ -265,13 +266,16 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
 
   public AriesApplication resolve(AriesApplication originalApp, ResolveConstraint... constraints) throws ResolverException {
     AriesApplicationImpl application = new AriesApplicationImpl(originalApp.getApplicationMetadata(), originalApp.getBundleInfo(), _localPlatform);
-    Set<BundleInfo> additionalBundlesRequired = _resolver.resolve(application, constraints);
-    DeploymentMetadata deploymentMetadata = _deploymentMetadataFactory.createDeploymentMetadata(application, additionalBundlesRequired);
-    application.setDeploymentMetadata(deploymentMetadata);
+    Manifest deploymentManifest = deploymentManifestManager.generateDeploymentManifest(originalApp, constraints);
+    try {
+      application.setDeploymentMetadata(_deploymentMetadataFactory.createDeploymentMetadata(deploymentManifest));
+    } catch (IOException ioe) {
+      throw new ResolverException(ioe);
+    }
     // Store a reference to any modified bundles
     if (originalApp instanceof AriesApplicationImpl) {
-        // TODO: are we really passing streams around ?
-        application.setModifiedBundles(((AriesApplicationImpl) originalApp).getModifiedBundles());
+      // TODO: are we really passing streams around ?
+      application.setModifiedBundles(((AriesApplicationImpl) originalApp).getModifiedBundles());
     }
     return application;
   } 
