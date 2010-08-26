@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map;
 
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.modelling.ExportedPackage;
@@ -31,6 +32,7 @@ import org.apache.aries.application.modelling.ImportedBundle;
 import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;
+import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -73,65 +75,66 @@ public abstract class AbstractBundleResourceTest
     int count = 0;
   
     for (ImportedPackage ip : bundleResource.getImportedPackages()) {
+      String filter = ip.getAttributeFilter();
+      Map<String, String> parsedFilterElements = ManifestHeaderProcessor.parseFilter(filter);
       
       if (ip.getPackageName().equals("org.osgi.framework")) {
         count++;
-        assertEquals("The filter is wrong.", "(&(package=org.osgi.framework)(version>=1.3.0))", 
-            ip.getAttributeFilter());
-  
+        assertEquals ("Wrong package", parsedFilterElements.get("package"), "org.osgi.framework");
+        assertEquals ("Wrong package version", parsedFilterElements.get("version"), "1.3.0");
       } else if (ip.getPackageName().equals("aries.ws.kernel.file")) {
         count++;
-        assertEquals("The filter is wrong.", "(&(package=aries.ws.kernel.file)(version>=0.0.0))", ip.getAttributeFilter());
-  
+        assertEquals ("Wrong package", parsedFilterElements.get("package"), "aries.ws.kernel.file");
+        assertEquals ("Wrong package version", parsedFilterElements.get("version"), "0.0.0");
       } else if (ip.getPackageName().equals("aries.wsspi.application.aries")) {
         count++;
-        assertEquals("The filter is wrong.",
-            "(&(package=aries.wsspi.application.aries)(version>=0.0.0)(company=yang)(mandatory:<*company))", ip
-                .getAttributeFilter());
+        assertEquals ("Wrong package", parsedFilterElements.get("package"), "aries.wsspi.application.aries");
+        assertEquals ("Wrong package version", parsedFilterElements.get("version"), "0.0.0");
+        assertEquals ("Company wrong", parsedFilterElements.get("company"), "yang");
+        assertTrue ("mandatory filter missing", filter.contains("(mandatory:<*company)"));
       } else if (ip.getPackageName().equals("aries.ws.ffdc")) {
         count++;
         assertEquals("The filter is wrong.", "(&(package=aries.ws.ffdc)(version>=0.0.0))", ip.getAttributeFilter());
         assertTrue ("Optional import not correctly represented", ip.isOptional());
       } else if (ip.getPackageName().equals("aries.ws.app.framework.plugin")) {
         count++;
-        assertEquals(
-            "The filter is wrong.",
-            "(&(package=aries.ws.app.framework.plugin)(version>=1.0.0)(version<=2.0.0)(!(version=2.0.0)))",
-            ip.getAttributeFilter());
+        assertEquals ("Wrong package", parsedFilterElements.get("package"), "aries.ws.app.framework.plugin");
+        assertEquals ("Wrong package version", parsedFilterElements.get("version"), "[1.0.0,2.0.0)");
       } else if (ip.getPackageName().equals("aries.ejs.ras")) {
         count++;
-        assertEquals("The filter is wrong.", "(&(package=aries.ejs.ras)(version>=0.0.0))", ip.getAttributeFilter());
-      } else if (ip.getPackageName().equals("aries.ws.event")) {
+        assertEquals ("Wrong package", parsedFilterElements.get("package"), "aries.ejs.ras");
+        assertEquals ("Wrong package version", parsedFilterElements.get("version"), "0.0.0");
+     } else if (ip.getPackageName().equals("aries.ws.event")) {
         count++;
-        assertEquals("The filter is wrong.", "(&(package=aries.ws.event)(version>=1.0.0))", ip
-            .getAttributeFilter());
+        assertEquals ("Wrong package", parsedFilterElements.get("package"), "aries.ws.event");
+        assertEquals ("Wrong package version", parsedFilterElements.get("version"), "1.0.0");
       } else if (ip.getPackageName().equals("aries.wsspi.app.container.aries")) {
         count++;
-        assertEquals(
-            "The filter is wrong.",
-            "(&(package=aries.wsspi.app.container.aries)(version>=0.0.0)(bundle-symbolic-name=B)(bundle-version>=1.2.0)(bundle-version<=2.2.0)(!(bundle-version=2.2.0)))",
-            ip.getAttributeFilter());
+        assertEquals ("Wrong package", parsedFilterElements.get("package"), "aries.wsspi.app.container.aries");
+        assertEquals ("Wrong package version", parsedFilterElements.get("version"), "0.0.0");
+        assertEquals ("Wrong bundle symbolic name", parsedFilterElements.get("bundle-symbolic-name"), "B");
+        assertEquals ("Wrong bundle version", parsedFilterElements.get("bundle-version"), "[1.2.0,2.2.0)");
       } else if (ip.getPackageName().equals("aries.ws.eba.bla")) {
-  
         count++;
-        assertEquals("The filter is wrong.", "(&(package=aries.ws.eba.bla)(version>=0.0.0))", ip.getAttributeFilter());
+        assertEquals ("Wrong package", parsedFilterElements.get("package"), "aries.ws.eba.bla");
+        assertEquals ("Wrong package version", parsedFilterElements.get("version"), "0.0.0");
       } else if (ip.getPackageName().equals("aries.ws.eba.launcher")) {
-  
         count++;
-        assertEquals("The filter is wrong.",
-            "(&(package=aries.ws.eba.launcher)(version>=1.0.0)(version<=2.0.0))", ip.getAttributeFilter());
+        assertEquals ("Wrong package", parsedFilterElements.get("package"), "aries.ws.eba.launcher");
+        assertEquals ("Wrong package version", parsedFilterElements.get("version"), "[1.0.0,2.0.0]");
         assertTrue ("Dynamic-ImportPackage should be optional", ip.isOptional());
-  
       } else if (ip.getPackageName().equals("aries.ws.eba.bundle4")) {
         count++;
-        assertEquals("The filter is wrong.", "(&(package=aries.ws.eba.bundle4)(version>=3.0.0))",
-            ip.getAttributeFilter());
+        assertEquals ("Wrong package", parsedFilterElements.get("package"), "aries.ws.eba.bundle4");
+        assertEquals ("Wrong package version", parsedFilterElements.get("version"), "3.0.0");
       } else if (ip.getPackageName().equals("aries.ws.eba.bundle5")) {
         count++;
-        assertEquals("The filter is wrong.", "(&(package=aries.ws.eba.bundle5)(version>=3.0.0))",
-            ip.getAttributeFilter());
+        assertEquals ("Wrong package", parsedFilterElements.get("package"), "aries.ws.eba.bundle5");
+        assertEquals ("Wrong package version", parsedFilterElements.get("version"), "3.0.0");
       } else if (ip.getPackageName().equals("aries.ws.eba.bundle6")) {
         count++;
+        assertEquals ("Wrong package", parsedFilterElements.get("package"), "aries.ws.eba.bundle6");
+        
         assertEquals("The filter is wrong.", "(&(package=aries.ws.eba.bundle6)(version>=0.0.0))", ip.getAttributeFilter());
       } else if (ip.getPackageName().equals("aries.ws.eba.bundle7")) {
         count++;
@@ -140,32 +143,34 @@ public abstract class AbstractBundleResourceTest
     }
       
     for (ImportedBundle ib : bundleResource.getRequiredBundles()) {
-    
+      String filter = ib.getAttributeFilter();
+      Map<String, String> parsedFilterElements = ManifestHeaderProcessor.parseFilter(filter);
       if (ib.getSymbolicName().equals("com.acme.facade")) {
         count++;
-        assertEquals("The filter is wrong.", "(&(symbolicname=com.acme.facade)(version>=3.0.0))",
-            ib.getAttributeFilter());
+        assertEquals ("Wrong bundle symbolic name", parsedFilterElements.get("symbolicname"), "com.acme.facade");
+        assertEquals ("Wrong bundle version", parsedFilterElements.get("version"), "3.0.0");
       } else if (ib.getSymbolicName().equals("com.acme.bar")) {
         count++;
-        assertEquals("The filter is wrong.", "(symbolicname=com.acme.bar)", ib.getAttributeFilter());
+        assertEquals ("Wrong bundle symbolic name", parsedFilterElements.get("symbolicname"), "com.acme.bar");
       } else if (ib.getSymbolicName().equals("aries.ws.eba.framework")) {
         count++;
-        assertEquals("The filter is wrong.",
-            "(&(symbolicname=aries.ws.eba.framework)(version>=3.0.0)(version<=4.0.0))", ib
-                .getAttributeFilter());
+        assertEquals ("Wrong bundle symbolic name", parsedFilterElements.get("symbolicname"), "aries.ws.eba.framework");
+        assertEquals ("Wrong bundle version", parsedFilterElements.get("version"), "(3.0.0,4.0.0)");
       } else if (ib.getSymbolicName().equals("com.de.ba")) {
         count++;
-        assertEquals("The filter is wrong.", "(symbolicname=com.de.ba)", ib.getAttributeFilter());
+        assertEquals ("Wrong bundle symbolic name", parsedFilterElements.get("symbolicname"), "com.de.ba");
       } else if (ib.getSymbolicName().equals("com.ab.de")) {
         count++;
-        assertEquals("The filter is wrong.", "(symbolicname=com.ab.de)", ib.getAttributeFilter());
+        assertEquals ("Wrong bundle symbolic name", parsedFilterElements.get("symbolicname"), "com.ab.de");
       }
     }
     
     for(ImportedService svc : bundleResource.getImportedServices()) {
       if (svc.getInterface().equals("aries.ws.eba.import")) {
         count++;
-        assertTrue("objectClass should be aries.ws.eba.import", svc.getAttributeFilter().contains("(objectClass=aries.ws.eba.import)"));
+        String filter = svc.getAttributeFilter();
+        Map<String, String> parsedFilterElements = ManifestHeaderProcessor.parseFilter(filter);
+        assertEquals ("Wrong object class", parsedFilterElements.get("objectClass"), "aries.ws.eba.import");
         assertTrue("(service=service) should be present", svc.getAttributeFilter().contains("(service=service)"));
         assertTrue("(mandatory:<*service) should be present", svc.getAttributeFilter().contains("(mandatory:<*service)"));        
       } 
