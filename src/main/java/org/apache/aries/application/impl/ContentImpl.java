@@ -66,6 +66,12 @@ public final class ContentImpl implements Content
     setup();
   }
   
+  public ContentImpl (String bundleSymbolicName, VersionRange version) { 
+    this.contentName = bundleSymbolicName;
+    this.nameValueMap = new NameValueMap<String, String>();
+    nameValueMap.put("version", version.toString());
+    setup();
+  }
   /**
    * 
    * @param contentName  

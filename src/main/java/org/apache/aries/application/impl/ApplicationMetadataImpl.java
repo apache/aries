@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -36,8 +37,12 @@ import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.ServiceDeclaration;
 import org.apache.aries.application.utils.AppConstants;
-import org.apache.aries.application.utils.manifest.ManifestProcessor;
+import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
+import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor.NameValueMap;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of ApplicationMetadata and DeploymentMetadata
@@ -45,6 +50,7 @@ import org.osgi.framework.Version;
  */
 public final class ApplicationMetadataImpl implements ApplicationMetadata
 {
+  private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.application.management.impl");
   private String appSymbolicName;
   private Version appVersion;
   private String appName;
@@ -53,7 +59,7 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
   private List<ServiceDeclaration> importServices;
   private List<ServiceDeclaration> exportServices;
   private Manifest manifest;
-  
+  private List<Content> useBundle;
   /**
    * create the applicationMetadata from appManifest
    * @param appManifest   the Application.mf manifest
@@ -61,8 +67,9 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
   public ApplicationMetadataImpl(Manifest appManifest) {
 
     this.appContents = new ArrayList<Content>();
+    this.useBundle = new ArrayList<Content>();    
     this.importServices = new ArrayList<ServiceDeclaration>();
-    this.exportServices = new ArrayList<ServiceDeclaration>();
+    this.exportServices = new ArrayList<ServiceDeclaration>();    
     setup(appManifest);
     
     // As of 7 Jan 2010 we have no setter methods. Hence it's currently 
@@ -90,13 +97,42 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
     }
     
     // configure appContents
+ // use parseImportString as we don't allow appContents to be duplicate
     String applicationContents = appMap.get(AppConstants.APPLICATION_CONTENT);
-    List<String> appContentsArray = ManifestProcessor.split(applicationContents, ",");
-    for (String content : appContentsArray) {
-      this.appContents.add(new ContentImpl(content));
+    Map<String, NameValueMap<String, String>> appContentsMap = ManifestHeaderProcessor.parseImportString(applicationContents);
+    for (Map.Entry<String, NameValueMap<String, String>> e : appContentsMap.entrySet()) {
+      this.appContents.add(new ContentImpl(e.getKey(), e.getValue()));
+    }
+   
+    String useBundleStr = appMap.get(AppConstants.APPLICATION_USE_BUNDLE);
+    if (useBundleStr != null) {
+      Map<String, NameValueMap<String, String>> useBundleMap = ManifestHeaderProcessor.parseImportString(useBundleStr);
+    for (Map.Entry<String, NameValueMap<String, String>> e : useBundleMap.entrySet()) {
+        this.useBundle.add(new ContentImpl(e.getKey(), e.getValue()));
+      }
     }
     
-    // TODO: configure importServices + exportServices
+    String allServiceImports = appMap.get(AppConstants.APPLICATION_IMPORT_SERVICE);
+    List<String> serviceImports = ManifestHeaderProcessor.split(allServiceImports, ",");
+    for (String s: serviceImports) { 
+      try { 
+        ServiceDeclaration dec = new ServiceDeclarationImpl(s);
+        importServices.add(dec);
+      } catch (InvalidSyntaxException ise) { 
+        _logger.warn("APPUTILS0013E", new Object[] {s, appSymbolicName});
+      }
+    }
+    
+    String allServiceExports = appMap.get(AppConstants.APPLICATION_EXPORT_SERVICE);
+    List<String> serviceExports = ManifestHeaderProcessor.split(allServiceExports, ",");
+    for (String s: serviceExports) { 
+      try { 
+        ServiceDeclaration dec = new ServiceDeclarationImpl(s);
+        exportServices.add(dec);
+      } catch (InvalidSyntaxException ise) { 
+        _logger.warn("APPUTILS0014E", new Object[] {s, appSymbolicName});
+      }
+    }
     
   }
   
@@ -192,5 +228,10 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
       }
       manifest.write(out);
     }
+  }
+
+  public Collection<Content> getUseBundles()
+  {
+    return this.useBundle;
   }
 }

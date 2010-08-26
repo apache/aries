@@ -28,7 +28,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.aries.application.Content;
 import org.apache.aries.application.VersionRange;
+import org.apache.aries.application.impl.ContentImpl;
 import org.apache.aries.application.impl.VersionRangeImpl;
 import org.apache.aries.application.utils.internal.MessageUtil;
 import org.osgi.framework.Constants;
@@ -690,5 +692,26 @@ public class ManifestHeaderProcessor
     }
     return result;
   }
+  
+  /**
+   * Parse a content object
+   * @param bundleSymbolicName bundle symbolic name
+   * @param versionRange version range in the String format
+   * @return Content object
+   */
+  public static Content parseContent(String bundleSymbolicName, String versionRange) {
+    return new ContentImpl(bundleSymbolicName, parseVersionRange(versionRange));
+  }
+  
+  /**
+   * Parse a content
+   * @param contentName The content name
+   * @param nameValueMap The map containing the content attributes/directives
+   * @return a content object
+   */
+  public static Content parseContent(String contentName, NameValueMap<String, String> nameValueMap) {
+    return new ContentImpl(contentName, nameValueMap);
+  }
+
 }
 
