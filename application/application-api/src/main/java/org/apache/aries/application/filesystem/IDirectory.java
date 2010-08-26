@@ -32,6 +32,13 @@ public interface IDirectory extends Iterable<IFile>, IFile
    *         and not in sub-directories.
    */
   public List<IFile> listFiles();
+  
+  /**
+   * 
+   * @return the list of files in all directories (including sub-directories). This is the complete list.
+   */
+  public List<IFile> listAllFiles();
+  
   /**
    * Gets the requested file under this directory. The file may be located any
    * number of levels within this directory. The name is relative to this

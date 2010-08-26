@@ -35,7 +35,8 @@
         <aries.osgi.export.pkg>
             org.apache.aries.application;
             org.apache.aries.application.filesystem;
-            org.apache.aries.application.management
+            org.apache.aries.application.management;
+            org.apache.aries.application.modelling
         </aries.osgi.export.pkg>
     </properties>
 

@@ -19,9 +19,12 @@
 
 package org.apache.aries.application.management;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.apache.aries.application.ApplicationMetadata;
+import org.apache.aries.application.Content;
+import org.apache.aries.application.modelling.ModelledResource;
 import org.osgi.framework.Version;
 
 /**
@@ -36,6 +39,7 @@ import org.osgi.framework.Version;
 public interface AriesApplicationResolver {
 
   /** 
+   * Deprecated. Use the method resolve(String appName, String appVersion, Collection<ModelledResource> byValueBundles, Collection<Content> inputs) throws ResolverException;
    * Resolve an AriesApplication. The implementation of this method is expected to do the following:
    * 
    * <ol>
@@ -56,6 +60,7 @@ public interface AriesApplicationResolver {
    *         set will not include those provided by value within the application.
    * @throws ResolverException if the application cannot be resolved.  
    */
+  @Deprecated
   Set<BundleInfo> resolve (AriesApplication app, ResolveConstraint... constraints) throws ResolverException ;
 
   /** 
@@ -69,4 +74,19 @@ public interface AriesApplicationResolver {
    * @return the BundleInfo for the requested bundle, or null if none could be found.
    */
   BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion);
+  /**
+   * Resolve an AriesApplication. The resolving process will build a repository from by-value bundles. 
+   * It then scans all the required bundles and pull the dependencies required to resolve the bundles.
+   * 
+   * 
+   * Return a collect of modelled resources. This method is called when installing an application
+   * @param appName Application name
+   * @param appVersion application version
+   * @param byValueBundles by value bundles
+   * @param inputs bundle requirement
+   * @return a collection of modelled resource required by this application.
+   * @throws ResolverException
+   */
+  Collection<ModelledResource> resolve(String appName, String appVersion, Collection<ModelledResource> byValueBundles, Collection<Content> inputs) throws ResolverException;
+
 }

@@ -24,8 +24,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
+import org.apache.aries.application.management.InvalidAttributeException;
+import org.osgi.framework.Filter;
 import org.osgi.framework.Version;
 
 /**
@@ -59,8 +61,8 @@ public interface DeploymentMetadata {
   public List<DeploymentContent> getApplicationProvisionBundles();
   
   /**
-   * get the value of Deployed-Use-Bundle
-   * the bundle here can contain a range
+   * get the value of Deployed-UseBundle header
+   * 
    * @return
    */
   public Collection<DeploymentContent> getDeployedUseBundle();
@@ -71,6 +73,17 @@ public interface DeploymentMetadata {
    */
   public Collection<Content> getImportPackage();
 
+  /**
+   * Get the list of DeployedService-Import
+   * @return DeployedService-Import
+   */
+  public Collection<Filter> getDeployedServiceImport() throws InvalidAttributeException;
+  
+  /**
+   * get the contents of deployment manifest in a map
+   * @return    the required feature map
+   */
+  public Map<String, String> getHeaders();
   /**
    * Obtain the associated 
    * {@link org.apache.aries.application.ApplicationMetadata ApplicationMetadata}. 
