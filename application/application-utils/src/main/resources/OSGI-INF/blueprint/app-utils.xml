@@ -37,5 +37,7 @@
   <service interface="org.apache.aries.application.management.AriesApplicationResolver" 
             ref="no-op-resolver"
             ranking="-1" />
+  <bean id="default-platform-repository" class="org.apache.aries.application.utils.runtime.DefaultPlatformRepository"/>
+  <service interface="org.apache.aries.application.management.PlatformRepository" ref="default-platform-repository" ranking="-1"/>
             
 </blueprint>

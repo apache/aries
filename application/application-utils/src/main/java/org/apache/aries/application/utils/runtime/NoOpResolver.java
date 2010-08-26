@@ -18,17 +18,17 @@
  */
 package org.apache.aries.application.utils.runtime;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import org.apache.aries.application.Content;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationResolver;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ResolveConstraint;
+import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.modelling.ModelledResource;
 import org.osgi.framework.Version;
 
 /** AriesApplicationManager requires that there be at least one 
@@ -58,5 +58,13 @@ public class NoOpResolver implements AriesApplicationResolver {
       }
     }
     return result;
+  }
+
+  public Collection<ModelledResource> resolve(String appName, String appVersion,
+      Collection<ModelledResource> byValueBundles, Collection<Content> inputs)
+      throws ResolverException
+  {
+    
+    return byValueBundles;
   }
 }

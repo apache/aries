@@ -161,4 +161,9 @@ public final class SimpleBundleInfo implements BundleInfo {
   {
     return _contentName.getContentName() + "_" + getVersion();
   }
+  public Attributes getRawAttributes()
+  {
+    
+    return _attributes;
+  }
 }
