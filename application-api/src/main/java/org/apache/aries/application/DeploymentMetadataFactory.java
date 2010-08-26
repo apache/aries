@@ -35,13 +35,14 @@ import org.apache.aries.application.management.ResolverException;
 public interface DeploymentMetadataFactory {
 
   /** 
-   * Create a DeploymentMetadata from an AriesApplication and its by-value bundles. 
+   * Deprecated. Use parseDeploymentManifest(IFile) to create a DeploymentMetadata from an AriesApplication and its by-value bundles. 
    * 
    * @param  app The AriesApplication in question
    * @param  bundleInfo A resolved set of BundleInfo objects
    * @throws ResolverException
    * @return DeploymentMetadata instance
    */
+  @Deprecated
   public DeploymentMetadata createDeploymentMetadata (AriesApplication app, Set<BundleInfo> bundleInfo)
     throws ResolverException;
   

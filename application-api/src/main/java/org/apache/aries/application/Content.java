@@ -28,8 +28,8 @@ import java.util.Map;
 public interface Content
 {
   /**
-   * get the package name of the content
-   * @return    the package name of the content
+   * get the content name of the content
+   * @return    the content name of the content
    */
   public String getContentName();
   
