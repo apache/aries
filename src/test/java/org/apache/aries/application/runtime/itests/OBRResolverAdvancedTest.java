@@ -63,9 +63,6 @@ import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
-import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
-
 @RunWith(JUnit4TestRunner.class)
 public class OBRResolverAdvancedTest extends AbstractIntegrationTest 
 {
@@ -452,9 +449,9 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 
-        /* For debugging, uncomment the next two lines */
+        /* For debugging, uncomment the next two lines 
         vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5010"),
-        waitForFrameworkStartup(),
+        waitForFrameworkStartup(), */
 
         /* For debugging, add these imports:
         import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
