@@ -165,7 +165,7 @@ public abstract class AbstractBundleResourceTest
     for(ImportedService svc : bundleResource.getImportedServices()) {
       if (svc.getInterface().equals("aries.ws.eba.import")) {
         count++;
-        assertEquals("The filter is wrong.", "(&(service=service)(objectClass=aries.ws.eba.import)(mandatory:<*service))",
+        assertEquals("The filter is wrong.", "(&(objectClass=aries.ws.eba.import)(service=service)(mandatory:<*service))",
           svc.getAttributeFilter());
       } 
     }
