@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><repository name="Test repo description">
+<resource id="aries.ws.eba.bundle1/2.0.0" presentationname="Test Bundle" symbolicname="aries.ws.eba.bundle1" uri="" version="2.0.0">
+<capability name="bundle">
+<p n="presentationname" v="Test Bundle"/>
+<p n="Fragment-Host" v="aries.ws.eba.framework;bundle-version=&quot;[3.0,4.0]&quot;"/>
+<p n="version" t="version" v="2.0.0"/>
+<p n="symbolicname" v="aries.ws.eba.bundle1"/>
+<p n="Bundle-ManifestVersion" v="2"/>
+<p n="mandatory" v=""/>
+</capability>
+<capability name="package">
+<p n="security" v="false"/>
+<p n="mandatory" v="company,security"/>
+<p n="package" v="aries.ws.eba.bundle1"/>
+<p n="version" t="version" v="2.2.0"/>
+<p n="bundle-symbolic-name" v="aries.ws.eba.bundle1"/>
+<p n="company" v="dodo"/>
+<p n="bundle-version" t="version" v="2.0.0"/>
+</capability>
+<capability name="service">
+<p n="service" v="service"/>
+<p n="osgi.service.blueprint.compname" v="helloWorldManager"/>
+<p n="objectClass" t="set" v="org.apache.aries.sample.HelloWorldManager"/>
+<p n="service.ranking" v="0"/>
+<p n="mandatory" v=""/>
+</capability>
+<capability name="service">
+<p n="service" v="service"/>
+<p n="objectClass" t="set" v="aries.ws.eba.export"/>
+<p n="service.ranking" v="0"/>
+<p n="mandatory" v=""/>
+</capability>
+<require extend="false" filter="(&amp;(package=org.osgi.framework)(version&gt;=1.3.0))" multiple="false" name="package" optional="false">Requires package with attributes {package=org.osgi.framework, version=1.3.0}</require>
+<require extend="false" filter="(&amp;(package=aries.ws.event)(version&gt;=1.0.0))" multiple="false" name="package" optional="false">Requires package with attributes {package=aries.ws.event, version=1.0.0}</require>
+<require extend="false" filter="(&amp;(package=aries.wsspi.application.aries)(version&gt;=0.0.0)(company=yang)(mandatory:&lt;*company))" multiple="false" name="package" optional="false">Requires package with attributes {package=aries.wsspi.application.aries, version=0.0.0, company=yang}</require>
+<require extend="false" filter="(&amp;(package=aries.ws.kernel.file)(version&gt;=0.0.0))" multiple="false" name="package" optional="false">Requires package with attributes {package=aries.ws.kernel.file, version=0.0.0}</require>
+<require extend="false" filter="(&amp;(package=aries.wsspi.app.container.aries)(version&gt;=0.0.0)(bundle-symbolic-name=B)(bundle-version&gt;=1.2.0)(bundle-version&lt;=2.2.0)(!(bundle-version=2.2.0)))" multiple="false" name="package" optional="false">Requires package with attributes {package=aries.wsspi.app.container.aries, version=0.0.0, bundle-symbolic-name=B, bundle-version=[1.2.0,2.2.0)}</require>
+<require extend="false" filter="(&amp;(package=aries.ws.ffdc)(version&gt;=0.0.0))" multiple="false" name="package" optional="true">Requires package with attributes {package=aries.ws.ffdc, version=0.0.0}</require>
+<require extend="false" filter="(&amp;(package=aries.ws.app.framework.plugin)(version&gt;=1.0.0)(version&lt;=2.0.0)(!(version=2.0.0)))" multiple="false" name="package" optional="false">Requires package with attributes {package=aries.ws.app.framework.plugin, version=[1.0.0,2.0.0)}</require>
+<require extend="false" filter="(&amp;(package=aries.ejs.ras)(version&gt;=0.0.0))" multiple="false" name="package" optional="false">Requires package with attributes {package=aries.ejs.ras, version=0.0.0}</require>
+<require extend="false" filter="(&amp;(package=aries.ws.eba.bla)(version&gt;=0.0.0))" multiple="false" name="package" optional="true">Requires package with attributes {package=aries.ws.eba.bla, version=0.0.0}</require>
+<require extend="false" filter="(&amp;(package=aries.ws.eba.launcher)(version&gt;=1.0.0)(version&lt;=2.0.0))" multiple="false" name="package" optional="true">Requires package with attributes {package=aries.ws.eba.launcher, version=[1.0.0,2.0.0]}</require>
+<require extend="false" filter="(&amp;(service=service)(objectClass=org.apache.aries.sample.HelloWorld)(mandatory:&lt;*service))" multiple="true" name="service" optional="false">Requires service with attributes {service=service, objectClass=org.apache.aries.sample.HelloWorld}</require>
+<require extend="false" filter="(&amp;(service=service)(objectClass=aries.ws.eba.import)(mandatory:&lt;*service))" multiple="false" name="service" optional="false">Requires service with attributes {service=service, objectClass=aries.ws.eba.import}</require>
+<require extend="false" filter="(symbolicname=com.ab.de)" multiple="false" name="bundle" optional="false">Requires bundle with attributes {symbolicname=com.ab.de}</require>
+<require extend="false" filter="(symbolicname=com.acme.facade)" multiple="false" name="bundle" optional="false">Requires bundle with attributes {symbolicname=com.acme.facade}</require>
+<require extend="false" filter="(symbolicname=com.acme.bar)" multiple="false" name="bundle" optional="true">Requires bundle with attributes {symbolicname=com.acme.bar}</require>
+<require extend="false" filter="(symbolicname=com.de.ba)" multiple="false" name="bundle" optional="false">Requires bundle with attributes {symbolicname=com.de.ba}</require>
+<require extend="false" filter="(&amp;(version&gt;=3.0.0)(version&lt;=4.0.0)(symbolicname=aries.ws.eba.framework)(mandatory:&lt;*symbolicname))" multiple="false" name="bundle" optional="false">Requires bundle with attributes {version=[3.0.0,4.0.0], symbolicname=aries.ws.eba.framework}</require>
+</resource>
+</repository>

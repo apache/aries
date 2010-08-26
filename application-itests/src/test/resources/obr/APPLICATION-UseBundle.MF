@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Application-ManifestVersion: 1.0
+Application-Name: test application 2
+Application-SymbolicName: org.apache.obr.resolver.test.app
+Application-Version: 1.0
+Application-Content: core.bundle.by.value; version=1.0.0,
+ core.bundle.by.reference; version=1.0.0
+Use-Bundle: use.bundle.by.reference;version="1.0.0"

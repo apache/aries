@@ -133,6 +133,8 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
         // Bundles
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.api"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces"),
@@ -140,6 +142,7 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"), 
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
+        
         
         /* For debugging, uncomment the next two lines
         vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
