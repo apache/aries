@@ -54,18 +54,18 @@ public class JdbcBlogSampleWithEbaTest extends AbstractIntegrationTest {
 		/* Check that the Blog Sample bundles are present an started */
         Bundle bapi = getInstalledBundle("org.apache.aries.samples.blog.api");
         assertNotNull(bapi);
-		assertEquals(bapi.ACTIVE, bapi.getState());
+		assertEquals(Bundle.ACTIVE, bapi.getState());
 
         Bundle bweb = getInstalledBundle("org.apache.aries.samples.blog.web");
         assertNotNull(bweb);
 
         Bundle bbiz = getInstalledBundle("org.apache.aries.samples.blog.biz");
         assertNotNull(bbiz);
-		assertEquals(bbiz.ACTIVE, bbiz.getState());
+		assertEquals(Bundle.ACTIVE, bbiz.getState());
 
         Bundle bper = getInstalledBundle("org.apache.aries.samples.blog.persistence.jdbc");
         assertNotNull(bper);
-		assertEquals(bper.ACTIVE, bper.getState());
+		assertEquals(Bundle.ACTIVE, bper.getState());
 
         /* Require services from biz and persistence - wait for them to register */
         waitForServices(bbiz, "org.apache.aries.samples.blog.api.BloggingService");
@@ -143,6 +143,8 @@ public class JdbcBlogSampleWithEbaTest extends AbstractIntegrationTest {
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.management" ),
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime" ),
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils" ),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management"),
                 mavenBundle("org.apache.felix", "org.apache.felix.fileinstall" ),
                 mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api" ),
                 mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container" ),
