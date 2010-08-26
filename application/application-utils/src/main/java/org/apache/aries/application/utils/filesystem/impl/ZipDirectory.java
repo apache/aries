@@ -141,6 +141,25 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     return files;
   }
 
+  public List<IFile> listAllFiles()
+  {
+    List<IFile> files = new ArrayList<IFile>();
+
+    ZipFile z = openZipFile();
+    Enumeration<? extends ZipEntry> entries = z.entries();
+
+    while (entries.hasMoreElements()) {
+      ZipEntry possibleEntry = entries.nextElement();
+      if (possibleEntry.isDirectory()) {
+        files.add(new ZipDirectory(zip, possibleEntry, this));
+      } else {
+        files.add(new ZipFileImpl(zip, possibleEntry, this));
+      }
+      
+    }
+    closeZipFile(z);
+    return files;
+  }
   /**
    * This method works out if the provided entry is inside this directory. It
    * returns false if it is not, or if it is in a sub-directory.

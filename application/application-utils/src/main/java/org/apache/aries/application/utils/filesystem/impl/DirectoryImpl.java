@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.filesystem.IFile;
-import org.apache.aries.application.utils.AppConstants;
 
 /**
  * An IDirectory representing a java.io.File whose isDirectory method returns true.
@@ -80,6 +79,37 @@ public class DirectoryImpl extends FileImpl implements IDirectory
       }
     }
     return files;
+  }
+  public List<IFile> listAllFiles()
+  {
+    List<IFile> files = new ArrayList<IFile>();
+    File[] filesInDir = file.listFiles();
+    if (filesInDir != null) {
+      for (File f : filesInDir) {
+        if (f.isFile()) {
+          files.add(new FileImpl(f, rootDirFile));
+        } else if (f.isDirectory()) {
+          files.add(new DirectoryImpl(f, rootDirFile));
+          listSubDirectoryFiles(files, f);
+        }
+      }
+    }
+    return files;
+  }
+  
+  private void listSubDirectoryFiles(List<IFile> lists, File file) {
+    File[] filesInDir = file.listFiles();
+    if (filesInDir != null) {
+      for (File f : filesInDir) {
+        if (f.isFile()) {
+          lists.add(new FileImpl(f, rootDirFile));
+        } else if (f.isDirectory()) {
+          lists.add(new DirectoryImpl(f, rootDirFile));
+          listSubDirectoryFiles(lists, f);
+        }
+      }
+    }
+    
   }
 
   public Iterator<IFile> iterator()

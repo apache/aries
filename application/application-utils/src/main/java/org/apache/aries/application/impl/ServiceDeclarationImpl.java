@@ -18,12 +18,11 @@
  */
 package org.apache.aries.application.impl;
 
+import org.apache.aries.application.Content;
+import org.apache.aries.application.ServiceDeclaration;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
-
-import org.apache.aries.application.Content;
-import org.apache.aries.application.ServiceDeclaration;
 
 /**
  * this class represents the Import-Services and Export-Services
@@ -69,5 +68,30 @@ public class ServiceDeclarationImpl implements ServiceDeclaration
   public Filter getFilter() 
   {
     return this.filter;
+  }
+  @Override
+  public int hashCode()
+  {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((filter == null) ? 0 : filter.hashCode());
+    result = prime * result + ((interfaceName == null) ? 0 : interfaceName.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    ServiceDeclarationImpl other = (ServiceDeclarationImpl) obj;
+    if (filter == null) {
+      if (other.filter != null) return false;
+    } else if (!filter.equals(other.filter)) return false;
+    if (interfaceName == null) {
+      if (other.interfaceName != null) return false;
+    } else if (!interfaceName.equals(other.interfaceName)) return false;
+    return true;
   }
 }
