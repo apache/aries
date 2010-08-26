@@ -18,27 +18,29 @@
  */
 package org.apache.aries.application.resolver.obr.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.aries.application.Content;
+import org.apache.aries.application.modelling.ImportedBundle;
 import org.apache.aries.application.utils.manifest.ManifestHeaderProcessor;
+import org.apache.felix.bundlerepository.Capability;
+import org.apache.felix.bundlerepository.Requirement;
+import org.apache.felix.bundlerepository.Resource;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
-import org.apache.felix.bundlerepository.Capability;
-import org.apache.felix.bundlerepository.Repository;
-import org.apache.felix.bundlerepository.Requirement;
-import org.apache.felix.bundlerepository.Resource;
 
 public class ApplicationResourceImpl implements Resource
 {
   private String _symbolicName;
   private Version _version;
-  private Requirement[] _requirements;
+  private List<Requirement> _requirements = new ArrayList<Requirement>();
   
   private static class FilterWrapper implements Filter
   {
@@ -76,8 +78,8 @@ public class ApplicationResourceImpl implements Resource
     _symbolicName = appName;
     _version = appVersion;
     
-    _requirements = new Requirement[appContent.size()];
-    for (int i = 0; i < _requirements.length; i++) {
+ 
+    for (int i = 0; i < appContent.size(); i++) {
       Content c = appContent.get(i);
       
       String comment = "Requires " + Resource.SYMBOLIC_NAME + " " + c.getContentName() + " with attributes " + c.getAttributes();
@@ -90,13 +92,22 @@ public class ApplicationResourceImpl implements Resource
       Filter filter;
       try {
         filter = FrameworkUtil.createFilter(f);
-        _requirements[i] = new RequirementImpl("bundle", new FilterWrapper(filter), false, optional, false, comment);
+        _requirements.add(new RequirementImpl("bundle", new FilterWrapper(filter), false, optional, false, comment));
       } catch (InvalidSyntaxException e) {
-        // TODO work out what to do if his happens. If it does our filter generation code is bust.
+        // TODO work out what to do if this happens. If it does our filter generation code is bust.
       }
     }
   }
   
+  public ApplicationResourceImpl(String appName, Version appVersion, Collection<ImportedBundle> inputs)
+  {
+    _symbolicName = appName;
+    _version = appVersion;
+    
+    for (ImportedBundle match : inputs) {
+      _requirements.add(new RequirementImpl(match));
+    }
+  }
   public Capability[] getCapabilities()
   {
     return null;
@@ -122,14 +133,19 @@ public class ApplicationResourceImpl implements Resource
     return null;
   }
 
-  public Repository getRepository()
-  {
-    return null;
-  }
-
   public Requirement[] getRequirements()
   {
-    return _requirements;
+    if (_requirements!= null) {
+    Requirement[] reqs = new Requirement[_requirements.size()];
+    int index =0;
+    for (Requirement req: _requirements) {
+      reqs[index++] = req;
+    }
+    return reqs;
+    } else {
+      return null;
+    }
+      
   }
 
   public String getSymbolicName()
@@ -154,7 +170,6 @@ public class ApplicationResourceImpl implements Resource
 
   public String getURI()
   {
-    // TODO Auto-generated method stub
     return null;
   }
 

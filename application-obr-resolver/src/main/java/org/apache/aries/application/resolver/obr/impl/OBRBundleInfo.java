@@ -19,16 +19,14 @@
 
 package org.apache.aries.application.resolver.obr.impl;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.jar.Attributes;
+
 import org.apache.aries.application.Content;
 import org.apache.aries.application.management.BundleInfo;
 import org.osgi.framework.Version;
 
-import java.util.Map;
-import java.util.Set;
-
-/**
- * @version $Rev$ $Date$
- */
 public class OBRBundleInfo implements BundleInfo
 {
 
@@ -143,4 +141,12 @@ public class OBRBundleInfo implements BundleInfo
             && version.equals(other.version));
   }
   
+  public Attributes getRawAttributes()
+  {
+
+    Attributes _attributes = new Attributes();
+    _attributes.putAll(attributes);
+    _attributes.putAll(directives);
+    return _attributes;
+  }
 }
