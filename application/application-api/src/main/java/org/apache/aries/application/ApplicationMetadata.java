@@ -21,6 +21,7 @@ package org.apache.aries.application;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.List;
 
 import org.osgi.framework.Version;
@@ -75,6 +76,12 @@ public interface ApplicationMetadata
    * @return    the value of the AppScope
    */
   public String getApplicationScope();
+  
+  /**
+   * get the list of use-bundle content including bundle symbolic name and version range
+   * @return
+   */
+  public Collection<Content> getUseBundles();
   
   /** 
    * Persist this metadata. 
