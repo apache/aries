@@ -23,7 +23,7 @@
     <property name="applicationMetadataFactory" ref="app-metadata-factory"/>
     <property name="deploymentMetadataFactory" ref="deployment-metadata-factory"/>
     <property name="bundleConverters" ref="bundle-converters"/>
-    <property name="resolver" ref="resolver"/>
+    <property name="deploymentManifestManager" ref="deploymentManifestManager"/>
     <property name="localPlatform" ref="localPlatform"/>
     <property name="applicationContextManager" ref="application-context-manager"/>
     <property name="bundleContext" ref="blueprintBundleContext"/>
@@ -34,7 +34,7 @@
   <reference-list id="bundle-converters" 
                   interface="org.apache.aries.application.management.BundleConverter"
                   availability="optional"/>
-  <reference id="resolver" interface="org.apache.aries.application.management.AriesApplicationResolver"/>
+  <reference id="deploymentManifestManager" interface="org.apache.aries.application.management.DeploymentManifestManager"/>
   <reference id="localPlatform" interface="org.apache.aries.application.management.LocalPlatform"/>
   <reference id="application-context-manager" interface="org.apache.aries.application.management.AriesApplicationContextManager"/>
     
