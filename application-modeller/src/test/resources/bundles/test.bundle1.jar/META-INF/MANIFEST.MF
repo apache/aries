@@ -1,0 +1,54 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Test Bundle
+Bundle-SymbolicName: test.bundle1;fragment-attachment:=always;singleton:=true
+Bundle-Version: 2.0.0.build-121
+Bundle-Vendor: Aries
+Import-Package: aries.ejs.ras,
+ aries.ws.app.framework.plugin;version="[1,2)",
+ aries.ws.event;version="1.0.0",
+ aries.ws.ffdc;resolution:=optional,
+ aries.ws.kernel.file;resolution:=mandatory,
+ aries.wsspi.app.container.aries;bundle-symbolic-name=B;bundle-version="[1.2.0,2.2.0)",
+ aries.wsspi.application.aries;company=yang;security:=haha,
+ org.osgi.framework;version="1.3.0",
+ aries.ws.eba.bundle4;aries.ws.eba.bundle5;version=3,
+ aries.ws.eba.bundle6;aries.ws.eba.bundle7
+DynamicImport-Package: *;vendor=acmen, *,aries.ws.eba.bla,aries.ws.eba.launcher;
+ version="[1,2]"
+Export-Package: aries.ws.eba.bundle1; version=2.2.0,
+ aries.ws.eba.bundle2;aries.ws.eba.bundle3;version=3 
+Require-Bundle: com.acme.facade;bundle-version=3;visibility:=reexport,
+ com.acme.bar; visibility:=reexport;resolution:=optional,
+ com.ab.de; visibility:=private,
+ com.de.ba; resolution:=mandatory,
+Import-Service: aries.ws.eba.import
+Export-Service: aries.ws.eba.export
+Fragment-Host: eba.framework;bundle-version="[3.0,4.0]"
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Test Bundle
+Bundle-SymbolicName: test.bundle1;fragment-attachment:=always;singleton:=true
+Bundle-Version: 2.0.0.build-121
+Bundle-Vendor: Aries
+Import-Package: aries.ejs.ras,
+ aries.ws.app.framework.plugin;version="[1,2)",
+ aries.ws.event;version="1.0.0",
+ aries.ws.ffdc;resolution:=optional,
+ aries.ws.kernel.file;resolution:=mandatory,
+ aries.wsspi.app.container.aries;bundle-symbolic-name=B;bundle-version="[1.2.0,2.2.0)",
+ aries.wsspi.application.aries;company=yang;security:=haha,
+ org.osgi.framework;version="1.3.0",
+ aries.ws.eba.bundle4;aries.ws.eba.bundle5;version=3,
+ aries.ws.eba.bundle6;aries.ws.eba.bundle7
+DynamicImport-Package: *;vendor=acmen, *,aries.ws.eba.bla,aries.ws.eba.launcher;
+ version="[1,2]"
+Export-Package: aries.ws.eba.bundle1; version=2.2.0,
+ aries.ws.eba.bundle2;aries.ws.eba.bundle3;version=3 
+Require-Bundle: com.acme.facade;bundle-version=3;visibility:=reexport,
+ com.acme.bar; visibility:=reexport;resolution:=optional,
+ com.ab.de; visibility:=private,
+ com.de.ba; resolution:=mandatory,
+Import-Service: aries.ws.eba.import
+Export-Service: aries.ws.eba.export
+Fragment-Host: eba.framework;bundle-version="[3.0,4.0]"
