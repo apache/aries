@@ -27,8 +27,9 @@ public interface AppConstants
   /** Trace group for this bundle */
   public String TRACE_GROUP = "Aries.app.utils";
 
-  /** The Provision-Content header for the deployment.mf */
-  public static final String PROVISION_CONTENT = "Provision-Bundle";
+
+  /** The Manifest version */
+  public static final String APPLICATION_MANIFEST_VERSION="Manifest-Version";
   
   /** The application scope (used to find the applications bundle repository */
   public static final String APPLICATION_SCOPE = "Application-Scope";
@@ -60,12 +61,24 @@ public interface AppConstants
   public static final String MANIFEST_MF = "META-INF/MANIFEST.MF";
   
   public static final String MANIFEST_VERSION="1.0";
-  
+  /** The application import service directive for the application manifest */
+  public static final String APPLICATION_IMPORT_SERVICE = "Application-ImportService";
+  /** The application export service directive for the application manifest */
+  public static final String APPLICATION_EXPORT_SERVICE = "Application-ExportService"; 
+  /** The use-bundle entry for the application manifest. */
+  public static final String APPLICATION_USE_BUNDLE = "Use-Bundle";
   /* The Deployed-Content header in DEPLOYMENT.MF records all the bundles
    * to be deployed for a particular application. 
    */
   public static final String DEPLOYMENT_CONTENT = "Deployed-Content";
-  
+  /** deployment.mf entry corresponding to application.mf Use-Bundle. */
+  public static final String DEPLOYMENT_USE_BUNDLE = "Deployed-Use-Bundle";
+  /** deployment.mf entry 'Import-Package' */
+  public static final String DEPLOYMENT_IMPORT_PACKAGES="Import-Package";
+  /** Bundle dependencies required by bundles listed in Deployed-Content or Deployed-Use-Bundle. */
+  public static final String DEPLOYMENT_PROVISION_BUNDLE = "Provision-Bundle";  
+  /** Blueprint managed services imported by the isolated bundles */ 
+  public static final String DEPLOYMENTSERVICE_IMPORT = "DeployedService-Import";
   /**
    * Logging insert strings
    */

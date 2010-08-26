@@ -29,6 +29,7 @@ import org.apache.aries.application.DeploymentMetadataFactory;
 import org.apache.aries.application.filesystem.IFile;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.InvalidAttributeException;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.utils.manifest.ManifestProcessor;
 
@@ -58,7 +59,11 @@ public class DeploymentMetadataFactoryImpl implements DeploymentMetadataFactory
 
   public DeploymentMetadata createDeploymentMetadata(Manifest manifest) throws IOException
   {
-    return new DeploymentMetadataImpl(manifest);
+    try {
+      return new DeploymentMetadataImpl(manifest);
+    } catch (InvalidAttributeException iae) {
+      throw new IOException(iae);
+    }
   }
 
   public DeploymentMetadata createDeploymentMetadata(IFile src) throws IOException
