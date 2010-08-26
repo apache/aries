@@ -19,8 +19,11 @@
 
 package org.apache.aries.application.runtime.isolated.impl;
 
+import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
+import static org.apache.aries.application.utils.AppConstants.LOG_EXCEPTION;
+import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,7 +35,6 @@ import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
-import org.apache.aries.application.management.BundleFramework;
 import org.apache.aries.application.management.BundleFrameworkManager;
 import org.apache.aries.application.management.BundleRepositoryManager;
 import org.apache.aries.application.management.ContextException;
@@ -43,10 +45,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXCEPTION;
 
 public class ApplicationContextImpl implements AriesApplicationContext
 {
