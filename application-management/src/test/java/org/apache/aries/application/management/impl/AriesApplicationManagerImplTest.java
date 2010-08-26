@@ -29,9 +29,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.apache.aries.application.ApplicationMetadata;
@@ -52,10 +56,13 @@ import org.apache.aries.application.management.BundleConversion;
 import org.apache.aries.application.management.BundleConverter;
 import org.apache.aries.application.management.BundleInfo;
 import org.apache.aries.application.management.ConversionException;
+import org.apache.aries.application.management.DeploymentManifestManager;
 import org.apache.aries.application.management.LocalPlatform;
 import org.apache.aries.application.management.ManagementException;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.modelling.ModelledResource;
+import org.apache.aries.application.utils.AppConstants;
 import org.apache.aries.application.utils.filesystem.FileSystem;
 import org.apache.aries.application.utils.filesystem.IOUtils;
 import org.apache.aries.application.utils.management.SimpleBundleInfo;
@@ -73,6 +80,69 @@ import org.osgi.framework.Version;
  */
 public class AriesApplicationManagerImplTest {
   
+  static class DummyDMManager implements DeploymentManifestManager {
+
+    private AriesApplicationResolver resolver;
+    public Manifest generateDeploymentManifest(AriesApplication app,
+        ResolveConstraint... constraints) throws ResolverException
+    {
+      
+      Map<String, String> deploymentMap = new HashMap<String, String>();
+      Set<BundleInfo> byValueBundles = app.getBundleInfo();
+      StringBuilder deployedContents = new StringBuilder();
+      boolean beginning= true;
+      for (BundleInfo bundle: byValueBundles) {
+        if (!!!beginning) {
+          deployedContents.append(",");
+        }
+        deployedContents.append(bundle.getSymbolicName()+";" + AppConstants.DEPLOYMENT_BUNDLE_VERSION + "=" +  bundle.getVersion());
+        beginning = false;
+      }
+      deploymentMap.put(AppConstants.DEPLOYMENT_CONTENT, deployedContents.toString());
+      // fake the provision bundle now.
+      String persistenceLibraryLocation = "../src/test/resources/bundles/repository/a.handy.persistence.library.jar";
+      File persistenceLibrary = new File (persistenceLibraryLocation);
+      BundleManifest mf = BundleManifest.fromBundle(persistenceLibrary);
+      
+      deploymentMap.put(AppConstants.DEPLOYMENT_PROVISION_BUNDLE, mf.getSymbolicName()+";" + AppConstants.DEPLOYMENT_BUNDLE_VERSION + "=" + mf.getVersion());
+      deploymentMap.put(AppConstants.APPLICATION_SYMBOLIC_NAME, app.getApplicationMetadata().getApplicationSymbolicName());
+     
+      deploymentMap.put(AppConstants.APPLICATION_VERSION, app.getApplicationMetadata().getApplicationVersion().toString());
+      
+      
+      Manifest man = new Manifest();
+      Attributes att = man.getMainAttributes();
+      att.putValue(Attributes.Name.MANIFEST_VERSION.toString(), AppConstants.MANIFEST_VERSION);
+      for (Map.Entry<String, String> entry : deploymentMap.entrySet()) {
+        att.putValue(entry.getKey(),  entry.getValue());
+      }
+      return man;
+    }
+
+   
+
+    public Manifest generateDeploymentManifest(AriesApplication app,
+        Collection<ModelledResource> byValueBundles, Collection<Content> useBundleSet,
+        Collection<Content> otherBundles) throws ResolverException
+    {
+      
+      return null;
+    }
+
+
+    public void setResolver(AriesApplicationResolver resolver) {
+      this.resolver = resolver;
+    }
+
+    public AriesApplicationResolver getResolver()
+    {
+      
+      return resolver;
+    }
+    
+    
+  }
+
   static class DummyResolver implements AriesApplicationResolver {
     Set<BundleInfo> nextResult;
     public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) {
@@ -88,6 +158,13 @@ public class AriesApplicationManagerImplTest {
     public BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion)
     {
       return null;
+    }
+    public Collection<ModelledResource> resolve(String appName, String appVersion,
+        Collection<ModelledResource> byValueBundles, Collection<Content> inputs)
+        throws ResolverException
+    {
+      
+      return byValueBundles;
     }
   }
   
@@ -163,6 +240,7 @@ public class AriesApplicationManagerImplTest {
   ApplicationMetadataFactory _appMetaFactory;
   DummyResolver _resolver;
   DummyConverter _converter;
+  DummyDMManager _dmMgr;
   @Before
   public void setup() { 
     _appMgr = new AriesApplicationManagerImpl ();
@@ -172,11 +250,13 @@ public class AriesApplicationManagerImplTest {
     _converter = new DummyConverter();
     List<BundleConverter> bundleConverters = new ArrayList<BundleConverter>();
     bundleConverters.add(_converter);
-    _resolver = new DummyResolver();    
+    _resolver = new DummyResolver(); 
+    _dmMgr = new DummyDMManager();
+    _dmMgr.setResolver(_resolver);
     _appMgr.setApplicationMetadataFactory(_appMetaFactory);
     _appMgr.setDeploymentMetadataFactory(dmf);
     _appMgr.setBundleConverters(bundleConverters);
-    _appMgr.setResolver(_resolver);
+    _appMgr.setDeploymentManifestManager(_dmMgr);
     _appMgr.setLocalPlatform(new DummyLocalPlatform());
   }
   
