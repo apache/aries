@@ -24,8 +24,18 @@
         <argument>
             <reference interface="org.apache.felix.bundlerepository.RepositoryAdmin"/>
         </argument>
+        <property name="platformRepository" ref="platformRepository"/>
+        <property name="repositoryGenerator" ref="repository-generator"/>
     </bean>
-
+    <reference id="platformRepository" interface="org.apache.aries.application.management.PlatformRepository" availability="optional"/>        
+    
+    <bean id="repository-generator" class="org.apache.aries.application.resolver.obr.impl.RepositoryGeneratorImpl" activation="lazy">
+        <argument>
+            <reference interface="org.apache.felix.bundlerepository.RepositoryAdmin"/>
+        </argument>
+    </bean>
+    <service id="repository-generator-service" ref="repository-generator" interface="org.apache.aries.application.management.RepositoryGenerator"/>
     <service interface="org.apache.aries.application.management.AriesApplicationResolver" ref="obr-resolver"/>
 
 </blueprint>
+
