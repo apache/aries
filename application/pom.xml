@@ -169,6 +169,18 @@
                 <artifactId>org.apache.aries.application.utils</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+			<dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.deployment.management</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+			<dependency>
+                <groupId>org.apache.aries.application</groupId>
+                <artifactId>org.apache.aries.application.modeller</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -187,6 +199,9 @@
         <module>application-obr-resolver</module>
         <module>application-install</module>
         <module>application-bundle</module>
+        <module>application-deployment-management</module>
+        <module>application-modeller</module>
+
     </modules>
 
     <build>
