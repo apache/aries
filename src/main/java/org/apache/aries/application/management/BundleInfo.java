@@ -21,6 +21,8 @@ package org.apache.aries.application.management;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.Attributes;
+
 import org.osgi.framework.Version;
 import org.apache.aries.application.Content;
 
@@ -62,4 +64,6 @@ public interface BundleInfo
   /** All the headers in the MANIFEST.MF file */
   public Map<String, String> getHeaders();
   
+  /** The Attribute object in the MANIFEST.MF file */
+  public Attributes getRawAttributes();
 }
