@@ -17,12 +17,12 @@
  * under the License.
  */
 package org.apache.aries.application.runtime.itests;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
@@ -31,7 +31,6 @@ import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.utils.filesystem.FileSystem;
-
 import org.apache.aries.isolated.sample.HelloWorld;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
@@ -47,10 +46,6 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.framework.CompositeBundle;
 import org.osgi.util.tracker.ServiceTracker;
-
-import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
-
 @RunWith(JUnit4TestRunner.class)
 public class IsolatedRuntimeTest extends AbstractIntegrationTest {
   
@@ -238,6 +233,10 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.isolated"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
+        mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.framework"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.framework.management"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.repository"),
@@ -247,9 +246,16 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.geronimo.specs","geronimo-jta_1.1_spec"),
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 
-//        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006"),
-//        waitForFrameworkStartup(),
+        /* For debugging, uncommenting the following two lines and add the imports */
+        /*
+         * vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5011"),
+        waitForFrameworkStartup(),*/
 
+        /*
+         * and add these imports:
+        import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
+        import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
+         */
         equinox().version("3.5.0"));
     options = updateOptions(options);
     return options;

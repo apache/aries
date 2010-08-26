@@ -27,29 +27,27 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.lang.reflect.Constructor;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.apache.aries.application.DeploymentContent;
 import org.apache.aries.application.DeploymentMetadata;
+import org.apache.aries.application.filesystem.IDirectory;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
-import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.management.RepositoryGenerator;
 import org.apache.aries.application.management.ResolverException;
-import org.apache.aries.application.resolver.obr.generator.RepositoryDescriptorGenerator;
+import org.apache.aries.application.modelling.ModelledResource;
+import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.application.utils.filesystem.FileSystem;
-import org.apache.aries.application.utils.manifest.BundleManifest;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
+import org.apache.felix.bundlerepository.Repository;
+import org.apache.felix.bundlerepository.RepositoryAdmin;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,10 +55,6 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
-import org.apache.felix.bundlerepository.Repository;
-import org.apache.felix.bundlerepository.RepositoryAdmin;
-import org.w3c.dom.Document;
-
 @RunWith(JUnit4TestRunner.class)
 public class OBRResolverTest extends AbstractIntegrationTest 
 {
@@ -139,6 +133,16 @@ public class OBRResolverTest extends AbstractIntegrationTest
     fout.close();
   }
 
+  @After
+  public void clearRepository() {
+	  RepositoryAdmin repositoryAdmin = getOsgiService(RepositoryAdmin.class);
+	  Repository[] repos = repositoryAdmin.listRepositories();
+	  if ((repos != null) && (repos.length >0)) {
+		  for (Repository repo : repos) {
+			  repositoryAdmin.removeRepository(repo.getURI());
+		  }
+	  }
+  }
   @Test(expected=ResolverException.class)
   public void testBlogAppResolveFail() throws ResolverException, Exception
   {
@@ -214,32 +218,19 @@ public class OBRResolverTest extends AbstractIntegrationTest
 
   private void generateOBRRepoXML(String ... bundleFiles) throws Exception
   {
-    Set<BundleInfo> bundles = new HashSet<BundleInfo>();
-    
-    for (String file : bundleFiles) {
-      bundles.add(createBundleInfo(new File(file).toURI().toURL().toExternalForm()));
-    }
-    
-    Document doc = RepositoryDescriptorGenerator.generateRepositoryDescriptor("Test repo description", bundles);
-    
+    Set<ModelledResource> mrs = new HashSet<ModelledResource>();
     FileOutputStream fout = new FileOutputStream("repository.xml");
-    
-    TransformerFactory.newInstance().newTransformer().transform(new DOMSource(doc), new StreamResult(fout));
-    
+    RepositoryGenerator repositoryGenerator = getOsgiService(RepositoryGenerator.class);
+    ModelledResourceManager modelledResourceManager = getOsgiService(ModelledResourceManager.class);
+    for (String fileName : bundleFiles) {
+      File bundleFile = new File(fileName);
+      IDirectory jarDir = FileSystem.getFSRoot(bundleFile);
+      mrs.add(modelledResourceManager.getModelledResource(bundleFile.toURI().toString(), jarDir));
+    }
+    repositoryGenerator.generateRepository("Test repo description", mrs, fout);
     fout.close();
-    
-    TransformerFactory.newInstance().newTransformer().transform(new DOMSource(doc), new StreamResult(System.out));
-  }
+    }
 
-  private BundleInfo createBundleInfo(String urlToBundle) throws Exception
-  {
-    Bundle b = getBundle("org.apache.aries.application.management");
-    @SuppressWarnings("unchecked")
-    Class<BundleInfo> clazz = b.loadClass("org.apache.aries.application.utils.management.SimpleBundleInfo");
-    Constructor<BundleInfo> c = clazz.getConstructor(BundleManifest.class, String.class);
-    
-    return c.newInstance(BundleManifest.fromBundle(new URL(urlToBundle).openStream()), urlToBundle);
-  }
 
   @org.ops4j.pax.exam.junit.Configuration
   public static Option[] configuration() {
@@ -262,6 +253,8 @@ public class OBRResolverTest extends AbstractIntegrationTest
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime").noStart(),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
         mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
@@ -270,8 +263,8 @@ public class OBRResolverTest extends AbstractIntegrationTest
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 
         /* For debugging, uncomment the next two lines */
-//        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
-//        waitForFrameworkStartup(),
+        /*vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
+        waitForFrameworkStartup(),*/
 
         /* For debugging, uncomment the next two lines
         and add these imports:

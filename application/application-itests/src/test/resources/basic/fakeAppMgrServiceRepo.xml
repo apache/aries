@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><repository name="app.manager.service">
+<resource id="appManagerService/1.0.0" presentationname="application.management.fake" symbolicname="application.management.fake" uri="bundle_location" version="1.0.0">
+<capability name="bundle">
+<p n="version" t="version" v="1.0.0"/>
+<p n="symbolicname" v="application.management.fake"/>
+<p n="Bundle-ManifestVersion" v="2"/>
+<p n="mandatory" v=""/>
+</capability>
+<capability name="service">
+<p n="service" v="service"/>
+<p n="osgi.service.blueprint.compname" v="app-manager"/>
+<p n="objectClass" t="set" v="org.apache.aries.application.management.AriesApplicationManager"/>
+<p n="service.ranking" v="0"/>
+<p n="mandatory" v=""/>
+</capability>
+</resource>
+</repository>
