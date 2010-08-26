@@ -29,15 +29,14 @@ import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.apache.aries.application.management.AriesApplication;
+import org.apache.aries.application.management.AriesApplicationContext;
+import org.apache.aries.application.management.AriesApplicationManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
-
-import org.apache.aries.application.management.AriesApplication;
-import org.apache.aries.application.management.AriesApplicationContext;
-import org.apache.aries.application.management.AriesApplicationManager;
 
 
 
@@ -58,19 +57,19 @@ public class JpaBlogSampleWithEbaTest extends AbstractIntegrationTest {
 
 	Bundle bapi = getInstalledBundle("org.apache.aries.samples.blog.api");
     assertNotNull(bapi);
-	assertEquals(bapi.ACTIVE, bapi.getState());
+	assertEquals(Bundle.ACTIVE, bapi.getState());
 
 	Bundle bweb = getInstalledBundle("org.apache.aries.samples.blog.web");
     assertNotNull(bweb);
-	assertEquals(bweb.ACTIVE, bweb.getState());
+	assertEquals(Bundle.ACTIVE, bweb.getState());
 
 	Bundle bbiz = getInstalledBundle("org.apache.aries.samples.blog.biz");
     assertNotNull(bbiz);
-	assertEquals(bbiz.ACTIVE, bbiz.getState());
+	assertEquals(Bundle.ACTIVE, bbiz.getState());
 
 	Bundle bper = getInstalledBundle("org.apache.aries.samples.blog.persistence.jpa");
     assertNotNull(bper);
-	assertEquals(bper.ACTIVE, bper.getState());
+	assertEquals(Bundle.ACTIVE, bper.getState());
  
     /* Datasource and transaction manager services are used by the blog sample */
 	Bundle bds = getInstalledBundle("org.apache.aries.samples.blog.datasource");
@@ -161,6 +160,8 @@ bootDelegationPackages("javax.transaction", "javax.transaction.*"),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.management" ),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime" ),
             mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils" ),
+            mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
+            mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management"),
             mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api" ),
             mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container" ),
             mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.blueprint.aries" ),
