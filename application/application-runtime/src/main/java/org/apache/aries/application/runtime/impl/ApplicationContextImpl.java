@@ -67,7 +67,7 @@ public class ApplicationContextImpl implements AriesApplicationContext {
     
       List<DeploymentContent> bundlesToInstall = new ArrayList<DeploymentContent>(meta.getApplicationDeploymentContents());
       bundlesToInstall.addAll(meta.getApplicationProvisionBundles());
-    
+      bundlesToInstall.addAll(meta.getDeployedUseBundle());
       for (DeploymentContent content : bundlesToInstall) {
         String bundleSymbolicName = content.getContentName();
         Version bundleVersion = content.getExactVersion();
