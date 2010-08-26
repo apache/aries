@@ -168,6 +168,10 @@ public class OBRAppManagerTest extends AbstractIntegrationTest {
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.management"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime").noStart(),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.deployment.management"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller"),
+        mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
+        mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolver.obr"),
         mavenBundle("org.apache.felix", "org.apache.felix.bundlerepository"),
         mavenBundle("org.apache.aries.application", "org.apache.aries.application.runtime.itest.interfaces"),
         mavenBundle("org.apache.aries", "org.apache.aries.util"),
@@ -175,15 +179,15 @@ public class OBRAppManagerTest extends AbstractIntegrationTest {
         mavenBundle("org.osgi", "org.osgi.compendium"),
         mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
 
-//        /* For debugging, uncomment the next two lines
-//        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
-//        waitForFrameworkStartup(),
+        //        /* For debugging, uncomment the next two lines
+        //        vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+        //        waitForFrameworkStartup(),
 
         /* For debugging, uncomment the next two lines
         and add these imports:
         import static org.ops4j.pax.exam.CoreOptions.waitForFrameworkStartup;
         import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption;
-        */
+         */
 
         equinox().version("3.5.0"));
     options = updateOptions(options);
