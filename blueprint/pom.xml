@@ -182,6 +182,5 @@
         <module>blueprint-testbundleb</module>
         <module>blueprint-itests</module>
     </modules>
-
 </project>
 
