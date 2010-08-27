@@ -21,14 +21,14 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>java5-parent</artifactId>
-        <version>0.2-incubating</version>
+        <version>0.2-incubating-SNAPSHOT</version>
     </parent>  
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.aries.jmx</groupId>
     <artifactId>jmx</artifactId>
     <name>Apache Aries JMX</name>
-    <version>0.3-incubating-SNAPSHOT</version>
+    <version>0.2-incubating-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
@@ -77,17 +77,17 @@
             <dependency>
                 <groupId>org.apache.aries</groupId>
                 <artifactId>org.apache.aries.util</artifactId>
-                <version>0.2-incubating</version>
+                <version>0.2-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint</artifactId>
-                <version>0.2-incubating</version>
+                <version>0.2-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.sample</artifactId>
-                <version>0.2-incubating</version>
+                <version>0.2-incubating-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
