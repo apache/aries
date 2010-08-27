@@ -178,7 +178,7 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
         
         // service: ref=foo, no componentId set. So using it to test getComponentIdsByType.
         String[] serviceComponentIds = metadataProxy.getComponentIdsByType(sampleBlueprintContainerServiceId, BlueprintMetadataMBean.SERVICE_METADATA);
-        assertEquals("There should be only one service component in this sample", 1, serviceComponentIds.length);
+        assertEquals("There should be two service components in this sample", 2, serviceComponentIds.length);
         
         MapEntryValidator mev = new MapEntryValidator();
         mev.setKeyValueValidator(new ValueValidator("key"), new ValueValidator("value"));
